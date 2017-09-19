@@ -1,0 +1,55 @@
+<div class="row">
+    <div class="col-sm-4">
+        <img id="photoEleve" src="" class="img-responsive" alt="Photo élève">
+    </div>
+    <div>
+        {% csrf_token %}
+        {% load crispy_forms_tags %}
+        {% crispy form %}
+    </div>
+
+
+<script>
+ $('#nomForm').typeahead({
+     ajax: '{% url "get_people_names" "all" "all" %}',
+     items: 14,
+     onSelect: function (suggestion) {
+         $("#matriculeForm").val(suggestion.value);
+         {% load staticfiles %}
+         $("#photoEleve").attr("src", "{% static '' %}photos/" + suggestion.value + ".jpg");
+     }
+ });
+ $('#matriculeForm').typeahead({
+     ajax: '{% url "get_students_matricules" %}',
+     items: 14,
+     onSelect: function (suggestion) {
+         $("#nomForm").val(suggestion.value);
+         {% load staticfiles %}
+         $("#photoEleve").attr("src", "{% static '' %}photos/" + suggestion.text + ".jpg");
+     }
+ });
+
+ $("option:selected").attr("disabled", "");
+ $("select").attr("required", "");
+
+$("#div_id_datetime_motif_start").datetimepicker({
+    defaultDate: moment(),
+    locale: 'fr',
+    sideBySide: true,
+    allowInputToggle: true
+});
+
+$("#div_id_datetime_motif_end").datetimepicker({
+    defaultDate: moment(),
+    locale: 'fr',
+    sideBySide: true,
+    allowInputToggle: true
+});
+
+$("#div_id_datetime_appel").datetimepicker({
+    defaultDate: moment(),
+    locale: 'fr',
+    sideBySide: true,
+    allowInputToggle: true
+});
+ </script>

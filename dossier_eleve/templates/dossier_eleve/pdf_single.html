@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>{{ student.surname }} {{ student.firstname }} {{ student.classe }}</title>
+        <style>
+            .column {
+                float: left;
+            }
+            #info {
+                width: 300px;
+            }
+            #stat {
+                width: 150px;
+            }
+            #photo {
+                width: 10px;
+            }
+            p {
+                font-size: 12px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <h3 class="panel-title">{{ student.surname }} {{ student.firstname }} {{ student.classe|upper }}</h3>
+
+        <div id="header">
+            <div id="info" class="column">
+                <p>
+                    Nom :
+                    {{ student.surname }}<br >
+                    Prénom :
+                    {{ student.firstname }}<br >
+                    Matricule :
+                    {{ student.matricule }} <br >
+                    Enseignement :
+                    {{ student.enseignement }} <br >
+                    Classe :
+                    {{ student.classe }}<br >
+                    Date de naissance :
+                    {{ student.date_naissance }}<br >
+                    Adresse :
+                    {{ student.rue }} - {{ student.code_postal }} {{ student.localite }}
+                </p>
+
+                <p>
+                    Téléphone :
+                    {% if student.telephone %}{{ student.telephone }}{% endif %}<br >
+                    GSM :
+                    {% if student.gsm %}{{ student.gsm }}{% endif %}<br >
+                    Email :
+                    {% if student.email %}{{ student.email }}{% endif %}<br >
+                    Téléphone mère :
+                    {% if student.telephone_mere %}{{ student.telephone_mere }}{% endif %}<br >
+                    GSM mère :
+                    {% if student.gsm_mere %}{{ student.gsm_mere }}{% endif %}<br >
+                    Email mère :
+                    {% if student.email_mere %}{{ student.email_mere }}{% endif %}<br >
+                    Téléphone père :
+                    {% if student.telephone_pere %}{{ student.telephone_pere }}{% endif %}<br >
+                    GSM père :
+                    {% if student.gsm_pere %}{{ student.gsm_pere }}{% endif %}<br >
+                    Email père :
+                    {% if student.email_pere %}{{ student.email_pere }}{% endif %}<br >
+                </p>
+            </div>
+            <div id="stat" class="column">
+                <h4>Récapitulatif :</h4>
+                    <p>
+                        Temps de midi :
+                        {{ temps_midi }}<br >
+                        Retenue(s) :
+                        {{ retenue }}<br >
+                        Convocat°(s)
+                        {{ convoc }}<br >
+                        Exclusion(s) :
+                        {{ exclu }}<br >
+                        Renvoi(s) :
+                        {{ renvoi }}<br >
+                        Autres :
+                        {{ autre }}
+                    </p>
+                    <h5>Total : {# temps_midi + temps_midi #}</h5>
+            </div>
+            <div id="photo" class="column">
+            </div>
+        </div>
+        <br style="clear: left;" />
+        <ul>
+            {% for d in list %}
+            <li>{{ d.explication_commentaire }}</li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>

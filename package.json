@@ -1,0 +1,41 @@
+{
+  "name": "appyschool",
+  "version": "2.0.0",
+  "description": "School application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@testserver:11022/root/app.eschool.git"
+  },
+  "keywords": [
+    "school"
+  ],
+  "author": "ISLN",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "axios": "^0.17.1",
+    "css-loader": "^0.28.7",
+    "style-loader": "^0.18.2",
+    "vue": "^2.5.13",
+    "vue-cli": "^2.8.2",
+    "vue-loader": "^13.7.1",
+    "vue-template-compiler": "^2.5.13",
+    "webpack": "^3.6.0",
+    "webpack-bundle-tracker": "^0.2.0"
+  },
+  "dependencies": {
+    "bootstrap": "^4.0.0",
+    "bootstrap-vue": "^2.0.0-rc.1",
+    "moment": "^2.18.1",
+    "push.js": "^1.0.5",
+    "reconnecting-websocket": "^3.2.2",
+    "vue-awesome": "^2.3.3",
+    "vue-hot-reload-api": "^2.1.0",
+    "vue-multiselect": "^2.0.8",
+    "vue-select": "github:sagalbot/vue-select",
+    "vuex": "^2.4.1"
+  }
+}

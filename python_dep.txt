@@ -1,0 +1,8 @@
+django-filter
+channels_api
+unidecode
+z3c.rml
+ldap3
+django_auth_ldap
+coverage
+psycopg2-binary # postgresql

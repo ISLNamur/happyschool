@@ -1,0 +1,8 @@
+[run]
+source = .
+omit = 
+     venv_appyschool/*
+     manage.py
+     */migrations/*
+[report]
+exclude_lines = def __str__

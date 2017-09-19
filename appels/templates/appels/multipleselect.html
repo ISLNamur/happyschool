@@ -1,0 +1,26 @@
+    <div class="form-group">
+        <label for="{{ field.id_for_label }}" class="control-label {{ label_class }}{% if field.field.required %} requiredField{% endif %}">
+                {{ field.label|safe }}{% if field.field.required %}<span class="asteriskField">*</span>{% endif %}
+        </label>
+
+        <div class="controls {{ field_class }}">
+            {% load crispy_forms_filters %}
+            {% load l10n %}
+
+            <div class="controls {{ field_class }}"{% if flat_attrs %} {{ flat_attrs|safe }}{% endif %}
+            style="-moz-columns: 2;-webkit-columns: 2">
+                {% include 'bootstrap3/layout/field_errors_block.html' %}
+
+                {% for choice in field.field.choices %}
+
+                <div class="checkbox">
+                    <label class="{% if inline_class %}checkbox-{{ inline_class }}{% endif %}">
+                        <input type="checkbox"{% if choice.0 in field.value or choice.0|stringformat:"s" in field.value or choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}" {{ field.field.widget.attrs|flatatt }}>{{ choice.1|unlocalize }}
+                    </label>
+                </div>
+                {% endfor %}
+
+                {% include 'bootstrap3/layout/help_text.html' %}
+            </div>
+        </div>
+    </div>

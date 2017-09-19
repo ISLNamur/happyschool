@@ -1,0 +1,39 @@
+{% if eleves %}
+
+    {% if classe %}
+    <div id="classe" class="row">
+        <div class="panel panel-default col-sm-offset-1 col-sm-10" style="margin-top:10px">
+            <div class="panel-body">
+                <a target="_blank" class="btn btn-default" href="{% url 'get_class_photo_pdf' year classe enseignement %}">
+                    Télécharger les photos des élèves de la classe
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <table class="table col-xs-12">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Classe</th>
+                    <th>Enseignement</th>
+                </tr>
+            </thead>
+            <tbody class="recherchable">
+                {% for eleve in eleves %}
+                <tr class="clickable" onclick="document.location = '{% url 'summary' eleve.matricule  %}'">
+                    <td>{{ eleve.last_name }}</td>
+                    <td>{{ eleve.first_name }}</td>
+                    <td>{{ eleve.classe.compact_str }}</td>
+                    <td>{{eleve.teaching.display_name }}</td>
+                    {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+
+<script>
+</script>

@@ -1,0 +1,17 @@
+{% extends "core/base.html" %}
+
+{% block header %}
+{% load staticfiles %}
+<link href="/static/bootstrap3_datetime/css/bootstrap-datetimepicker.min.css" type="text/css" media="all" rel="stylesheet">
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/moment.min.js"></script>
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="/static/bootstrap3_datetime/js/locale/fr-be.js"></script>
+<script src="{% static 'js/bootstrap-typeahead.js' %}"></script>
+        <link rel="stylesheet" href="{% static 'css/autocomplete.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h3>Aucun élève trouvé dans le dossier des élèves</h3>
+</div>
+{% endblock %}

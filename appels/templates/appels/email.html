@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<font face='Calibri'><p>Bonjour,</p></font>
+<p></p>
+<p><font face='Calibri'>Un appel a été reçu avec comme objet : {{ appel.objet }}, et pour motif : {{ appel.motif }}. Vous trouverez ci-dessous les informations détaillées à propos de cet appel.</font></p>
+
+<table width='100%' border='1'>
+    <tr bgcolor='#0099FF'>
+        <td width='36%' bgcolor='#4f81bd'>
+            <div align='center'><p align='center'><font color='#FFFFFF' size='+1' face='Calibri'>Appel re&ccedil;u le
+                </font></p><p align='center'><font color='#FFFFFF' size='+1' face='Calibri'>{{ appel.datetime_appel|date:'d/m/y à H:i' }}</font></p></div>
+        </td>
+
+        <td width='28%' bgcolor='#c0504d'><p align='center'><font color='#FFFFFF' size='+1' face='Calibri'>
+          <strong> {% if appel.is_student %}{{ etudiant.surname }} {{ etudiant.firstname }} {{ etudiant.classe|upper }}
+            {% else %} {{ appel.name }} {% endif %}
+          </strong>
+        </font></p></td>
+        <td width='36%' bgcolor='#f79646'><p align='center'><font color='#FFFFFF' size='+1' face='Calibri'>P&eacute;riode
+            du {{ appel.datetime_motif_start|date:'d/m/y à H:i' }}</font></p>
+            <p align='center'><font color='#FFFFFF' size='+1'
+                                    face='Calibri'> au {{ appel.datetime_motif_start|date:'d/m/y à H:i' }}</font></p></td>
+    </tr>
+    <tr>
+        <td height='340' bgcolor='#948b54'>
+            <div align='center'><p align='center'><strong><font color='#FFFFFF' size='+1' face='Calibri'>Commentaire(s)
+                :</font></strong></p>
+                <p><font color='#FFFFFF'><em><font
+                        face='Verdana, Arial, Helvetica, sans-serif'>{{ appel.commentaire }}</font></em></font></p>
+            </div>
+        </td>
+
+        <td width='200' bgcolor='#c0504d'>
+            <div align='justify'><p align='center'><font face='Verdana, Arial, Helvetica, sans-serif'><img
+                    src='cid:{{ etudiant.matricule }}.jpg' width='183' height='277'></font></p></div>
+        </td>
+
+        <td bgcolor='#c2d69a'>
+            <div align='justify'><p align='center'><strong><font color='#1f497d' size='+1' face='Calibri'>Autre
+                traitement r&eacute;serv&eacute; &agrave; l'appel :</font></strong></p>
+                <p align='center'><font
+                        color='#1f497d'><em><font face='Verdana, Arial, Helvetica, sans-serif'>{{ appel.traitement }}</font></em></font></p></div>
+        </td>
+    </tr>
+
+    <tr bgcolor='#ffc000'>
+        <td height='42'>
+            <div align='center'>
+                <font color='#17375d'><font size='2' face='Verdana, Arial, Helvetica, sans-serif'>
+                    {% if appel.is_student %}
+                        Email resp. : {% if etudiant.get_additional_info.resp_email %}<a href='mailto:{{ etudiant.get_additional_info.resp_email }}'>{{ etudiant.get_additional_info.resp_email }}</a>{% else %} Absent de proéco {% endif %}
+                    {% endif %}
+                </font></font></div>
+        </td>
+
+        <td>
+            <div align='center'><font color='#17375d'>
+                <font size='2' face='Verdana, Arial, Helvetica, sans-serif'>
+                    {% if appel.is_student %}
+                        Tel. resp. : {% if etudiant.get_additional_info.resp_phone %}{{ etudiant.get_additional_info.resp_phone }}{% else %} Absent de proéco {% endif %}
+                    {% endif %}
+                </font></font></div>
+        </td>
+
+        <td>
+            <div align='center'>
+                <font color='#17375d'><font size='2' face='Verdana, Arial, Helvetica, sans-serif'>
+                    {% if appel.is_student %}
+                        GSM resp. : {% if etudiant.get_additional_info.resp_mobile %}{{ etudiant.get_additional_info.resp_mobile }}{% else %} Absent de proéco {% endif %}
+                    {% endif %}
+                </font></font></div>
+        </td>
+
+    </tr>
+
+</table>
+
+<p><font face='Calibri'>Merci de réserver la meilleure suite à cet e-mail.</font></p>
+<p></p>
+<p><font face='Calibri'>Bonne journée,</font></p>
+<p><font face='Calibri'>L'équipe de l'accueil.</font></p>
+</body>
+</html>

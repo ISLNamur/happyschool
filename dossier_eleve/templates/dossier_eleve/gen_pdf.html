@@ -1,0 +1,109 @@
+{% load staticfiles %}
+<div class="row">
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#sommaire-tab" aria-controls="sommaire-tab" role="tab" data-toggle="tab">Sommaire</a></li>
+        <li role="presentation"><a href="#conseil-discipline-tab" aria-controls="conseil-discipline-tab" role="tab" data-toggle="tab">Conseil de discipline</a></li>
+        <li role="presentation"><a href="#retenues-tab" aria-controls="retenues-tab" role="tab" data-toggle="tab">Retenues</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="sommaire-tab">
+            {% csrf_token %}
+            {% load crispy_forms_tags %}
+            {% crispy form_sommaire %}
+        </div>
+        <div role="tabpanel" class="tab-pane" id="conseil-discipline-tab">
+            {% csrf_token %}
+            {% load crispy_forms_tags %}
+            {% crispy form_council %}
+        </div>
+        <div role="tabpanel" class="tab-pane" id="retenues-tab">
+            {% csrf_token %}
+            {% load crispy_forms_tags %}
+            {% crispy form_retenues %}
+        </div>
+    </div>
+
+
+    <script>
+    var matricule = '';
+    var classe = '';
+    $("option[value='default']").attr("disabled", "disabled")
+    $("#button-id-genpdf").prop( "disabled", true );
+
+    $('#nomForm').typeahead({
+         ajax: '{% url "get_students_or_classes" "secondaire" 1 %}',
+         items: 14,
+         onSelect: function (suggestion) {
+            if (isNaN(suggestion.text[0])) {
+                matricule = suggestion.value;
+                classe = '';
+            } else {
+                classe = suggestion.value[0] + suggestion.value[1];
+                matricule = '';
+            }
+            $("#button-id-genpdf").prop( "disabled", false );
+         }
+    });
+
+    $("#button-id-genpdf").click(function () {
+        var pdf_type = matricule != "" ? matricule : classe;
+        var all_year = $("#id_all_year").is(':checked') ? "1" : "0";
+        var infos = $("#id_infos").is(':checked') ? "1" : "0";
+        var sanctions = $("#id_sanctions").is(':checked') ? "1" : "0";
+        window.open('{% url 'get_pdf' %}' + all_year + '/' + pdf_type + '/' + infos + '/' + sanctions + '/', '_blank');
+    });
+
+    $("#button-id-genpdf_council").click(function () {
+        var from = $("#div_id_datetime_from input").val();
+        var to = $("#div_id_datetime_to input").val();
+        window.open('{% url 'get_pdf_council' %}' + from + '/' + to + '/', '_blank');
+    });
+
+    $("#button-id-genpdf_retenues").click(function () {
+        var date = $("#div_id_date_retenues input").val();
+        console.log(date);
+        window.open('{% url 'get_pdf_retenues' %}' + date);
+    });
+
+    $("#nomForm").on("input", function(e) {
+        $("#button-id-genpdf").prop( "disabled", true );
+    });
+
+    $("#nomForm").focus();
+
+    $("#div_id_datetime_from").datetimepicker({
+        defaultDate: moment(),
+        format: 'DD-MM-YYYY',
+        locale: 'fr',
+        sideBySide: false,
+        allowInputToggle: true,
+        useCurrent: false
+    });
+
+    $("#div_id_datetime_to").datetimepicker({
+        defaultDate: moment(),
+        format: 'DD-MM-YYYY',
+        locale: 'fr',
+        sideBySide: false,
+        allowInputToggle: true
+    });
+
+    $("#div_id_date_retenues").datetimepicker({
+        defaultDate: moment(),
+        format: 'DD-MM-YYYY',
+        locale: 'fr',
+        sideBySide: false,
+        allowInputToggle: true,
+        useCurrent: false
+    });
+
+    $("#id_datetime_from").on("dp.change", function (e) {
+        $("#id_datetime_to").data("DateTimePicker").minDate(e.date);
+    });
+
+    $("#id_datetime_to").on("dp.change", function (e) {
+        $("#id_datetime_from").data("DateTimePicker").maxDate(e.date);
+    });
+    </script>
+</div>

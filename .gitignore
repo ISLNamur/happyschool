@@ -1,0 +1,7 @@
+venv_appyschool/
+myapp/migrations
+current_date/migrations
+*__pycache__*
+.idea
+db.sqlite3
+*~

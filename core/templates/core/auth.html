@@ -1,0 +1,25 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container">
+    {% if not user.is_authenticated %}
+    <form class="form-signin" style="max-width: 330px;margin: 0 auto;" method="post">
+        {% csrf_token %}
+        <h2 class="form-signin-heading">Connexion</h2>
+        <div class="{% if has_try %} has-error {% endif %} has-feedback">
+            <label for="inputUser" class="sr-only">Nom d'utilisateur</label>
+            <input name="username" value="" type="text" id="inputUser" class="form-control" placeholder="Nom d'utilisateur" required autofocus>
+            {% if has_try %} <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span> {% endif %}
+        </div>
+        <div class="{% if has_try %} has-error {% endif %} has-feedback">
+            <label for="inputPassword" class="sr-only">Password</label>
+            <input name="password" value="" type="password" id="inputPassword" class="form-control" placeholder="Mot de passe" required>
+            {% if has_try %} <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span> {% endif %}
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" style="margin-top:10px">Se connecter</button>
+    </form>
+    {% else %}
+    <h3> Vous êtes déjà connecté</h3>
+    {% endif %}
+</div>
+{% endblock %}

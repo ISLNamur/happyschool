@@ -1,0 +1,133 @@
+{% extends "core/base.html" %}
+
+{% block header %}
+{% load staticfiles %}
+        <script src="{% static 'js/bootstrap-typeahead.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/autocomplete.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm-8">
+            <h2>Annuaire</h2>
+            <div class="form-inline" >
+                <div id="div_id_enseignement" class="form-group">
+                    <label for="id_enseignement" class="control-label ">Enseignement :</label>
+                    <div class="controls ">
+                        <select class="select form-control" id="id_enseignement" name="enseignement">
+                            <option value="all" selected="selected">Tous</option>
+                            <option value="primaire">Primaire</option>
+                            <option value="secondaire">Secondaire</option>
+                        </select>
+                    </div>
+                </div>
+                {% if perms.auth.add_group or can_search_teachers %}
+                <div id="div_id_type" class="form-group">
+                    <label for="id_type" class="control-label ">Type :</label>
+                    <div class="controls ">
+                        <select class="select form-control" id="id_type" name="type">
+                            <option value="student">Élèves</option>
+                            <option value="teacher">Professeurs</option>
+                        </select>
+                    </div>
+                </div>
+                {% endif %}
+                <div id="div_id_rechercher" class="form-group">
+                    <label for="rechercherInput" class="control-label ">Rechercher nom, classe, année, …</label>
+                    <div class="controls ">
+                        <input autocomplete="off" class="textinput textInput form-control" id="rechercherInput"
+                               size="35" maxlength="300" name="rechercher" type="text" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="table" class="row">
+
+    </div>
+</div>
+
+<script>
+    var sortBy = 'name';
+    var order = 'asc';
+    var search = '';
+    var ens = 'all';
+    var mat = '';
+    var classe = '';
+    var type = 'student';
+
+    function getParameters() {
+        return '?sortBy=' + sortBy + '&order=' + order + '&search=' + search + '&ens=' + ens + '&mat=' + mat + '&classe=' + classe + '&type=' + type;
+    }
+
+    function updateTable() {
+        $('#table').fadeOut(0);
+        $.get("{% url 'get_list' %}" + getParameters(), function (data) {
+            $('#table').html(data);
+            $('#table').fadeIn(500);
+        });
+    }
+
+    function setTypeAhead(people_type) {
+        // Set matcher to -1
+        $('#rechercherInput').typeahead('destroy');
+        if (people_type == 'student') {
+            $('#rechercherInput').typeahead({
+                matcher: function(item) {return true},
+                ajax: '{% url "get_students_or_classes" %}' + ens + '/0/',
+                items: 25,
+                onSelect: function (suggestion) {
+                     if (!isNaN(suggestion.value)) {
+                        search = suggestion.text;
+                        mat = suggestion.value;
+                        classe = '';
+                     } else if (!isNaN(suggestion.value[0])) {
+                        search = suggestion.text;
+                        classe = suggestion.value.slice(0,2);
+                        mat = '';
+                        ens = search.split(" ").slice(-1);
+                     }
+
+                     updateTable();
+                }
+            });
+        } else if (people_type == 'teacher') {
+            $('#rechercherInput').typeahead({
+                matcher: function(item) {return -1},
+                ajax: '{% url "get_people_names" %}' + ens + '/' + people_type + '/',
+                items: 25,
+                onSelect: function (suggestion) {
+                     search = suggestion.text;
+                     updateTable();
+                }
+            });
+        }
+    }
+
+    function searching(searchString) {
+        search = searchString;
+        mat = '';
+        classe = '';
+        updateTable();
+    }
+
+    setTypeAhead(type);
+
+    $('#id_enseignement').change( function () {
+        ens = $(this).find(':selected').attr('value');
+        setTypeAhead(type);
+        if (search.length > 0) updateTable();
+     });
+
+    $('#id_type').change( function () {
+        type = $(this).find(':selected').attr('value');
+        setTypeAhead(type);
+        //updateTable();
+     });
+
+     $('#rechercherInput').keypress(function(e){
+       if (e.keyCode==13) searching($(this).val());
+     });
+</script>
+{% endblock %}

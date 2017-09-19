@@ -1,0 +1,123 @@
+{# extends "core/base.html" #}
+
+{# block content #}
+    <div class="row">
+        <div class="col-xs-12">
+            <h1>{{ student.fullname }}</h1>
+        </div>
+    </div>
+    <div class="row">
+        {% load staticfiles %}
+        <div class="col-xs-4">
+            <img class="img-responsive" src="{% static '' %}photos/{{ student.matricule }}.jpg"></img>
+        </div>
+        <div class="col-xs-8">
+            <dl class="dl-horizontal">
+                <dt>Nom</dt>
+                <dd>{{ student.last_name }}</dd>
+                <dt>Prénom</dt>
+                <dd>{{ student.first_name }}</dd>
+                <dt>Matricule</dt>
+                <dd>{{ student.matricule }} </dd>
+                <dt>Enseignement</dt>
+                <dd>{{ student.teaching.display_name }} </dd>
+                <dt>Classe</dt>
+                <dd>{{ student.classe.compact_str }}</dd>
+                <dt>Date de naissance</dt>
+                <dd>{{ student.get_additional_info.birth_date }}</dd>
+                <dt>Adresse</dt>
+                <dd>{% if student.get_additional_info.street %}{{ student.get_additional_info.street }} <br /> {{ student.get_additional_info.postal_code }} - {{ student.get_additional_info.locality }}{% endif %}</dd>
+            </dl>
+            {% if app_infirmerie and perms.infirmerie.access_infirmerie %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <a href="#info_contact" data-toggle="collapse" aria-expanded="false" aria-controls="info_contact">Moyens de contacts</a>
+                    </h3>
+                </div>
+                <div class="collapse" id="info_contact">
+                    <dl class="dl-horizontal">
+                        <dt>Nom resp.</dt>
+                        <dd>{% if student.get_additional_info.resp_first_name %}{{ student.get_additional_info.resp_first_name }} {{ student.get_additional_info.resp_last_name }}{% endif %}</dd>
+                        <dt>Téléphone resp.</dt>
+                        <dd>{% if student.get_additional_info.resp_phone %}{{ student.get_additional_info.resp_phone }}{% endif %}</dd>
+                        <dt>GSM resp.</dt>
+                        <dd>{% if student.get_additional_info.resp_mobile %}{{ student.get_additional_info.resp_mobile }}{% endif %}</dd>
+                        <dt>Email resp.</dt>
+                        <dd>{% if student.get_additional_info.resp_email %}<a href="mailto:{{ student.get_additional_info.resp_email }}">{{ student.get_additional_info.resp_email }}{% endif %}</a></dd>
+                        <dt>Nom mère</dt>
+                        <dd>{% if student.get_additional_info.mother_first_name %}{{ student.get_additional_info.mother_first_name }} {{ student.get_additional_info.mother_last_name }}{% endif %}</dd>
+                        <dt>Téléphone mère</dt>
+                        <dd>{% if student.get_additional_info.mother_phone %}{{ student.get_additional_info.mother_phone }}{% endif %}</dd>
+                        <dt>GSM mère</dt>
+                        <dd>{% if student.get_additional_info.mother_mobile %}{{ student.get_additional_info.mother_mobile }}{% endif %}</dd>
+                        <dt>Email mère</dt>
+                        <dd>{% if student..get_additional_info.mother_email %}{{ student.get_additional_info.mother_email }}{% endif %}</dd>
+                        <dt>Nom père</dt>
+                        <dd>{% if student.get_additional_info.father_first_name %}{{ student.get_additional_info.father_first_name }} {{ student.get_additional_info.father_last_name }}{% endif %}</dd>
+                        <dt>Téléphone père</dt>
+                        <dd>{% if student.get_additional_info.father_phone %}{{ student.get_additional_info.father_phone }}{% endif %}</dd>
+                        <dt>GSM père</dt>
+                        <dd>{% if student.get_additional_info.father_mobile %}{{ student.get_additional_info.father_mobile }}{% endif %}</dd>
+                        <dt>Email père</dt>
+                        <dd>{% if student.get_additional_info.father_email %}{{ student.get_additional_info.father_email }}{% endif %}</dd>
+                    </dl>
+                </div>
+            </div>
+            {% if medical_info == '1' %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <a href="#medical_info" data-toggle="collapse" aria-expanded="false" aria-controls="medical_info">Information médicales</a>
+                    </h3>
+                </div>
+                <div class="collapse" id="medical_info">
+                    <dl class="dl-horizontal">
+                        <dt>Médecin</dt>
+                        <dd>{% if student.get_additional_info.doctor %}{{ student.get_additional_info.doctor }}{% endif %}</dd>
+                        <dt>Téléphone médecin</dt>
+                        <dd>{% if student.get_additional_info.doctor_phone %}{{ student.get_additional_info.doctor_phone }}{% endif %}</dd>
+                        <dt>Mutuelle</dt>
+                        <dd>{% if student.get_additional_info.mutual %}{{ student.get_additional_info.mutual }}{% endif %}</dd>
+                        <dt>Numéro mutuelle / <br />infos complémentaires</dt>
+                        <dd>{% if student.get_additional_info.mutual_number %}{{ student.get_additional_info.mutual_number }} <br />{% endif %}{% if student.get_additional_info.medical_information %} {{ student.get_additional_info.medical_information }}{% endif %}</dd>
+                    </dl>
+                </div>
+            </div>
+            {% endif %}
+            {% endif %}
+            {% if user_info == '1' %}
+            <dl class="dl-horizontal">
+                <dt>Username</dt>
+                <dd>{% if student.get_additional_info.username %}{{ student.get_additional_info.username }}{% endif %}</dd>
+                <dt>Mot de passe</dt>
+                {% if student.get_additional_info.password and not '{SHA' in student.get_additional_info.password %}
+                <dd class="clickable"  id="pwd" data="{{ student.get_additional_info.password }}" onclick="$(this).text($(this).attr('data'))">************</dd>
+                {% endif %}
+            </dl>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row" style="margin-top:10px;">
+        <div class="col-xs-12">
+            {% if perms.dossier_eleve.access_dossier_eleve %}
+            {% if dossier_eleve_important %}
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <a href="#discip_infos" data-toggle="collapse" aria-expanded="false" aria-controls="discip_infos">Infos importantes</a>
+                    </h3>
+                </div>
+                <div class="collapse" id="discip_infos">
+                    <ul class="list-group">
+                    {% for cas in dossier_eleve_important %}
+                        <li class="list-group-item"><strong>{{ cas.datetime_encodage }}</strong> – {{ cas.explication_commentaire }}</li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{# endblock #}

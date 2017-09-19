@@ -1,0 +1,85 @@
+{% load render_bundle from webpack_loader %}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Changement d'horaire</title>
+</head>
+
+<body>
+    <script>
+        var settings = {{ app_settings|safe }};
+    </script>
+<div id="vue-app">
+    <header-menu :apps="menu"></header-menu>
+    <b-container>
+        <b-row>
+            <h2>Changement d'horaire</h2>
+        </b-row>
+        <b-row>
+            <b-form-group>
+                <div>
+                    <b-button-group>
+                        <b-button
+                            v-on:click="showModal('add-modal')"
+                            variant="success"
+                            >
+                            Ajouter
+                        </b-button>
+                        <b-button
+                            variant="light"
+                            v-on:click="refresh"
+                            >
+                            <icon name="refresh" scale="1" :spin="isRefreshing"></icon>
+                        </b-button>
+                    </b-button-group>
+                    <b-button variant="outline-secondary" v-b-toggle.filters>
+                        Ajouter des filtres
+                    </b-button>
+                    <b-button :pressed.sync="active" variant="primary">
+                        <span v-if="active">Afficher tous les changements</span>
+                        <span v-else>Afficher les futurs changements</span>
+                    </b-button>
+                </div>
+            </b-form-group>
+        </b-row>
+        <b-row>
+            <b-col>
+                    <b-collapse id="filters">
+                        <b-card>
+                            <filters :filter-type-options="filterTypeOptions" :appe-socket="appeSocket"
+                                :filter-search-options="filterSearchOptions" @update="setFilters" ref="filters"></filters>
+                        </b-card>
+                    </b-collapse>
+                </b-col>
+        </b-row>
+        <b-pagination :total-rows="entriesCount" v-model="currentPage" :per-page="per_page" v-on:change="changePage">
+        </b-pagination>
+        <b-card no-body class="current-card d-none d-md-block d-lg-block d-xl-block">
+            <b-row class="text-center">
+                <b-col cols="2"><strong>Classe(s)</strong></b-col>
+                <b-col cols="2"><strong>Activité</strong></b-col>
+                <b-col cols="2"><strong>Professeurs</strong></b-col>
+                <b-col cols="2"><strong>Lieu</strong></b-col>
+                <b-col><strong>Remarque</strong></b-col>
+            </b-row>
+        </b-card>
+        <schedule-change-entry
+            v-for="(entry, index) in scheduleChangeEntries"
+            v-bind:key="entry.id"
+            v-bind:row-data="entry"
+            v-on:delete="deleteEntry(entry.id)"
+            v-on:edit="editEntry(index)"
+            >
+        </schedule-change-entry>
+    </b-container>
+    <component v-bind:is="currentModal" ref="modal" :appe-socket="appeSocket"
+        :teaching="settings.teaching" :options="modalOptions" :errors="modalErrors"
+        ></component>
+</div>
+
+    {% load staticfiles %}
+<script src="{% static "channels/js/websocketbridge.js" %}"></script>
+{% render_bundle 'commons' %}
+{% render_bundle 'schedule_change' %}
+</body>
+</html>

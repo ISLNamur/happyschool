@@ -1,0 +1,46 @@
+{# extends "core/base.html" #}
+
+{# block content #}
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <h1>{{ teacher }}</h1>
+        </div>
+        {% load staticfiles %}
+        <div class="col-xs-4">
+            <img class="img-responsive" src="{% static '' %}photos_prof/{{ teacher.matricule }}.jpg"></img>
+        </div>
+        <div class="col-xs-8">
+            <dl class="dl-horizontal">
+                <dt>Nom</dt>
+                <dd>{{ teacher.last_name }}</dd>
+                <dt>Prénom</dt>
+                <dd>{{ teacher.first_name }}</dd>
+                <dt>ID</dt>
+                <dd>{{ teacher.matricule }} </dd>
+                <dt>Enseignement</dt>
+                <dd>{% for teaching in teacher.teaching.all %}{{ teaching.display_name }} {% endfor %} </dd>
+                <dt>Email personnel</dt>
+                <dd>{{ teacher.email }}</dd>
+                <dt>Email de l'école</dt>
+                <dd>{{ teacher.email_alias }}</dd>
+                <dt>Classe</dt>
+                {% for c in teacher.classe.all %}
+                <dd>{{ c.compact_str }}</dd>
+                {% endfor %}
+            </dl>
+
+            {% if username_info %}
+            <dl class="dl-horizontal">
+                <dt>Username</dt>
+                <dd>{% if teacher.username %}{{ teacher.username }}{% endif %}</dd>
+                <dt>Mot de passe</dt>
+                {% if teacher.password %}
+                <dd class="clickable"  id="pwd" data="{{ teacher.password }}" onclick="$(this).text($(this).attr('data'))">************</dd>
+                {% endif %}
+            </dl>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{# endblock #}

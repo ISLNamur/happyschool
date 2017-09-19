@@ -1,0 +1,116 @@
+<!DOCTYPE document SYSTEM "rml.dtd">
+<document filename="{{ student.matricule }}.pdf">
+
+    <template showBoundary="0">
+        <!--define a 'frame' into which the content will flow.-->
+        <!--<pageTemplate id="main">-->
+             <!--<frame id="head" x1="10" y1="530" width="575" height="150"/>-->
+        <!--</pageTemplate>-->
+        <pageTemplate id="main">
+            <!-- two frames are defined here: -->
+            <frame id="first" x1="10" y1="790" width="570" height="40"/>
+            <frame id="second" x1="10" y1="630" width="250" height="160"/>
+            <frame id="third" x1="260" y1="630" width="125" height="160"/>
+            <frame id="image" x1="430" y1="630" width="150" height="160"/>
+            <frame id="discip" x1="10" y1="20" width="570" height="600"/>
+        </pageTemplate>
+        <pageTemplate id="otherPages">
+            <pageGraphics>
+                <drawString x="200" y="820">{{ student.last_name }} {{ student.first_name }} {{ student.classe.compact_str }} – {{ student.get_additional_info.scolar_year }}-{{ student.get_additional_info.scolar_year|add:"1" }}</drawString>
+            </pageGraphics>
+            <frame id="discip" x1="10" y1="20" width="570" height="790"/>
+        </pageTemplate>
+    </template>
+
+    <stylesheet>
+        <paraStyle name="title" fontName="Helvetica" fontSize="13" leading="15" alignment="center" />
+        <paraStyle name="head_info" fontName="Helvetica" fontSize="8" alignment="justify" />
+        <blockTableStyle id="cas">
+            <lineStyle kind="LINEABOVE" colorName="black" thickness="1"/>
+            <blockValign value="middle"/>
+        </blockTableStyle>
+
+    </stylesheet>
+
+    <story firstPageTemplate="main">
+        <keepInFrame frame="first" onOverflow="shrink">
+            <para style="title">
+                 <h1><strong>JOURNALIER ET DOSSIER DISCIPLINAIRE DE L'ÉLÈVE</strong></h1>
+            </para>
+
+            <para style="head_info" leftIndent="20">
+            Année scolaire : <strong>{{ student.get_additional_info.scolar_year }}-{{ student.get_additional_info.scolar_year|add:"1" }}</strong>               
+            Classe : {{ student.classe.compact_str|upper }}               
+            Classe précédente :  {% if student.previous_classe %}{{ student.previous_classe|upper }}{% else %}—{% endif %}           
+            {% if student.orientation %}Orientation : {{ student.get_additional_info.orientation }}{% endif %}           
+            Titulaire : {{ tenure }}
+            </para>
+        </keepInFrame>
+
+        <keepInFrame frame="second" onOverflow="shrink">
+            <para leading="17" leftIndent="20">
+            Élève :   <strong>{{ student.fullname }}</strong><br/>
+            Née le :  <em>{{ student.get_additional_info.birth_date }}</em><br/>
+            Adresse : <em>{{ student.get_additional_info.street }} - {{ student.get_additional_info.postal_code }} {{ student.get_additional_info.l }}</em><br/>
+            Mère :    <em>{{ student.get_additional_info.mother_last_name }} {{ student.get_additional_info.mother_first_name }}  ({%if student.get_additional_info.mother_job %}{{ student.get_additional_info.mother_job }}{% else %} N.C.{% endif %})</em><br/>
+            Tél. :    <em>{% if student.get_additional_info.mother_phone %}{{ student.get_additional_info.mother_phone }}{% else %}N.C.{% endif %}</em>     GSM :  <em>{% if student.get_additional_info.mother_mobile %}{{ student.mother_mobile }}{% else %}N.C.{% endif %}</em><br/>
+            Père :    <em>{{ student.get_additional_info.father_last_name }} {{ student.get_additional_info.father_first_name }}  ({%if student.get_additional_info.father_job %}{{ student.get_additional_info.father_job }}{% else %} N.C.{% endif %})</em><br/>
+            Tél. :    <em>{% if student.get_additional_info.father_phone %}{{ student.get_additional_info.father_phone }}{% else %}N.C.{% endif %}</em>     GSM :  <em>{% if student.get_additional_info.father_mobile %}{{ student.father_mobile }}{% else %}N.C.{% endif %}</em><br/>
+            Mail Resp. légal : <em>{% if student.get_additional_info.resp_email %}{{ student.get_additional_info.resp_email }}{% else %}N.C.{% endif %}</em><br/>
+            Volume du dossier non-disciplinaire :   <em>{{ non_disciplinaire }}</em><br/>
+            </para>
+        </keepInFrame>
+
+        <keepInFrame frame="third" onOverflow="shrink">
+            <para style="title">
+                Discipline
+            </para>
+            <para rightIndent="30" alignment="right" leading="17">
+                Temps de midi : {{ temps_midi }}<br/>
+                Retenue(s) : {{ retenue }}<br/>
+                Convocat°(s) : {{ convoc }}<br/>
+                Exclusion(s) : {{ exclu }}<br/>
+                Renvoi(s) : {{ renvoi }}<br/>
+                Autres : {{ autre }}<br/>
+                <strong>TOTAL : {{ total }}</strong><br/>
+            </para>
+        </keepInFrame>
+        {% load staticfiles %}
+        <keepInFrame frame="image" onOverflow="shrink">
+            <illustration width="190" height="160" borderStrokeWidth="1"
+                          borderStrokeColor="black">
+                <image file="{{ absolute_path }}{% static 'photos/' %}{{ student.matricule }}.jpg" x="0" y="0" height="160" preserveAspectRatio="1"/>
+            </illustration>
+        </keepInFrame>
+        <setNextTemplate name="otherPages"/>
+        <blockTable colWidths="80 350 110" style="cas">
+            <tr>
+                <td><para><strong>Date</strong></para></td>
+                <td><para><strong>Faits</strong></para></td>
+                <td><para><strong>Sanction / Décision</strong></para></td>
+            </tr>
+            {% for c in list %}
+            <tr>
+                <td>{{ c.datetime_encodage|date:'Y/m/d' }}</td>
+                <td>
+                    <para alignment="justify">
+                        {{ c.explication_commentaire }}
+                    </para>
+                </td>
+                <td>
+                    {% if c.sanction_decision %}
+                    <para>
+                        {{ c.sanction_decision }} à {{ c.datetime_sanction|date:'H:i' }} le {{ c.datetime_sanction|date:'d/m/Y' }}
+                    </para>
+                    {% else %}
+                    <para textColor="grey">
+                        Info non disciplinaire
+                    </para>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </blockTable>
+    </story>
+</document>
+
