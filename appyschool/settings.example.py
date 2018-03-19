@@ -93,7 +93,7 @@ DATABASES = {
         'NAME': 'appyschool',
         'USER': 'appyschool',
         'PASSWORD': 'libreschool',
-        'HOST': 'localhost',
+        'HOST': os.getenv("DB_HOST", "localhost"),
         'PORT': '',
     }
 }
