@@ -191,12 +191,13 @@ class People:
         Get students by their name.
         :param name: String that starts the students' name.
         :param teaching: A list of students' teachings.
+        :param classes: A ClasseModel queryset.
         :return: A QuerySet of students.
         """
         students = self._get_people_by_name_by_model(StudentModel,
                                                      name=name,
                                                      teaching=teaching)
-        if classes:
+        if type(classes) == QuerySet:
             years = set(map(lambda c: c.year, classes))
             letters = set(map(lambda c: c.letter.lower(), classes))
             students = students.filter(classe__year__in=years, classe__letter__in=letters)
@@ -323,12 +324,18 @@ def get_classes(teaching: list={"default"}, check_access: bool=False, user: User
     if type(teaching) == set:
         teaching = list(teaching)
 
-    if "default" in teaching:
+    if "default" in teaching and not user:
         teaching.remove("default")
         teaching += get_default_teaching()
 
     if check_access and user:
-        return _get_classes_access(teaching=teaching, user=user)
+        try:
+            teachings = ResponsibleModel.objects.get(user=user).teaching.all()
+            teachings = list(map(lambda t: t.name, teachings))
+            return _get_classes_access(teaching=teachings, user=user)
+        except ObjectDoesNotExist:
+            # The user is not a responsible and thus no access.
+            return set()
 
     if "all" not in teaching:
         return ClasseModel.objects.filter(teaching__name__in=teaching)
@@ -355,6 +362,6 @@ def get_years(teaching: list={"default"}, check_access: bool=False, user: User=N
         classes = ClasseModel.objects.all()
 
     if check_access:
-        classes = ClasseModel.filter(year__in=_get_years_access(user))
+        classes = ClasseModel.objects.filter(year__in=_get_years_access(user))
 
     return set(map(lambda s: s.year, classes))

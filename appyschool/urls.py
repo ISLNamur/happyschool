@@ -19,12 +19,9 @@ from django.conf import settings
 
 from django.contrib.auth.views import LoginView, LogoutView, TemplateView
 
-from schedule_change import views
-
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^channels-api/', include('channels_api.urls')),
-    url(r'^schedule_change/', view=views.test, name="schedule_change"),
     url(r'^core/', include('core.urls')),
     url(r'^auth', LoginView.as_view(template_name='core/auth.html'), name='auth'),
     url(r'^logout', LogoutView.as_view(next_page='auth'), name='logout'),
@@ -32,6 +29,6 @@ urlpatterns = [
     url(r'^no_access/', TemplateView.as_view(template_name='core/no_access.html'), name='no_access'),
 ]
 
-for app in ['infirmerie', 'appels', 'dossier_eleve', 'absence_prof', 'mail_notification', 'slas', 'mobility_survey']:
+for app in ['infirmerie', 'appels', 'dossier_eleve', 'absence_prof', 'mail_notification', 'slas', 'mobility_survey',]:
     if app in settings.INSTALLED_APPS:
         urlpatterns.append(url(r'^%s/' % (app), include('%s.urls' % (app))))

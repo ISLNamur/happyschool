@@ -2,14 +2,14 @@ from channels.generic.websockets import WebsocketDemultiplexer
 from channels.routing import route_class, route
 
 from core.consumers import SearchTeacherConsumer, SearchStudentsClassesYears, GetMenu
-from schedule_change.bindings import ScheduleChangeBinding
+# from schedule_change.bindings import ScheduleChangeBinding
 
 
 class APIDemultiplexer(WebsocketDemultiplexer):
     http_user_and_session = True
 
     consumers = {
-        'schedule_change': ScheduleChangeBinding.consumer,
+        # 'schedule_change': ScheduleChangeBinding.consumer,
         'get_teachers': SearchTeacherConsumer,
         'get_students_classes_years': SearchStudentsClassesYears,
         'get_menu': GetMenu,

@@ -2,7 +2,7 @@ import itertools
 
 from django.test import TestCase, Client
 from django.contrib.auth.models import User, Group
-from .people import People, get_default_teaching, STUDENT, get_years, _get_classes_access, get_classes,\
+from .people import People, get_default_teaching, STUDENT, get_years, get_classes,\
     get_years
 
 from .models import TeachingModel, StudentModel, ClasseModel, ResponsibleModel
@@ -141,11 +141,14 @@ class PeopleTest(TestCase):
         self.assertEqual(len(result), 0)
 
     def test_get_students_by_name_with_classes(self):
-        result = self.people.get_students_by_name("t", classes=["1A"])
+        classe_1A = ClasseModel.objects.filter(year=1, letter="a")
+        classe_3B = ClasseModel.objects.filter(year=3, letter="b")
+        classe_6B = ClasseModel.objects.filter(year=6, letter="B")
+        result = self.people.get_students_by_name("t", classes=classe_1A)
         self.assertEqual(len(result), 1)
-        result = self.people.get_students_by_name("t", classes=["3B", "1A"])
+        result = self.people.get_students_by_name("t", classes=classe_3B | classe_1A)
         self.assertEqual(len(result), 1)
-        result = self.people.get_students_by_name("t", classes=["6B"])
+        result = self.people.get_students_by_name("t", classes=classe_6B)
         self.assertEqual(len(result), 0)
 
     def test_get_teachers_by_name(self):
@@ -236,9 +239,11 @@ class GetClassesTest(TestCase):
         self.assertListEqual(classes, ['1A', '1B'])
 
     def test_coordonator_access(self):
+        # It is a 1 year coordonator so it has all classes in the first year in secondaire.
         classes = get_classes(check_access=True, user=self.coordonator_user)
         classes = list(map(lambda c: c.compact_str, classes))
-        self.assertListEqual(classes, ['1A'])
+        self.assertListEqual(sorted(classes), ['1A', '1B'])
+
 
 
 class GetYearsTest(TestCase):

@@ -1,7 +1,5 @@
 from django.db import models
 
-from core.models import TeachingModel
-
 
 class ScheduleChange(models.Model):
     date_start = models.DateField("Date de début")
@@ -18,8 +16,3 @@ class ScheduleChange(models.Model):
 
     class Meta:
         ordering = ('date_start', 'time_start')
-
-
-class ScheduleChangeSettings(models.Model):
-    teaching = models.ManyToManyField(TeachingModel, default=None, blank=True)
-
