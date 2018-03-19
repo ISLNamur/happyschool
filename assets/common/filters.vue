@@ -87,7 +87,7 @@ export default {
             // Don't search on empty string.
             if (!search) return [];
 
-            let param = { 'name': search, 'page=1' };
+            let param = { 'name': search, 'page':1 };
             axios.get("/" + this.app + "/api/", {params: param})
             .then(response => {
                 let results = response.data.results.map(i => i[this.filterType]);
