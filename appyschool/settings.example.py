@@ -43,13 +43,13 @@ INSTALLED_APPS = [
     'channels_api',
     'crispy_forms',
     'core',
-    'schedule_change',
+    # 'schedule_change',
     'webpack_loader',
     'annuaire',
-    'infirmerie',
-    'appels',
-    'absence_prof',
-    'dossier_eleve',
+    # 'infirmerie',
+    # 'appels',
+    # 'absence_prof',
+    # 'dossier_eleve',
 ]
 
 MIDDLEWARE = [

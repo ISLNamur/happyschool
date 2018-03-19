@@ -38,7 +38,7 @@ class People:
     default_teaching = get_default_teaching()
 
     def get_person(self,
-                   teaching: list=default_teaching,
+                   teaching: list=('all',),
                    person_type=ALL,
                    **kwargs) -> object:
         """
@@ -53,6 +53,7 @@ class People:
 
         if 'person_id' in kwargs:
             get_by_id = getattr(self, function_person + "_by_id", None)
+            kwargs['teaching'] = teaching
             return get_by_id(**kwargs)
 
     @staticmethod
@@ -97,7 +98,7 @@ class People:
 
     @staticmethod
     def get_student_by_id(person_id: int,
-                          teaching: list=default_teaching) -> object:
+                          teaching: list=('all',)) -> object:
         """
         Get a student by specifying an id. We assume that the id unique among
         different teachings.
@@ -115,7 +116,7 @@ class People:
 
     @staticmethod
     def get_responsible_by_id(person_id: int,
-                              teaching: list=default_teaching) -> object:
+                              teaching: list=('all',)) -> object:
         """
         Get a responsible (educator, teacher or a responsible object) by
         specifying an id and the teaching. It will first look at non teachers
@@ -176,9 +177,11 @@ class People:
             for name_part in tokens:
                 people |= model_name.objects.filter(Q(first_name__istartswith=name_part)
                                                    | Q(last_name__istartswith=name_part))
-        if 'all' not in teaching:
+
+        if teaching and 'all' not in teaching:
             people = people.filter(teaching__name__in=teaching)
 
+        len(people)
         if additional_filter:
             people = people.filter(**additional_filter)
 

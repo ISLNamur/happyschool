@@ -32,9 +32,6 @@ class GetDefaultTeachingTest(TestCase):
 class PeopleTest(TestCase):
     fixtures = ['test_core.json']
 
-    def setUp(self):
-        self.people = People()
-
     def _assert_student_exist(self, student: object):
         self.assertIsNotNone(student)
         # student: StudentModel # Only supported in python 3.6
@@ -56,119 +53,120 @@ class PeopleTest(TestCase):
         self.assertEqual(responsible.first_name, "Trespon")
 
     def test_get_person(self):
-        student = self.people.get_person(person_type='student',
-                                         person_id=1234,
-                                         teaching=['secondaire'])
+        student = People().get_person(person_type='student',
+                                      person_id=1234,
+                                      teaching=['secondaire'])
         self._assert_student_exist(student)
-        self.assertEqual(student, self.people.get_person(person_type='student',
-                                                         person_id=1234))
-        teacher = self.people.get_person(person_type='teacher',
-                                         person_id=123,
-                                         teaching=['secondaire'])
+        # Check that it doesn't depend on teaching.
+        self.assertEqual(student, People().get_person(person_type='student',
+                                                      person_id=1234))
+        teacher = People().get_person(person_type='teacher',
+                                      person_id=123,
+                                      teaching=['secondaire'])
         self._assert_teacher_exist(teacher)
-        educator = self.people.get_person(person_type='educator',
-                                          person_id=12,
-                                          teaching=['secondaire'])
+        educator = People().get_person(person_type='educator',
+                                       person_id=12,
+                                       teaching=['secondaire'])
         self._assert_educator_exist(educator)
 
     def test_get_student(self):
-        student = self.people.get_student_by_id(person_id=1234)
+        student = People().get_student_by_id(person_id=1234)
         self._assert_student_exist(student)
-        other_student = self.people.get_student_by_id(person_id=4242)
+        other_student = People().get_student_by_id(person_id=4242)
         self.assertIsNone(other_student)
 
     def test_get_teacher(self):
-        teacher = self.people.get_teacher_by_id(person_id=123,
+        teacher = People().get_teacher_by_id(person_id=123,
                                                 teaching=['secondaire'])
         self._assert_teacher_exist(teacher)
-        other_teacher = self.people.get_teacher_by_id(person_id=1234,
+        other_teacher = People().get_teacher_by_id(person_id=1234,
                                                       teaching=['secondaire'])
         self.assertIsNone(other_teacher)
-        other_teacher = self.people.get_teacher_by_id(person_id=123,
+        other_teacher = People().get_teacher_by_id(person_id=123,
                                                       teaching=['primaire'])
         self.assertIsNone(other_teacher)
 
     def test_get_educator(self):
-        educator = self.people.get_educator_by_id(person_id=12,
+        educator = People().get_educator_by_id(person_id=12,
                                                   teaching=['secondaire'])
         self._assert_educator_exist(educator)
-        educator = self.people.get_educator_by_id(person_id=1,
+        educator = People().get_educator_by_id(person_id=1,
                                                   teaching=['secondaire'])
         self.assertIsNone(educator)
 
     def test_get_responsible(self):
-        responsible = self.people.get_responsible_by_id(person_id=1,
+        responsible = People().get_responsible_by_id(person_id=1,
                                                         teaching=['secondaire'])
         self._assert_responsible_exist(responsible)
-        educator = self.people.get_responsible_by_id(person_id=12,
+        educator = People().get_responsible_by_id(person_id=12,
                                                      teaching=['secondaire'])
         self._assert_educator_exist(educator)
-        teacher = self.people.get_responsible_by_id(person_id=123,
+        teacher = People().get_responsible_by_id(person_id=123,
                                                     teaching=['secondaire'])
         self._assert_teacher_exist(teacher)
 
-        responsible = self.people.get_responsible_by_id(person_id=9999,
+        responsible = People().get_responsible_by_id(person_id=9999,
                                                         teaching=['secondaire'])
         self.assertIsNone(responsible)
 
     def test_get_people_by_name_by_model(self):
-        result = self.people._get_people_by_name_by_model(StudentModel, "tot")
+        result = People()._get_people_by_name_by_model(StudentModel, "tot")
         self.assertGreater(len(result), 0)
         self.assertEqual(type(result[0]), StudentModel)
-        result = self.people._get_people_by_name_by_model(StudentModel, "tot",
+        result = People()._get_people_by_name_by_model(StudentModel, "tot",
                                                           teaching=['secondaire'])
         self.assertEqual(len(result), 1)
 
     def test_get_people_by_name(self):
-        result = self.people.get_people_by_name(name="t")
+        result = People().get_people_by_name(name="t")
         self.assertEqual(len(result), 5)
 
-        result = self.people.get_people_by_name(name="t", person_type=STUDENT)
+        result = People().get_people_by_name(name="t", person_type=STUDENT)
         self.assertEqual(len(result), 2)
 
-        result = self.people.get_people_by_name(name="tea")
+        result = People().get_people_by_name(name="tea")
         self.assertEqual(len(result), 1)
 
-        result = self.people.get_people_by_name(name="t", teaching=['all'])
+        result = People().get_people_by_name(name="t", teaching=['all'])
         self.assertEqual(len(result), 5)
-        result = self.people.get_people_by_name(name="t", teaching=['primaire'])
+        result = People().get_people_by_name(name="t", teaching=['primaire'])
         self.assertEqual(len(result), 1)
 
     def test_get_students_by_name(self):
-        result = self.people.get_students_by_name("t")
+        result = People().get_students_by_name("t")
         self.assertEqual(len(result), 2)
-        result = self.people.get_students_by_name("a")
+        result = People().get_students_by_name("a")
         self.assertEqual(len(result), 0)
 
     def test_get_students_by_name_with_classes(self):
         classe_1A = ClasseModel.objects.filter(year=1, letter="a")
         classe_3B = ClasseModel.objects.filter(year=3, letter="b")
         classe_6B = ClasseModel.objects.filter(year=6, letter="B")
-        result = self.people.get_students_by_name("t", classes=classe_1A)
+        result = People().get_students_by_name("t", classes=classe_1A)
         self.assertEqual(len(result), 1)
-        result = self.people.get_students_by_name("t", classes=classe_3B | classe_1A)
+        result = People().get_students_by_name("t", classes=classe_3B | classe_1A)
         self.assertEqual(len(result), 1)
-        result = self.people.get_students_by_name("t", classes=classe_6B)
+        result = People().get_students_by_name("t", classes=classe_6B)
         self.assertEqual(len(result), 0)
 
     def test_get_teachers_by_name(self):
-        result = self.people.get_teachers_by_name("tea")
+        result = People().get_teachers_by_name("tea")
         self.assertEqual(len(result), 1)
-        result = self.people.get_teachers_by_name("a")
+        result = People().get_teachers_by_name("a")
         self.assertEqual(len(result), 0)
 
     def test_get_educators_by_name(self):
-        result = self.people.get_educators_by_name("ted")
+        result = People().get_educators_by_name("ted")
         self.assertEqual(len(result), 1)
-        result = self.people.get_educators_by_name("a")
+        result = People().get_educators_by_name("a")
         self.assertEqual(len(result), 0)
 
     def test_get_responsibles_by_name(self):
-        result = self.people.get_responsibles_by_name("tre")
+        result = People().get_responsibles_by_name("tre")
         self.assertEqual(len(result), 1)
-        result = self.people.get_responsibles_by_name("t")
+        result = People().get_responsibles_by_name("t")
         self.assertEqual(len(result), 3)
-        result = self.people.get_responsibles_by_name("a")
+        result = People().get_responsibles_by_name("a")
         self.assertEqual(len(result), 0)
 
 
@@ -243,7 +241,6 @@ class GetClassesTest(TestCase):
         classes = get_classes(check_access=True, user=self.coordonator_user)
         classes = list(map(lambda c: c.compact_str, classes))
         self.assertListEqual(sorted(classes), ['1A', '1B'])
-
 
 
 class GetYearsTest(TestCase):

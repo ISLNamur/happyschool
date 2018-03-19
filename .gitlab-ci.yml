@@ -8,12 +8,13 @@ variables:
 
 before_script:
     - apt-get update -qq && apt-get install -y -qq python-dev libldap2-dev libsasl2-dev libssl-dev python3-pip git python3-dateutil
-    - pip3 install django django-crispy-forms z3c.rml django_auth_ldap ldap3 unidecode coverage celery django-webpack-loader djangorestframework channels channels_api psycopg2-binary django-filter
+    - pip3 install django==1.11.11 django-crispy-forms z3c.rml django_auth_ldap ldap3 unidecode coverage celery django-webpack-loader djangorestframework channels channels_api psycopg2-binary django-filter
     - git clone https://github.com/Supermanu/django-bootstrap3-datetimepicker && cd django-bootstrap3-datetimepicker && python3 setup.py install && cd ..
 
 test:
     script:
         - cp appyschool/settings.example.py appyschool/settings.py
         - sed -i 's/DEBUG = False/DEBUG = True/g' appyschool/settings.py
+        - python3 manage.py makemigrations && python3 manage.py migrate
         - coverage run --source='.' manage.py test
         - coverage report
