@@ -1,0 +1,111 @@
+<html>
+	<head>
+	   <meta charset="UTF-8">
+	</head>
+
+	<body>
+	  <div>
+		  <div>
+		  <h2>Infirmerie</h2>
+		  <p>Bonjour,</p>
+		  <p>Pour information, {{ eleve.last_name }} {{ eleve.first_name }} est sorti(e) à l'infirmerie à {{ passage.datetime_sortie }}.</p>
+		  <p>Voici les remarques de sortie laissé à ce sujet par l'équipe de l'infirmerie :</p>
+		  <p>{{ passage.remarques_sortie }}</p>
+		  <p>Vous pouvez contacter l'infirmerie par téléphone au 180 pour plus de renseignements.</p>
+		  <p>Bonne journée,</p>
+		  <p>L'équipe de l'infirmerie.</p>
+		  </div>
+		  <div>
+		  <div>
+			  <h3>{{ eleve.first_name }} {{ eleve.last_name }}</h3>
+		  </div>
+		  <div style="float:left;margin-right:20px;">
+			  <img src="cid:{{ eleve.matricule }}.jpg"></img>
+		  </div>
+		  <table>
+			<tbody>
+			  <tr>
+			  <td>Nom</td>
+			  <td>{{ eleve.last_name }}</td>
+			  </tr>
+			  <tr>
+			  <td>Prénom</td>
+			  <td>{{ eleve.first_name }}</td>
+			  </tr>
+			  <tr>
+			  <td>Matricule</td>
+			  <td>{{ eleve.matricule }} </td>
+			  </tr>
+			  <tr>
+			  <td>Enseignement</td>
+			  <td>{{ eleve.teaching.display_name }} </td>
+			  </tr>
+			  <tr>
+			  <td>Classe</td>
+			  <td>{{ eleve.classe.compact_str }}</td>
+			  </tr>
+			  <tr>
+			  <td>Date de naissance</td>
+			  <td>{{ eleve.get_additional_info.birth_date }}</td>
+			  </tr>
+			  <tr>
+			  <td>Adresse</td>
+			  <td>{{ eleve.get_additional_info.street }} <br /> {{ eleve.get_additional_info.postal_code }} - {{ eleve.get_additional_info.locality }}</td>
+			  </tr>
+			  <tr>
+			  <td>Téléphone responsable</td>
+			  <td>{% if eleve.get_additional_info.resp_phone %}{{ eleve.get_additional_info.resp_phone }}{% endif %}</td>
+			  </tr>
+			  <tr>
+			  <td>GSM responsable</td>
+			  <td>{% if eleve.get_additional_info.resp_mobile %}{{ eleve.get_additional_info.resp_mobile }}{% endif %}</td>
+			  </tr>
+			  <tr>
+			  <td>Email responsable</td>
+			  <td>{% if eleve.get_additional_info.resp_email %}<a href="mailto:{{ eleve.get_additional_info.resp_email }}">{{ eleve.get_additional_info.resp_email }}{% endif %}</a></td>
+			  </tr>
+			  <tr>
+			  <td>Téléphone mère</td>
+			  <td>{% if eleve.get_additional_info.mother_phone %}{{ eleve.get_additional_info.mother_phone }}{% endif %}</td>
+			  </tr>
+			  <tr>
+			  <td>GSM mère</td>
+			  <td>{% if eleve.get_additional_info.mother_mobile %}{{ eleve.get_additional_info.mother_mobile }}{% endif %}</td>
+			  </tr>
+			  <tr>
+			  <td>Email mère</td>
+			  <td>{% if eleve.get_additional_info.mother_email %}{{ eleve.get_additional_info.mother_email }}{% endif %}</td>
+			  </tr>
+			  <tr>
+			  <td>Téléphone père</td>
+			  <td>{% if eleve.get_additional_info.father_phone %}{{ eleve.get_additional_info.father_phone }}{% endif %}</td>
+			  </tr>
+			  <tr>
+			  <td>GSM père</td>
+			  <td>{% if eleve.get_additional_info.father_mobile %}{{ eleve.get_additional_info.father_mobile }}{% endif %}</td>
+			  </tr>
+			  <tr>
+			  <td>Email père</td>
+			  <td>{% if eleve.get_additional_info.father_email %}{{ eleve.get_additional_info.father_email }}{% endif %}</td>
+			  </tr>
+			  <tr>
+			  <td>Médecin</td>
+			  <td>{% if eleve.medecin %}{{ eleve.medecin }}{% endif %}</td>
+			  </tr>
+			  <tr>
+			  <td>Téléphone médecin</td>
+			  <td>{% if eleve.get_additional_info.doctor %}{{ eleve.get_additional_info.doctor }}{% endif %}</td>
+			  </tr>
+			  <tr>
+			  <td>Mutuelle</td>
+			  <td>{% if eleve.get_additional_info.mutual %}{{ eleve.get_additional_info.mutual }}{% endif %}</td>
+			  </tr>
+			  <tr>
+			  <td>Numéro mutuelle / <br />infos complémentaires</td>
+			  <td>{% if eleve.get_additional_info.mutual_number %}{{ eleve.get_additional_info.mutual_number }}{% endif %}<br /> {% if eleve.get_additional_info.medical_information %}{{ eleve.get_additional_info.medical_information }}{% endif %}</td>
+			  </tr>
+		  </table>
+		  </div>
+	  </div>
+	</body>
+</html>
