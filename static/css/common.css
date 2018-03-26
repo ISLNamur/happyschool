@@ -1,0 +1,18 @@
+.clickable:hover {
+    cursor: pointer;
+}
+
+.table > thead > tr > th {
+  vertical-align: top;
+  text-align: center
+}
+
+td {
+  text-align: center
+}
+
+@media print {
+  a[href]:after {
+    content: none;
+  }
+}
