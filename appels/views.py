@@ -208,11 +208,6 @@ def traiter_appel(request, appelId):
         # Send to relevant coordonateur and educateur
         prechecked = list(map(lambda e: e.pk, EmailModel.objects.filter(years__year=appel.matricule.classe.year,
                                                                         teaching=appel.matricule.teaching)))
-        print(prechecked)
-        # prechecked = class_to_emails[int(appel.matricule.classe[0])]
-    # elif appel.is_student:
-        # Send to secrétariat primaire
-        # prechecked = [6, 7]
 
     save_or_later = None
     if appel.is_traiter:
