@@ -138,6 +138,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 LOGIN_URL = 'auth'
 LOGIN_REDIRECT_URL = 'annuaire'
 
+EMAIL_ADMIN = os.getenv("EMAIL_ADMIN", "admin@example.org")
+
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.server.com")
 EMAIL_PORT = os.getenv("EMAIL_PORT", 465)
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "admin@example.org")

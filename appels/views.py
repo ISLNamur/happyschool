@@ -103,7 +103,7 @@ def traiter(request):
                 email.send_email(to=sent_to, subject="[Appel] %s" % name, email_template="appels/email.html", context=context, images=image)
             else:
                 print(sent_to)
-                email.send_email(to=['manuel.tondeur@isln.be'], subject="[Appel] %s" % name, email_template="appels/email.html",
+                email.send_email(to=[settings.EMAIL_ADMIN], subject="[Appel] %s" % name, email_template="appels/email.html",
                                  context=context, images=image)
     else:
         print(form.errors)

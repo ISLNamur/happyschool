@@ -50,7 +50,7 @@ def add(request):
             email.send_email(to=['educateurs@isln.be'], subject=subject,
                        email_template='absence_prof/email.html', context=context)
         else:
-            email.send_email(to=['manuel.tondeur@isln.be'], subject=subject,
+            email.send_email(to=[settings.EMAIL_ADMIN], subject=subject,
                        email_template='absence_prof/email.html', context=context)
     else:
         raise ValidationError('Error while cleaning absence form')

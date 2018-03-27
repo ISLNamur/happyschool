@@ -36,7 +36,7 @@ def send_emails(passage, template, subject):
                          email_template="infirmerie/" + template + ".html", context=context, images=[image])
     else:
         print("Sending to: " + str(recipients_emails))
-        email.send_email(to=['manuel.tondeur@isln.be'], subject="[Infirmerie] %s %s %s" % (subject, eleve.fullname, eleve.classe.compact_str),
+        email.send_email(to=[settings.EMAIL_ADMIN], subject="[Infirmerie] %s %s %s" % (subject, eleve.fullname, eleve.classe.compact_str),
                          email_template="infirmerie/" + template + ".html", context=context, images=[image])
 
 

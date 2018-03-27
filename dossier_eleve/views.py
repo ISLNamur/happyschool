@@ -117,7 +117,7 @@ def nouveau(request):
             teachers = []
             for t in teachers_obj:
                 if not t.gen_email:
-                    send_email(to=['manuel.tondeur@isln.be'],
+                    send_email(to=[settings.EMAIL_ADMIN],
                                subject='ISLN : À propos de ' + student.fullname + " non envoyé à %s" % t.full_name,
                                email_template="dossier_eleve/email_info.html",
                                context={'student': student, 'info': model_to_dict(c), 'info_type': info}
@@ -146,7 +146,7 @@ def nouveau(request):
                                context={'student': student, 'info': model_to_dict(c), 'info_type': info}
                                )
             else:
-                send_email(to=['manuel.tondeur@isln.be'],
+                send_email(to=[settings.EMAIL_ADMIN],
                            subject='ISLN : À propos de ' + student.fullname,
                            email_template="dossier_eleve/email_info.html",
                            context={'student': student, 'info': model_to_dict(c), 'info_type': info}
