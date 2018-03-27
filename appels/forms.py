@@ -70,7 +70,7 @@ class TraiterAppelForm(forms.Form):
     emails = EmailsChoiceField(
         label='Traitement par emails',
         widget=CheckboxSelectMultiple(),
-        queryset=EmailModel.objects.all(),
+        queryset=EmailModel.objects.all().order_by('-display'),
     )
 
     custom_email = forms.EmailField(
