@@ -31,10 +31,9 @@ $("#div_id_datetime_traitement").datetimepicker({
 });
 
 // Hide custom email input if not checked.
-var custom_email_checkbox = $("#id_emails_19");
+var custom_email_checkbox = $("input[value=19]");
 var custom_email_input = $("#custom_email");
 if (custom_email_checkbox.is(':checked')) {
-
     custom_email_input.show();
 }
 custom_email_checkbox.change(function() {
