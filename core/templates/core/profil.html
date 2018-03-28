@@ -1,0 +1,75 @@
+{% extends "core/base.html" %}
+
+{% block header %}
+<style>
+    td ul {
+        padding-left: 0px;
+        list-style: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="col-xs-12 col-sm-12 col-md-8 col-lg-10 col-xs-offset-0 col-sm-offset-0 col-md-offset-2 col-lg-offset-1" >
+{% load staticfiles %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ user.first_name }} {{ user.last_name }}</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-3 col-lg-3 " align="center">
+                    {% if 'professeur' in user.ldap_user.group_names or 'educateur' in user.ldap_user.group_names%}
+                    <img alt="Photo" src="{% static 'photos_prof' %}/{{ user.ldap_user.attrs.id.0 }}.jpg" class="img-circle img-responsive">
+                    {% endif %}
+                </div>
+                <div class=" col-md-9 col-lg-9 ">
+                    <table class="table">
+                    <tbody>
+                    {% if 'professeur' in user.ldap_user.group_names %}
+                    <tr>
+                        <td>Enseignement :</td>
+                        <td>{{ user.ldap_user.attrs.enseignement.0 }}</td>
+                    </tr>
+                    <tr>
+                        <td>Titulaire :</td>
+                        <td>{{ user.ldap_user.attrs.tenure.0|upper }}</td>
+                    </tr>
+                    <tr>
+                        <td>Classes :</td>
+                        <td>
+                            <ul>
+                                {% for c in user.ldap_user.attrs.classe %}
+                                <li>{{ c|upper }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <td>Groupes:</td>
+                        <td>
+                            <ul>
+                                {% for g in user.ldap_user.group_names %}
+                                <li>{{ g }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td><a href="mailto:{{ user.ldap_user.attrs.mail.0 }}">{{ user.ldap_user.attrs.mail.0 }}</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#title").text("Mon profil");
+    $("#menu-profil").addClass("active");
+</script>
+{% endblock content %}

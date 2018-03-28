@@ -6,6 +6,8 @@ from django_filters import rest_framework as filters
 
 from django.utils import timezone
 from django.db.models import CharField
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 from core.models import ResponsibleModel
 from core.people import get_classes
@@ -60,3 +62,7 @@ class BaseModelViewSet(ModelViewSet):
             datetime_encodage=timezone.now(),
             user=self.request.user.username,
         )
+
+@login_required
+def profil(request):
+    return render(request, 'core/profil.html')

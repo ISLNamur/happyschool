@@ -19,11 +19,12 @@
 
 from django.conf.urls import url
 
-# from . import views
+from . import views
 
 app_name = 'core'
 
 urlpatterns = [
+    url(r'^profil$', views.profil, name='profil'),
     # url(r'^get_students_classes_years/(?P<teaching>\w+)/$', views.get_students_classes_years,
     #     name="get_students_classes_years"),
     # url(r'^get_students_classes_years/$', views.get_students_classes_years,
