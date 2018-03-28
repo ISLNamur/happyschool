@@ -301,18 +301,18 @@ def get_people_names(request, enseignement='all', people_type='all', formatting=
     people = []
     query = request.GET.get('query', '')
 
-    # Filter teachers by name and split if there are different words. Also remove null word.
-    if people_type == 'teacher' or people_type == 'all' or people_type == 'responsible':
-        people += People().get_teachers_by_name(query, [enseignement])
-        # people = people + teacher_man.get_people_by_names(enseignement, search_string=query)
+    if people_type == 'responsible' or people_type == 'all':
+        people += People().get_responsibles_by_name(query, [enseignement])
 
-    if people_type == 'educator' or people_type == 'all' or people_type == 'responsible':
+    if people_type == 'teacher':
+        people += People().get_teachers_by_name(query, [enseignement])
+
+    if people_type == 'educator':
         people += People().get_educators_by_name(query, [enseignement])
 
     if people_type == 'student' or people_type == 'all':
         classe_years = get_classes([enseignement], check_access=True, user=request.user) if check_access else None
         people += People().get_students_by_name(query, [enseignement], classes=classe_years)
-        # people = people + student_man.get_people_by_names(enseignement, search_string=query, years=classe_years)
 
     if formatting == 'json':
         return format_name_to_json(people, people_type)
