@@ -2,8 +2,8 @@ services:
   - postgres:latest
 
 variables:
-  POSTGRES_DB: appyschool
-  POSTGRES_USER: appyschool
+  POSTGRES_DB: happyschool
+  POSTGRES_USER: happyschool
   POSTGRES_PASSWORD: libreschool
 
 before_script:
@@ -13,8 +13,8 @@ before_script:
 
 test:
     script:
-        - cp appyschool/settings.example.py appyschool/settings.py
-        - sed -i 's/DEBUG = False/DEBUG = True/g' appyschool/settings.py
+        - cp happyschool/settings.example.py happyschool/settings.py
+        - sed -i 's/DEBUG = False/DEBUG = True/g' happyschool/settings.py
         - python3 manage.py makemigrations && python3 manage.py migrate
         - coverage run --source='.' manage.py test
         - coverage report

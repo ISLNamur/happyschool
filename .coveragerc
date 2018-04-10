@@ -1,7 +1,7 @@
 [run]
 source = .
 omit = 
-     venv_appyschool/*
+     venv_happyschool/*
      manage.py
      */migrations/*
 [report]
