@@ -151,6 +151,7 @@ EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.server.com")
 EMAIL_PORT = os.getenv("EMAIL_PORT", 465)
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "admin@example.org")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "password")
+EMAIL_FROM = os.getenv("EMAIL_FROM", "robot@example.org")
 
 if EMAIL_PORT == 465:
     EMAIL_USE_SSL = True

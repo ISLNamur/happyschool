@@ -34,7 +34,7 @@ def send_email(to, subject, email_template, cc=None, images=None, context=None):
     html_content = render_to_string(email_template, context)
     text_content = strip_tags(html_content)
 
-    email = EmailMultiAlternatives(subject, text_content, settings.EMAIL_HOST_USER, to, cc, connection)
+    email = EmailMultiAlternatives(subject, text_content, settings.EMAIL_FROM, to, cc, connection)
     email.attach_alternative(html_content, "text/html")
 
     if images:
