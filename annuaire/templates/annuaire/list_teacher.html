@@ -10,7 +10,7 @@
             </thead>
             <tbody class="recherchable">
                 {% for teacher in teachers %}
-                <tr class="clickable" onclick="document.location = '{% url 'summary_teacher' teacher.matricule teacher.teaching.all.0.name %}'">
+                <tr class="clickable" onclick="document.location = '{% url 'summary_teacher' teacher.matricule %}'">
                     <td>{{ teacher.last_name }}</td>
                     <td>{{ teacher.first_name }}</td>
                     <td>{% for teaching in teacher.teaching.all %}{{ teaching.display_name }} {% endfor %}</td>
