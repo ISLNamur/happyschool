@@ -129,23 +129,23 @@ def nouveau(request):
         # Check if we need to send info to the related teachers
         if info and form.cleaned_data['send_to_teachers']:
             student = People().get_student_by_id(c.matricule.matricule)
-            teachers_obj = ResponsibleModel.objects.filters(classes=student.classe)
+            teachers_obj = ResponsibleModel.objects.filter(classe=student.classe)
             # student = student_man.get_person(c.matricule.matricule)
             # teachers_obj = teacher_man.get_people(filters=['classe=' + student.classe, 'enseignement=secondaire'])
 
             teachers = []
             for t in teachers_obj:
-                if not t.gen_email:
+                if not t.email_alias:
                     send_email(to=[settings.EMAIL_ADMIN],
                                subject='ISLN : À propos de ' + student.fullname + " non envoyé à %s" % t.full_name,
                                email_template="dossier_eleve/email_info.html",
                                context={'student': student, 'info': model_to_dict(c), 'info_type': info}
                                )
                 else:
-                    teachers.append(t.gen_email)
+                    teachers.append(t.email_alias)
 
             # Add coord and educs to email list
-            teachers += map(lambda e: e.email, EmailModel.objects.filter(teaching=student.teaching, year=student.classe.year))
+            teachers += map(lambda e: e.email, EmailModel.objects.filter(teaching=student.teaching, years=student.classe.year))
             teachers.append(EmailModel.objects.get(display='PMS').email)
             # teachers.append(Email.objects.get(pk=CLASS_TO_EMAILS_COORD[int(student.classe[0]) - 1]).email)
             # teachers.append(Email.objects.get(pk=CLASS_TO_EMAILS_EDUC[int(student.classe[0]) - 1]).email)
