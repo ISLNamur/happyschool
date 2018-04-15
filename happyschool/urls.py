@@ -20,8 +20,10 @@
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf import settings
+from django.views.generic import RedirectView
 
 from django.contrib.auth.views import LoginView, LogoutView, TemplateView
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -31,6 +33,7 @@ urlpatterns = [
     url(r'^logout', LogoutView.as_view(next_page='auth'), name='logout'),
     url(r'^annuaire/', include('annuaire.urls'), name='annuaire'),
     url(r'^no_access/', TemplateView.as_view(template_name='core/no_access.html'), name='no_access'),
+    url(r'^$', RedirectView.as_view(url='annuaire/', permanent=False)),
 ]
 
 for app in ['infirmerie', 'appels', 'dossier_eleve', 'absence_prof', 'mail_notification', 'slas', 'mobility_survey',]:
