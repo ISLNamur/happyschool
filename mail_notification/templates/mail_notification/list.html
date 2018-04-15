@@ -1,0 +1,50 @@
+{% extends "core/base_vue.html" %}
+
+{% block header %}
+{% load render_bundle from webpack_loader %}
+{% endblock %}
+{% block content %}
+<div id="vue-app">
+    <b-container>
+        <b-row>
+            <b-nav tabs>
+                <b-nav-item href="/mail_notification/">Envoyer un email</b-nav-item>
+                <b-nav-item active href="/mail_notification/list/">Liste des emails envoyés</b-nav-item>
+            </b-nav>
+        </b-row>
+        {% for email in emails %}
+            <b-row>
+                <b-col>
+                    <b-card title="{{ email.subject }}"
+                        sub-title="Envoyé à : {{ email.email_to }} ({{ email.teaching }}) à partir de : {{ email.email_from }}">
+                        <p class="card-text">
+                            État : {{ email.errors }}
+                        </p>
+                        <p>
+                            Message {% if email.attachments.all|length > 0 %}<icon name="paperclip"></icon>{% endif %} :
+                        </p>
+                        <b-card>
+                            {{ email.body|truncatewords_html:5|safe }}
+                        </b-card>
+                    </b-card>
+                </b-col>
+            </b-row>
+        {% endfor %}
+    </b-container>
+</div>
+{% render_bundle 'commons' %}
+{% render_bundle 'mail_notification_list' %}
+
+<style>
+.card-body p {
+    margin-bottom: 2px;
+    line-height: 14px;
+}
+.fade-enter-active {
+  transition: opacity .7s
+}
+.fade-enter, .fade-leave-to .fade-leave-active {
+  opacity: 0
+}
+</style>
+{% endblock %}

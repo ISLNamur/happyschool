@@ -6,7 +6,8 @@ module.exports = {
 	context: __dirname,
 	entry: {
         schedule_change: './assets/js/schedule_change',
-		appels: './assets/js/appels'
+		appels: './assets/js/appels',
+		mail_notification: './assets/js/mail_notification'
 	},
 
 	output: {
@@ -18,7 +19,7 @@ module.exports = {
 		new BundleTracker({filename: './webpack-stats.json'}),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: "commons",
-			chunks: ["schedule_change", "appels"],
+			chunks: ["schedule_change", "appels", "mail_notification"],
 			minChunks: 2
 		}),
 	],

@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
-import os
+import os, requests
 
 from django.core.mail import EmailMultiAlternatives, get_connection
 # from django.core.mail.backends.smtp import
@@ -49,6 +49,26 @@ def send_email(to, subject, email_template, cc=None, images=None, context=None):
             fp.close()
             
     email.send()
+
+
+def send_email_with_mg(recipients, subject, body, from_email="Informatique ISLN <informatique@isln.be>",attachments=()):
+    attachments = list(map(lambda a: ("attachment", (os.path.basename(a), open(a, 'rb+').read())), attachments))
+    data = {"from": from_email,
+            "subject": subject,
+            "text": strip_tags(body),
+            "html": body}
+    if settings.DEBUG:
+        data["to"] = [settings.EMAIL_ADMIN]
+        data["html"] = data["html"].replace("</html>", str(recipients) + "</html>")
+    else:
+        data["to"] = recipients
+    return requests.post(
+        "https://api.mailgun.net/v3/mg.isln.be/messages",
+        auth=("api", settings.MAILGUN_KEY),
+        data=data,
+        files=attachments
+    )
+
 
 def get_resp_emails(student):
     emails = {}
