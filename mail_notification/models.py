@@ -40,6 +40,9 @@ class EmailSender(models.Model):
     groups = models.ManyToManyField(Group)
     teaching = models.CharField(max_length=30)
 
+    def __str__(self):
+        return "%s (%s)" % (self.sender_email_name, self.sender_email)
+
 
 class EmailTag(models.Model):
     name = models.CharField(max_length=200)

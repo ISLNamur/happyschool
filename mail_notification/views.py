@@ -73,7 +73,9 @@ class SendersList(APIView):
     permission_classes = (IsAuthenticated, HasPermissions)
 
     def get(self, request, teaching, format=None):
-        senders = EmailSender.objects.filter(teaching=teaching, groups__in=request.user.groups.all())
+        senders = EmailSender.objects.filter(teaching=teaching, groups__in=request.user.groups.all())\
+            .distinct()\
+            .order_by('sender_email_name')
         serializer = EmailSenderSerializer(senders, many=True)
         return Response(serializer.data)
 
