@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        {% load render_bundle from webpack_loader %}
+        {% block header %}{% endblock %}
+    </head>
+
+    <body>
+        <div>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <a class="navbar-brand"  href="/">
+                    <img src="/static/img/logo_isln.png" class="d-inline-block align-top" alt="BV">
+                    HappySchool
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav">
+                        {% if user.is_authenticated %}
+                            {% if app_infirmerie and perms.infirmerie.access_infirmerie %}
+                            <li class="nav-item">
+                                <a href="{% url 'infirmerie' %}" class="nav-link">Infirmerie</a>
+                            </li>
+                            {% endif %}
+                            {% if app_appels and perms.appels.access_appel %}
+                            <li class="nav-item">
+                                <a href="{% url 'appels' %}" class="nav-link">Appels</a>
+                            </li>
+                            {% endif %}
+                            {% if app_absences and perms.absence_prof.access_absences %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'absence_prof:index' %}">Absences prof</a>
+                            </li>
+                            {% endif %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'annuaire' %}">Annuaire</a>
+                            </li>
+                            {% if app_dossier_eleve and perms.dossier_eleve.access_dossier_eleve %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'dossier_eleve' %}">Dossier des élèves</a>
+                            </li>
+                            {% endif %}
+                        {% endif %}
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        {% render_bundle 'commons' %}
+        {% block content %}{% endblock %}
+    </body>
+</html>

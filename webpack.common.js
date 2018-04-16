@@ -7,7 +7,8 @@ module.exports = {
 	entry: {
         schedule_change: './assets/js/schedule_change',
 		appels: './assets/js/appels',
-		mail_notification: './assets/js/mail_notification'
+		mail_notification: './assets/js/mail_notification',
+		mail_notification_list: './assets/js/mail_notification_list',
 	},
 
 	output: {
@@ -19,7 +20,7 @@ module.exports = {
 		new BundleTracker({filename: './webpack-stats.json'}),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: "commons",
-			chunks: ["schedule_change", "appels", "mail_notification"],
+			chunks: ["schedule_change", "appels", "mail_notification", "mail_notification_list"],
 			minChunks: 2
 		}),
 	],

@@ -15,7 +15,7 @@
                             >
                             <b-form-radio-group v-model="teaching" name="teaching">
                                 <b-form-radio value="secondaire">Secondaire</b-form-radio>
-                                <b-form-radio value="primaire">Primaire</b-form-radio>
+                                <b-form-radio disabled value="primaire">Primaire</b-form-radio>
                             </b-form-radio-group>
                         </b-form-group>
                     </div>
@@ -26,7 +26,7 @@
                             >
                             <b-form-radio-group v-model="toType" name="toType" @change="warnChoice">
                                 <b-form-radio value="teachers">Professeurs</b-form-radio>
-                                <b-form-radio value="parents">Parents</b-form-radio>
+                                <b-form-radio disabled value="parents">Parents</b-form-radio>
                             </b-form-radio-group>
                         </b-form-group>
                         <b-form-group
@@ -163,6 +163,8 @@
 import Vue from 'vue';
 import BootstrapVue from 'bootstrap-vue';
 import {quillEditor} from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
@@ -173,10 +175,8 @@ import Icon from 'vue-awesome/components/Icon.vue'
 import axios from 'axios';
 import Multiselect from 'vue-multiselect';
 
-import Menu from '../common/menu.vue';
 import FileUpload from './file_upload.vue';
 
-Vue.component('header-menu', Menu);
 Vue.use(BootstrapVue);
 Vue.component('icon', Icon);
 

@@ -189,11 +189,11 @@ def get_email_to_options(request, teaching, to_type):
     recipients = list(filter(lambda r: unidecode(r).lower().startswith(query), recipients))
 
     if len(query) == 1:
-        recipients += map(lambda c: c['classe'], create_classes_list(request, check_access=False, enseignement=teaching,
-                                                                  annees=query[0]))
+        recipients += map(lambda c: c.split(" ")[0], sorted(create_classes_list(request, check_access=False, enseignement=teaching,
+                                                                  annees=query[0])))
     else:
-        recipients += map(lambda c: c['classe'], create_classes_list(request, check_access=False, enseignement=teaching,
-                                                                  annees=query[0], letters=query[1]))
+        recipients += map(lambda c: c.split(" ")[0], sorted(create_classes_list(request, check_access=False, enseignement=teaching,
+                                                                  annees=query[0], letters=query[1])))
 
     return JsonResponse(recipients, safe=False)
 

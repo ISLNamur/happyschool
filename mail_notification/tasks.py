@@ -35,7 +35,7 @@ from mail_notification.models import EmailNotification
 def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=True, responsibles=True):
     """ Send emails """
     # First sync media between local and distant server
-    subprocess.run("/usr/bin/rsync -e ssh -avz --delete-after /home/isln-user/libreschool/media django@djangoisln:/home/django/libreschool/", shell=True)
+    subprocess.run(settings.MEDIA_SYNC['rsync_command'], shell=True)
     email_notif = EmailNotification.objects.get(pk=pk)
     print(email_notif)
     recipients = list(get_emails(email_notif.email_to, to_type, teaching, responsibles=responsibles))
@@ -90,7 +90,7 @@ def get_emails(email_to, to_type, teaching="secondaire", responsibles=True):
                 # Class length is only two.
                 if len(recip) == 2:
                     classes = ClasseModel.objects.filter(year=int(recip[0]),
-                                                         letter=recip[1],
+                                                         letter=recip[1].lower(),
                                                          teaching__name=teaching)
                     years.append(int(recip[0]))
                 elif 'année' in recip:
@@ -117,9 +117,9 @@ def get_emails(email_to, to_type, teaching="secondaire", responsibles=True):
                     years = []
                 classes = ClasseModel.objects.filter(year__in=years, teaching__name=teaching)
 
-            teachers = ResponsibleModel.objects.filter(classe=classes, is_teacher=True)
+            teachers = ResponsibleModel.objects.filter(classe__in=classes, is_teacher=True)
             if responsibles:
-                resp_email = EmailModel.objects.filter(years__in=years)
+                resp_email = EmailModel.objects.filter(years__in=years, teaching__name=teaching)
                 emails += list(map(lambda e: e.email, resp_email))
 
             emails += list(map(lambda t: t.email_alias, teachers))
@@ -132,7 +132,7 @@ def get_emails(email_to, to_type, teaching="secondaire", responsibles=True):
                 # Class length is only two.
                 if len(recip) == 2:
                     classes = ClasseModel.objects.filter(year=int(recip[0]),
-                                                         letter=recip[1],
+                                                         letter=recip[1].lower(),
                                                          teaching__name=teaching)
                 elif 'année' in recip:
                     classes = ClasseModel.objects.filter(year=int(recip[0]),

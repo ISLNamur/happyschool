@@ -216,6 +216,13 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20
 }
 
+CELERY_NAME = "happyschool"
+CELERY_BACKEND = "redis"
+CELERY_BROKER = 'redis://localhost:6379'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "asgi_redis.RedisChannelLayer",
@@ -231,4 +238,10 @@ WEBPACK_LOADER = {
         'BUNDLE_DIR_NAME': 'bundles/',
         'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json'),
     }
+}
+
+MAILGUN_KEY = "your-mailgun-key"
+
+MEDIA_SYNC = {
+    'rsync_command': "/usr/bin/rsync -e ssh -avz --delete-after /home/user/happyschool/media happyschool@remote:/home/user/happyschool/",
 }
