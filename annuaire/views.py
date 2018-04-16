@@ -284,7 +284,7 @@ def create_classes_list(request, enseignement="all", check_access=False, annees=
         classes = classes.filter(year=annees)
 
     if letters:
-        classes = classes.filter(letter=letters)
+        classes = classes.filter(letter=letters.lower())
 
     return list(map(lambda c: str(c), classes))
 

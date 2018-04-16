@@ -304,7 +304,7 @@ def _get_years_access(user: User) -> list:
         return []
     # Sysadmins and direction members have all access
     if user.groups.filter(name__in=['sysadmin', 'direction']).exists():
-        return list(set(ClasseModel.objects.filter(teaching__in=teaching).values_list(flat=True)))
+        return list(set(ClasseModel.objects.filter(teaching__in=teaching).values_list('year', flat=True)))
 
     # Educators and coordonators years.
     if user.groups.filter(name__istartswith='educ').exists()\
