@@ -42,6 +42,11 @@
                                 <a class="nav-link" href="{% url 'dossier_eleve' %}">Dossier des élèves</a>
                             </li>
                             {% endif %}
+                            {% if app_mail_notification and perms.mail_notification.access_mail_notification %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'mail_notification:mail_notification' %}">Envoi d'email</a>
+                            </li>
+                            {% endif %}
                         {% endif %}
                     </ul>
                 </div>

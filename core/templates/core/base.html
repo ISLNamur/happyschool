@@ -43,6 +43,9 @@
                                 <li><a href="{% url 'dossier_eleve' %}">Dossier des élèves
                                     {% if new_rows.dossier_eleve > 0 %}<span class="badge">{{ new_rows.dossier_eleve }}</span>{% endif %}</a> </li>
                                 {% endif %}
+                                {% if app_mail_notification and perms.mail_notification.access_mail_notification %}
+                                <li><a href="{% url 'mail_notification:mail_notification' %}">Envoi d'email</a> </li>
+                                {% endif %}
                                 {% endif %}
                             </ul>
 
