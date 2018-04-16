@@ -22,7 +22,7 @@ from celery import Celery
 
 from django.conf import settings
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "libreschool.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "happyschool.settings")
 
 
 app = Celery(settings.CELERY_NAME, backend=settings.CELERY_BACKEND, broker=settings.CELERY_BROKER)
