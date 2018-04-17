@@ -156,9 +156,10 @@ def get_emails(email_to, to_type, teaching="secondaire", responsibles=True):
 
             students = StudentModel.objects.filter(classe__in=classes)
             for s in students:
-                parents_email = {s.get_additional_info()['resp_email'],
-                                 s.get_additional_info()['mother_email'],
-                                 s.get_additional_info()['father_email']}
+                info = s.get_additional_info()
+                parents_email = {info['resp_email'] if 'resp_email' in info else None,
+                                 info['mother_email'] if 'mother_email' in info else None,
+                                 info['father_email'] if 'father_email' in info else None,}
                 parents = list(filter(lambda e: e is not None, parents_email))
                 if len(parents) > 0:
                     emails += parents

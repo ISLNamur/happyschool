@@ -53,10 +53,12 @@ def send_email(to, subject, email_template, cc=None, images=None, context=None):
 
 def send_email_with_mg(recipients, subject, body, from_email="Informatique ISLN <informatique@isln.be>",attachments=()):
     attachments = list(map(lambda a: ("attachment", (os.path.basename(a), open(a, 'rb+').read())), attachments))
-    data = {"from": from_email,
+    data = {"from": from_email.replace("@", "@mg."),
             "subject": subject,
             "text": strip_tags(body),
-            "html": body}
+            "html": body,
+            "h:Reply-To": from_email
+            }
     if settings.DEBUG:
         data["to"] = [settings.EMAIL_ADMIN]
         data["html"] = data["html"].replace("</html>", str(recipients) + "</html>")

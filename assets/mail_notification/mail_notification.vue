@@ -26,7 +26,7 @@
                             >
                             <b-form-radio-group v-model="toType" name="toType" @change="warnChoice">
                                 <b-form-radio value="teachers">Professeurs</b-form-radio>
-                                <b-form-radio disabled value="parents">Parents</b-form-radio>
+                                <b-form-radio value="parents">Parents</b-form-radio>
                             </b-form-radio-group>
                         </b-form-group>
                         <b-form-group
