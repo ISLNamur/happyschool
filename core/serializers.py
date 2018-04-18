@@ -17,21 +17,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url
+from rest_framework import serializers
 
-from rest_framework.routers import DefaultRouter
-
-from . import views
+from core.models import ResponsibleModel
 
 
-app_name = 'core'
-
-urlpatterns = [
-    url(r'^profil/$', views.ProfilView.as_view(), name='profil'),
-    url(r'^members/$', views.MembersView.as_view(), name='members'),
-]
-
-router = DefaultRouter()
-router.register(r'api/members', views.MembersAPI)
-
-urlpatterns += router.urls
+class ResponsibleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ResponsibleModel
+        fields = ('pk', 'last_name', 'first_name', 'is_secretary', 'email')

@@ -1,17 +1,20 @@
 from rest_framework.filters import OrderingFilter
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import DjangoModelPermissions
+from rest_framework.generics import GenericAPIView, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.mixins import ListModelMixin, UpdateModelMixin, CreateModelMixin, DestroyModelMixin
+from rest_framework.permissions import DjangoModelPermissions, IsAuthenticated
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
 from django_filters import rest_framework as filters
 
 from django.utils import timezone
 from django.db.models import CharField
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
+from django.views.generic import TemplateView
 
 from core.models import ResponsibleModel
 from core.people import get_classes
-
+from core.permissions import IsSecretaryPermission
+from core.serializers import ResponsibleSerializer
 
 class BaseFilters(filters.FilterSet):
     unique = filters.CharFilter('unique_by', method='unique_by')
@@ -63,6 +66,26 @@ class BaseModelViewSet(ModelViewSet):
             user=self.request.user.username,
         )
 
-@login_required
-def profil(request):
-    return render(request, 'core/profil.html')
+
+class MembersView(LoginRequiredMixin,
+                  PermissionRequiredMixin,
+                  TemplateView):
+    template_name = "core/members.html"
+    permission_required = ('core.add_responsiblemodel')
+
+
+class ProfilView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/profil.html'
+
+
+class MembersAPI(ModelViewSet):
+    queryset = ResponsibleModel.objects.filter(is_teacher=False, is_educator=False)
+    serializer_class = ResponsibleSerializer
+    permission_classes = (IsAuthenticated, IsSecretaryPermission)
+
+    def get_queryset(self):
+        person_type = self.request.GET.get('person_type', None)
+        if person_type == 'secretary':
+            return ResponsibleModel.objects.filter(is_secretary=True)
+        else:
+            return ResponsibleModel.objects.filter(is_teacher=False, is_educator=False)

@@ -10,6 +10,7 @@ module.exports = {
 		appels: './assets/js/appels',
 		mail_notification: './assets/js/mail_notification',
 		mail_notification_list: './assets/js/mail_notification_list',
+		members: './assets/js/members',
 	},
 
 	output: {

@@ -149,7 +149,7 @@ class ResponsibleModel(models.Model):
                                related_name="tenure_classe")
     is_teacher = models.BooleanField(default=False)
     is_educator = models.BooleanField(default=False)
-    is_secretaire = models.BooleanField(default=False)
+    is_secretary = models.BooleanField(default=False)
     user = models.OneToOneField(settings.AUTH_USER_MODEL,
                                 on_delete=models.CASCADE,
                                 null=True,
