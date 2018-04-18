@@ -5,6 +5,7 @@ var BundleTracker = require('webpack-bundle-tracker');
 module.exports = {
 	context: __dirname,
 	entry: {
+		menu: './assets/js/menu',
         schedule_change: './assets/js/schedule_change',
 		appels: './assets/js/appels',
 		mail_notification: './assets/js/mail_notification',
@@ -20,14 +21,14 @@ module.exports = {
 		new BundleTracker({filename: './webpack-stats.json'}),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: "commons",
-			chunks: ["schedule_change", "appels", "mail_notification", "mail_notification_list"],
+			chunks: ["menu", "schedule_change", "appels", "mail_notification", "mail_notification_list"],
 			minChunks: 2
 		}),
 	],
 
 	resolve: {
 		alias: {
-			vue: 'vue/dist/vue.js'
+			vue: 'vue/dist/vue.common.js'
 		}
 	},
 
