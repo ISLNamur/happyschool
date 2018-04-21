@@ -22,7 +22,7 @@ module.exports = {
 		new BundleTracker({filename: './webpack-stats.json'}),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: "commons",
-			chunks: ["menu", "schedule_change", "appels", "mail_notification", "mail_notification_list"],
+			chunks: ["menu", "schedule_change", "appels", "mail_notification", "mail_notification_list", "members"],
 			minChunks: 2
 		}),
 	],

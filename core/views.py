@@ -87,5 +87,7 @@ class MembersAPI(ModelViewSet):
         person_type = self.request.GET.get('person_type', None)
         if person_type == 'secretary':
             return ResponsibleModel.objects.filter(is_secretary=True)
+        elif person_type == 'others':
+            return ResponsibleModel.objects.filter(is_teacher=False, is_educator=False, is_secretary=False)
         else:
             return ResponsibleModel.objects.filter(is_teacher=False, is_educator=False)
