@@ -5,6 +5,7 @@
                 <b-nav tabs>
                     <b-nav-item active href="/mail_notification/">Envoyer un email</b-nav-item>
                     <b-nav-item href="/mail_notification/list/">Liste des emails envoyés</b-nav-item>
+                    <b-nav-item href="/core/members/">Gestion des personnes</b-nav-item>
                 </b-nav>
             </b-row>
             <b-row>
