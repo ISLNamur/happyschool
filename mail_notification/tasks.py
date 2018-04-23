@@ -38,8 +38,8 @@ def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=
     subprocess.run(settings.MEDIA_SYNC['rsync_command'], shell=True)
     email_notif = EmailNotification.objects.get(pk=pk)
     print(email_notif)
-    recipients = list(get_emails(email_notif.email_to, to_type, teaching, responsibles=responsibles))
-    recipients += ['manuel.tondeur@isln.be', 'directeur@isln.be', 'sous-directeur@isln.be']
+    recipients = [email_notif.email_from] + list(get_emails(email_notif.email_to, to_type, teaching, responsibles=responsibles))
+    recipients += [settings.EMAIL_ADMIN, 'directeur@isln.be', 'sous-directeur@isln.be']
     print(recipients)
     if settings.DEBUG:
         recipients = [settings.EMAIL_ADMIN]
