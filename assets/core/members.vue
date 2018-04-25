@@ -1,3 +1,22 @@
+<!-- This file is part of Happyschool. -->
+<!--  -->
+<!-- Happyschool is the legal property of its developers, whose names -->
+<!-- can be found in the AUTHORS file distributed with this source -->
+<!-- distribution. -->
+<!--  -->
+<!-- Happyschool is free software: you can redistribute it and/or modify -->
+<!-- it under the terms of the GNU Affero General Public License as published by -->
+<!-- the Free Software Foundation, either version 3 of the License, or -->
+<!-- (at your option) any later version. -->
+<!--  -->
+<!-- Happyschool is distributed in the hope that it will be useful, -->
+<!-- but WITHOUT ANY WARRANTY; without even the implied warranty of -->
+<!-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the -->
+<!-- GNU Affero General Public License for more details. -->
+<!--  -->
+<!-- You should have received a copy of the GNU Affero General Public License -->
+<!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
+
 <template>
     <div>
         <b-container v-cloak>
@@ -50,23 +69,23 @@
                 title="Ajouter une personne"
                 ok-title="Ajouter"
                 centered
-                @ok="addEntry">
+                @ok="addEntry" @hidden="resetModal">
             <form>
                 <b-form-input type="text" v-model="last_name" placeholder="Nom"
                     id="last_name" aria-describedby="lastNameFeedback"
-                    :state="lastNameState"></b-form-input>
+                    :state="inputStates.last_name"></b-form-input>
                 <b-form-invalid-feedback id="lastNameFeedback">
                     {{ errorMsg('last_name') }}
                 </b-form-invalid-feedback>
                 <b-form-input type="text" v-model="first_name" placeholder="Prénom"
                     id="first_name" aria-describedby="firstNameFeedback"
-                    :state="firstNameState"></b-form-input>
+                    :state="inputStates.first_name"></b-form-input>
                 <b-form-invalid-feedback id="firstNameFeedback">
                     {{ errorMsg('first_name') }}
                 </b-form-invalid-feedback>
                 <b-form-input type="email" v-model="email" placeholder="Email"
                     id="email" aria-describedby="emailFeedback"
-                    :state="emailState"></b-form-input>
+                    :state="inputStates.email"></b-form-input>
                 <b-form-invalid-feedback id="emailFeedback">
                     {{ errorMsg('email') }}
                 </b-form-invalid-feedback>
@@ -98,30 +117,24 @@ export default {
             email: "",
             pk: null,
             errors: {},
+            inputStates: {
+                email: null,
+                last_name: null,
+                first_name: null,
+            }
         }
     },
-    computed: {
-        emailState: function() {
-            if ('email' in this.errors) {
-                return this.errors.email.length == 0;
-            } else {
-                return null;
+    watch: {
+        errors: function (newErrors, oldErrors) {
+            let inputs = ['email', 'last_name', 'first_name'];
+            for (let u in inputs) {
+                if (inputs[u] in newErrors) {
+                    this.inputStates[inputs[u]] = newErrors[inputs[u]].length == 0;
+                } else {
+                    this.inputStates[inputs[u]] = null;
+                }
             }
-        },
-        lastNameState: function() {
-            if ('last_name' in this.errors) {
-                return this.errors.last_name.length == 0;
-            } else {
-                return null;
-            }
-        },
-        firstNameState: function() {
-            if ('first_name' in this.errors) {
-                return this.errors.first_name.length == 0;
-            } else {
-                return null;
-            }
-        },
+        }
     },
     methods: {
         errorMsg(err) {
@@ -183,7 +196,6 @@ export default {
                 this.loadPeople('others');
                 // Reset errors if any.
                 this.errors = {};
-                this.resetModal();
                 this.$refs.addModal.hide();
             })
             .catch(function (error) {
