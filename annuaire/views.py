@@ -24,11 +24,15 @@ from django.http import Http404, JsonResponse, HttpResponse
 from django.template.loader import get_template
 from django.contrib.auth.decorators import login_required, user_passes_test
 
+from rest_framework.views import APIView, Response
+from rest_framework.permissions import IsAuthenticated
+
 from z3c.rml import rml2pdf
 from unidecode import unidecode
 
 from core.people import People, get_classes
 from core.models import StudentModel, ClasseModel, TeachingModel, ResponsibleModel
+from core.serializers import StudentSerializer, ResponsibleSensitiveSerializer
 
 # from core.Person import Person
 # from core.Student import Student
@@ -387,3 +391,40 @@ def get_class_photo_pdf(request, year, classe, enseignement):
     response['Content-Disposition'] = 'filename; filename="' + pdf_name + '"'
     response.write(pdf.read())
     return response
+
+
+class SearchPeopleAPI(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @staticmethod
+    def serialize_people(person):
+        if type(person) == StudentModel:
+            return StudentSerializer(person).data
+        elif type(person) == ResponsibleModel:
+            return ResponsibleSensitiveSerializer(person).data
+
+    def get(self, request, format=None):
+        query = request.GET.get('query', '')
+        people_type = request.GET.get('people', 'all')
+        teaching = request.GET.get('teaching', 'all')
+        check_access = request.GET.get('check_access', '0')
+
+        if not query:
+            return Response([])
+
+        people = []
+        if people == 'responsible' or people_type == 'all':
+            people += People().get_responsibles_by_name(query, [teaching])
+
+        if people == 'teacher':
+            people += People().get_teachers_by_name(query, [teaching])
+
+        if people == 'educator':
+            people += People().get_educators_by_name(query, [teaching])
+
+        if people == 'student' or people_type == 'all':
+            classe_years = get_classes([teaching], check_access=True,
+                                       user=request.user) if check_access == '1' else None
+            people += People().get_students_by_name(query, [teaching], classes=classe_years)
+
+        return Response(map(self.serialize_people, people))
