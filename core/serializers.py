@@ -19,10 +19,25 @@
 
 from rest_framework import serializers
 
-from core.models import ResponsibleModel
+from core.models import ResponsibleModel, StudentModel
 
 
 class ResponsibleSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResponsibleModel
-        fields = ('pk', 'last_name', 'first_name', 'is_secretary', 'email')
+        fields = ('pk', 'last_name', 'first_name', 'is_secretary', 'email', 'email_alias', 'teaching')
+        depth = 1
+
+
+class ResponsibleSensitiveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ResponsibleModel
+        fields = ('pk', 'last_name', 'first_name', 'is_secretary', 'email_alias', 'teaching')
+        depth = 1
+
+
+class StudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentModel
+        fields = '__all__'
+        depth = 1
