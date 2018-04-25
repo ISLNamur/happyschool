@@ -16,6 +16,7 @@ from core.people import get_classes
 from core.permissions import IsSecretaryPermission
 from core.serializers import ResponsibleSerializer
 
+
 class BaseFilters(filters.FilterSet):
     unique = filters.CharFilter('unique_by', method='unique_by')
 
