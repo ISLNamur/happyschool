@@ -1,22 +1,24 @@
 <template>
-    <transition appear name="fade">
-        <b-card :title="title" :sub-title="subtitle" class="current-card">
-            <b-row align-h="end">
-                <a href="#" v-on:click="editEntry"
-                class="card-link"><icon name="edit" scale="1" color="green"></icon></a>
-                <a href="#" v-on:click="deleteEntry"
-                class="card-link"><icon name="remove" scale="1" color="red"></icon></a>
-            </b-row>
-            <b-row class="text-center">
-                <b-col md="2" class="current-data">{{ rowData.objet }}</b-col>
-                <b-col md="2" class="current-data">{{ rowData.motif }}</b-col>
-                <b-col md="1" class="current-data">{{ motif_start }}</b-col>
-                <b-col md="1" class="current-data">{{ motif_end }}</b-col>
-                <b-col md="2" class="current-data">{{ appel }}</b-col>
-                <b-col class="current-data">{{ rowData.commentaire }}</b-col>
-            </b-row>
-        </b-card>
-    </transition>
+    <div>
+        <transition appear name="fade">
+            <b-card :title="title" :sub-title="subtitle" class="current-card">
+                <b-row align-h="end">
+                    <a href="#" v-on:click="editEntry"
+                    class="card-link"><icon name="edit" scale="1" color="green"></icon></a>
+                    <a href="#" v-on:click="deleteEntry"
+                    class="card-link"><icon name="remove" scale="1" color="red"></icon></a>
+                </b-row>
+                <b-row class="text-center">
+                    <b-col md="2" class="current-data">{{ rowData.objet }}</b-col>
+                    <b-col md="2" class="current-data">{{ rowData.motif }}</b-col>
+                    <b-col md="1" class="current-data">{{ motif_start }}</b-col>
+                    <b-col md="1" class="current-data">{{ motif_end }}</b-col>
+                    <b-col md="2" class="current-data">{{ appel }}</b-col>
+                    <b-col class="current-data">{{ rowData.commentaire }}</b-col>
+                </b-row>
+            </b-card>
+        </transition>
+    </div>
 </template>
 <script>
     import Moment from 'moment';

@@ -29,7 +29,7 @@ from django.db.models import Count, CharField
 
 
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
-from rest_framework.response import Response
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
 
 from core import email
@@ -37,8 +37,8 @@ from core.people import People, get_classes
 from core.models import EmailModel
 from core.views import BaseFilters, BaseModelViewSet
 
-from .models import Appel
-from .serializers import AppelSerializer
+from .models import Appel, ObjectModel, MotiveModel
+from .serializers import AppelSerializer, ObjectSerializer, MotiveSerializer
 from .forms import NouvelAppelForm, TraiterAppelForm
 
 
@@ -384,3 +384,13 @@ class AppelViewSet(BaseModelViewSet):
     filter_class = AppelFilter
     ordering_fields = ('name', 'objet', 'motif', 'datetime_appel', 'datetime_traitement', 'is_traiter')
     # Default ordering and distinct object cannot be used together.
+
+
+class MotiveViewSet(ReadOnlyModelViewSet):
+    queryset = MotiveModel.objects.all()
+    serializer_class = MotiveSerializer
+
+
+class ObjectViewSet(ReadOnlyModelViewSet):
+    queryset = ObjectModel.objects.all()
+    serializer_class = ObjectSerializer

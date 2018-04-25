@@ -1,68 +1,16 @@
+{% extends "core/base_vue.html" %}
+
+{% block header %}
+<title>HappySchool : Appels</title>
+{% endblock %}
+{% block content %}
+<script>
+    const current_app = "appels";
+    const settings = "";
+    const filters = {{ filters|safe }};
+</script>
+<div id="vue-app"></div>
 {% load render_bundle from webpack_loader %}
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Appels</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap4.min.css">
-    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-vue.min.css">
-</head>
-
-<body>
-    <script>
-        var settings = "";
-        var filters = {{ filters|safe }};
-    </script>
-<div id="vue-app">
-    <b-container>
-        <b-row>
-            <h2>Appels</h2>
-        </b-row>
-        <b-row>
-            <b-form-group>
-                <div>
-                    <b-button variant="outline-secondary" v-b-toggle.filters>
-                        Ajouter des filtres
-                    </b-button>
-                    <b-button :pressed.sync="active" variant="primary">
-                        <span v-if="active">Afficher tous les appels</span>
-                        <span v-else>Afficher les appels courant</span>
-                    </b-button>
-                </div>
-            </b-form-group>
-        </b-row>
-        <b-row>
-            <b-col>
-                    <b-collapse id="filters">
-                        <b-card>
-                            <filters app="appels" ref="filters"></filters>
-                        </b-card>
-                    </b-collapse>
-                </b-col>
-        </b-row>
-        <b-pagination :total-rows="entriesCount" v-model="currentPage" v-on:change="changePage">
-        </b-pagination>
-        <b-card no-body class="current-card d-none d-md-block d-lg-block d-xl-block">
-            <b-row class="text-center">
-                <b-col cols="2"><strong>Objet</strong></b-col>
-                <b-col cols="2"><strong>Motif</strong></b-col>
-                <b-col cols="1"><strong>De</strong></b-col>
-                <b-col cols="1"><strong>À</strong></b-col>
-                <b-col cols="1"><strong>Appel</strong></b-col>
-                <b-col><strong>Commentaire(s)</strong></b-col>
-            </b-row>
-        </b-card>
-        <appel-entry
-            v-for="(entry, index) in entries"
-            v-bind:key="entry.id"
-            v-bind:row-data="entry"
-            v-on:delete="deleteEntry(entry.id)"
-            v-on:edit="editEntry(index)"
-            >
-        </schedule-change-entry>
-    </b-container>
-</div>
-
-{% render_bundle 'commons' %}
 {% render_bundle 'appels' %}
-</body>
-</html>
+
+{% endblock %}

@@ -19,7 +19,7 @@
 
 from rest_framework import serializers
 
-from appels.models import Appel
+from appels.models import Appel, MotiveModel, ObjectModel
 
 
 class AppelSerializer(serializers.ModelSerializer):
@@ -27,3 +27,15 @@ class AppelSerializer(serializers.ModelSerializer):
         model = Appel
         exclude = ('datetime_encodage',)
         read_only_fields = ('user', 'name',)
+
+
+class MotiveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MotiveModel
+        fields = '__all__'
+
+
+class ObjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ObjectModel
+        fields = '__all__'

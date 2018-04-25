@@ -45,3 +45,11 @@ class Appel(models.Model):
         permissions = (
             ('access_appel', 'Can access to appel data'),
         )
+
+
+class MotiveModel(models.Model):
+    motive = models.CharField(max_length=200)
+
+
+class ObjectModel(models.Model):
+    object = models.CharField(max_length=200)

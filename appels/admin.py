@@ -19,7 +19,9 @@
 
 from django.contrib import admin
 
-from .models import Appel
+from .models import Appel, MotiveModel, ObjectModel
 
 
 admin.site.register(Appel)
+admin.site.register(MotiveModel)
+admin.site.register(ObjectModel)

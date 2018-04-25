@@ -33,6 +33,8 @@ urlpatterns = [
 ]
 
 router = DefaultRouter()
-router.register(r'api', views.AppelViewSet)
+router.register(r'api/appel', views.AppelViewSet)
+router.register(r'api/motive', views.MotiveViewSet)
+router.register(r'api/object', views.ObjectViewSet)
 
 urlpatterns += router.urls
