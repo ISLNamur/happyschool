@@ -189,13 +189,13 @@ class People:
         people = model_name.objects.none()
 
         if len(tokens) > 1:
-            people = model_name.objects.filter(Q(first_name__iexact=tokens[0], last_name__istartswith=tokens[1])
-                                               | Q(first_name__istartswith=tokens[1], last_name__iexact=tokens[0]))
+            people = model_name.objects.filter(Q(first_name__unaccent__iexact=tokens[0], last_name__unaccent__istartswith=tokens[1])
+                                               | Q(first_name__unaccent__istartswith=tokens[1], last_name__unaccent__iexact=tokens[0]))
 
         if len(people) == 0:
             for name_part in tokens:
-                people |= model_name.objects.filter(Q(first_name__istartswith=name_part)
-                                                   | Q(last_name__istartswith=name_part))
+                people |= model_name.objects.filter(Q(first_name__unaccent__istartswith=name_part)
+                                                   | Q(last_name__unaccent__istartswith=name_part))
 
         if teaching and 'all' not in teaching:
             people = people.filter(teaching__name__in=teaching)
