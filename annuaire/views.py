@@ -409,7 +409,7 @@ class SearchPeopleAPI(APIView):
         teaching = request.GET.get('teaching', 'all')
         check_access = request.GET.get('check_access', '0')
 
-        if not query:
+        if len(query) < 2:
             return Response([])
 
         people = []
