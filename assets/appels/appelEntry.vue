@@ -9,8 +9,8 @@
                     class="card-link"><icon name="remove" scale="1" color="red"></icon></a>
                 </b-row>
                 <b-row class="text-center">
-                    <b-col md="2" class="current-data">{{ rowData.objet }}</b-col>
-                    <b-col md="2" class="current-data">{{ rowData.motif }}</b-col>
+                    <b-col md="2" class="current-data">{{ rowData.object.display }}</b-col>
+                    <b-col md="2" class="current-data">{{ rowData.motive.display }}</b-col>
                     <b-col md="1" class="current-data">{{ motif_start }}</b-col>
                     <b-col md="1" class="current-data">{{ motif_end }}</b-col>
                     <b-col md="2" class="current-data">{{ appel }}</b-col>
@@ -31,7 +31,11 @@
         },
         computed: {
             title: function () {
-                return  this.rowData.name;
+                let title = this.rowData.matricule.last_name
+                title += " " + this.rowData.matricule.first_name;
+                if (this.rowData.is_student)
+                    title += " (" + this.rowData.matricule.teaching.display_name + ")";
+                return title;
             },
             subtitle: function () {
                 if (!this.rowData.is_traiter)

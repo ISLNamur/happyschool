@@ -20,13 +20,7 @@
 from rest_framework import serializers
 
 from appels.models import Appel, MotiveModel, ObjectModel
-
-
-class AppelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Appel
-        exclude = ('datetime_encodage',)
-        read_only_fields = ('user', 'name',)
+from core.serializers import StudentSerializer, StudentModel
 
 
 class MotiveSerializer(serializers.ModelSerializer):
@@ -39,3 +33,21 @@ class ObjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = ObjectModel
         fields = '__all__'
+
+
+class AppelSerializer(serializers.ModelSerializer):
+    # In order to write with the id and read the entire object, it uses two fields field + field_id.
+    matricule = StudentSerializer(read_only=True)
+    matricule_id = serializers.PrimaryKeyRelatedField(queryset=StudentModel.objects.all(),
+                                                      source='matricule', required=False, allow_null=True)
+    motive = MotiveSerializer(read_only=True)
+    motive_id = serializers.PrimaryKeyRelatedField(queryset=MotiveModel.objects.all(),
+                                                   source='motive', write_only=True)
+    object = ObjectSerializer(read_only=True)
+    object_id = serializers.PrimaryKeyRelatedField(queryset=ObjectModel.objects.all(),
+                                                   source='object', write_only=True)
+
+    class Meta:
+        model = Appel
+        exclude = ('datetime_encodage', 'motif', 'objet',)
+        read_only_fields = ('user', )

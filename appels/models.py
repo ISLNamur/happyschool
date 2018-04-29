@@ -20,20 +20,30 @@
 from django.db import models
 from django.utils import timezone
 
-from core.models import EmailModel, StudentModel
+from core.models import EmailModel, StudentModel, ResponsibleModel
+
+
+class MotiveModel(models.Model):
+    display = models.CharField(max_length=200)
+
+
+class ObjectModel(models.Model):
+    display = models.CharField(max_length=200)
 
 
 class Appel(models.Model):
     matricule = models.ForeignKey(StudentModel, on_delete=models.SET_NULL, to_field='matricule', null=True, blank=True)
-    name = models.CharField(max_length=100, default="")
+    name = models.CharField(max_length=100)
     is_student = models.BooleanField(default=True)
     user = models.CharField(max_length=20, default="")
-    objet = models.CharField(max_length=300)
-    motif = models.CharField(max_length=300)
+    objet = models.CharField(max_length=300)  # DEPRECATED, use object instead.
+    motif = models.CharField(max_length=300)  # DEPRECATED, use motive instead.
+    object = models.ForeignKey(ObjectModel, on_delete=models.CASCADE, null=True, blank=True)
+    motive = models.ForeignKey(MotiveModel, on_delete=models.CASCADE, null=True, blank=True)
     datetime_motif_start = models.DateTimeField("Début date d'appel")
     datetime_motif_end = models.DateTimeField("Fin date d'appel")
     datetime_appel = models.DateTimeField("Date d'appel")
-    commentaire = models.CharField(max_length=2000)
+    commentaire = models.CharField(max_length=2000, blank=True)
     traitement = models.CharField(max_length=2000, null=True, blank=True)
     datetime_traitement = models.DateTimeField("Date traitement", null=True, blank=True)
     is_traiter = models.BooleanField()
@@ -45,11 +55,3 @@ class Appel(models.Model):
         permissions = (
             ('access_appel', 'Can access to appel data'),
         )
-
-
-class MotiveModel(models.Model):
-    motive = models.CharField(max_length=200)
-
-
-class ObjectModel(models.Model):
-    object = models.CharField(max_length=200)

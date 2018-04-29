@@ -34,7 +34,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from core import email
 from core.people import People, get_classes
-from core.models import EmailModel
+from core.models import EmailModel, StudentModel, ResponsibleModel
 from core.views import BaseFilters, BaseModelViewSet
 
 from .models import Appel, ObjectModel, MotiveModel
@@ -366,7 +366,7 @@ def test_vue(request):
 
 class AppelFilter(BaseFilters):
     class Meta:
-        fields_to_filter = ('name', 'objet', 'motif',
+        fields_to_filter = ('name', 'object', 'motive',
              'datetime_motif_start', 'datetime_motif_end',
              'datetime_appel', 'datetime_traitement',
              'is_traiter',)
@@ -382,8 +382,13 @@ class AppelViewSet(BaseModelViewSet):
     serializer_class = AppelSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     filter_class = AppelFilter
-    ordering_fields = ('name', 'objet', 'motif', 'datetime_appel', 'datetime_traitement', 'is_traiter')
+    ordering_fields = ('name', 'datetime_appel', 'datetime_traitement', 'is_traiter')
     # Default ordering and distinct object cannot be used together.
+
+    def perform_create(self, serializer):
+        # Set full name.
+        name = serializer.validated_data['matricule'].fullname
+        serializer.save(name=name)
 
 
 class MotiveViewSet(ReadOnlyModelViewSet):
