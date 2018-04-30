@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     # 'appels',
     # 'absence_prof',
     # 'dossier_eleve',
+    # 'mail_notification',
+    # 'mail_answer',
 ]
 
 MIDDLEWARE = [

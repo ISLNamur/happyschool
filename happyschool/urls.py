@@ -36,6 +36,6 @@ urlpatterns = [
     url(r'^$', RedirectView.as_view(url='annuaire/', permanent=False)),
 ]
 
-for app in ['infirmerie', 'appels', 'dossier_eleve', 'absence_prof', 'mail_notification', 'slas', 'mobility_survey',]:
+for app in ['infirmerie', 'appels', 'dossier_eleve', 'absence_prof', 'mail_notification', 'slas', 'mobility_survey', 'mail_answer']:
     if app in settings.INSTALLED_APPS:
         urlpatterns.append(url(r'^%s/' % (app), include('%s.urls' % (app))))
