@@ -19,9 +19,15 @@
 
 from rest_framework.routers import DefaultRouter
 
+from django.conf.urls import url
+
 from . import views
 
-urlpatterns = []
+app_name = 'mail_answer'
+
+urlpatterns = [
+    url(r'^$', views.MailAnswerView.as_view(), name='mail_answer'),
+]
 
 router = DefaultRouter()
 router.register(r'api/mail_template', views.MailTemplateViewSet)

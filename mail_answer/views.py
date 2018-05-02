@@ -20,6 +20,9 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.views.generic import TemplateView
+
 from .serializers import MailTemplateSerializer, MailAnswerSerializer, ChoiceSerializer, OptionSerializer
 from .models import MailTemplateModel, MailAnswerModel, ChoiceModel, OptionModel
 
@@ -49,3 +52,10 @@ class MailAnswerViewSet(ModelViewSet):
     queryset = MailAnswerModel.objects.all()
     serializer_class = MailAnswerSerializer
     permission_classes = permissions
+
+
+class MailAnswerView(LoginRequiredMixin,
+                  PermissionRequiredMixin,
+                  TemplateView):
+    template_name = "mail_answer/mail_answer.html"
+    permission_required = ('mail_answer.add_mailtemplatemodel')
