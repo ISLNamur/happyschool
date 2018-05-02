@@ -1,18 +1,27 @@
 services:
-  - postgres:latest
+    - sameersbn/postgresql
 
 variables:
-  POSTGRES_DB: happyschool
-  POSTGRES_USER: happyschool
-  POSTGRES_PASSWORD: libreschool
+    DB_NAME: happyschool
+    DB_USER: happyschool
+    DB_PASS: libreschool
+    DB_EXTENSION: unaccent
+    PG_PASSWORD: passw0rd
+
 
 before_script:
-    - apt-get update -qq && apt-get install -y -qq python-dev libldap2-dev libsasl2-dev libssl-dev python3-pip git python3-dateutil
+    - export DEBIAN_FRONTEND=noninteractive && export DEBCONF_NONINTERACTIVE=true
+    - echo "tzdata tzdata/Areas select Europe" > /tmp/preseed.txt
+    - echo "tzdata tzdata/Zones/Europe select Berlin" >> /tmp/preseed.txt
+    - debconf-set-selections /tmp/preseed.txt && rm /etc/timezone && rm /etc/localtime && apt-get update && apt-get install -y tzdata
+    - apt-get update -qq && apt-get install -y -qq python-dev libldap2-dev libsasl2-dev libssl-dev python3-pip git python3-dateutil postgresql-client
     - pip3 install django==1.11.11 django-crispy-forms z3c.rml django_auth_ldap ldap3 unidecode coverage celery django-webpack-loader djangorestframework channels channels_api psycopg2-binary django-filter
     - git clone https://github.com/Supermanu/django-bootstrap3-datetimepicker && cd django-bootstrap3-datetimepicker && python3 setup.py install && cd ..
 
 test:
     script:
+        - export PGPASSWORD=passw0rd
+        - psql -h "sameersbn-postgresql" -U "postgres" -d "template1" -c 'CREATE EXTENSION unaccent;'
         - cp happyschool/settings.example.py happyschool/settings.py
         - sed -i 's/DEBUG = False/DEBUG = True/g' happyschool/settings.py
         - python3 manage.py makemigrations && python3 manage.py migrate
