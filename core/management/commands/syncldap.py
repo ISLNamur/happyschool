@@ -112,6 +112,7 @@ class Command(BaseCommand):
                         tenure = ClasseModel(year=int(t[0]), letter=t[1].lower(), teaching=teaching)
                         tenure.save()
                     resp.tenure.add(tenure)
+                    resp.classe.add(tenure)
 
             if 'resp_email' in resp_dict:
                 resp.email = resp_dict['resp_email']
