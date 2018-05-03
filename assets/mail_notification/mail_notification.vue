@@ -16,7 +16,7 @@
                             >
                             <b-form-radio-group v-model="teaching" name="teaching">
                                 <b-form-radio value="secondaire">Secondaire</b-form-radio>
-                                <b-form-radio disabled value="primaire">Primaire</b-form-radio>
+                                <b-form-radio value="primaire">Primaire</b-form-radio>
                             </b-form-radio-group>
                         </b-form-group>
                     </div>
@@ -203,7 +203,7 @@ export default {
             tagsOptions: [],
             tagsLoading: false,
             teaching: null,
-            responsibles: true,
+            responsibles: false,
             attachments: [],
             uploadedFiles: [],
             showModal: false,
@@ -240,7 +240,10 @@ export default {
         teaching: function() {
             if (!this.teaching) return;
 
+            // Reset fields.
             this.emailFrom = "";
+            this.responsibles = false;
+            //TODO reset all other fields.
             axios.get('/mail_notification/get_senders/' + this.teaching + '/')
             .then(response => {
                 this.emailFromOptions = response.data.map(m => m.sender_email_name + " <" + m.sender_email + ">");
