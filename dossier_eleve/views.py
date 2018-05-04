@@ -146,10 +146,7 @@ def nouveau(request):
 
             # Add coord and educs to email list
             teachers += map(lambda e: e.email, EmailModel.objects.filter(teaching=student.teaching, years=student.classe.year))
-            teachers.append(EmailModel.objects.get(display='PMS').email)
-            # teachers.append(Email.objects.get(pk=CLASS_TO_EMAILS_COORD[int(student.classe[0]) - 1]).email)
-            # teachers.append(Email.objects.get(pk=CLASS_TO_EMAILS_EDUC[int(student.classe[0]) - 1]).email)
-            # teachers.append(Email.objects.get(pk=PMS_EMAIL).email)
+            teachers += list(map(lambda e: e.email, EmailModel.objects.filter(is_pms=True)))
 
             if not settings.DEBUG:
                 try:
@@ -165,6 +162,7 @@ def nouveau(request):
                                context={'student': student, 'info': model_to_dict(c), 'info_type': info}
                                )
             else:
+                print(teachers)
                 send_email(to=[settings.EMAIL_ADMIN],
                            subject='ISLN : À propos de ' + student.fullname,
                            email_template="dossier_eleve/email_info.html",

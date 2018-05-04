@@ -203,6 +203,7 @@ class EmailModel(models.Model):
     email = models.EmailField()
     display = models.CharField(max_length=300, default="")
     teaching = models.ForeignKey(TeachingModel, on_delete=models.SET_NULL, null=True, blank=True)
+    is_pms = models.BooleanField(default=False)
     years = models.ManyToManyField(YearModel, blank=True)
 
     def __str__(self):
