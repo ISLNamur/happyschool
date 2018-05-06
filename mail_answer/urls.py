@@ -30,6 +30,8 @@ urlpatterns = [
 ]
 
 router = DefaultRouter()
+router.register(r'api/choices', views.ChoicesViewSet)
+router.register(r'api/options', views.OptionsViewSet)
 router.register(r'api/mail_template', views.MailTemplateViewSet)
 router.register(r'api/mail_answer', views.MailAnswerViewSet)
 

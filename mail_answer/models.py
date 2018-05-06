@@ -26,19 +26,20 @@ from core.models import StudentModel
 
 
 class ChoiceModel(models.Model):
-    choice = models.CharField(max_length=500)
-    choice_input = models.BooleanField(default=False)
+    text = models.CharField(max_length=500)
+    input = models.BooleanField(default=False)
 
 
 class OptionModel(models.Model):
-    option = models.CharField(max_length=500)
-    option_input = models.BooleanField(default=False)
+    text = models.CharField(max_length=500)
+    input = models.BooleanField(default=False)
 
 
 class MailTemplateModel(models.Model):
+    name = models.CharField(max_length=200)
     text = models.TextField(blank=True)
-    aknowledge = models.BooleanField()
-    aknowledge_text = models.CharField(max_length=500, default="Je déclare avoir pris connaissance des présentes informations")
+    acknowledge = models.BooleanField()
+    acknowledge_text = models.CharField(max_length=500, default="Je déclare avoir pris connaissance des présentes informations.")
     choices = models.ManyToManyField(ChoiceModel, blank=True)
     options = models.ManyToManyField(OptionModel, blank=True)
 

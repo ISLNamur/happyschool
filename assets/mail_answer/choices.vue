@@ -22,7 +22,7 @@
         <b-row>
             <b-form-group>
                 <b-form-radio-group stacked>
-                        <b-form-radio v-for="(choice, index) in choices">
+                        <b-form-radio v-for="(choice, index) in choices" :key="choice.id">
                             <b-form inline>
                             {{ choice.text }}
                             <b-form-input class="ml-1" v-if="choice.input" type="text"></b-form-input>
@@ -30,7 +30,7 @@
                                 @click="editChoice(index)">
                                 <icon name="edit" scale="1" color="green"></icon>
                             </b-btn>
-                            <b-btn variant="light" @click="choices.splice(index, 1)" class="ml-1">
+                            <b-btn variant="light" @click="removeChoice(index)" class="ml-1">
                                 <icon name="remove" scale="1" color="red"></icon>
                             </b-btn>
                             </b-form>
@@ -59,12 +59,12 @@
 import Vue from 'vue';
 import BootstrapVue from 'bootstrap-vue'
 
+import axios from 'axios';
+
 export default {
+    props: ['choices'],
     data: function () {
         return {
-            choices: [
-                {id: -1, text: 'Un choix parmi d\'autres.', input: true},
-            ],
             textInput: "",
             checkInclude: false,
             itemIndex: -1,
@@ -72,11 +72,30 @@ export default {
     },
     methods: {
         addChoice: function () {
+            let token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
             if (this.itemIndex < 0) {
-                this.choices.push({id: this.itemId, text: this.textInput, input: this.checkInclude});
+                // Create new choice.
+                let data = {text: this.textInput, input: this.checkInclude};
+                axios.post('/mail_answer/api/choices/', data, token)
+                .then(response => {
+                    data.id = response.data.id;
+                    this.choices.push(data);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
             } else {
-                this.choices[this.itemIndex].text = this.textInput;
-                this.choices[this.itemIndex].input = this.checkInclude;
+                // Update choice.
+                let data = this.choices[this.itemIndex];
+                data.text = this.textInput;
+                data.input = this.checkInclude;
+                axios.put('/mail_answer/api/choices/' + this.choices[this.itemIndex].id + '/', data, token)
+                .then(response => {
+                    this.choices[this.itemIndex] = data;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
             }
         },
         editChoice: function(index) {
@@ -84,11 +103,21 @@ export default {
             this.checkInclude = this.choices[index].input;
             this.itemIndex = index;
         },
+        removeChoice: function(index) {
+            let token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            axios.delete('/mail_answer/api/choices/' + this.choices[index].id + '/', token)
+            .then(response => {
+                this.choices.splice(index, 1);
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        },
         resetModal: function () {
             this.textInput = "";
             this.checkInclude = false;
             this.itemIndex = -1;
-        }
+        },
     }
 }
 </script>

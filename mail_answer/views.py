@@ -30,13 +30,13 @@ from .models import MailTemplateModel, MailAnswerModel, ChoiceModel, OptionModel
 permissions = (IsAuthenticated, DjangoModelPermissions,)
 
 
-class OptionViewSet(ModelViewSet):
+class OptionsViewSet(ModelViewSet):
     queryset = OptionModel.objects.all()
     serializer_class = OptionSerializer
     permission_classes = permissions
 
 
-class ChoiceViewSet(ModelViewSet):
+class ChoicesViewSet(ModelViewSet):
     queryset = ChoiceModel.objects.all()
     serializer_class = ChoiceSerializer
     permission_classes = permissions

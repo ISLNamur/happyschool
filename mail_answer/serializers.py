@@ -39,20 +39,6 @@ class MailTemplateSerializer(serializers.ModelSerializer):
         model = MailTemplateModel
         fields = '__all__'
 
-    def create(self, validated_data):
-        choices = validated_data.pop('choices')
-        options = validated_data.pop('options')
-
-        mail_template = MailTemplateModel.objects.create(**validated_data)
-        for choice in choices:
-            choice_model = ChoiceModel.objects.create(**choice)
-            mail_template.choices.append(choice_model)
-        for option in options:
-            option_model = OptionModel.objects.create(**option)
-            mail_template.options.append(option_model)
-
-        return mail_template
-
 
 class MailAnswerSerializer(serializers.ModelSerializer):
     class Meta:
