@@ -2,13 +2,11 @@
     <b-form>
         <b-form-group label="Ajouter un filtre">
             <b-input-group>
-                    <b-col>
-                        <!-- <b-input-group-button slot="left"> -->
+                    <b-col sm="12" md="4">
                             <b-form-select :options="filterTypeOptions" v-model="filterType" @input="cleanDate">
                             </b-form-select>
-                        <!-- </b-input-group-button> -->
                     </b-col>
-                    <b-col cols="8">
+                    <b-col sm="12" md="8">
                         <multiselect v-model="filterSearch" tag-placeholder="Ajouter cette recherche"
                             select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
                             selected-label="Sélectionné"
@@ -23,20 +21,28 @@
             </b-input-group>
         </b-form-group>
         <b-form-group v-if="inputType != 'text'">
-            <b-input-group>
-                <b-input-group-addon>À partir de </b-input-group-addon>
-                <b-form-input :type="inputType" v-model="dateTime1" :max="dateTime2" />
-                <b-input-group-addon>jusqu'à </b-input-group-addon>
-                <b-form-input :type="inputType" v-model="dateTime2" :min="dateTime1" />
-                <b-input-group-button>
-                    <b-button variant="success"
+            <b-form-row>
+                <b-col sm="2">
+                    <p class="text-right">À partir de </p>
+                </b-col>
+                <b-col sm="3">
+                    <b-form-input :type="inputType" v-model="dateTime1" :max="dateTime2" />
+                </b-col>
+                <b-col sm="2">
+                    <p class="text-right">jusqu'à </p>
+                </b-col>
+                <b-col sm="3">
+                    <b-form-input :type="inputType" v-model="dateTime2" :min="dateTime1" />
+                </b-col>
+                <b-col sm="2">
+                    <b-button variant="success" style="display:inline"
                         @click="addDateTimeRange"
-                        :disabled="dateTime1 === '' || dateTime2 === ''"
+                        :disabled="dateTime1 === null || dateTime2 === null"
                         >
                         Ajouter le filtre
                     </b-button>
-                </b-input-group-button>
-            </b-input-group>
+                </b-col>
+            </b-form-row>
         </b-form-group>
     </b-form>
 </template>
@@ -46,7 +52,7 @@ import Multiselect from 'vue-multiselect'
 import axios from 'axios';
 
 export default {
-    props: ['app'],
+    props: ['app', 'model'],
     data: function () {
         return {
             filterType: null,
@@ -54,12 +60,14 @@ export default {
             filterSearch: [],
             filterSearchOptions: [],
             filters: {},
-            dateTime1: '',
-            dateTime2: '',
+            dateTime1: null,
+            dateTime2: null,
         };
     },
     computed: {
         selectDisabled: function() {
+            // When filter is a date or a time (thus a range), disable the
+            // multiselect input.
             if (!this.filterType || this.filterType.startsWith("date_")
                 || this.filterType.startsWith("datetime_")
                 || this.filterType.startsWith("time_")) {
@@ -71,15 +79,18 @@ export default {
         inputType: function() {
             if (!this.filterType) return "text";
             if (this.filterType.startsWith("date_")) return "date";
-            if (this.filterType.startsWith("datetime-local_")) return "datetime-local";
+            if (this.filterType.startsWith("datetime_")) return "date";
             if (this.filterType.startsWith("time_")) return "time";
 
             return "text";
         }
     },
     watch: {
-        filterTypeOptions: function(options) {
+        filterTypeOptions: function (options) {
             if (options.length > 0) this.filterType = options[0].value;
+        },
+        dateTime1: function (dateTime) {
+            if (this.dateTime2 === null) this.dateTime2 = dateTime;
         }
     },
     methods: {
@@ -88,7 +99,7 @@ export default {
             if (!search) return [];
 
             let param = { 'name': search, 'page':1 };
-            axios.get("/" + this.app + "/api/", {params: param})
+            axios.get("/" + this.app + "/api/" + this.model + "/", {params: param})
             .then(response => {
                 let results = response.data.results.map(i => i[this.filterType]);
                 this.filterSearchOptions = Array.from(new Set(results)).map(i => ({
@@ -99,16 +110,17 @@ export default {
 
         },
         cleanDate: function() {
-            this.dateTime1 = '';
-            this.dateTime2 = '';
+            this.dateTime1 = null;
+            this.dateTime2 = null;
         },
         addNewTag(newTag) {
             const tag = {
                 filterType: this.filterType,
-                value: this.filterType + "-" + newTag,
+                value: newTag,
                 tag: newTag
             };
             this.addTag(tag);
+            console.log(tag);
         },
         addTag(tag) {
                 this.filterSearch.push(tag);
@@ -129,9 +141,11 @@ export default {
             this.addDateTimeTag(this.filterType, this.dateTime1, this.dateTime2);
         },
         addDateTimeTag(filterType, dateTime1, dateTime2) {
+            let blankTime1 = filterType.startsWith("datetime") ? " 00:00" : "";
+            let blankTime2 = filterType.startsWith("datetime") ? " 23:59" : "";
             const tag = {
                 'filterType': filterType,
-                value: filterType + '-' + dateTime1 + "_" + dateTime2,
+                value: dateTime1 + blankTime1 + "_" + dateTime2 + blankTime2,
                 tag: dateTime1 + " " + dateTime2
             }
             this.addTag(tag);
@@ -159,9 +173,9 @@ export default {
             for (let fil in this.filterSearch) {
                 let filter = this.filterSearch[fil]
                 if (!this.filters.hasOwnProperty(filter.filterType)) {
-                    this.filters[filter.filterType] = [filter.tag];
+                    this.filters[filter.filterType] = [filter.value];
                 } else {
-                    this.filters[filter.filterType].push(filter.tag);
+                    this.filters[filter.filterType].push(filter.value);
                 }
             }
             this.$emit('update', this.filters);

@@ -31,11 +31,16 @@
         },
         computed: {
             title: function () {
-                let title = this.rowData.matricule.last_name
-                title += " " + this.rowData.matricule.first_name;
-                if (this.rowData.is_student)
-                    title += " (" + this.rowData.matricule.teaching.display_name + ")";
-                return title;
+                if (this.rowData.matricule) {
+                    let student = this.rowData.matricule;
+                    let title = student.last_name
+                    title += " " + student.first_name;
+                    title += " " + student.classe.year + student.classe.letter.toUpperCase();
+                    title += " (" + student.teaching.display_name + ")";
+                    return title;
+                }
+                // This is a responsible.
+                return this.rowData.name;
             },
             subtitle: function () {
                 if (!this.rowData.is_traiter)

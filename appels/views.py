@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
+import json
+
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -27,10 +29,8 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.db.models import Count, CharField
 
-
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.viewsets import ReadOnlyModelViewSet
-
 
 from core import email
 from core.people import People, get_classes
@@ -40,7 +40,6 @@ from core.views import BaseFilters, BaseModelViewSet
 from .models import Appel, ObjectModel, MotiveModel
 from .serializers import AppelSerializer, ObjectSerializer, MotiveSerializer
 from .forms import NouvelAppelForm, TraiterAppelForm
-
 
 groups_with_access = ['sysadmin', 'direction', 'educateur', 'secretaire', 'accueil']
 for i in range(1, 7):
@@ -115,14 +114,17 @@ def traiter(request):
                 context['etudiant'] = etudiant
                 image = [static("/photos/" + str(a.matricule.matricule) + ".jpg")]
 
-            sent_to = list(filter(lambda e: e != 'robot@isln.be', map(lambda e: e.email, a.emails.all())))
+            sent_to = list(
+                filter(lambda e: e != 'robot@isln.be', map(lambda e: e.email, a.emails.all())))
             if a.custom_email:
                 sent_to.append(a.custom_email)
             if not settings.DEBUG:
-                email.send_email(to=sent_to, subject="[Appel] %s" % name, email_template="appels/email.html", context=context, images=image)
+                email.send_email(to=sent_to, subject="[Appel] %s" % name,
+                                 email_template="appels/email.html", context=context, images=image)
             else:
                 print(sent_to)
-                email.send_email(to=[settings.EMAIL_ADMIN], subject="[Appel] %s" % name, email_template="appels/email.html",
+                email.send_email(to=[settings.EMAIL_ADMIN], subject="[Appel] %s" % name,
+                                 email_template="appels/email.html",
                                  context=context, images=image)
     else:
         print(form.errors)
@@ -153,7 +155,8 @@ def get_appels(request):
     # Show only active ?
     active = request.GET.get("active", "1")
 
-    appels = filter_and_order(request, active=='1', filter_column, data1, data2, sort_by, order=='asc', ens)
+    appels = filter_and_order(request, active == '1', filter_column, data1, data2, sort_by,
+                              order == 'asc', ens)
 
     paginator = Paginator(appels, appel_per_page)
 
@@ -225,8 +228,9 @@ def traiter_appel(request, appelId):
             prechecked.append(e.pk)
     elif appel.is_student:
         # Send to relevant coordonateur and educateur
-        prechecked = list(map(lambda e: e.pk, EmailModel.objects.filter(years__year=appel.matricule.classe.year,
-                                                                        teaching=appel.matricule.teaching)))
+        prechecked = list(
+            map(lambda e: e.pk, EmailModel.objects.filter(years__year=appel.matricule.classe.year,
+                                                          teaching=appel.matricule.teaching)))
 
     save_or_later = None
     if appel.is_traiter:
@@ -247,15 +251,16 @@ def traiter_appel(request, appelId):
             'custom_email': appel.custom_email},
         id=appel.pk,
         saveButton=save_or_later)
-    
-    context = { 'appel': appel, 'form': form}
+
+    context = {'appel': appel, 'form': form}
     if appel.is_student:
         context['eleve'] = appel.matricule
 
     return render(request, 'appels/traiter_appel.html', context=context)
 
 
-def filter_and_order(request, only_actives=False, column=None, data1=None, data2=None, order_by=None, order_asc=False,
+def filter_and_order(request, only_actives=False, column=None, data1=None, data2=None,
+                     order_by=None, order_asc=False,
                      ens='all'):
     rows = Appel.objects.exclude(matricule__isnull=True, is_student=True)
 
@@ -268,7 +273,7 @@ def filter_and_order(request, only_actives=False, column=None, data1=None, data2
     if column and data1 != '':
         if column == 'name':
             # people = People().get_people_by_name(data1, teaching=[ens])
-            rows = rows.filter(name__unaccent__icontains=data1)
+            rows = rows.filter(name__icontains=data1)
         if column == 'matricule':
             rows = rows.filter(matricule__matricule=int(data1))
         if column == 'classe':
@@ -322,7 +327,7 @@ def filter_and_order(request, only_actives=False, column=None, data1=None, data2
 
     if order_by in ['datetime_traitement']:
         rows = rows.annotate(**{'null_' + order_by: Count(order_by)}).order_by('-null_' + order_by,
-                                                                                       asc + order_by)
+                                                                               asc + order_by)
 
     # Transform query into a list and thus make the actual query on the database
     return list(rows)
@@ -356,10 +361,9 @@ def get_entries(request, column='name', ens='all'):
     return JsonResponse(entries, safe=False)
 
 
-import json
-
 def test_vue(request):
-    filters = [{'value':'name', 'text':'Nom'}]
+    filters = [{'value': 'name', 'text': 'Nom'},
+               {'value': 'datetime_appel', 'text': "Date d'appel"}]
 
     return render(request, "appels/appels.html", context={'filters': json.dumps(filters)})
 
@@ -367,9 +371,9 @@ def test_vue(request):
 class AppelFilter(BaseFilters):
     class Meta:
         fields_to_filter = ('name', 'object', 'motive',
-             'datetime_motif_start', 'datetime_motif_end',
-             'datetime_appel', 'datetime_traitement',
-             'is_traiter',)
+                            'datetime_motif_start', 'datetime_motif_end',
+                            'datetime_appel', 'datetime_traitement',
+                            'is_traiter',)
         model = Appel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
@@ -383,12 +387,15 @@ class AppelViewSet(BaseModelViewSet):
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     filter_class = AppelFilter
     ordering_fields = ('name', 'datetime_appel', 'datetime_traitement', 'is_traiter')
+
     # Default ordering and distinct object cannot be used together.
 
     def perform_create(self, serializer):
         # Set full name.
-        name = serializer.validated_data['matricule'].fullname
-        serializer.save(name=name)
+        if serializer.validated_data['is_student']:
+            name = serializer.validated_data['matricule'].fullname
+            serializer.save(name=name)
+        serializer.save()
 
 
 class MotiveViewSet(ReadOnlyModelViewSet):
