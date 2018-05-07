@@ -31,11 +31,10 @@
                                     v-model="name"
                                     >
                                     <span slot="noResult">Aucune personne trouvée.</span>
+
                                 </multiselect>
+                                <span slot="invalid-feedback">{{ errorMsg('name') }}</span>
                             </b-form-group>
-                            <b-form-invalid-feedback id="nameFeedback">
-                                {{ errorMsg('name') }}
-                            </b-form-invalid-feedback>
                         </b-col>
                         <b-col sm="4">
                             <b-form-group label="Matricule" label-for="input-matricule">
@@ -45,28 +44,31 @@
                     </b-form-row>
                     <b-form-row>
                         <b-col>
-                            <b-form-group label="Objet" label-for="input-objet">
-                                <b-form-select v-model="form.object" :options="objectOptions">
+                            <b-form-group label="Objet" label-for="input-object" :state="inputStates.object_id">
+                                <b-form-select id="input-object" v-model="form.object_id" :options="objectOptions">
                                     <template slot="first">
                                         <option :value="null" disabled>Choisissez un objet</option>
                                     </template>
                                 </b-form-select>
+                                <span slot="invalid-feedback">{{ errorMsg('object_id') }}</span>
                             </b-form-group>
                         </b-col>
                         <b-col>
-                            <b-form-group label="Motif" label-for="input-motif">
-                                <b-form-select v-model="form.motive" :options="motiveOptions">
+                            <b-form-group label="Motif" label-for="input-motif" :state="inputStates.motive_id">
+                                <b-form-select v-model="form.motive_id" :options="motiveOptions">
                                     <template slot="first">
                                         <option :value="null" disabled>Choisissez un motif</option>
                                     </template>
                                 </b-form-select>
+                                <span slot="invalid-feedback">{{ errorMsg('motive_id') }}</span>
                             </b-form-group>
                         </b-col>
                     </b-form-row>
                     <b-form-row>
                         <b-col sm="4">
-                            <b-form-group label="Début du motif" label-for="input-date-motif-start">
+                            <b-form-group label="Début du motif" label-for="input-date-motif-start" :state="inputStates.datetime_motif_start">
                                 <b-form-input id="input-date-motif-start" type="date" v-model="form.datetime_motif_start"></b-form-input>
+                                <span slot="invalid-feedback">{{ errorMsg('datetime_motif_start') }}</span>
                             </b-form-group>
                         </b-col>
                         <b-col sm="2">
@@ -76,8 +78,9 @@
                         </b-form-group>
                         </b-col>
                         <b-col sm="4">
-                            <b-form-group label="Fin du motif" label-for="input-date-motif-end">
+                            <b-form-group label="Fin du motif" label-for="input-date-motif-end" :state="inputStates.datetime_motif_end">
                                 <b-form-input id="input-date-motif-end" type="date" v-model="form.datetime_motif_end"></b-form-input>
+                                <span slot="invalid-feedback">{{ errorMsg('datetime_motif_end') }}</span>
                             </b-form-group>
                         </b-col>
                         <b-col sm="2">
@@ -88,8 +91,9 @@
                     </b-form-row>
                     <b-form-row>
                         <b-col>
-                            <b-form-group label="Date de l'appel" label-for="input-date-appel">
+                            <b-form-group label="Date de l'appel" label-for="input-date-appel"  :state="inputStates.datetime_appel">
                                 <b-form-input id="input-date-appel" type="date" v-model="form.datetime_appel"></b-form-input>
+                                <span slot="invalid-feedback">{{ errorMsg('datetime_appel') }}</span>
                             </b-form-group>
                         </b-col>
                         <b-col>
@@ -127,6 +131,7 @@ export default {
     data: function () {
         return {
             form: {
+                name: "",
                 matricule_id: null,
                 object_id: null,
                 motive_id: null,
@@ -135,6 +140,7 @@ export default {
                 datetime_appel: null,
                 commentaire: "",
                 is_student: false,
+                is_traiter: false,
             },
             timeMotifStart: null,
             timeMotifEnd: null,
@@ -150,6 +156,9 @@ export default {
                 name: null,
                 object_id: null,
                 motive_id: null,
+                datetime_motif_start: null,
+                datetime_motif_end: null,
+                datetime_appel: null,
             }
         };
     },
@@ -163,6 +172,8 @@ export default {
         name: function () {
             // Update form data.
             if (this.name.matricule) {
+                // First update form name data.
+                this.form.name = this.name.display;
                 if (this.name.matricule < 10000 && this.name.matricule > 999) {
                     // Student.
                     this.form.matricule_id = this.name.matricule;
@@ -172,7 +183,8 @@ export default {
             }
         },
         errors: function (newErrors, oldErrors) {
-            let inputs = ['name', 'object_id', 'motive_id'];
+            let inputs = ['name', 'object_id', 'motive_id',
+                'datetime_motif_start', 'datetime_motif_end', 'datetime_appel'];
             for (let u in inputs) {
                 if (inputs[u] in newErrors) {
                     this.inputStates[inputs[u]] = newErrors[inputs[u]].length == 0;
@@ -202,11 +214,17 @@ export default {
         addAppel: function (evt) {
             evt.preventDefault();
 
-            // Add times if any.
             let data = this.form;
-            if (this.timeMotifStart) data.datetime_motif_start += " " + this.timeMotifStart;
-            if (this.timeMotifEnd) data.datetime_motif_end += " " + this.timeMotifEnd;
-            if (this.timeAppel) data.datetime_appel += " " + this.timeAppel;
+            // Add times if any.
+            let time = this.timeMotifStart ? " " + this.timeMotifStart : " 12:00";
+            data.datetime_motif_start += time;
+            time = this.timeMotifEnd ? " " + this.timeMotifEnd : " 12:00";
+            data.datetime_motif_end += time;
+            time = this.timeAppel ? " " + this.timeAppel : " 12:00";
+            data.datetime_appel += time;
+            // if (this.timeMotifStart) data.datetime_motif_start += " " + this.timeMotifStart;
+            // if (this.timeMotifEnd) data.datetime_motif_end += " " + this.timeMotifEnd;
+            // if (this.timeAppel) data.datetime_appel += " " + this.timeAppel;
 
             // Set is_student.
             if (data.matricule_id) data.is_student = true;
@@ -216,7 +234,9 @@ export default {
             let token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
             axios.post('/appels/api/appel/', data, token)
             .then(response => {
-
+                this.hide();
+                this.errors = {};
+                this.$emit('update');
             }).catch(function (error) {
                 modal.errors = error.response.data;
             });
@@ -260,14 +280,14 @@ export default {
         axios.get('/appels/api/motive/')
         .then(response => {
             this.motiveOptions = response.data.results.map(m => {
-                return {value: m.id, text: m.motive}
+                return {value: m.id, text: m.display};
             });
         });
         // Set object options.
         axios.get('/appels/api/object/')
         .then(response => {
             this.objectOptions = response.data.results.map(m => {
-                return {value: m.id, text: m.object}
+                return {value: m.id, text: m.display};
             });
         });
     }

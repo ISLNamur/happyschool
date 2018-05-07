@@ -28,7 +28,7 @@
             <b-col>
                     <b-collapse id="filters">
                         <b-card>
-                            <filters app="appels" ref="filters"></filters>
+                            <filters app="appels" model="appel" ref="filters" @update="applyFilter"></filters>
                         </b-card>
                     </b-collapse>
                 </b-col>
@@ -57,7 +57,7 @@
     <b-modal ref="deleteModal" cancel-title="Annuler" hide-header centered @ok="deleteEntry">
         Êtes-vous sûr de vouloir supprimer cet appel ?
     </b-modal>
-    <component v-bind:is="currentModal" ref="dynamicModal"></component>
+    <component v-bind:is="currentModal" ref="dynamicModal" @update="loadEntries"></component>
     </div>
 </template>
 
@@ -89,11 +89,27 @@ export default {
             entries: [],
             currentEntry: -1,
             currentModal: 'add-modal',
+            filter: "",
         }
     },
     methods: {
         changePage: function (page) {
             return;
+        },
+        applyFilter: function(filters) {
+            console.log(filters);
+            this.filter = "";
+            for (var key in filters) {
+                if (filters.hasOwnProperty(key)) {
+                    if (key.startsWith("date") || key.startsWith("time")) {
+                        let ranges = filters[key][0].split("_");
+                        this.filter += "&" + key + "__gt=" + ranges[0] + "&" + key + "__lt=" + ranges[1];
+                    } else {
+                        this.filter += "&" + key + "=" + filters[key][0];
+                    }
+                }
+            }
+            this.loadEntries();
         },
         askDelete: function (id) {
             this.currentEntry = id;
@@ -110,7 +126,7 @@ export default {
 
         },
         loadEntries: function () {
-            axios.get('/appels/api/appel/?page=' + this.currentPage)
+            axios.get('/appels/api/appel/?page=' + this.currentPage + this.filter)
             .then(response => {
                 this.entries = response.data.results;
             });
