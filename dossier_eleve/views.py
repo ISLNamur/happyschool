@@ -547,7 +547,7 @@ def filter_and_order(request, only_actives=False, retenues=False, year=None,
         rows = rows.filter(sanction_decision__pk__in=SANCTIONS_RETENUE)
     if column and data1 != '':
         if column == 'name':
-            rows = rows.filter(name__icontains=data1)
+            rows = rows.filter(name__unaccent__icontains=data1)
         if column == 'matricule':
             rows = rows.filter(matricule__matricule=int(data1))
         if column == 'classe':
