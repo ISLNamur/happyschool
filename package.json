@@ -1,7 +1,7 @@
 {
-  "name": "appyschool",
-  "version": "2.0.0",
-  "description": "School application",
+  "name": "happyschool",
+  "version": "0.0.1",
+  "description": "School applications",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@testserver:11022/root/app.eschool.git"
+    "url": "ssh://git@github.com:ISLNamur/happyschool.git"
   },
   "keywords": [
     "school"
