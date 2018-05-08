@@ -39,7 +39,12 @@
                             </b-list-group-item>
                         </b-list-group>
                     </b-card>
-                    <b-card header="<b>Autres personnels</b>">
+                    <b-card>
+                        <div slot="header">
+                            <b>Autres personnels</b>
+                                <icon id="others-info" name="info-circle" color="blue" scale="1"></icon>
+                            <b-tooltip target="others-info" title="Personnes responsables"></b-tooltip>
+                        </div>
                         <b-list-group>
                             <b-list-group-item v-for="item in others" :key="item.pk"
                                 class="d-flex justify-content-between align-items-center"
