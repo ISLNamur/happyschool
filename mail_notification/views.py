@@ -31,14 +31,17 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.views import APIView, Response
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 
 from annuaire.views import create_classes_list
 
 from core.permissions import IsInGroupPermission
 
-from mail_notification.models import EmailTag, EmailNotification, EmailAttachment, EmailSender
-from mail_notification.serializers import EmailNotificationSerializer, EmailAttachmentSerializer, EmailSenderSerializer
+from mail_notification.models import EmailTag, EmailNotification, EmailAttachment, EmailSender,\
+    OtherEmailGroupModel, OtherEmailModel
+from mail_notification.serializers import EmailNotificationSerializer, EmailAttachmentSerializer, EmailSenderSerializer,\
+    OtherEmailSerializer, OtherEmailGroupSerializer
 from mail_notification.tasks import task_send_emails_notif
 
 CYCLES = ['Cycle inférieur', 'Cycle supérieur']
@@ -208,3 +211,15 @@ def get_tags_options(request):
         return JsonResponse(list(map(lambda t: t.name, EmailTag.objects.all())), safe=False)
 
     return JsonResponse(list(map(lambda t: t.name, EmailTag.objects.filter(name__istartswith=query))), safe=False)
+
+
+class OtherEmailViewSet(ModelViewSet):
+    queryset = OtherEmailModel.objects.all()
+    serializer_class = OtherEmailSerializer
+    permission_classes = (IsAuthenticated, HasPermissions)
+
+
+class OtherEmailGroupViewSet(ModelViewSet):
+    queryset = OtherEmailGroupModel.objects.all()
+    serializer_class = OtherEmailGroupSerializer
+    permission_classes = (IsAuthenticated, HasPermissions)

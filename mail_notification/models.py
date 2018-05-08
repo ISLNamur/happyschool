@@ -76,3 +76,20 @@ class EmailNotification(models.Model):
         permissions = (
             ('access_mail_notification', 'Can access to mail notification'),
         )
+
+
+class OtherEmailGroupModel(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+
+class OtherEmailModel(models.Model):
+    email = models.EmailField()
+    last_name = models.CharField(max_length=200)
+    first_name = models.CharField(max_length=200)
+    group = models.ForeignKey(OtherEmailGroupModel)
+
+    def __str__(self):
+        return self.email + '(%s)' % str(self.group)

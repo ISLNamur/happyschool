@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
+from rest_framework.routers import DefaultRouter
+
 from django.conf.urls import url
 
 from . import views
@@ -34,3 +36,9 @@ urlpatterns = [
     url(r'^upload_file/$', views.UploadFile.as_view(), name='upload_file'),
     url(r'^upload_file/(?P<pk>[0-9]+)/$', views.UploadFile.as_view(), name='remove_file'),
 ]
+
+router = DefaultRouter()
+router.register(r'api/other_email', views.OtherEmailViewSet)
+router.register(r'api/other_email_group', views.OtherEmailGroupViewSet)
+
+urlpatterns += router.urls
