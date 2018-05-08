@@ -303,7 +303,7 @@ def _get_years_access(user: User) -> list:
         # TODO: Make it work for students.
         return []
     # Sysadmins and direction members have all access
-    if user.groups.filter(name__in=['sysadmin', 'direction']).exists():
+    if user.groups.filter(name__in=['sysadmin', 'direction', 'pms']).exists():
         return list(set(ClasseModel.objects.filter(teaching__in=teaching).values_list('year', flat=True)))
 
     # Educators and coordonators years.
@@ -325,7 +325,7 @@ def _get_classes_access(user: User, teaching: list={"default"}) -> QuerySet:
     classes = ClasseModel.objects.none()
 
     # Sysadmins and direction members, educators or coordonators.
-    if user.groups.filter(name__in=['sysadmin', 'direction', 'educateur']).exists() or \
+    if user.groups.filter(name__in=['sysadmin', 'direction', 'educateur', 'pms']).exists() or \
             user.groups.filter(name__istartswith='coord').exists():
         classes |= get_classes(teaching).filter(year__in=years)
 
