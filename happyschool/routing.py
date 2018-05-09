@@ -17,32 +17,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
-from channels.generic.websockets import WebsocketDemultiplexer
-from channels.routing import route_class, route
+from channels.routing import ProtocolTypeRouter
 
-from core.consumers import SearchTeacherConsumer, SearchStudentsClassesYears, GetMenu
-# from schedule_change.bindings import ScheduleChangeBinding
-
-
-class APIDemultiplexer(WebsocketDemultiplexer):
-    http_user_and_session = True
-
-    consumers = {
-        # 'schedule_change': ScheduleChangeBinding.consumer,
-        'get_teachers': SearchTeacherConsumer,
-        'get_students_classes_years': SearchStudentsClassesYears,
-        'get_menu': GetMenu,
-    }
-
-    def connection_groups(self, **kwargs):
-        return ['schedule_change']
-
-
-from channels.routing import route
-
-channel_routing = [
-    # route("websocket.connect", ws_add),
-    # route("websocket.receive", ws_message),
-    # route("websocket.disconnect", ws_disconnect),
-    route_class(APIDemultiplexer),
-]
+application = ProtocolTypeRouter({})
