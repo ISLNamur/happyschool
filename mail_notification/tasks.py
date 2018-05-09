@@ -28,7 +28,7 @@ from core.email import send_email_with_mg
 from core.people import People
 from core.models import ResponsibleModel, StudentModel, ClasseModel, EmailModel
 
-from mail_notification.models import EmailNotification
+from mail_notification.models import EmailNotification, OtherEmailGroupModel, OtherEmailModel
 
 
 @shared_task(bind=True)
@@ -84,6 +84,22 @@ def get_emails(email_to, to_type, teaching="secondaire", responsibles=True):
     emails = []
     if to_type == 'teachers':
         for recip in recipients:
+            # Check if it is the staff.
+            if recip == 'Personnels':
+                staff = ResponsibleModel.objects.filter(is_teacher=False, is_educator=False, is_secretary=False)
+                emails += list(map(lambda s: s.email, staff))
+                continue
+            # Check if it is a custom group.
+            is_group = False
+            for group in OtherEmailGroupModel.objects.all():
+                if recip == group.name:
+                    is_group = True
+                    emails += list(map(lambda p: p.email, OtherEmailModel.objects.filter(group=group.pk)))
+                    break
+            if is_group:
+                continue
+
+            # So it is directly related to classes.
             years = []
             # If it starts with a digit, it could be a class, a year or a degree.
             if recip[0].isdigit():
@@ -109,7 +125,7 @@ def get_emails(email_to, to_type, teaching="secondaire", responsibles=True):
                     years += [4, 5, 6]
                 elif "inférieur" in recip:
                     years += [1, 2, 3]
-                elif "Tous les professeurs" in recip:
+                elif "Tous les classes" in recip:
                     years += [1, 2, 3, 4, 5, 6]
                 # elif "Tout le personnel" in recip:
                 #
@@ -144,11 +160,11 @@ def get_emails(email_to, to_type, teaching="secondaire", responsibles=True):
                         teaching__name=teaching)
             else:
                 # It is a cycle.
-                if "supérieur" in recip:
+                if "Cycle supérieur" in recip:
                     years = [4, 5, 6]
-                elif "inférieur" in recip:
+                elif "Cycle inférieur" in recip:
                     years = [1, 2, 3]
-                elif "Tous" in recip:
+                elif "Toutes les classes" in recip:
                     years = [1, 2, 3, 4, 5, 6]
                 else:
                     years = []

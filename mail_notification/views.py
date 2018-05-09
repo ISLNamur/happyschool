@@ -185,8 +185,12 @@ def get_email_to_options(request, teaching, to_type):
     recipients = []
     if not query[0].isdigit():
         recipients += CYCLES
+        # Add static groups.
+        recipients.append('Toutes les classes')
         if to_type == 'teachers':
-            recipients += ['Tous les professeurs'] # + 'Tout le personnel'
+            recipients.append('Personnels')
+            # Add custom groups
+            recipients += list(map(lambda g: g['name'], OtherEmailGroupModel.objects.all().values('name')))
         recipients = list(filter(lambda r: unidecode(r).lower().startswith(query), recipients))
         return JsonResponse(recipients, safe=False)
 
