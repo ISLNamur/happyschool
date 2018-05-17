@@ -1,0 +1,15 @@
+{% extends "core/base_vue.html" %}
+
+{% block header %}
+<title>HappySchool : Dossier des élèves</title>
+{% endblock %}
+{% block content %}
+<script>
+    const current_app = "dossier_eleve";
+    var settings = JSON.parse('{{ settings|safe }}');
+</script>
+<div id="vue-app"></div>
+{% load render_bundle from webpack_loader %}
+{% render_bundle 'dossier_eleve' %}
+
+{% endblock %}
