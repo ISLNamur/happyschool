@@ -156,6 +156,7 @@ class NouveauCasForm(forms.Form):
 
         super(NouveauCasForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.include_media = False
         self.helper.form_class = 'col-sm-8'
         self.helper.html5_required = True
         self.helper.layout = Layout(
@@ -251,6 +252,7 @@ class GenerateSummaryPDFForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(GenerateSummaryPDFForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.include_media = False
         self.helper.form_class = 'col-sm-8'
         self.helper.html5_required = True
         self.helper.layout = Layout(
@@ -281,6 +283,7 @@ class GenDisciplinaryCouncilForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(GenDisciplinaryCouncilForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.include_media = False
         self.helper.form_class = 'col-sm-8'
         self.helper.html5_required = True
         self.helper.layout = Layout(
@@ -303,6 +306,7 @@ class GenRetenueForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(GenRetenueForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.include_media = False
         self.helper.form_class = 'col-sm-8'
         self.helper.html5_required = True
         self.helper.layout = Layout(

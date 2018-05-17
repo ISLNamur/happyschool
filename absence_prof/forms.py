@@ -79,6 +79,7 @@ class AbsenceForm(forms.Form):
             self.type = 'change'
         super(AbsenceForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.include_media = False
         self.helper.html5_required = True
         self.helper.form_class = 'col-sm-8'
         self.helper.layout = Layout(

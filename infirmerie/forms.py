@@ -60,6 +60,7 @@ class ArriveForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(ArriveForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.include_media = False
         self.helper.html5_required = True
         self.helper.form_class = 'col-sm-8'
         self.helper.layout = Layout(
@@ -131,6 +132,7 @@ class SortieForm(forms.Form):
         self.id = kwargs.pop('id', -1)
         super(SortieForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.include_media = False
         self.helper.html5_required = True
         self.helper.form_class = 'col-sm-8'
         self.helper.layout = Layout(

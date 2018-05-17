@@ -115,6 +115,7 @@ class TraiterAppelForm(forms.Form):
         self.save_or_later = kwargs.pop('saveButton', 'Traiter plus tard')
         super(TraiterAppelForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.include_media = False
         self.helper.form_class = 'col-sm-8'
         self.helper.html5_required = True
         self.helper.layout = Layout(
@@ -217,6 +218,7 @@ class NouvelAppelForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super(NouvelAppelForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.include_media = False
         self.helper.form_class = 'col-sm-8'
         self.helper.html5_required = True
         self.helper.layout = Layout(
