@@ -68,21 +68,29 @@ def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=
             if a:
                 email_body = email_body.replace("specific_uuid", str(a.uuid))
 
-            print(email_body)
-            # if not settings.DEBUG:
-            #     response = send_email_with_mg([r],
-            #                        email_notif.subject,
-            #                        email_body,
-            #                        from_email=email_notif.email_from,
-            #                        attachments=attachments)
-            # if response.status_code != 200:
-            #     email_notif.errors += "Error with %s." % r
-            # else:
-            #     one_ok = True
+            if not settings.DEBUG:
+                response = send_email_with_mg([r],
+                                   email_notif.subject,
+                                   email_body,
+                                   from_email=email_notif.email_from,
+                                   attachments=attachments)
+
+            if response.status_code != 200:
+                email_notif.errors += "Error with %s." % r
+            else:
+                one_ok = True
             time.sleep(0.4)
         if one_ok:
             email_notif.errors = email_notif.errors.replace("Submitting.", "")
             email_notif.errors += "Sent."
+
+        # Send an email to admin
+        if settings.DEBUG:
+            send_email_with_mg([settings.EMAIL_ADMIN],
+                               email_notif.subject,
+                               email_body,
+                               from_email=email_notif.email_from,
+                               attachments=attachments)
     else:
         response = send_email_with_mg(recipients,
                                       email_notif.subject,
