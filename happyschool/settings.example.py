@@ -92,8 +92,6 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'happyschool.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
@@ -230,13 +228,15 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 
+
+ASGI_APPLICATION = "happyschool.routing.application"
+
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [("localhost", 6379)],
         },
-        "ROUTING": "happyschool.routing.channel_routing",
     },
 }
 

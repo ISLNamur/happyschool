@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-daphne happyschool.asgi:channel_layer
+daphne happyschool.asgi:application

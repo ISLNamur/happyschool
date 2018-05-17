@@ -1,9 +1,11 @@
 django-filter
 channels_api
+channels_redis
 unidecode
 z3c.rml
 ldap3
 django-crispy-forms
 django_auth_ldap
+django-crispy-forms
 coverage
 psycopg2-binary # postgresql
