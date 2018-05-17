@@ -28,10 +28,10 @@
                             <b-form-input class="ml-1" v-if="option.input" type="text"></b-form-input>
                             <b-btn v-b-modal.addOptionModal variant="light" class="ml-1"
                                 @click="editOption(index)">
-                                <icon name="edit" scale="1" color="green"></icon>
+                                <icon name="edit" color="green"></icon>
                             </b-btn>
-                            <b-btn variant="light" @click="removeOption(index)" class="ml-1">
-                                <icon name="remove" scale="1" color="red"></icon>
+                            <b-btn variant="light" :disabled="disabled" @click="removeOption(index)" class="ml-1">
+                                <icon name="remove" color="red"></icon>
                             </b-btn>
                             </b-form>
                         </b-form-checkbox>
@@ -39,9 +39,10 @@
             </b-form-group>
         </b-row>
         <b-row>
-            <b-btn v-b-modal.addOptionModal variant="success"><icon name="plus" scale="1" color="white"></icon>Ajouter une option</b-btn>
+            <b-btn v-b-modal.addOptionModal variant="success"><icon name="plus"></icon>Ajouter une option</b-btn>
         </b-row>
         <b-modal ref="addOptionModal" id="addOptionModal"
+            :disabled="disabled"
             cancel-title="Annuler"
             title="Ajouter une option"
             centered
@@ -62,7 +63,7 @@ import BootstrapVue from 'bootstrap-vue'
 import axios from 'axios';
 
 export default {
-    props: ['options'],
+    props: ['options', 'disabled'],
     data: function () {
         return {
             selected: [],

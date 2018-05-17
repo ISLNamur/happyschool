@@ -12,6 +12,7 @@ module.exports = {
 		mail_notification_list: './assets/js/mail_notification_list',
 		members: './assets/js/members',
 		mail_answer: './assets/js/mail_answer',
+		answer: './assets/js/answer',
 	},
 
 	output: {
@@ -24,7 +25,7 @@ module.exports = {
 		new webpack.optimize.CommonsChunkPlugin({
 			name: "commons",
 			chunks: ["menu", "schedule_change", "appels", "mail_notification",
-				"mail_notification_list", "members", "mail_answer"],
+				"mail_notification_list", "members", "mail_answer", "answer"],
 			minChunks: 2
 		}),
 	],

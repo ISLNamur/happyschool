@@ -21,8 +21,16 @@ import uuid
 
 from django.db import models
 from django.contrib.postgres.fields import JSONField
+from django.conf import settings
+
+from rest_framework.authtoken.models import Token
 
 from core.models import StudentModel
+
+
+class SettingsModel(models.Model):
+    use_remote = models.BooleanField(default=False)
+    is_remote = models.BooleanField(default=False)
 
 
 class ChoiceModel(models.Model):
@@ -42,9 +50,13 @@ class MailTemplateModel(models.Model):
     acknowledge_text = models.CharField(max_length=500, default="Je déclare avoir pris connaissance des présentes informations.")
     choices = models.ManyToManyField(ChoiceModel, blank=True)
     options = models.ManyToManyField(OptionModel, blank=True)
+    is_used = models.BooleanField(default=False)
+    datetime_creation = models.DateTimeField()
 
 
 class MailAnswerModel(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)
-    answers = JSONField()
+    template = models.ForeignKey(MailTemplateModel, on_delete=models.CASCADE, default=None, null=True)
+    answers = JSONField(default='{}')
+    is_answered = models.BooleanField(default=False)

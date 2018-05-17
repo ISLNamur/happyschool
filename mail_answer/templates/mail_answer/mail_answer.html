@@ -6,6 +6,7 @@
 {% block content %}
 <script>
     const current_app = "mail_answer";
+    var settings = JSON.parse('{{ settings|safe }}');
 </script>
 <div id="vue-app"></div>
 {% load render_bundle from webpack_loader %}

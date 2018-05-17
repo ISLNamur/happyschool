@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.postgres',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_filters',
     'channels',
     'channels_api',
@@ -134,6 +135,9 @@ AUTHENTICATION_BACKENDS = [
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+
+LOCAL_DOMAIN = ''
+REMOTE_DOMAIN = ''
 
 if DEBUG:
     STATICFILES_DIRS = [
@@ -247,4 +251,20 @@ MAILGUN_KEY = "your-mailgun-key"
 
 MEDIA_SYNC = {
     'rsync_command': "/usr/bin/rsync -e ssh -avz --delete-after /home/user/happyschool/media happyschool@remote:/home/user/happyschool/",
+}
+
+
+# The following setting allows to sync db (templates and mail answers) from local to remote server. It uses an ssh connection and pg_dump to
+# transfer the data through an unix pipe. Please change the related db settings as well as the ssh user and server.
+MAIL_ANSWER = {
+    'template_sync': """PGPASSWORD=local_pwd pg_dump -h localhost -U db_user -d db_name -O --column-inserts --clean \
+        -t mail_answer_optionmodel\
+        -t mail_answer_choicemodel\
+        -t mail_answer_mailtemplatemodel\
+        -t mail_answer_mailtemplatemodel_choices\
+        -t mail_answer_mailtemplatemodel_options\
+    | ssh happyschool@remote 'PGPASSWORD=remote_pwd psql -h localhost -U "db_user" -d "db_name"'""",
+    'mail_answers_create' : """PGPASSWORD=local_pwd pg_dump -h localhost -U db_user -d db_name -O --column-inserts -a \
+        -t mail_answer_mailanswermodel\
+    | ssh happyschool@remote 'PGPASSWORD=remote_pwd psql -h localhost -U "db_user" -d "db_name"'"""
 }

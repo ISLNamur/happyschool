@@ -19,8 +19,13 @@
 
 from rest_framework import serializers
 
-from .models import ChoiceModel, OptionModel, MailTemplateModel, MailAnswerModel
+from .models import ChoiceModel, OptionModel, MailTemplateModel, MailAnswerModel, SettingsModel
 
+
+class SettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SettingsModel
+        fields = '__all__'
 
 class ChoiceSerializer(serializers.ModelSerializer):
     class Meta:
@@ -37,10 +42,28 @@ class OptionSerializer(serializers.ModelSerializer):
 class MailTemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = MailTemplateModel
-        fields = '__all__'
+        exclude = ('datetime_creation',)
 
 
 class MailAnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = MailAnswerModel
         fields = '__all__'
+        read_only_fields = ('uuid', 'student', 'template')
+
+        depth = 2
+
+
+class AnswerSerializer(serializers.Serializer):
+    classe = serializers.CharField(max_length=200)
+    student_name = serializers.CharField(max_length=100)
+    answer = serializers.JSONField()
+    is_answered = serializers.BooleanField()
+
+
+class AnswerClasseSerializer(serializers.Serializer):
+    classe_id = serializers.IntegerField()
+    classe_name = serializers.CharField(max_length=200)
+    classe_year = serializers.IntegerField()
+    answered_count = serializers.IntegerField()
+    answers_count = serializers.IntegerField()

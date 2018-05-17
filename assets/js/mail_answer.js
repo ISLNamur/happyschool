@@ -19,10 +19,21 @@
 
 import Vue from 'vue';
 
+import Vuex from 'vuex';
+Vue.use(Vuex);
+
 import MailAnswer from '../mail_answer/mail_answer.vue';
+
+const store = new Vuex.Store({
+  state: {
+    settings: settings
+  },
+});
 
 var mailNotificationApp = new Vue({
     el: '#vue-app',
+    data: {settings: {}},
+    store,
     template: '<mail-answer/>',
-    components: { MailAnswer }
+    components: { MailAnswer },
 })

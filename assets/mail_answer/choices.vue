@@ -28,10 +28,10 @@
                             <b-form-input class="ml-1" v-if="choice.input" type="text"></b-form-input>
                             <b-btn v-b-modal.addChoiceModal variant="light" class="ml-1"
                                 @click="editChoice(index)">
-                                <icon name="edit" scale="1" color="green"></icon>
+                                <icon name="edit" color="green"></icon>
                             </b-btn>
-                            <b-btn variant="light" @click="removeChoice(index)" class="ml-1">
-                                <icon name="remove" scale="1" color="red"></icon>
+                            <b-btn variant="light" :disabled="disabled" @click="removeChoice(index)" class="ml-1">
+                                <icon name="remove" color="red"></icon>
                             </b-btn>
                             </b-form>
                         </b-form-radio>
@@ -39,9 +39,10 @@
             </b-form-group>
         </b-row>
         <b-row>
-            <b-btn v-b-modal.addChoiceModal variant="success"><icon name="plus" scale="1" color="white"></icon>Ajouter un choix</b-btn>
+            <b-btn v-b-modal.addChoiceModal variant="success"><icon name="plus" color="white"></icon>Ajouter un choix</b-btn>
         </b-row>
         <b-modal ref="addChoiceModal" id="addChoiceModal"
+            :disabled="disabled"
             cancel-title="Annuler"
             title="Ajouter un choix"
             centered
@@ -62,7 +63,7 @@ import BootstrapVue from 'bootstrap-vue'
 import axios from 'axios';
 
 export default {
-    props: ['choices'],
+    props: ['choices', 'disabled'],
     data: function () {
         return {
             textInput: "",
