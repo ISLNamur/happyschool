@@ -183,7 +183,7 @@ if USE_LDAP_INFO:
 
 AUTH_LDAP_USER_ATTR_MAP = {"first_name": "cn", "last_name": "sn"}
 
-groups = ['sysadmin', 'professeur', 'educateur', 'secretaire', 'accueil', 'pms']
+groups = ['sysadmin', 'professeur', 'educateur', 'secretaire', 'accueil', 'pms', 'direction']
 active_groups = map(lambda g: "cn=%s,ou=groups,%s" % (g, LDAP_DOMAIN), groups)
 
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
