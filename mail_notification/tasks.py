@@ -29,6 +29,9 @@ from core.people import People
 from core.models import ResponsibleModel, StudentModel, ClasseModel, EmailModel
 
 from mail_notification.models import EmailNotification, OtherEmailGroupModel, OtherEmailModel
+from mail_answer.models import MailAnswerModel, MailTemplateModel
+from mail_answer.models import SettingsModel as AnswersSettings
+from mail_answer.tasks import task_sync_mail_answers
 
 
 @shared_task(bind=True)
@@ -36,30 +39,46 @@ def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=
     """ Send emails """
     # First sync media between local and distant server
     subprocess.run(settings.MEDIA_SYNC['rsync_command'], shell=True)
+
+    # Get EmailNotification object.
     email_notif = EmailNotification.objects.get(pk=pk)
     print(email_notif)
-    recipients = [email_notif.email_from] + list(get_emails(email_notif.email_to, to_type, teaching, responsibles=responsibles))
-    recipients += [settings.EMAIL_ADMIN, 'directeur@isln.be', 'sous-directeur@isln.be']
+    # Get recipients.
+    recipients = [(email_notif.email_from, None)]
+    recipients += list(get_emails(email_notif.email_to, to_type, teaching, responsibles=responsibles,
+                                  template=email_notif.answers))
+    recipients += [(settings.EMAIL_ADMIN, None), ('directeur@isln.be', None), ('sous-directeur@isln.be', None)]
     print(recipients)
-    if settings.DEBUG:
-        recipients = [settings.EMAIL_ADMIN]
 
+    # Get attachments.
     attachments = list(map(lambda a: a.attachment.path, email_notif.attachments.all()))
+    # Log progress.
     email_notif.errors = "Submitting."
     email_notif.save()
+
+    # Set template as used.
+    email_notif.answers.is_used = True
+    email_notif.answers.save()
+
     if one_by_one:
         one_ok = False
-        print(attachments)
-        for r in recipients:
-            response = send_email_with_mg([r],
-                               email_notif.subject,
-                               "<html>%s</html>" % email_notif.body,
-                               from_email=email_notif.email_from,
-                               attachments=attachments)
-            if response.status_code != 200:
-                email_notif.errors += "Error with %s." % r
-            else:
-                one_ok = True
+        for r, a in recipients:
+            # Check if there is answer form attached to the email.
+            email_body = "<html>%s</html>" % email_notif.body
+            if a:
+                email_body = email_body.replace("specific_uuid", str(a.uuid))
+
+            print(email_body)
+            # if not settings.DEBUG:
+            #     response = send_email_with_mg([r],
+            #                        email_notif.subject,
+            #                        email_body,
+            #                        from_email=email_notif.email_from,
+            #                        attachments=attachments)
+            # if response.status_code != 200:
+            #     email_notif.errors += "Error with %s." % r
+            # else:
+            #     one_ok = True
             time.sleep(0.4)
         if one_ok:
             email_notif.errors = email_notif.errors.replace("Submitting.", "")
@@ -79,7 +98,18 @@ def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=
     email_notif.save()
 
 
-def get_emails(email_to, to_type, teaching="secondaire", responsibles=True):
+def get_emails(email_to: list, to_type: str, teaching: str="secondaire", responsibles: bool=True,
+               template: MailTemplateModel=None, all_parents: bool=True) -> list():
+    """
+        Retrieve emails of the student's parent or teachers and responsibles.
+    :param email_to: A list of keyword that might be classes, years, degree or a group of responsibles (2B, 1ère année,…).
+    :param to_type: A string that specify which kind of recipients (teachers or parents).
+    :param teaching: The teaching string.
+    :param responsibles: Whether, when sending to teachers, responsibles need to be added (educators, coordonators,…).
+    :param template: A MailTemplate model that implies the creation of a MailAnswer model for each student. Has no effect for teachers.
+    :param all_parents: A boolean that indicates if all the parents or only the student's responsible need to be taking into account.
+    :return: A list of emails in a tuple shape.
+    """
     recipients = email_to.split(',')
     emails = []
     if to_type == 'teachers':
@@ -87,14 +117,14 @@ def get_emails(email_to, to_type, teaching="secondaire", responsibles=True):
             # Check if it is the staff.
             if recip == 'Personnels':
                 staff = ResponsibleModel.objects.filter(is_teacher=False, is_educator=False, is_secretary=False)
-                emails += list(map(lambda s: s.email, staff))
+                emails += list(map(lambda s: (s.email, None), staff))
                 continue
             # Check if it is a custom group.
             is_group = False
             for group in OtherEmailGroupModel.objects.all():
                 if recip == group.name:
                     is_group = True
-                    emails += list(map(lambda p: p.email, OtherEmailModel.objects.filter(group=group.pk)))
+                    emails += list(map(lambda p: (p.email, None), OtherEmailModel.objects.filter(group=group.pk)))
                     break
             if is_group:
                 continue
@@ -125,7 +155,7 @@ def get_emails(email_to, to_type, teaching="secondaire", responsibles=True):
                     years += [4, 5, 6]
                 elif "inférieur" in recip:
                     years += [1, 2, 3]
-                elif "Tous les classes" in recip:
+                elif "Toutes les classes" in recip:
                     years += [1, 2, 3, 4, 5, 6]
                 # elif "Tout le personnel" in recip:
                 #
@@ -136,12 +166,14 @@ def get_emails(email_to, to_type, teaching="secondaire", responsibles=True):
             teachers = ResponsibleModel.objects.filter(classe__in=classes, is_teacher=True)
             if responsibles:
                 resp_email = EmailModel.objects.filter(years__in=years, teaching__name=teaching)
-                emails += list(map(lambda e: e.email, resp_email))
+                emails += list(map(lambda e: (e.email, None), resp_email))
 
-            emails += list(map(lambda t: t.email_alias, teachers))
+            emails += list(map(lambda t: (t.email_alias, None), teachers))
         return set(emails)
 
     elif to_type == "parents":
+        students = []
+        # Collect students
         for recip in recipients:
             # If it starts with a digit, it could be a class, a year or a degree.
             if recip[0].isdigit():
@@ -164,19 +196,45 @@ def get_emails(email_to, to_type, teaching="secondaire", responsibles=True):
                     years = [4, 5, 6]
                 elif "Cycle inférieur" in recip:
                     years = [1, 2, 3]
-                elif "Toutes les classes" in recip:
+                elif "Toutes les classes" == recip:
+                    print('toutes les classes')
                     years = [1, 2, 3, 4, 5, 6]
                 else:
                     years = []
                 classes = ClasseModel.objects.filter(year__in=years, teaching__name=teaching)
 
-            students = StudentModel.objects.filter(classe__in=classes)
-            for s in students:
-                info = s.get_additional_info()
-                parents_email = {info['resp_email'] if 'resp_email' in info else None,
-                                 info['mother_email'] if 'mother_email' in info else None,
-                                 info['father_email'] if 'father_email' in info else None,}
-                parents = list(filter(lambda e: e is not None, parents_email))
-                if len(parents) > 0:
-                    emails += parents
-        return list(set(emails))
+            students += list(StudentModel.objects.filter(classe__in=classes))
+
+        # Remove duplicates.
+        students = set(students)
+
+        def get_parents_email(student):
+            info = student.get_additional_info()
+            parents_email = {info['resp_email'] if 'resp_email' in info else None}
+            if all_parents:
+                parents_email = parents_email.union({
+                    info['mother_email'] if 'mother_email' in info else None,
+                    info['father_email'] if 'father_email' in info else None
+                })
+
+            # Remove None values.
+            return list(filter(lambda e: e is not None, parents_email))
+
+        # Attach for each student an AnswerModel (template case).
+        if template:
+            template.is_used = True
+            template.save()
+            students = list(map(lambda s: (s, MailAnswerModel(student=s, template=template)), students))
+            MailAnswerModel.objects.bulk_create(map(lambda s: s[1], students))
+            answers_settings = AnswersSettings.objects.first()
+            if answers_settings.use_remote and not answers_settings.is_remote:
+                task_sync_mail_answers.apply_async(countdown=2)
+            for s, a in students:
+                emails += list(map(lambda e: (e, a), get_parents_email(s)))
+            return emails
+
+        for s in students:
+            emails += list(map(lambda e: (e, None), get_parents_email(s)))
+
+        # Remove duplicates.
+        return set(emails)

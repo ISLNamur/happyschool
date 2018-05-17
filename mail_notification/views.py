@@ -35,8 +35,9 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 
 from annuaire.views import create_classes_list
-
 from core.permissions import IsInGroupPermission
+from mail_answer.models import MailTemplateModel
+from mail_answer.models import SettingsModel as AnswersSettings
 
 from mail_notification.models import EmailTag, EmailNotification, EmailAttachment, EmailSender,\
     OtherEmailGroupModel, OtherEmailModel
@@ -125,12 +126,17 @@ class SendEmailsView(APIView):
         email_to_sent.subject = request.data.get('subject')
         email_to_sent.body = request.data.get('email_content')
         email_to_sent.teaching = request.data.get('teaching')
+        try:
+            template = MailTemplateModel.objects.get(id=request.data.get('template', -1))
+            email_to_sent.answers = template
+        except ObjectDoesNotExist:
+            pass
         email_to_sent.datetime_created = timezone.now()
         email_to_sent.save()
 
-        tags = request.data.get('tags', [''])[0].split(',')  # Come as  ['tag1,tag2,tag3'].
+        tags = request.data.get('tags', None)  # Come as  ['tag1,tag2,tag3'].
         if tags:
-            tags = EmailTag.objects.filter(name__in=tags)
+            tags = EmailTag.objects.filter(name__in=tags[0].split(','))
             email_to_sent.tags = tags
 
         attachments = request.data.get('attachments', '').split(',')
@@ -160,6 +166,14 @@ class SendEmailsView(APIView):
             for name, url in file_names_urls: html_files += '<li><a href="%s">%s</a></li>\n' % (url, name)
             html_files += "</ul>"
             context['files'] = html_files
+
+        # Add a link to a form if asked.
+        if email_to_sent.answers:
+            url = "https://local.isln.be/mail_answer/answer/specific_uuid/"
+            answers_settings = AnswersSettings.objects.first()
+            if answers_settings and answers_settings.use_remote:
+                url = url.replace("local.isln.be", "app.isln.be")
+            context['link_to_form'] = url
 
         email_to_sent.body = template.render(context)
         email_to_sent.save()

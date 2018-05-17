@@ -3,4 +3,8 @@
 {% if files %}{{ files|safe }}
 <hr>
 {% endif %}
+{% if link_to_form %}
+<p><strong>Vous trouverez le formulaire à l'adresse unique suivante :</strong> <a href="{{ link_to_form }}">{{ link_to_form }}</a></p>
+<hr>
+{% endif %}
 <p style="color:grey;font-size:0.8em"><em>Vous avez reçu ce courriel parce que {% if to_teachers %}vous travaillez{% else %}votre enfant est inscrit{% endif %} à l'Institut Saint-Louis Namur. Si ce n'est pas le cas ou que vous ne souhaitez pas recevoir de courriels de l'école, merci de contacter le service informatique à <a href="mailto:informatique@isln.be">informatique@isln.be</a>.</em></p>

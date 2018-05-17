@@ -37,7 +37,7 @@
                             >
                             <b-form-radio-group v-model="sendType" name="sendType">
                                 <b-form-radio value="parents">Par parent</b-form-radio>
-                                <b-form-radio value="students" disabled>Par élève</b-form-radio>
+                                <b-form-radio value="students">Par élève</b-form-radio>
                             </b-form-radio-group>
                         </b-form-group>
                         <b-form-group
@@ -87,6 +87,16 @@
                             <b-form-checkbox v-model="responsibles">
                                 Également envoyer aux educateurs et coordonnateurs correspondants.
                             </b-form-checkbox>
+                        </b-form-group>
+                        <b-form-group v-if="sendType == 'students'">
+                            <multiselect
+                                v-model="template"
+                                :options="templateOptions"
+                                trackBy="id"
+                                label="name"
+                                placeholder="Ajouter un formulaire à remplir"
+                                >
+                            </multiselect>
                         </b-form-group>
                         <b-form-group label="Tag(s) : " description="Permet de facilement identifier l'email (CPE, CGQ,…)">
                             <multiselect
@@ -199,6 +209,8 @@ export default {
             emailFromState: true,
             emailContent: "",
             sendType: "parents",
+            template: null,
+            templateOptions: [],
             tags: [],
             tagsOptions: [],
             tagsLoading: false,
@@ -338,6 +350,7 @@ export default {
            formData.append('email_content', this.emailContent);
            formData.append('subject', this.subject);
            formData.append('teaching', this.teaching);
+           formData.append('template', this.template.id);
            var attachments = [];
            for (let u in this.uploadedFiles) {
                attachments.push(this.uploadedFiles[u].id);
@@ -364,6 +377,15 @@ export default {
     components: {Multiselect, quillEditor, FileUpload},
     mounted: function () {
         this.getTagsOptions("");
+
+        // Get templates.
+        axios.get('/mail_answer/api/mail_template/?is_used=0')
+        .then(response => {
+            this.templateOptions = response.data.results;
+        })
+        .catch(function (error) {
+            alert(error);
+        });
     }
 }
 </script>

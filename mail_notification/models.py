@@ -24,6 +24,8 @@ from time import strftime
 from django.db import models
 from django.contrib.auth.models import Group
 
+from mail_answer.models import MailTemplateModel
+
 
 def unique_file_name(instance, filename):
     path = strftime('attachments/%Y/%m/%d/')
@@ -60,6 +62,7 @@ class EmailNotification(models.Model):
     attachments = models.ManyToManyField(EmailAttachment)
     tags = models.ManyToManyField(EmailTag)
     teaching = models.CharField(max_length=50)
+    answers = models.ForeignKey(MailTemplateModel, on_delete=models.SET_NULL, null=True)
     datetime_created = models.DateTimeField("Date de création")
 
     def __str__(self):
@@ -89,7 +92,7 @@ class OtherEmailModel(models.Model):
     email = models.EmailField()
     last_name = models.CharField(max_length=200)
     first_name = models.CharField(max_length=200)
-    group = models.ForeignKey(OtherEmailGroupModel)
+    group = models.ForeignKey(OtherEmailGroupModel, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.email + '(%s)' % str(self.group)
