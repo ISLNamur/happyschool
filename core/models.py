@@ -83,7 +83,7 @@ class StudentModel(models.Model):
             if len(connection.response) > 0:
                 return get_django_dict_from_ldap(connection.response[0])
 
-            raise Exception("Student not found in the LDAP directory.")
+            raise Exception("Student (%s) not found in the LDAP directory." % self.matricule)
 
         return model_to_dict(AdditionalStudentInfo.objects.get(student=self),
                              exclude=['student'])
