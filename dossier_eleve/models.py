@@ -19,7 +19,12 @@
 
 from django.db import models
 
-from core.models import StudentModel
+from core.models import StudentModel, TeachingModel
+
+
+class SettingsModel(models.Model):
+    teachings = models.ManyToManyField(TeachingModel, default=None)
+    enable_submit_sanctions = models.BooleanField(default=True)
 
 
 class InfoEleve(models.Model):
@@ -31,6 +36,7 @@ class InfoEleve(models.Model):
 
 class SanctionDecisionDisciplinaire(models.Model):
     sanction_decision = models.CharField(max_length=200)
+    is_retenue = models.BooleanField(default=False)
 
     def __str__(self):
         return self.sanction_decision

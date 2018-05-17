@@ -17,14 +17,28 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.contrib import admin
+from rest_framework import serializers
 
-from .models import CasEleve, InfoEleve, SanctionDecisionDisciplinaire, SettingsModel
+from .models import *
 
-class CasDisciplinaireAdmin(admin.ModelAdmin):
-    list_display = ('matricule', 'datetime_encodage', 'info', 'sanction_decision', 'datetime_conseil', 'sanction_faite')
 
-admin.site.register(CasEleve, CasDisciplinaireAdmin)
-admin.site.register(InfoEleve)
-admin.site.register(SanctionDecisionDisciplinaire)
-admin.site.register(SettingsModel)
+class SettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SettingsModel
+        fields = '__all__'
+
+
+class CasEleveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CasEleve
+        fields = '__all__'
+
+class InfoEleveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InfoEleve
+        fields = '__all__'
+
+class SanctionDecisionDisciplinaireSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SanctionDecisionDisciplinaire
+        fields = '__all__'

@@ -18,6 +18,7 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.conf.urls import url
+from django.urls import path
 
 from . import views
 
@@ -42,4 +43,5 @@ urlpatterns = [
     url(r'^change_sanction/', views.change_sanction, name='change_sanction'),
 #    url(r'^ajouter_malade$', views.ajouter_malade, name='ajouter_malade'),
 #    url(r'^encoder_sortie/(?P<passageId>[0-9]+)$', views.encoder_sortie, name='encoder_sortie'),
+    path('test_vue', views.DossierEleveView.as_view()),
 ]

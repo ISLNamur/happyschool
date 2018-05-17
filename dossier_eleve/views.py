@@ -28,6 +28,17 @@ from django.conf import settings
 from django.db.models import Count, Q
 from django.core.exceptions import ObjectDoesNotExist
 
+# Vue app imports
+from rest_framework.renderers import JSONRenderer
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+
+from django.views.generic import TemplateView
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+
+from core.views import BaseFilters, BaseModelViewSet
+
+from .serializers import *
+
 from z3c.rml import rml2pdf
 from io import BytesIO
 from PyPDF2 import PdfFileMerger
@@ -38,10 +49,8 @@ from core.email import send_email
 from core.models import StudentModel, EmailModel, ResponsibleModel
 from core.people import People, get_classes, get_years
 
-# from auth_libreschool.views import has_auth, get_year_access, get_classes_access
-# from auth_libreschool import auth
 
-from .models import CasEleve, InfoEleve, SanctionDecisionDisciplinaire
+from .models import CasEleve, InfoEleve, SanctionDecisionDisciplinaire, SettingsModel
 from .forms import NouveauCasForm, GenerateSummaryPDFForm, GenDisciplinaryCouncilForm, GenRetenueForm
 
 
@@ -244,6 +253,11 @@ def get_cas(request):
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name__in=groups_with_access), login_url='no_access')
 def index(request):
+    settings = SettingsModel.objects.first()
+    if not settings:
+        # Create default settings.
+        SettingsModel.objects.create().save()
+
     if request.method == "POST":
         if request.POST['type'] == 'nouveau':
             nouveau(request)
@@ -267,7 +281,7 @@ def index(request):
         {'val': 'sanction_faite', 'display': 'Sanction faite ?'},
     ]
 
-    context = { 'is_pms': request.user.username == 'pms', 'filters': filters}
+    context = { 'is_pms': request.user.username == 'pms', 'filters': filters, 'settings': settings}
     return render(request, 'dossier_eleve/index.html', context=context)
 
 
@@ -534,6 +548,12 @@ def filter_and_order(request, only_actives=False, retenues=False, year=None,
                      order_by=None, order_asc=False):
     rows = CasEleve.objects.filter(matricule__isnull=False)
 
+    # Filter the rows from the user teaching.
+    print(request.user)
+    teachings = ResponsibleModel.objects.get(user=request.user).teaching.all()
+    print(teachings)
+    rows = rows.filter(matricule__teaching__in=teachings)
+
     # First we filter and order at the query level
     # Filtering
     if only_actives:
@@ -662,3 +682,30 @@ def get_entries(request, column='name', ens='all'):
         entries = list(map(lambda c: c.explication_commentaire[:40].replace("\r\n", " "), cas_discip))
 
     return JsonResponse(entries, safe=False)
+
+
+class DossierEleveView(LoginRequiredMixin,
+                       PermissionRequiredMixin,
+                       TemplateView):
+    template_name = "dossier_eleve/dossier_eleve.html"
+    permission_required = ('dossier_eleve.can_access')
+
+    def get_context_data(self, **kwargs):
+        # Get settings.
+        settings = SettingsModel.objects.first()
+        if not settings:
+            # Create default settings.
+            SettingsModel.objects.create().save()
+        # Add to the current context.
+        context = super().get_context_data(**kwargs)
+        context['settings'] = JSONRenderer().render(SettingsSerializer(settings).data).decode()
+        return context
+
+class AppelViewSet(BaseModelViewSet):
+    queryset = CasEleve.objects.all()
+    filter_access = True
+
+    serializer_class = CasEleveSerializer
+    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    # filter_class = AppelFilter
+    # ordering_fields = ('name', 'datetime_appel', 'datetime_traitement', 'is_traiter')
