@@ -2,11 +2,11 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>ISLN: info à propos de {{ student.surname }} {{ student.firstname }} {{ student.classe|upper }}</title>
+    <title>ISLN: info à propos de {{ student.fullname }} {{ student.classe|upper }}</title>
 </head>
 <body>
     <p>Bonjour,</p>
-    <p>Voici une info ({{ info_type }}) à propos de <strong>{{ student.surname }} {{ student.firstname }} {{ student.classe|upper }}</strong>.
+    <p>Voici une info ({{ info_type }}) à propos de <strong>{{ student.fullname }} {{ student.classe|upper }}</strong>.
         Elle a été demandée par <em>{{ info.demandeur }}</em> pour le motif suivant :</p>
     <p>{{ info.explication_commentaire }}</p>
     <br>

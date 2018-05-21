@@ -18,12 +18,14 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.db import models
+from django.contrib.auth.models import Group
 
 from core.models import StudentModel, TeachingModel
 
 
-class SettingsModel(models.Model):
+class DossierEleveSettingsModel(models.Model):
     teachings = models.ManyToManyField(TeachingModel, default=None)
+    all_access = models.ManyToManyField(Group, default=None, blank=True)
     enable_submit_sanctions = models.BooleanField(default=True)
 
 
@@ -37,9 +39,19 @@ class InfoEleve(models.Model):
 class SanctionDecisionDisciplinaire(models.Model):
     sanction_decision = models.CharField(max_length=200)
     is_retenue = models.BooleanField(default=False)
+    can_ask = models.BooleanField(default=False)
 
     def __str__(self):
         return self.sanction_decision
+
+
+class SanctionStatisticsModel(models.Model):
+    display = models.CharField(max_length=100)
+    sanctions_decisions = models.ManyToManyField(SanctionDecisionDisciplinaire, blank=True,
+                                                 default=None)
+
+    def __str__(self):
+        return self.display
 
 
 class CasEleve(models.Model):

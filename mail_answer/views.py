@@ -34,7 +34,7 @@ from django.utils import timezone
 from core.models import ClasseModel
 
 from .serializers import *
-from .models import MailTemplateModel, MailAnswerModel, ChoiceModel, OptionModel, SettingsModel
+from .models import MailTemplateModel, MailAnswerModel, ChoiceModel, OptionModel, MailAnswerSettingsModel
 
 
 permissions = (IsAuthenticated, DjangoModelPermissions,)
@@ -93,10 +93,10 @@ class MailAnswerView(LoginRequiredMixin,
 
     def get_context_data(self, **kwargs):
         # Get settings.
-        settings = SettingsModel.objects.first()
+        settings = MailAnswerSettingsModel.objects.first()
         if not settings:
             # Create default settings.
-            SettingsModel.objects.create().save()
+            MailAnswerSettingsModel.objects.create().save()
         # Add to the current context.
         context = super().get_context_data(**kwargs)
         context['settings'] = JSONRenderer().render(SettingsSerializer(settings).data).decode()

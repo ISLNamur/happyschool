@@ -18,11 +18,13 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.conf.urls import url
+from django.urls import path
+
+from rest_framework.routers import DefaultRouter
 
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.index, name='annuaire'),
     url(r'^get_list/$', views.get_list, name='get_list'),
     url(r'^get_people_names/(?P<enseignement>\w+)/(?P<people_type>\w+)/(?P<check_access>[0-9]+)/$', views.get_people_names,
         name='get_people_names'),
@@ -41,5 +43,18 @@ urlpatterns = [
     url(r'^teacher/(?P<id>[0-9]+)/$', views.summary_teacher, name='summary_teacher'),
     url(r'^get_class_photo_pdf/(?P<year>[0-9]+)/(?P<classe>\w+)/(?P<enseignement>\w+)/$', views.get_class_photo_pdf,
         name="get_class_photo_pdf"),
-    url(r'^api/$', views.SearchPeopleAPI.as_view())
+    path('', views.AnnuaireView.as_view(), name='annuaire'),
+    path('api/people/', views.SearchPeopleAPI.as_view()),
+    path('api/classes/', views.SearchClassesAPI.as_view()),
+    path('api/people_or_classes/', views.SearchClassesOrPeopleAPI.as_view()),
+    path('api/studentclasse/', views.StudentClasseAPI.as_view()),
 ]
+
+router = DefaultRouter()
+router.register(r'api/student', views.StudentInfoViewSet)
+router.register(r'api/responsible', views.ResponsibleInfoViewSet)
+router.register(r'api/info_general', views.StudentGeneralInfoViewSet)
+router.register(r'api/info_contact', views.StudentContactInfoViewSet)
+router.register(r'api/info_medical', views.StudentMedicalInfoViewSet)
+
+urlpatterns += router.urls

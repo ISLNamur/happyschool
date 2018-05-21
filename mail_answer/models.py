@@ -25,7 +25,7 @@ from django.contrib.postgres.fields import JSONField
 from core.models import StudentModel
 
 
-class SettingsModel(models.Model):
+class MailAnswerSettingsModel(models.Model):
     use_remote = models.BooleanField(default=False)
     is_remote = models.BooleanField(default=False)
 

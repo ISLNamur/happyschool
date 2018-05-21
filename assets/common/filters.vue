@@ -7,14 +7,18 @@
                             </b-form-select>
                     </b-col>
                     <b-col sm="12" md="8">
-                        <multiselect v-model="filterSearch" tag-placeholder="Ajouter cette recherche"
+                        <multiselect tag-placeholder="Ajouter cette recherche"
                             select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
                             selected-label="Sélectionné"
                             deselect-label="Cliquer dessus pour enlever"
-                            placeholder="Filtrer par…" :options="filterSearchOptions" track-by="value"
-                            :multiple="true" :taggable="true" @tag="addNewTag" @remove="removeFilter"
+                            placeholder="Filtrer par…"
+                            :value="filtersValue"
+                            :options="filterSearchOptions" track-by="value"
+                            :multiple="true" :taggable="true" @remove="removeFilter"
+                            @select="addFilter" @tag="addCustomTag"
                             :customLabel="niceLabel" :disabled="selectDisabled"
-                            @search-change="getOptions" @input="updateFilters"
+                            @search-change="getOptions"
+                            :internalSearch="false"
                             >
                         </multiselect>
                     </b-col>
@@ -36,10 +40,13 @@
                 </b-col>
                 <b-col sm="2">
                     <b-button variant="success" style="display:inline"
-                        @click="addDateTimeRange"
+                        @click="addDateTimeTag"
                         :disabled="dateTime1 === null || dateTime2 === null"
                         >
                         Ajouter le filtre
+                    </b-button>
+                    <b-button variant="danger" @click="removeFilter('current')">
+                        Retirer
                     </b-button>
                 </b-col>
             </b-form-row>
@@ -60,6 +67,7 @@ export default {
             filterSearch: [],
             filterSearchOptions: [],
             filters: {},
+            searchId: 0,
             dateTime1: null,
             dateTime2: null,
         };
@@ -83,6 +91,9 @@ export default {
             if (this.filterType.startsWith("time_")) return "time";
 
             return "text";
+        },
+        filtersValue: function () {
+            return this.$store.state.filters;
         }
     },
     watch: {
@@ -96,15 +107,69 @@ export default {
     methods: {
         getOptions: function(search) {
             // Don't search on empty string.
-            if (!search) return [];
+            if (!search) {
+                this.filterSearchOptions = [];
+                return;
+            }
 
-            let param = { 'name': search, 'page':1 };
+            let param = {'unique': this.filterType};
+            param[this.filterType] = search;
+            this.searchId += 1;
+            let currentSearch = this.searchId;
+            if (this.filterType == 'classe') {
+                const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+                let data = {
+                    query: search,
+                    teachings: this.$store.state.settings.teachings,
+                    check_access: 1
+                }
+                axios.post('/annuaire/api/classes/', data, token)
+                .then(response => {
+                    if (this.searchId !== currentSearch)
+                        return;
+                    this.filterSearchOptions = Array.from(response.data.map(i => ({
+                        'tag': i.display,
+                        'filterType': 'classe',
+                        'value': i.year + i.letter,
+                    })))
+                })
+                return;
+            } else if (this.filterType == 'scholar_year') {
+                axios.get('/core/api/scholar_year/?scholar_year=' + search)
+                .then(response => {
+                    if (this.searchId !== currentSearch)
+                        return;
+                    this.filterSearchOptions = Array.from(response.data.map(i => ({
+                        'tag': i,
+                        'filterType': 'scholar_year',
+                        'value': i,
+                    })))
+                })
+                return;
+            } else if (this.filterType.startsWith('activate_')) {
+                this.filterSearchOptions = [{
+                    'tag': 'Activer',
+                    'filterType': this.filterType,
+                    'value': true,
+                }]
+                return;
+            }
+
             axios.get("/" + this.app + "/api/" + this.model + "/", {params: param})
             .then(response => {
-                let results = response.data.results.map(i => i[this.filterType]);
+                if (this.searchId !== currentSearch)
+                    return;
+                let results = [];
+                if (this.filterType.includes('__')) {
+                    const subTypes = this.filterType.split('__');
+                    results = response.data.results.map(i => i[subTypes[0]][subTypes[1]]);
+                } else {
+                    results = response.data.results.map(i => i[this.filterType]);
+                }
                 this.filterSearchOptions = Array.from(new Set(results)).map(i => ({
                     'tag': i,
                     'filterType': this.filterType,
+                    'value': i
                 }));
             });
 
@@ -112,20 +177,6 @@ export default {
         cleanDate: function() {
             this.dateTime1 = null;
             this.dateTime2 = null;
-        },
-        addNewTag(newTag) {
-            const tag = {
-                filterType: this.filterType,
-                value: newTag,
-                tag: newTag
-            };
-            this.addTag(tag);
-            console.log(tag);
-        },
-        addTag(tag) {
-                this.filterSearch.push(tag);
-                this.filterSearchOptions.push(tag);
-                this.updateFilters();
         },
         niceLabel(search) {
             let displayType = search.filterType;
@@ -137,48 +188,38 @@ export default {
             }
             return displayType + " : " + search.tag ;
         },
-        addDateTimeRange() {
-            this.addDateTimeTag(this.filterType, this.dateTime1, this.dateTime2);
-        },
-        addDateTimeTag(filterType, dateTime1, dateTime2) {
-            let blankTime1 = filterType.startsWith("datetime") ? " 00:00" : "";
-            let blankTime2 = filterType.startsWith("datetime") ? " 23:59" : "";
+        addDateTimeTag() {
+            let blankTime1 = this.filterType.startsWith("datetime") ? " 00:00" : "";
+            let blankTime2 = this.filterType.startsWith("datetime") ? " 23:59" : "";
             const tag = {
-                'filterType': filterType,
-                value: dateTime1 + blankTime1 + "_" + dateTime2 + blankTime2,
-                tag: dateTime1 + " " + dateTime2
+                'filterType': this.filterType,
+                value: this.dateTime1 + blankTime1 + "_" + this.dateTime2 + blankTime2,
+                tag: this.dateTime1 + " " + this.dateTime2
             }
-            this.addTag(tag);
+            this.addFilter(tag);
         },
-        removeFilter(removedObject, id) {
+        addCustomTag: function (tag) {
+            const newTag = {
+                filterType: this.filterType,
+                tag: tag,
+                value: tag,
+            }
+            this.addFilter(newTag);
+        },
+        addFilter(addedObject, id) {
+            this.$store.commit('addFilter', addedObject);
             this.updateFilters();
         },
-        removeTag(value) {
-            for (let s in this.filterSearch) {
-                if (this.filterSearch[s].value === value) {
-                    this.filterSearch.splice(s, 1);
-                    break;
-                }
-            }
-            for (let o in this.filterSearchOptions) {
-                if (this.filterSearchOptions[o].value === value) {
-                    this.filterSearchOptions.splice(o, 1);
-                    break;
-                }
+        removeFilter(removedObject, id) {
+            if (removedObject == 'current') {
+                this.$store.commit('removeFilter', this.filterType);
+            } else {
+                this.$store.commit('removeFilter', removedObject.filterType);
             }
             this.updateFilters();
         },
         updateFilters() {
-            this.filters = {};
-            for (let fil in this.filterSearch) {
-                let filter = this.filterSearch[fil]
-                if (!this.filters.hasOwnProperty(filter.filterType)) {
-                    this.filters[filter.filterType] = [filter.value];
-                } else {
-                    this.filters[filter.filterType].push(filter.value);
-                }
-            }
-            this.$emit('update', this.filters);
+            this.$emit('update');
         }
     },
     components: {Multiselect},

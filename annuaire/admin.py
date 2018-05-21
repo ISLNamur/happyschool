@@ -18,4 +18,6 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.contrib import admin
+from .models import AnnuaireSettingsModel
 
+admin.site.register(AnnuaireSettingsModel)

@@ -19,8 +19,8 @@
 
 from django.contrib import admin
 
-from .models import SettingsModel, MailAnswerModel, MailTemplateModel
+from .models import MailAnswerSettingsModel, MailAnswerModel, MailTemplateModel
 
-admin.site.register(SettingsModel)
+admin.site.register(MailAnswerSettingsModel)
 admin.site.register(MailAnswerModel)
 admin.site.register(MailTemplateModel)

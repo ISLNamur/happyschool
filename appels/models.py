@@ -26,9 +26,15 @@ from core.models import EmailModel, StudentModel, ResponsibleModel
 class MotiveModel(models.Model):
     display = models.CharField(max_length=200)
 
+    def __str__(self):
+        return self.display
+
 
 class ObjectModel(models.Model):
     display = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.display
 
 
 class Appel(models.Model):

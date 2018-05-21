@@ -1,7 +1,7 @@
 {% extends "core/base_vue.html" %}
 
 {% block header %}
-<title>HappySchool : Dossier des élèves</title>
+<title>HappySchool : Demande de sanctions</title>
 {% endblock %}
 {% block content %}
 <script>
@@ -14,6 +14,6 @@
 </script>
 <div id="vue-app"></div>
 {% load render_bundle from webpack_loader %}
-{% render_bundle 'dossier_eleve' %}
+{% render_bundle 'ask_sanctions' %}
 
 {% endblock %}

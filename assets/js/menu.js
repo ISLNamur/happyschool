@@ -24,4 +24,8 @@ Vue.use(BootstrapVue);
 
 var menu = new Vue({
     el: '#menu',
+    data: {
+    },
+    mounted: function () {
+    }
 });

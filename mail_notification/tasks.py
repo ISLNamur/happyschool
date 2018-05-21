@@ -30,7 +30,7 @@ from core.models import ResponsibleModel, StudentModel, ClasseModel, EmailModel
 
 from mail_notification.models import EmailNotification, OtherEmailGroupModel, OtherEmailModel
 from mail_answer.models import MailAnswerModel, MailTemplateModel
-from mail_answer.models import SettingsModel as AnswersSettings
+from mail_answer.models import MailAnswerSettingsModel as AnswersSettings
 from mail_answer.tasks import task_sync_mail_answers
 
 

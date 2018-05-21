@@ -22,44 +22,18 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 Vue.use(Vuex);
 
-import DossierEleve from '../dossier_eleve/dossier_eleve.vue';
+import Annuaire from '../annuaire/annuaire.vue';
 
 const store = new Vuex.Store({
   state: {
-    settings: settings,
-    filters: [{
-        filterType: 'scholar_year',
-        tag: currentYear,
-        value: currentYear,
-    }]
+    settings: settings
   },
-  mutations: {
-      addFilter: function (state, filter) {
-          // If filter is a matricule, remove name filter to avoid conflict.
-          if (filter.filterType === 'matricule_id') {
-              this.commit('removeFilter', 'name');
-          }
-
-          // Overwrite same filter type.
-          this.commit('removeFilter', filter.filterType);
-
-          state.filters.push(filter);
-      },
-      removeFilter: function (state, key) {
-          for (let f in state.filters) {
-              if (state.filters[f].filterType === key) {
-                  state.filters.splice(f, 1);
-                  break;
-              }
-          }
-      }
-  }
 });
 
-var mailNotificationApp = new Vue({
+var annuaireApp = new Vue({
     el: '#vue-app',
     data: {},
     store,
-    template: '<dossier-eleve/>',
-    components: { DossierEleve },
+    template: '<annuaire/>',
+    components: { Annuaire },
 })

@@ -23,17 +23,26 @@ from django.shortcuts import render
 from django.http import Http404, JsonResponse, HttpResponse
 from django.template.loader import get_template
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
 
 from rest_framework.views import APIView, Response
+from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.permissions import IsAuthenticated
+
 from rest_framework.parsers import JSONParser
+from rest_framework.renderers import JSONRenderer
 
 from z3c.rml import rml2pdf
 from unidecode import unidecode
 
 from core.people import People, get_classes
-from core.models import StudentModel, ClasseModel, TeachingModel, ResponsibleModel
-from core.serializers import StudentSerializer, ResponsibleSensitiveSerializer
+from core.models import StudentModel, ClasseModel, TeachingModel, ResponsibleModel, AdditionalStudentInfo
+from core.serializers import StudentSerializer, ResponsibleSensitiveSerializer, ClasseSerializer,\
+    StudentGeneralInfoSerializer, StudentContactInfoSerializer, StudentMedicalInfoSerializer
+
+from .models import AnnuaireSettingsModel
+from .serializers import AnnuaireSettingsSerializer
 
 # from core.Person import Person
 # from core.Student import Student
@@ -378,67 +387,198 @@ def get_class_photo_pdf(request, year, classe, enseignement):
     return response
 
 
-class SearchPeopleAPI(APIView):
-    permission_classes = (IsAuthenticated,)
-    parser_classes = (JSONParser,)
+def get_settings():
+    settings_annuaire = AnnuaireSettingsModel.objects.first()
+    if not settings_annuaire:
+        # Create default settings.
+        AnnuaireSettingsModel.objects.create().save()
 
-    @staticmethod
+    return settings_annuaire
+
+
+class AnnuaireView(LoginRequiredMixin,
+                       TemplateView):
+    template_name = "annuaire/annuaire.html"
+
+    def get_context_data(self, **kwargs):
+        # Add to the current context.
+        context = super().get_context_data(**kwargs)
+        context['settings'] = JSONRenderer().render(AnnuaireSettingsSerializer(get_settings()).data).decode()
+        return context
+
+
+def search_classes(query, teachings, check_access, user):
+    if len(query) == 0:
+        return []
+
+    if not query[0].isdigit():
+        return []
+
+    truncate = True
+    classes = get_classes(teaching=teachings, check_access=check_access, user=user)
+    classes = classes.filter(year=query[0]).order_by('year', 'letter')
+    if len(query) > 1:
+        classes = classes.filter(letter=query[1].lower())
+
+    if truncate:
+        classes = classes[:100]
+
+    return ClasseSerializer(classes, many=True).data
+
+
+def search_people(query, people_type, teachings, check_access, user):
     def serialize_people(person):
         if type(person) == StudentModel:
             return StudentSerializer(person).data
         elif type(person) == ResponsibleModel:
             return ResponsibleSensitiveSerializer(person).data
 
+    if len(query) < 1:
+        return []
+
+    truncate_limit = 50
+    people = []
+    if people_type == 'responsible' or people_type == 'all':
+        people += ResponsibleSensitiveSerializer(
+            People().get_responsibles_by_name(query, teachings)[:truncate_limit], many=True
+        ).data
+
+    if people_type == 'teacher':
+        people += ResponsibleSensitiveSerializer(
+            People().get_teachers_by_name(query, teachings)[:truncate_limit], many=True
+        ).data
+
+    if people_type == 'educator':
+        people += ResponsibleSensitiveSerializer(
+            People().get_educators_by_name(query, teachings)[:truncate_limit], many=True
+        ).data
+
+    if people_type == 'student' or people_type == 'all':
+        classe_years = get_classes(teachings, check_access=True,
+                                   user=user) if check_access else None
+        people += StudentSerializer(
+            People().get_students_by_name(query, teachings, classes=classe_years)[:truncate_limit], many=True
+        ).data
+
+    return people[:truncate_limit]
+
+
+class SearchPeopleAPI(APIView):
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (JSONParser,)
+
     def get(self, request, format=None):
         query = request.GET.get('query', '')
         people_type = request.GET.get('people', 'all')
-        teaching = request.GET.get('teaching', 'all')
-        check_access = request.GET.get('check_access', '0')
+        teachings = request.GET.get('teaching', 'all')
+        check_access = request.GET.get('check_access', '0') == 1
 
-        if len(query) < 2:
-            return Response([])
-
-        people = []
-        if people_type == 'responsible' or people_type == 'all':
-            people += People().get_responsibles_by_name(query, [teaching])
-
-        if people_type == 'teacher':
-            people += People().get_teachers_by_name(query, [teaching])
-
-        if people_type == 'educator':
-            people += People().get_educators_by_name(query, [teaching])
-
-        if people_type == 'student' or people_type == 'all':
-            classe_years = get_classes([teaching], check_access=True,
-                                       user=request.user) if check_access == '1' else None
-            people += People().get_students_by_name(query, [teaching], classes=classe_years)
-
-        return Response(map(self.serialize_people, people))
+        people = search_people(query=query, people_type=people_type, teachings=teachings,
+                               check_access=check_access, user=request.user)
+        return Response(people)
 
     def post(self, request, format=None):
-        query = request.data['query']
-        people_type = request.data['people']
-        teachings = request.data['teachings']
-        check_access = request.data['check_access']
+        query = request.data.get('query', '')
+        people_type = request.data.get('people', 'all')
+        teachings = TeachingModel.objects.filter(id__in=request.data.get('teachings', []))
+        check_access = request.data.get('check_access', 0) == 1
 
-        if len(query) < 2:
+        people = search_people(query=query, people_type=people_type, teachings=teachings,
+                               check_access=check_access, user=request.user)
+        return Response(people)
+
+
+class SearchClassesAPI(APIView):
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (JSONParser,)
+
+    def post(self, request, format=None):
+        query = request.data.get('query', '')
+        teachings = TeachingModel.objects.filter(id__in=request.data.get('teachings', []))
+        check_access = request.data.get('check_access', 0) == 1
+
+        classes = search_classes(query=query, teachings=teachings,
+                                 check_access=check_access, user=request.user)
+        return Response(classes)
+
+
+class SearchClassesOrPeopleAPI(APIView):
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (JSONParser,)
+
+    def post(self, request, format=None):
+        query = request.data.get('query', '')
+        people_type = request.data.get('people', 'student')
+        teachings = TeachingModel.objects.filter(id__in=request.data.get('teachings', []))
+        check_access = request.data.get('check_access', 0) == 1
+
+        if len(query) == 0:
             return Response([])
 
-        people = []
-        if people_type == 'responsible' or people_type == 'all':
-            people += People().get_responsibles_by_name(query, teachings)
+        if query[0].isdigit():
+            return Response(search_classes(query=query, teachings=teachings,
+                                           check_access=check_access, user=request.user))
 
-        if people_type == 'teacher':
-            people += People().get_teachers_by_name(query, teachings)
+        people = search_people(query=query, people_type=people_type, teachings=teachings,
+                               check_access=check_access, user=request.user)
+        return Response(people)
 
-        if people_type == 'educator':
-            people += People().get_educators_by_name(query, teachings)
 
-        if people_type == 'student' or people_type == 'all':
-            print('coucou')
-            classe_years = get_classes(teachings, check_access=True,
-                                       user=request.user) if check_access == 1 else None
-            print(classe_years)
-            people += People().get_students_by_name(query, teachings, classes=classe_years)
+class StudentClasseAPI(APIView):
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (JSONParser,)
 
-        return Response(map(self.serialize_people, people))
+    def get(self, request, format=None):
+        classe_id = request.GET.get('classe', None)
+        print(classe_id)
+        if not classe_id or not classe_id.isdigit:
+            return Response([])
+
+        students = StudentModel.objects.filter(classe__id=classe_id).order_by('last_name', 'first_name')
+        serializer = StudentSerializer(students, many=True)
+        return Response(serializer.data)
+
+
+class StudentInfoViewSet(ReadOnlyModelViewSet):
+    queryset = StudentModel.objects.all()
+    serializer_class = StudentSerializer
+    permission_classes = (IsAuthenticated,)
+
+
+class ResponsibleInfoViewSet(ReadOnlyModelViewSet):
+    queryset = ResponsibleModel.objects.all()
+    serializer_class = ResponsibleSensitiveSerializer
+    permission_classes = (IsAuthenticated,)
+    lookup_field = "matricule"
+
+
+class StudentGeneralInfoViewSet(ReadOnlyModelViewSet):
+    queryset = AdditionalStudentInfo.objects.all()
+    serializer_class = StudentGeneralInfoSerializer
+    permission_classes = (IsAuthenticated,)
+
+
+class StudentContactInfoViewSet(ReadOnlyModelViewSet):
+    queryset = AdditionalStudentInfo.objects.all()
+    serializer_class = StudentContactInfoSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        allowed_groups = get_settings().can_see_student_contact.all()
+        if not self.request.user.groups.intersection(allowed_groups).exists():
+            return AdditionalStudentInfo.objects.none()
+
+        return super().get_queryset()
+
+
+class StudentMedicalInfoViewSet(ReadOnlyModelViewSet):
+    queryset = AdditionalStudentInfo.objects.all()
+    serializer_class = StudentMedicalInfoSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        allowed_groups = get_settings().can_see_student_medical.all()
+        if not self.request.user.groups.intersection(allowed_groups).exists():
+            return AdditionalStudentInfo.objects.none()
+
+        return super().get_queryset()

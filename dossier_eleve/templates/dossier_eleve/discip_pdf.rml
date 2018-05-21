@@ -16,7 +16,7 @@
         </pageTemplate>
         <pageTemplate id="otherPages">
             <pageGraphics>
-                <drawString x="200" y="820">{{ student.last_name }} {{ student.first_name }} {{ student.classe.compact_str }} – {{ student.get_additional_info.scolar_year }}-{{ student.get_additional_info.scolar_year|add:"1" }}</drawString>
+                <drawString x="200" y="820">{{ student.last_name }} {{ student.first_name }} {{ student.classe.compact_str }} – {{ student.additionalstudentinfo.scholar_year }}-{{ student.additionalstudentinfo.scholar_year|add:"1" }}</drawString>
             </pageGraphics>
             <frame id="discip" x1="10" y1="20" width="570" height="790"/>
         </pageTemplate>
@@ -39,10 +39,10 @@
             </para>
 
             <para style="head_info" leftIndent="20">
-            Année scolaire : <strong>{{ student.get_additional_info.scolar_year }}-{{ student.get_additional_info.scolar_year|add:"1" }}</strong>               
+            Année scolaire : <strong>{{ student.additionalstudentinfo.scholar_year }}-{{ student.additionalstudentinfo.scholar_year|add:"1" }}</strong>               
             Classe : {{ student.classe.compact_str|upper }}               
             Classe précédente :  {% if student.previous_classe %}{{ student.previous_classe|upper }}{% else %}—{% endif %}           
-            {% if student.orientation %}Orientation : {{ student.get_additional_info.orientation }}{% endif %}           
+            {% if student.orientation %}Orientation : {{ student.additionalstudentinfo.orientation }}{% endif %}           
             Titulaire : {{ tenure }}
             </para>
         </keepInFrame>
@@ -50,13 +50,13 @@
         <keepInFrame frame="second" onOverflow="shrink">
             <para leading="17" leftIndent="20">
             Élève :   <strong>{{ student.fullname }}</strong><br/>
-            Née le :  <em>{{ student.get_additional_info.birth_date }}</em><br/>
-            Adresse : <em>{{ student.get_additional_info.street }} - {{ student.get_additional_info.postal_code }} {{ student.get_additional_info.l }}</em><br/>
-            Mère :    <em>{{ student.get_additional_info.mother_last_name }} {{ student.get_additional_info.mother_first_name }}  ({%if student.get_additional_info.mother_job %}{{ student.get_additional_info.mother_job }}{% else %} N.C.{% endif %})</em><br/>
-            Tél. :    <em>{% if student.get_additional_info.mother_phone %}{{ student.get_additional_info.mother_phone }}{% else %}N.C.{% endif %}</em>     GSM :  <em>{% if student.get_additional_info.mother_mobile %}{{ student.mother_mobile }}{% else %}N.C.{% endif %}</em><br/>
-            Père :    <em>{{ student.get_additional_info.father_last_name }} {{ student.get_additional_info.father_first_name }}  ({%if student.get_additional_info.father_job %}{{ student.get_additional_info.father_job }}{% else %} N.C.{% endif %})</em><br/>
-            Tél. :    <em>{% if student.get_additional_info.father_phone %}{{ student.get_additional_info.father_phone }}{% else %}N.C.{% endif %}</em>     GSM :  <em>{% if student.get_additional_info.father_mobile %}{{ student.father_mobile }}{% else %}N.C.{% endif %}</em><br/>
-            Mail Resp. légal : <em>{% if student.get_additional_info.resp_email %}{{ student.get_additional_info.resp_email }}{% else %}N.C.{% endif %}</em><br/>
+            Née le :  <em>{{ student.additionalstudentinfo.birth_date }}</em><br/>
+            Adresse : <em>{{ student.additionalstudentinfo.street }} - {{ student.additionalstudentinfo.postal_code }} {{ student.additionalstudentinfo.l }}</em><br/>
+            Mère :    <em>{{ student.additionalstudentinfo.mother_last_name }} {{ student.additionalstudentinfo.mother_first_name }}  ({%if student.additionalstudentinfo.mother_job %}{{ student.additionalstudentinfo.mother_job }}{% else %} N.C.{% endif %})</em><br/>
+            Tél. :    <em>{% if student.additionalstudentinfo.mother_phone %}{{ student.additionalstudentinfo.mother_phone }}{% else %}N.C.{% endif %}</em>     GSM :  <em>{% if student.additionalstudentinfo.mother_mobile %}{{ student.mother_mobile }}{% else %}N.C.{% endif %}</em><br/>
+            Père :    <em>{{ student.additionalstudentinfo.father_last_name }} {{ student.additionalstudentinfo.father_first_name }}  ({%if student.additionalstudentinfo.father_job %}{{ student.additionalstudentinfo.father_job }}{% else %} N.C.{% endif %})</em><br/>
+            Tél. :    <em>{% if student.additionalstudentinfo.father_phone %}{{ student.additionalstudentinfo.father_phone }}{% else %}N.C.{% endif %}</em>     GSM :  <em>{% if student.additionalstudentinfo.father_mobile %}{{ student.father_mobile }}{% else %}N.C.{% endif %}</em><br/>
+            Mail Resp. légal : <em>{% if student.additionalstudentinfo.resp_email %}{{ student.additionalstudentinfo.resp_email }}{% else %}N.C.{% endif %}</em><br/>
             Volume du dossier non-disciplinaire :   <em>{{ non_disciplinaire }}</em><br/>
             </para>
         </keepInFrame>
@@ -113,4 +113,3 @@
         </blockTable>
     </story>
 </document>
-

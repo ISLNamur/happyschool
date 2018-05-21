@@ -19,12 +19,12 @@
 
 from rest_framework import serializers
 
-from .models import ChoiceModel, OptionModel, MailTemplateModel, MailAnswerModel, SettingsModel
+from .models import ChoiceModel, OptionModel, MailTemplateModel, MailAnswerModel, MailAnswerSettingsModel
 
 
 class SettingsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = SettingsModel
+        model = MailAnswerSettingsModel
         fields = '__all__'
 
 class ChoiceSerializer(serializers.ModelSerializer):

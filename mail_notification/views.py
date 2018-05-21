@@ -38,7 +38,7 @@ from rest_framework.permissions import IsAuthenticated
 from annuaire.views import create_classes_list
 from core.permissions import IsInGroupPermission
 from mail_answer.models import MailTemplateModel
-from mail_answer.models import SettingsModel as AnswersSettings
+from mail_answer.models import MailAnswerSettingsModel as AnswersSettings
 
 from mail_notification.models import EmailTag, EmailNotification, EmailAttachment, EmailSender,\
     OtherEmailGroupModel, OtherEmailModel

@@ -22,7 +22,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 Vue.use(Vuex);
 
-import DossierEleve from '../dossier_eleve/dossier_eleve.vue';
+import AskSanctions from '../dossier_eleve/askSanctions.vue';
 
 const store = new Vuex.Store({
   state: {
@@ -31,7 +31,9 @@ const store = new Vuex.Store({
         filterType: 'scholar_year',
         tag: currentYear,
         value: currentYear,
-    }]
+    }],
+    coord: is_coord,
+    educ: is_educ,
   },
   mutations: {
       addFilter: function (state, filter) {
@@ -56,10 +58,10 @@ const store = new Vuex.Store({
   }
 });
 
-var mailNotificationApp = new Vue({
+var askSanctionsApp = new Vue({
     el: '#vue-app',
     data: {},
     store,
-    template: '<dossier-eleve/>',
-    components: { DossierEleve },
+    template: '<ask-sanctions/>',
+    components: { AskSanctions },
 })

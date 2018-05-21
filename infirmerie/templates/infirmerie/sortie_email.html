@@ -46,47 +46,47 @@
 			  </tr>
 			  <tr>
 			  <td>Date de naissance</td>
-			  <td>{{ eleve.get_additional_info.birth_date }}</td>
+			  <td>{{ eleve.additionalstudentinfo.birth_date }}</td>
 			  </tr>
 			  <tr>
 			  <td>Adresse</td>
-			  <td>{{ eleve.get_additional_info.street }} <br /> {{ eleve.get_additional_info.postal_code }} - {{ eleve.get_additional_info.locality }}</td>
+			  <td>{{ eleve.additionalstudentinfo.street }} <br /> {{ eleve.additionalstudentinfo.postal_code }} - {{ eleve.additionalstudentinfo.locality }}</td>
 			  </tr>
 			  <tr>
 			  <td>Téléphone responsable</td>
-			  <td>{% if eleve.get_additional_info.resp_phone %}{{ eleve.get_additional_info.resp_phone }}{% endif %}</td>
+			  <td>{% if eleve.additionalstudentinfo.resp_phone %}{{ eleve.additionalstudentinfo.resp_phone }}{% endif %}</td>
 			  </tr>
 			  <tr>
 			  <td>GSM responsable</td>
-			  <td>{% if eleve.get_additional_info.resp_mobile %}{{ eleve.get_additional_info.resp_mobile }}{% endif %}</td>
+			  <td>{% if eleve.additionalstudentinfo.resp_mobile %}{{ eleve.additionalstudentinfo.resp_mobile }}{% endif %}</td>
 			  </tr>
 			  <tr>
 			  <td>Email responsable</td>
-			  <td>{% if eleve.get_additional_info.resp_email %}<a href="mailto:{{ eleve.get_additional_info.resp_email }}">{{ eleve.get_additional_info.resp_email }}{% endif %}</a></td>
+			  <td>{% if eleve.additionalstudentinfo.resp_email %}<a href="mailto:{{ eleve.additionalstudentinfo.resp_email }}">{{ eleve.additionalstudentinfo.resp_email }}{% endif %}</a></td>
 			  </tr>
 			  <tr>
 			  <td>Téléphone mère</td>
-			  <td>{% if eleve.get_additional_info.mother_phone %}{{ eleve.get_additional_info.mother_phone }}{% endif %}</td>
+			  <td>{% if eleve.additionalstudentinfo.mother_phone %}{{ eleve.additionalstudentinfo.mother_phone }}{% endif %}</td>
 			  </tr>
 			  <tr>
 			  <td>GSM mère</td>
-			  <td>{% if eleve.get_additional_info.mother_mobile %}{{ eleve.get_additional_info.mother_mobile }}{% endif %}</td>
+			  <td>{% if eleve.additionalstudentinfo.mother_mobile %}{{ eleve.additionalstudentinfo.mother_mobile }}{% endif %}</td>
 			  </tr>
 			  <tr>
 			  <td>Email mère</td>
-			  <td>{% if eleve.get_additional_info.mother_email %}{{ eleve.get_additional_info.mother_email }}{% endif %}</td>
+			  <td>{% if eleve.additionalstudentinfo.mother_email %}{{ eleve.additionalstudentinfo.mother_email }}{% endif %}</td>
 			  </tr>
 			  <tr>
 			  <td>Téléphone père</td>
-			  <td>{% if eleve.get_additional_info.father_phone %}{{ eleve.get_additional_info.father_phone }}{% endif %}</td>
+			  <td>{% if eleve.additionalstudentinfo.father_phone %}{{ eleve.additionalstudentinfo.father_phone }}{% endif %}</td>
 			  </tr>
 			  <tr>
 			  <td>GSM père</td>
-			  <td>{% if eleve.get_additional_info.father_mobile %}{{ eleve.get_additional_info.father_mobile }}{% endif %}</td>
+			  <td>{% if eleve.additionalstudentinfo.father_mobile %}{{ eleve.additionalstudentinfo.father_mobile }}{% endif %}</td>
 			  </tr>
 			  <tr>
 			  <td>Email père</td>
-			  <td>{% if eleve.get_additional_info.father_email %}{{ eleve.get_additional_info.father_email }}{% endif %}</td>
+			  <td>{% if eleve.additionalstudentinfo.father_email %}{{ eleve.additionalstudentinfo.father_email }}{% endif %}</td>
 			  </tr>
 			  <tr>
 			  <td>Médecin</td>
@@ -94,15 +94,15 @@
 			  </tr>
 			  <tr>
 			  <td>Téléphone médecin</td>
-			  <td>{% if eleve.get_additional_info.doctor %}{{ eleve.get_additional_info.doctor }}{% endif %}</td>
+			  <td>{% if eleve.additionalstudentinfo.doctor %}{{ eleve.additionalstudentinfo.doctor }}{% endif %}</td>
 			  </tr>
 			  <tr>
 			  <td>Mutuelle</td>
-			  <td>{% if eleve.get_additional_info.mutual %}{{ eleve.get_additional_info.mutual }}{% endif %}</td>
+			  <td>{% if eleve.additionalstudentinfo.mutual %}{{ eleve.additionalstudentinfo.mutual }}{% endif %}</td>
 			  </tr>
 			  <tr>
 			  <td>Numéro mutuelle / <br />infos complémentaires</td>
-			  <td>{% if eleve.get_additional_info.mutual_number %}{{ eleve.get_additional_info.mutual_number }}{% endif %}<br /> {% if eleve.get_additional_info.medical_information %}{{ eleve.get_additional_info.medical_information }}{% endif %}</td>
+			  <td>{% if eleve.additionalstudentinfo.mutual_number %}{{ eleve.additionalstudentinfo.mutual_number }}{% endif %}<br /> {% if eleve.additionalstudentinfo.medical_information %}{{ eleve.additionalstudentinfo.medical_information }}{% endif %}</td>
 			  </tr>
 		  </table>
 		  </div>

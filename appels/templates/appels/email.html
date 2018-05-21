@@ -53,7 +53,7 @@
             <div align='center'>
                 <font color='#17375d'><font size='2' face='Verdana, Arial, Helvetica, sans-serif'>
                     {% if appel.is_student %}
-                        Email resp. : {% if etudiant.get_additional_info.resp_email %}<a href='mailto:{{ etudiant.get_additional_info.resp_email }}'>{{ etudiant.get_additional_info.resp_email }}</a>{% else %} Absent de proéco {% endif %}
+                        Email resp. : {% if etudiant.additionalstudentinfo.resp_email %}<a href='mailto:{{ etudiant.additionalstudentinfo.resp_email }}'>{{ etudiant.additionalstudentinfo.resp_email }}</a>{% else %} Absent de proéco {% endif %}
                     {% endif %}
                 </font></font></div>
         </td>
@@ -62,7 +62,7 @@
             <div align='center'><font color='#17375d'>
                 <font size='2' face='Verdana, Arial, Helvetica, sans-serif'>
                     {% if appel.is_student %}
-                        Tel. resp. : {% if etudiant.get_additional_info.resp_phone %}{{ etudiant.get_additional_info.resp_phone }}{% else %} Absent de proéco {% endif %}
+                        Tel. resp. : {% if etudiant.additionalstudentinfo.resp_phone %}{{ etudiant.additionalstudentinfo.resp_phone }}{% else %} Absent de proéco {% endif %}
                     {% endif %}
                 </font></font></div>
         </td>
@@ -71,7 +71,7 @@
             <div align='center'>
                 <font color='#17375d'><font size='2' face='Verdana, Arial, Helvetica, sans-serif'>
                     {% if appel.is_student %}
-                        GSM resp. : {% if etudiant.get_additional_info.resp_mobile %}{{ etudiant.get_additional_info.resp_mobile }}{% else %} Absent de proéco {% endif %}
+                        GSM resp. : {% if etudiant.additionalstudentinfo.resp_mobile %}{{ etudiant.additionalstudentinfo.resp_mobile }}{% else %} Absent de proéco {% endif %}
                     {% endif %}
                 </font></font></div>
         </td>

@@ -18,6 +18,9 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.conf.urls import url
+from django.urls import path
+
+from rest_framework.routers import DefaultRouter
 
 from . import views
 
@@ -29,3 +32,8 @@ urlpatterns = [
     url(r'^get_entries/$', views.get_entries, name='get_entries'),
     url(r'^get_entries/(?P<ens>\w+)/(?P<column>\w+)/$', views.get_entries, name='get_entries'),
 ]
+
+router = DefaultRouter()
+router.register(r'api/passage', views.PassageViewSet)
+
+urlpatterns += router.urls

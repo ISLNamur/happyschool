@@ -40,7 +40,7 @@ ldap_to_django = {
     'id': 'matricule',
 
     'genre': 'gender',
-    'ansco': 'scolar_year',
+    'ansco': 'scholar_year',
     'previousClasse': 'previous_classe',
     'orientation': 'orientation',
 
@@ -92,12 +92,16 @@ def get_django_dict_from_ldap(ldap_entry: dict) -> dict:
     django_dict = {}
     for ldap, django in ldap_to_django.items():
         try:
-            if ldap == 'dateNaiss' and ldap_attributes[ldap]:
+            if ldap == 'dateNaiss':
                 date_str = ldap_attributes[ldap][0]
                 django_dict[django] = date(year=int(date_str[:4]), month=int(date_str[4:6]), day=int(date_str[6:]))
-            elif ldap not in ('enseignement', 'classe', 'tenure'):
-                if ldap_attributes[ldap]:
+            elif ldap not in ('enseignement', 'classe', 'tenure',):
+                if ldap in ldap_attributes:
                     django_dict[django] = ldap_attributes[ldap][0]
+                else:
+                    if django in django_dict and django_dict[django]:
+                        continue
+                    django_dict[django] = ""
             else:
                 django_dict[django] = ldap_attributes[ldap]
         except KeyError:

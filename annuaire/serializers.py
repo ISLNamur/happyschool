@@ -17,24 +17,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url
-from django.urls import path
-
-from rest_framework.routers import DefaultRouter
-
-from . import views
+from rest_framework import serializers
+from .models import AnnuaireSettingsModel
 
 
-app_name = 'core'
-
-urlpatterns = [
-    url(r'^profil/$', views.ProfilView.as_view(), name='profil'),
-    url(r'^members/$', views.MembersView.as_view(), name='members'),
-    path('api/scholar_year/', views.ScholarYearAPI.as_view()),
-]
-
-router = DefaultRouter()
-router.register(r'api/members', views.MembersAPI)
-router.register(r'api/teaching', views.TeachingViewSet)
-
-urlpatterns += router.urls
+class AnnuaireSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AnnuaireSettingsModel
+        fields = '__all__'

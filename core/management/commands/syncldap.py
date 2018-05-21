@@ -2,7 +2,6 @@ from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 
-
 from core.models import *
 from core.ldap import get_ldap_connection, get_django_dict_from_ldap
 
@@ -48,6 +47,57 @@ class Command(BaseCommand):
             student.first_name = student_dict['first_name']
             student.last_name = student_dict['last_name']
             student.save()
+
+            # Additional info.
+            try:
+                info = student.additionalstudentinfo
+            except ObjectDoesNotExist:
+                info = AdditionalStudentInfo(student=student)
+
+            info.gender = student_dict['gender']
+            info.scholar_year = student_dict['scholar_year']
+            info.previous_classe = student_dict['previous_classe']
+            info.orientation = student_dict['orientation']
+
+            info.birth_date = student_dict['birth_date']
+            info.street = student_dict['street']
+            info.postal_code = student_dict['postal_code']
+            info.locality = student_dict['locality']
+
+            info.student_phone = student_dict['student_phone']
+            info.student_mobile = student_dict['student_phone']
+            info.student_email = student_dict['student_email']
+
+            info.resp_last_name = student_dict['resp_last_name']
+            info.resp_first_name = student_dict['resp_first_name']
+            info.resp_phone = student_dict['resp_phone']
+            info.resp_mobile = student_dict['resp_mobile']
+            info.resp_email = student_dict['resp_email']
+
+            info.father_last_name = student_dict['father_last_name']
+            info.father_first_name = student_dict['father_first_name']
+            info.father_job = student_dict['father_job']
+            info.father_phone = student_dict['father_phone']
+            info.father_mobile = student_dict['father_mobile']
+            info.father_email = student_dict['father_email']
+
+            info.mother_last_name = student_dict['mother_last_name']
+            info.mother_first_name = student_dict['mother_first_name']
+            info.mother_job = student_dict['mother_job']
+            info.mother_phone = student_dict['mother_phone']
+            info.mother_mobile = student_dict['mother_mobile']
+            info.mother_email = student_dict['mother_email']
+
+            info.doctor = student_dict['doctor']
+            info.doctor_phone = student_dict['doctor_phone']
+            info.mutual = student_dict['mutual']
+            info.mutual_number = student_dict['mutual_number']
+            info.medical_information = student_dict['medical_information']
+
+            info.username = student_dict['username']
+            info.password = student_dict['password']
+            info.save()
+
             student_synced.add(student.matricule)
             processed += 1
             if processed % 50 == 0:

@@ -17,24 +17,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url
-from django.urls import path
+from rest_framework import serializers
 
-from rest_framework.routers import DefaultRouter
+from core.serializers import StudentSerializer
 
-from . import views
+from .models import *
 
-
-app_name = 'core'
-
-urlpatterns = [
-    url(r'^profil/$', views.ProfilView.as_view(), name='profil'),
-    url(r'^members/$', views.MembersView.as_view(), name='members'),
-    path('api/scholar_year/', views.ScholarYearAPI.as_view()),
-]
-
-router = DefaultRouter()
-router.register(r'api/members', views.MembersAPI)
-router.register(r'api/teaching', views.TeachingViewSet)
-
-urlpatterns += router.urls
+class PassageSerializer(serializers.ModelSerializer):
+    matricule = StudentSerializer(read_only=True)
+    matricule_id = serializers.PrimaryKeyRelatedField(queryset=StudentModel.objects.all(),
+                                                      source='matricule', required=False,
+                                                      allow_null=True)
+    class Meta:
+        model = Passage
+        fields = '__all__'

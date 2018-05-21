@@ -24,9 +24,9 @@
                 <dt>Classe</dt>
                 <dd>{{ student.classe.compact_str }}</dd>
                 <dt>Date de naissance</dt>
-                <dd>{{ student.get_additional_info.birth_date }}</dd>
+                <dd>{{ student.additionalstudentinfo.birth_date }}</dd>
                 <dt>Adresse</dt>
-                <dd>{% if student.get_additional_info.street %}{{ student.get_additional_info.street }} <br /> {{ student.get_additional_info.postal_code }} - {{ student.get_additional_info.locality }}{% endif %}</dd>
+                <dd>{% if student.additionalstudentinfo.street %}{{ student.additionalstudentinfo.street }} <br /> {{ student.additionalstudentinfo.postal_code }} - {{ student.additionalstudentinfo.locality }}{% endif %}</dd>
             </dl>
             {% if app_infirmerie and perms.infirmerie.access_infirmerie %}
             <div class="panel panel-default">
@@ -38,29 +38,29 @@
                 <div class="collapse" id="info_contact">
                     <dl class="dl-horizontal">
                         <dt>Nom resp.</dt>
-                        <dd>{% if student.get_additional_info.resp_first_name %}{{ student.get_additional_info.resp_first_name }} {{ student.get_additional_info.resp_last_name }}{% endif %}</dd>
+                        <dd>{% if student.additionalstudentinfo.resp_first_name %}{{ student.additionalstudentinfo.resp_first_name }} {{ student.additionalstudentinfo.resp_last_name }}{% endif %}</dd>
                         <dt>Téléphone resp.</dt>
-                        <dd>{% if student.get_additional_info.resp_phone %}{{ student.get_additional_info.resp_phone }}{% endif %}</dd>
+                        <dd>{% if student.additionalstudentinfo.resp_phone %}{{ student.additionalstudentinfo.resp_phone }}{% endif %}</dd>
                         <dt>GSM resp.</dt>
-                        <dd>{% if student.get_additional_info.resp_mobile %}{{ student.get_additional_info.resp_mobile }}{% endif %}</dd>
+                        <dd>{% if student.additionalstudentinfo.resp_mobile %}{{ student.additionalstudentinfo.resp_mobile }}{% endif %}</dd>
                         <dt>Email resp.</dt>
-                        <dd>{% if student.get_additional_info.resp_email %}<a href="mailto:{{ student.get_additional_info.resp_email }}">{{ student.get_additional_info.resp_email }}{% endif %}</a></dd>
+                        <dd>{% if student.additionalstudentinfo.resp_email %}<a href="mailto:{{ student.additionalstudentinfo.resp_email }}">{{ student.additionalstudentinfo.resp_email }}{% endif %}</a></dd>
                         <dt>Nom mère</dt>
-                        <dd>{% if student.get_additional_info.mother_first_name %}{{ student.get_additional_info.mother_first_name }} {{ student.get_additional_info.mother_last_name }}{% endif %}</dd>
+                        <dd>{% if student.additionalstudentinfo.mother_first_name %}{{ student.additionalstudentinfo.mother_first_name }} {{ student.additionalstudentinfo.mother_last_name }}{% endif %}</dd>
                         <dt>Téléphone mère</dt>
-                        <dd>{% if student.get_additional_info.mother_phone %}{{ student.get_additional_info.mother_phone }}{% endif %}</dd>
+                        <dd>{% if student.additionalstudentinfo.mother_phone %}{{ student.additionalstudentinfo.mother_phone }}{% endif %}</dd>
                         <dt>GSM mère</dt>
-                        <dd>{% if student.get_additional_info.mother_mobile %}{{ student.get_additional_info.mother_mobile }}{% endif %}</dd>
+                        <dd>{% if student.additionalstudentinfo.mother_mobile %}{{ student.additionalstudentinfo.mother_mobile }}{% endif %}</dd>
                         <dt>Email mère</dt>
-                        <dd>{% if student..get_additional_info.mother_email %}{{ student.get_additional_info.mother_email }}{% endif %}</dd>
+                        <dd>{% if student..additionalstudentinfo.mother_email %}{{ student.additionalstudentinfo.mother_email }}{% endif %}</dd>
                         <dt>Nom père</dt>
-                        <dd>{% if student.get_additional_info.father_first_name %}{{ student.get_additional_info.father_first_name }} {{ student.get_additional_info.father_last_name }}{% endif %}</dd>
+                        <dd>{% if student.additionalstudentinfo.father_first_name %}{{ student.additionalstudentinfo.father_first_name }} {{ student.additionalstudentinfo.father_last_name }}{% endif %}</dd>
                         <dt>Téléphone père</dt>
-                        <dd>{% if student.get_additional_info.father_phone %}{{ student.get_additional_info.father_phone }}{% endif %}</dd>
+                        <dd>{% if student.additionalstudentinfo.father_phone %}{{ student.additionalstudentinfo.father_phone }}{% endif %}</dd>
                         <dt>GSM père</dt>
-                        <dd>{% if student.get_additional_info.father_mobile %}{{ student.get_additional_info.father_mobile }}{% endif %}</dd>
+                        <dd>{% if student.additionalstudentinfo.father_mobile %}{{ student.additionalstudentinfo.father_mobile }}{% endif %}</dd>
                         <dt>Email père</dt>
-                        <dd>{% if student.get_additional_info.father_email %}{{ student.get_additional_info.father_email }}{% endif %}</dd>
+                        <dd>{% if student.additionalstudentinfo.father_email %}{{ student.additionalstudentinfo.father_email }}{% endif %}</dd>
                     </dl>
                 </div>
             </div>
@@ -74,13 +74,13 @@
                 <div class="collapse" id="medical_info">
                     <dl class="dl-horizontal">
                         <dt>Médecin</dt>
-                        <dd>{% if student.get_additional_info.doctor %}{{ student.get_additional_info.doctor }}{% endif %}</dd>
+                        <dd>{% if student.additionalstudentinfo.doctor %}{{ student.additionalstudentinfo.doctor }}{% endif %}</dd>
                         <dt>Téléphone médecin</dt>
-                        <dd>{% if student.get_additional_info.doctor_phone %}{{ student.get_additional_info.doctor_phone }}{% endif %}</dd>
+                        <dd>{% if student.additionalstudentinfo.doctor_phone %}{{ student.additionalstudentinfo.doctor_phone }}{% endif %}</dd>
                         <dt>Mutuelle</dt>
-                        <dd>{% if student.get_additional_info.mutual %}{{ student.get_additional_info.mutual }}{% endif %}</dd>
+                        <dd>{% if student.additionalstudentinfo.mutual %}{{ student.additionalstudentinfo.mutual }}{% endif %}</dd>
                         <dt>Numéro mutuelle / <br />infos complémentaires</dt>
-                        <dd>{% if student.get_additional_info.mutual_number %}{{ student.get_additional_info.mutual_number }} <br />{% endif %}{% if student.get_additional_info.medical_information %} {{ student.get_additional_info.medical_information }}{% endif %}</dd>
+                        <dd>{% if student.additionalstudentinfo.mutual_number %}{{ student.additionalstudentinfo.mutual_number }} <br />{% endif %}{% if student.additionalstudentinfo.medical_information %} {{ student.additionalstudentinfo.medical_information }}{% endif %}</dd>
                     </dl>
                 </div>
             </div>
@@ -89,10 +89,10 @@
             {% if user_info == '1' %}
             <dl class="dl-horizontal">
                 <dt>Username</dt>
-                <dd>{% if student.get_additional_info.username %}{{ student.get_additional_info.username }}{% endif %}</dd>
+                <dd>{% if student.additionalstudentinfo.username %}{{ student.additionalstudentinfo.username }}{% endif %}</dd>
                 <dt>Mot de passe</dt>
-                {% if student.get_additional_info.password and not '{SHA' in student.get_additional_info.password %}
-                <dd class="clickable"  id="pwd" data="{{ student.get_additional_info.password }}" onclick="$(this).text($(this).attr('data'))">************</dd>
+                {% if student.additionalstudentinfo.password and not '{SHA' in student.additionalstudentinfo.password %}
+                <dd class="clickable"  id="pwd" data="{{ student.additionalstudentinfo.password }}" onclick="$(this).text($(this).attr('data'))">************</dd>
                 {% endif %}
             </dl>
             {% endif %}

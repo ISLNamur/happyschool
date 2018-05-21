@@ -69,70 +69,55 @@ class StudentModel(models.Model):
     def fullname_classe(self):
         return '%s %s %s' % (self.last_name, self.first_name, self.classe.compact_str)
 
-    def get_additional_info(self) -> dict:
-        """
-        Get additional info about a student.
-        The information source could be either an ldap server or the django model provided here.
-        """
-        if settings.USE_LDAP_INFO:
-            connection = get_ldap_connection()
-            base_dn = settings.AUTH_LDAP_USER_SEARCH.base_dn
-            # Get attributes we are interested in.
-            attributes = list(map(lambda k: k[0], ldap_to_django.items()))
-            connection.search(base_dn, "(matricule=%s)" % self.matricule, attributes=attributes)
-            if len(connection.response) > 0:
-                return get_django_dict_from_ldap(connection.response[0])
-
-            raise Exception("Student (%s) not found in the LDAP directory." % self.matricule)
-
-        return model_to_dict(AdditionalStudentInfo.objects.get(student=self),
-                             exclude=['student'])
+    @property
+    def display(self):
+        return '%s %s %s' % (self.last_name, self.first_name, str(self.classe))
 
 
 class AdditionalStudentInfo(models.Model):
-    student = models.OneToOneField(StudentModel, on_delete=models.CASCADE)
-    gender = models.CharField(max_length=10)
-    scolar_year = models.CharField(max_length=9)
-    previous_classe = models.CharField(max_length=20)
-    orientation = models.CharField(max_length=200)
+    student = models.OneToOneField(StudentModel, primary_key=True, on_delete=models.CASCADE)
+    gender = models.CharField(max_length=10, blank=True)
+    scholar_year = models.CharField(max_length=9, blank=True)
+    previous_classe = models.CharField(max_length=20, blank=True)
+    orientation = models.CharField(max_length=200, blank=True)
 
-    birth_date = models.DateField("birth date")
-    street = models.CharField(max_length=500)
-    postal_code = models.CharField(max_length=50)
-    locality = models.CharField(max_length=200)
+    birth_date = models.DateField("birth date", null=True, blank=True)
+    street = models.CharField(max_length=500, blank=True)
+    postal_code = models.CharField(max_length=50, blank=True)
+    locality = models.CharField(max_length=200, blank=True)
 
-    student_phone = models.CharField(max_length=100)
-    student_mobile = models.CharField(max_length=100)
+    student_phone = models.CharField(max_length=100, blank=True)
+    student_mobile = models.CharField(max_length=100, blank=True)
     student_email = models.EmailField(null=True, blank=True)
 
-    resp_last_name = models.CharField(max_length=200)
-    resp_first_name = models.CharField(max_length=200)
-    resp_phone = models.CharField(max_length=100)
-    resp_mobile = models.CharField(max_length=100)
+    resp_last_name = models.CharField(max_length=200, blank=True)
+    resp_first_name = models.CharField(max_length=200, blank=True)
+    resp_phone = models.CharField(max_length=100, blank=True)
+    resp_mobile = models.CharField(max_length=100, blank=True)
     resp_email = models.EmailField(null=True, blank=True)
 
-    father_last_name = models.CharField(max_length=200)
-    father_first_name = models.CharField(max_length=200)
-    father_job = models.CharField(max_length=500)
-    father_phone = models.CharField(max_length=100)
-    father_mobile = models.CharField(max_length=100)
+    father_last_name = models.CharField(max_length=200, blank=True)
+    father_first_name = models.CharField(max_length=200, blank=True)
+    father_job = models.CharField(max_length=500, blank=True)
+    father_phone = models.CharField(max_length=100, blank=True)
+    father_mobile = models.CharField(max_length=100, blank=True)
     father_email = models.EmailField(null=True, blank=True)
 
-    mother_last_name = models.CharField(max_length=200)
-    mother_first_name = models.CharField(max_length=200)
-    mother_job = models.CharField(max_length=500)
-    mother_phone = models.CharField(max_length=100)
-    mother_mobile = models.CharField(max_length=100)
+    mother_last_name = models.CharField(max_length=200, blank=True)
+    mother_first_name = models.CharField(max_length=200, blank=True)
+    mother_job = models.CharField(max_length=500, blank=True)
+    mother_phone = models.CharField(max_length=100, blank=True)
+    mother_mobile = models.CharField(max_length=100, blank=True)
     mother_email = models.EmailField(null=True, blank=True)
 
-    doctor = models.CharField(max_length=200)
-    doctor_phone = models.CharField(max_length=200)
-    mutual = models.CharField(max_length=200)
-    mutual_number = models.CharField(max_length=200)
-    medical_information = models.CharField(max_length=500)
+    doctor = models.CharField(max_length=200, blank=True)
+    doctor_phone = models.CharField(max_length=200, blank=True)
+    mutual = models.CharField(max_length=200, blank=True)
+    mutual_number = models.CharField(max_length=200, blank=True)
+    medical_information = models.CharField(max_length=500, blank=True)
 
-    username = models.CharField(max_length=20)
-    password = models.CharField(max_length=20)
+    username = models.CharField(max_length=20, blank=True)
+    password = models.CharField(max_length=20, blank=True)
 
 
 class ResponsibleModel(models.Model):

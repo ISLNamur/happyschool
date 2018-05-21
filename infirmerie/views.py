@@ -33,6 +33,10 @@ from .forms import ArriveForm, SortieForm
 from core.people import People, get_classes
 from core import email
 
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+from core.views import BaseModelViewSet, BaseFilters
+from .serializers import PassageSerializer
+
 
 teachings = ['primaire', 'secondaire']
 
@@ -286,3 +290,22 @@ def get_entries(request, column='name', ens='all'):
         entries = list(map(lambda m: m.remarques_sortie.replace("\r\n", " "), malades))
 
     return JsonResponse(entries, safe=False)
+
+
+class PassageFilter(BaseFilters):
+    class Meta:
+        fields_to_filter = ('matricule_id',)
+        model = Passage
+        fields = BaseFilters.Meta.generate_filters(fields_to_filter)
+        filter_overrides = BaseFilters.Meta.filter_overrides
+
+
+class PassageViewSet(BaseModelViewSet):
+    queryset = Passage.objects.filter(matricule__isnull=False)
+    filter_access = True #TODO Make model setting for infirmerie.
+    # all_access = get_settings().all_access.all()
+
+    serializer_class = PassageSerializer
+    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    filter_class = PassageFilter
+    ordering_fields = ('datetime_arrive',)

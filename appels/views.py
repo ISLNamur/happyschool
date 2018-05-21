@@ -371,7 +371,7 @@ def test_vue(request):
 
 class AppelFilter(BaseFilters):
     class Meta:
-        fields_to_filter = ('name', 'object', 'motive',
+        fields_to_filter = ('name', 'matricule_id', 'object', 'motive',
                             'datetime_motif_start', 'datetime_motif_end',
                             'datetime_appel', 'datetime_traitement',
                             'is_traiter',)
@@ -392,6 +392,7 @@ class AppelViewSet(BaseModelViewSet):
     # Default ordering and distinct object cannot be used together.
 
     def perform_create(self, serializer):
+        super().perform_create(serializer)
         # Set full name.
         if serializer.validated_data['is_student']:
             name = serializer.validated_data['matricule'].fullname
