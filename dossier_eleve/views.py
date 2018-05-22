@@ -549,9 +549,11 @@ def filter_and_order(request, only_actives=False, retenues=False, year=None,
     rows = CasEleve.objects.filter(matricule__isnull=False)
 
     # Filter the rows from the user teaching.
-    print(request.user)
-    teachings = ResponsibleModel.objects.get(user=request.user).teaching.all()
-    print(teachings)
+    try:
+        teachings = ResponsibleModel.objects.get(user=request.user).teaching.all()
+    except ObjectDoesNotExist:
+        # Responsible doesn't exist return null result.
+        return []
     rows = rows.filter(matricule__teaching__in=teachings)
 
     # First we filter and order at the query level
