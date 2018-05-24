@@ -57,14 +57,15 @@ def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=
     email_notif.save()
 
     # Set template as used.
-    email_notif.answers.is_used = True
-    email_notif.answers.save()
+    if email_notif.answers:
+        email_notif.answers.is_used = True
+        email_notif.answers.save()
 
     if one_by_one:
         one_ok = False
         for r, a in recipients:
-            # Check if there is answer form attached to the email.
             email_body = "<html>%s</html>" % email_notif.body
+            # Check if there is answer form attached to the email.
             if a:
                 email_body = email_body.replace("specific_uuid", str(a.uuid))
 
@@ -75,10 +76,10 @@ def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=
                                    from_email=email_notif.email_from,
                                    attachments=attachments)
 
-            if response.status_code != 200:
-                email_notif.errors += "Error with %s." % r
-            else:
-                one_ok = True
+                if response.status_code != 200:
+                    email_notif.errors += "Error with %s." % r
+                else:
+                    one_ok = True
             time.sleep(0.4)
         if one_ok:
             email_notif.errors = email_notif.errors.replace("Submitting.", "")
@@ -88,7 +89,7 @@ def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=
         if settings.DEBUG:
             send_email_with_mg([settings.EMAIL_ADMIN],
                                email_notif.subject,
-                               email_body,
+                               "<html>%s</html>" % email_notif.body,
                                from_email=email_notif.email_from,
                                attachments=attachments)
     else:

@@ -350,7 +350,7 @@ export default {
            formData.append('email_content', this.emailContent);
            formData.append('subject', this.subject);
            formData.append('teaching', this.teaching);
-           formData.append('template', this.template.id);
+           if (this.template) formData.append('template', this.template.id);
            var attachments = [];
            for (let u in this.uploadedFiles) {
                attachments.push(this.uploadedFiles[u].id);
