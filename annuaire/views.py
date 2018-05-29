@@ -53,16 +53,8 @@ from .forms import ChercherEleveForm
 # teacher_man = TeacherManager()
 # educator_man = EducatorManager()
 
-groups_with_access = ['sysadmin', 'professeur', 'direction', 'educateur', 'secretaire', 'accueil', 'pms']
-
-# SECRETARIAT_PEOPLE = [
-#     Person(dic_attributes={'surname': 'Malotaux', 'firstname': 'Emmanuelle', 'matricule': 10001}),
-#     Person(dic_attributes={'surname': 'Callut', 'firstname': 'Gaby','matricule': 10002}),
-#     Person(dic_attributes={'surname': 'Bueres', 'firstname': 'Manolita', 'matricule': 10003}),
-#     Person(dic_attributes={'surname': 'Tack', 'firstname': 'Etienne', 'matricule': 10004}),
-#     Person(dic_attributes={'surname': 'Beaugnée', 'firstname': 'Séverine', 'matricule': 10005}),
-#     ]
-
+groups_with_access = [settings.SYSADMIN_GROUP, settings.TEACHER_GROUP, settings.DIRECTION_GROUP, settings.EDUCATOR_GROUP,
+                      settings.SECRETARY_GROUP, settings.RECEPTION_GROUP, settings.PMS_GROUP]
 
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name__in=groups_with_access), login_url='no_access')
@@ -75,7 +67,7 @@ def get_list(request):
     classe = request.GET.get("classe", "")
     people_type = request.GET.get("type", "student")
 
-    if people_type == 'teacher' and request.user.groups.filter(name__in=['sysadmin', 'direction', 'accueil']).exists():
+    if people_type == 'teacher' and request.user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.RECEPTION_GROUP]).exists():
         return get_teacher_list(request, ens, search)
 
     students = []
@@ -136,7 +128,7 @@ def index(request):
 
     #TODO: context = {'form': chercher_form, 'new_rows': get_new_rows(request)}
     context = {'form': chercher_form, 'new_rows': 0}
-    if request.user.groups.filter(name__in=['sysadmin', 'direction', 'accueil']).exists():
+    if request.user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.RECEPTION_GROUP]).exists():
         context['can_search_teachers'] = True
     return render(request, 'annuaire/index.html', context)
 
@@ -150,21 +142,13 @@ def info(request, matricule, medical_info='1', user_info='1'):
         raise Http404("Matricule inexistant : " + str(matricule))
 
     context = {'student': student, 'medical_info': medical_info, 'user_info': user_info }
-    # if 'dossier_eleve' in settings.INSTALLED_APPS:
-    #     from dossier_eleve.models import CasEleve
-    #     auth_classes = get_classes_access(request)
-    #     cas = CasEleve.objects.filter(matricule__matricule=student.matricule,
-    #                                   important=True,
-    #                                   matricule__classe__in=auth_classes).order_by("-datetime_encodage")
-    #     context['dossier_eleve_important'] = cas[:5]
-
 
     return render(request, 'annuaire/eleve_info.html', context=context)
 
 
 @login_required
 def info_teacher(request, matricule):
-    if not request.user.groups.filter(name__in=['sysadmin', 'direction', 'accueil']).exists():
+    if not request.user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.RECEPTION_GROUP]).exists():
         raise Http404("ID inexistant : " + str(id))
 
 
@@ -173,7 +157,7 @@ def info_teacher(request, matricule):
     if not teacher:
         raise Http404("Matricule inexistant : " + str(matricule))
     context = {'teacher': teacher}
-    if request.user.groups.filter(name__in=['sysadmin', 'direction']).exists():
+    if request.user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP]).exists():
         context['username_info'] = True
 
     return render(request, 'annuaire/professeur_info.html', context)
@@ -218,10 +202,10 @@ def summary(request, matricule):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name__in=['sysadmin', 'direction', 'accueil']),
+@user_passes_test(lambda u: u.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.RECEPTION_GROUP]),
                   login_url='no_access')
 def summary_teacher(request, id):
-    if not request.user.groups.filter(name__in=['sysadmin', 'direction', 'accueil']).exists():
+    if not request.user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.RECEPTION_GROUP]).exists():
         raise Http404("ID inexistant : " + str(id))
 
     # teacher = teacher_man.get_person(id, ens)

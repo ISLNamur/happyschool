@@ -24,6 +24,7 @@ from unidecode import unidecode
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.conf import settings
 from django.template.loader import get_template
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
@@ -49,9 +50,9 @@ CYCLES = ['Cycle inférieur', 'Cycle supérieur']
 DEGREES = ["1er degré", "2ème degré", "3ème degré"]
 YEARS = ["1ère année", "2ème année", "3ème année", "4ème année", "5ème année", "6ème année"]
 
-groups_with_access = ['sysadmin', 'direction', 'secretaire']
+groups_with_access = [settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.SECRETARY_GROUP]
 for i in range(1,7):
-    groups_with_access.append("coord" + str(i))
+    groups_with_access.append(settings.COORD_GROUP + str(i))
 
 
 @login_required
@@ -70,7 +71,7 @@ def get_list(request):
 
 
 class HasPermissions(IsInGroupPermission):
-    group = ["coord" + str(i) for i in range(1, 7)] + ['sysadmin', 'direction', 'secretaire']
+    group = groups_with_access
 
 
 class SendersList(APIView):

@@ -20,6 +20,7 @@
 import itertools
 from unidecode import unidecode
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db.models import Q, QuerySet, Model
@@ -303,7 +304,7 @@ def _get_years_access(user: User) -> list:
         # TODO: Make it work for students.
         return []
     # Sysadmins and direction members have all access
-    if user.groups.filter(name__in=['sysadmin', 'direction', 'pms']).exists():
+    if user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.PMS_GROUP]).exists():
         return list(set(ClasseModel.objects.filter(teaching__in=teaching).values_list('year', flat=True)))
 
     # Educators and coordonators years.

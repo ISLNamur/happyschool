@@ -35,9 +35,11 @@ from core import email
 
 
 teachings = ['primaire', 'secondaire']
-groups_with_access = ['sysadmin', 'direction', 'educateur', 'secretaire', 'accueil', 'pms']
-for i in range(1,7):
-    groups_with_access.append("coord" + str(i))
+
+groups_with_access = [settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.EDUCATOR_GROUP,
+                      settings.SECRETARY_GROUP, settings.RECEPTION_GROUP, settings.PMS_GROUP]
+for i in range(1, 7):
+    groups_with_access.append(settings.COORD_GROUP + str(i))
 
 
 def send_emails(passage, template, subject):
@@ -236,7 +238,7 @@ def filter_and_order(request, only_actives=False, column=None, data1=None, data2
                 rows = rows.filter(datetime_sortie__range=[date_1, date_2])
 
     # Check access
-    if not request.user.groups.filter(name__in=['sysadmin', 'direction', 'accueil']).exists():
+    if not request.user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.RECEPTION_GROUP]).exists():
         auth_classes = get_classes([ens], check_access=True, user=request.user)
         rows = rows.filter(matricule__classe__in=auth_classes)
 

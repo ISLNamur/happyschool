@@ -34,9 +34,10 @@ from unidecode import unidecode
 
 from core import email
 
-groups_with_access = ['sysadmin', 'direction', 'educateur', 'secretaire']
+groups_with_access = [settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.EDUCATOR_GROUP,
+                      settings.SECRETARY_GROUP,]
 for i in range(1,7):
-    groups_with_access.append("coord" + str(i))
+    groups_with_access.append(settings.COORD_GROUP + str(i))
 
 
 def add(request):

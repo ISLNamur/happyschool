@@ -57,8 +57,8 @@ from .forms import NouveauCasForm, GenerateSummaryPDFForm, GenDisciplinaryCounci
 SANCTIONS_RETENUE = [2, 5, 15, 16]
 PMS_EMAIL = 8
 
-groups_with_access = ['sysadmin', 'direction', 'educateur', 'secretaire', 'professeur', 'pms']
-
+groups_with_access = [settings.SYSADMIN_GROUP, settings.TEACHER_GROUP, settings.DIRECTION_GROUP, settings.EDUCATOR_GROUP,
+                      settings.SECRETARY_GROUP, settings.PMS_GROUP]
 
 def compute_unread_rows(request):
     if 'dossier_eleve_last_time' in request.session:
@@ -68,7 +68,7 @@ def compute_unread_rows(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name__in=['sysadmin', 'direction', 'educateur']),
+@user_passes_test(lambda u: u.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.EDUCATOR_GROUP]),
                   login_url='no_access')
 def change_sanction(request, cas_id=None, is_done=None):
     cas = CasEleve.objects.get(pk=cas_id)
@@ -243,9 +243,9 @@ def get_cas(request):
         cas.append(dic)
 
     context = {'cas': cas, 'paginator': cas_page, }
-    is_teacher = request.user.groups.filter(name__in=['professeur']).exists()
-    is_direction = not request.user.groups.filter(name__in=['direction']).exists()
-    is_coord = not request.user.groups.filter(name__istartswith=['coord']).exists()
+    is_teacher = request.user.groups.filter(name__in=[settings.TEACHER_GROUP]).exists()
+    is_direction = not request.user.groups.filter(name__in=[settings.DIRECTION_GROUP]).exists()
+    is_coord = not request.user.groups.filter(name__istartswith=[settings.COORD_GROUP]).exists()
     context['is_only_teacher'] = not (is_coord or is_direction) and is_teacher
     return render(request, 'dossier_eleve/list_cas.html', context)
 
@@ -497,9 +497,9 @@ def nouveau_cas(request, cas_id=-1):
     # context['is_coord'] = auth.is_coord(request) or auth.is_direction(request)
     coords = []
     for i in range(1, 7):
-        coords.append("coord" + str(i))
-    context['is_coord'] = request.user.groups.filter(name__in=coords + ['direction', 'sysadmin']).exists()
-    context['is_educ'] = request.user.groups.filter(name__in=['educateur', 'sysadmin']).exists()
+        coords.append(settings.COORD_GROUP + str(i))
+    context['is_coord'] = request.user.groups.filter(name__in=coords + [settings.DIRECTION_GROUP, settings.SYSADMIN_GROUP]).exists()
+    context['is_educ'] = request.user.groups.filter(name__in=[settings.EDUCATOR_GROUP, settings.SYSADMIN_GROUP]).exists()
 
     return render(request, 'dossier_eleve/nouveau_cas.html', context)
 
@@ -607,7 +607,7 @@ def filter_and_order(request, only_actives=False, retenues=False, year=None,
                 rows = rows.filter(datetime_sanction__range=[date_1, date_2])
 
     # Check access
-    if not request.user.groups.filter(name__in=['sysadmin', 'direction']).exists():
+    if not request.user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP]).exists():
         auth_classes = get_classes(['secondaire'], check_access=True, user=request.user)
 
         if request.user.groups.filter(name__istartswith='coord').exists():
@@ -624,7 +624,7 @@ def filter_and_order(request, only_actives=False, retenues=False, year=None,
             else:
                 rows = rows.filter(matricule__classe__in=auth_classes, visible_by_educ=True)
 
-        elif request.user.groups.filter(name='professeur'):
+        elif request.user.groups.filter(name=settings.TEACHER_GROUP):
             # teacher = teacher_man.get_people(filters=['uid=' + request.user.username])[0]
             classes = ResponsibleModel.objects.get(user=request.user).tenure.all()
             rows = rows.filter(matricule__classe__in=classes, visible_by_tenure=True)

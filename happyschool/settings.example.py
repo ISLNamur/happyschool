@@ -163,6 +163,16 @@ if EMAIL_PORT == 465:
 elif EMAIL_PORT == 587:
     EMAIL_USE_TLS = True
 
+# Group mapping
+SYSADMIN_GROUP = "sysadmin"
+DIRECTION_GROUP = "direction"
+TEACHER_GROUP = "professeur"
+EDUCATOR_GROUP = "educateur"
+SECRETARY_GROUP = "secretaire"
+PMS_GROUP = "pms"
+RECEPTION_GROUP = "accueil"
+COORD_GROUP = "coord"
+
 USE_LDAP_INFO = True
 
 LDAP_HOST = os.getenv("LDAP_HOST", "localhost")
@@ -181,7 +191,7 @@ if USE_LDAP_INFO:
 
 AUTH_LDAP_USER_ATTR_MAP = {"first_name": "cn", "last_name": "sn"}
 
-groups = ['sysadmin', 'professeur', 'educateur', 'secretaire', 'accueil', 'pms', 'direction']
+groups = [SYSADMIN_GROUP, DIRECTION_GROUP, TEACHER_GROUP, EDUCATOR_GROUP, SECRETARY_GROUP, PMS_GROUP, RECEPTION_GROUP]
 active_groups = map(lambda g: "cn=%s,ou=groups,%s" % (g, LDAP_DOMAIN), groups)
 
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
