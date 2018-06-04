@@ -24,7 +24,7 @@ from django.conf import settings
 
 from celery import shared_task
 
-from core.email import send_email_with_mg
+from core.email import send_email_with_mg, send_email_with_sp
 from core.people import People
 from core.models import ResponsibleModel, StudentModel, ClasseModel, EmailModel
 
@@ -87,7 +87,7 @@ def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=
 
         # Send an email to admin
         if settings.DEBUG:
-            send_email_with_mg([settings.EMAIL_ADMIN],
+            send_email_with_sp([settings.EMAIL_ADMIN],
                                email_notif.subject,
                                "<html>%s</html>" % email_notif.body,
                                from_email=email_notif.email_from,
