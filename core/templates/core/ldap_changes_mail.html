@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajout/Suppression de {{ people_type }} sur le serveur</title>
+</head>
+<body>
+    <h3>{{ people_type }} ajoutés</h3>
+    <ul>
+        {% for a_t in added_people %}
+	<a href="https://local.isln.be{% if a_t.objectclass == 'professeur' %}{% url 'summary_teacher' a_t.attributes.id a_t.attributes.enseignement %}{% elif a_t.objectclass == 'eleve' %}{% url 'info' a_t.attributes.matricule %}{% endif %}"><li class="list-group-item">{{ a_t.attributes.cn }} {{ a_t.attributes.sn }}</li></a>
+        {% endfor %}
+    </ul>
+    <h3>{{ people_type }} supprimés</h3>
+    <ul>
+        {% for r_t in removed_people %}
+        <li class="list-group-item">{{ r_t.cn }} {{ r_t.sn }} ({{ r_t.dn }})</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
