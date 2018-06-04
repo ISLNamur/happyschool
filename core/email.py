@@ -72,6 +72,33 @@ def send_email_with_mg(recipients, subject, body, from_email="Informatique ISLN 
     )
 
 
+def send_email_with_sp(recipients, subject, body, from_email="Informatique ISLN <informatique@isln.be>", attachments=()):
+    recipients = list(map(lambda r: {"address": r}, recipients))
+    data = {
+        "content": {
+            "from": from_email.replace("@", "@email."),
+            "subject": subject,
+            "text": strip_tags(body),
+            "html": body,
+            "reply_to": from_email,
+        },
+    }
+    if settings.DEBUG:
+        data["recipients"] = [{"address": settings.EMAIL_ADMIN}]
+        data["content"]["html"] = data["content"]["html"].replace("</html>", str(recipients) + "</html>")
+    else:
+        data["recipients"] = recipients
+
+    response = requests.post(
+        "https://api.sparkpost.com/api/v1/transmissions",
+        headers={'Authorization': settings.SPARKPOST_KEY},
+        json=data
+    )
+    if settings.DEBUG:
+        print(response.json())
+    return response
+
+
 def get_resp_emails(student):
     emails = {}
     for e in EmailModel.objects.filter(teaching=student.teaching, years=student.classe.year):
