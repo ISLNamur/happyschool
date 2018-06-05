@@ -143,15 +143,17 @@ def nouveau(request):
             # teachers_obj = teacher_man.get_people(filters=['classe=' + student.classe, 'enseignement=secondaire'])
 
             teachers = []
+            use_alias_email = False
             for t in teachers_obj:
-                if not t.email_alias:
+                email = t.email_alias if use_alias_email else t.email
+                if not email:
                     send_email(to=[settings.EMAIL_ADMIN],
                                subject='ISLN : À propos de ' + student.fullname + " non envoyé à %s" % t.full_name,
                                email_template="dossier_eleve/email_info.html",
                                context={'student': student, 'info': model_to_dict(c), 'info_type': info}
                                )
                 else:
-                    teachers.append(t.email_alias)
+                    teachers.append(email)
 
             # Add coord and educs to email list
             teachers += map(lambda e: e.email, EmailModel.objects.filter(teaching=student.teaching, years=student.classe.year))
