@@ -108,7 +108,7 @@ def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=
 
 
 def get_emails(email_to: list, to_type: str, teaching: str="secondaire", responsibles: bool=True,
-               template: MailTemplateModel=None, all_parents: bool=True) -> list():
+               template: MailTemplateModel=None, all_parents: bool=False) -> list():
     """
         Retrieve emails of the student's parent or teachers and responsibles.
     :param email_to: A list of keyword that might be classes, years, degree or a group of responsibles (2B, 1ère année,…).
