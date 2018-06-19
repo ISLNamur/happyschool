@@ -26,7 +26,7 @@ from .ldap import ldap_to_django, get_django_dict_from_ldap, get_ldap_connection
 
 class TeachingModel(models.Model):
     display_name = models.CharField(max_length=100)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, help_text="Nom simple pour la programmation.")
     default = models.BooleanField(default=False)
 
     def __str__(self):
@@ -56,6 +56,7 @@ class StudentModel(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.SET_NULL,
                              null=True, blank=True)
+    inactive_from = models.DateTimeField(null=True, blank=True, default=None)
 
     def __str__(self):
         """Return the full name with the last name first."""
@@ -139,6 +140,7 @@ class ResponsibleModel(models.Model):
                                 on_delete=models.CASCADE,
                                 null=True,
                                 blank=True)
+    inactive_from = models.DateTimeField(null=True, blank=True, default=None)
 
     def __str__(self):
         """Return the full name with the last name first."""
