@@ -31,7 +31,14 @@
                     </b-col>
                     <b-col sm="4">
                         <div class="text-right">
-                            <b-form-checkbox v-if="date_sanction" @change="setSanctionDone">Sanction faite ? </b-form-checkbox>
+                            <icon name="question-circle" color="blue" class="align-text-middle"
+                                v-if="date_sanction === ''"
+                                v-b-tooltip.hover title="Pour marquer la sanction comme faite, vous devez donner une date de sanction."
+                                >
+                            </icon>
+                            <b-form-checkbox :disabled="date_sanction === ''" @change="setSanctionDone">
+                                Sanction faite ?
+                            </b-form-checkbox>
                             <b-btn variant="light" size="sm" @click="editEntry"
                             class="card-link"><icon scale="1.3" name="edit" color="green" class="align-text-bottom"></icon></b-btn>
                             <b-btn variant="light" size="sm" @click="deleteEntry"
