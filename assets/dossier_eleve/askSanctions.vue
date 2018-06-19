@@ -90,12 +90,16 @@
                 @delete="askDelete(entry)"
                 @edit="editEntry(index)"
                 @filterStudent="filterStudent($event)"
+                @showInfo="showInfo(entry)"
                 @done="loadEntries"
                 >
             </ask-sanctions-entry>
             <b-modal ref="deleteModal" cancel-title="Annuler" hide-header centered
                 @ok="deleteEntry" @cancel="currentEntry = null">
                 Êtes-vous sûr de vouloir supprimer définitivement cette entrée ?
+            </b-modal>
+            <b-modal :title="currentName" size="lg" ref="infoModal" centered ok-only>
+                <info v-if="currentEntry" :matricule="currentEntry.matricule_id" type="student"></info>
             </b-modal>
             <component
                 v-bind:is="currentModal" ref="dynamicModal"
@@ -118,6 +122,8 @@ import axios from 'axios';
 window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
+import Info from '../annuaire/info.vue'
+
 import AskSanctionsEntry from './askSanctionsEntry.vue'
 import AskModal from './askModal.vue'
 import AskExportModal from './askExportModal.vue'
@@ -139,6 +145,14 @@ export default {
             loaded: false,
         }
     },
+    computed: {
+        currentName: function () {
+            if (this.currentEntry) {
+                return this.currentEntry.matricule.display;
+            }
+            return '';
+        }
+    },
     methods: {
         changePage: function (page) {
             this.currentPage = page;
@@ -155,6 +169,10 @@ export default {
                 {filterType: 'matricule_id', tag: matricule, value: matricule}
             );
             this.applyFilter()
+        },
+        showInfo: function (entry) {
+            this.currentEntry = entry
+            this.$refs.infoModal.show();
         },
         applyFilter: function () {
             this.filter = "";
@@ -230,6 +248,7 @@ export default {
         'ask-sanctions-entry': AskSanctionsEntry,
         'ask-modal': AskModal,
         'ask-export-modal': AskExportModal,
+        'info': Info,
     }
 }
 </script>

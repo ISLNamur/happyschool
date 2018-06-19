@@ -23,7 +23,7 @@
             <b-card :class="'px-4 mt-2 current-card '" no-body>
                 <b-row class="entry-title">
                     <b-col>
-                        <h5>{{ title }}
+                        <h5><a class="clickable" @click="$emit('showInfo')">{{ title }}</a>
                             <b-btn variant="link" size="sm" @click="filterStudent">
                                 <icon name="filter" scale="1.2" class="align-text-middle"></icon>
                             </b-btn>
@@ -173,5 +173,15 @@
 
     .important {
         background-color: rgba(255, 0, 0, 0.3) !important;
+    }
+
+    .clickable {
+        text-decoration: underline !important;
+        color: #0069d9 !important;
+    }
+
+    .clickable:hover {
+        cursor: pointer;
+        color: rgb(0, 0, 150) !important;
     }
 </style>
