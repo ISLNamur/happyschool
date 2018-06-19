@@ -279,3 +279,20 @@ MAIL_ANSWER = {
         -t mail_answer_mailanswermodel\
     | ssh happyschool@remote 'PGPASSWORD=remote_pwd psql -h localhost -U "db_user" -d "db_name"'"""
 }
+
+# Use synchronization capabilities with one or multiple ProEco databases. Need libreschoolfdb python package.
+SYNC_FDB = False
+if SYNC_FDB:
+    # The corresponding teaching need to be created before trying to synchronize.
+    from libreschoolfdb import fdbserver
+    SYNC_FDB_SERVER = [
+        {
+            # The custom name field of the teaching model.
+            "teaching_name": "etablissement_technique",
+            # The way the data are stored in ProEco (secondaire or primaire).
+            "teaching_type": "secondaire",
+            # Access configuration to the ProEco database.
+            "server": fdbserver.FDBServer(host="192.168.1.1", path='C:/ProEco/DataFB/',
+                                          user='complex_login', password='complex_pwd'),
+        }
+    ]
