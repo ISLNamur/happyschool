@@ -124,8 +124,11 @@
                                     <b-form-input id="input-date-sanction" type="date" v-model="form.datetime_sanction"></b-form-input>
                                     <span slot="invalid-feedback">{{ errorMsg('datetime_sanction') }}</span>
                                 </b-form-group>
-                                <b-form-group label="Heure de la sanction" label-for="input-time-sanction">
-                                    <b-form-input id="input-time-sanction" type="time" v-model="timeSanction"></b-form-input>
+                                <b-form-group v-if="form.sanction_faite !== null" label-for="input-sanction-faite">
+                                    <b-form-checkbox id="input-sanction-faite"
+                                        v-model="form.sanction_faite">
+                                        Sanction faite ?
+                                    </b-form-checkbox>
                                 </b-form-group>
                             </b-col>
                             <b-col sm="5">
@@ -193,6 +196,7 @@ export default {
                 visible_by_educ: false,
                 visible_by_tenure: false,
                 datetime_sanction: null,
+                sanction_faite: null,
                 send_to_teachers: false,
             },
             infoOrSanction: null,
@@ -283,6 +287,7 @@ export default {
             this.form.visible_by_educ = !this.coord;
             this.form.visible_by_tenure = !this.educ && !this.coord;
             this.form.datetime_sanction = null;
+            this.form.sanction_faite = null;
             this.form.send_to_teachers = false;
         },
         errorMsg(err) {
@@ -314,6 +319,7 @@ export default {
                     this.form.datetime_sanction = datetime.format('YYYY-MM-DD');
                     this.timeSanction = datetime.format('HH:MM');
                 }
+                this.form.sanction_faite = entry.sanction_faite;
 
                 this.infoOrSanction = entry.info_id ? 'info' : 'sanction-decision';
             } else {
