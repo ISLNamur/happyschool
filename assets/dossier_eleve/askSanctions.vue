@@ -98,7 +98,7 @@
                 @ok="deleteEntry" @cancel="currentEntry = null">
                 Êtes-vous sûr de vouloir supprimer définitivement cette entrée ?
             </b-modal>
-            <b-modal :title="currentName" size="lg" ref="infoModal" centered ok-only>
+            <b-modal :title="currentName" size="lg" ref="infoModal" centered ok-only @hidden="currentEntry = null">
                 <info v-if="currentEntry" :matricule="currentEntry.matricule_id" type="student"></info>
             </b-modal>
             <component
