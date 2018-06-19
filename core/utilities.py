@@ -20,7 +20,7 @@
 from django.utils import timezone
 
 
-def get_scolar_year():
+def get_scholar_year():
     current_date = timezone.now()
     year = current_date.year
     month = current_date.month
@@ -34,8 +34,8 @@ def get_scolar_year():
         return year
 
 
-def in_scolar_year(date):
-    current_year = get_scolar_year()
+def in_scholar_year(date):
+    current_year = get_scholar_year()
     if date.year < current_year:
         return False
 

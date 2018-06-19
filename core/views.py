@@ -16,7 +16,7 @@ from core.people import get_classes
 from core.permissions import IsSecretaryPermission
 from core.serializers import ResponsibleSerializer, TeachingSerializer,\
     StudentContactInfoSerializer, StudentGeneralInfoSerializer, StudentMedicalInfoSerializer
-from core.utilities import get_scolar_year
+from core.utilities import get_scholar_year
 
 class BaseFilters(filters.FilterSet):
     unique = filters.CharFilter('unique_by', method='unique_by')
@@ -111,7 +111,7 @@ class ScholarYearAPI(APIView):
         if not query:
             return Response([])
 
-        current_year = get_scolar_year()
+        current_year = get_scholar_year()
         options = []
         for y in reversed(range(current_year - 10, current_year + 1)):
             options.append("%i-%i" % (y, y + 1))

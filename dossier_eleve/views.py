@@ -53,7 +53,7 @@ from io import BytesIO
 from PyPDF2 import PdfFileMerger
 
 
-from core.utilities import get_scolar_year
+from core.utilities import get_scholar_year
 from core.email import send_email
 from core.models import StudentModel, EmailModel, ResponsibleModel
 from core.people import People, get_classes, get_years
@@ -226,7 +226,7 @@ def get_cas(request):
     # Show retenues from all degrees?
     retenues = request.GET.get("retenues", "0")
     # Show cas by scolaryear.
-    year = request.GET.get("year", str(get_scolar_year()))
+    year = request.GET.get("year", str(get_scholar_year()))
 
     cas_discip = filter_and_order(request, only_actives=active == "1", retenues=retenues == "1", year=int(year),
                                   column=filter_cas, data1=data1, data2=data2, order_by=sort_by, order_asc=asc)
@@ -439,7 +439,7 @@ def create_pdf(student, all_year, infos, sanctions):
         cas = CasEleve.objects.filter(Q(matricule=student) &
                                       (Q(sanction_faite__isnull=True) | Q(sanction_faite=True)))
     else:
-        current_scholar_year = get_scolar_year()
+        current_scholar_year = get_scholar_year()
         limit_date = timezone.make_aware(timezone.datetime(current_scholar_year, 8, 15))
         cas = CasEleve.objects.filter(matricule=student, datetime_encodage__gte=limit_date)
         cas = cas.filter(Q(sanction_faite__isnull=True) | Q(sanction_faite=True))
@@ -514,7 +514,7 @@ def nouveau_cas(request, cas_id=-1):
 
 
 def gen_stats(matricule):
-    current_scolar_year = get_scolar_year()
+    current_scolar_year = get_scholar_year()
     limit_date = timezone.make_aware(timezone.datetime(current_scolar_year, 8, 15))
 
 
@@ -723,7 +723,7 @@ class BaseDossierEleveView(LoginRequiredMixin,
         context = super().get_context_data(**kwargs)
         context['settings'] = JSONRenderer().render(DossierEleveSettingsSerializer(settings_dossier_eleve).data).decode()
         context['filters'] = json.dumps(self.filters)
-        scholar_year = get_scolar_year()
+        scholar_year = get_scholar_year()
         context['current_year'] = json.dumps('%i-%i' % (scholar_year, scholar_year + 1))
         coords = []
         for i in range(1, 7):
@@ -938,7 +938,7 @@ class StatisticAPI(APIView):
             classes = get_classes(list(map(lambda t: t.name, teachings)), True, self.request.user)
             queryset = queryset.filter(matricule__classe__in=classes)
 
-        current_scolar_year = get_scolar_year()
+        current_scolar_year = get_scholar_year()
         limit_date = timezone.make_aware(timezone.datetime(current_scolar_year, 8, 15))
 
         cas_discip = queryset.filter(info=None, matricule=matricule).filter(Q(sanction_faite=True)
