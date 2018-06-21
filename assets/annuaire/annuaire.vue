@@ -58,8 +58,11 @@
                     </b-form-group>
                 </b-col>
             </b-row>
-            <b-row>
+            <b-row v-if="classe && !matricule">
                 <b-col>
+                    <p>
+                        <a :href="getClassePhoto">Télécharger les photos des élèves de la classe.</a>
+                    </p>
                     <b-list-group class="text-center">
                         <b-list-group-item v-for="s in students" :key="s.matricule"
                             button @click="selectStudent(s.matricule)"
@@ -69,7 +72,10 @@
                     </b-list-group>
                 </b-col>
             </b-row>
-            <info v-if="matricule && students.length == 0" :matricule="matricule" :type="type" last_news></info>
+            <p v-if="classe && matricule">
+                <b-btn @click="matricule=null">Retour à la classe</b-btn>
+            </p>
+            <info v-if="matricule" :matricule="matricule" :type="type" last_news></info>
         </b-container>
     </div>
 </template>
@@ -102,6 +108,19 @@ export default {
             students: [],
             type: null,
             matricule: null,
+            classe: null,
+        }
+    },
+    computed: {
+        getClassePhoto: function () {
+            if (!this.classe)
+                return '';
+
+            let classeUrl = '/annuaire/get_class_photo_pdf/';
+            classeUrl += this.classe.year + '/';
+            classeUrl += this.classe.letter + '/';
+            classeUrl +=  this.classe.teaching;
+            return classeUrl;
         }
     },
     methods: {
@@ -112,16 +131,19 @@ export default {
                 .then(response => {
                     this.students = response.data;
                 })
+                this.classe = option;
+                this.matricule = null;
                 return;
             } else {
                 this.students = [];
                 this.matricule = option.id;
                 this.type = option.type;
+                this.classe = null;
             }
         },
         selectStudent: function (matricule) {
             this.matricule = matricule;
-            this.students = [];
+            // this.students = [];
             this.type = 'student';
         },
         getSearchOptions: function (query) {
