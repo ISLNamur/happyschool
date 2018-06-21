@@ -350,7 +350,12 @@ def format_name_to_json(people_list, people_type):
 @user_passes_test(lambda u: u.groups.filter(name__in=groups_with_access),
                   login_url='no_access')
 def get_class_photo_pdf(request, year, classe, enseignement):
-    students = StudentModel.objects.filter(classe__year=year, classe__letter=classe, classe__teaching__name=enseignement)
+    students = StudentModel.objects.filter(classe__year=year, classe__letter=classe)
+    if enseignement.isdigit():
+        teaching = TeachingModel.objects.get(id=int(enseignement))
+    else:
+        teaching = TeachingModel.objects.get(name=enseignement)
+    students = students.filter(classe__teaching=teaching)
 
     students = sorted(students, key=lambda s: unidecode(s.last_name.lower()))
     rows = []
@@ -365,11 +370,9 @@ def get_class_photo_pdf(request, year, classe, enseignement):
 
     context = {'classe': str(year) + classe , 'list': rows, 'students_numb': len(students)}
 
-    # teaching = TeachingModel.objects.get(name=enseignement)
-    classe = ClasseModel.objects.get(year=year, letter=classe, teaching__name=enseignement)
+    classe = ClasseModel.objects.get(year=year, letter=classe, teaching=teaching)
     tenures = ResponsibleModel.objects.filter(tenure=classe)
-    # tenures = teacher_man.get_people(enseignement=enseignement,
-                                    # filters=['tenure=%s%s' % (year, classe)])
+
     context['tenures'] = tenures
 
     context['absolute_path'] = settings.BASE_DIR
