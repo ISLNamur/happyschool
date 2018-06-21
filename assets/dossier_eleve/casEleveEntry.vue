@@ -25,7 +25,7 @@
                     <b-col>
                         <h5><a class="clickable" @click="$emit('showInfo')">{{ title }}</a>
                             <b-btn variant="link" size="sm" @click="filterStudent">
-                                <icon name="filter" scale="1.2" class="align-text-middle"></icon>
+                                <icon name="eye" scale="1.2" class="align-text-middle"></icon>
                             </b-btn>
                         </h5>
                     </b-col>
@@ -136,9 +136,13 @@
         background-color: rgba(255, 255, 255, 1) !important;
     }
 
+    .category {
+        text-align: left;
+    }
+
     .current-data {
         text-align: left;
-        background-color: rgba(200, 200, 200, 0.1);
+        background-color: rgba(180, 180, 180, 0.25);
     }
 
     .entry-subtitle {

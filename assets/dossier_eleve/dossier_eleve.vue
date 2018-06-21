@@ -66,12 +66,6 @@
             </b-row>
             <b-pagination class="mt-1" :total-rows="entriesCount" v-model="currentPage" @change="changePage" :per-page="20">
             </b-pagination>
-            <b-card no-body class="current-card d-none d-md-block d-lg-block d-xl-block">
-                <b-row class="text-center">
-                    <b-col cols="2"><strong>Catégorie</strong></b-col>
-                    <b-col><strong>Commentaire(s)</strong></b-col>
-                </b-row>
-            </b-card>
             <cas-eleve-entry
                 v-for="(entry, index) in entries"
                 v-bind:key="entry.id"
