@@ -284,7 +284,7 @@ class People:
         if len(classe) > 0:
             students = StudentModel.objects.all()
             if classe[0].isdigit():
-                students = students.filter(classe__year=int(classe[0]))
+                students = students.filter(classe__year=int(classe[0])).order_by('last_name', 'first_name')
             if len(classe) > 1:
                 students = students.filter(classe__letter=classe[1].lower())
 
