@@ -67,7 +67,7 @@
                         <b-list-group-item button @click="addFilter('activate_not_done', 'Activer', true)">
                             Non faites : <b-badge variant="danger">{{ entriesNotDone }}</b-badge>
                         </b-list-group-item>
-                        <b-list-group-item button @click="addFilter('activate_waiting', 'Activer', true)">
+                        <b-list-group-item button v-if="entriesWaiting > 0" @click="addFilter('activate_waiting', 'Activer', true)">
                             En attentes de validations : <b-badge variant="warning">{{ entriesWaiting }}</b-badge>
                         </b-list-group-item>
                     </b-list-group>

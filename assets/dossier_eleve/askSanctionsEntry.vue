@@ -25,7 +25,7 @@
                     <b-col>
                         <h5><a class="clickable" @click="$emit('showInfo')">{{ title }}</a>
                             <b-btn variant="link" size="sm" @click="filterStudent">
-                                <icon name="filter" scale="1.2" class="align-text-middle"></icon>
+                                <icon name="eye" scale="1.2" class="align-text-middle"></icon>
                             </b-btn>
                         </h5>
                     </b-col>
@@ -47,12 +47,12 @@
                     </b-col>
                 </b-row>
                 <b-row class="entry-subtitle"><em>{{ subtitle }}</em></b-row>
-                <b-row class="text-center">
+                <b-row>
                     <b-col md="2" class="category">
                         {{ category }}
                     </b-col>
-                    <b-col md="2">{{ date_council }}</b-col>
-                    <b-col md="2">{{ date_sanction }}</b-col>
+                    <b-col md="2" class="text-center">{{ date_council }}</b-col>
+                    <b-col md="2" class="text-center">{{ date_sanction }}</b-col>
                     <b-col class="current-data mb-1 mr-1">
                         <p>
                             {{ comment }}
@@ -156,7 +156,7 @@
 
     .current-data {
         text-align: left;
-        background-color: rgba(200, 200, 200, 0.1);
+        background-color: rgba(180, 180, 180, 0.25);
     }
 
     .entry-subtitle {
