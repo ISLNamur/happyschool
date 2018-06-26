@@ -36,17 +36,6 @@ RESPONSIBLE = 'responsible'
 ALL = 'all'
 
 
-def get_default_teaching():
-    try:
-        default_teachings = TeachingModel.objects.filter(default=True)
-        if len(default_teachings) == 0:
-            default_teachings = TeachingModel.objects.all()
-
-        return list(map(lambda t: t.name, default_teachings))
-    except (OperationalError, ProgrammingError):
-        pass
-
-
 def get_all_teachings():
     return list(map(lambda t: t[0], TeachingModel.objects.all().values_list("name")))
 
@@ -55,7 +44,6 @@ class People:
     """
     Class that handles people search and access.
     """
-    default_teaching = get_default_teaching()
 
     def get_person(self,
                    teaching: list=('all',),
@@ -78,7 +66,7 @@ class People:
 
     @staticmethod
     def get_teacher_by_id(person_id: int,
-                          teaching: list=default_teaching) -> object:
+                          teaching: list=('all',)) -> object:
         """
         Get a teacher by specifying an id and the teaching.
         :param person_id:  The teacher's id.
@@ -98,7 +86,7 @@ class People:
 
     @staticmethod
     def get_educator_by_id(person_id: int,
-                           teaching: list=default_teaching) -> object:
+                           teaching: list=('all',)) -> object:
         """
         Get a educator by specifying an id and the teaching.
         :param person_id:  The educator's id.
@@ -156,7 +144,7 @@ class People:
 
     def get_people_by_name(self,
                            name: str,
-                           teaching: list=default_teaching,
+                           teaching: list=('all',),
                            person_type=ALL) -> list:
         """
         Get people by their name.
@@ -176,7 +164,7 @@ class People:
     @staticmethod
     def _get_people_by_name_by_model(model_name: Model,
                                      name: str,
-                                     teaching: list=default_teaching,
+                                     teaching: list=('all',),
                                      additional_filter: dict={}) -> QuerySet:
         """
         Private method where you can get people by their name and specify the
@@ -210,7 +198,7 @@ class People:
         return people
 
     def get_students_by_name(self, name: str,
-                             teaching: list=default_teaching,
+                             teaching: list=('all',),
                              classes: list=None) -> QuerySet:
         """
         Get students by their name.
@@ -231,7 +219,7 @@ class People:
 
     def get_teachers_by_name(self,
                              name: str,
-                             teaching: list=default_teaching) -> QuerySet:
+                             teaching: list=('all',)) -> QuerySet:
         """
         Get teachers by their name.
         :param name: String that starts the teachers' name.
@@ -247,7 +235,7 @@ class People:
 
     def get_educators_by_name(self,
                               name: str,
-                              teaching: list=default_teaching) -> QuerySet:
+                              teaching: list=('all',)) -> QuerySet:
         """
         Get educators by their name.
         :param name: String that starts the educators' name.
@@ -263,7 +251,7 @@ class People:
 
     def get_responsibles_by_name(self,
                                  name: str,
-                                 teaching: list=default_teaching) -> QuerySet:
+                                 teaching: list=('all',)) -> QuerySet:
         """
         Get responsibles by their name.
         :param name: String that starts the responsibles' name.
@@ -274,7 +262,8 @@ class People:
                                                  name=name,
                                                  teaching=teaching)
 
-    def get_students_by_classe(self, classe: str, teaching: list=default_teaching) -> QuerySet:
+    @staticmethod
+    def get_students_by_classe(classe: str, teaching: list=('all',)) -> QuerySet:
         """
         Get students that are in a classe.
         :param classe: A string that describes the classe.
@@ -283,6 +272,12 @@ class People:
         """
         if len(classe) > 0:
             students = StudentModel.objects.all()
+            if "all" not in teaching:
+                if type(teaching[0]) == TeachingModel:
+                    students = students.filter(teaching__in=teaching)
+                else:
+                    students = students.filter(teaching__name__in=teaching)
+
             if classe[0].isdigit():
                 students = students.filter(classe__year=int(classe[0])).order_by('last_name', 'first_name')
             if len(classe) > 1:
@@ -318,7 +313,7 @@ def _get_years_access(user: User) -> list:
     return []
 
 
-def _get_classes_access(user: User, teaching: list={"default"}) -> QuerySet:
+def _get_classes_access(user: User, teaching: list=('all',)) -> QuerySet:
     """
     Get a list of classes a user can access, like the classes a teacher have.
     :param user: The user we want to have the list of classes.
@@ -341,19 +336,13 @@ def _get_classes_access(user: User, teaching: list={"default"}) -> QuerySet:
     return classes
 
 
-def get_classes(teaching: list={"default"}, check_access: bool=False, user: User=None) -> QuerySet:
+def get_classes(teaching: list=('all',), check_access: bool=False, user: User=None) -> QuerySet:
     """
     Get the list of classes.
     :param teaching: A list of students' teachings.
+    :check_access: Return only classes with access.
     :return: A set of classes.
     """
-    if type(teaching) == set:
-        teaching = list(teaching)
-
-    if "default" in teaching and not user:
-        teaching.remove("default")
-        teaching += get_default_teaching()
-
     if check_access and user:
         try:
             teachings = ResponsibleModel.objects.get(user=user).teaching.all()
@@ -374,19 +363,12 @@ def get_classes(teaching: list={"default"}, check_access: bool=False, user: User
         return ClasseModel.objects.all()
 
 
-def get_years(teaching: list={"default"}, check_access: bool=False, user: User=None) -> set:
+def get_years(teaching: list=("all",), check_access: bool=False, user: User=None) -> set:
     """
         Get the list of years.
         :param teaching: A list of students' teachings.
         :return: A set of years.
     """
-    if type(teaching) == set:
-        teaching = list(teaching)
-
-    if "default" in teaching:
-        teaching.remove("default")
-        teaching += get_default_teaching()
-
     if "all" not in teaching:
         if type(teaching[0]) == TeachingModel:
             classes = ClasseModel.objects.filter(teaching__in=teaching)
