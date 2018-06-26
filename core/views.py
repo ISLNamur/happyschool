@@ -60,10 +60,9 @@ class BaseModelViewSet(ModelViewSet):
     filter_access = False
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     permission_classes = (DjangoModelPermissions,)
-    all_access = ()
 
     def get_queryset(self):
-        if not self.filter_access and self.request.user.groups.intersection(self.all_access).exists():
+        if not self.filter_access and self.request.user.groups.intersection(self.get_group_all_access).exists():
             return self.queryset
         else:
             teachings = ResponsibleModel.objects.get(user=self.request.user).teaching.all()
@@ -75,6 +74,9 @@ class BaseModelViewSet(ModelViewSet):
             datetime_encodage=timezone.now(),
             user=self.request.user.username,
         )
+
+    def get_group_all_access(self):
+        return ()
 
 
 class MembersView(LoginRequiredMixin,

@@ -704,7 +704,7 @@ def get_settings():
     settings_dossier_eleve = DossierEleveSettingsModel.objects.first()
     if not settings_dossier_eleve:
         # Create default settings.
-        DossierEleveSettingsModel.objects.create().save()
+        settings_dossier_eleve = DossierEleveSettingsModel.objects.create().save()
 
     return settings_dossier_eleve
 
@@ -778,12 +778,14 @@ class CasEleveFilter(BaseFilters):
 class CasEleveViewSet(BaseModelViewSet):
     queryset = CasEleve.objects.filter(matricule__isnull=False)
     filter_access = True
-    all_access = get_settings().all_access.all()
 
     serializer_class = CasEleveSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     filter_class = CasEleveFilter
     ordering_fields = ('datetime_encodage',)
+
+    def get_group_all_access(self):
+        return get_settings().all_access.all()
 
     def get_queryset(self):
         queryset = super().get_queryset()
