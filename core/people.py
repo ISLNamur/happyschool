@@ -211,9 +211,7 @@ class People:
                                                      name=name,
                                                      teaching=teaching)
         if type(classes) == QuerySet:
-            years = set(map(lambda c: c.year, classes))
-            letters = set(map(lambda c: c.letter.lower(), classes))
-            students = students.filter(classe__year__in=years, classe__letter__in=letters)
+            students = students.filter(classe__in=classes)
 
         return students
 
