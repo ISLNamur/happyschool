@@ -19,9 +19,10 @@
 
 from django.contrib import admin
 
-from .models import EmailTag, EmailNotification, EmailAttachment, EmailSender
+from .models import EmailTag, EmailNotification, EmailAttachment, EmailSender, EmailNotificationSettingsModel
 
 admin.site.register(EmailTag)
 admin.site.register(EmailSender)
 admin.site.register(EmailNotification)
 admin.site.register(EmailAttachment)
+admin.site.register(EmailNotificationSettingsModel)

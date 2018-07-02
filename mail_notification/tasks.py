@@ -28,10 +28,20 @@ from core.email import send_email_with_mg, send_email_with_sp
 from core.people import People
 from core.models import ResponsibleModel, StudentModel, ClasseModel, EmailModel
 
-from mail_notification.models import EmailNotification, OtherEmailGroupModel, OtherEmailModel
+from mail_notification.models import EmailNotification, OtherEmailGroupModel, OtherEmailModel, EmailNotificationSettingsModel
 from mail_answer.models import MailAnswerModel, MailTemplateModel
 from mail_answer.models import MailAnswerSettingsModel as AnswersSettings
 from mail_answer.tasks import task_sync_mail_answers
+
+
+
+def get_settings():
+    settings_email_notif = EmailNotificationSettingsModel.objects.first()
+    if not settings_email_notif:
+        # Create default settings.
+        settings_email_notif = EmailNotificationSettingsModel.objects.create().save()
+
+    return settings_email_notif
 
 
 @shared_task(bind=True)
@@ -128,6 +138,7 @@ def get_emails(email_to: list, to_type: str, teaching: str="secondaire", respons
     recipients = email_to.split(',')
     emails = []
     if to_type == 'teachers':
+        email_alias = get_settings().use_email_alias
         for recip in recipients:
             # Check if it is the staff.
             if recip == 'Personnels':
@@ -183,7 +194,7 @@ def get_emails(email_to: list, to_type: str, teaching: str="secondaire", respons
                 resp_email = EmailModel.objects.filter(years__in=years, teaching__name=teaching)
                 emails += list(map(lambda e: (e.email, None), resp_email))
 
-            emails += list(map(lambda t: (t.email_alias, None), teachers))
+            emails += list(map(lambda t: (t.email_alias if email_alias else t.email, None), teachers))
         return set(emails)
 
     elif to_type == "parents":

@@ -32,6 +32,11 @@ def unique_file_name(instance, filename):
     file = "".join(random.choice(string.ascii_letters) for x in range(0, 8)) + "_" + filename
     return path + file
 
+
+class EmailNotificationSettingsModel(models.Model):
+    use_email_alias = models.BooleanField(default=False)
+
+
 class EmailAttachment(models.Model):
     attachment = models.FileField(upload_to=unique_file_name)
 

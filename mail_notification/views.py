@@ -16,6 +16,24 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
+# This file is part of HappySchool.
+#
+# HappySchool is the legal property of its developers, whose names
+# can be found in the AUTHORS file distributed with this source
+# distribution.
+#
+# HappySchool is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# HappySchool is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 
@@ -41,7 +59,7 @@ from mail_answer.models import MailTemplateModel
 from mail_answer.models import MailAnswerSettingsModel as AnswersSettings
 
 from mail_notification.models import EmailTag, EmailNotification, EmailAttachment, EmailSender,\
-    OtherEmailGroupModel, OtherEmailModel
+    OtherEmailGroupModel, OtherEmailModel, EmailNotificationSettingsModel
 from mail_notification.serializers import EmailNotificationSerializer, EmailAttachmentSerializer, EmailSenderSerializer,\
     OtherEmailSerializer, OtherEmailGroupSerializer
 from mail_notification.tasks import task_send_emails_notif
@@ -68,6 +86,15 @@ def get_list(request):
     emails = EmailNotification.objects.all().order_by("-datetime_created")[:15]
     return render(request, 'mail_notification/list.html', context={'emails': emails,
                                                                    'active_menu': 'mail_notification'})
+
+
+def get_settings():
+    settings_email_notif = EmailNotificationSettingsModel.objects.first()
+    if not settings_email_notif:
+        # Create default settings.
+        settings_email_notif = EmailNotificationSettingsModel.objects.create().save()
+
+    return settings_email_notif
 
 
 class HasPermissions(IsInGroupPermission):
