@@ -42,13 +42,14 @@ def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=
 
     # Get EmailNotification object.
     email_notif = EmailNotification.objects.get(pk=pk)
-    print(email_notif)
+
     # Get recipients.
-    recipients = [(email_notif.email_from, None)]
+    recipients = [(email_notif.email_from.split("<")[1][:-1], None)] if "<" in email_notif.email_from else [email_notif.email_from]
     recipients += list(get_emails(email_notif.email_to, to_type, teaching, responsibles=responsibles,
                                   template=email_notif.answers))
     recipients += [(settings.EMAIL_ADMIN, None), ('directeur@isln.be', None), ('sous-directeur@isln.be', None)]
-    print(recipients)
+    if settings.DEBUG:
+        print(recipients)
 
     # Get attachments.
     attachments = list(map(lambda a: a.attachment.path, email_notif.attachments.all()))
@@ -70,17 +71,22 @@ def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=
                 email_body = email_body.replace("specific_uuid", str(a.uuid))
 
             if not settings.DEBUG:
-                response = send_email_with_mg([r],
+                response = send_email_with_sp([r],
                                    email_notif.subject,
                                    email_body,
                                    from_email=email_notif.email_from,
                                    attachments=attachments)
 
                 if response.status_code != 200:
-                    email_notif.errors += "Error with %s." % r
+                    if settings.DEBUG:
+                        print("Error with %s" % r)
+                        print(response.json)
+                    email_notif.errors = "Error with %s: %s" % (r, response.json)
+                    break
+
                 else:
                     one_ok = True
-            time.sleep(0.4)
+            time.sleep(1)
         if one_ok:
             email_notif.errors = email_notif.errors.replace("Submitting.", "")
             email_notif.errors += "Sent."
@@ -93,7 +99,7 @@ def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=
                                from_email=email_notif.email_from,
                                attachments=attachments)
     else:
-        response = send_email_with_mg(recipients,
+        response = send_email_with_sp(recipients,
                                       email_notif.subject,
                                       "<html>%s</html>" % email_notif.body,
                                       from_email=email_notif.email_from,
