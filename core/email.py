@@ -74,14 +74,25 @@ def send_email_with_mg(recipients, subject, body, from_email="Informatique ISLN 
 
 def send_email_with_sp(recipients, subject, body, from_email="Informatique ISLN <informatique@isln.be>", attachments=()):
     recipients = list(map(lambda r: {"address": r}, recipients))
+    if "<" in from_email:
+        name = from_email.split("<")[0]
+        reply_to = from_email.split("<")[1][:-1] # Remove last chevron.
+        from_email = {"name": name, "email": reply_to.replace("@", "@email.")}
+    else:
+        reply_to = from_email
+        from_email = from_email.replace("@", "@email.")
     data = {
         "content": {
-            "from": from_email.replace("@", "@email."),
+            "from": from_email,
             "subject": subject,
             "text": strip_tags(body),
             "html": body,
-            "reply_to": from_email,
+            "reply_to": reply_to,
         },
+        "options": {
+            "open_tracking": False,
+            "click_tracking": False,
+        }
     }
     if settings.DEBUG:
         data["recipients"] = [{"address": settings.EMAIL_ADMIN}]
