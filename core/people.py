@@ -321,7 +321,7 @@ def _get_classes_access(user: User, teaching: list=('all',)) -> QuerySet:
     classes = ClasseModel.objects.none()
 
     # Sysadmins and direction members, educators or coordonators.
-    if user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.PMS_GROUP, settings.EDUCATOR]).exists() or \
+    if user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.PMS_GROUP, settings.EDUCATOR_GROUP]).exists() or \
             user.groups.filter(name__istartswith='coord').exists():
         c = get_classes(teaching).filter(year__in=years)
         classes |= c
