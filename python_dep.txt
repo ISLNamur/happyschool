@@ -1,5 +1,4 @@
 django-filter
-channels_api
 channels_redis
 unidecode
 z3c.rml

@@ -27,7 +27,6 @@ from django.contrib.auth.views import LoginView, LogoutView, TemplateView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^channels-api/', include('channels_api.urls')),
     url(r'^core/', include('core.urls')),
     url(r'^auth', LoginView.as_view(template_name='core/auth.html'), name='auth'),
     url(r'^logout', LogoutView.as_view(next_page='auth'), name='logout'),

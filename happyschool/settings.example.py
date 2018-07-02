@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'channels',
-    'channels_api',
     'crispy_forms',
     'core',
     # 'schedule_change',
