@@ -99,7 +99,7 @@ calendrier. Même s'il est en cours de remplacement, il est encore
 nécessaire de l'installer. Pour cela, la commande suivante va télécharger
 le code dans le dossier courant puis l'installer :
 ```
-git clone https://github.com/Supermanu/django-bootstrap3-datetimepicker && cd django-bootstrap3-datetimepicker && python3 setup.py install && cd ..
+git clone https://github.com/Supermanu/django-bootstrap3-datetimepicker && cd django-bootstrap3-datetimepicker && sudo python3 setup.py install && cd ..
 ```
 
 **Happy School**
