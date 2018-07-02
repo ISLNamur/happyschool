@@ -32,7 +32,7 @@ SECRET_KEY = ')$g)mysea$a+_^mbzx$@!4lv_h$ecp@pp7a9g=%5ume#is6cg!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
