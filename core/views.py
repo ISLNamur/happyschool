@@ -9,6 +9,7 @@ from django_filters import rest_framework as filters
 
 from django.utils import timezone
 from django.db.models import CharField
+from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import TemplateView
 
 from core.models import ResponsibleModel, TeachingModel, AdditionalStudentInfo
@@ -65,9 +66,12 @@ class BaseModelViewSet(ModelViewSet):
         if not self.filter_access and self.request.user.groups.intersection(self.get_group_all_access).exists():
             return self.queryset
         else:
-            teachings = ResponsibleModel.objects.get(user=self.request.user).teaching.all()
-            classes = get_classes(list(map(lambda t: t.name, teachings)), True, self.request.user)
-            return self.queryset.filter(matricule__classe__in=classes)
+            try:
+                teachings = ResponsibleModel.objects.get(user=self.request.user).teaching.all()
+                classes = get_classes(list(map(lambda t: t.name, teachings)), True, self.request.user)
+                return self.queryset.filter(matricule__classe__in=classes)
+            except ObjectDoesNotExist:
+                return self.queryset
 
     def perform_create(self, serializer):
         serializer.save(
