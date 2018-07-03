@@ -37,7 +37,7 @@
                                     <dd class="col-7">{{ firstName }}</dd>
                                     <dt class="col-5 text-right">Matricule</dt>
                                     <dd class="col-7">{{ matricule }}</dd>
-                                    <dt v-if="tenure" class="col-5 text-right">Titulariat</dt>
+                                    <dt v-if="tenure && tenure.length > 0" class="col-5 text-right">Titulariat</dt>
                                     <dd v-if="tenure" v-for="(t, index) in tenure" :key="t.id"
                                         :class="{'col-7': index == 0, 'col-7 offset-5': index > 0}">
                                         {{ t.year }}{{ t.letter.toUpperCase()}}
