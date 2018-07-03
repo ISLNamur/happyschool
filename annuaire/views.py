@@ -441,6 +441,13 @@ def search_people(query, people_type, teachings, check_access, user):
 
     truncate_limit = 50
     people = []
+    if people_type == 'student' or people_type == 'all':
+        classe_years = get_classes(teachings, check_access=True,
+                                   user=user) if check_access else None
+        people += StudentSerializer(
+            People().get_students_by_name(query, teachings, classes=classe_years)[:truncate_limit], many=True
+        ).data
+
     if people_type == 'responsible' or people_type == 'all':
         people += ResponsibleSensitiveSerializer(
             People().get_responsibles_by_name(query, teachings)[:truncate_limit], many=True
@@ -454,13 +461,6 @@ def search_people(query, people_type, teachings, check_access, user):
     if people_type == 'educator':
         people += ResponsibleSensitiveSerializer(
             People().get_educators_by_name(query, teachings)[:truncate_limit], many=True
-        ).data
-
-    if people_type == 'student' or people_type == 'all':
-        classe_years = get_classes(teachings, check_access=True,
-                                   user=user) if check_access else None
-        people += StudentSerializer(
-            People().get_students_by_name(query, teachings, classes=classe_years)[:truncate_limit], many=True
         ).data
 
     return people[:truncate_limit]
@@ -533,7 +533,6 @@ class StudentClasseAPI(APIView):
 
     def get(self, request, format=None):
         classe_id = request.GET.get('classe', None)
-        print(classe_id)
         if not classe_id or not classe_id.isdigit:
             return Response([])
 
