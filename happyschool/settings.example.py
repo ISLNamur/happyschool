@@ -293,5 +293,10 @@ if SYNC_FDB:
             # Access configuration to the ProEco database.
             "server": fdbserver.FDBServer(host="192.168.1.1", path='C:/ProEco/DataFB/',
                                           user='complex_login', password='complex_pwd'),
+            # A mapping of a unique attribute shared between ProEco and a LDAP server.
+            "ldap_unique_attr": {
+                "ldap_attr": "id",  # Attribute from the LDAP server.
+                "model_attr": "matricule"  # Attribute from ResponsibleModel (matricule, email,…).
+            }
         }
     ]

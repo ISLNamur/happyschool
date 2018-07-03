@@ -244,7 +244,7 @@ class Command(BaseCommand):
             conn = get_ldap_connection()
             base_dn = settings.AUTH_LDAP_USER_SEARCH.base_dn
             conn.search(base_dn,
-                        '(%s=%s)' % (ldap_unique_attr, getattr(resp, 'matricule')),
+                        '(%s=%s)' % (ldap_unique_attr["ldap_attr"], getattr(resp, ldap_unique_attr["model_attr"])),
                         attributes='*')
             for r in conn.response:
                 username = r['attributes'][settings.AUTH_LDAP_USER_ATTR_MAP["username"]]
