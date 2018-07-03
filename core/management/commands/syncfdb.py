@@ -23,6 +23,7 @@ from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 from core.models import *
 from core.utilities import get_scholar_year
@@ -143,10 +144,13 @@ class Command(BaseCommand):
             processed = 0
             teachers_synced = set()
             for matricule, t in teachers.items():
+                ldap_unique_attr = proeco.get("ldap_unique_attr", None)
                 resp = self.update_responsible(responsible_type="teacher",
-                                        matricule=matricule,
-                                        data=t,
-                                        teaching_model=teaching_model)
+                                               matricule=matricule,
+                                               data=t,
+                                               teaching_model=teaching_model,
+                                               ldap_unique_attr=ldap_unique_attr)
+
                 teachers_synced.add(resp.matricule)
                 processed += 1
                 if processed % 25 == 0:
@@ -191,12 +195,14 @@ class Command(BaseCommand):
                     e.teaching.clear()
                     e.save()
 
-    def update_responsible(self, responsible_type, matricule, data, teaching_model):
+    def update_responsible(self, responsible_type, matricule, data, teaching_model, ldap_unique_attr=None):
         # Check if the responsible already exists.
+        new_user = False
         try:
             resp = ResponsibleModel.objects.get(matricule=matricule)
         except ObjectDoesNotExist:
             resp = ResponsibleModel(matricule=matricule)
+            new_user = True
 
         if responsible_type == 'teacher':
             resp.is_teacher = True
@@ -231,6 +237,26 @@ class Command(BaseCommand):
 
         if "email" in data:
             resp.email = data['email']
+
+        # Create a corresponding user if a ldap server is configured.
+        if new_user and settings.USE_LDAP_INFO and ldap_unique_attr:
+            from core.ldap import get_ldap_connection
+            conn = get_ldap_connection()
+            base_dn = settings.AUTH_LDAP_USER_SEARCH.base_dn
+            conn.search(base_dn,
+                        '(%s=%s)' % (ldap_unique_attr, getattr(resp, 'matricule')),
+                        attributes='*')
+            for r in conn.response:
+                username = r['attributes'][settings.AUTH_LDAP_USER_ATTR_MAP["username"]]
+                # Server sometimes return a list (for multiple values).
+                if type(username) == list:
+                    username = username[0]
+                # Check if user already exist.
+                try:
+                    user = User.objects.get(username=username)
+                except ObjectDoesNotExist:
+                    user = User.objects.create_user(username)
+                resp.user = user
 
         resp.first_name = data['firstname']
         resp.last_name = data['surname']
