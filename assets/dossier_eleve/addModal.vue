@@ -21,7 +21,7 @@
 <div>
     <b-modal size="lg" title="Nouveau cas"
         ok-title="Soumettre" cancel-title="Annuler"
-        :ok-disabled="!(form.info_id || form.sanction_decision_id)"
+        :ok-disabled="!(form.info_id || form.sanction_decision_id) || (!coord && !educ)"
         ref="addModal"
         @ok="addCas" @hidden="resetModal"
         >
@@ -91,7 +91,7 @@
                         <b-form-group label="Type d'info">
                             <b-form-radio-group id="info-or-sanction" v-model="infoOrSanction" :disabled="entry ? true : false">
                                 <b-form-radio value="info">Non disciplinaire</b-form-radio>
-                                <b-form-radio value="sanction-decision">Disciplinaire</b-form-radio>
+                                <b-form-radio value="sanction-decision" :disabled="!coord && !educ">Disciplinaire</b-form-radio>
                             </b-form-radio-group>
                         </b-form-group>
                     </b-form-row>
@@ -412,8 +412,8 @@ export default {
     components: {Multiselect},
     mounted: function () {
         // Set policies.
-        this.coord = is_coord;
-        this.educ = is_educ;
+        this.coord = this.$store.state.is_coord;
+        this.educ = this.$store.state.is_educ;
         this.form.visible_by_educ = !this.coord;
         this.form.visible_by_tenure = !this.educ && !this.coord;
 

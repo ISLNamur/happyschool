@@ -32,11 +32,11 @@
                     <b-col sm="4">
                         <div class="text-right">
                             <icon name="question-circle" color="blue" class="align-text-middle"
-                                v-if="date_sanction === ''"
-                                v-b-tooltip.hover title="Pour marquer la sanction comme faite, vous devez donner une date de sanction."
+                                v-if="!canSetSanctionDone"
+                                v-b-tooltip.hover title="La date de sanction doit être antérieure ou égale à aujourd'hui."
                                 >
                             </icon>
-                            <b-form-checkbox :disabled="date_sanction === ''" @change="setSanctionDone">
+                            <b-form-checkbox :disabled="!canSetSanctionDone" @change="setSanctionDone">
                                 Sanction faite ?
                             </b-form-checkbox>
                             <b-btn variant="light" size="sm" @click="editEntry"
@@ -106,7 +106,7 @@
                 return this.rowData.datetime_sanction ? Moment(this.rowData.datetime_sanction).format('DD/MM/YY') : '';
             },
             date_council: function () {
-                const datetime_conseil = this.rowData.datetime_conseil ? Moment(this.rowData.datetime_conseil).format('DD/MM/YY') : null
+                const datetime_conseil = this.rowData.datetime_conseil ? Moment(this.rowData.datetime_conseil).format('DD/MM/YY') : null;
                 if (datetime_conseil)
                     return datetime_conseil;
                 if (!this.rowData.datetime_sanction) {
@@ -120,6 +120,14 @@
                     return this.rowData.explication_commentaire;
                 } else {
                     return this.rowData.explication_commentaire.substring(0, 100) + "…";
+                }
+            },
+            canSetSanctionDone: function () {
+                if (this.date_sanction === '') {
+                    return false;
+                } else {
+                    // Check that sanction date is today or older.
+                    return Moment(this.rowData.datetime_sanction).isSameOrBefore(Moment(), 'day');
                 }
             }
         },

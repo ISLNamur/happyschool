@@ -31,7 +31,9 @@ const store = new Vuex.Store({
         filterType: 'scholar_year',
         tag: currentYear,
         value: currentYear,
-    }]
+    }],
+    is_coord: is_coord,
+    is_educ: is_educ,
   },
   mutations: {
       addFilter: function (state, filter) {
