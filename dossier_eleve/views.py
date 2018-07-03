@@ -747,6 +747,7 @@ class DossierEleveView(BaseDossierEleveView):
         {'value': 'scholar_year', 'text': 'Année scolaire'},
     ]
 
+
 class CasEleveFilter(BaseFilters):
     classe = filters.CharFilter(method='classe_by')
     activate_important = filters.BooleanFilter(name="important")
