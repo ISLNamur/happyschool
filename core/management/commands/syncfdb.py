@@ -136,7 +136,8 @@ class Command(BaseCommand):
                     s.classe = None
                     s.save()
 
-            # Sync teachers.
+            # # Sync teachers.
+            ldap_unique_attr = proeco.get("ldap_unique_attr", None)
             teachers = reader.get_teachers(year=current_year,
                                            fdb_server=proeco["server"],
                                            teaching=proeco["teaching_type"])
@@ -144,7 +145,6 @@ class Command(BaseCommand):
             processed = 0
             teachers_synced = set()
             for matricule, t in teachers.items():
-                ldap_unique_attr = proeco.get("ldap_unique_attr", None)
                 resp = self.update_responsible(responsible_type="teacher",
                                                matricule=matricule,
                                                data=t,
@@ -177,7 +177,8 @@ class Command(BaseCommand):
                 resp = self.update_responsible(responsible_type="educator",
                                                matricule=matricule,
                                                data=e,
-                                               teaching_model=teaching_model)
+                                               teaching_model=teaching_model,
+                                               ldap_unique_attr=ldap_unique_attr)
                 educators_synced.add(resp.matricule)
                 processed += 1
                 if processed % 25 == 0:
@@ -197,12 +198,10 @@ class Command(BaseCommand):
 
     def update_responsible(self, responsible_type, matricule, data, teaching_model, ldap_unique_attr=None):
         # Check if the responsible already exists.
-        new_user = False
         try:
             resp = ResponsibleModel.objects.get(matricule=matricule)
         except ObjectDoesNotExist:
             resp = ResponsibleModel(matricule=matricule)
-            new_user = True
 
         if responsible_type == 'teacher':
             resp.is_teacher = True
@@ -239,7 +238,7 @@ class Command(BaseCommand):
             resp.email = data['email']
 
         # Create a corresponding user if a ldap server is configured.
-        if new_user and settings.USE_LDAP_INFO and ldap_unique_attr:
+        if settings.USE_LDAP_INFO and ldap_unique_attr:
             from core.ldap import get_ldap_connection
             conn = get_ldap_connection()
             base_dn = settings.AUTH_LDAP_USER_SEARCH.base_dn
