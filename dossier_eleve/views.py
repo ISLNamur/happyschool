@@ -916,14 +916,12 @@ class InfoViewSet(ReadOnlyModelViewSet):
 
 
 class SanctionDecisionViewSet(ReadOnlyModelViewSet):
-    queryset = SanctionDecisionDisciplinaire.objects.all()
+    queryset = SanctionDecisionDisciplinaire.objects.order_by("sanction_decision")
     serializer_class = SanctionDecisionDisciplinaireSerializer
 
     def get_queryset(self):
         self.queryset = super().get_queryset()
-        print(self.request.GET.get('only_sanctions', None))
         only_sanctions = self.request.GET.get('only_sanctions', 0) == "1"
-        print(only_sanctions)
         if only_sanctions:
             return self.queryset.filter(can_ask=True)
 

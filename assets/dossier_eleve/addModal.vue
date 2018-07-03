@@ -112,10 +112,10 @@
                     <div v-if="infoOrSanction == 'sanction-decision'">
                         <b-form-row>
                             <b-col sm="7">
-                                <b-form-group label="Sanction et décision disciplinaire" label-for="input-info" :state="inputStates.sanction_decision_id">
+                                <b-form-group label="Info disciplinaire" label-for="input-info" :state="inputStates.sanction_decision_id">
                                     <b-form-select id="input-info" v-model="form.sanction_decision_id" :options="sanctionDecisionOptions">
                                         <template slot="first">
-                                            <option :value="null" disabled>Choisissez un type de sanction/décision</option>
+                                            <option :value="null" disabled>Choisissez dans la liste</option>
                                         </template>
                                     </b-form-select>
                                     <span slot="invalid-feedback">{{ errorMsg('sanction_decision_id') }}</span>
@@ -436,7 +436,12 @@ export default {
         axios.get('/dossier_eleve/api/sanction_decision/')
         .then(response => {
             this.sanctionDecisionOptions = response.data.results.map(m => {
-                return {value: m.id, text: m.sanction_decision};
+                let entry = {value: m.id, text: m.sanction_decision};
+                if (this.$store.state.settings.enable_submit_sanctions) {
+                    entry['disabled'] = m.can_ask;
+                }
+
+                return entry;
             });
         })
         .catch(function (error) {

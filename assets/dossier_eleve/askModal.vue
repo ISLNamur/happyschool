@@ -89,7 +89,7 @@
                     </b-form-row>
                     <b-form-row class="mt-2">
                         <b-col sm="7">
-                            <b-form-group label="Sanction et décision disciplinaire" label-for="input-info" :state="inputStates.sanction_decision_id">
+                            <b-form-group label="Sanction disciplinaire" label-for="input-info" :state="inputStates.sanction_decision_id">
                                 <b-form-select id="input-info" v-model="form.sanction_decision_id" :options="sanctionOptions">
                                     <template slot="first">
                                         <option :value="null" disabled>Choisissez un type de sanction</option>
