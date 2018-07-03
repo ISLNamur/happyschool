@@ -1,146 +1,41 @@
-**Happy School**
+Happy School
 ================
+Concrètement, Happy school est une application de gestion administrative
+et pédagogique. Ainsi il propose de gérer différents aspects de l'école
+dont :
 
-Objectif
-========
+- Un dossier de l'élève où les informations sur l'élève (disciplinaire ou non)
+sont conservées. Il permet également de notifier les professeurs par email
+d'une information et de gérer la présence lors des retenues.
+- L'infirmerie où les entrées/sorties peuvent être enregistrées avec un envoi
+automatique aux responsables.
+- Les appels téléphoniques concernant élèves et professeurs qui peuvent être
+transmis par courriel (des infos, pas l'appel en lui-même).
+- L'absence des professeurs. Juste une base de donnée de qui est absent et
+remplacé par qui.
+- Un annuaire des élèves et des professeurs.
+- Un système d'envoi de courriel aux professeurs et aux parents avec
+possibilité de réponse par ceux-ci (toujours en développement).
 
-Ce document est destiné à l’installation et la mise en place de
-l’application HappySchool, il s’agira de la mise en œuvre de
-l’environnement de développement ainsi que la mise en fonctionnement du
-serveur web afin de rendre fonctionnel les différentes applications
-d’HappySchool.
+Le tout dispose d'un système de permission et d'accès en fonction des classes
+et de droits spécifiques. Par exemple, un titulaire ne verra que les
+informations de sa classe, un éducateur qui s'occupe d'une année spécifique,
+ne verra que les informations de son année.
 
-Prérequis
-=========
+Somme toute, Happy school est très similaire à d'autres solutions payantes.
+Cependant, l'objectif principal est de fournir un outil pour toutes
+les écoles. Ainsi, le seul support proposé est celui fournit par la
+communauté si elle est disponible.
 
-Happy School a été prévu pour fonctionner sur le plus d'environnement
-possible, il peut donc techniquement tourner sur Windows, OSX, linux.
-Cependant, il a été activement développé sous linux et c'est donc ce
-type système d'exploitation, et en particulier Ubuntu qui est recommandé
-et qui sera utilisé dans ce manuel.
 
-**Configuration minimale : **
+Par où commencer ?
+------------------
 
-- Ubuntu 16.04 (sans interface graphique)
-- 1GO de mémoire vive
-
-**Configuration recommandée :**
-
-- Ubuntu 16.04
-- 2GO de mémoire vive
-
-Installation
-============
-
-Il y a deux types d'installations, une pour le développement et une
-pour la mise en production.
-
-Installation de l’environnement de développement
-------------------------------------------------
-**Base de donnée**
-
-Happy School utilise une base de donnée *postgresql* avec une extension
-pour gérer les caractères accentués.
-
-Pour l'installer :
-```
-sudo apt install postgresql postgresql-contrib
-```
-Pour activer l'extension pour toutes les futures base de données :
-```
-sudo -u postgres bash -c "psql -U postgres -d 'template1' -c 'CREATE EXTENSION unaccent;'"
-```
-Puis créer un utilisateur et une base de donnée. D'abord accéder au shell `psql`:
-```
-sudo -u postgres bash -c "psql"
-```
-Et introduire les commandes SQL suivantes en spécifiant utilisateur, mot
-de passe et nom de la base de donnée :
-```
-CREATE USER newuser WITH PASSWORD 'yourpassword';
-CREATE DATABASE mydb WITH OWNER newuser;
-\quit
-```
-
-**Paquets système**
-
-Happy School utilise principalement du python pour fonctionner mais pas
-seulement. Il utilise `git` pour la collecte et les mises à jour du code, un
-serveur `redis` pour communiquer entre différents processus.
-
-Pour les installer :
-```
-sudo apt install python-dev libldap2-dev libsasl2-dev libssl-dev python3-pip git python3-dateutil ttf-bitstream-vera redis-server
-```
-
-**NodeJS**
-Une partie de l'interface, et à terme toute l'interface, est en javascript.
-Elle utilise le framework [Vue.js](https://vuejs.org/) et a besoin d'être
-transformé pour être lisible et légère pour le navigateur client.
-Pour cela, Happy School utilise *webpack* qui s'installe avec [Node.js](https://nodejs.org/en/)
-à travers *npm*. Pour installer une version récente :
-```
-curl -sL https://deb.nodesource.com/setup\_8.x | sudo -E bash -
-sudo apt-get install -y nodejs
-```
-
-**Django et paquets python**
-
-Happy School s'appuie sur le framework [Django](https://www.djangoproject.com/)
-ainsi que toutes une série de modules python. Pour les installer :
-```
-sudo pip3 install django django-crispy-forms z3c.rml django_auth_ldap ldap3 unidecode coverage celery django-webpack-loader djangorestframework channels psycopg2-binary django-filter asgi_redis channels_redis
-```
-À noter que l'installation se fait sur le système tout entier, pour gérer
-différentes versions il est alors mieux d'utiliser `virtualenv` ou apparenté.
-
-Par ailleurs, Happy School utilise son propre système de widget pour le
-calendrier. Même s'il est en cours de remplacement, il est encore
-nécessaire de l'installer. Pour cela, la commande suivante va télécharger
-le code dans le dossier courant puis l'installer :
-```
-git clone https://github.com/Supermanu/django-bootstrap3-datetimepicker && cd django-bootstrap3-datetimepicker && sudo python3 setup.py install && cd ..
-```
-
-**Happy School**
-
-Le code d'Happy School est disponible sur [github](https://github.com/ISLNamur/happyschool.git).
-Pour l'installer, placez-vous dans le dossier où vous vous voulez l'installer
-puis récupérer le code avec git :
-```
-cd /home/user/mon/dossier
-git clone https://github.com/ISLNamur/happyschool.git
-```
-Il existe plusieurs niveaux de configurations pour Happy School, le plus
-bas niveau est `happyschool/settings.py` (chemin relatif au dossier racine
-d'Happy School). Un fichier exemple est disponible et peut être copié :
-```
-cp happyschool/settings.example.py happyschool/settings.py
-```
-Dans celui-ci vous retrouverez la possibilité d'activer/désactiver une
-application, configurer l'accès à la base de donnée, configurer le
-serveur d'envoi d'email, configurer authentification pour un serveur
-LDAP/ActiveDirectory, etc.
-
-Pour installer les dépendances javascript et les compiler, dans le dossier
-racine (cela peut prendre un peu de temps):
-```
-npm install
-./node_modules/.bin/webpack --config webpack.dev.js
-```
-Vous pouvez créer un super utilisateur en répondant aux questions posées par :
-```
-python3 manage.py createsuperuser
-```
-Finalement, pour la lancer le serveur de test :
-```
-python3 manage.py runserver
-```
-Installation de l’environnement de production
----------------------------------------------
-En cours d'écriture…
-
-Configuration
-=============
-
-En cours d'écriture…
+- [Installation](docs/installation.md). Que ce soit pour commencer à développer
+ou pour utiliser en production.
+- [Configuration](docs/configuration.md). Happy School possède différents
+niveaux de configuration, les applications à utiliser, les droits d'accès
+aux applications, etc.
+- [Utilisation](docs/utilisation.md). Les applications sont nées d'un réel
+besoin et suivent en conséquence une manière de fonctionner propre à ces
+besoins.
