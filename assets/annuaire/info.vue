@@ -79,13 +79,13 @@
                                     <b-collapse id="infos-importantes">
                                         <b-card-body>
                                             <b-row>
-                                                <b-col cols="3"><strong>Date</strong></b-col>
-                                                <b-col cols="2"><strong>Objet/Motif</strong></b-col>
+                                                <b-col cols="2"><strong>Date</strong></b-col>
+                                                <b-col cols="3"><strong>Objet/Motif</strong></b-col>
                                                 <b-col><strong>Message</strong></b-col>
                                             </b-row>
                                             <b-row v-for="cas in important" :key="cas.id" class="mb-2">
-                                                <b-col cols="3">{{ niceDate(cas.datetime_encodage) }}</b-col>
-                                                <b-col cols="2">{{ cas.sanction_decision ? cas.sanction_decision.sanction_decision : cas.info.info }}</b-col>
+                                                <b-col cols="2">{{ niceDate(cas.datetime_encodage) }}</b-col>
+                                                <b-col cols="3">{{ cas.sanction_decision ? cas.sanction_decision.sanction_decision : cas.info.info }}</b-col>
                                                 <b-col>{{ cas.explication_commentaire }}</b-col>
                                             </b-row>
                                         </b-card-body>
