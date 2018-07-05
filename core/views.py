@@ -79,6 +79,11 @@ class BaseModelViewSet(ModelViewSet):
             user=self.request.user.username,
         )
 
+    def perform_update(self, serializer):
+        serializer.save(
+            datetime_encodage=timezone.now()
+        )
+
     def get_group_all_access(self):
         return ()
 
