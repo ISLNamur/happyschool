@@ -24,7 +24,7 @@
             <b-row>
                 <h2>Dossier des élèves</h2>
             </b-row>
-            <b-row class="mb-2" v-if="$store.state.settings.enable_submit_sanctions">
+            <b-row class="mb-2" v-if="canAskSanction">
                 <b-tabs>
                     <template slot="tabs">
                         <b-nav-item href="/dossier_eleve/ask_sanctions">
@@ -135,6 +135,12 @@ export default {
                 return this.currentEntry.matricule.display;
             }
             return '';
+        },
+        canAskSanction: function () {
+            const enable = this.$store.state.settings.enable_submit_sanctions;
+            const coord = this.$store.state.is_coord;
+            const educ = this.$store.state.is_educ;
+            return enable && (coord || educ);
         }
     },
     methods: {
