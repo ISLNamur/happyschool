@@ -22,7 +22,7 @@
         <div class="loading" v-if="!loaded"></div>
         <b-container v-if="loaded">
             <b-row>
-                <h2>Demande de sanctions</h2>
+                <h2>Demandes de sanction</h2>
             </b-row>
             <b-row class="mb-2">
                 <b-tabs>

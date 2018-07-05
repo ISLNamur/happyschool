@@ -322,6 +322,32 @@ export default {
                 this.form.sanction_faite = entry.sanction_faite;
 
                 this.infoOrSanction = entry.info_id ? 'info' : 'sanction-decision';
+
+                // Set sanctions and decisions options.
+                axios.get('/dossier_eleve/api/sanction_decision/')
+                .then(response => {
+                    this.sanctionDecisionOptions = response.data.results.map(m => {
+                        let entry = {value: m.id, text: m.sanction_decision};
+                        if (this.$store.state.settings.enable_submit_sanctions) {
+                            entry['disabled'] = m.can_ask;
+                        }
+                        return entry;
+                    })
+
+                    // Keep sanction decision entry.
+                    if (this.$store.state.settings.enable_submit_sanctions) {
+                        this.sanctionDecisionOptions = this.sanctionDecisionOptions.filter(s => {
+                            if (this.form.sanction_decision_id === s.value || !s.disabled) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        });
+                    }
+                })
+                .catch(function (error) {
+                    alert(error);
+                });
             } else {
                 this.resetModal();
             }
@@ -426,22 +452,6 @@ export default {
         .then(response => {
             this.infoOptions = response.data.results.map(m => {
                 return {value: m.id, text: m.info};
-            });
-        })
-        .catch(function (error) {
-            alert(error);
-        });
-
-        // Set sanctions and decisions options.
-        axios.get('/dossier_eleve/api/sanction_decision/')
-        .then(response => {
-            this.sanctionDecisionOptions = response.data.results.map(m => {
-                let entry = {value: m.id, text: m.sanction_decision};
-                if (this.$store.state.settings.enable_submit_sanctions) {
-                    entry['disabled'] = m.can_ask;
-                }
-
-                return entry;
             });
         })
         .catch(function (error) {

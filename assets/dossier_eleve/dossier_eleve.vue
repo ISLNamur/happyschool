@@ -28,7 +28,7 @@
                 <b-tabs>
                     <template slot="tabs">
                         <b-nav-item href="/dossier_eleve/ask_sanctions">
-                            Demande de sanctions
+                            Demandes de sanction
                             <b-badge>{{ askSanctionsCount }}</b-badge>
                             <b-badge variant="warning">{{ askSanctionsNotDoneCount }}</b-badge>
                         </b-nav-item>

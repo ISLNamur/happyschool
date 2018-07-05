@@ -19,7 +19,7 @@
 
 <template>
 <div>
-    <b-modal size="lg" title="Nouveau cas"
+    <b-modal size="lg" title="Nouvelle demande"
         ok-title="Soumettre" cancel-title="Annuler"
         :ok-disabled="!form.sanction_decision_id"
         ref="askModal"
