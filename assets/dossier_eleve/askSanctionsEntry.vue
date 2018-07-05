@@ -55,11 +55,11 @@
                     <b-col md="2" class="text-center">{{ date_sanction }}</b-col>
                     <b-col class="current-data mb-1 mr-1">
                         <span v-html="comment"></span>
-                        <b-btn size="sm" variant="light" v-if="comment.length > 100" @click="expand = !expand">
+                        <b-btn class="move-up" size="sm" variant="light" v-if="comment.length > 100" @click="expand = !expand">
                             <icon
                                 color="grey"
                                 class="align-text-top"
-                                scale="1.7"
+                                scale="1.1"
                                 :name="expand ? 'angle-double-up' : 'angle-double-down'"
                                 >
                             </icon>
@@ -202,5 +202,9 @@
     .clickable:hover {
         cursor: pointer;
         color: rgb(0, 0, 150) !important;
+    }
+
+    .move-up {
+        margin-top: -25px;
     }
 </style>

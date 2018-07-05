@@ -184,6 +184,6 @@
     }
 
     .move-up {
-        margin-top: -15px;
+        margin-top: -25px;
     }
 </style>
