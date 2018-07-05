@@ -121,7 +121,9 @@
                     <b-form-row>
                         <b-col>
                             <b-form-group label="Commentaires" label-for="input-comment" :state="inputStates.explication_commentaire">
-                                <b-form-textarea id="input-comment" :rows="3" v-model="form.explication_commentaire"></b-form-textarea>
+                                <!-- <b-form-textarea id="input-comment" :rows="3" v-model="form.explication_commentaire"></b-form-textarea> -->
+                                <quill-editor id="input-comment" v-model="form.explication_commentaire" :options="editorOptions">
+                                </quill-editor>
                                 <span slot="invalid-feedback">{{ errorMsg('explication_commentaire') }}</span>
                             </b-form-group>
                         </b-col>
@@ -136,6 +138,10 @@
 <script>
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
+
+import {quillEditor} from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
 
 import Moment from 'moment';
 Moment.locale('fr');
@@ -174,6 +180,19 @@ export default {
                 sanction_decision_id: null,
                 demandeur: null,
                 explication_commentaire: null,
+            },
+            editorOptions: {
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        ['blockquote'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'indent': '-1'}, { 'indent': '+1' }],
+                        [{ 'align': [] }],
+                        ['clean']
+                    ]
+                },
+                placeholder: ""
             },
         }
     },
@@ -359,7 +378,7 @@ export default {
             alert(error);
         });
     },
-    components: {Multiselect},
+    components: {Multiselect, quillEditor},
 }
 </script>
 

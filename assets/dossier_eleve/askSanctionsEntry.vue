@@ -54,18 +54,16 @@
                     <b-col md="2" class="text-center">{{ date_council }}</b-col>
                     <b-col md="2" class="text-center">{{ date_sanction }}</b-col>
                     <b-col class="current-data mb-1 mr-1">
-                        <p>
-                            {{ comment }}
-                            <b-btn size="sm" variant="light" v-if="comment.length > 100" @click="expand = !expand">
-                                <icon
-                                    color="grey"
-                                    class="align-text-top"
-                                    scale="1.7"
-                                    :name="expand ? 'angle-double-up' : 'angle-double-down'"
-                                    >
-                                </icon>
-                            </b-btn>
-                        </p>
+                        <span v-html="comment"></span>
+                        <b-btn size="sm" variant="light" v-if="comment.length > 100" @click="expand = !expand">
+                            <icon
+                                color="grey"
+                                class="align-text-top"
+                                scale="1.7"
+                                :name="expand ? 'angle-double-up' : 'angle-double-down'"
+                                >
+                            </icon>
+                        </b-btn>
                     </b-col>
                 </b-row>
             </b-card>
@@ -116,10 +114,16 @@
                 }
             },
             comment: function () {
-                if (this.expand || this.rowData.explication_commentaire.length < 101) {
+                const regex = /(<([^>]+)>)/ig;
+                const commentLength = this.rowData.explication_commentaire.replace(regex, "").length;
+                if (this.expand || commentLength < 101) {
                     return this.rowData.explication_commentaire;
                 } else {
-                    return this.rowData.explication_commentaire.substring(0, 100) + "…";
+                    const diffLength = this.rowData.explication_commentaire.length - commentLength;
+                    let comment = this.rowData.explication_commentaire.substring(0, 100 + diffLength) + "…";
+                    if (comment.startsWith("<p>"))
+                        comment += "</p>";
+                    return comment;
                 }
             },
             canSetSanctionDone: function () {

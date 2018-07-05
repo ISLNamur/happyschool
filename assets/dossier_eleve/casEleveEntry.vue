@@ -46,18 +46,17 @@
                         {{ category }}
                     </b-col>
                     <b-col class="current-data mb-1 mr-1">
-                        <p>
-                            {{ comment }}
-                            <b-btn size="sm" variant="light" v-if="comment.length > 150" @click="expand = !expand">
-                                <icon
-                                    color="grey"
-                                    class="align-text-top"
-                                    scale="1.7"
-                                    :name="expand ? 'angle-double-up' : 'angle-double-down'"
-                                    >
-                                </icon>
-                            </b-btn>
-                        </p>
+                        <span v-html="comment">
+                        </span>
+                        <b-btn class="move-up" size="sm" variant="light" v-if="comment.length > 150" @click="expand = !expand">
+                            <icon
+                                color="grey"
+                                class="align-text-top"
+                                scale="1.1"
+                                :name="expand ? 'angle-double-up' : 'angle-double-down'"
+                                >
+                            </icon>
+                        </b-btn>
                     </b-col>
                 </b-row>
             </b-card>
@@ -110,12 +109,18 @@
                 return this.rowData.info ? true : false;
             },
             comment: function () {
-                if (this.expand || this.rowData.explication_commentaire.length < 151) {
+                const regex = /(<([^>]+)>)/ig;
+                const commentLength = this.rowData.explication_commentaire.replace(regex, "").length;
+                if (this.expand || commentLength < 151) {
                     return this.rowData.explication_commentaire;
                 } else {
-                    return this.rowData.explication_commentaire.substring(0, 150) + "…";
+                    const diffLength = this.rowData.explication_commentaire.length - commentLength;
+                    let comment = this.rowData.explication_commentaire.substring(0, 150 + diffLength) + "…";
+                    if (comment.startsWith("<p>"))
+                        comment += "</p>";
+                    return comment;
                 }
-            }
+            },
         },
         methods: {
             deleteEntry: function () {
@@ -176,5 +181,9 @@
     .clickable:hover {
         cursor: pointer;
         color: rgb(0, 0, 150) !important;
+    }
+
+    .move-up {
+        margin-top: -15px;
     }
 </style>
