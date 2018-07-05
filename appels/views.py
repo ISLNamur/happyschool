@@ -20,6 +20,7 @@
 import json
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.staticfiles.templatetags.staticfiles import static
@@ -52,7 +53,17 @@ def nouveau(request):
     if form.is_valid():
         a = Appel()
         a.objet = form.cleaned_data['objet']
+        try:
+            o = ObjectModel.objects.get(display=a.objet)
+            a.object = o
+        except ObjectDoesNotExist:
+            pass
         a.motif = form.cleaned_data['motif']
+        try:
+            o = MotiveModel.objects.get(display=a.motif)
+            a.motive = o
+        except ObjectDoesNotExist:
+            pass
         a.commentaire = form.cleaned_data['commentaires']
         a.datetime_motif_start = form.cleaned_data['datetime_motif_start']
         a.datetime_motif_end = form.cleaned_data['datetime_motif_end']
@@ -87,7 +98,17 @@ def traiter(request):
     if form.is_valid():
         a = Appel.objects.get(pk=request.POST['id'])
         a.objet = form.cleaned_data['objet']
+        try:
+            o = ObjectModel.objects.get(display=a.objet)
+            a.object = o
+        except ObjectDoesNotExist:
+            pass
         a.motif = form.cleaned_data['motif']
+        try:
+            o = MotiveModel.objects.get(display=a.motif)
+            a.motive = o
+        except ObjectDoesNotExist:
+            pass
         a.commentaire = form.cleaned_data['commentaires']
         a.datetime_appel = form.cleaned_data['datetime_appel']
         a.traitement = form.cleaned_data['remarques']
