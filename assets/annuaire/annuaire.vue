@@ -61,7 +61,9 @@
             <b-row v-if="classe && !matricule">
                 <b-col>
                     <p>
-                        <a :href="getClassePhoto">Télécharger les photos des élèves de la classe.</a>
+                        <a target="_blank" rel="noopener noreferrer" :href="getClassePhoto">
+                            Télécharger les photos des élèves de la classe.
+                        </a>
                     </p>
                     <b-list-group class="text-center">
                         <b-list-group-item v-for="s in students" :key="s.matricule"
