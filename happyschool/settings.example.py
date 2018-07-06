@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     'channels',
     'crispy_forms',
     'core',
-    # 'schedule_change',
     'webpack_loader',
     'annuaire',
     # 'infirmerie',
