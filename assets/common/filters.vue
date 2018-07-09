@@ -39,13 +39,13 @@
                     <b-form-input :type="inputType" v-model="dateTime2" :min="dateTime1" />
                 </b-col>
                 <b-col sm="2">
-                    <b-button variant="success" style="display:inline"
+                    <b-button variant="success" style="display:inline" class="mt-sm-0 mt-1"
                         @click="addDateTimeTag"
                         :disabled="dateTime1 === null || dateTime2 === null"
                         >
-                        Ajouter le filtre
+                        Ajouter
                     </b-button>
-                    <b-button variant="danger" @click="removeFilter('current')">
+                    <b-button variant="danger" @click="removeFilter('current')" class="mt-xl-0 mt-1">
                         Retirer
                     </b-button>
                 </b-col>
