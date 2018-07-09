@@ -44,7 +44,7 @@
                 </b-row>
             </b-tab>
             <b-tab title="Retenues">
-                <b-row>
+                <b-row class="mt-4">
                     <b-col>
                         <b-form-row>
                             <b-form-group label="À partir du">
