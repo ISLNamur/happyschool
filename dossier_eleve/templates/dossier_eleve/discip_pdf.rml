@@ -94,7 +94,7 @@
                 <td>{{ c.datetime_encodage|date:'Y/m/d' }}</td>
                 <td>
                     <para alignment="justify">
-                        {{ c.explication_commentaire }}
+                        {{ c.explication_commentaire|striptags }}
                     </para>
                 </td>
                 <td>
