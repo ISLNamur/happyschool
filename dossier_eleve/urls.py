@@ -26,12 +26,6 @@ from . import views
 #
 urlpatterns = [
     url(r'^gen_pdf/$', views.gen_pdf, name='gen_pdf'),
-    url(r'^nouveau_cas/$', views.nouveau_cas, name='nouveau_cas'),
-    url(r'^nouveau_cas/(?P<cas_id>[0-9]+)$', views.nouveau_cas, name='nouveau_cas'),
-    url(r'^stats/(?P<matricule>[0-9]+)$', views.get_stats, name='get_stats'),
-    url(r'^get_entries/$', views.get_entries, name='get_entries'),
-    url(r'^get_entries/(?P<ens>\w+)/(?P<column>\w+)/$', views.get_entries, name='get_entries'),
-    url(r'^get_cas/$', views.get_cas, name='get_cas'),
     url(r'^get_pdf/(?P<all_year>[0-9]+)/(?P<matricule>[0-9]+)/(?P<infos>[0-9]+)/(?P<sanctions>[0-9]+)/',
         views.get_pdf, name='get_pdf'),
     url(r'^get_pdf/(?P<all_year>[0-9]+)/(?P<classe>\w+)/(?P<infos>[0-9]+)/(?P<sanctions>[0-9]+)/', views.get_pdf, name='get_pdf'),
@@ -42,8 +36,6 @@ urlpatterns = [
     url(r'^get_pdf_retenues/(?P<date>.*)/(?P<date2>.*)/', views.get_pdf_retenues, name='get_pdf_retenues'),
     url(r'^get_pdf_retenues/(?P<date>.*)', views.get_pdf_retenues, name='get_pdf_retenues'),
     url(r'^get_pdf_retenues/', views.get_pdf_retenues, name='get_pdf_retenues'),
-    url(r'^change_sanction/(?P<cas_id>[0-9]+)/(?P<is_done>[0-9]+)$', views.change_sanction, name='change_sanction'),
-    url(r'^change_sanction/', views.change_sanction, name='change_sanction'),
     path('', views.DossierEleveView.as_view(), name='dossier_eleve'),
     path('ask_sanctions', views.AskSanctionsView.as_view()),
     path('api/statistics/<int:matricule>/', views.StatisticAPI.as_view(), name='statistics'),

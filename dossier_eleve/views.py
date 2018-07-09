@@ -77,224 +77,6 @@ def compute_unread_rows(request):
 
 
 @login_required
-@user_passes_test(lambda u: u.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.EDUCATOR_GROUP]),
-                  login_url='no_access')
-def change_sanction(request, cas_id=None, is_done=None):
-    cas = CasEleve.objects.get(pk=cas_id)
-    cas.sanction_faite = is_done == "1"
-    cas.save()
-    return HttpResponse(status=200)
-
-
-def nouveau(request):
-    form = NouveauCasForm(request.POST)
-    if form.is_valid():
-        explication_commentaire = demandeur = ""
-        info = sanction_decision = datetime_sanction = datetime_conseil = None
-        sanction_faite = False
-        visible_by_educ = visible_by_tenure = True
-
-        if form.cleaned_data['est_disciplinaire'] == 'non_disciplinaire':
-            info = InfoEleve.objects.get(pk=form.cleaned_data['info'])
-            explication_commentaire = form.cleaned_data['commentaire_info']
-            visible_by_educ = form.cleaned_data['visible_by_educ']
-            visible_by_tenure = form.cleaned_data['visible_by_tenure']
-        else:
-            sanction_decision = SanctionDecisionDisciplinaire.objects.get(pk=form.cleaned_data['sanction_decision'])
-            datetime_sanction = form.cleaned_data['datetime_sanction']
-            explication_commentaire = form.cleaned_data['explication_sanction']
-            sanction_faite = form.cleaned_data['sanction_faite']
-            if form.cleaned_data['conseil_discipline']:
-                datetime_conseil = form.cleaned_data['datetime_conseil']
-
-        c = None
-
-        if int(request.POST['id']) < 0:
-            # Create a new entry.
-            matricule = form.cleaned_data['matricule']
-            try:
-                student = People().get_student_by_id(matricule, ['secondaire'])
-            except ObjectDoesNotExist:
-                print(ObjectDoesNotExist("Student matricule %s does not exist" % matricule))
-                return
-
-            # Check authorizations.
-            classes = get_classes(teaching=['secondaire'], check_access=True, user=request.user)
-            if student.classe not in classes:
-                return
-
-            c = CasEleve(matricule=student, name=student.fullname)
-            c.datetime_encodage = timezone.now()
-            c.user = request.user.username
-        else:
-            c = CasEleve.objects.get(pk=request.POST['id'])
-            # Check authorizations.
-            classes = get_classes(teaching=['secondaire'], check_access=True, user=request.user)
-            if c.matricule.classe not in classes:
-                return
-
-        c.info = info
-        c.demandeur = form.cleaned_data['demandeur']
-        c.important = form.cleaned_data['important']
-        c.sanction_decision = sanction_decision
-        c.explication_commentaire = explication_commentaire
-        c.datetime_sanction = datetime_sanction
-        c.datetime_conseil = datetime_conseil
-        c.sanction_faite = sanction_faite
-        c.visible_by_educ = visible_by_educ
-        c.visible_by_tenure = visible_by_tenure
-
-        # Check if we need to send info to the related teachers
-        if info and form.cleaned_data['send_to_teachers']:
-            student = People().get_student_by_id(c.matricule.matricule)
-            teachers_obj = ResponsibleModel.objects.filter(classe=student.classe)
-            # student = student_man.get_person(c.matricule.matricule)
-            # teachers_obj = teacher_man.get_people(filters=['classe=' + student.classe, 'enseignement=secondaire'])
-
-            teachers = []
-            for t in teachers_obj:
-                if not t.email_alias:
-                    send_email(to=[settings.EMAIL_ADMIN],
-                               subject='ISLN : À propos de ' + student.fullname + " non envoyé à %s" % t.full_name,
-                               email_template="dossier_eleve/email_info.html",
-                               context={'student': student, 'info': model_to_dict(c), 'info_type': info}
-                               )
-                else:
-                    teachers.append(t.email_alias)
-
-            # Add coord and educs to email list
-            teachers += map(lambda e: e.email, EmailModel.objects.filter(teaching=student.teaching, years=student.classe.year))
-            teachers += list(map(lambda e: e.email, EmailModel.objects.filter(is_pms=True)))
-
-            if not settings.DEBUG:
-                try:
-                    send_email(to=teachers,
-                               subject='ISLN : À propos de ' + student.fullname,
-                               email_template="dossier_eleve/email_info.html",
-                               context={'student': student, 'info': model_to_dict(c), 'info_type': info}
-                               )
-                except Exception as err:
-                    send_email(to=teachers,
-                               subject='ISLN : À propos de ' + student.fullname,
-                               email_template="dossier_eleve/email_info.html",
-                               context={'student': student, 'info': model_to_dict(c), 'info_type': info}
-                               )
-            else:
-                print(teachers)
-                send_email(to=[settings.EMAIL_ADMIN],
-                           subject='ISLN : À propos de ' + student.fullname,
-                           email_template="dossier_eleve/email_info.html",
-                           context={'student': student, 'info': model_to_dict(c), 'info_type': info}
-                           )
-                for t in teachers:
-                    print("Sending email to : " + t)
-
-        c.save()
-    else:
-        print("ERROR !!!!!")
-        print(form.errors)
-
-
-def supprimer(request):
-    p = CasEleve.objects.get(pk=request.POST['id'])
-    p.delete()
-
-
-@login_required
-@user_passes_test(lambda u: u.groups.filter(name__in=groups_with_access), login_url='no_access')
-def get_cas(request):
-    # Récuparation des variables GET
-    # On enlève les anciens paramètres
-    request.GET = request.GET.copy()
-    for k in request.GET:
-        request.GET[k] = request.GET[k]
-
-    # La page courrante
-    page = request.GET.get("page", 1)
-    # Le nombre de cas par page
-    cas_par_page = request.GET.get("rpp", 20)
-    # L'ordre d'affichage
-    sort_by = request.GET.get("sortBy", 'datetime_encodage')
-    # Ordre descendant
-    asc = request.GET.get("order", "desc") == 'asc'
-    # Filtre sur les cas
-    filter_cas = request.GET.get("filter", None)
-    data1 = request.GET.get("data1", None)
-    data2 = request.GET.get("data2", None)
-    # Show only active ?
-    active = request.GET.get("active", "0")
-    # Show retenues from all degrees?
-    retenues = request.GET.get("retenues", "0")
-    # Show cas by scolaryear.
-    year = request.GET.get("year", str(get_scholar_year()))
-
-    cas_discip = filter_and_order(request, only_actives=active == "1", retenues=retenues == "1", year=int(year),
-                                  column=filter_cas, data1=data1, data2=data2, order_by=sort_by, order_asc=asc)
-
-    paginator = Paginator(cas_discip, cas_par_page)
-
-    cas_page = None
-    try:
-        cas_page = paginator.page(page)
-    except (PageNotAnInteger, EmptyPage):
-        cas_page = paginator.page(1)
-
-    cas = []
-    for c in cas_page:
-        dic = model_to_dict(c)
-        dic['fullname'] = c.matricule.fullname
-        dic['classe'] = c.matricule.classe.compact_str
-        if dic['info']:
-            dic['info'] = InfoEleve.objects.get(pk=dic['info']).info
-        else:
-            dic['sanction_decision'] = SanctionDecisionDisciplinaire.objects.get(
-                pk=dic['sanction_decision']).sanction_decision
-        cas.append(dic)
-
-    context = {'cas': cas, 'paginator': cas_page, }
-    is_teacher = request.user.groups.filter(name__in=[settings.TEACHER_GROUP]).exists()
-    is_direction = not request.user.groups.filter(name__in=[settings.DIRECTION_GROUP]).exists()
-    is_coord = not request.user.groups.filter(name__istartswith=[settings.COORD_GROUP]).exists()
-    context['is_only_teacher'] = not (is_coord or is_direction) and is_teacher
-    return render(request, 'dossier_eleve/list_cas.html', context)
-
-
-@login_required
-@user_passes_test(lambda u: u.groups.filter(name__in=groups_with_access), login_url='no_access')
-def index(request):
-    settings = DossierEleveSettingsModel.objects.first()
-    if not settings:
-        # Create default settings.
-        DossierEleveSettingsModel.objects.create().save()
-
-    if request.method == "POST":
-        if request.POST['type'] == 'nouveau':
-            nouveau(request)
-
-        if request.POST['type'] == 'supprimer':
-            supprimer(request)
-
-    compute_unread_rows(request)
-    request.session['dossier_eleve_last_time'] = timezone.now().timestamp()
-
-    filters = [
-        {'val': 'name', 'display': 'Nom et prénom'},
-        {'val': 'classe', 'display': 'Classe'},
-        {'val': 'datetime_encodage', 'display': "Date d'encodage"},
-        {'val': 'info', 'display': 'Info'},
-        {'val': 'demandeur', 'display': 'Demandeur'},
-        {'val': 'sanction', 'display': 'Sanction/décision'},
-        {'val': 'comment', 'display': 'Explication/Commentaire'},
-        {'val': 'datetime_council', 'display': 'Date du conseil de discipline'},
-        {'val': 'datetime_sanction', 'display': 'Date de la sanction'},
-        {'val': 'sanction_faite', 'display': 'Sanction faite ?'},
-    ]
-
-    context = { 'is_pms': request.user.username == 'pms', 'filters': filters, 'settings': settings}
-    return render(request, 'dossier_eleve/index.html', context=context)
-
-
-@login_required
 def gen_pdf(request):
     form_summary = GenerateSummaryPDFForm()
     form_council = GenDisciplinaryCouncilForm()
@@ -337,8 +119,6 @@ def get_pdf_council(request, date_from=None, date_to=None):
     response.write(pdf.read())
     return response
 
-    # return render(request, 'dossier_eleve/no_student.html')
-
 
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name__in=groups_with_access), login_url='no_access')
@@ -353,7 +133,6 @@ def get_pdf_retenues(request, date=None, date2=None):
     retenues = []
     for r in rows:
         dic = model_to_dict(r)
-        # student = student_man.get_person(dic['matricule'])
         student = People().get_student_by_id(dic['matricule'])
         dic['classe'] = student.classe.compact_str
         dic['full_name'] = student.fullname
@@ -384,9 +163,7 @@ def get_pdf(request, all_year=False, matricule=None, classe=None, infos=None, sa
     classe_access = get_classes(get_settings().teachings.all(), True, request.user)
 
     if matricule:
-        # student = StudentLDAP.objects.get(matricule=matricule)
         student = People().get_student_by_id(matricule)
-        # if not int(student.classe[0]) in year_access:
         if student.classe not in classe_access:
             return HttpResponse("Vous n'avez pas les accès nécessaire.", status=401)
 
@@ -401,7 +178,6 @@ def get_pdf(request, all_year=False, matricule=None, classe=None, infos=None, sa
         return response
 
     if classe:
-        # if not int(classe[0]) in year_access:
         classes = classe_access.filter(year=int(classe[0]), letter=classe[1].lower(), teaching__name="secondaire")
         if not classes.exists():
             return HttpResponse("Vous n'avez pas les accès nécessaire.", status=401)
@@ -453,7 +229,6 @@ def create_pdf(student, all_year, infos, sanctions):
 
     context = gen_stats(student)
     tenure = ResponsibleModel.objects.filter(tenure=student.classe).first()
-    # tenure = teacher_man.get_people(filters=['tenure=' + student.classe])[0]
     context['tenure'] = tenure.fullname
 
     context['student'] = student
@@ -465,52 +240,6 @@ def create_pdf(student, all_year, infos, sanctions):
 
     pdf = rml2pdf.parseString(rml_str)
     return pdf
-
-
-@login_required
-@user_passes_test(lambda u: u.groups.filter(name__in=groups_with_access), login_url='no_access')
-def nouveau_cas(request, cas_id=-1):
-    cas_id = int(cas_id)
-    form = None
-    context = {}
-    if cas_id < 0:
-        form = NouveauCasForm()
-    else:
-        cas = CasEleve.objects.get(pk=cas_id)
-        init = {'matricule': cas.matricule.matricule,
-                'name': cas.matricule.fullname_classe,
-                'demandeur': cas.demandeur, 'important': cas.important, }
-        context['matricule'] = cas.matricule.matricule
-        if cas.info:
-            init = {**init, **{'est_disciplinaire': "non_disciplinaire",
-                               'info': cas.info.pk, 'commentaire_info': cas.explication_commentaire,
-                               'visible_by_educ': cas.visible_by_educ, 'visible_by_tenure': cas.visible_by_tenure,
-                               }}
-        else:
-            conseil_discipline = cas.datetime_conseil is not None
-            init = {**init, **{'est_disciplinaire': "disciplinaire",
-                               'sanction_decision': cas.sanction_decision.pk,
-                               'datetime_sanction': cas.datetime_sanction,
-                               'explication_sanction': cas.explication_commentaire,
-                               'conseil_discipline': conseil_discipline,
-                               'datetime_conseil': cas.datetime_conseil,
-                               'sanction_faite': cas.sanction_faite,
-                               }
-                    }
-            stat = gen_stats(cas.matricule)
-            context = { **context, **stat}
-
-        form = NouveauCasForm(initial=init, id=cas.pk, is_info=cas.info)
-
-    context['form'] = form
-    # context['is_coord'] = auth.is_coord(request) or auth.is_direction(request)
-    coords = []
-    for i in range(1, 7):
-        coords.append(settings.COORD_GROUP + str(i))
-    context['is_coord'] = request.user.groups.filter(name__in=coords + [settings.DIRECTION_GROUP, settings.SYSADMIN_GROUP]).exists()
-    context['is_educ'] = request.user.groups.filter(name__in=[settings.EDUCATOR_GROUP, settings.SYSADMIN_GROUP]).exists()
-
-    return render(request, 'dossier_eleve/nouveau_cas.html', context)
 
 
 def gen_stats(matricule):
@@ -543,13 +272,6 @@ def gen_stats(matricule):
             }
 
     return stats
-
-
-@login_required
-@user_passes_test(lambda u: u.groups.filter(name__in=groups_with_access), login_url='no_access')
-def get_stats(request, matricule):
-    stats = gen_stats(matricule)
-    return JsonResponse(stats, safe=False)
 
 
 def filter_and_order(request, only_actives=False, retenues=False, year=None,
