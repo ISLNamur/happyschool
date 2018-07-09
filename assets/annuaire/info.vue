@@ -86,7 +86,7 @@
                                             <b-row v-for="cas in important" :key="cas.id" class="mb-2">
                                                 <b-col cols="2">{{ niceDate(cas.datetime_encodage) }}</b-col>
                                                 <b-col cols="3">{{ cas.sanction_decision ? cas.sanction_decision.sanction_decision : cas.info.info }}</b-col>
-                                                <b-col>{{ cas.explication_commentaire }}</b-col>
+                                                <b-col><div v-html="cas.explication_commentaire"></div></b-col>
                                             </b-row>
                                         </b-card-body>
                                     </b-collapse>
@@ -147,7 +147,7 @@
                 <b-row v-for="cas in dossier_eleve" :key="cas.id" class="mb-2">
                     <b-col cols="2" :class="cas.important ? ' important' : ''">{{ niceDate(cas.datetime_encodage) }}</b-col>
                     <b-col cols="2" :class="cas.important ? ' important' : ''">{{ cas.sanction_decision ? cas.sanction_decision.sanction_decision : cas.info.info }}</b-col>
-                    <b-col :class="cas.important ? ' important' : ''">{{ cas.explication_commentaire }}</b-col>
+                    <b-col :class="cas.important ? ' important' : ''"><div v-html="cas.explication_commentaire"></div></b-col>
                 </b-row>
             </b-card>
             <b-card v-if="last_news && infirmerie.length > 0" header="Derniers passages à l'infirmerie" class="mt-2">
@@ -275,7 +275,7 @@ export default {
                     this.medical = response.data;
                 });
 
-                axios.get('/dossier_eleve/api/cas_eleve/?ordering=-datetime_encodage&important=true&matricule_id=' + this.matricule)
+                axios.get('/dossier_eleve/api/cas_eleve/?ordering=-datetime_encodage&activate_important=true&matricule_id=' + this.matricule)
                 .then(response => {
                     this.important = response.data.results;
                 });
