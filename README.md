@@ -33,9 +33,11 @@ Par où commencer ?
 
 - [Installation](docs/installation.md). Que ce soit pour commencer à développer
 ou pour utiliser en production.
-- [Configuration](docs/configuration.md). Happy School possède différents
+- [Configuration](docs/configuration.md). Happyschool possède différents
 niveaux de configuration, les applications à utiliser, les droits d'accès
 aux applications, etc.
 - [Utilisation](docs/utilisation.md). Les applications sont nées d'un réel
 besoin et suivent en conséquence une manière de fonctionner propre à ces
 besoins.
+- [Développement](docs/developpement.md). Développez votre propre application
+ou corrigez vous-même un bug.
