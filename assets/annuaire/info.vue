@@ -37,6 +37,10 @@
                                     <dd class="col-7">{{ firstName }}</dd>
                                     <dt class="col-5 text-right">Matricule</dt>
                                     <dd class="col-7">{{ matricule }}</dd>
+                                    <dt class="col-5 text-right">Courriel</dt>
+                                    <dd class="col-7">{{ email }}</dd>
+                                    <dt class="col-5 text-right" v-if="emailAlias">Courriel de l'école</dt>
+                                    <dd class="col-7" v-if="emailAlias">{{ emailAlias }}</dd>
                                     <dt v-if="tenure && tenure.length > 0" class="col-5 text-right">Titulariat</dt>
                                     <dd v-if="tenure" v-for="(t, index) in tenure" :key="t.id"
                                         :class="{'col-7': index == 0, 'col-7 offset-5': index > 0}">
@@ -60,9 +64,9 @@
                                 </dl>
                                 <dl class="row">
                                     <dt class="col-5 text-right">Nom d'utilisateur </dt>
-                                    <dd class="col-7">{{ student_info.username }}</dd>
+                                    <dd class="col-7">{{ username }}</dd>
                                     <dt class="col-5 text-right">Mot de passe </dt>
-                                    <dd v-if="showPassword" class="col-7">{{ student_info.password }}</dd>
+                                    <dd v-if="showPassword" class="col-7">{{ password }}</dd>
                                     <dd v-else class="col-7">
                                         <b-btn size="sm" variant="light" @click="showPassword = true">Montrer le mot de passe</b-btn>
                                     </dd>
@@ -209,6 +213,10 @@ export default {
             lastName: '',
             firstName: '',
             showPassword: false,
+            username: '',
+            password: '',
+            email: '',
+            emailAlias: '',
             classe: [],
             tenure: null,
             teachings: [],
@@ -235,6 +243,10 @@ export default {
     },
     methods: {
         reset: function () {
+            this.username = '';
+            this.password = '';
+            this.email = '';
+            this.email_alias = '';
             this.student_info = {};
             this.contact = null;
             this.medical = null;
@@ -263,6 +275,8 @@ export default {
                 axios.get('/annuaire/api/info_general/' + this.matricule + '/')
                 .then(response => {
                     this.student_info = response.data;
+                    this.username = this.student_info.username;
+                    this.password = this.student_info.password;
                 });
 
                 axios.get('/annuaire/api/info_contact/' + this.matricule + '/')
@@ -304,6 +318,14 @@ export default {
                     this.classe = response.data.classe;
                     this.teachings = response.data.teaching;
                     this.tenure = response.data.tenure;
+                })
+
+                axios.get('/annuaire/api/responsible_sensitive/' + this.matricule + '/')
+                .then(response => {
+                    this.username = response.data.user.username;
+                    this.password = response.data.password;
+                    this.emailAlias = response.data.email_alias;
+                    this.email = response.data.email;
                 })
             }
         }

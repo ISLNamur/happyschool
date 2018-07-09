@@ -151,15 +151,15 @@ class ResponsibleModel(models.Model):
 
     @property
     def username(self) -> str:
-        if settings.USE_LDAP_INFO:
-            return self._get_ldap_properties()['username']
-        else:
-            return self.user.username
+        return self.user.username
 
     @property
     def password(self) -> str:
         if settings.USE_LDAP_INFO:
-            return self._get_ldap_properties()['password']
+            password = self._get_ldap_properties()[settings.AUTH_LDAP_USER_ATTR_MAP['password']]
+            if type(password) == list:
+                password = password[0]
+            return password
         else:
             return self.user.password
 
@@ -167,11 +167,12 @@ class ResponsibleModel(models.Model):
         if settings.USE_LDAP_INFO:
             connection = get_ldap_connection()
             base_dn = settings.AUTH_LDAP_USER_SEARCH.base_dn
-            # Get attributes we are interested in.
-            attributes = list(map(lambda k: k[0], ldap_to_django.items()))
-            connection.search(base_dn, "(id=%s)" % self.matricule, attributes=attributes)
+            # Assume username is unique.
+            ldap_username_attr = settings.AUTH_LDAP_USER_ATTR_MAP['username']
+            connection.search(base_dn, "(%s=%s)" % (ldap_username_attr, self.user.username),
+                              attributes='*')
             if len(connection.response) > 0:
-                return get_django_dict_from_ldap(connection.response[0])
+                return connection.response[0]['attributes']
 
             raise Exception("Teacher not found in the LDAP directory.")
         else:

@@ -22,14 +22,14 @@ from rest_framework import serializers
 from core.models import *
 
 
-class ResponsibleSerializer(serializers.ModelSerializer):
+class ResponsibleSensitiveSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResponsibleModel
-        fields = ('pk', 'last_name', 'first_name', 'is_secretary', 'email', 'email_alias', 'teaching')
+        fields = ('pk', 'last_name', 'first_name', 'is_secretary', 'email', 'email_alias', 'teaching', 'user', 'password')
         depth = 1
 
 
-class ResponsibleSensitiveSerializer(serializers.ModelSerializer):
+class ResponsibleSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResponsibleModel
         fields = ('pk', 'matricule', 'last_name', 'first_name', 'is_secretary', 'email_alias',

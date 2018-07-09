@@ -15,7 +15,7 @@ from django.views.generic import TemplateView
 from core.models import ResponsibleModel, TeachingModel, AdditionalStudentInfo
 from core.people import get_classes
 from core.permissions import IsSecretaryPermission
-from core.serializers import ResponsibleSerializer, TeachingSerializer,\
+from core.serializers import ResponsibleSensitiveSerializer, TeachingSerializer,\
     StudentContactInfoSerializer, StudentGeneralInfoSerializer, StudentMedicalInfoSerializer
 from core.utilities import get_scholar_year
 
@@ -101,7 +101,7 @@ class ProfilView(LoginRequiredMixin, TemplateView):
 
 class MembersAPI(ModelViewSet):
     queryset = ResponsibleModel.objects.filter(is_teacher=False, is_educator=False)
-    serializer_class = ResponsibleSerializer
+    serializer_class = ResponsibleSensitiveSerializer
     permission_classes = (IsAuthenticated, IsSecretaryPermission)
 
     def get_queryset(self):

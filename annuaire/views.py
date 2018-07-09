@@ -38,8 +38,9 @@ from unidecode import unidecode
 
 from core.people import People, get_classes
 from core.models import StudentModel, ClasseModel, TeachingModel, ResponsibleModel, AdditionalStudentInfo
-from core.serializers import StudentSerializer, ResponsibleSensitiveSerializer, ClasseSerializer,\
-    StudentGeneralInfoSerializer, StudentContactInfoSerializer, StudentMedicalInfoSerializer
+from core.serializers import StudentSerializer, ResponsibleSerializer, ClasseSerializer,\
+    StudentGeneralInfoSerializer, StudentContactInfoSerializer, StudentMedicalInfoSerializer,\
+    ResponsibleSensitiveSerializer
 
 from .models import AnnuaireSettingsModel
 from .serializers import AnnuaireSettingsSerializer
@@ -434,7 +435,7 @@ def search_people(query, people_type, teachings, check_access, user):
         if type(person) == StudentModel:
             return StudentSerializer(person).data
         elif type(person) == ResponsibleModel:
-            return ResponsibleSensitiveSerializer(person).data
+            return ResponsibleSerializer(person).data
 
     if len(query) < 1:
         return []
@@ -449,17 +450,17 @@ def search_people(query, people_type, teachings, check_access, user):
         ).data
 
     if people_type == 'responsible' or people_type == 'all':
-        people += ResponsibleSensitiveSerializer(
+        people += ResponsibleSerializer(
             People().get_responsibles_by_name(query, teachings)[:truncate_limit], many=True
         ).data
 
     if people_type == 'teacher':
-        people += ResponsibleSensitiveSerializer(
+        people += ResponsibleSerializer(
             People().get_teachers_by_name(query, teachings)[:truncate_limit], many=True
         ).data
 
     if people_type == 'educator':
-        people += ResponsibleSensitiveSerializer(
+        people += ResponsibleSerializer(
             People().get_educators_by_name(query, teachings)[:truncate_limit], many=True
         ).data
 
@@ -549,9 +550,23 @@ class StudentInfoViewSet(ReadOnlyModelViewSet):
 
 class ResponsibleInfoViewSet(ReadOnlyModelViewSet):
     queryset = ResponsibleModel.objects.all()
+    serializer_class = ResponsibleSerializer
+    permission_classes = (IsAuthenticated,)
+    lookup_field = "matricule"
+
+
+class ResponsibleSensitiveViewSet(ReadOnlyModelViewSet):
+    queryset = ResponsibleModel.objects.all()
     serializer_class = ResponsibleSensitiveSerializer
     permission_classes = (IsAuthenticated,)
     lookup_field = "matricule"
+
+    def get_queryset(self):
+        allowed_groups = get_settings().can_see_responsibles_sensitive.all()
+        if not self.request.user.groups.intersection(allowed_groups).exists():
+            return ResponsibleModel.objects.none()
+
+        return super().get_queryset()
 
 
 class StudentGeneralInfoViewSet(ReadOnlyModelViewSet):
