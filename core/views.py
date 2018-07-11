@@ -62,8 +62,6 @@ class BaseModelViewSet(ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     permission_classes = (DjangoModelPermissions,)
     user_field = "user"
-    datetime_creation_field = "datetime_encodage"
-    datetime_update_field = "datetime_encodage"
 
     def get_queryset(self):
         if not self.filter_access and self.request.user.groups.intersection(self.get_group_all_access).exists():
@@ -77,17 +75,10 @@ class BaseModelViewSet(ModelViewSet):
                 return self.queryset
 
     def perform_create(self, serializer):
-
         serializer.save(**{
-            self.datetime_creation_field: timezone.now(),
             self.user_field: self.request.user.username,
             }
         )
-
-    def perform_update(self, serializer):
-        serializer.save(**{
-            self.datetime_update_field: timezone.now()
-        })
 
     def get_group_all_access(self):
         return ()
