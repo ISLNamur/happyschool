@@ -258,8 +258,8 @@ WEBPACK_LOADER = {
 MAILGUN_KEY = "your-mailgun-key"
 SPARKPOST_KEY = "your-sparkpost-key"
 
-MEDIA_SYNC = {
-    'rsync_command': "/usr/bin/rsync -e ssh -avz --delete-after /home/user/happyschool/media happyschool@remote:/home/user/happyschool/",
+EMAIL_ATTACHMENTS_SYNC = {
+    'rsync_command': "/usr/bin/rsync -e ssh -avz --delete-after /home/user/happyschool/media/mail_notification happyschool@remote:/home/user/happyschool/media",
 }
 
 

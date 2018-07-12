@@ -28,7 +28,7 @@ from mail_answer.models import MailTemplateModel
 
 
 def unique_file_name(instance, filename):
-    path = strftime('attachments/%Y/%m/%d/')
+    path = strftime('mail_notification/%Y/%m/%d/')
     file = "".join(random.choice(string.ascii_letters) for x in range(0, 8)) + "_" + filename
     return path + file
 

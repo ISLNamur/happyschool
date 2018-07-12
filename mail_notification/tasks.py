@@ -48,7 +48,7 @@ def get_settings():
 def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=True, responsibles=True):
     """ Send emails """
     # First sync media between local and distant server
-    subprocess.run(settings.MEDIA_SYNC['rsync_command'], shell=True)
+    subprocess.run(settings.EMAIL_ATTACHMENTS_SYNC['rsync_command'], shell=True)
 
     # Get EmailNotification object.
     email_notif = EmailNotification.objects.get(pk=pk)
