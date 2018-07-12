@@ -38,7 +38,7 @@ class EmailSenderSerializer(serializers.ModelSerializer):
 class EmailAttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailAttachment
-        fields = ['id']
+        fields = '__all__'
 
 
 class OtherEmailSerializer(serializers.ModelSerializer):

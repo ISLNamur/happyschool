@@ -33,7 +33,7 @@ urlpatterns = [
     url(r'^get_email_to_options/(?P<teaching>\w+)/(?P<to_type>\w+)/$', views.get_email_to_options, name='get_email_to_options'),
     url(r'^get_tags_options/$', views.get_tags_options, name='get_tags_options'),
     url(r'^get_senders/(?P<teaching>\w+)/', views.SendersList.as_view(), name='get_senders'),
-    url(r'^upload_file/$', views.UploadFile.as_view(), name='upload_file'),
+    url(r'^upload_file/$', views.UploadFile.as_view(), name='attached_file'),
     url(r'^upload_file/(?P<pk>[0-9]+)/$', views.UploadFile.as_view(), name='remove_file'),
 ]
 

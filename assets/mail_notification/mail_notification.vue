@@ -139,7 +139,9 @@
                                 >
                             </b-form-file>
                             <b-list-group v-for="(item, index) in uploadedFiles" :key="index">
-                                <file-upload :file="item.file" @delete="deleteFile(index)" @setid="setFileId(index, $event)"></file-upload>
+                                <file-upload :id=item.id :file="item.file" path="/mail_notification/upload_file/"
+                                    @delete="deleteFile(index)" @setdata="setFileData(index, $event)">
+                                </file-upload>
                             </b-list-group>
                         </b-form-group>
                         <b-form-group
@@ -186,7 +188,7 @@ import Icon from 'vue-awesome/components/Icon.vue'
 import axios from 'axios';
 import Multiselect from 'vue-multiselect';
 
-import FileUpload from './file_upload.vue';
+import FileUpload from '../common/file_upload.vue';
 
 Vue.use(BootstrapVue);
 Vue.component('icon', Icon);
@@ -287,8 +289,9 @@ export default {
             }
             this.attachments.splice(0, this.attachments.length);
         },
-        setFileId: function(index, id) {
-            this.uploadedFiles[index].id = id;
+        setFileData: function(index, data) {
+            this.uploadedFiles[index].id = data.id;
+            this.uploadedFiles[index].link = data.attachment;
         },
         deleteFile: function(index) {
             this.uploadedFiles.splice(index, 1);
