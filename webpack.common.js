@@ -5,6 +5,7 @@ var BundleTracker = require('webpack-bundle-tracker');
 module.exports = {
 	context: __dirname,
 	entry: {
+		babelPolyfill: "babel-polyfill",
 		menu: './assets/js/menu',
 		annuaire: './assets/js/annuaire',
         schedule_change: './assets/js/schedule_change',
@@ -28,7 +29,7 @@ module.exports = {
 		new webpack.optimize.CommonsChunkPlugin({
 			name: "commons",
 			chunks: ["menu", "schedule_change", "appels", "mail_notification",
-				"mail_notification_list", "members", "mail_answer", "answer", "dossier_eleve",
+				"mail_notification_list", "members", "mail_answer", "dossier_eleve",
 				"ask_sanctions", "annuaire",
 			],
 			minChunks: 2
@@ -58,6 +59,11 @@ module.exports = {
 					{ loader: "style-loader" },
 					{ loader: "css-loader" }
 				]
+			},
+			{
+				test: /\.js$/,
+				exclude: /node_modules/,
+				use: 'babel-loader',
 			}
 		]
 	}
