@@ -62,3 +62,9 @@ class CasEleveSerializer(serializers.ModelSerializer):
         model = CasEleve
         fields = '__all__'
         read_only_fields = ('user', 'datetime_encodage',)
+
+
+class CasAttachmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CasAttachment
+        fields = '__all__'

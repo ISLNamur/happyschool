@@ -39,6 +39,8 @@ urlpatterns = [
     path('', views.DossierEleveView.as_view(), name='dossier_eleve'),
     path('ask_sanctions', views.AskSanctionsView.as_view()),
     path('api/statistics/<int:matricule>/', views.StatisticAPI.as_view(), name='statistics'),
+    path('upload_file/', views.UploadFile.as_view(), name='upload_file'),
+    path('upload_file/<int:pk>/', views.UploadFile.as_view(), name='remove_file'),
 ]
 
 router = DefaultRouter()

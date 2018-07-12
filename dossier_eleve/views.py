@@ -33,8 +33,10 @@ import json
 
 from django_filters import rest_framework as filters
 
+from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+from rest_framework.parsers import FileUploadParser
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -686,3 +688,34 @@ class StatisticAPI(APIView):
             stats.append({'display': 'Total disciplinaire', 'value': len(cas_discip)})
 
         return Response(json.dumps(stats))
+
+
+class UploadFile(APIView):
+    parser_classes = (FileUploadParser,)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk, format=None):
+        try:
+            attachment = CasAttachment.objects.get(pk=pk)
+            serializer = CasAttachmentSerializer(attachment)
+            return Response(data=serializer.data, status=status.HTTP_202_ACCEPTED)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+    def put(self, request, format=None):
+        file_obj = request.FILES['file']
+        attachment = CasAttachment(attachment=file_obj)
+        attachment.save()
+        serializer = CasAttachmentSerializer(attachment)
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, pk, format=None):
+        try:
+            attachment = CasAttachment.objects.get(pk=pk)
+            attachment.delete()
+        except ObjectDoesNotExist:
+            pass
+
+        # As we want the object to be removed, if it's not found, it's ok!
+        return Response(status=status.HTTP_200_OK)

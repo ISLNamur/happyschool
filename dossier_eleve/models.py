@@ -17,10 +17,20 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
+import string
+import random
+from time import strftime
+
 from django.db import models
 from django.contrib.auth.models import Group
 
 from core.models import StudentModel, TeachingModel
+
+
+def unique_file_name(instance, filename):
+    path = strftime('dossier_eleve/%Y/%m/%d/')
+    file = "".join(random.choice(string.ascii_letters) for x in range(0, 4)) + "_" + filename
+    return path + file
 
 
 class DossierEleveSettingsModel(models.Model):
@@ -45,6 +55,10 @@ class SanctionDecisionDisciplinaire(models.Model):
         return self.sanction_decision
 
 
+class CasAttachment(models.Model):
+    attachment = models.FileField(upload_to=unique_file_name)
+
+
 class SanctionStatisticsModel(models.Model):
     display = models.CharField(max_length=100)
     sanctions_decisions = models.ManyToManyField(SanctionDecisionDisciplinaire, blank=True,
@@ -63,6 +77,7 @@ class CasEleve(models.Model):
     demandeur = models.CharField(max_length=50)
     sanction_decision = models.ForeignKey(SanctionDecisionDisciplinaire, null=True, blank=True, on_delete=models.SET_NULL)
     explication_commentaire = models.CharField(max_length=2000)
+    attachments = models.ManyToManyField(CasAttachment)
     datetime_sanction = models.DateTimeField("date de la sanction", null=True, blank=True)
     datetime_conseil = models.DateTimeField("date du conseil disciplinaire", null=True, blank=True)
     sanction_faite = models.NullBooleanField(default=None, null=True, blank=True)

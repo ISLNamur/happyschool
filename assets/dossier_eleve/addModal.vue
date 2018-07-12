@@ -148,6 +148,28 @@
                                 </quill-editor>
                                 <span slot="invalid-feedback">{{ errorMsg('explication_commentaire') }}</span>
                             </b-form-group>
+                            <b-form-group
+                                description="Ajouter un ou des fichiers. Accepte uniquement des fichiers pdf."
+                                label="Fichier(s) : "
+                                >
+                                <b-form-file
+                                    multiple
+                                    accept=".pdf"
+                                    v-model="attachments"
+                                    ref="attachments"
+                                    placeholder="Attacher un ou des fichiers."
+                                    choose-label="Attacher un ou des fichiers"
+                                    drop-label="Déposer des fichiers ici"
+                                    plain
+                                    @input="addFiles"
+                                    >
+                                </b-form-file>
+                                <b-list-group v-for="(item, index) in uploadedFiles" :key="index">
+                                    <file-upload :id=item.id :file="item.file" path="/dossier_eleve/upload_file/"
+                                        @delete="deleteFile(index)" @setdata="setFileData(index, $event)">
+                                    </file-upload>
+                                </b-list-group>
+                            </b-form-group>
                         </b-col>
                     </b-form-row>
                     <b-form-row v-if="infoOrSanction == 'info'">
@@ -186,6 +208,8 @@ import axios from 'axios';
 window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
+import FileUpload from '../common/file_upload.vue';
+
 export default {
     props: ['entry'],
     data: function () {
@@ -204,6 +228,8 @@ export default {
                 sanction_faite: null,
                 send_to_teachers: false,
             },
+            attachments: [],
+            uploadedFiles: [],
             infoOrSanction: null,
             infoOptions: [],
             sanctionDecisionOptions: [],
@@ -294,6 +320,8 @@ export default {
             this.infoOrSanction = null;
             this.demandeur = {};
             this.stats = {};
+            this.$refs.attachments.reset();
+            this.uploadedFiles.splice(0, this.uploadedFiles.length);
 
             this.form.name = "";
             this.form.matricule_id = null;
@@ -307,6 +335,20 @@ export default {
             this.form.datetime_sanction = null;
             this.form.sanction_faite = null;
             this.form.send_to_teachers = false;
+        },
+        addFiles: function(evt) {
+            for (let a in this.attachments) {
+                this.uploadedFiles.push({file: this.attachments[a], id: -1});
+            }
+            this.attachments.splice(0, this.attachments.length);
+        },
+        setFileData: function(index, data) {
+            this.uploadedFiles[index].id = data.id;
+            this.uploadedFiles[index].link = data.attachment;
+        },
+        deleteFile: function(index) {
+            this.uploadedFiles.splice(index, 1);
+            this.$refs.attachments.reset();
         },
         errorMsg(err) {
             if (err in this.errors) {
@@ -342,6 +384,12 @@ export default {
                 this.infoOrSanction = entry.info_id ? 'info' : 'sanction-decision';
 
                 this.setSanctionDecisionOptions();
+
+                if (entry.attachments.length > 0) {
+                    for (let a in entry.attachments) {
+                        this.uploadedFiles.push({id: entry.attachments[a], file: null});
+                    }
+                }
             } else {
                 this.resetModal();
             }
@@ -355,6 +403,9 @@ export default {
             if (data.datetime_sanction) {
                 let time = this.timeSanction ? " " + this.timeSanction : " 12:00";
                 data.datetime_sanction += time;
+            }
+            if (this.uploadedFiles.length > 0) {
+                data.attachments = Array.from(this.uploadedFiles.map(u => u.id));
             }
 
             let modal = this;
@@ -456,7 +507,7 @@ export default {
             });
         }
     },
-    components: {Multiselect, quillEditor},
+    components: {Multiselect, quillEditor, FileUpload},
     mounted: function () {
         // Set policies.
         this.coord = this.$store.state.is_coord;
