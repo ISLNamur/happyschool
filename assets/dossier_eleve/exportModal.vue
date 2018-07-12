@@ -137,7 +137,8 @@ export default {
                 const options = response.data.map(p => {
                     if (Number.isNaN(Number.parseInt(query[0]))) {
                         // It is a student.
-                        return {display: p.last_name + ' ' + p.first_name + ' – ' + p.teaching.display_name, id: p.matricule}
+                        const classe = " " + p.classe.year + p.classe.letter.toUpperCase();
+                        return {display: p.last_name + ' ' + p.first_name + classe + ' – ' + p.teaching.display_name, id: p.matricule}
                     } else {
                         // It is a classe.
                         return p;
