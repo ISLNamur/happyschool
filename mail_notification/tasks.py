@@ -235,12 +235,12 @@ def get_emails(email_to: list, to_type: str, teaching: str="secondaire", respons
         students = set(students)
 
         def get_parents_email(student):
-            info = student.get_additional_info()
-            parents_email = {info['resp_email'] if 'resp_email' in info else None}
+            info = student.additionalstudentinfo
+            parents_email = {info.resp_email}
             if all_parents:
                 parents_email = parents_email.union({
-                    info['mother_email'] if 'mother_email' in info else None,
-                    info['father_email'] if 'father_email' in info else None
+                    info.mother_email,
+                    info.father_email
                 })
 
             # Remove None values.
