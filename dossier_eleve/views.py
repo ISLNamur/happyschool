@@ -449,10 +449,10 @@ class BaseDossierEleveView(LoginRequiredMixin,
         context['current_year'] = json.dumps('%i-%i' % (scholar_year, scholar_year + 1))
         coords = []
         for i in range(1, 7):
-            coords.append("coord" + str(i))
+            coords.append(settings.COORD_GROUP + str(i))
         context['is_coord'] = json.dumps(self.request.user.groups.filter(
-            name__in=coords + ['direction', 'sysadmin']).exists())
-        context['is_educ'] = json.dumps(self.request.user.groups.filter(name__in=['educateur', 'sysadmin']).exists())
+            name__in=coords + [settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP]).exists())
+        context['is_educ'] = json.dumps(self.request.user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.EDUCATOR_GROUP]).exists())
         return context
 
 
@@ -514,9 +514,9 @@ class CasEleveViewSet(BaseModelViewSet):
         queryset = super().get_queryset()
         coords = []
         for i in range(1, 7):
-            coords.append("coord" + str(i))
-        is_coord = self.request.user.groups.filter(name__in=coords + ['direction', 'sysadmin']).exists()
-        is_educ = self.request.user.groups.filter(name__in=['educateur', 'sysadmin']).exists()
+            coords.append(settings.COORD_GROUP + str(i))
+        is_coord = self.request.user.groups.filter(name__in=coords + [settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP]).exists()
+        is_educ = self.request.user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.EDUCATOR_GROUP]).exists()
         if is_educ and not is_coord:
             queryset = queryset.filter(visible_by_educ=True)
         elif not is_educ and not is_coord:
