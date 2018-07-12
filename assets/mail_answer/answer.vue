@@ -69,7 +69,7 @@
             </b-row>
             <b-row>
                 <p>
-                    <b-btn @click="sendData" :disabled="saving" variant="primary">
+                    <b-btn @click="sendData" :disabled="saving || (template.acknowledge && !form.acknowledge)" variant="primary">
                         {{ sent ? "Mettre à jour" : "Envoyer"}}
                         <icon v-if="saving" name="spinner" scale="1" :spin="saving"></icon>
                     </b-btn>
