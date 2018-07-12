@@ -29,7 +29,11 @@
     "webpack-bundle-tracker": "^0.2.0"
   },
   "dependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
     "babel-minify-webpack-plugin": "^0.3.1",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
     "bootstrap": "^4.0.0",
     "bootstrap-vue": "^2.0.0-rc.9",
     "moment": "^2.18.1",
