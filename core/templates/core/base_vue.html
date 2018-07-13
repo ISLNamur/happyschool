@@ -10,48 +10,7 @@
     </head>
 
     <body>
-        <div id="menu">
-            <b-navbar class="navbar navbar-expand-lg navbar-light bg-light" toggleable type="light" variant="light">
-                <b-nav-toggle target="nav_text_collapse"></b-nav-toggle>
-                <b-navbar-brand href="/">
-                    <img src="/static/img/logo_isln.png" class="d-inline-block" alt="logo">
-                    Happyschool
-                </b-navbar-brand>
-                <b-collapse is-nav id="nav_text_collapse">
-                    <b-navbar-nav is-nav-bar>
-                        {% if user.is_authenticated %}
-                            {% if app_infirmerie and perms.infirmerie.access_infirmerie %}
-                            <b-nav-item href="{% url 'infirmerie' %}">Infirmerie</b-nav-item>
-                            {% endif %}
-                            {% if app_appels and perms.appels.access_appel %}
-                            <b-nav-item href="{% url 'appels' %}">Appels</b-nav-item>
-                            {% endif %}
-                            {% if app_absences and perms.absence_prof.access_absences %}
-                            <b-nav-item href="{% url 'absence_prof:index' %}">Absences prof</b-nav-item>
-                            {% endif %}
-                            <b-nav-item href="{% url 'annuaire' %}">Annuaire</b-nav-item>
-                            {% if app_dossier_eleve and perms.dossier_eleve.access_dossier_eleve %}
-                            <b-nav-item href="{% url 'dossier_eleve' %}">Dossier des élèves</b-nav-item>
-                            {% endif %}
-                            {% if app_mail_notification and perms.mail_notification.access_mail_notification %}
-                            <b-nav-item href="{% url 'mail_notification:mail_notification' %}">Envoi d'email</b-nav-item>
-                            {% endif %}
-
-                        {% endif %}
-                    </b-navbar-nav>
-                    <b-navbar-nav class="ml-auto">
-                         <b-nav-text>Connecté en tant que <strong>{{ user.first_name }} {{ user.last_name }}</strong></b-nav-text>
-                         <b-nav-item-dropdown text="Options" right>
-                             <b-dropdown-item href="/core/profil/">Profil</b-dropdown-item>
-                             <b-dropdown-divider></b-dropdown-divider>
-                             <b-dropdown-item href="/logout/">Se déconnecter</b-dropdown-item>
-                         </b-nav-item-dropdown>
-                    </b-navbar-nav>
-                </b-collapse>
-            </b-navbar>
-        </div>
         {% render_bundle 'commons' %}
-        {% render_bundle 'menu' %}
         {% block content %}{% endblock %}
     </body>
 </html>

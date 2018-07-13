@@ -1,5 +1,6 @@
 <template>
     <div v-cloak>
+        <app-menu :menu-info="menuInfo"></app-menu>
         <b-container v-cloak>
             <b-row>
                 <b-nav tabs>
@@ -176,6 +177,8 @@
 <script>
 import Vue from 'vue';
 import BootstrapVue from 'bootstrap-vue';
+Vue.use(BootstrapVue);
+
 import {quillEditor} from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
@@ -189,6 +192,7 @@ import axios from 'axios';
 import Multiselect from 'vue-multiselect';
 
 import FileUpload from '../common/file_upload.vue';
+import AppMenu from '../common/menu.vue';
 
 Vue.use(BootstrapVue);
 Vue.component('icon', Icon);
@@ -196,7 +200,7 @@ Vue.component('icon', Icon);
 export default {
     data: function () {
         return {
-            menu: {},
+            menuInfo: {},
             explanation_mail:"",
             /*`Dans le cas d'un message «Par élève»,
             les variables {{ nom }} et {{ classe }} seront automatiquement converties en nom et classe de l'élève.
@@ -378,8 +382,9 @@ export default {
            });
         }
     },
-    components: {Multiselect, quillEditor, FileUpload},
+    components: {Multiselect, quillEditor, FileUpload, AppMenu},
     mounted: function () {
+        this.menuInfo = menu;
         this.getTagsOptions("");
 
         // Get templates.

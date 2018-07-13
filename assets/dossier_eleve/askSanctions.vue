@@ -20,6 +20,7 @@
 <template>
     <div>
         <div class="loading" v-if="!loaded"></div>
+        <app-menu v-if="loaded" :menu-info="menuInfo"></app-menu>
         <b-container v-if="loaded">
             <b-row>
                 <h2>Demandes de sanction</h2>
@@ -113,6 +114,7 @@
 <script>
 import Vue from 'vue';
 import BootstrapVue from 'bootstrap-vue'
+Vue.use(BootstrapVue);
 
 import 'vue-awesome/icons'
 import Icon from 'vue-awesome/components/Icon.vue'
@@ -128,10 +130,12 @@ import AskSanctionsEntry from './askSanctionsEntry.vue'
 import AskModal from './askModal.vue'
 import AskExportModal from './askExportModal.vue'
 import Filters from '../common/filters.vue'
+import Menu from '../common/menu.vue'
 
 export default {
     data: function () {
         return {
+            menuInfo: {},
             showFilters: false,
             filter: '',
             ordering: '&ordering=datetime_sanction',
@@ -240,6 +244,8 @@ export default {
         }
     },
     mounted: function () {
+        this.menuInfo = menu;
+
         this.applyFilter();
         this.loadEntries();
     },
@@ -249,6 +255,7 @@ export default {
         'ask-modal': AskModal,
         'ask-export-modal': AskExportModal,
         'info': Info,
+        'app-menu': Menu,
     }
 }
 </script>

@@ -20,6 +20,7 @@
 <template>
     <div>
         <div class="loading" v-if="!loaded"></div>
+        <app-menu v-if="loaded" :menu-info="menuInfo"></app-menu>
         <b-container v-if="loaded">
             <h1>Annuaire</h1>
             <b-row>
@@ -86,6 +87,8 @@
 import Vue from 'vue';
 import BootstrapVue from 'bootstrap-vue'
 
+Vue.use(BootstrapVue);
+
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
 
@@ -95,11 +98,13 @@ Vue.component('icon', Icon);
 
 import axios from 'axios';
 
+import Menu from '../common/menu.vue'
 import Info from './info.vue';
 
 export default {
     data: function () {
         return {
+            menuInfo: {},
             loaded: false,
             searchId: 0,
             teachings: [],
@@ -209,10 +214,13 @@ export default {
             this.teachingsOptions = response.data.results;
             this.loaded = true;
         });
+
+        this.menuInfo = menu;
     },
     components: {
         'multiselect': Multiselect,
         'info': Info,
+        'app-menu': Menu,
     }
 }
 </script>

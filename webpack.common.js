@@ -8,7 +8,6 @@ module.exports = {
 		babelPolyfill: "babel-polyfill",
 		menu: './assets/js/menu',
 		annuaire: './assets/js/annuaire',
-        schedule_change: './assets/js/schedule_change',
 		appels: './assets/js/appels',
 		mail_notification: './assets/js/mail_notification',
 		mail_notification_list: './assets/js/mail_notification_list',

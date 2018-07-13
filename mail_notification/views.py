@@ -36,6 +36,7 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import json
 
 from unidecode import unidecode
 
@@ -55,6 +56,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from annuaire.views import create_classes_list
 from core.permissions import IsInGroupPermission
+from core.utilities import get_menu
 from mail_answer.models import MailTemplateModel
 from mail_answer.models import MailAnswerSettingsModel as AnswersSettings
 
@@ -76,7 +78,7 @@ for i in range(1,7):
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name__in=groups_with_access), login_url='no_access')
 def index(request):
-    context = {'active_menu': 'mail_notification'}
+    context = {'menu': json.dumps(get_menu(request.user, "mail_notification"))}
     return render(request, 'mail_notification/index.html', context)
 
 
@@ -84,8 +86,9 @@ def index(request):
 @user_passes_test(lambda u: u.groups.filter(name__in=groups_with_access), login_url='no_access')
 def get_list(request):
     emails = EmailNotification.objects.all().order_by("-datetime_created")[:15]
-    return render(request, 'mail_notification/list.html', context={'emails': emails,
-                                                                   'active_menu': 'mail_notification'})
+    return render(request, 'mail_notification/list.html',
+                  context={'emails': emails,
+                           'menu': json.dumps(get_menu(request.user, "mail_notification"))})
 
 
 def get_settings():

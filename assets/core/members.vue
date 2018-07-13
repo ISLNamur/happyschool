@@ -19,6 +19,7 @@
 
 <template>
     <div>
+        <app-menu :menu-info="menuInfo"></app-menu>
         <b-container v-cloak>
             <h1>Gestion du personnels</h1>
             <b-row>
@@ -151,6 +152,8 @@
 <script>
 import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue'
+Vue.use(BootstrapVue);
+
 import axios from 'axios';
 
 import 'vue-awesome/icons'
@@ -158,11 +161,12 @@ import Icon from 'vue-awesome/components/Icon.vue'
 
 Vue.component('icon', Icon);
 
-Vue.use(BootstrapVue);
+import Menu from '../common/menu.vue';
 
 export default {
     data: function () {
         return {
+            menuInfo: {},
             secretary: [],
             others: [],
             groups: [],
@@ -333,6 +337,7 @@ export default {
         }
     },
     mounted: function () {
+        this.menuInfo = menu;
         // Load people.
         this.loadCorePeople('secretary');
         this.loadCorePeople('others');
@@ -342,6 +347,9 @@ export default {
 
         this.loadGroups();
     },
+    components: {
+        'app-menu': Menu,
+    }
 }
 </script>
 

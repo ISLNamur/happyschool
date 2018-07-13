@@ -20,6 +20,7 @@
 <template>
     <div>
         <div class="loading" v-if="!loaded"></div>
+        <app-menu :menu-info="menuInfo"></app-menu>
         <b-container v-if="loaded">
             <b-row>
                 <h2>Dossier des élèves</h2>
@@ -97,6 +98,7 @@
 <script>
 import Vue from 'vue';
 import BootstrapVue from 'bootstrap-vue'
+Vue.use(BootstrapVue);
 
 import 'vue-awesome/icons'
 import Icon from 'vue-awesome/components/Icon.vue'
@@ -109,6 +111,7 @@ window.axios.defaults.baseURL = window.location.origin; // In order to have http
 import Info from '../annuaire/info.vue'
 
 import Filters from '../common/filters.vue'
+import Menu from '../common/menu.vue'
 import CasEleveEntry from './casEleveEntry.vue'
 import AddModal from './addModal.vue'
 import ExportModal from './exportModal.vue'
@@ -116,6 +119,7 @@ import ExportModal from './exportModal.vue'
 export default {
     data: function () {
         return {
+            menuInfo: {},
             entriesCount: 0,
             currentPage: 1,
             entries: [],
@@ -209,6 +213,8 @@ export default {
         },
     },
     mounted: function () {
+        this.menuInfo = menu;
+
         this.applyFilter();
         this.loadEntries();
 
@@ -227,6 +233,7 @@ export default {
         'add-modal': AddModal,
         'export-modal': ExportModal,
         'info': Info,
+        'app-menu': Menu,
     }
 }
 </script>

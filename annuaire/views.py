@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
+import json
+
 from django.conf import settings
 from django.shortcuts import render
 
@@ -36,6 +38,7 @@ from rest_framework.renderers import JSONRenderer
 from z3c.rml import rml2pdf
 from unidecode import unidecode
 
+from core.utilities import get_menu
 from core.people import People, get_classes
 from core.models import StudentModel, ClasseModel, TeachingModel, ResponsibleModel, AdditionalStudentInfo
 from core.serializers import StudentSerializer, ResponsibleSerializer, ClasseSerializer,\
@@ -132,11 +135,10 @@ def get_teacher_list(request, ens, search):
 def index(request):
     chercher_form = ChercherEleveForm()
 
-    # Set a long time expiracy for accuiel
+    # Set a long time expiracy for accueil
     if request.user.username == 'accueil':
         request.session.set_expiry(100000000)
 
-    #TODO: context = {'form': chercher_form, 'new_rows': get_new_rows(request)}
     context = {'form': chercher_form, 'new_rows': 0}
     if request.user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.RECEPTION_GROUP]).exists():
         context['can_search_teachers'] = True
@@ -408,6 +410,7 @@ class AnnuaireView(LoginRequiredMixin,
         # Add to the current context.
         context = super().get_context_data(**kwargs)
         context['settings'] = JSONRenderer().render(AnnuaireSettingsSerializer(get_settings()).data).decode()
+        context['menu'] = json.dumps(get_menu(self.request.user, "annuaire"))
         return context
 
 

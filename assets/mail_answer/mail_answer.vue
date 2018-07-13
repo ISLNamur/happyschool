@@ -19,6 +19,7 @@
 
 <template>
     <div>
+        <app-menu :menu-info="menuInfo"></app-menu>
         <b-container>
             <h1>Réponse d'email</h1>
                 <component v-bind:is="currentComponent"
@@ -33,6 +34,7 @@
 <script>
 import Vue from 'vue';
 import BootstrapVue from 'bootstrap-vue'
+Vue.use(BootstrapVue);
 
 import 'vue-awesome/icons'
 import Icon from 'vue-awesome/components/Icon.vue'
@@ -44,9 +46,12 @@ import MailTemplateList from './mail_template_list.vue';
 import MailTemplate from './mail_template.vue';
 import MailAnswerList from './mail_answer_list.vue';
 
+import Menu from '../common/menu.vue';
+
 export default {
     data: function () {
         return {
+            menuInfo: {},
             currentComponent: 'mail-template-list',
             templateId: null,
         }
@@ -56,10 +61,14 @@ export default {
             this.currentComponent = component;
         }
     },
+    mounted: function () {
+        this.menuInfo = menu;
+    },
     components: {
         'mail-template-list': MailTemplateList,
         'mail-template': MailTemplate,
         'mail-answer-list': MailAnswerList,
+        'app-menu': Menu,
     }
 }
 </script>

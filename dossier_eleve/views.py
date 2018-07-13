@@ -45,6 +45,7 @@ from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
 from core.views import BaseFilters, BaseModelViewSet
+from core.utilities import get_menu
 
 from .serializers import *
 from .models import *
@@ -446,6 +447,7 @@ class BaseDossierEleveView(LoginRequiredMixin,
         # Add to the current context.
         context = super().get_context_data(**kwargs)
         context['settings'] = JSONRenderer().render(DossierEleveSettingsSerializer(settings_dossier_eleve).data).decode()
+        context['menu'] = json.dumps(get_menu(self.request.user, "dossier_eleve"))
         context['filters'] = json.dumps(self.filters)
         scholar_year = get_scholar_year()
         context['current_year'] = json.dumps('%i-%i' % (scholar_year, scholar_year + 1))

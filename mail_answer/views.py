@@ -32,6 +32,7 @@ from django.views.generic import TemplateView
 from django.utils import timezone
 
 from core.models import ClasseModel
+from core.utilities import get_menu
 
 from .serializers import *
 from .models import MailTemplateModel, MailAnswerModel, ChoiceModel, OptionModel, MailAnswerSettingsModel
@@ -100,6 +101,7 @@ class MailAnswerView(LoginRequiredMixin,
         # Add to the current context.
         context = super().get_context_data(**kwargs)
         context['settings'] = JSONRenderer().render(SettingsSerializer(settings).data).decode()
+        context['menu'] = json.dumps(get_menu(self.request.user, "mail_answer"))
         return context
 
 

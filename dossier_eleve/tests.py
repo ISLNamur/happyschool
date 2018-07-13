@@ -19,52 +19,45 @@
 
 # from django.utils import timezone
 #
-# from django.contrib.auth.models import User, Group
-# from django.test import TestCase, Client
-# from django.test.utils import override_settings
+from django.contrib.auth.models import User, Group
+from django.test import TestCase, Client
+from django.test.utils import override_settings
+from django.conf import settings
 #
 # from core.models import StudentModel
 #
 # from .models import InfoEleve, SanctionDecisionDisciplinaire, CasEleve
 #
-# # Ensure we use the correct backend (ModelBackend)
-# @override_settings(AUTHENTICATION_BACKENDS=
-#                    ('django.contrib.auth.backends.ModelBackend',))
-# class DossierEleveViewTest(TestCase):
-#     fixtures = ['dossier_eleve_infos.json', 'dossier_eleve_sanctions.json']
-#
-#     def setUp(self):
-#         self.client = Client()
-#
-#         # Create a superuser
-#         self.superuser = User.objects.create_user(username='testsuperuser', password='12345')
-#         self.superuser.is_staff = True
-#         self.superuser.is_admin = True
-#         self.superuser.is_superuser = True
-#         self.superuser.save()
-#
-#         # Create a direction user
-#         self.dir_user = User.objects.create_user(username='director', password='67890')
-#         self.dir_user.is_active = True
-#         self.dir_user.save()
-#
-#         # Create a student user
-#         self.student_user = User.objects.create_user(username='student', password='54321')
-#         self.student_user.is_active = True
-#         self.student_user.save()
-#
-#         sysadmin_group = Group(name='sysadmin')
-#         sysadmin_group.save()
-#         sysadmin_group.user_set.add(self.superuser)
-#
-#         direction_group = Group(name='direction')
-#         direction_group.save()
-#         direction_group.user_set.add(self.dir_user)
-#
-#         student_group = Group(name='eleve')
-#         student_group.save()
-#         student_group.user_set.add(self.student_user)
-#
+# Ensure we use the correct backend (ModelBackend)
+@override_settings(AUTHENTICATION_BACKENDS=
+                   ('django.contrib.auth.backends.ModelBackend',))
+class DossierEleveViewTest(TestCase):
+    fixtures = ['dossier_eleve_infos.json', 'dossier_eleve_sanctions.json']
+
+    def setUp(self):
+        self.client = Client()
+
+        # Create a superuser
+        self.superuser = User.objects.create_user(username='testsuperuser', password='12345')
+        self.superuser.is_staff = True
+        self.superuser.is_admin = True
+        self.superuser.is_superuser = True
+        self.superuser.save()
+
+        # Create a direction user
+        self.dir_user = User.objects.create_user(username='director', password='67890')
+        self.dir_user.is_active = True
+        self.dir_user.save()
+
+        sysadmin_group = Group(name=settings.SYSADMIN_GROUP)
+        sysadmin_group.save()
+        sysadmin_group.user_set.add(self.superuser)
+
+        direction_group = Group(name='direction')
+        direction_group.save()
+        direction_group.user_set.add(self.dir_user)
+
+
 #         # Create a student
 #         StudentModel(1, 'Totoé', 'Totoe', 'Ohé', 'Ohe', '1c', 1, 'secondaire').save()
 #

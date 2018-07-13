@@ -1,3 +1,24 @@
+# This file is part of HappySchool.
+#
+# HappySchool is the legal property of its developers, whose names
+# can be found in the AUTHORS file distributed with this source
+# distribution.
+#
+# HappySchool is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# HappySchool is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
+
+import json
+
 from rest_framework.filters import OrderingFilter
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.views import APIView
@@ -17,7 +38,8 @@ from core.people import get_classes
 from core.permissions import IsSecretaryPermission
 from core.serializers import ResponsibleSensitiveSerializer, TeachingSerializer,\
     StudentContactInfoSerializer, StudentGeneralInfoSerializer, StudentMedicalInfoSerializer
-from core.utilities import get_scholar_year
+from core.utilities import get_scholar_year, get_menu
+
 
 class BaseFilters(filters.FilterSet):
     unique = filters.CharFilter('unique_by', method='unique_by')
@@ -89,6 +111,11 @@ class MembersView(LoginRequiredMixin,
                   TemplateView):
     template_name = "core/members.html"
     permission_required = ('core.add_responsiblemodel')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['menu'] = json.dumps(get_menu(self.request.user))
+        return context
 
 
 class ProfilView(LoginRequiredMixin, TemplateView):
