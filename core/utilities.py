@@ -65,7 +65,7 @@ def get_menu(user: User, active_app: str=None) -> list:
             "active": active_app == "infirmerie"
         })
 
-    if "appels" in settings.INSTALLED_APPS and user.has_perm('appels.access_appels'):
+    if "appels" in settings.INSTALLED_APPS and user.has_perm('appels.access_appel'):
         apps.append({
             "app": "appels",
             "display": "Appels",
