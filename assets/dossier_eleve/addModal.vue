@@ -150,7 +150,7 @@
                             </b-form-group>
                             <b-form-group
                                 description="Ajouter un ou des fichiers. Accepte uniquement des fichiers pdf."
-                                label="Fichier(s) : "
+                                label="Fichier(s)"
                                 >
                                 <b-form-file
                                     multiple
@@ -166,6 +166,7 @@
                                 </b-form-file>
                                 <b-list-group v-for="(item, index) in uploadedFiles" :key="index">
                                     <file-upload :id=item.id :file="item.file" path="/dossier_eleve/upload_file/"
+                                        :removestr="5"
                                         @delete="deleteFile(index)" @setdata="setFileData(index, $event)">
                                     </file-upload>
                                 </b-list-group>
@@ -406,6 +407,8 @@ export default {
             }
             if (this.uploadedFiles.length > 0) {
                 data.attachments = Array.from(this.uploadedFiles.map(u => u.id));
+            } else if (this.entry) {
+                data.attachments = [];
             }
 
             let modal = this;

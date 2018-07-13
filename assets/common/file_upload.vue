@@ -4,7 +4,7 @@
         <b-btn v-else @click="deleteEntry" size="sm" variant="danger">Enlever</b-btn>
          <span v-if="file">{{ file.name }}</span>
          <span v-else>
-             Voir <a target="_blank" rel="noopener noreferrer" :href="link">{{ filename }}</a>
+             Voir <a target="_blank" rel="noopener noreferrer" :href="link">{{ filename.substring(removestr, 40) }}</a>
          </span>
     </b-list-group-item>
 </template>
@@ -14,7 +14,7 @@ import axios from 'axios';
 import Icon from 'vue-awesome/components/Icon.vue'
 
 export default {
-    props: ['id', 'file', 'path'],
+    props: ['id', 'file', 'path', 'removestr'],
     data: function () {
         return {
             loading: true,

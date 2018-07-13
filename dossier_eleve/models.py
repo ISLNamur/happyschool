@@ -77,7 +77,7 @@ class CasEleve(models.Model):
     demandeur = models.CharField(max_length=50)
     sanction_decision = models.ForeignKey(SanctionDecisionDisciplinaire, null=True, blank=True, on_delete=models.SET_NULL)
     explication_commentaire = models.CharField(max_length=2000)
-    attachments = models.ManyToManyField(CasAttachment)
+    attachments = models.ManyToManyField(CasAttachment, blank=True)
     datetime_sanction = models.DateTimeField("date de la sanction", null=True, blank=True)
     datetime_conseil = models.DateTimeField("date du conseil disciplinaire", null=True, blank=True)
     sanction_faite = models.NullBooleanField(default=None, null=True, blank=True)
