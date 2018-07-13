@@ -40,6 +40,9 @@
                         <icon name="eye"></icon>
                         Voir les réponses
                     </b-button>
+                    <a v-if="template.is_used && remoteInUse && !isRemote" :href="$store.state.settings.remote_url + 'mail_answer'">
+                        Voir les réponses et/ou modifier le modèle
+                    </a>
                 </b-card>
             </b-col>
         </b-row>

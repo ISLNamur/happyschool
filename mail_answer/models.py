@@ -28,6 +28,7 @@ from core.models import StudentModel
 class MailAnswerSettingsModel(models.Model):
     use_remote = models.BooleanField(default=False)
     is_remote = models.BooleanField(default=False)
+    remote_url = models.URLField(default="http://localhost/")
 
 
 class ChoiceModel(models.Model):
