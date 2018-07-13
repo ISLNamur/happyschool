@@ -121,10 +121,32 @@
                     <b-form-row>
                         <b-col>
                             <b-form-group label="Commentaires" label-for="input-comment" :state="inputStates.explication_commentaire">
-                                <!-- <b-form-textarea id="input-comment" :rows="3" v-model="form.explication_commentaire"></b-form-textarea> -->
                                 <quill-editor id="input-comment" v-model="form.explication_commentaire" :options="editorOptions">
                                 </quill-editor>
                                 <span slot="invalid-feedback">{{ errorMsg('explication_commentaire') }}</span>
+                            </b-form-group>
+                            <b-form-group
+                                description="Ajouter un ou des fichiers. Accepte uniquement des fichiers pdf."
+                                label="Fichier(s)"
+                                >
+                                <b-form-file
+                                    multiple
+                                    accept=".pdf"
+                                    v-model="attachments"
+                                    ref="attachments"
+                                    placeholder="Attacher un ou des fichiers."
+                                    choose-label="Attacher un ou des fichiers"
+                                    drop-label="Déposer des fichiers ici"
+                                    plain
+                                    @input="addFiles"
+                                    >
+                                </b-form-file>
+                                <b-list-group v-for="(item, index) in uploadedFiles" :key="index">
+                                    <file-upload :id=item.id :file="item.file" path="/dossier_eleve/upload_file/"
+                                        :removestr="5"
+                                        @delete="deleteFile(index)" @setdata="setFileData(index, $event)">
+                                    </file-upload>
+                                </b-list-group>
                             </b-form-group>
                         </b-col>
                     </b-form-row>
@@ -150,6 +172,8 @@ import axios from 'axios';
 window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
+import FileUpload from '../common/file_upload.vue';
+
 export default {
     props: ['entry'],
     data: function () {
@@ -164,6 +188,8 @@ export default {
                 datetime_sanction: null,
                 datetime_conseil: null,
             },
+            attachments: [],
+            uploadedFiles: [],
             sanctionOptions: [],
             name: {matricule: null},
             nameOptions: [],
@@ -246,6 +272,11 @@ export default {
                 if (entry.datetime_conseil) {
                     this.form.datetime_conseil = Moment(entry.datetime_conseil).format('YYYY-MM-DD');
                 }
+                if (entry.attachments.length > 0) {
+                    for (let a in entry.attachments) {
+                        this.uploadedFiles.push({id: entry.attachments[a], file: null});
+                    }
+                }
             } else {
                 this.resetModal();
             }
@@ -264,6 +295,8 @@ export default {
             this.name = {matricule: null};
             this.demandeur = {};
             this.stats = {};
+            this.$refs.attachments.reset();
+            this.uploadedFiles.splice(0, this.uploadedFiles.length);
 
             this.form.name = "";
             this.form.matricule_id = null;
@@ -281,6 +314,20 @@ export default {
                 return "";
             }
         },
+        addFiles: function(evt) {
+            for (let a in this.attachments) {
+                this.uploadedFiles.push({file: this.attachments[a], id: -1});
+            }
+            this.attachments.splice(0, this.attachments.length);
+        },
+        setFileData: function(index, data) {
+            this.uploadedFiles[index].id = data.id;
+            this.uploadedFiles[index].link = data.attachment;
+        },
+        deleteFile: function(index) {
+            this.uploadedFiles.splice(index, 1);
+            this.$refs.attachments.reset();
+        },
         askSanction: function (evt) {
             evt.preventDefault();
 
@@ -293,6 +340,11 @@ export default {
             }
             if (data.datetime_conseil) {
                 data.datetime_conseil += " 12:00";
+            }
+            if (this.uploadedFiles.length > 0) {
+                data.attachments = Array.from(this.uploadedFiles.map(u => u.id));
+            } else if (this.entry) {
+                data.attachments = [];
             }
 
             let modal = this;
@@ -378,7 +430,7 @@ export default {
             alert(error);
         });
     },
-    components: {Multiselect, quillEditor},
+    components: {Multiselect, quillEditor, FileUpload},
 }
 </script>
 
