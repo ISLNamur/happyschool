@@ -19,8 +19,14 @@
 
 from rest_framework import serializers
 
-from appels.models import Appel, MotiveModel, ObjectModel
+from appels.models import Appel, MotiveModel, ObjectModel, AppelsSettingsModel
 from core.serializers import StudentSerializer, StudentModel
+
+
+class AppelsSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AppelsSettingsModel
+        fields = '__all__'
 
 
 class MotiveSerializer(serializers.ModelSerializer):

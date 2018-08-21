@@ -18,9 +18,15 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.db import models
+from django.contrib.auth.models import Group
 from django.utils import timezone
 
-from core.models import EmailModel, StudentModel, ResponsibleModel
+from core.models import EmailModel, StudentModel, TeachingModel
+
+
+class AppelsSettingsModel(models.Model):
+    teachings = models.ManyToManyField(TeachingModel, default=None)
+    all_access = models.ManyToManyField(Group, default=None, blank=True)
 
 
 class MotiveModel(models.Model):

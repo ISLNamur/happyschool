@@ -18,6 +18,7 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.conf.urls import url
+from django.urls import path
 
 from rest_framework.routers import DefaultRouter
 
@@ -29,7 +30,8 @@ urlpatterns = [
     url(r'^nouvel_appel$', views.nouvel_appel, name='nouvel_appel'),
     url(r'^traiter_appel/(?P<appelId>[0-9]+)$', views.traiter_appel, name='traiter_appel'),
     url(r'^get_entries/(?P<ens>\w+)/(?P<column>\w+)/$', views.get_entries, name='get_entries'),
-    url(r'vue', views.test_vue, name='test_vue'),
+    path('test_vue', views.AppelsView.as_view(), name='appels'),
+
 ]
 
 router = DefaultRouter()

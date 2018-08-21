@@ -30,6 +30,12 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.db.models import Count, CharField
 
+from django.views.generic import TemplateView
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+
+
+from django_filters import rest_framework as filters
+
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
@@ -37,9 +43,10 @@ from core import email
 from core.people import People, get_classes
 from core.models import EmailModel, StudentModel, ResponsibleModel
 from core.views import BaseFilters, BaseModelViewSet
+from core.utilities import get_menu
 
-from .models import Appel, ObjectModel, MotiveModel
-from .serializers import AppelSerializer, ObjectSerializer, MotiveSerializer
+from .models import Appel, ObjectModel, MotiveModel, AppelsSettingsModel
+from .serializers import AppelSerializer, ObjectSerializer, MotiveSerializer, AppelsSettingsSerializer
 from .forms import NouvelAppelForm, TraiterAppelForm
 
 groups_with_access = [settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.EDUCATOR_GROUP,
@@ -383,34 +390,57 @@ def get_entries(request, column='name', ens='all'):
     return JsonResponse(entries, safe=False)
 
 
-def test_vue(request):
-    filters = [{'value': 'name', 'text': 'Nom'},
-               {'value': 'datetime_appel', 'text': "Date d'appel"}]
+def get_settings():
+    settings_appels = AppelsSettingsModel.objects.first()
+    if not settings_appels:
+        # Create default settings.
+        settings_appels = AppelsSettingsModel.objects.create().save()
 
-    return render(request, "appels/appels.html", context={'filters': json.dumps(filters)})
+    return settings_appels
+
+
+class AppelsView(LoginRequiredMixin,
+                 PermissionRequiredMixin,
+                 TemplateView):
+    template_name = "appels/appels.html"
+    permission_required = ('appels.access_appels')
+    filters = [{'value': 'name', 'text': 'Nom'},
+               {'value': 'datetime_appel', 'text': "Date d'appel"},
+               {'value': 'matricule_id', 'text': 'Matricule'},
+               {'value': 'activate_ongoing', 'text': 'Non traiter'},]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['menu'] = json.dumps(get_menu(self.request.user, "appels"))
+        context['filters'] = json.dumps(self.filters)
+        context['settings'] = json.dumps((AppelsSettingsSerializer(get_settings()).data))
+
+        return context
 
 
 class AppelFilter(BaseFilters):
+    activate_ongoing = filters.BooleanFilter(method="activate_ongoing_by")
+
     class Meta:
         fields_to_filter = ('name', 'matricule_id', 'object', 'motive',
                             'datetime_motif_start', 'datetime_motif_end',
                             'datetime_appel', 'datetime_traitement',
-                            'is_traiter',)
+                            'is_traiter', 'activate_ongoing')
         model = Appel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
 
+    def activate_ongoing_by(self, queryset, name, value):
+        return queryset.filter(datetime_traitement__isnull=True)
+
 
 class AppelViewSet(BaseModelViewSet):
-    queryset = Appel.objects.all()
+    queryset = Appel.objects.filter(matricule__isnull=False)
     filter_access = True
-    all_access = ['sysadmin', 'direction', 'secretariat', 'accueil']
     serializer_class = AppelSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     filter_class = AppelFilter
     ordering_fields = ('name', 'datetime_appel', 'datetime_traitement', 'is_traiter')
-
-    # Default ordering and distinct object cannot be used together.
 
     def perform_create(self, serializer):
         super().perform_create(serializer)
@@ -419,6 +449,9 @@ class AppelViewSet(BaseModelViewSet):
             name = serializer.validated_data['matricule'].fullname
             serializer.save(name=name)
         serializer.save()
+
+    def get_group_all_access(self):
+        return get_settings().all_access.all()
 
 
 class MotiveViewSet(ReadOnlyModelViewSet):

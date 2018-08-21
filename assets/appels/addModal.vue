@@ -102,6 +102,9 @@
                             </b-form-group>
                         </b-col>
                     </b-form-row>
+                    <b-form-row v-if="entry">
+
+                    </b-form-row>
                     <b-form-row>
                         <b-col>
                             <b-form-group label="Commentaires" label-for="input-comment">
@@ -128,6 +131,7 @@ window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
 export default {
+    props: ['entry'],
     data: function () {
         return {
             form: {
@@ -202,7 +206,20 @@ export default {
             this.$refs.addModal.hide();
         },
         resetModal: function () {
-            //TODO resetModal()
+            this.$emit('reset');
+
+            form = {
+                name: "",
+                matricule_id: null,
+                object_id: null,
+                motive_id: null,
+                datetime_motif_start: null,
+                datetime_motif_end: null,
+                datetime_appel: null,
+                commentaire: "",
+                is_student: false,
+                is_traiter: false,
+            };
         },
         errorMsg(err) {
             if (err in this.errors) {
