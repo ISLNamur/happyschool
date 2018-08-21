@@ -18,6 +18,7 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 import json
+import warnings
 
 from rest_framework.filters import OrderingFilter
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
@@ -30,7 +31,7 @@ from django_filters import rest_framework as filters
 
 from django.utils import timezone
 from django.db.models import CharField
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, FieldError
 from django.views.generic import TemplateView
 
 from core.models import ResponsibleModel, TeachingModel, AdditionalStudentInfo
@@ -92,7 +93,12 @@ class BaseModelViewSet(ModelViewSet):
             try:
                 teachings = ResponsibleModel.objects.get(user=self.request.user).teaching.all()
                 classes = get_classes(list(map(lambda t: t.name, teachings)), True, self.request.user)
-                return self.queryset.filter(matricule__classe__in=classes)
+                try:
+                    queryset = self.queryset.filter(student__classe__in=classes)
+                except FieldError:
+                    queryset = self.queryset.filter(matricule__classe__in=classes)
+                    warnings.warn("Use *student* as field name instead of matricule", DeprecationWarning)
+                return queryset
             except ObjectDoesNotExist:
                 return self.queryset
 
