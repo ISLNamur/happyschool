@@ -350,7 +350,7 @@ def get_classes(teaching: list=('all',), check_access: bool=False, user: User=No
             return _get_classes_access(teaching=teachings, user=user)
         except ObjectDoesNotExist:
             # The user is not a responsible and thus has no access.
-            return set()
+            return ClasseModel.objects.none()
 
     if "all" not in teaching:
         if type(teaching[0]) == TeachingModel:
