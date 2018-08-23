@@ -3,10 +3,11 @@
         <transition appear name="fade">
             <b-card :title="title" :sub-title="subtitle" class="current-card">
                 <b-row align-h="end">
-                    <a href="#" v-on:click="editEntry"
-                    class="card-link"><icon name="edit" scale="1" color="green"></icon></a>
-                    <a href="#" v-on:click="deleteEntry"
-                    class="card-link"><icon name="remove" scale="1" color="red"></icon></a>
+                    <b-btn @click="$emit('processing')" v-if="!this.rowData.is_traiter" class="mr-2" size="sm">Traiter l'appel</b-btn>
+                    <b-link @click="$emit('edit')"
+                        class="card-link"><icon name="edit" scale="1" color="green"></icon></b-link>
+                    <b-link @click="$emit('delete')"
+                        class="card-link"><icon name="remove" scale="1" color="red"></icon></b-link>
                 </b-row>
                 <b-row class="text-center">
                     <b-col md="2" class="current-data">{{ rowData.object.display }}</b-col>
@@ -59,14 +60,6 @@
                 return Moment(this.rowData.datetime_appel).calendar();
             }
         },
-        methods: {
-            deleteEntry: function() {
-                this.$emit('delete');
-            },
-            editEntry: function() {
-                this.$emit('edit');
-            }
-        }
     }
 </script>
 

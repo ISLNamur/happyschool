@@ -51,16 +51,19 @@
                 v-for="(entry, index) in entries"
                 v-bind:key="entry.id"
                 v-bind:row-data="entry"
-                v-on:delete="askDelete(entry)"
-                v-on:edit="editEntry(index)"
+                @delete="askDelete(entry)"
+                @edit="editEntry(index)"
+                @processing="processEntry(index)"
                 >
             </appel-entry>
         </b-container>
-        <b-modal ref="deleteModal" cancel-title="Annuler" hide-header centered @ok="deleteEntry">
+        <b-modal ref="deleteModal" cancel-title="Annuler" hide-header centered
+            @ok="deleteEntry" @cancel="currentEntry = null"
+            :no-close-on-backdrop="true" :no-close-on-esc="true">
             Êtes-vous sûr de vouloir supprimer cet appel ?
         </b-modal>
         <component v-bind:is="currentModal" ref="dynamicModal" :entry="currentEntry"
-            @update="loadEntries" @reset="currentEntry = null">
+            :processing="processing" @update="loadEntries" @reset="currentEntry = null; processing = false">
         </component>
     </div>
 </template>
@@ -98,8 +101,10 @@ export default {
             currentEntry: null,
             currentModal: 'add-modal',
             filter: "",
+            ordering: "&ordering=-datetime_appel",
             menuInfo: {},
             loaded: false,
+            processing: false,
         }
     },
     watch: {
@@ -139,7 +144,7 @@ export default {
             this.loadEntries();
         },
         askDelete: function (entry) {
-            this.currentEntry = entry.id;
+            this.currentEntry = entry;
             this.$refs.deleteModal.show();
         },
         deleteEntry: function () {
@@ -148,13 +153,19 @@ export default {
             .then(response => {
                 this.loadEntries();
             });
+
+            this.currentEntry = null;
         },
         editEntry: function(index) {
             this.currentEntry = this.entries[index];
             this.openDynamicModal('add-modal');
         },
+        processEntry: function(index) {
+            this.processing = true;
+            this.editEntry(index);
+        },
         loadEntries: function () {
-            axios.get('/appels/api/appel/?page=' + this.currentPage + this.filter)
+            axios.get('/appels/api/appel/?page=' + this.currentPage + this.filter + this.ordering)
             .then(response => {
                 this.entries = response.data.results;
                 this.entriesCount = response.data.count;

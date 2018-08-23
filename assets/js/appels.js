@@ -22,6 +22,8 @@ import Vue from 'vue'
 import Vuex from 'vuex';
 Vue.use(Vuex);
 
+import axios from 'axios';
+
 const store = new Vuex.Store({
   state: {
     settings: settings,
@@ -30,6 +32,7 @@ const store = new Vuex.Store({
         tag: "Activer",
         value: true,
     }],
+    emails: [],
   },
   mutations: {
       addFilter: function (state, filter) {
@@ -50,9 +53,23 @@ const store = new Vuex.Store({
                   break;
               }
           }
+      },
+      setEmails: function (state, emails) {
+          state.emails = emails;
+      },
+  },
+  actions: {
+      loadEmails (context) {
+          const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+          axios.get('/core/api/email/', token)
+          .then(response => {
+              context.commit('setEmails', response.data.results);
+          })
       }
   }
 });
+
+store.dispatch('loadEmails');
 
 import Appels from '../appels/appels.vue';
 
@@ -60,5 +77,5 @@ var appelsApp = new Vue({
     el: '#vue-app',
     store,
     template: '<appels/>',
-    components: { Appels }
+    components: { Appels },
 })

@@ -1,7 +1,7 @@
 <template>
 <div>
-    <b-modal size="lg" title="Ajouter un appel"
-        ok-title="Soumettre" cancel-title="Annuler"
+    <b-modal size="lg" :title="(processing ? 'Traiter' : 'Ajouter') + ' un appel'"
+        :ok-title="processing ? 'Traiter' : 'Soumettre'" cancel-title="Annuler"
         ref="addModal"
         @ok="addAppel" @hidden="resetModal"
         >
@@ -64,46 +64,56 @@
                             </b-form-group>
                         </b-col>
                     </b-form-row>
-                    <b-form-row>
-                        <b-col sm="4">
-                            <b-form-group label="Début du motif" label-for="input-date-motif-start" :state="inputStates.datetime_motif_start">
-                                <b-form-input id="input-date-motif-start" type="date" v-model="form.datetime_motif_start"></b-form-input>
-                                <span slot="invalid-feedback">{{ errorMsg('datetime_motif_start') }}</span>
+                    <div v-if="!processing || form.is_traiter">
+                        <b-form-row>
+                            <b-col>
+                                <b-form-group label="Début du motif" label-for="input-date-motif-start" :state="inputStates.datetime_motif_start">
+                                    <b-form-input id="input-date-motif-start" type="date" v-model="form.datetime_motif_start"></b-form-input>
+                                    <span slot="invalid-feedback">{{ errorMsg('datetime_motif_start') }}</span>
+                                </b-form-group>
+                            </b-col>
+                            <b-col>
+                                <b-form-group label="(heure)" label-for="input-time-motif-start">
+                                    <b-form-input id="input-time-motif-start" type="time" v-model="timeMotifStart"></b-form-input>
+                                </b-form-group>
                             </b-form-group>
-                        </b-col>
-                        <b-col sm="2">
-                            <b-form-group label="(heure)" label-for="input-time-motif-start">
-                                <b-form-input id="input-time-motif-start" type="time" :step="300" v-model="timeMotifStart"></b-form-input>
-                            </b-form-group>
+                            </b-col>
+                        </b-form-row>
+                        <b-form-row>
+                            <b-col>
+                                <b-form-group label="Fin du motif" label-for="input-date-motif-end" :state="inputStates.datetime_motif_end">
+                                    <b-form-input id="input-date-motif-end" type="date" v-model="form.datetime_motif_end"></b-form-input>
+                                    <span slot="invalid-feedback">{{ errorMsg('datetime_motif_end') }}</span>
+                                </b-form-group>
+                            </b-col>
+                            <b-col>
+                                <b-form-group label="(heure)" label-for="input-time-motif-end">
+                                    <b-form-input id="input-time-motif-end" type="time" v-model="timeMotifEnd"></b-form-input>
+                                </b-form-group>
+                            </b-col>
+                        </b-form-row>
+                        <b-form-row>
+                            <b-col>
+                                <b-form-group label="Date de l'appel" label-for="input-date-appel"  :state="inputStates.datetime_appel">
+                                    <b-form-input id="input-date-appel" type="date" v-model="form.datetime_appel"></b-form-input>
+                                    <span slot="invalid-feedback">{{ errorMsg('datetime_appel') }}</span>
+                                </b-form-group>
+                            </b-col>
+                            <b-col>
+                                <b-form-group label="Heure de l'appel" label-for="input-time-appel">
+                                    <b-form-input id="input-time-appel" type="time" :step="60" v-model="timeAppel"></b-form-input>
+                                </b-form-group>
+                            </b-col>
+                        </b-form-row>
+                    </div>
+                    <b-form-row v-if="processing || form.is_traiter">
+                        <b-form-group label="Destinataire(s) : ">
+                            <b-form-checkbox-group id="emails" stacked
+                                v-model="form.emails"
+                                :options="$store.state.emails"
+                                value-field="id" text-field="display">
+                            </b-form-checkbox-group>
                         </b-form-group>
-                        </b-col>
-                        <b-col sm="4">
-                            <b-form-group label="Fin du motif" label-for="input-date-motif-end" :state="inputStates.datetime_motif_end">
-                                <b-form-input id="input-date-motif-end" type="date" v-model="form.datetime_motif_end"></b-form-input>
-                                <span slot="invalid-feedback">{{ errorMsg('datetime_motif_end') }}</span>
-                            </b-form-group>
-                        </b-col>
-                        <b-col sm="2">
-                            <b-form-group label="(heure)" label-for="input-time-motif-end">
-                                <b-form-input id="input-time-motif-end" type="time" :step="300" v-model="timeMotifEnd"></b-form-input>
-                            </b-form-group>
-                        </b-col>
-                    </b-form-row>
-                    <b-form-row>
-                        <b-col>
-                            <b-form-group label="Date de l'appel" label-for="input-date-appel"  :state="inputStates.datetime_appel">
-                                <b-form-input id="input-date-appel" type="date" v-model="form.datetime_appel"></b-form-input>
-                                <span slot="invalid-feedback">{{ errorMsg('datetime_appel') }}</span>
-                            </b-form-group>
-                        </b-col>
-                        <b-col>
-                            <b-form-group label="Heure de l'appel" label-for="input-time-appel">
-                                <b-form-input id="input-time-appel" type="time" :step="60" v-model="timeAppel"></b-form-input>
-                            </b-form-group>
-                        </b-col>
-                    </b-form-row>
-                    <b-form-row v-if="entry">
-
                     </b-form-row>
                     <b-form-row>
                         <b-col>
@@ -131,7 +141,7 @@ window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
 export default {
-    props: ['entry'],
+    props: ['entry', 'processing'],
     data: function () {
         return {
             form: {
@@ -143,6 +153,7 @@ export default {
                 datetime_motif_end: null,
                 datetime_appel: null,
                 commentaire: "",
+                emails: [],
                 is_student: false,
                 is_traiter: false,
             },
@@ -178,7 +189,7 @@ export default {
             if (this.name.matricule) {
                 // First update form name data.
                 this.form.name = this.name.display;
-                if (this.name.matricule < 10000 && this.name.matricule > 999) {
+                if (!('is_teacher' in this.name)) {
                     // Student.
                     this.form.matricule_id = this.name.matricule;
                 } else {
@@ -196,10 +207,35 @@ export default {
                     this.inputStates[inputs[u]] = null;
                 }
             }
-        }
+        },
+        entry: function (entry, oldEntry) {
+            if (entry) {
+                this.setEntry(entry);
+                // Precheck emails.
+                if (this.processing && this.form.is_student) {
+                    this.form.emails = this.$store.state.emails.filter(email => {
+                        if (this.name.teaching.id == email.teaching
+                            && email.years.includes(this.name.classe.year)) {
+                            return true;
+                        }
+                        return false;
+                    }).map(email => email.id);
+                }
+            } else {
+                this.resetModal();
+            }
+        },
     },
     methods: {
         show: function () {
+            if (!this.entry) {
+                const nowDate = Moment().format('YYYY-MM-DD');
+                const nowTime = Moment().format('HH:mm');
+                this.form.datetime_appel = nowDate;
+                this.timeAppel = nowTime;
+                this.form.datetime_motif_start = nowDate;
+                this.form.datetime_motif_end = nowDate;
+            }
             this.$refs.addModal.show();
         },
         hide: function () {
@@ -208,7 +244,7 @@ export default {
         resetModal: function () {
             this.$emit('reset');
 
-            form = {
+            this.form = {
                 name: "",
                 matricule_id: null,
                 object_id: null,
@@ -217,9 +253,35 @@ export default {
                 datetime_motif_end: null,
                 datetime_appel: null,
                 commentaire: "",
+                emails: [],
                 is_student: false,
                 is_traiter: false,
             };
+
+            this.name = {matricule: null};
+            this.timeMotifStart = null;
+            this.timeMotifEnd = null;
+            this.timeAppel = null;
+        },
+        setEntry: function (entry) {
+            this.name = entry.matricule;
+            this.form = {
+                id: entry.id,
+                name: entry.name,
+                matricule_id: entry.matricule_id,
+                object_id: entry.object.id,
+                motive_id: entry.motive.id,
+                datetime_motif_start: Moment(entry.datetime_motif_start).format('YYYY-MM-DD'),
+                datetime_motif_end: Moment(entry.datetime_motif_end).format('YYYY-MM-DD'),
+                datetime_appel: Moment(entry.datetime_appel).format('YYYY-MM-DD'),
+                commentaire: entry.commentaire,
+                emails: entry.emails,
+                is_student: entry.is_student,
+                is_traiter: entry.is_traiter,
+            };
+            this.timeMotifStart = Moment(entry.datetime_motif_start).format('HH:mm');
+            this.timeMotifEnd = Moment(entry.datetime_motif_end).format('HH:mm');
+            this.timeAppel = Moment(entry.datetime_appel).format('HH:mm');
         },
         errorMsg(err) {
             if (err in this.errors) {
@@ -239,18 +301,17 @@ export default {
             data.datetime_motif_end += time;
             time = this.timeAppel ? " " + this.timeAppel : " 12:00";
             data.datetime_appel += time;
-            // if (this.timeMotifStart) data.datetime_motif_start += " " + this.timeMotifStart;
-            // if (this.timeMotifEnd) data.datetime_motif_end += " " + this.timeMotifEnd;
-            // if (this.timeAppel) data.datetime_appel += " " + this.timeAppel;
 
             // Set is_student.
             if (data.matricule_id) data.is_student = true;
 
             let modal = this;
             // Send data.
-            let token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-            axios.post('/appels/api/appel/', data, token)
-            .then(response => {
+            const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            let path = '/appels/api/appel/';
+            if (this.entry) path += this.form.id + '/'
+            const send = this.entry ? axios.put(path, data, token) : axios.post(path, data, token);
+            send.then(response => {
                 this.hide();
                 this.errors = {};
                 this.$emit('update');
@@ -259,35 +320,48 @@ export default {
             });
         },
         getNameOptions(query) {
+            let app = this;
             this.searchId += 1;
             let currentSearch = this.searchId;
             this.nameLoading = true;
-            axios.get("/annuaire/api/?query=" + query)
+
+            const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            const data = {
+                query: query,
+                teachings: this.$store.state.settings.teachings,
+                people: 'all',
+                check_access: false,
+            };
+            axios.post('/annuaire/api/people/', data, token)
             .then(response => {
                 // Avoid that a previous search overwrites a faster following search results.
                 if (this.searchId !== currentSearch)
                     return;
-                this.nameOptions = response.data.map(p => {
+                const options = response.data.map(p => {
                     // Format entries.
                     let entry = {display: p.last_name + " " + p.first_name, matricule: p.matricule};
-                    if ('classe' in p) {
-                        // It's a student.
-                        entry.display += " " + p.classe.year + p.classe.letter.toUpperCase();
-                        entry.display += " – " + p.teaching.display_name;
-                    } else {
+                    if ('is_secretary' in p) {
                         // It's a responsible.
                         let teachings = " —";
                         for (let t in p.teaching) {
                             teachings += " " + p.teaching[t].display_name;
                         }
                         entry.display += teachings;
+                        entry.is_student = false;
+                    } else {
+                        // It's a student.
+                        entry.display += " " + p.classe.year + p.classe.letter.toUpperCase();
+                        entry.display += " – " + p.teaching.display_name;
+                        entry.is_student = true;
                     }
                     return entry;
                 });
                 this.nameLoading = false;
+                this.nameOptions = options;
             })
             .catch(function (error) {
-                this.nameLoading = false;
+                alert(error);
+                app.nameLoading = false;
             });
         },
     },

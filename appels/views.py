@@ -399,6 +399,30 @@ def get_settings():
     return settings_appels
 
 
+def send_emails(appel):
+    context = {'appel': appel}
+    image = []
+    name = appel.name
+    if appel.is_student:
+        etudiant = People().get_student_by_id(appel.matricule.matricule)
+        name = str(etudiant)
+        context['etudiant'] = etudiant
+        image = [static("/photos/" + str(appel.matricule.matricule) + ".jpg")]
+
+    sent_to = list(
+        filter(lambda e: e != 'robot@isln.be', map(lambda e: e.email, appel.emails.all())))
+    if appel.custom_email:
+        sent_to.append(appel.custom_email)
+    if not settings.DEBUG:
+        email.send_email(to=sent_to, subject="[Appel] %s" % name,
+                         email_template="appels/email.html", context=context, images=image)
+    else:
+        print(sent_to)
+        email.send_email(to=[settings.EMAIL_ADMIN], subject="[Appel] %s" % name,
+                         email_template="appels/email.html",
+                         context=context, images=image)
+
+
 class AppelsView(LoginRequiredMixin,
                  PermissionRequiredMixin,
                  TemplateView):
@@ -448,7 +472,12 @@ class AppelViewSet(BaseModelViewSet):
         if serializer.validated_data['is_student']:
             name = serializer.validated_data['matricule'].fullname
             serializer.save(name=name)
-        serializer.save()
+
+    def perform_update(self, serializer):
+        super().perform_update(serializer)
+        if serializer.validated_data['emails']:
+            appel = serializer.save(datetime_traitement=timezone.now(), is_traiter=True)
+            send_emails(appel)
 
     def get_group_all_access(self):
         return get_settings().all_access.all()
