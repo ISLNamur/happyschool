@@ -96,7 +96,8 @@
                 >
             </ask-sanctions-entry>
             <b-modal ref="deleteModal" cancel-title="Annuler" hide-header centered
-                @ok="deleteEntry" @cancel="currentEntry = null">
+                @ok="deleteEntry" @cancel="currentEntry = null"
+                :no-close-on-backdrop="true" :no-close-on-esc="true">
                 Êtes-vous sûr de vouloir supprimer définitivement cette entrée ?
             </b-modal>
             <b-modal :title="currentName" size="lg" ref="infoModal" centered ok-only @hidden="currentEntry = null">
