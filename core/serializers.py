@@ -81,3 +81,9 @@ class TeachingSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeachingModel
         fields = '__all__'
+
+
+class EmailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmailModel
+        fields = '__all__'

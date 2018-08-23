@@ -36,5 +36,6 @@ urlpatterns = [
 router = DefaultRouter()
 router.register(r'api/members', views.MembersAPI)
 router.register(r'api/teaching', views.TeachingViewSet)
+router.register(r'api/email', views.EmailViewSet)
 
 urlpatterns += router.urls

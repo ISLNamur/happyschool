@@ -34,11 +34,11 @@ from django.db.models import CharField
 from django.core.exceptions import ObjectDoesNotExist, FieldError
 from django.views.generic import TemplateView
 
-from core.models import ResponsibleModel, TeachingModel, AdditionalStudentInfo
+from core.models import ResponsibleModel, TeachingModel, EmailModel
 from core.people import get_classes
 from core.permissions import IsSecretaryPermission
 from core.serializers import ResponsibleSensitiveSerializer, TeachingSerializer,\
-    StudentContactInfoSerializer, StudentGeneralInfoSerializer, StudentMedicalInfoSerializer
+    EmailSerializer
 from core.utilities import get_scholar_year, get_menu
 
 
@@ -161,4 +161,10 @@ class ScholarYearAPI(APIView):
 class TeachingViewSet(ReadOnlyModelViewSet):
     queryset = TeachingModel.objects.all()
     serializer_class = TeachingSerializer
+    permission_classes = (IsAuthenticated,)
+
+
+class EmailViewSet(ReadOnlyModelViewSet):
+    queryset = EmailModel.objects.all().order_by("-display")
+    serializer_class = EmailSerializer
     permission_classes = (IsAuthenticated,)
