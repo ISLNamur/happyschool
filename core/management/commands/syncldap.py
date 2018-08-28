@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from core.models import *
 from core.ldap import get_ldap_connection, get_django_dict_from_ldap
@@ -113,7 +114,9 @@ class Command(BaseCommand):
         all_students = StudentModel.objects.all()
         for s in all_students:
             if s.matricule not in student_synced:
-                s.delete()
+                s.inactive_from = timezone.make_aware(timezone.datetime.now())
+                s.classe = None
+                s.save()
 
         # Get all responsibles.
         print("Retrieving responsibles")
@@ -151,6 +154,7 @@ class Command(BaseCommand):
 
             # Check if responsible's classes already exists.
             if 'classe' in resp_dict:
+                resp.classe.clear()
                 for c in resp_dict['classe']:
                     try:
                         classe = ClasseModel.objects.get(year=int(c[0]), letter=c[1].lower(), teaching=teaching)
@@ -161,6 +165,7 @@ class Command(BaseCommand):
 
             # Check if responsible's tenures already exists.
             if 'tenure' in resp_dict:
+                resp.tenure.clear()
                 for t in resp_dict['tenure']:
                     try:
                         tenure = ClasseModel.objects.get(year=int(t[0]), letter=t[1].lower(), teaching=teaching)
