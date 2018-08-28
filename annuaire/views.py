@@ -340,7 +340,8 @@ def format_name_to_json(people_list, people_type):
     for p in people_list:
         display_name = p.fullname
         if type(p) == StudentModel:
-            display_name += ' ' + p.classe.compact_str
+            if p.classe:
+                display_name += ' ' + p.classe.compact_str
             if p.teaching.name == 'primaire':
                 display_name += ' ' + 'Prim.'
 
@@ -433,7 +434,7 @@ def search_classes(query, teachings, check_access, user):
     return ClasseSerializer(classes, many=True).data
 
 
-def search_people(query, people_type, teachings, check_access, user):
+def search_people(query, people_type, teachings, check_access, user, active=True):
     def serialize_people(person):
         if type(person) == StudentModel:
             return StudentSerializer(person).data
@@ -449,22 +450,22 @@ def search_people(query, people_type, teachings, check_access, user):
         classe_years = get_classes(teachings, check_access=True,
                                    user=user) if check_access else None
         people += StudentSerializer(
-            People().get_students_by_name(query, teachings, classes=classe_years)[:truncate_limit], many=True
+            People().get_students_by_name(query, teachings, classes=classe_years, active=active)[:truncate_limit], many=True
         ).data
 
     if people_type == 'responsible' or people_type == 'all':
         people += ResponsibleSerializer(
-            People().get_responsibles_by_name(query, teachings)[:truncate_limit], many=True
+            People().get_responsibles_by_name(query, teachings, active=active)[:truncate_limit], many=True
         ).data
 
     if people_type == 'teacher':
         people += ResponsibleSerializer(
-            People().get_teachers_by_name(query, teachings)[:truncate_limit], many=True
+            People().get_teachers_by_name(query, teachings, active=active)[:truncate_limit], many=True
         ).data
 
     if people_type == 'educator':
         people += ResponsibleSerializer(
-            People().get_educators_by_name(query, teachings)[:truncate_limit], many=True
+            People().get_educators_by_name(query, teachings, active=active)[:truncate_limit], many=True
         ).data
 
     return people[:truncate_limit]
@@ -489,9 +490,10 @@ class SearchPeopleAPI(APIView):
         people_type = request.data.get('people', 'all')
         teachings = TeachingModel.objects.filter(id__in=request.data.get('teachings', []))
         check_access = request.data.get('check_access', 0) == 1
+        active = request.data.get('active', 1) == 1
 
         people = search_people(query=query, people_type=people_type, teachings=teachings,
-                               check_access=check_access, user=request.user)
+                               check_access=check_access, user=request.user, active=active)
         return Response(people)
 
 
@@ -518,6 +520,7 @@ class SearchClassesOrPeopleAPI(APIView):
         people_type = request.data.get('people', 'student')
         teachings = TeachingModel.objects.filter(id__in=request.data.get('teachings', []))
         check_access = request.data.get('check_access', 0) == 1
+        active = request.data.get('active', 1) == 1
 
         if len(query) == 0:
             return Response([])
@@ -527,7 +530,7 @@ class SearchClassesOrPeopleAPI(APIView):
                                            check_access=check_access, user=request.user))
 
         people = search_people(query=query, people_type=people_type, teachings=teachings,
-                               check_access=check_access, user=request.user)
+                               check_access=check_access, user=request.user, active=active)
         return Response(people)
 
 
