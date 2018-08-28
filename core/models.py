@@ -59,7 +59,10 @@ class StudentModel(models.Model):
 
     def __str__(self):
         """Return the full name with the last name first."""
-        return '%s %s %s' % (self.last_name, self.first_name, self.classe)
+        if self.inactive_from:
+            return '%s %s (%s)' % (self.last_name, self.first_name, 'ancien')
+        else:
+            return '%s %s %s' % (self.last_name, self.first_name, str(self.classe))
 
     @property
     def fullname(self):
@@ -71,7 +74,8 @@ class StudentModel(models.Model):
 
     @property
     def display(self):
-        return '%s %s %s' % (self.last_name, self.first_name, str(self.classe))
+        return self.__str__()
+
 
 
 class AdditionalStudentInfo(models.Model):

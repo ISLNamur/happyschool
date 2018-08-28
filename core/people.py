@@ -145,35 +145,40 @@ class People:
     def get_people_by_name(self,
                            name: str,
                            teaching: list=('all',),
-                           person_type=ALL) -> list:
+                           person_type=ALL,
+                           active: bool=True) -> list:
         """
         Get people by their name.
         :param name: String that starts the people's name.
         :param teaching: A list of the person's teachings.
         :param person_type: People's type (students, educators,…).
+        :param active: Filter out inactive people.
         :return: A list of Queryset.
         """
 
         if person_type != ALL:
             get_by_name = getattr(self, "get_%ss_by_name" % person_type, None)
-            return get_by_name(name=name, teaching=teaching)
+            return get_by_name(name=name, teaching=teaching, active=active)
 
-        return list(self.get_students_by_name(name=name, teaching=teaching)) +\
-            list(self.get_responsibles_by_name(name=name, teaching=teaching))
+        return list(self.get_students_by_name(name=name, teaching=teaching, active=active)) +\
+            list(self.get_responsibles_by_name(name=name, teaching=teaching, active=active))
 
     @staticmethod
     def _get_people_by_name_by_model(model_name: Model,
                                      name: str,
                                      teaching: list=('all',),
+                                     active: bool = True,
                                      additional_filter: dict={}) -> QuerySet:
         """
         Private method where you can get people by their name and specify the
         model object you expect to have.
         :param model_name: People's model.
         :param name: String that starts the teachers' name.
+        :param active: Filter out inactive people.
         :param teaching: A list of teachers' teachings.
         :return: A QuerySet of teachers.
         """
+        print(active)
         tokens = name.split(" ")
         people = model_name.objects.none()
 
@@ -192,6 +197,8 @@ class People:
             else:
                 people = people.filter(teaching__name__in=teaching)
 
+        if active:
+            people = people.filter(inactive_from__isnull=True)
         if additional_filter:
             people = people.filter(**additional_filter)
 
@@ -199,17 +206,20 @@ class People:
 
     def get_students_by_name(self, name: str,
                              teaching: list=('all',),
-                             classes: list=None) -> QuerySet:
+                             classes: list=None,
+                             active: bool=True) -> QuerySet:
         """
         Get students by their name.
         :param name: String that starts the students' name.
         :param teaching: A list of students' teachings.
         :param classes: A ClasseModel queryset.
+        :param active: Filter out inactive students.
         :return: A QuerySet of students.
         """
         students = self._get_people_by_name_by_model(StudentModel,
                                                      name=name,
-                                                     teaching=teaching)
+                                                     teaching=teaching,
+                                                     active=active)
         if type(classes) == QuerySet:
             students = students.filter(classe__in=classes)
 
@@ -217,48 +227,57 @@ class People:
 
     def get_teachers_by_name(self,
                              name: str,
-                             teaching: list=('all',)) -> QuerySet:
+                             teaching: list=('all',),
+                             active: bool=True) -> QuerySet:
         """
         Get teachers by their name.
         :param name: String that starts the teachers' name.
         :param teaching: A list of teachers' teachings.
+        :param active: Filter out inactive teachers.
         :return: A QuerySet of teachers.
         """
         return self._get_people_by_name_by_model(ResponsibleModel,
                                                  name=name,
                                                  teaching=teaching,
+                                                 active=active,
                                                  additional_filter={
                                                      'is_teacher': True
                                                  })
 
     def get_educators_by_name(self,
                               name: str,
-                              teaching: list=('all',)) -> QuerySet:
+                              teaching: list=('all',),
+                              active: bool=True) -> QuerySet:
         """
         Get educators by their name.
         :param name: String that starts the educators' name.
         :param teaching: A list of educators' teachings.
+        :param active: Filter out inactive educators.
         :return: A QuerySet of educators.
         """
         return self._get_people_by_name_by_model(ResponsibleModel,
                                                  name=name,
                                                  teaching=teaching,
+                                                 active=active,
                                                  additional_filter={
                                                      'is_educator': True
                                                  })
 
     def get_responsibles_by_name(self,
                                  name: str,
-                                 teaching: list=('all',)) -> QuerySet:
+                                 teaching: list=('all',),
+                                 active: bool=True) -> QuerySet:
         """
         Get responsibles by their name.
         :param name: String that starts the responsibles' name.
         :param teaching: A list of responsibles' teachings.
+        :param active: Filter out inactive responsibles.
         :return: A QuerySet of responsibles.
         """
         return self._get_people_by_name_by_model(ResponsibleModel,
                                                  name=name,
-                                                 teaching=teaching)
+                                                 teaching=teaching,
+                                                 active=active)
 
     @staticmethod
     def get_students_by_classe(classe: str, teaching: list=('all',)) -> QuerySet:
