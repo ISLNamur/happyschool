@@ -504,7 +504,6 @@ class CasEleveFilter(BaseFilters):
 
 class CasEleveViewSet(BaseModelViewSet):
     queryset = CasEleve.objects.filter(matricule__isnull=False)
-    filter_access = True
 
     serializer_class = CasEleveSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
@@ -621,7 +620,6 @@ class AskSanctionsFilter(BaseFilters):
 
 class AskSanctionsViewSet(BaseModelViewSet):
     queryset = CasEleve.objects.filter(matricule__isnull=False, sanction_decision__isnull=False, sanction_faite=False)
-    filter_access = True
     serializer_class = CasEleveSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     filter_class = AskSanctionsFilter

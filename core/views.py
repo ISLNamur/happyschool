@@ -33,6 +33,7 @@ from django.utils import timezone
 from django.db.models import CharField
 from django.core.exceptions import ObjectDoesNotExist, FieldError
 from django.views.generic import TemplateView
+from django.contrib.auth.models import Group
 
 from core.models import ResponsibleModel, TeachingModel, EmailModel
 from core.people import get_classes
@@ -81,13 +82,12 @@ class BaseFilters(filters.FilterSet):
 
 
 class BaseModelViewSet(ModelViewSet):
-    filter_access = False
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     permission_classes = (DjangoModelPermissions,)
     user_field = "user"
 
     def get_queryset(self):
-        if not self.filter_access and self.request.user.groups.intersection(self.get_group_all_access).exists():
+        if self.request.user.groups.intersection(self.get_group_all_access()).exists():
             return self.queryset
         else:
             try:
@@ -109,7 +109,7 @@ class BaseModelViewSet(ModelViewSet):
         )
 
     def get_group_all_access(self):
-        return ()
+        return Group.objects.none()
 
 
 class MembersView(LoginRequiredMixin,
@@ -165,6 +165,6 @@ class TeachingViewSet(ReadOnlyModelViewSet):
 
 
 class EmailViewSet(ReadOnlyModelViewSet):
-    queryset = EmailModel.objects.all().order_by("-display")
+    queryset = EmailModel.objects.all().order_by("display")
     serializer_class = EmailSerializer
     permission_classes = (IsAuthenticated,)
