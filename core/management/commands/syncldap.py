@@ -25,6 +25,7 @@ class Command(BaseCommand):
             # Check if the student already exists.
             try:
                 student = StudentModel.objects.get(matricule=int(student_dict['matricule']))
+                student.inactive_from = None
             except ObjectDoesNotExist:
                 student = StudentModel(matricule=int(student_dict['matricule']))
 
@@ -129,6 +130,7 @@ class Command(BaseCommand):
             # Check if the responsible already exists.
             try:
                 resp = ResponsibleModel.objects.get(matricule=int(resp_dict['matricule']))
+                resp.inactive_from = None
             except ObjectDoesNotExist:
                 try:
                     user = User.objects.get(username=resp_dict['username'])
