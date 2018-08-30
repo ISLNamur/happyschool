@@ -100,7 +100,7 @@ class BaseModelViewSet(ModelViewSet):
                     warnings.warn("Use *student* as field name instead of matricule", DeprecationWarning)
                 return queryset
             except ObjectDoesNotExist:
-                return self.queryset
+                return self.queryset.none()
 
     def perform_create(self, serializer):
         serializer.save(**{
