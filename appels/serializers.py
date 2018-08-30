@@ -20,7 +20,7 @@
 from rest_framework import serializers
 
 from appels.models import Appel, MotiveModel, ObjectModel, AppelsSettingsModel
-from core.serializers import StudentSerializer, StudentModel
+from core.serializers import StudentSerializer, StudentModel, ResponsibleModel, ResponsibleSerializer
 
 
 class AppelsSettingsSerializer(serializers.ModelSerializer):
@@ -46,6 +46,9 @@ class AppelSerializer(serializers.ModelSerializer):
     matricule = StudentSerializer(read_only=True)
     matricule_id = serializers.PrimaryKeyRelatedField(queryset=StudentModel.objects.all(),
                                                       source='matricule', required=False, allow_null=True)
+    responsible = ResponsibleSerializer(read_only=True)
+    responsible_pk = serializers.PrimaryKeyRelatedField(queryset=ResponsibleModel.objects.all(),
+                                                        source='responsible', required=False, allow_null=True)
     motive = MotiveSerializer(read_only=True)
     motive_id = serializers.PrimaryKeyRelatedField(queryset=MotiveModel.objects.all(),
                                                    source='motive', write_only=True)

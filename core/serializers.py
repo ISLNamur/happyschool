@@ -33,7 +33,7 @@ class ResponsibleSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResponsibleModel
         fields = ('pk', 'matricule', 'last_name', 'first_name', 'is_secretary', 'email_school',
-                  'teaching', 'classe', 'tenure')
+                  'teaching', 'classe', 'tenure', 'display')
         depth = 1
 
 

@@ -51,10 +51,27 @@
                 return  subTitleStr;
             },
             motif_start: function() {
-                return Moment(this.rowData.datetime_motif_start).format('hh:mm DD/MM');
+                if (this.rowData.datetime_motif_start) {
+                    // Deprecated data.
+                    return Moment(this.rowData.datetime_motif_start).format('hh:mm DD/MM');
+                }
+                let datetime_str = Moment(this.rowData.date_motif_start).format('DD/MM')
+                if (this.rowData.time_motif_start) {
+                    datetime_str = Moment(this.rowData.time_motif_start, 'hh:mm:ss').format('hh:mm ') + datetime_str;
+                }
+                return datetime_str;
             },
             motif_end: function() {
-                return Moment(this.rowData.datetime_motif_end).format('hh:mm DD/MM');
+                if (this.rowData.datetime_motif_end) {
+                    // Deprecated data.
+                    return Moment(this.rowData.datetime_motif_end).format('hh:mm DD/MM');
+                }
+
+                let datetime_str = Moment(this.rowData.date_motif_end).format('DD/MM')
+                if (this.rowData.time_motif_end) {
+                    datetime_str = Moment(this.rowData.time_motif_end, 'hh:mm:ss').format('hh:mm ') + datetime_str;
+                }
+                return datetime_str;
             },
             appel: function() {
                 return Moment(this.rowData.datetime_appel).calendar();

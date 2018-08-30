@@ -1,14 +1,14 @@
 <template>
 <div>
-    <b-modal size="lg" :title="(processing ? 'Traiter' : 'Ajouter') + ' un appel'"
-        :ok-title="processing ? 'Traiter' : 'Soumettre'" cancel-title="Annuler"
-        ref="addModal"
+    <b-modal size="lg" :title="(processing ? 'Traiter' : 'Ajouter/Modifier') + ' un appel'"
+        cancel-title="Annuler"
+        ref="addModal" :ok-disabled="loading"
         @ok="addAppel" @hidden="resetModal"
         >
         <b-row>
             <b-col sm="4">
                 <div>
-                    <b-img rounded :src="photoPath" fluid alt="Responsive image" />
+                    <b-img rounded :src="'/static/photos' + photo + '.jpg'" fluid alt="Photo de la personne" />
                 </div>
             </b-col>
             <b-col>
@@ -67,28 +67,28 @@
                     <div v-if="!processing || form.is_traiter">
                         <b-form-row>
                             <b-col>
-                                <b-form-group label="Début du motif" label-for="input-date-motif-start" :state="inputStates.datetime_motif_start">
-                                    <b-form-input id="input-date-motif-start" type="date" v-model="form.datetime_motif_start"></b-form-input>
-                                    <span slot="invalid-feedback">{{ errorMsg('datetime_motif_start') }}</span>
+                                <b-form-group label="Début du motif" label-for="input-date-motif-start" :state="inputStates.date_motif_start">
+                                    <b-form-input id="input-date-motif-start" type="date" v-model="form.date_motif_start"></b-form-input>
+                                    <span slot="invalid-feedback">{{ errorMsg('date_motif_start') }}</span>
                                 </b-form-group>
                             </b-col>
                             <b-col>
                                 <b-form-group label="(heure)" label-for="input-time-motif-start">
-                                    <b-form-input id="input-time-motif-start" type="time" v-model="timeMotifStart"></b-form-input>
+                                    <b-form-input id="input-time-motif-start" type="time" v-model="form.time_motif_start"></b-form-input>
                                 </b-form-group>
                             </b-form-group>
                             </b-col>
                         </b-form-row>
                         <b-form-row>
                             <b-col>
-                                <b-form-group label="Fin du motif" label-for="input-date-motif-end" :state="inputStates.datetime_motif_end">
-                                    <b-form-input id="input-date-motif-end" type="date" v-model="form.datetime_motif_end"></b-form-input>
-                                    <span slot="invalid-feedback">{{ errorMsg('datetime_motif_end') }}</span>
+                                <b-form-group label="Fin du motif" label-for="input-date-motif-end" :state="inputStates.date_motif_end">
+                                    <b-form-input id="input-date-motif-end" type="date" v-model="form.date_motif_end"></b-form-input>
+                                    <span slot="invalid-feedback">{{ errorMsg('date_motif_end') }}</span>
                                 </b-form-group>
                             </b-col>
                             <b-col>
                                 <b-form-group label="(heure)" label-for="input-time-motif-end">
-                                    <b-form-input id="input-time-motif-end" type="time" v-model="timeMotifEnd"></b-form-input>
+                                    <b-form-input id="input-time-motif-end" type="time" v-model="form.time_motif_end"></b-form-input>
                                 </b-form-group>
                             </b-col>
                         </b-form-row>
@@ -106,15 +106,25 @@
                             </b-col>
                         </b-form-row>
                     </div>
-                    <b-form-row v-if="processing || form.is_traiter">
-                        <b-form-group label="Destinataire(s) : ">
-                            <b-form-checkbox-group id="emails" stacked
-                                v-model="form.emails"
-                                :options="$store.state.emails"
-                                value-field="id" text-field="display">
-                            </b-form-checkbox-group>
-                        </b-form-group>
-                    </b-form-row>
+                    <div v-if="processing || form.is_traiter">
+                        <b-form-row>
+                            <b-form-group label="Destinataire(s) : ">
+                                <b-form-checkbox-group id="emails" stacked
+                                    v-model="form.emails"
+                                    :options="$store.state.emails"
+                                    value-field="id" text-field="display">
+                                </b-form-checkbox-group>
+                            </b-form-group>
+                        </b-form-row>
+                        <b-form-row>
+                            <b-form-group label="Autre email :" label-for="input-custom-email"  :state="inputStates.custom_email">
+                                <b-form-input v-model="form.custom_email" type="text" id="input-custom-email"
+                                    placeholder="Courriel personnalisé"></b-form-input>
+                                <span slot="invalid-feedback">{{ errorMsg('custom_email') }}</span>
+                            </b-form-group>
+                        </b-form-row>
+                    </div>
+
                     <b-form-row>
                         <b-col>
                             <b-form-group label="Commentaires" label-for="input-comment">
@@ -125,6 +135,10 @@
                 </b-form>
             </b-col>
         </b-row>
+        <template slot="modal-ok">
+            <icon v-if="loading" name="spinner" scale="1" spin class="align-baseline"></icon>
+            {{ processing ? 'Traiter' : 'Soumettre' }}
+        </template>
     </b-modal>
 </div>
 </template>
@@ -147,18 +161,20 @@ export default {
             form: {
                 name: "",
                 matricule_id: null,
+                responsible_pk: null,
                 object_id: null,
                 motive_id: null,
-                datetime_motif_start: null,
-                datetime_motif_end: null,
+                date_motif_start: null,
+                time_motif_start: null,
+                date_motif_end: null,
+                time_motif_end: null,
                 datetime_appel: null,
                 commentaire: "",
                 emails: [],
+                custom_email: null,
                 is_student: false,
                 is_traiter: false,
             },
-            timeMotifStart: null,
-            timeMotifEnd: null,
             timeAppel: null,
             objectOptions: [],
             motiveOptions: [],
@@ -171,16 +187,27 @@ export default {
                 name: null,
                 object_id: null,
                 motive_id: null,
-                datetime_motif_start: null,
-                datetime_motif_end: null,
+                date_motif_start: null,
+                date_motif_end: null,
                 datetime_appel: null,
-            }
+                custom_email: null,
+            },
+            loading: false,
         };
     },
     computed: {
-        photoPath: function () {
-            //TODO photo path
-            return "/static/photos/4721.jpg";
+        photo: function () {
+            if (this.form.name) {
+                if (this.name.is_student) {
+                    return "/" + this.name.matricule;
+                } else {
+                    let url = "_prof/";
+                    url += this.entry ? this.form.matricule_id : this.name.id;
+                    return url;
+                }
+            } else {
+                return "/unknown";
+            }
         }
     },
     watch: {
@@ -193,13 +220,12 @@ export default {
                     // Student.
                     this.form.matricule_id = this.name.matricule;
                 } else {
-                    this.form.matricule_id = null;
+                    this.form.responsible_pk = this.name.id;
                 }
             }
         },
         errors: function (newErrors, oldErrors) {
-            let inputs = ['name', 'object_id', 'motive_id',
-                'datetime_motif_start', 'datetime_motif_end', 'datetime_appel'];
+            const inputs = Object.keys(this.inputStates);
             for (let u in inputs) {
                 if (inputs[u] in newErrors) {
                     this.inputStates[inputs[u]] = newErrors[inputs[u]].length == 0;
@@ -222,7 +248,7 @@ export default {
                     }).map(email => email.id);
                 }
             } else {
-                this.resetModal();
+                // this.resetModal();
             }
         },
     },
@@ -233,8 +259,8 @@ export default {
                 const nowTime = Moment().format('HH:mm');
                 this.form.datetime_appel = nowDate;
                 this.timeAppel = nowTime;
-                this.form.datetime_motif_start = nowDate;
-                this.form.datetime_motif_end = nowDate;
+                this.form.date_motif_start = nowDate;
+                this.form.date_motif_end = nowDate;
             }
             this.$refs.addModal.show();
         },
@@ -247,40 +273,50 @@ export default {
             this.form = {
                 name: "",
                 matricule_id: null,
+                responsible_pk: null,
                 object_id: null,
                 motive_id: null,
-                datetime_motif_start: null,
-                datetime_motif_end: null,
+                date_motif_start: null,
+                time_motif_start: null,
+                date_motif_end: null,
+                time_motif_end: null,
                 datetime_appel: null,
                 commentaire: "",
                 emails: [],
+                custom_email: null,
                 is_student: false,
                 is_traiter: false,
             };
 
             this.name = {matricule: null};
-            this.timeMotifStart = null;
-            this.timeMotifEnd = null;
             this.timeAppel = null;
         },
         setEntry: function (entry) {
-            this.name = entry.matricule;
+            if (entry.matricule) {
+                this.name = entry.matricule;
+                this.name.is_student = true;
+            } else {
+                this.name = entry.responsible;
+                this.name.is_student = false;
+            }
             this.form = {
                 id: entry.id,
                 name: entry.name,
                 matricule_id: entry.matricule_id,
+                responsible_pk: entry.responsible_pk,
                 object_id: entry.object.id,
                 motive_id: entry.motive.id,
-                datetime_motif_start: Moment(entry.datetime_motif_start).format('YYYY-MM-DD'),
-                datetime_motif_end: Moment(entry.datetime_motif_end).format('YYYY-MM-DD'),
+                date_motif_start: Moment(entry.date_motif_start).format('YYYY-MM-DD'),
+                time_motif_start: entry.time_motif_start ? Moment(entry.time_motif_start, 'hh:mm:ss').format('hh:mm') : null,
+                date_motif_end: Moment(entry.date_motif_end).format('YYYY-MM-DD'),
+                time_motif_end: entry.time_motif_end ? Moment(entry.time_motif_end, 'hh:mm:ss').format('hh:mm') : null,
                 datetime_appel: Moment(entry.datetime_appel).format('YYYY-MM-DD'),
                 commentaire: entry.commentaire,
                 emails: entry.emails,
+                custom_email: entry.custom_email,
                 is_student: entry.is_student,
                 is_traiter: entry.is_traiter,
             };
-            this.timeMotifStart = Moment(entry.datetime_motif_start).format('HH:mm');
-            this.timeMotifEnd = Moment(entry.datetime_motif_end).format('HH:mm');
             this.timeAppel = Moment(entry.datetime_appel).format('HH:mm');
         },
         errorMsg(err) {
@@ -293,17 +329,21 @@ export default {
         addAppel: function (evt) {
             evt.preventDefault();
 
-            let data = this.form;
+            this.loading = true;
+            // Copy form data.
+            let data = Object.assign({}, this.form);
             // Add times if any.
-            let time = this.timeMotifStart ? " " + this.timeMotifStart : " 12:00";
-            data.datetime_motif_start += time;
-            time = this.timeMotifEnd ? " " + this.timeMotifEnd : " 12:00";
-            data.datetime_motif_end += time;
-            time = this.timeAppel ? " " + this.timeAppel : " 12:00";
+            const time = this.timeAppel ? " " + this.timeAppel : Moment().format('HH:mm');;
             data.datetime_appel += time;
 
-            // Set is_student.
-            if (data.matricule_id) data.is_student = true;
+            // Set is_student field and responsible's matricule.
+            data.is_student = this.name.is_student;
+            if (!data.is_student) {
+                if (!this.entry) {
+                    data.responsible_pk = data.matricule_id;
+                }
+                data.matricule_id = null;
+            }
 
             let modal = this;
             // Send data.
@@ -315,7 +355,9 @@ export default {
                 this.hide();
                 this.errors = {};
                 this.$emit('update');
+                this.loading = false;
             }).catch(function (error) {
+                modal.loading = false;
                 modal.errors = error.response.data;
             });
         },
@@ -339,7 +381,7 @@ export default {
                     return;
                 const options = response.data.map(p => {
                     // Format entries.
-                    let entry = {display: p.last_name + " " + p.first_name, matricule: p.matricule};
+                    let entry = {display: p.last_name + " " + p.first_name};
                     if ('is_secretary' in p) {
                         // It's a responsible.
                         let teachings = " —";
@@ -348,11 +390,13 @@ export default {
                         }
                         entry.display += teachings;
                         entry.is_student = false;
+                        entry.matricule = p.pk;
+                        entry.id = p.matricule;
                     } else {
                         // It's a student.
-                        entry.display += " " + p.classe.year + p.classe.letter.toUpperCase();
-                        entry.display += " – " + p.teaching.display_name;
+                        entry.display = p.display;
                         entry.is_student = true;
+                        entry.matricule = p.matricule;
                     }
                     return entry;
                 });

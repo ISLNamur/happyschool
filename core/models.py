@@ -182,6 +182,10 @@ class ResponsibleModel(models.Model):
         else:
             return None
 
+    @property
+    def display(self):
+        return self.__str__()
+
 
 class YearModel(models.Model):
     year = models.IntegerField("year")
