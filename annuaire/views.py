@@ -434,37 +434,54 @@ def search_classes(query, teachings, check_access, user):
     return ClasseSerializer(classes, many=True).data
 
 
-def search_people(query, people_type, teachings, check_access, user, active=True):
-    def serialize_people(person):
-        if type(person) == StudentModel:
-            return StudentSerializer(person).data
-        elif type(person) == ResponsibleModel:
-            return ResponsibleSerializer(person).data
+def serialize_people(person):
+    if not person:
+        return {}
+    if type(person) == StudentModel:
+        return StudentSerializer(person).data
+    elif type(person) == ResponsibleModel:
+        return ResponsibleSerializer(person).data
 
+
+def search_people(query, people_type, teachings, check_access, user, active=True):
     if len(query) < 1:
         return []
 
     truncate_limit = 50
+
     people = []
-    if people_type == 'student' or people_type == 'all':
+    if people_type == 'all':
         classe_years = get_classes(teachings, check_access=True,
                                    user=user) if check_access else None
-        people += StudentSerializer(
+
+        result = People().get_people_by_name(query, teachings, classes=classe_years, active=active)
+        # Check quality.
+        if result['student'][1] > result['responsible'][1]:
+            people = StudentSerializer(result['student'][0][:truncate_limit], many=True).data
+        elif result['responsible'][1] > result['student'][1]:
+            people = ResponsibleSerializer(result['responsible'][0][:truncate_limit], many=True).data
+        else:
+            people = StudentSerializer(result['student'][0][:truncate_limit/2], many=True).data + ResponsibleSerializer(result['responsible'][0][:truncate_limit/2], many=True).data
+
+    if people_type == 'student':
+        classe_years = get_classes(teachings, check_access=True,
+                                   user=user) if check_access else None
+        people = StudentSerializer(
             People().get_students_by_name(query, teachings, classes=classe_years, active=active)[:truncate_limit], many=True
         ).data
 
-    if people_type == 'responsible' or people_type == 'all':
-        people += ResponsibleSerializer(
+    if people_type == 'responsible':
+        people = ResponsibleSerializer(
             People().get_responsibles_by_name(query, teachings, active=active)[:truncate_limit], many=True
         ).data
 
     if people_type == 'teacher':
-        people += ResponsibleSerializer(
+        people = ResponsibleSerializer(
             People().get_teachers_by_name(query, teachings, active=active)[:truncate_limit], many=True
         ).data
 
     if people_type == 'educator':
-        people += ResponsibleSerializer(
+        people = ResponsibleSerializer(
             People().get_educators_by_name(query, teachings, active=active)[:truncate_limit], many=True
         ).data
 
