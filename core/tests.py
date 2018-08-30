@@ -126,37 +126,37 @@ class PeopleTest(TestCase):
 
     def test_get_people_by_name_by_model(self):
         result = People()._get_people_by_name_by_model(StudentModel, "tot")
-        self.assertGreater(len(result), 0)
+        self.assertGreater(len(result[0]), 0)
 
-        self.assertEqual(type(result[0]), StudentModel)
+        self.assertEqual(type(result[0][0]), StudentModel)
         result = People()._get_people_by_name_by_model(StudentModel, "tot",
                                                           teaching=['secondaire'])
-        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result[0]), 1)
 
         result = People()._get_people_by_name_by_model(StudentModel, "tutu tot",
                                                        teaching=['secondaire'])
-        self.assertEqual(len(result), 1)
-        self.assertEqual(type(result[0]), StudentModel)
+        self.assertEqual(len(result[0]), 1)
+        self.assertEqual(type(result[0][0]), StudentModel)
 
         teaching_secondaire = TeachingModel.objects.filter(name="secondaire")
         result = People()._get_people_by_name_by_model(StudentModel, "tot",
                                                        teaching=teaching_secondaire)
-        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result[0]), 1)
 
     def test_get_people_by_name(self):
         result = People().get_people_by_name(name="t")
-        self.assertEqual(len(result), 5)
+        self.assertEqual(len(result['student'][0]) + len(result['responsible'][0]), 5)
 
         result = People().get_people_by_name(name="t", person_type=STUDENT)
         self.assertEqual(len(result), 2)
 
         result = People().get_people_by_name(name="tea")
-        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result['student'][0]) + len(result['responsible'][0]), 1)
 
         result = People().get_people_by_name(name="t", teaching=['all'])
-        self.assertEqual(len(result), 5)
+        self.assertEqual(len(result['student'][0]) + len(result['responsible'][0]), 5)
         result = People().get_people_by_name(name="t", teaching=['primaire'])
-        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result['student'][0]) + len(result['responsible'][0]), 1)
 
     def test_get_students_by_name(self):
         result = People().get_students_by_name("t")
