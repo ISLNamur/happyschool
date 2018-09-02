@@ -194,3 +194,149 @@ comme son nom, sa classe, son établissement/enseignement. `student` sera
 donc le champ en lecture seul avec toutes les informations et `student_id`
 sera le champ du matricule de l'élève nécessaire uniquement pour la
 création/modification d'une entrée dans la base de donnée.
+
+Avant d'arriver à la partie *vue* de notre application, mettons en place
+un système de configuration pour notre application pour, par exemple,
+spécifier l'enseignement/établissement qui aura accès aux absences. Afin
+de profiter des possibilités de django, créons un modèle qui n'aura qu'une
+seule entrée, les paramètres de StudentAbsence.
+
+```
+from core.models import StudentModel, TeachingModel
+
+# Les paramètres de notre application.
+class StudentAbsenceSettingsModel(models.Model):
+    # Les enseignements/établissements utilisés par l'application.
+    # Ne pas oublier de mettre une valeur par défaut pour la création automatique.
+    teachings = models.ManyToManyField(TeachingModel, default=None)
+```
+
+Ceci rajoute simplement un modèle, `StudentAbsenceSettingsModel` avec un
+seul champ, `teachings`, qui peut être relier à plusieurs instances de
+`TeachingModel`, d'où le `ManyToManyField`. Par défaut, aucun `TeachingModel`
+ne sera sélectioné et aucune entrée ne sera affichée. Il faudra donc que
+l'administrateur mette explicitement et manuellement au moins une entrée.
+
+Comme pour `StudentAbsenceModel`, il faut appliquer les changements sur
+notre base de donnée avec :
+```
+python3 manage.py makemigrations
+python3 manage.py migrate
+```
+
+Passons maintenant au cœur de notre application avec la partie *vue*, c'est-à-dire
+exposer notre modèle au travers d'une API REST. La classe `ModelViewSet` du DRF,
+permet de nous faciliter grandement le travail. En effet, en lui donnant le
+*sérialiseur* ainsi que quelques paramètres, il nous crée automatiquement une
+interface http en gérant les requêtes `GET`, `POST`, `PUT`, `DELETE`. Une des
+particularité d'Happyschool étant de gérer les permissions d'accès, la classe
+`BaseMovelViewSet` va hériter de `ModelViewSet` et gérer les accès
+automatiquement, un éducateur du 2ème niveau ne verra que les élèves de ce
+niveau. Il est évidemment possible de passer outre en surchargeant la méthode
+`get_group_all_access` qui attend comme retour un `QuerySet` de `Group`
+ayant accès à tous les niveaux. Les paramètres attendus par notre class
+`StudentAbsenceViewSet(BaseModelViewSet)` sont, le *sérialiseur*
+`serializer_class`, la requête de base à la base de donnée `queryset` (qui servira
+également de cache), les permissions avec `permission_classes`, les champs qui
+peuvent être ordonés `ordering_fields` et les filtres que nous pouvons appliquer
+sur nos données, `filter_class`, objet que détaillerons par la suite.
+
+En ce qui concerne, `permission_classes`, nous pouvons demander que l'utilisateur
+soit connecté avec `IsAuthenticated` et utilisé le système de permission de django
+pour gérer l'écriture/modification/suppression qui accessible par l'interface d'admin
+de django.
+
+Finalement, intéressons-nous aux capacités de filtres. Le système offert par
+l'application [`django_filters`](https://django-filter.readthedocs.io/en/master/) permet
+une grande souplesse dans les types de filtres. Pour cela la classe fournie par
+Happyschool, `BaseFilters` qui hérite de `django_filters`, permet d'indiquer les
+champs à filtrer de manière exacte mais également des filtres personnalisés.
+Dans notre application nous avons ajouté un filtre par classe.
+
+Nous obtenons alors le code suivant :
+```
+import json
+
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+from django_filters import rest_framework as filters
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import TemplateView
+
+from core.views import BaseModelViewSet, BaseFilters
+from core.models import ResponsibleModel
+from core.people import get_classes
+from core.utilities import get_menu
+
+class StudentAbsenceFilter(BaseFilters):
+    classe = filters.CharFilter(method='classe_by')
+
+    class Meta:
+        fields_to_filter = ('student_id', 'date_absence_start', 'date_absence_end')
+        model = StudentAbsenceModel
+        # Permet de génèrer correctement les filtres avec prises en comptes des accents.
+        fields = BaseFilters.Meta.generate_filters(fields_to_filter)
+        filter_overrides = BaseFilters.Meta.filter_overrides
+
+    def classe_by(self, queryset, name, value):
+        if not value[0].isdigit():
+            return queryset
+
+        teachings = ResponsibleModel.objects.get(user=self.request.user).teaching.all()
+        classes = get_classes(list(map(lambda t: t.name, teachings)), True, self.request.user)
+        queryset = queryset.filter(student__classe__in=classes)
+
+        if len(value) > 0:
+            queryset = queryset.filter(student__classe__year=value[0])
+            if len(value) > 1:
+                queryset = queryset.filter(student__classe__letter=value[1].lower())
+        return queryset
+
+
+class StudentAbsenceViewSet(BaseModelViewSet):
+    queryset = StudentAbsenceModel.objects.filter(student__isnull=False)
+
+    serializer_class = StudentAbsenceSerializer
+    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    filter_class = StudentAbsenceFilter
+    ordering_fields = ('datetime_creation',)
+```
+
+Il ne nous reste plus qu'à exposer notre API par un accès http, une URL. Nous
+voulons tout d'abord que tout ce qui concerne notre application soit de la forme
+`http://mon.domaine.org/student_absence/…`, pour cela il faut ajouter au fichier
+`happyschool/urls.py`, l'application `student_absence` à la liste `app` du fichier.
+Ensuite, créons le fichier `/student_absence/urls.py` et mettons-y :
+```
+from rest_framework.routers import DefaultRouter
+
+from . import views
+
+urlpatterns = [
+]
+
+router = DefaultRouter()
+router.register(r'api/student_absence', views.StudentAbsenceViewSet)
+
+urlpatterns += router.urls
+```
+qui va se charger de créer les bonnes urls. Ainsi pour avoir la liste des absences
+il faudra faire [http://localhost:8000/student_absence/api/student_absence/](http://localhost:8000/student_absence/api/student_absence/)
+si vous avez lancé le serveur de développement en local. Pour accèder à une
+entrée en particulier, qui a comme *id* 42, nous irons sur
+[http://localhost:8000/student_absence/api/student_absence/42/](http://localhost:8000/student_absence/api/student_absence/42/).
+DRF crée automatiquement une interface web de notre API accessible depuis un
+navigateur, il suffit d'aller sur les liens précédents.
+
+Pour tester notre API, django fournit un serveur de développement qui peut être
+lancer avec :
+```
+python3 manage.py runserver
+```
+
+et qui se rechargera à chaque modification de fichiers.
+
+Nous avons maintenant notre partie *back-end* prête à l'emploi, il nous reste à
+développer la partie *front-end* qui sera principalement écrite en javascript avec
+le framework [Vue.js](https://vuejs.org/v2/guide/). Pour la suite, il est conseillé
+d'avoir lu, au moins en partie, la documentation et sa philosophie.
