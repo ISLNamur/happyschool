@@ -668,8 +668,8 @@ class StatisticAPI(APIView):
         current_scolar_year = get_scholar_year()
         limit_date = timezone.make_aware(timezone.datetime(current_scolar_year, 8, 15))
 
-        cas_discip = queryset.filter(info=None, matricule=matricule).filter(Q(sanction_faite=True)
-                                                                            | Q(sanction_faite__isnull=True))
+        cas_discip = queryset.filter(info=None, matricule=matricule, datetime_encodage__gte=limit_date)\
+                             .filter(Q(sanction_faite=True) | Q(sanction_faite__isnull=True))
         cas_info = queryset.filter(sanction_decision=None, matricule=matricule,
                                            datetime_encodage__gte=limit_date)
 
