@@ -138,6 +138,10 @@ class Command(BaseCommand):
                     user = User.objects.create_user(resp_dict['username'])
                 resp = ResponsibleModel(matricule=int(resp_dict['matricule']), user=user)
 
+            if 'inactive_from' in resp_dict:
+                resp.inactive_from = timezone.make_aware(timezone.datetime.combine(resp_dict['inactive_from'],
+                                                                                   timezone.datetime.min.time()))
+
             if 'professeur' in r['attributes']['objectClass']:
                 resp.is_teacher = True
 

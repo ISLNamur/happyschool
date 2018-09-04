@@ -30,6 +30,8 @@ ldap_to_django = {
     'uid': 'username',
     'userPassword': 'password',
 
+    'lastActive': 'inactive_from',
+
     'enseignement': 'teaching',
     'classeLettre': 'classe_letter',
     'an': 'year',
@@ -94,6 +96,15 @@ def get_django_dict_from_ldap(ldap_entry: dict) -> dict:
         try:
             if ldap == 'dateNaiss':
                 date_str = ldap_attributes[ldap][0]
+                try:
+                    django_dict[django] = date(year=int(date_str[:4]), month=int(date_str[4:6]),
+                                               day=int(date_str[6:]))
+                except ValueError:
+                    django_dict[django] = date.today()
+            elif ldap == 'lastActive':
+                date_str = ldap_attributes[ldap][0]
+                if len(date_str) < 8:
+                    continue
                 django_dict[django] = date(year=int(date_str[:4]), month=int(date_str[4:6]), day=int(date_str[6:]))
             elif ldap not in ('enseignement', 'classe', 'tenure',):
                 if ldap in ldap_attributes:
