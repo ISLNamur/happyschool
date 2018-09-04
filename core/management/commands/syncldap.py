@@ -155,8 +155,8 @@ class Command(BaseCommand):
                 resp.teaching.add(teaching)
 
             # Check if responsible's classes already exists.
+            resp.classe.clear()
             if 'classe' in resp_dict:
-                resp.classe.clear()
                 for c in resp_dict['classe']:
                     try:
                         classe = ClasseModel.objects.get(year=int(c[0]), letter=c[1].lower(), teaching=teaching)
@@ -166,8 +166,8 @@ class Command(BaseCommand):
                     resp.classe.add(classe)
 
             # Check if responsible's tenures already exists.
+            resp.tenure.clear()
             if 'tenure' in resp_dict:
-                resp.tenure.clear()
                 for t in resp_dict['tenure']:
                     try:
                         tenure = ClasseModel.objects.get(year=int(t[0]), letter=t[1].lower(), teaching=teaching)
