@@ -162,6 +162,8 @@ class Command(BaseCommand):
             resp.classe.clear()
             if 'classe' in resp_dict:
                 for c in resp_dict['classe']:
+                    if len(c) < 2:
+                        continue
                     try:
                         classe = ClasseModel.objects.get(year=int(c[0]), letter=c[1].lower(), teaching=teaching)
                     except ObjectDoesNotExist:
