@@ -188,7 +188,11 @@ class People:
         quality = 2
 
         if len(tokens) > 1:
-            people = model_name.objects.filter(Q(first_name__unaccent__iexact=tokens[0], last_name__unaccent__istartswith=tokens[1])
+            # First check compound last name.
+            people = model_name.objects.filter(Q(last_name__unaccent__istartswith=" ".join(tokens[:2]))
+                                               | Q(last_name__unaccent__istartswith=" ".join(tokens[-2:])))
+            if len(people) == 0:
+                people = model_name.objects.filter(Q(first_name__unaccent__iexact=tokens[0], last_name__unaccent__istartswith=tokens[1])
                                                | Q(first_name__unaccent__istartswith=tokens[1], last_name__unaccent__iexact=tokens[0]))
 
         if len(people) == 0:
