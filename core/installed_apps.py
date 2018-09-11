@@ -27,5 +27,5 @@ def installed_apps(request):
         'app_absences': 'absence_prof' in settings.INSTALLED_APPS,
         'app_dossier_eleve': 'dossier_eleve' in settings.INSTALLED_APPS,
         'app_appels': 'appels' in settings.INSTALLED_APPS,
-        'app_mail_notification': 'appels' in settings.INSTALLED_APPS,
+        'app_mail_notification': 'mail_notification' in settings.INSTALLED_APPS,
     }
