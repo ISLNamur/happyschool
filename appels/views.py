@@ -203,7 +203,8 @@ def get_appels(request):
             # temps_midi = student.teaching.name == 'secondaire' and int(student.classe.year) > 4
             dic['firstname'] = student.first_name
             dic['surname'] = student.last_name
-            dic['classe'] = student.classe.compact_str
+            if student.classe:
+                dic['classe'] = student.classe.compact_str
             dic['enseignement'] = student.teaching.display_name
 
         appels_list.append(dic)
