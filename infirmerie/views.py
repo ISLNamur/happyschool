@@ -144,7 +144,8 @@ def get_malades(request):
         dic = model_to_dict(malade)
         dic['firstname'] = student.first_name
         dic['surname'] = student.last_name
-        dic['classe'] = student.classe.compact_str
+        if student.classe:
+            dic['classe'] = student.classe.compact_str
         dic['enseignement'] = student.teaching.display_name
         dic['temps_midi'] = temps_midi
 
