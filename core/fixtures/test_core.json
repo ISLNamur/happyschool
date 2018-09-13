@@ -269,7 +269,7 @@
         "last_name": "Cher",
         "matricule": 123,
         "email": "tea.cher@happy.org",
-        "email_alias": null,
+        "email_school": null,
         "is_teacher": true,
         "is_educator": false,
         "user": [
@@ -295,7 +295,7 @@
         "last_name": "onator",
         "matricule": 321,
         "email": "coord.onator@happy.org",
-        "email_alias": null,
+        "email_school": null,
         "is_teacher": true,
         "is_educator": false,
         "user": [
@@ -320,7 +320,7 @@
         "last_name": "Cator",
         "matricule": 12,
         "email": "tedu.cator@happy.org",
-        "email_alias": null,
+        "email_school": null,
         "is_teacher": false,
         "is_educator": true,
         "user": [
@@ -341,7 +341,7 @@
         "last_name": "Sible",
         "matricule": 1,
         "email": "tres.sible@happy.org",
-        "email_alias": null,
+        "email_school": null,
         "is_teacher": false,
         "is_educator": false,
         "user": [
