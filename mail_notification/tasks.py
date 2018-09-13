@@ -138,7 +138,7 @@ def get_emails(email_to: list, to_type: str, teaching: str="secondaire", respons
     recipients = email_to.split(',')
     emails = []
     if to_type == 'teachers':
-        email_alias = get_settings().use_email_alias
+        email_school = get_settings().use_email_school
         for recip in recipients:
             # Check if it is the staff.
             if recip == 'Personnels':
@@ -194,7 +194,7 @@ def get_emails(email_to: list, to_type: str, teaching: str="secondaire", respons
                 resp_email = EmailModel.objects.filter(years__in=years, teaching__name=teaching)
                 emails += list(map(lambda e: (e.email, None), resp_email))
 
-            emails += list(map(lambda t: (t.email_alias if email_alias else t.email, None), teachers))
+            emails += list(map(lambda t: (t.email_school if email_school else t.email, None), teachers))
         return set(emails)
 
     elif to_type == "parents":

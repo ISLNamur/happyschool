@@ -35,14 +35,14 @@ def task_send_info_email(self, instance_id):
     teachers = []
     context = {'student': student, 'info': instance, 'info_type': instance.info.info}
     for t in teachers_obj:
-        if not t.email_alias:
+        if not t.email_school:
             send_email(to=[settings.EMAIL_ADMIN],
                        subject='ISLN : À propos de ' + student.fullname + " non envoyé à %s" % t.full_name,
                        email_template="dossier_eleve/email_info.html",
                        context=context
                        )
         else:
-            teachers.append(t.email_alias)
+            teachers.append(t.email_school)
 
     # Add coord and educs to email list
     teachers += map(lambda e: e.email, EmailModel.objects.filter(teaching=student.teaching,

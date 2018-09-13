@@ -197,7 +197,7 @@ class Command(BaseCommand):
                     resp.email = resp_dict['resp_email']
 
                 if 'gen_email' in resp_dict:
-                    resp.email_alias = resp_dict['gen_email']
+                    resp.email_school = resp_dict['gen_email']
 
                 resp.first_name = resp_dict['first_name']
                 resp.last_name = resp_dict['last_name']

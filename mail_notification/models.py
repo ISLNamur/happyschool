@@ -34,7 +34,7 @@ def unique_file_name(instance, filename):
 
 
 class EmailNotificationSettingsModel(models.Model):
-    use_email_alias = models.BooleanField(default=False)
+    use_email_school = models.BooleanField(default=False)
 
 
 class EmailAttachment(models.Model):

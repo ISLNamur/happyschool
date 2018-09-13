@@ -25,14 +25,14 @@ from core.models import *
 class ResponsibleSensitiveSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResponsibleModel
-        fields = ('pk', 'last_name', 'first_name', 'is_secretary', 'email', 'email_alias', 'teaching', 'user', 'password')
+        fields = ('pk', 'last_name', 'first_name', 'is_secretary', 'email', 'email_school', 'teaching', 'user', 'password')
         depth = 1
 
 
 class ResponsibleSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResponsibleModel
-        fields = ('pk', 'matricule', 'last_name', 'first_name', 'is_secretary', 'email_alias',
+        fields = ('pk', 'matricule', 'last_name', 'first_name', 'is_secretary', 'email_school',
                   'teaching', 'classe', 'tenure')
         depth = 1
 
