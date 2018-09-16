@@ -1,0 +1,14 @@
+django>=2.0
+django-filter>=2.0
+channels>=2.1
+channels_redis>=2.2
+unidecode
+z3c.rml
+django-crispy-forms>=1.7
+django_auth_ldap>=1.7
+coverage
+psycopg2-binary
+celery>=4
+django-webpack-loader
+djangorestframework
+git+https://github.com/Supermanu/django-bootstrap3-datetimepicker.git@dcb355c28755475932a79bf49e15ee6e60552b90#egg=django-bootstrap3-datetimepicker

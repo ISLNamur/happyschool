@@ -72,25 +72,6 @@ curl -sL https://deb.nodesource.com/setup\_8.x | sudo -E bash -
 sudo apt-get install -y nodejs
 ```
 
-Django et paquets python
-------------------------
-
-Happyschool s'appuie sur le framework [Django](https://www.djangoproject.com/)
-ainsi que toutes une série de modules python. Pour les installer :
-```
-sudo pip3 install django django-crispy-forms z3c.rml django_auth_ldap ldap3 unidecode coverage celery django-webpack-loader djangorestframework channels psycopg2-binary django-filter asgi_redis channels_redis
-```
-À noter que l'installation se fait sur le système tout entier, pour gérer
-différentes versions il est alors mieux d'utiliser `virtualenv` ou apparenté.
-
-Par ailleurs, Happyschool utilise son propre système de widget pour le
-calendrier. Même s'il est en cours de remplacement, il est encore
-nécessaire de l'installer. Pour cela, la commande suivante va télécharger
-le code dans le dossier courant puis l'installer :
-```
-git clone https://github.com/Supermanu/django-bootstrap3-datetimepicker && cd django-bootstrap3-datetimepicker && sudo python3 setup.py install && cd ..
-```
-
 Happyschool
 ------------
 
@@ -101,9 +82,19 @@ puis récupérer le code avec git :
 cd /home/user/mon/dossier
 git clone https://github.com/ISLNamur/happyschool.git
 ```
+
+Happyschool s'appuie sur le framework [Django](https://www.djangoproject.com/)
+ainsi que toutes une série de modules python. Pour les installer :
+```
+sudo pip3 install -r happyschool/requirements.txt
+```
+À noter que l'installation se fait sur le système tout entier, pour gérer
+différentes versions il est alors mieux d'utiliser `virtualenv` ou apparenté.
+
 Il existe plusieurs niveaux de configurations pour Happyschool, le plus
 bas niveau est `happyschool/settings.py` (chemin relatif au dossier racine
-d'Happyschool). Un fichier exemple est disponible et peut être copié :
+d'Happyschool, faire `cd happyschool` pour vous y rendre). Un fichier exemple
+est disponible et peut être copié :
 ```
 cp happyschool/settings.example.py happyschool/settings.py
 ```
