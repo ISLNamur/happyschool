@@ -332,8 +332,8 @@ def _get_years_access(user: User) -> list:
         return list(set(ClasseModel.objects.filter(teaching__in=teaching).values_list('year', flat=True)))
 
     # Educators and coordonators years.
-    if user.groups.filter(name__istartswith='educ').exists()\
-            or user.groups.filter(name__istartswith='coord').exists():
+    if user.groups.filter(name__istartswith=settings.EDUC_GROUP).exists()\
+            or user.groups.filter(name__istartswith=settings.COORD_GROUP).exists():
         groups_with_year = filter(lambda g: g.name[-1].isdigit(), user.groups.all())
         return list(set(map(lambda g: int(g.name[-1]), groups_with_year)))
 
@@ -351,7 +351,7 @@ def _get_classes_access(user: User, teaching: list=('all',)) -> QuerySet:
 
     # Sysadmins and direction members, educators or coordonators.
     if user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.PMS_GROUP, settings.EDUCATOR_GROUP]).exists() or \
-            user.groups.filter(name__istartswith='coord').exists():
+            user.groups.filter(name__istartswith=settings.COORD_GROUP).exists():
         c = get_classes(teaching).filter(year__in=years)
         classes |= c
 

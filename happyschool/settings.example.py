@@ -170,6 +170,7 @@ SECRETARY_GROUP = "secretaire"
 PMS_GROUP = "pms"
 RECEPTION_GROUP = "accueil"
 COORD_GROUP = "coord"
+EDUC_GROUP = "educ"
 
 USE_LDAP_INFO = True
 
