@@ -34,7 +34,7 @@ class TeachingModel(models.Model):
 
 class ClasseModel(models.Model):
     year = models.IntegerField()
-    letter = models.CharField(max_length=2)
+    letter = models.CharField(max_length=20)
     teaching = models.ForeignKey(TeachingModel, on_delete=models.CASCADE)
 
     def __str__(self):
