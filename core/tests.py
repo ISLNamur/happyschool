@@ -248,6 +248,9 @@ class GetClassesTest(TestCase):
         self.coordonator_user = User.objects.get(username='coordonator')
 
     def test_teaching(self):
+        classes = get_classes([])
+        self.assertListEqual(list(classes), [])
+
         classes = get_classes(["all"])
         classes = list(map(lambda c: c.compact_str, classes))
         self.assertListEqual(classes, ["1A", "1B", "3B"])

@@ -374,7 +374,7 @@ def get_classes(teaching: list=('all',), check_access: bool=False, user: User=No
         try:
             teachings = ResponsibleModel.objects.get(user=user).teaching.all()
             # We want the intersection between the user teachings and the asked teachings.
-            if type(teaching[0]) == TeachingModel:
+            if len(teaching) > 0 and type(teaching[0]) == TeachingModel:
                 teachings = teachings.intersection(teaching)
             return _get_classes_access(teaching=teachings, user=user)
         except ObjectDoesNotExist:
@@ -382,7 +382,7 @@ def get_classes(teaching: list=('all',), check_access: bool=False, user: User=No
             return ClasseModel.objects.none()
 
     if "all" not in teaching:
-        if type(teaching[0]) == TeachingModel:
+        if len(teaching) > 0 and type(teaching[0]) == TeachingModel:
             return ClasseModel.objects.filter(teaching__in=list(teaching))
         else:
             return ClasseModel.objects.filter(teaching__name__in=teaching)
