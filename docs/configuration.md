@@ -25,7 +25,8 @@ lorsqu'il y a une erreur. À mettre sur `True` uniquement lorsque vous développ
 connectent. Vous pouvez utiliser un joker comme ceci `ALLOWED_HOSTS = ['*']`.
 - `INSTALLED_APPS` est la liste des applications installées. Par défaut, seul
 l'annuaire est activé. Il vous suffit de décommenter les applications que vous
-désirez.
+désirez (n'oubliez pas d'effectuer la création/migration de la base de donnée si
+vous ajoutez une application).
 - `DATABASES` vous permet de configurer l'accès à votre base de donnée, vous
 pouvez ainsi spécifier le nom de la base de donnée (`NAME`), l'utilisateur
 (`USER`) et le mot de passe (`PASSWORD`) pour y accéder.
