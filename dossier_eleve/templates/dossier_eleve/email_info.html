@@ -8,7 +8,7 @@
     <p>Bonjour,</p>
     <p>Voici une info ({{ info_type }}) à propos de <strong>{{ student.fullname }} {{ student.classe|upper }}</strong>.
         Elle a été demandée par <em>{{ info.demandeur }}</em> pour le motif suivant :</p>
-    <p>{{ info.explication_commentaire }}</p>
+    <p>{{ info.explication_commentaire|safe }}</p>
     <br>
     <p>Pour plus d'informations, merci de contacter les éducateurs et/ou coordonnateurs relevants.</p>
     <p>L'institut Saint-Louis Namur</p>
