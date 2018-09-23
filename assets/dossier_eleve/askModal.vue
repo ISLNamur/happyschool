@@ -187,6 +187,8 @@ export default {
                 demandeur: "",
                 datetime_sanction: null,
                 datetime_conseil: null,
+                visible_by_educ: true,
+                visible_by_tenure: true,
             },
             attachments: [],
             uploadedFiles: [],

@@ -400,6 +400,11 @@ export default {
 
             this.form.demandeur = this.demandeur.display;
             let data = this.form;
+            // Set visibility for all if it's sanction_decision.
+            if (this.infoOrSanction == 'sanction-decision') {
+                data.visible_by_educ = true;
+                data.visible_by_tenure = true;
+            }
             // Add times if any.
             if (data.datetime_sanction) {
                 let time = this.timeSanction ? " " + this.timeSanction : " 12:00";
