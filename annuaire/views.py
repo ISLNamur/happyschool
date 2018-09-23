@@ -426,7 +426,7 @@ def search_classes(query, teachings, check_access, user):
     classes = get_classes(teaching=teachings, check_access=check_access, user=user)
     classes = classes.filter(year=query[0]).order_by('year', 'letter')
     if len(query) > 1:
-        classes = classes.filter(letter=query[1].lower())
+        classes = classes.filter(letter__icontains=query[1:])
 
     if truncate:
         classes = classes[:100]
