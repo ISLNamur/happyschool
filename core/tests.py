@@ -331,7 +331,7 @@ class GetYearsTest(TestCase):
 
     def test_teacher_access(self):
         years = get_years(check_access=True, user=self.teacher_user)
-        self.assertSetEqual(years, set())
+        self.assertSetEqual(years, {1})
 
     def test_educator_access(self):
         years = get_years(check_access=True, user=self.educator_user)

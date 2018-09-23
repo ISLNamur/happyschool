@@ -315,54 +315,6 @@ class People:
         return StudentModel.objects.none()
 
 
-def _get_years_access(user: User) -> list:
-    """
-    Get a list of years a user can access, like the years educators or teachers can access.
-    :param user: The user object.
-    :return: A list of integers that represents the years.
-    """
-    try:
-        teaching = ResponsibleModel.objects.get(user=user).teaching.all()
-    except ObjectDoesNotExist:
-        # User not found.
-        # TODO: Make it work for students.
-        return []
-    # Sysadmins and direction members have all access
-    if user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.PMS_GROUP]).exists():
-        return list(set(ClasseModel.objects.filter(teaching__in=teaching).values_list('year', flat=True)))
-
-    # Educators and coordonators years.
-    if user.groups.filter(name__istartswith=settings.EDUC_GROUP).exists()\
-            or user.groups.filter(name__istartswith=settings.COORD_GROUP).exists():
-        groups_with_year = filter(lambda g: g.name[-1].isdigit(), user.groups.all())
-        return list(set(map(lambda g: int(g.name[-1]), groups_with_year)))
-
-    return []
-
-
-def _get_classes_access(user: User, teaching: list=('all',)) -> QuerySet:
-    """
-    Get a list of classes a user can access, like the classes a teacher have.
-    :param user: The user we want to have the list of classes.
-    :return: A list of strings in the form of strings.
-    """
-    years = _get_years_access(user)
-    classes = ClasseModel.objects.none()
-
-    # Sysadmins and direction members, educators or coordonators.
-    if user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.PMS_GROUP, settings.EDUCATOR_GROUP]).exists() or \
-            user.groups.filter(name__istartswith=settings.COORD_GROUP).exists():
-        c = get_classes(teaching).filter(year__in=years)
-        classes |= c
-
-    # Teachers, tenure's classe only.
-    if user.groups.filter(name__in=[settings.TEACHER_GROUP]).exists():
-        teacher = ResponsibleModel.objects.get(user=user)
-        classes |= teacher.tenure.all()
-
-    return classes
-
-
 def get_classes(teaching: list=('all',), check_access: bool=False, user: User=None) -> QuerySet:
     """
     Get the list of classes.
@@ -370,24 +322,38 @@ def get_classes(teaching: list=('all',), check_access: bool=False, user: User=No
     :check_access: Return only classes with access.
     :return: A set of classes.
     """
-    if check_access and user:
-        try:
-            teachings = ResponsibleModel.objects.get(user=user).teaching.all()
-            # We want the intersection between the user teachings and the asked teachings.
-            if len(teaching) > 0 and type(teaching[0]) == TeachingModel:
-                teachings = teachings.intersection(teaching)
-            return _get_classes_access(teaching=teachings, user=user)
-        except ObjectDoesNotExist:
-            # The user is not a responsible and thus has no access.
-            return ClasseModel.objects.none()
-
+    # First, get teaching models.
     if "all" not in teaching:
         if len(teaching) > 0 and type(teaching[0]) == TeachingModel:
-            return ClasseModel.objects.filter(teaching__in=list(teaching))
+            teaching_models = teaching
         else:
-            return ClasseModel.objects.filter(teaching__name__in=teaching)
+            teaching_models = TeachingModel.objects.filter(name__in=teaching)
     else:
-        return ClasseModel.objects.all()
+        teaching_models = TeachingModel.objects.all()
+
+    if check_access and user:
+        try:
+            responsible = ResponsibleModel.objects.get(user=user)
+            teaching_models = list(teaching_models.intersection(responsible.teaching.all()))
+        except ObjectDoesNotExist:
+            # Responsible not found return no classes.
+            return ClasseModel.objects.none()
+
+        # Sysadmins, direction members, pms have all access.
+        if user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP,
+                                        settings.PMS_GROUP]).exists():
+            return get_classes(teaching_models)
+
+        # Educators and coordonators have by years access.
+        if user.groups.filter(name__istartswith=settings.COORD_GROUP).exists() or \
+            user.groups.filter(name__istartswith=settings.EDUC_GROUP).exists():
+            years = _get_years_by_group(user)
+            return get_classes(teaching_models).filter(year__in=years)
+
+        # It should be a teacher.
+        return responsible.tenure.all().filter(teaching__in=teaching_models)
+    else:
+        return ClasseModel.objects.filter(teaching__in=teaching_models)
 
 
 def get_years(teaching: list=("all",), check_access: bool=False, user: User=None) -> set:
@@ -396,15 +362,10 @@ def get_years(teaching: list=("all",), check_access: bool=False, user: User=None
         :param teaching: A list of students' teachings.
         :return: A set of years.
     """
-    if "all" not in teaching:
-        if type(teaching[0]) == TeachingModel:
-            classes = ClasseModel.objects.filter(teaching__in=teaching)
-        else:
-            classes = ClasseModel.objects.filter(teaching__name__in=teaching)
-    else:
-        classes = ClasseModel.objects.all()
-
-    if check_access:
-        classes = ClasseModel.objects.filter(year__in=_get_years_access(user))
-
+    classes = get_classes(teaching, check_access, user)
     return set(map(lambda s: s.year, classes))
+
+
+def _get_years_by_group(user: User) -> set:
+    groups = user.groups.values_list("name", flat=True)
+    return set(map(lambda g: int(g[-1]), filter(lambda g: g[-1].isdigit(), groups)))
