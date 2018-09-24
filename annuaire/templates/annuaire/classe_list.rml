@@ -1,0 +1,57 @@
+<!DOCTYPE document SYSTEM "rml.dtd">
+<document filename="classe_{{ classe.compact_str }}.pdf"
+          xmlns:doc="http://namespaces.zope.org/rml/doc">
+
+    <template showBoundary="0">
+        <!--define a 'frame' into which the content will flow.-->
+        <!--<pageTemplate id="main">-->
+             <!--<frame id="head" x1="10" y1="530" width="575" height="150"/>-->
+        <!--</pageTemplate>-->
+        <pageTemplate id="main" pagesize="(595,842)">
+            <!-- two frames are defined here: -->
+            <frame id="first" x1="10" y1="780" width="580" height="40"/>
+            <frame id="list" x1="10" y1="5" width="580" height="780"/>
+        </pageTemplate>
+    </template>
+
+    <stylesheet>
+        <paraStyle name="title" fontName="Helvetica" fontSize="12" leading="14" alignment="center" />
+        <paraStyle name="head_info" fontName="Helvetica" fontSize="8" alignment="justify" />
+        <paraStyle name="row" leading="20" />
+        <blockTableStyle id="cas">
+            <lineStyle kind="LINEABOVE" colorName="black" thickness="1"/>
+            <blockValign value="top"/>
+        </blockTableStyle>
+
+    </stylesheet>
+
+    <story firstPageTemplate="main">
+        <keepInFrame frame="first" onOverflow="shrink">
+            <para style="title">
+                 <h1><strong>{{ classe.compact_str }}</strong> ({{ students_numb }} élèves) Titulaire(s) : {% for t in tenures %}{{ t.fullname }} {% endfor %}</h1>
+            </para>
+        </keepInFrame>
+
+        <blockTable style="cas">
+            <tr>
+                <td><para><strong>Nom complet</strong></para></td>
+                <td><para><strong>Nom d'utilisateur</strong></para></td>
+                <td><para><strong>Mot de passe</strong></para></td>
+            </tr>
+            {% for s in students %}
+            <tr>
+                <td>
+                    <para style="row"><strong>{{ s.fullname }}</strong></para>
+                </td>
+                <td>
+                    <para style="row">{% if s.additionalstudentinfo %}{{ s.additionalstudentinfo.username }}{% endif %}</para>
+                </td>
+                <td>
+                    <para style="row">{% if s.additionalstudentinfo %}{{ s.additionalstudentinfo.password }}{% endif %}</para>
+                </td>
+            </tr>
+            {% endfor %}
+        </blockTable>
+    </story>
+</document>
+

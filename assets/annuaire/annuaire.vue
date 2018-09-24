@@ -61,12 +61,19 @@
             </b-row>
             <b-row v-if="classe && !matricule">
                 <b-col>
-                    <p>
-                        <a v-if="students.length > 0" target="_blank" rel="noopener noreferrer" :href="getClassePhoto">
-                            Télécharger les photos des élèves de la classe.
-                        </a>
-                        <span v-else>Il n'y a pas d'élèves dans cette classe.</span>
+                    <p v-if="students.length > 0">
+                        Téléchargements :
+                        <b-button  target="_blank" rel="noopener noreferrer" :href="getClassePhoto">
+                            Photos de classe
+                        </b-button>
+                            <b-button  target="_blank" rel="noopener noreferrer" :href="getClasseListExcel">
+                                Liste des étudiants avec identifiants (excel)
+                            </b-button>
+                            <b-button  target="_blank" rel="noopener noreferrer" :href="getClasseListPDF">
+                                Liste des étudiants avec identifiants (PDF)
+                            </b-button>
                     </p>
+                    <p v-else>Il n'y a pas d'élèves dans cette classe.</p>
                     <b-list-group class="text-center">
                         <b-list-group-item v-for="s in students" :key="s.matricule"
                             button @click="selectStudent(s.matricule)"
@@ -129,7 +136,19 @@ export default {
             classeUrl += this.classe.letter + '/';
             classeUrl +=  this.classe.teaching;
             return classeUrl;
-        }
+        },
+        getClasseListExcel: function () {
+            if (!this.classe)
+                return '';
+
+            return '/annuaire/get_class_list_excel/' + this.classe.id + '/';
+        },
+        getClasseListPDF: function () {
+            if (!this.classe)
+                return '';
+
+            return '/annuaire/get_class_list_pdf/' + this.classe.id + '/';
+        },
     },
     methods: {
         selected: function (option) {

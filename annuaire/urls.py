@@ -44,6 +44,8 @@ urlpatterns = [
     url(r'^get_class_photo_pdf/(?P<year>[0-9]+)/(?P<classe>\w+)/(?P<enseignement>\w+)/$', views.get_class_photo_pdf,
         name="get_class_photo_pdf"),
     path('', views.AnnuaireView.as_view(), name='annuaire'),
+    path('get_class_list_excel/<int:classe_id>/', views.ClasseListExcelView.as_view()),
+    path('get_class_list_pdf/<int:classe_id>/', views.ClasseListPDFView.as_view()),
     path('api/people/', views.SearchPeopleAPI.as_view()),
     path('api/classes/', views.SearchClassesAPI.as_view()),
     path('api/people_or_classes/', views.SearchClassesOrPeopleAPI.as_view()),

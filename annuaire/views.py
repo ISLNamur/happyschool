@@ -18,6 +18,9 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 import json
+import xlsxwriter
+
+from io import BytesIO
 
 from django.conf import settings
 from django.shortcuts import render
@@ -27,6 +30,8 @@ from django.template.loader import get_template
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
+from django.views import View
+from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework.views import APIView, Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
@@ -622,3 +627,61 @@ class StudentMedicalInfoViewSet(ReadOnlyModelViewSet):
             return AdditionalStudentInfo.objects.none()
 
         return super().get_queryset()
+
+
+class ClasseListExcelView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        classe_id = kwargs['classe_id']
+        try:
+            classe = ClasseModel.objects.get(id=classe_id)
+        except ObjectDoesNotExist:
+            # Class not found
+            return render(request, 'dossier_eleve/no_student.html')
+
+        students = StudentModel.objects.filter(classe=classe).order_by('last_name', 'first_name')
+        file_name = 'classes_%s_%s%s.xlsx' % (classe.teaching.name, classe.year, classe.letter)
+        output = BytesIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+        worksheet = workbook.add_worksheet()
+        worksheet.set_column(0, 2, 30)
+
+        row = 0
+        worksheet.write_row(0, 0, ["Nom et prénom", "Nom d'utilisateur", "Mot de passe"])
+        row += 1
+        for s in students:
+            if not s.additionalstudentinfo:
+                worksheet.write(row, 0, s.fullname)
+            else:
+                worksheet.write_row(row, 0, [s.fullname, s.additionalstudentinfo.username, s.additionalstudentinfo.password])
+            row += 1
+        workbook.close()
+
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'filename; filename="' + file_name + '"'
+        response.write(output.getvalue())
+        return response
+
+
+class ClasseListPDFView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        classe_id = kwargs['classe_id']
+        try:
+            classe = ClasseModel.objects.get(id=classe_id)
+        except ObjectDoesNotExist:
+            # Class not found
+            return render(request, 'dossier_eleve/no_student.html')
+
+        students = StudentModel.objects.filter(classe=classe).order_by('last_name', 'first_name')
+        tenures = ResponsibleModel.objects.filter(tenure=classe)
+        t = get_template('annuaire/classe_list.rml')
+        rml_str = t.render({'students': students, 'students_numb': len(students), 'classe': classe, 'tenures': tenures})
+
+        pdf = rml2pdf.parseString(rml_str)
+        if not pdf:
+            return render(request, 'dossier_eleve/no_student.html')
+        pdf_name = 'classes_%s_%s%s.pdf' % (classe.teaching.name, classe.year, classe.letter)
+
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'filename; filename="' + pdf_name + '"'
+        response.write(pdf.read())
+        return response
