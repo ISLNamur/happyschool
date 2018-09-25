@@ -64,9 +64,9 @@
             <b-row>
                 <b-col>
                     <b-list-group>
-                        <b-list-group-item>Demandes de sanction en attentes : <b-badge>{{ entriesCount }}</b-badge></b-list-group-item>
+                        <b-list-group-item>Demandes de sanction en attente : <b-badge>{{ entriesCount }}</b-badge></b-list-group-item>
                         <b-list-group-item button @click="addFilter('activate_not_done', 'Activer', true)">
-                            Non faites : <b-badge variant="danger">{{ entriesNotDone }}</b-badge>
+                            Sanctions non faites <strong>à traiter</strong> : <b-badge variant="danger">{{ entriesNotDone }}</b-badge>
                         </b-list-group-item>
                         <b-list-group-item button v-if="entriesWaiting > 0" @click="addFilter('activate_waiting', 'Activer', true)">
                             En attentes de validations : <b-badge variant="warning">{{ entriesWaiting }}</b-badge>
