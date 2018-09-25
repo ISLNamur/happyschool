@@ -26,7 +26,7 @@
                         <b-row>
                             <b-col md="5" sm="12">
                                 <div>
-                                    <b-img rounded fluid :src="photoPath" fluid alt="Photo de l'élève" />
+                                    <b-img rounded fluid :src="photoPath" fluid alt="Photo" />
                                 </div>
                             </b-col>
                             <b-col>
