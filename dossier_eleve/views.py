@@ -170,7 +170,7 @@ def get_pdf(request, all_year=False, matricule=None, classe=None, infos=None, sa
         if student.classe not in classe_access:
             return HttpResponse("Vous n'avez pas les accès nécessaire.", status=401)
 
-        pdf = create_pdf(student, all_year, infos, sanctions)
+        pdf = create_pdf(request, student, all_year, infos, sanctions)
         if not pdf:
             return render(request, 'dossier_eleve/no_student.html')
         pdf_name = str(matricule) + '.pdf'
@@ -192,7 +192,7 @@ def get_pdf(request, all_year=False, matricule=None, classe=None, infos=None, sa
         merger = PdfFileMerger()
         added = False
         for s in students:
-            pdf = create_pdf(s, all_year, infos, sanctions)
+            pdf = create_pdf(request, s, all_year, infos, sanctions)
             if not pdf:
                 continue
 
@@ -212,7 +212,7 @@ def get_pdf(request, all_year=False, matricule=None, classe=None, infos=None, sa
     return response
 
 
-def create_pdf(student, all_year, infos, sanctions):
+def create_pdf(request, student, all_year, infos, sanctions):
     cas = None
     if int(all_year):
         cas = CasEleve.objects.filter(Q(matricule=student) &
@@ -230,7 +230,7 @@ def create_pdf(student, all_year, infos, sanctions):
     if not cas:
         return None
 
-    context = gen_stats(student)
+    context = {'statistics': StatisticAPI().gen_stats(request.user, student, all_years=bool(int(all_year)))}
     tenure = ResponsibleModel.objects.filter(tenure=student.classe).first()
     context['tenure'] = tenure.fullname
 
@@ -243,38 +243,6 @@ def create_pdf(student, all_year, infos, sanctions):
 
     pdf = rml2pdf.parseString(rml_str)
     return pdf
-
-
-def gen_stats(matricule):
-    current_scolar_year = get_scholar_year()
-    limit_date = timezone.make_aware(timezone.datetime(current_scolar_year, 8, 15))
-
-
-    cas_discip = CasEleve.objects.filter(info=None, matricule=matricule)
-    cas_discip = cas_discip.filter(Q(sanction_faite=True) | Q(sanction_faite__isnull=True))
-    cas_info = CasEleve.objects.filter(sanction_decision=None, matricule=matricule, datetime_encodage__gte=limit_date)
-
-    temps_midi = len(cas_discip.filter(sanction_decision__id=1))
-    retenue = len(cas_discip.filter(sanction_decision__id__in=SANCTIONS_RETENUE))
-    convoc = len(cas_discip.filter(sanction_decision__id=9)) + len(cas_discip.filter(sanction_decision__id=10)) + len(
-        cas_discip.filter(sanction_decision__id=11)) + len(cas_discip.filter(sanction_decision__id=12))
-    exclu = len(cas_discip.filter(sanction_decision__id=6)) + len(cas_discip.filter(sanction_decision__id=7)) + len(
-        cas_discip.filter(sanction_decision__id=8))
-    renvoi = len(cas_discip.filter(sanction_decision__id=4)) + len(cas_discip.filter(sanction_decision__id=3))
-    autre = len(cas_discip.filter(sanction_decision__id=14))
-
-    stats = {
-             'non_disciplinaire': len(cas_info),
-             'temps_midi': temps_midi,
-             'retenue': retenue,
-             'convoc': convoc,
-             'exclu': exclu,
-             'renvoi': renvoi,
-             'autre': autre,
-             'total': len(cas_discip),
-            }
-
-    return stats
 
 
 def filter_and_order(request, only_actives=False, retenues=False, year=None,
@@ -657,21 +625,28 @@ class StatisticAPI(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, matricule, format=None):
+        only_sanctions = request.GET.get('only_sanctions', 1) == 1
+        stats = self.gen_stats(request.user, matricule, only_sanctions)
+        return Response(json.dumps(stats))
+
+    def gen_stats(self, user_from, matricule, only_sanctions=False, all_years=False):
         all_access = get_settings().all_access.all()
         queryset = CasEleve.objects.all()
-        only_sanctions = request.GET.get('only_sanctions', 1) == 1
-        if not request.user.groups.intersection(all_access).exists():
-            teachings = ResponsibleModel.objects.get(user=self.request.user).teaching.all()
-            classes = get_classes(list(map(lambda t: t.name, teachings)), True, self.request.user)
+        if not user_from.groups.intersection(all_access).exists():
+            teachings = ResponsibleModel.objects.get(user=user_from).teaching.all()
+            classes = get_classes(list(map(lambda t: t.name, teachings)), True, user_from)
             queryset = queryset.filter(matricule__classe__in=classes)
 
-        current_scolar_year = get_scholar_year()
-        limit_date = timezone.make_aware(timezone.datetime(current_scolar_year, 8, 15))
-
-        cas_discip = queryset.filter(info=None, matricule=matricule, datetime_encodage__gte=limit_date)\
+        cas_discip = queryset.filter(info=None, matricule=matricule)\
                              .filter(Q(sanction_faite=True) | Q(sanction_faite__isnull=True))
-        cas_info = queryset.filter(sanction_decision=None, matricule=matricule,
-                                           datetime_encodage__gte=limit_date)
+        cas_info = queryset.filter(sanction_decision=None, matricule=matricule)
+
+        if not all_years:
+            print("not all years")
+            current_scolar_year = get_scholar_year()
+            limit_date = timezone.make_aware(timezone.datetime(current_scolar_year, 8, 15))
+            cas_discip = cas_discip.filter(datetime_encodage__gte=limit_date)
+            cas_info = cas_info.filter(datetime_encodage__gte=limit_date)
 
         sanctions = SanctionStatisticsModel.objects.all()
 
@@ -687,7 +662,7 @@ class StatisticAPI(APIView):
             stats.append({'display': 'Non disciplinaire', 'value': len(cas_info)})
             stats.append({'display': 'Total disciplinaire', 'value': len(cas_discip)})
 
-        return Response(json.dumps(stats))
+        return stats
 
 
 class UploadFile(APIView):

@@ -57,22 +57,17 @@
             Père :    <em>{{ student.additionalstudentinfo.father_last_name }} {{ student.additionalstudentinfo.father_first_name }}  ({%if student.additionalstudentinfo.father_job %}{{ student.additionalstudentinfo.father_job }}{% else %} N.C.{% endif %})</em><br/>
             Tél. :    <em>{% if student.additionalstudentinfo.father_phone %}{{ student.additionalstudentinfo.father_phone }}{% else %}N.C.{% endif %}</em>     GSM :  <em>{% if student.additionalstudentinfo.father_mobile %}{{ student.father_mobile }}{% else %}N.C.{% endif %}</em><br/>
             Mail Resp. légal : <em>{% if student.additionalstudentinfo.resp_email %}{{ student.additionalstudentinfo.resp_email }}{% else %}N.C.{% endif %}</em><br/>
-            Volume du dossier non-disciplinaire :   <em>{{ non_disciplinaire }}</em><br/>
             </para>
         </keepInFrame>
 
         <keepInFrame frame="third" onOverflow="shrink">
             <para style="title">
-                Discipline
+                Récapitulatif
             </para>
             <para rightIndent="30" alignment="right" leading="17">
-                Temps de midi : {{ temps_midi }}<br/>
-                Retenue(s) : {{ retenue }}<br/>
-                Convocat°(s) : {{ convoc }}<br/>
-                Exclusion(s) : {{ exclu }}<br/>
-                Renvoi(s) : {{ renvoi }}<br/>
-                Autres : {{ autre }}<br/>
-                <strong>TOTAL : {{ total }}</strong><br/>
+                {% for s in statistics %}
+                {{ s.display }} : {{ s.value }}<br/>
+                {% endfor %}
             </para>
         </keepInFrame>
         {% load staticfiles %}
