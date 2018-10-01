@@ -48,6 +48,9 @@
                                 <icon name="search" scale="1"></icon>
                                 Ajouter des filtres
                             </b-btn>
+                            <b-btn variant="outline-secondary" :pressed="retenues_mode" @click="retenues_mode = !retenues_mode">
+                                <span v-if=retenues_mode>Cacher</span><span v-else>Afficher</span> toutes les retenues
+                            </b-btn>
                         </div>
                     </b-form-group>
                 </b-col>
@@ -147,6 +150,7 @@ export default {
             entriesWaiting: 0,
             currentEntry: null,
             currentModal: 'ask-modal',
+            retenues_mode: false,
             loaded: false,
         }
     },
@@ -156,6 +160,16 @@ export default {
                 return this.currentEntry.matricule.display;
             }
             return '';
+        }
+    },
+    watch: {
+        retenues_mode: function (mode) {
+            if (mode) {
+                this.addFilter('activate_all_retenues', 'Activer', true);
+            } else {
+                this.$store.commit('removeFilter', 'activate_all_retenues');
+                this.applyFilter();
+            }
         }
     },
     methods: {
