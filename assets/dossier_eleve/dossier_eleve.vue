@@ -28,8 +28,9 @@
             <b-row class="mb-2" v-if="canAskSanction">
                 <b-tabs>
                     <template slot="tabs">
+                        <b-nav-item active href="/dossier_eleve/">Dossier des élèves</b-nav-item>
                         <b-nav-item href="/dossier_eleve/ask_sanctions">
-                            Demandes de sanction
+                            <span class="text-danger">Demandes de sanction</span>
                             <b-badge>{{ askSanctionsCount }}</b-badge>
                             <b-badge variant="warning">{{ askSanctionsNotDoneCount }}</b-badge>
                         </b-nav-item>

@@ -29,6 +29,7 @@
                 <b-tabs>
                     <template slot="tabs">
                         <b-nav-item href="/dossier_eleve/">Dossier des élèves</b-nav-item>
+                        <b-nav-item active href="/dossier_eleve/ask_sanctions">Demandes de sanction</b-nav-item>
                     </template>
                 </b-tabs>
             </b-row>
