@@ -35,12 +35,12 @@
                                     <dd class="col-7">{{ lastName }}</dd>
                                     <dt class="col-5 text-right">Prénom </dt>
                                     <dd class="col-7">{{ firstName }}</dd>
-                                    <dt class="col-5 text-right">Matricule</dt>
-                                    <dd class="col-7">{{ matricule }}</dd>
+                                    <dt v-if="type === 'student'" class="col-5 text-right">Matricule</dt>
+                                    <dd v-if="type === 'student'" class="col-7">{{ matricule }}</dd>
                                     <dt class="col-5 text-right">Courriel</dt>
                                     <dd class="col-7">{{ email }}</dd>
-                                    <dt class="col-5 text-right" v-if="emailAlias">Courriel de l'école</dt>
-                                    <dd class="col-7" v-if="emailAlias">{{ emailAlias }}</dd>
+                                    <dt class="col-5 text-right" v-if="emailSchool">Courriel de l'école</dt>
+                                    <dd class="col-7" v-if="emailSchool">{{ emailSchool }}</dd>
                                     <dt v-if="tenure && tenure.length > 0" class="col-5 text-right">Titulariat</dt>
                                     <dd v-if="tenure" v-for="(t, index) in tenure" :key="t.id"
                                         :class="{'col-7': index == 0, 'col-7 offset-5': index > 0}">
@@ -216,7 +216,7 @@ export default {
             username: '',
             password: '',
             email: '',
-            emailAlias: '',
+            emailSchool: '',
             classe: [],
             tenure: null,
             teachings: [],
@@ -318,13 +318,13 @@ export default {
                     this.classe = response.data.classe;
                     this.teachings = response.data.teaching;
                     this.tenure = response.data.tenure;
+                    this.emailSchool = response.data.email_school;
                 })
 
                 axios.get('/annuaire/api/responsible_sensitive/' + this.matricule + '/')
                 .then(response => {
                     this.username = response.data.user.username;
                     this.password = response.data.password;
-                    this.emailAlias = response.data.email_alias;
                     this.email = response.data.email;
                 })
             }
