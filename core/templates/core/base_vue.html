@@ -10,6 +10,13 @@
     </head>
 
     <body>
+        <script>
+            {% load groups %}
+            {% autoescape off %}
+            const user = "{{ user }}";
+            const user_groups = {% list_user_groups %};
+            {% endautoescape %}
+        </script>
         {% render_bundle 'commons' %}
         {% block content %}{% endblock %}
     </body>
