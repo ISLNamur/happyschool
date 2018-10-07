@@ -10,8 +10,8 @@
     const menu = {{ menu|safe }};
     var filters = JSON.parse('{{ filters|safe }}');
     var currentYear = JSON.parse('{{ current_year|safe }}');
-    var is_coord = JSON.parse('{{ is_coord|safe }}');
-    var is_educ = JSON.parse('{{ is_educ|safe }}');
+    var canSetSanction = JSON.parse('{{ can_set_sanction|safe }}');
+    var groups = {{ groups|safe }};
 </script>
 <div id="vue-app"></div>
 {% load render_bundle from webpack_loader %}

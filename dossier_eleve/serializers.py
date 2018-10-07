@@ -58,6 +58,11 @@ class CasEleveSerializer(serializers.ModelSerializer):
                                                  source='sanction_decision', required=False,
                                                  allow_null=True)
 
+    def validate_sanction_decision_id(self, value):
+        if not self.context['request'].user.has_perm('dossier_eleve.set_sanction'):
+            raise serializers.ValidationError("Vous n'avez pas les droits nécessaire pour ajouter une sanction")
+        return value
+
     class Meta:
         model = CasEleve
         fields = '__all__'

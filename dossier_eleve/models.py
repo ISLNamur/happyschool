@@ -22,7 +22,7 @@ import random
 from time import strftime
 
 from django.db import models
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 
 from core.models import StudentModel, TeachingModel
 
@@ -36,6 +36,26 @@ def unique_file_name(instance, filename):
 class DossierEleveSettingsModel(models.Model):
     teachings = models.ManyToManyField(TeachingModel, default=None)
     all_access = models.ManyToManyField(Group, default=None, blank=True)
+    dir_allow_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
+                                                           related_name="dir_allow_visibility_to")
+    dir_force_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
+                                                           related_name="dir_force_visibility_to")
+    coord_allow_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
+                                                             related_name="coord_allow_visibility_to")
+    coord_force_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
+                                                     related_name="coord_force_visibility_to")
+    educ_allow_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
+                                                          related_name="educ_allow_visibility_to")
+    educ_force_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
+                                                       related_name="educ_force_visibility_to")
+    teacher_allow_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
+                                                      related_name="teacher_allow_visibility_to")
+    teacher_force_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
+                                                      related_name="teacher_force_visibility_to")
+    pms_allow_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
+                                                         related_name="pms_allow_visibility_to")
+    pms_force_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
+                                                         related_name="pms_force_visibility_to")
     enable_submit_sanctions = models.BooleanField(default=True)
     use_school_email = models.BooleanField(default=False)
 
@@ -73,7 +93,8 @@ class CasEleve(models.Model):
     matricule = models.ForeignKey(StudentModel, on_delete=models.SET_NULL, to_field='matricule', null=True, blank=True)
     # The name field is there only to have some history.
     name = models.CharField(max_length=100, default="")
-    datetime_encodage = models.DateTimeField("date d'encodage", auto_now=True)
+    datetime_encodage = models.DateTimeField("date d'encodage", auto_now_add=True)
+    datetime_modified = models.DateTimeField("Date de modification", auto_now=True)
     info = models.ForeignKey(InfoEleve, null=True, blank=True, on_delete=models.SET_NULL)
     demandeur = models.CharField(max_length=50)
     sanction_decision = models.ForeignKey(SanctionDecisionDisciplinaire, null=True, blank=True, on_delete=models.SET_NULL)
@@ -84,10 +105,13 @@ class CasEleve(models.Model):
     sanction_faite = models.NullBooleanField(default=None, null=True, blank=True)
     important = models.BooleanField(default=False)
     user = models.CharField(max_length=20, default="")
-    visible_by_educ = models.BooleanField(default=True)
-    visible_by_tenure = models.BooleanField(default=False)
+    visible_by_educ = models.BooleanField(default=True) # Deprecated
+    visible_by_tenure = models.BooleanField(default=False) # Deprecated
+    visible_by_groups = models.ManyToManyField(Group, blank=True)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
         permissions = (
             ('access_dossier_eleve', 'Can access to dossier_eleve data'),
+            ('set_sanction', 'Can set sanction'),
         )

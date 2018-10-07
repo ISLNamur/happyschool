@@ -33,7 +33,7 @@ from django_filters import rest_framework as filters
 
 from rest_framework import status
 from rest_framework.renderers import JSONRenderer
-from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions, BasePermission
 from rest_framework.parsers import FileUploadParser
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.views import APIView
@@ -63,6 +63,22 @@ def get_settings():
     return settings_dossier_eleve
 
 
+def get_generic_groups() -> dict:
+    sysadmin_group = Group.objects.get(name=settings.SYSADMIN_GROUP)
+    direction_group = Group.objects.get(name=settings.DIRECTION_GROUP)
+    coord_group = Group.objects.get(name=settings.COORDONATOR_GROUP)
+    educ_group = Group.objects.get(name=settings.EDUCATOR_GROUP)
+    teacher_group = Group.objects.get(name=settings.TEACHER_GROUP)
+    pms_group = Group.objects.get(name=settings.PMS_GROUP)
+    return {"sysadmin": sysadmin_group,
+            "direction": direction_group,
+            "coordonator": coord_group,
+            "educator": educ_group,
+            "teacher": teacher_group,
+            "pms": pms_group,
+            }
+
+
 class BaseDossierEleveView(LoginRequiredMixin,
                        PermissionRequiredMixin,
                        TemplateView):
@@ -80,12 +96,15 @@ class BaseDossierEleveView(LoginRequiredMixin,
         context['filters'] = json.dumps(self.filters)
         scholar_year = get_scholar_year()
         context['current_year'] = json.dumps('%i-%i' % (scholar_year, scholar_year + 1))
-        coords = []
-        for i in range(1, 7):
-            coords.append(settings.COORD_GROUP + str(i))
-        context['is_coord'] = json.dumps(self.request.user.groups.filter(
-            name__in=coords + [settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP]).exists())
-        context['is_educ'] = json.dumps(self.request.user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.EDUCATOR_GROUP]).exists())
+        context['can_set_sanction'] = json.dumps(self.request.user.has_perm('dossier_eleve.set_sanction'))
+        groups = get_generic_groups()
+        groups["sysadmin"] = {"id": groups["sysadmin"].id, "text": "Admin"}
+        groups["direction"] = {"id": groups["direction"].id, "text": "Direction"}
+        groups["coordonator"] = {"id": groups["coordonator"].id, "text": "Coordonateur"}
+        groups["educator"] = {"id": groups["educator"].id, "text": "Educateur"}
+        groups["teacher"] = {"id": groups["teacher"].id, "text": "Professeur"}
+        groups["pms"] = {"id": groups["pms"].id, "text": "PMS"}
+        context['groups'] = groups
         return context
 
 
@@ -145,6 +164,15 @@ class CasEleveFilter(BaseFilters):
             return queryset
 
 
+class VisibilityPermissions(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        # groups = request.user.groups
+        if request.user.groups.intersection(obj.visible_by_groups.all()).exists():
+            return True
+
+        return False
+
+
 class CasEleveViewSet(BaseModelViewSet):
     queryset = CasEleve.objects.filter(matricule__isnull=False)
 
@@ -158,19 +186,14 @@ class CasEleveViewSet(BaseModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        coords = []
-        for i in range(1, 7):
-            coords.append(settings.COORD_GROUP + str(i))
-        is_coord = self.request.user.groups.filter(name__in=coords + [settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP]).exists()
-        is_educ = self.request.user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.EDUCATOR_GROUP]).exists()
-        if is_educ and not is_coord:
-            queryset = queryset.filter(visible_by_educ=True)
-        elif not is_educ and not is_coord:
-            # Must be a tenure.
-            queryset = queryset.filter(visible_by_tenure=True)
-
         if get_settings().enable_submit_sanctions:
             queryset = queryset.filter(Q(info__isnull=False) | ~Q(sanction_faite=False))
+
+        filter_by_groups = Q()
+        for g in self.request.user.groups.all():
+            filter_by_groups |= Q(visible_by_groups=g)
+        filter_by_groups |= Q(created_by=self.request.user)
+        queryset = queryset.filter(filter_by_groups).distinct()
         return queryset
 
     def perform_create(self, serializer):
@@ -179,11 +202,17 @@ class CasEleveViewSet(BaseModelViewSet):
         serializer.validated_data.pop('send_to_teachers')
 
         super().perform_create(serializer)
+        serializer.save(created_by=self.request.user)
         if send_to_teachers:
             task_send_info_email.apply_async(
                 countdown=1,
                 kwargs={'instance_id': serializer.save().id}
             )
+
+        if serializer.validated_data["info"]:
+            self.force_visibility(serializer)
+        else:
+            serializer.save(visible_by_groups=get_generic_groups().values())
 
     def perform_update(self, serializer):
         super().perform_update(serializer)
@@ -193,6 +222,37 @@ class CasEleveViewSet(BaseModelViewSet):
                 countdown=1,
                 kwargs={'instance_id': serializer.save().id}
             )
+
+        if serializer.validated_data["info"]:
+            self.force_visibility(serializer)
+        else:
+            serializer.save(visible_by_groups=get_generic_groups().values())
+
+    def force_visibility(self, serializer):
+        user_groups = self.request.user.groups.all()
+        groups = get_generic_groups().values()
+        forced_visibility = set(groups.values())
+        dossier_settings = get_settings()
+        if user_groups.filter(id=groups["sysadmin"].id).exists():
+            forced_visibility = set()
+        if user_groups.filter(id=groups["direction"].id).exists():
+            forced_visibility = forced_visibility.intersection(
+                set(dossier_settings.dir_force_visibility_to.all()))
+        if user_groups.filter(id=groups["coordonator"].id).exists():
+            forced_visibility = forced_visibility.intersection(
+                set(dossier_settings.coord_force_visibility_to.all()))
+        if user_groups.filter(id=groups["educator"].id).exists():
+            forced_visibility = forced_visibility.intersection(
+                set(dossier_settings.educ_force_visibility_to.all()))
+        if user_groups.filter(id=groups["teacher"].id).exists():
+            forced_visibility = forced_visibility.intersection(
+                set(dossier_settings.teacher_force_visibility_to.all()))
+        if user_groups.filter(id=groups["pms"].id).exists():
+            forced_visibility = forced_visibility.intersection(
+                set(dossier_settings.pms_force_visibility_to.all()))
+
+        visible_by = serializer.validated_data["visible_by_groups"] + list(forced_visibility)
+        serializer.save(visible_by_groups=visible_by)
 
 
 class AskSanctionsView(BaseDossierEleveView):
@@ -274,6 +334,11 @@ class AskSanctionsViewSet(BaseModelViewSet):
     def perform_create(self, serializer):
         super().perform_create(serializer)
         serializer.save(sanction_faite=False)
+        serializer.save(visible_by_groups=get_generic_groups().values())
+
+    def perform_update(self, serializer):
+        super().perform_update(serializer)
+        serializer.save(visible_by_groups=get_generic_groups().values())
 
 
 class InfoViewSet(ReadOnlyModelViewSet):
@@ -315,7 +380,6 @@ class StatisticAPI(APIView):
         cas_info = queryset.filter(sanction_decision=None, matricule=matricule)
 
         if not all_years:
-            print("not all years")
             current_scolar_year = get_scholar_year()
             limit_date = timezone.make_aware(timezone.datetime(current_scolar_year, 8, 15))
             cas_discip = cas_discip.filter(datetime_encodage__gte=limit_date)

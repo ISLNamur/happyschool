@@ -32,8 +32,7 @@ const store = new Vuex.Store({
         tag: currentYear,
         value: currentYear,
     }],
-    is_coord: is_coord,
-    is_educ: is_educ,
+    canSetSanction: canSetSanction,
   },
   mutations: {
       addFilter: function (state, filter) {

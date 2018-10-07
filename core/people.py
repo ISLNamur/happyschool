@@ -346,7 +346,6 @@ def get_classes(teaching: list=('all',), check_access: bool=False, user: User=No
         except ObjectDoesNotExist:
             # Responsible not found return no classes.
             return ClasseModel.objects.none()
-
         # Sysadmins, direction members, pms have all access.
         if user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP,
                                         settings.PMS_GROUP]).exists():

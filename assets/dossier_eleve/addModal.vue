@@ -21,7 +21,7 @@
 <div>
     <b-modal size="lg" title="Nouveau cas"
         ok-title="Soumettre" cancel-title="Annuler"
-        :ok-disabled="!(form.info_id || form.sanction_decision_id) || (!coord && !educ)"
+        :ok-disabled="!(form.info_id || form.sanction_decision_id)"
         ref="addModal"
         @ok="addCas" @hidden="resetModal"
         >
@@ -91,7 +91,7 @@
                         <b-form-group label="Type d'info">
                             <b-form-radio-group id="info-or-sanction" v-model="infoOrSanction" :disabled="entry ? true : false">
                                 <b-form-radio value="info">Non disciplinaire</b-form-radio>
-                                <b-form-radio value="sanction-decision" :disabled="!coord && !educ">Disciplinaire</b-form-radio>
+                                <b-form-radio value="sanction-decision" :disabled="!$store.state.canSetSanction">Disciplinaire</b-form-radio>
                             </b-form-radio-group>
                         </b-form-group>
                     </b-form-row>
@@ -174,13 +174,9 @@
                         </b-col>
                     </b-form-row>
                     <b-form-row v-if="infoOrSanction == 'info'">
-                        <b-form-group label="Visibilité">
-                                <b-form-checkbox v-model="form.visible_by_educ" :disabled="!coord">
-                                    Visible par les éducateurs
-                                </b-form-checkbox>
-                                <b-form-checkbox v-model="form.visible_by_tenure" :disabled="!educ && !coord">
-                                    Visible par les titulaires
-                                </b-form-checkbox>
+                        <b-form-group v-if="visibilityOptions.length > 0" label="Donner la visibilité à :">
+                                <b-form-checkbox-group stacked v-model="form.visible_by_groups" name="visible_by_groups" :options="visibilityOptions">
+                                </b-form-checkbox-group>
                         </b-form-group>
                         <b-form-checkbox v-model="form.send_to_teachers" :disabled="!educ && !coord">
                             Envoyer l'info par email aux professeurs de la classe de l'élève (les fichiers seront joints).
@@ -223,8 +219,7 @@ export default {
                 explication_commentaire: "",
                 important: false,
                 demandeur: "",
-                visible_by_educ: false,
-                visible_by_tenure: false,
+                visible_by_groups: [],
                 datetime_sanction: null,
                 sanction_faite: null,
                 send_to_teachers: false,
@@ -254,6 +249,8 @@ export default {
             },
             coord: false,
             educ: false,
+            visibilityOptions: [],
+            forcedVisibility: [],
             editorOptions: {
                 modules: {
                     toolbar: [
@@ -332,8 +329,7 @@ export default {
             this.form.explication_commentaire = "";
             this.form.important = false;
             this.form.demandeur = "";
-            this.form.visible_by_educ = !this.coord;
-            this.form.visible_by_tenure = !this.educ && !this.coord;
+            this.form.visible_by_groups = [];
             this.form.datetime_sanction = null;
             this.form.sanction_faite = null;
             this.form.send_to_teachers = false;
@@ -373,9 +369,6 @@ export default {
                 this.form.explication_commentaire = entry.explication_commentaire;
                 this.form.info_id = entry.info_id;
                 this.form.important = entry.important;
-                this.form.visible_by_educ = entry.visible_by_educ;
-                this.form.visible_by_tenure = entry.visible_by_tenure;
-
                 this.form.sanction_decision_id = entry.sanction_decision_id;
                 if (entry.datetime_sanction) {
                     let datetime = Moment(entry.datetime_sanction);
@@ -385,6 +378,9 @@ export default {
                 this.form.sanction_faite = entry.sanction_faite;
 
                 this.infoOrSanction = entry.info_id ? 'info' : 'sanction-decision';
+                if (entry.info_id) {
+                    this.form.visible_by_groups = entry.visible_by_groups;
+                }
 
                 this.setSanctionDecisionOptions();
 
@@ -404,8 +400,8 @@ export default {
             let data = this.form;
             // Set visibility for all if it's sanction_decision.
             if (this.infoOrSanction == 'sanction-decision') {
-                data.visible_by_educ = true;
-                data.visible_by_tenure = true;
+                // Set visibility to all.
+                data.visible_by_groups = Object.keys(groups).map(x => groups[x].id);
             }
             // Add times if any.
             if (data.datetime_sanction) {
@@ -515,15 +511,84 @@ export default {
             .catch(function (error) {
                 alert(error);
             });
-        }
+        },
+        setVisibilityGroups: function () {
+            let settings = this.$store.state.settings;
+            // Set options for checkboxes.
+            let forcedVisibility = Object.keys(groups).map(x => groups[x].id);
+            for (let g in user_groups) {
+                if (user_groups[g].id == groups.sysadmin.id) {
+                    this.visibilityOptions.push({value: groups.direction.id, text: groups.direction.text});
+                    this.visibilityOptions.push({value: groups.coordonator.id, text: groups.coordonator.text});
+                    this.visibilityOptions.push({value: groups.educator.id, text: groups.educator.text});
+                    this.visibilityOptions.push({value: groups.teacher.id, text: groups.teacher.text});
+                    this.visibilityOptions.push({value: groups.pms.id, text: groups.pms.text});
+                    forcedVisibility = [];
+                    break;
+                }
+                if (user_groups[g].id == groups.direction.id) {
+                    for (let vg in settings.dir_allow_visibility_to) {
+                        for (let cg in groups) {
+                            if (groups[cg].id == settings.dir_allow_visibility_to[vg]) {
+                                this.visibilityOptions.push({value: groups[cg].id, text: groups[cg].text});
+                                break;
+                            }
+                        }
+                    }
+                    forcedVisibility = forcedVisibility.filter(value => -1 !== settings.dir_force_visibility_to.indexOf(value));
+                }
+                if (user_groups[g].id == groups.coordonator.id) {
+                    for (let vg in settings.coord_allow_visibility_to) {
+                        for (let cg in groups) {
+                            if (groups[cg].id == settings.coord_allow_visibility_to[vg]) {
+                                this.visibilityOptions.push({value: groups[cg].id, text: groups[cg].text});
+                                break;
+                            }
+                        }
+                    }
+                    forcedVisibility = forcedVisibility.filter(value => -1 !== settings.coord_force_visibility_to.indexOf(value));
+                }
+                if (user_groups[g].id == groups.educator.id) {
+                    for (let vg in settings.educ_allow_visibility_to) {
+                        for (let cg in groups) {
+                            if (groups[cg].id == settings.educ_allow_visibility_to[vg]) {
+                                this.visibilityOptions.push({value: groups[cg].id, text: groups[cg].text});
+                                break;
+                            }
+                        }
+                    }
+                    forcedVisibility = forcedVisibility.filter(value => -1 !== settings.educ_force_visibility_to.indexOf(value));
+                }
+                if (user_groups[g] == groups.teacher.id) {
+                    for (let vg in settings.teacher_allow_visibility_to) {
+                        for (let cg in groups) {
+                            if (groups[cg].id == settings.teacher_allow_visibility_to[vg]) {
+                                this.visibilityOptions.push({value: groups[cg].id, text: groups[cg].text});
+                                break;
+                            }
+                        }
+                    }
+                    forcedVisibility = forcedVisibility.filter(value => -1 !== settings.teacher_force_visibility_to.indexOf(value));
+                }
+                if (user_groups[g] == groups.pms.id) {
+                    for (let vg in settings.pms_allow_visibility_to) {
+                        for (let cg in groups) {
+                            if (groups[cg].id == settings.pms_allow_visibility_to[vg]) {
+                                this.visibilityOptions.push({value: groups[cg].id, text: groups[cg].text});
+                                break;
+                            }
+                        }
+                    }
+                    forcedVisibility = forcedVisibility.filter(value => -1 !== settings.pms_force_visibility_to.indexOf(value));
+                }
+            }
+            this.forcedVisibility = forcedVisibility;
+        },
     },
     components: {Multiselect, quillEditor, FileUpload},
     mounted: function () {
         // Set policies.
-        this.coord = this.$store.state.is_coord;
-        this.educ = this.$store.state.is_educ;
-        this.form.visible_by_educ = !this.coord;
-        this.form.visible_by_tenure = !this.educ && !this.coord;
+        this.setVisibilityGroups();
 
         if (this.entry) this.setEntry(this.entry);
 

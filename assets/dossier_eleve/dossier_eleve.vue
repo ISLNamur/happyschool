@@ -144,9 +144,8 @@ export default {
         },
         canAskSanction: function () {
             const enable = this.$store.state.settings.enable_submit_sanctions;
-            const coord = this.$store.state.is_coord;
-            const educ = this.$store.state.is_educ;
-            return enable && (coord || educ);
+            const canSetSanction = this.$store.state.canSetSanction;
+            return enable && canSetSanction;
         }
     },
     methods: {
