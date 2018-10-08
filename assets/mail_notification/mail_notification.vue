@@ -182,6 +182,10 @@ Vue.use(BootstrapVue);
 import {quillEditor} from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
+import Quill from 'quill'
+var Block = Quill.import('blots/block');
+Block.tagName = 'DIV';
+Quill.register(Block, true);
 
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import 'vue-multiselect/dist/vue-multiselect.min.css'
@@ -232,7 +236,8 @@ export default {
                 modules: {
                     toolbar: [
                         ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-                        ['blockquote', 'code-block'],
+                        ['blockquote'],
+                        ['link', 'image'],
 
                         [{ 'header': 1 }, { 'header': 2 }],               // custom button values
                         [{ 'list': 'ordered'}, { 'list': 'bullet' }],
@@ -241,7 +246,6 @@ export default {
                         [{ 'direction': 'rtl' }],                         // text direction
 
                         [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
 
                         [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
                         [{ 'font': [] }],
