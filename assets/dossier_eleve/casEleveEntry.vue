@@ -38,7 +38,10 @@
                         </div>
                     </b-col>
                 </b-row>
-                <b-row class="entry-subtitle"><em>{{ subtitle }}</em></b-row>
+                <b-row class="entry-subtitle">
+                    <em>{{ subtitle }}</em>
+                    <a @click="editEntry"><icon name="paperclip" color="blue" v-if="rowData.attachments.length > 0"></icon></a>
+                </b-row>
                 <b-row class="text-center">
                     <b-col md="2" class="category">
                         <icon name="info" scale="1.2" v-if="isInfo" color="blue" class="align-text-bottom"></icon>
