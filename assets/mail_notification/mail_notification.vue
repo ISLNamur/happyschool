@@ -34,7 +34,7 @@
                         </b-form-group>
                         <b-form-group
                             v-if="toType == 'parents'"
-                            description="Si «Par parent» est choisi, un parent aillant plusieurs enfants ne recevra qu'un seul email. À contrario, si «Par élève» est choisi, un parent aillant plusières élèves recevra un email par élève."
+                            description="Si «Par parent» est choisi, un parent ayant plusieurs enfants ne recevra qu'un seul email. À contrario, si «Par élève» est choisi, un parent ayant plusieurs élèves recevra un email par élève."
                             label="Type d'envoi : "
                             >
                             <b-form-radio-group v-model="sendType" name="sendType">
