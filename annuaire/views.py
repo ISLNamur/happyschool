@@ -43,7 +43,7 @@ from rest_framework.renderers import JSONRenderer
 from z3c.rml import rml2pdf
 from unidecode import unidecode
 
-from core.utilities import get_menu
+from core.utilities import get_menu, check_student_photo
 from core.people import People, get_classes
 from core.models import StudentModel, ClasseModel, TeachingModel, ResponsibleModel, AdditionalStudentInfo
 from core.serializers import StudentSerializer, ResponsibleSerializer, ClasseSerializer,\
@@ -363,6 +363,7 @@ def get_class_photo_pdf(request, year, classe, enseignement):
     student_by_row = 6
     row = []
     for i, student in enumerate(students):
+        check_student_photo(student)
         if i % student_by_row == 0:
             row = []
         row.append(student)
