@@ -350,13 +350,12 @@ def format_name_to_json(people_list, people_type):
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name__in=groups_with_access),
                   login_url='no_access')
-def get_class_photo_pdf(request, year, classe, enseignement):
-    students = StudentModel.objects.filter(classe__year=year, classe__letter=classe)
-    if enseignement.isdigit():
-        teaching = TeachingModel.objects.get(id=int(enseignement))
-    else:
-        teaching = TeachingModel.objects.get(name=enseignement)
-    students = students.filter(classe__teaching=teaching)
+def get_class_photo_pdf(request, classe):
+    try:
+        classe = ClasseModel.objects.get(id=classe)
+    except ObjectDoesNotExist:
+        return render(request, 'dossier_eleve/no_student.html')
+    students = StudentModel.objects.filter(classe=classe)
 
     students = sorted(students, key=lambda s: unidecode(s.last_name.lower()))
     rows = []
@@ -370,9 +369,8 @@ def get_class_photo_pdf(request, year, classe, enseignement):
         if i % student_by_row == student_by_row - 1 or len(students) == i + 1:
             rows.append(row)
 
-    context = {'classe': str(year) + classe , 'list': rows, 'students_numb': len(students)}
+    context = {'classe': classe.compact_str, 'list': rows, 'students_numb': len(students)}
 
-    classe = ClasseModel.objects.get(year=year, letter=classe, teaching=teaching)
     tenures = ResponsibleModel.objects.filter(tenure=classe)
 
     context['tenures'] = tenures
@@ -384,7 +382,7 @@ def get_class_photo_pdf(request, year, classe, enseignement):
     pdf = rml2pdf.parseString(rml_str)
     if not pdf:
         return render(request, 'dossier_eleve/no_student.html')
-    pdf_name = 'classes_%s%s.pdf' % (year, classe)
+    pdf_name = 'classes_%s%s.pdf' % (classe.year, classe.letter)
 
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'filename; filename="' + pdf_name + '"'

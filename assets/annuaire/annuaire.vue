@@ -131,11 +131,7 @@ export default {
             if (!this.classe)
                 return '';
 
-            let classeUrl = '/annuaire/get_class_photo_pdf/';
-            classeUrl += this.classe.year + '/';
-            classeUrl += this.classe.letter + '/';
-            classeUrl +=  this.classe.teaching;
-            return classeUrl;
+            return '/annuaire/get_class_photo_pdf/' + this.classe.id + '/';
         },
         getClasseListExcel: function () {
             if (!this.classe)

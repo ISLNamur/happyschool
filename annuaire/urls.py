@@ -41,7 +41,7 @@ urlpatterns = [
     url(r'^student/(?P<matricule>[0-9]+)/', views.summary, name='summary'),
     url(r'^teacher/(?P<matricule>[0-9]+)/info/$', views.info_teacher, name='info_teacher'),
     url(r'^teacher/(?P<id>[0-9]+)/$', views.summary_teacher, name='summary_teacher'),
-    url(r'^get_class_photo_pdf/(?P<year>[0-9]+)/(?P<classe>\w+)/(?P<enseignement>\w+)/$', views.get_class_photo_pdf,
+    url(r'^get_class_photo_pdf/(?P<classe>[0-9]+)/$', views.get_class_photo_pdf,
         name="get_class_photo_pdf"),
     path('', views.AnnuaireView.as_view(), name='annuaire'),
     path('get_class_list_excel/<int:classe_id>/', views.ClasseListExcelView.as_view()),
