@@ -17,19 +17,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
+import json
+
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.forms.models import model_to_dict
 from django.utils import timezone
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from django.template.loader import get_template
 from django.conf import settings
-from django.db.models import Count, Q
+from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
-
-# Vue app imports
-import json
+from django.views.generic import TemplateView
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
 from django_filters import rest_framework as filters
 
@@ -41,11 +39,11 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from django.views.generic import TemplateView
-from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
-
 from core.views import BaseFilters, BaseModelViewSet
 from core.utilities import get_menu
+from core.utilities import get_scholar_year, check_student_photo
+from core.models import StudentModel, ResponsibleModel
+from core.people import People, get_classes
 
 from .serializers import *
 from .models import *
@@ -54,212 +52,6 @@ from .tasks import task_send_info_email
 from z3c.rml import rml2pdf
 from io import BytesIO
 from PyPDF2 import PdfFileMerger
-
-
-from core.utilities import get_scholar_year, check_student_photo
-from core.email import send_email
-from core.models import StudentModel, EmailModel, ResponsibleModel
-from core.people import People, get_classes, get_years
-
-
-from .models import CasEleve, InfoEleve, SanctionDecisionDisciplinaire, DossierEleveSettingsModel
-from .forms import NouveauCasForm, GenerateSummaryPDFForm, GenDisciplinaryCouncilForm, GenRetenueForm
-
-
-SANCTIONS_RETENUE = [2, 5, 15, 16]
-PMS_EMAIL = 8
-
-groups_with_access = [settings.SYSADMIN_GROUP, settings.TEACHER_GROUP, settings.DIRECTION_GROUP, settings.EDUCATOR_GROUP,
-                      settings.SECRETARY_GROUP, settings.PMS_GROUP]
-
-def compute_unread_rows(request):
-    if 'dossier_eleve_last_time' in request.session:
-        last_time = timezone.datetime.fromtimestamp(request.session['dossier_eleve_last_time'])
-        rows = filter_and_order(request, column='datetime_encodage', data1=last_time, data2=timezone.now())
-        return len(rows)
-
-
-@login_required
-@user_passes_test(lambda u: u.groups.filter(name__in=groups_with_access), login_url='no_access')
-def get_pdf_retenues(request, date=None, date2=None):
-    if not date2:
-        date2 = date
-
-    rows = filter_and_order(request, column="datetime_sanction", retenues=True,
-                            data1=date.replace("-", "/"), data2=date2.replace("-", "/"),
-                            order_by="classe")
-
-    retenues = []
-    for r in rows:
-        dic = model_to_dict(r)
-        student = People().get_student_by_id(dic['matricule'])
-        dic['classe'] = student.classe.compact_str
-        dic['full_name'] = student.fullname
-        dic['sanction_decision'] = SanctionDecisionDisciplinaire.objects.get(pk=dic['sanction_decision'])
-
-        retenues.append(dic)
-
-    context = {'date': date, 'list': retenues}
-    t = get_template('dossier_eleve/discip_retenues.rml')
-    rml_str = t.render(context)
-
-    pdf = rml2pdf.parseString(rml_str)
-    if not pdf:
-        return render(request, 'dossier_eleve/no_student.html')
-    pdf_name = 'retenues_' + date + '.pdf'
-
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'filename; filename="' + pdf_name + '"'
-    response.write(pdf.read())
-    return response
-
-
-def filter_and_order(request, only_actives=False, retenues=False, year=None,
-                     column=None, data1=None, data2=None,
-                     column2=None, data3=None, data4=None,
-                     order_by=None, order_asc=False):
-    rows = CasEleve.objects.filter(matricule__isnull=False)
-
-    # Filter the rows from the user teaching.
-    try:
-        teachings = ResponsibleModel.objects.get(user=request.user).teaching.all()
-    except ObjectDoesNotExist:
-        # Responsible doesn't exist return null result.
-        return []
-    rows = rows.filter(matricule__teaching__in=teachings)
-
-    # First we filter and order at the query level
-    # Filtering
-    if only_actives:
-        rows = rows.filter(datetime_conseil__isnull=False)
-
-    if year:
-        date_1 = timezone.datetime.strptime(str(year) + "-08-20", '%Y-%m-%d')
-        date_2 = timezone.datetime.strptime(str(year + 1) + "-08-19", '%Y-%m-%d')
-        rows = rows.filter(datetime_encodage__range=[date_1, date_2])
-    if retenues:
-        rows = rows.filter(sanction_decision__pk__in=SANCTIONS_RETENUE)
-    if column and data1 != '':
-        if column == 'name':
-            rows = rows.filter(name__unaccent__icontains=data1)
-        if column == 'matricule':
-            rows = rows.filter(matricule__matricule=int(data1))
-        if column == 'classe':
-            students = People().get_students_by_classe(data1, ['secondaire'])
-            rows = rows.filter(matricule__in=students)
-        if column == 'info':
-            rows = rows.filter(info__info__icontains=data1)
-        if column == 'sanction':
-            # Filter sanction by id
-            sanctions = list(map(lambda s: s.pk,
-                                 SanctionDecisionDisciplinaire.objects.filter(sanction_decision__icontains=data1)))
-            # Filter Cas by info_id
-            rows = rows.filter(sanction_decision__in=sanctions)
-        if column == 'demandeur':
-            rows = rows.filter(demandeur__icontains=data1)
-        if column == 'comment':
-            rows = rows.filter(explication_commentaire__icontains=data1)
-        if column == 'sanction_faite':
-            rows = rows.filter(sanction_faite='oui'.startswith(data1.lower()))
-
-        # Check if entries are valids
-        if column.startswith('datetime') and data2 != '':
-            date_1 = timezone.datetime.strptime(data1, '%d/%m/%Y') if type(data1) == str else data1
-            date_2 = timezone.datetime.strptime(data2, '%d/%m/%Y') if type(data2) == str else data2
-            date_1 = timezone.make_aware(date_1) if timezone.is_naive(date_1) else date_1
-            date_2 = timezone.make_aware(date_2) if timezone.is_naive(date_2) else date_2
-            date_1 = date_1.replace(hour=1)
-            date_2 = date_2.replace(hour=23)
-
-            if column == 'datetime_encodage':
-                rows = rows.filter(datetime_encodage__range=[date_1, date_2])
-            if column == 'datetime_council':
-                rows = rows.filter(datetime_conseil__range=[date_1, date_2])
-            if column == 'datetime_sanction':
-                rows = rows.filter(datetime_sanction__range=[date_1, date_2])
-
-    # Check access
-    if not request.user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP]).exists():
-        auth_classes = get_classes(['secondaire'], check_access=True, user=request.user)
-
-        if request.user.groups.filter(name__istartswith='coord').exists():
-            if retenues:
-                rows = rows.filter(Q(matricule__classe__in=auth_classes)
-                                   | Q(sanction_decision__pk__in=SANCTIONS_RETENUE))
-            else:
-                rows = rows.filter(matricule__classe__in=auth_classes)
-
-        elif request.user.groups.filter(name='educateur'):
-            if retenues:
-                rows = rows.filter(Q(matricule__classe__in=auth_classes, visible_by_educ=True)
-                                   | Q(sanction_decision__pk__in=SANCTIONS_RETENUE))
-            else:
-                rows = rows.filter(matricule__classe__in=auth_classes, visible_by_educ=True)
-
-        elif request.user.groups.filter(name=settings.TEACHER_GROUP):
-            # teacher = teacher_man.get_people(filters=['uid=' + request.user.username])[0]
-            classes = ResponsibleModel.objects.get(user=request.user).tenure.all()
-            rows = rows.filter(matricule__classe__in=classes, visible_by_tenure=True)
-
-
-    # Ordering
-    asc = ''
-    if order_asc:
-        asc = '-'
-
-    if order_by in ['datetime_encodage', 'demandeur']:
-        rows = rows.order_by(asc + order_by)
-
-    if order_by in ['classe']:
-        rows = rows.order_by(
-            asc + 'matricule__' + order_by + '__year',
-            asc + 'matricule__' + order_by + '__letter',
-            asc + 'matricule__last_name',
-        )
-
-    if order_by in ['name']:
-        rows = rows.order_by(asc + 'matricule__last_name')
-
-    if order_by in ['datetime_sanction', 'datetime_conseil', 'sanction_faite']:
-        rows = rows.annotate(**{'null_' + order_by: Count(order_by)}).order_by('-null_' + order_by,
-                                                                                       asc + order_by)
-
-    # Transform query into a list and thus make the actual query on the database
-    return list(rows)
-
-
-@login_required
-@user_passes_test(lambda u: u.groups.filter(name__in=groups_with_access), login_url='no_access')
-def get_entries(request, column='name', ens='all'):
-    filter_str = request.GET.get('query', '')
-
-    cas_discip = filter_and_order(request, column=column, data1=filter_str)
-
-    entries = []
-    if column == 'name':
-        entries = map(lambda cas: cas.matricule.fullname, cas_discip)
-        entries = list(set(entries))
-
-    elif column == 'classe':
-        entries = map(lambda cas: cas.matricule.classe.compact_str, cas_discip)
-        entries = list(set(entries))
-
-    elif column == 'info':
-        entries = list(set(map(lambda c: c.info.info, cas_discip)))
-
-    elif column == 'sanction':
-        entries = list(set(map(lambda c: c.sanction_decision.sanction_decision, cas_discip)))
-
-    elif column == 'demandeur':
-        entries = list(set(map(lambda cas: cas.demandeur, cas_discip)))
-
-    elif column == 'sanction_faite':
-        entries = [{'id': 'oui', 'name': 'Oui'}, {'id': 'non', 'name': 'Non'}]
-
-    elif column == 'comment':
-        entries = list(map(lambda c: c.explication_commentaire[:40].replace("\r\n", " "), cas_discip))
-
-    return JsonResponse(entries, safe=False)
 
 
 def get_settings():

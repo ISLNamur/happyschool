@@ -207,14 +207,6 @@ def summary(request, matricule):
                                              order_by="datetime_encodage",
                                              order_asc="desc")[:5]
 
-    if 'dossier_eleve' in settings.INSTALLED_APPS:
-        from dossier_eleve.views import filter_and_order
-        context['dossier_eleve'] = filter_and_order(request,
-                                                    column="matricule",
-                                                    data1=eleve.matricule,
-                                                    order_by="datetime_encodage",
-                                                    order_asc="desc")[:5]
-
     return render(request, 'annuaire/eleve.html', context)
 
 
