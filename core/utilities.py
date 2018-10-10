@@ -17,9 +17,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
+from pathlib import Path
+import shutil
+
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
+
 
 def get_scholar_year():
     current_date = timezone.now()
@@ -100,3 +104,11 @@ def get_menu(user: User, active_app: str=None) -> list:
     menu = {"full_name": user.get_full_name(), "apps": apps}
 
     return menu
+
+
+def check_student_photo(student):
+    photos_dir =  Path(settings.BASE_DIR).joinpath("static/photos/")
+    student_photo = photos_dir.joinpath(str(student.matricule) + ".jpg")
+    if not student_photo.is_file():
+        # Copy unknown.jpg to [matricule].jpg
+        shutil.copy(photos_dir.joinpath("unknown.jpg"), student_photo)
