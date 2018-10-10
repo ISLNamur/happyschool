@@ -113,11 +113,14 @@ export default {
 
             let path = '/dossier_eleve/get_pdf_'
             if (this.tabIndex == 0) {
-                path += 'council/' + Moment(this.date_council_from).format("DD-MM-YYYY") + '/' + Moment(this.date_council_to).format("DD-MM-YYYY") + '/';
-
+                path += 'council/?datetime_conseil__gt=' + this.date_council_from;
+                path += ' 00:00&datetime_conseil__lt=' + this.date_council_to + ' 23:59';
             } else if (this.tabIndex == 1) {
-                path += 'retenues/' + Moment(this.date_retenues_from).format("DD-MM-YYYY") + '/' + Moment(this.date_retenues_to).format("DD-MM-YYYY") + '/';
+                path += 'retenues/?activate_all_retenues=true'
+                path += '&datetime_sanction__gt=' + this.date_retenues_from;
+                path += ' 00:00&datetime_sanction__lt=' + this.date_retenues_to + ' 23:59';
             }
+            path += "&ordering=matricule__classe__year,matricule__classe__letter,matricule__last_name";
             window.open(path);
         },
     },

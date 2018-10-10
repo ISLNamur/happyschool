@@ -14,7 +14,7 @@
         </pageTemplate>
         <pageTemplate id="otherPages" pagesize="(842,595)">
             <pageGraphics>
-                <drawString x="420" y="570">Retenue {{ date }} (page <pageNumber/>)</drawString>
+                <drawString x="420" y="570">Retenues {{ date_from }} — {{ date_to }} (page <pageNumber/>)</drawString>
             </pageGraphics>
             <frame id="discip" x1="10" y1="10" width="815" height="520"/>
         </pageTemplate>
@@ -33,7 +33,7 @@
     <story firstPageTemplate="main">
         <keepInFrame frame="first" onOverflow="shrink">
             <para style="title">
-                 <h1><strong>RETENUES {{ date }}</strong></h1>
+                 <h1><strong>RETENUES {{ date_from }} — {{ date_to }}</strong></h1>
             </para>
         </keepInFrame>
 
@@ -50,7 +50,7 @@
             <tr>
                 <td>
                     <para alignment="center">
-                    {{ c.full_name }} {{ c.classe|upper }}
+                    {{ c.matricule.last_name }} {{ c.matricule.first_name }} {{ c.matricule.classe.year }}{{ c.matricule.classe.letter|upper }}
                     </para>
                 </td>
                 <td>
@@ -60,12 +60,12 @@
                 </td>
                 <td>
                     <para alignment="center">
-                    {{ c.sanction_decision }}
+                    {{ c.sanction_decision.sanction_decision }}
                     </para>
                 </td>
                 <td>
                     <para alignment="justify">
-                        {{ c.explication_commentaire }}
+                        {{ c.explication_commentaire|striptags }}
                     </para>
                 </td>
                 <td>{{ c.datetime_sanction|date:'d/m/y' }}</td>

@@ -150,18 +150,15 @@ export default {
         getPdf: function (evt) {
             evt.preventDefault();
 
-            let path = '/dossier_eleve/get_pdf/';
-            path += this.allYears ? '1/' : '0/' ;
+            let path = '/dossier_eleve/get_pdf/?';
 
-            if ('letter' in this.nameClasse) {
-                // It is a classe.
-                path += this.nameClasse.year + this.nameClasse.letter + '/';
-            } else {
-                // It is a student.
-                path += this.nameClasse.id + '/';
-            }
-            path += this.info ? '1/' : '0/';
-            path += this.sanction ? '1/' : '0/';
+            path += 'letter' in this.nameClasse ? 'classe=' : 'matricule_id=';
+            path += this.nameClasse.id;
+
+            path += this.info ? '' : '&no_infos=true';
+            path += this.sanction ? '' : '&no_sanctions=true';
+            path += this.allYears ? '' : '&scholar_year=' + currentYear ;
+            path += '&ordering=matricule__last_name';
 
             window.open(path);
         },

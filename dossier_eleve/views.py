@@ -56,7 +56,7 @@ from io import BytesIO
 from PyPDF2 import PdfFileMerger
 
 
-from core.utilities import get_scholar_year
+from core.utilities import get_scholar_year, check_student_photo
 from core.email import send_email
 from core.models import StudentModel, EmailModel, ResponsibleModel
 from core.people import People, get_classes, get_years
@@ -77,50 +77,6 @@ def compute_unread_rows(request):
         last_time = timezone.datetime.fromtimestamp(request.session['dossier_eleve_last_time'])
         rows = filter_and_order(request, column='datetime_encodage', data1=last_time, data2=timezone.now())
         return len(rows)
-
-
-@login_required
-def gen_pdf(request):
-    form_summary = GenerateSummaryPDFForm()
-    form_council = GenDisciplinaryCouncilForm()
-    form_retenues = GenRetenueForm()
-    return render(request, 'dossier_eleve/gen_pdf.html', context={'form_sommaire': form_summary,
-                                                                  'form_council': form_council,
-                                                                  'form_retenues': form_retenues})
-
-
-@login_required
-@user_passes_test(lambda u: u.groups.filter(name__in=groups_with_access), login_url='no_access')
-def get_pdf_council(request, date_from=None, date_to=None):
-    rows = filter_and_order(request, only_actives=True, retenues=False,
-                            column='datetime_council', data1=date_from.replace("-", "/"), data2=date_to.replace("-", "/"),
-                            order_by='classe')
-
-    discip_council = []
-    for r in rows:
-        dic = model_to_dict(r)
-        # student = student_man.get_person(dic['matricule'])
-        student = People().get_student_by_id(dic['matricule'])
-        dic['classe'] = student.classe.compact_str
-        dic['full_name'] = student.fullname
-        dic['sanction_decision'] = SanctionDecisionDisciplinaire.objects.get(pk=dic['sanction_decision'])
-
-        discip_council.append(dic)
-
-    context = {'date_from': date_from, 'date_to': date_to,
-               'list': discip_council}
-    t = get_template('dossier_eleve/discip_council.rml')
-    rml_str = t.render(context)
-
-    pdf = rml2pdf.parseString(rml_str)
-    if not pdf:
-        return render(request, 'dossier_eleve/no_student.html')
-    pdf_name = 'council_' + date_from + '_' + date_to + '.pdf'
-
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'filename; filename="' + pdf_name + '"'
-    response.write(pdf.read())
-    return response
 
 
 @login_required
@@ -156,93 +112,6 @@ def get_pdf_retenues(request, date=None, date2=None):
     response['Content-Disposition'] = 'filename; filename="' + pdf_name + '"'
     response.write(pdf.read())
     return response
-
-
-@login_required
-@user_passes_test(lambda u: u.groups.filter(name__in=groups_with_access), login_url='no_access')
-def get_pdf(request, all_year=False, matricule=None, classe=None, infos=None, sanctions=None):
-    response = None
-
-    classe_access = get_classes(get_settings().teachings.all(), True, request.user)
-
-    if matricule:
-        student = People().get_student_by_id(matricule)
-        if student.classe not in classe_access:
-            return HttpResponse("Vous n'avez pas les accès nécessaire.", status=401)
-
-        pdf = create_pdf(request, student, all_year, infos, sanctions)
-        if not pdf:
-            return render(request, 'dossier_eleve/no_student.html')
-        pdf_name = str(matricule) + '.pdf'
-
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'filename; filename="' + pdf_name + '"'
-        response.write(pdf.read())
-        return response
-
-    if classe:
-        classes = classe_access.filter(year=int(classe[0]), letter=classe[1].lower(), teaching__name="secondaire")
-        if not classes.exists():
-            return HttpResponse("Vous n'avez pas les accès nécessaire.", status=401)
-
-        students = []
-        for c in classes:
-            students += People().get_students_by_classe(c.compact_str)
-
-        merger = PdfFileMerger()
-        added = False
-        for s in students:
-            pdf = create_pdf(request, s, all_year, infos, sanctions)
-            if not pdf:
-                continue
-
-            merger.append(pdf)
-            added = True
-
-        if not added:
-            return render(request, 'dossier_eleve/no_student.html')
-
-        output_stream = BytesIO()
-        merger.write(output_stream)
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'filename; filename="' + classe + '"'
-        response.write(output_stream.getvalue())
-        return response
-
-    return response
-
-
-def create_pdf(request, student, all_year, infos, sanctions):
-    cas = None
-    if int(all_year):
-        cas = CasEleve.objects.filter(Q(matricule=student) &
-                                      (Q(sanction_faite__isnull=True) | Q(sanction_faite=True)))
-    else:
-        current_scholar_year = get_scholar_year()
-        limit_date = timezone.make_aware(timezone.datetime(current_scholar_year, 8, 15))
-        cas = CasEleve.objects.filter(matricule=student, datetime_encodage__gte=limit_date)
-        cas = cas.filter(Q(sanction_faite__isnull=True) | Q(sanction_faite=True))
-    if infos == "0":
-        cas = cas.filter(sanction_decision__isnull=False)
-    if sanctions == "0":
-        cas = cas.filter(info__isnull=False)
-
-    if not cas:
-        return None
-
-    context = {'statistics': StatisticAPI().gen_stats(request.user, student, all_years=bool(int(all_year)))}
-    tenure = ResponsibleModel.objects.filter(tenure=student.classe).first()
-    context['tenure'] = tenure.fullname
-
-    context['student'] = student
-    context['list'] = cas
-    context['absolute_path'] = settings.BASE_DIR
-
-    t = get_template('dossier_eleve/discip_pdf.rml')
-    rml_str = t.render(context)
-
-    pdf = rml2pdf.parseString(rml_str)
-    return pdf
 
 
 def filter_and_order(request, only_actives=False, retenues=False, year=None,
@@ -445,6 +314,8 @@ class DossierEleveView(BaseDossierEleveView):
 class CasEleveFilter(BaseFilters):
     classe = filters.CharFilter(method='classe_by')
     activate_important = filters.BooleanFilter(name="important")
+    no_sanctions = filters.BooleanFilter(method="no_sanctions_by")
+    no_infos = filters.BooleanFilter(method="no_infos_by")
 
     class Meta:
         fields_to_filter = ('name', 'matricule_id', 'info__info', 'sanction_decision__sanction_decision',
@@ -469,6 +340,18 @@ class CasEleveFilter(BaseFilters):
                 queryset = queryset.filter(matricule__classe__letter=value[1].lower())
         return queryset
 
+    def no_infos_by(self, queryset, name, value):
+        if value:
+            return queryset.filter(sanction_decision__isnull=False)
+        else:
+            return queryset
+
+    def no_sanctions_by(self, queryset, name, value):
+        if value:
+            return queryset.filter(info__isnull=False)
+        else:
+            return queryset
+
 
 class CasEleveViewSet(BaseModelViewSet):
     queryset = CasEleve.objects.filter(matricule__isnull=False)
@@ -476,7 +359,7 @@ class CasEleveViewSet(BaseModelViewSet):
     serializer_class = CasEleveSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     filter_class = CasEleveFilter
-    ordering_fields = ('datetime_encodage',)
+    ordering_fields = ('datetime_encodage', "matricule__last_name")
 
     def get_group_all_access(self):
         return get_settings().all_access.all()
@@ -591,7 +474,8 @@ class AskSanctionsViewSet(BaseModelViewSet):
     serializer_class = CasEleveSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     filter_class = AskSanctionsFilter
-    ordering_fields = ('datetime_encodage', 'datetime_sanction')
+    ordering_fields = ('datetime_encodage', 'datetime_sanction', 'matricule__classe__year',
+                       'matricule__classe__letter', 'matricule__last_name')
 
     def get_queryset(self):
         sanctions = SanctionDecisionDisciplinaire.objects.filter(can_ask=True)
@@ -694,3 +578,142 @@ class UploadFile(APIView):
 
         # As we want the object to be removed, if it's not found, it's ok!
         return Response(status=status.HTTP_200_OK)
+
+
+class CasElevePDFGenAPI(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None):
+        if request.GET.get('matricule_id'):
+            pdf = self.create_pdf(request)
+            if not pdf:
+                return render(request, 'dossier_eleve/no_student.html')
+            pdf_name = str(request.GET['matricule_id']) + '.pdf'
+
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = 'filename; filename="' + pdf_name + '"'
+            response.write(pdf.read())
+            return response
+
+        if request.GET.get('classe'):
+            classe_access = get_classes(get_settings().teachings.all(), True, request.user)
+            try:
+                classe = classe_access.get(id=request.GET['classe'])
+            except ObjectDoesNotExist:
+                return HttpResponse("Vous n'avez pas les accès nécessaire.", status=401)
+
+            students = People().get_students_by_classe(classe)
+            merger = PdfFileMerger()
+            added = False
+            for s in students:
+                request._request.GET = request.GET.copy()
+                request._request.GET['matricule_id'] = s.matricule
+                pdf = self.create_pdf(request)
+                if not pdf:
+                    continue
+
+                merger.append(pdf)
+                added = True
+
+            if not added:
+                return render(request, 'dossier_eleve/no_student.html')
+
+            output_stream = BytesIO()
+            merger.write(output_stream)
+            response = HttpResponse(content_type='application/pdf')
+            response['Content-Disposition'] = 'filename; filename="' + classe.compact_str + '"'
+            response.write(output_stream.getvalue())
+            return response
+
+        return render(request, 'dossier_eleve/no_student.html')
+
+    @staticmethod
+    def create_pdf(request):
+        if request._request.GET.get('classe'):
+            request._request.GET.pop('classe')
+        view_set = CasEleveViewSet.as_view({'get': 'list'})
+        results = view_set(request._request).data['results']
+        if not results:
+            return None
+
+        # Use datetime object instead of plain text.
+        for r in results:
+            r['datetime_encodage'] = timezone.datetime.strptime(r['datetime_encodage'], "%Y-%m-%dT%H:%M:%S.%f%z")
+            if r['info']:
+                continue
+            r['datetime_sanction'] = timezone.datetime.strptime(r['datetime_sanction'], "%Y-%m-%dT%H:%M:%S%z")
+        student = StudentModel.objects.get(matricule=request.GET['matricule_id'])
+        check_student_photo(student)
+        #TODO: Should we show current year statistics or all years statistics?
+        context = {'statistics': StatisticAPI().gen_stats(request.user, student,
+                                                          all_years=False)}
+        tenure = ResponsibleModel.objects.filter(tenure=student.classe).first()
+        context['tenure'] = tenure.fullname
+
+        context['student'] = student
+        context['list'] = results
+        context['absolute_path'] = settings.BASE_DIR
+
+        t = get_template('dossier_eleve/discip_pdf.rml')
+        rml_str = t.render(context)
+
+        pdf = rml2pdf.parseString(rml_str)
+        return pdf
+
+
+class AskSanctionsPDFGenAPI(APIView):
+    permission_classes = (IsAuthenticated,)
+    template = ""
+    file_name = ""
+    field_date = ""
+
+    def get(self, request, format=None):
+        view_set = AskSanctionsViewSet.as_view({'get': 'list'})
+        results = view_set(request._request).data['results']
+        results = self.modify_entries(results)
+
+        date_from = request.GET.get('datetime_%s__gt' % self.field_date)
+        date_to = request.GET.get('datetime_%s__lt' % self.field_date)
+        context = {'date_from': date_from, 'date_to': date_to,
+                   'list': results}
+        t = get_template(self.template)
+        rml_str = t.render(context)
+
+        pdf = rml2pdf.parseString(rml_str)
+        if not pdf:
+            return render(request, 'dossier_eleve/no_student.html')
+        pdf_name = self.file_name + '_' + date_from + '_' + date_to + '.pdf'
+
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'filename; filename="' + pdf_name + '"'
+        response.write(pdf.read())
+        return response
+
+    def modify_entries(self, results):
+        return results
+
+
+class AskSanctionCouncilPDFGenAPI(AskSanctionsPDFGenAPI):
+    template = "dossier_eleve/discip_council.rml"
+    file_name = "council"
+    field_date = "conseil"
+
+    def modify_entries(self, results):
+        for r in results:
+            r['datetime_sanction'] = timezone.datetime.strptime(r['datetime_sanction'],
+                                                                "%Y-%m-%dT%H:%M:%S%z")
+            r['datetime_conseil'] = timezone.datetime.strptime(r['datetime_conseil'],
+                                                               "%Y-%m-%dT%H:%M:%S%z")
+        return results
+
+
+class AskSanctionRetenuesPDFGenAPI(AskSanctionsPDFGenAPI):
+    template = "dossier_eleve/discip_retenues.rml"
+    file_name = "retenues"
+    field_date = "sanction"
+
+    def modify_entries(self, results):
+        for r in results:
+            r['datetime_sanction'] = timezone.datetime.strptime(r['datetime_sanction'],
+                                                                "%Y-%m-%dT%H:%M:%S%z")
+        return results

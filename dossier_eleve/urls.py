@@ -25,22 +25,19 @@ from rest_framework.routers import DefaultRouter
 from . import views
 #
 urlpatterns = [
-    url(r'^gen_pdf/$', views.gen_pdf, name='gen_pdf'),
-    url(r'^get_pdf/(?P<all_year>[0-9]+)/(?P<matricule>[0-9]+)/(?P<infos>[0-9]+)/(?P<sanctions>[0-9]+)/',
-        views.get_pdf, name='get_pdf'),
-    url(r'^get_pdf/(?P<all_year>[0-9]+)/(?P<classe>\w+)/(?P<infos>[0-9]+)/(?P<sanctions>[0-9]+)/', views.get_pdf, name='get_pdf'),
-    url(r'^get_pdf/(?P<all_year>[0-9]+)/(?P<classe>\w+)/', views.get_pdf, name='get_pdf'),
-    url(r'^get_pdf/', views.get_pdf, name='get_pdf'),
-    url(r'^get_pdf_council/(?P<date_from>.*)/(?P<date_to>.*)/', views.get_pdf_council, name='get_pdf_council'),
-    url(r'^get_pdf_council/', views.get_pdf_council, name='get_pdf_council'),
-    url(r'^get_pdf_retenues/(?P<date>.*)/(?P<date2>.*)/', views.get_pdf_retenues, name='get_pdf_retenues'),
-    url(r'^get_pdf_retenues/(?P<date>.*)', views.get_pdf_retenues, name='get_pdf_retenues'),
-    url(r'^get_pdf_retenues/', views.get_pdf_retenues, name='get_pdf_retenues'),
+    # url(r'^get_pdf_council/(?P<date_from>.*)/(?P<date_to>.*)/', views.get_pdf_council, name='get_pdf_council'),
+    # url(r'^get_pdf_council/', views.get_pdf_council, name='get_pdf_council'),
+    # url(r'^get_pdf_retenues/(?P<date>.*)/(?P<date2>.*)/', views.get_pdf_retenues, name='get_pdf_retenues'),
+    # url(r'^get_pdf_retenues/(?P<date>.*)', views.get_pdf_retenues, name='get_pdf_retenues'),
+    # url(r'^get_pdf_retenues/', views.get_pdf_retenues, name='get_pdf_retenues'),
     path('', views.DossierEleveView.as_view(), name='dossier_eleve'),
     path('ask_sanctions', views.AskSanctionsView.as_view()),
     path('api/statistics/<int:matricule>/', views.StatisticAPI.as_view(), name='statistics'),
     path('upload_file/', views.UploadFile.as_view(), name='upload_file'),
     path('upload_file/<int:pk>/', views.UploadFile.as_view(), name='remove_file'),
+    path('get_pdf/', views.CasElevePDFGenAPI.as_view()),
+    path('get_pdf_council/', views.AskSanctionCouncilPDFGenAPI.as_view()),
+    path('get_pdf_retenues/', views.AskSanctionRetenuesPDFGenAPI.as_view()),
 ]
 
 router = DefaultRouter()
