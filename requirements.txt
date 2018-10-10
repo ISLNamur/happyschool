@@ -4,6 +4,7 @@ channels>=2.1
 channels_redis>=2.2
 unidecode
 z3c.rml
+PyPDF2
 django-crispy-forms>=1.7
 django_auth_ldap>=1.7
 coverage
