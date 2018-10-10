@@ -215,6 +215,16 @@ class PeopleTest(TestCase):
         result = People().get_students_by_classe("")
         self.assertEqual(len(result), 0)
 
+        result = People().get_students_by_classe("a")
+        self.assertEqual(len(result), 0)
+
+        classe = ClasseModel.objects.get(year=1, letter="a")
+        result = People().get_students_by_classe(classe)
+        self.assertEqual(result.first().fullname, "Tutu Toto")
+
+        result = People().get_students_by_classe(None)
+        self.assertEqual(len(result), 0)
+
 
 class AccessTest(TestCase):
     fixtures = ['test_core.json']

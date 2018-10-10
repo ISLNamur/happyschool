@@ -290,29 +290,37 @@ class People:
                                                  active=active)[0]
 
     @staticmethod
-    def get_students_by_classe(classe: str, teaching: list=('all',)) -> QuerySet:
+    def get_students_by_classe(classe: object, teaching: list=('all',)) -> QuerySet:
         """
         Get students that are in a classe.
-        :param classe: A string that describes the classe.
+        :param classe: A string that describes the classe or a ClasseModel object.
         :param teaching:  A list of teaching that the students belong.
         :return: A QuerySet of students
         """
-        if len(classe) > 0:
-            students = StudentModel.objects.all()
-            if "all" not in teaching:
-                if type(teaching[0]) == TeachingModel:
-                    students = students.filter(teaching__in=teaching)
-                else:
-                    students = students.filter(teaching__name__in=teaching)
+        if not classe:
+            return StudentModel.objects.none()
 
-            if classe[0].isdigit():
-                students = students.filter(classe__year=int(classe[0])).order_by('last_name', 'first_name')
-            if len(classe) > 1:
-                students = students.filter(classe__letter=classe[1].lower())
+        students = StudentModel.objects.all()
+        if "all" not in teaching:
+            if type(teaching[0]) == TeachingModel:
+                students = students.filter(teaching__in=teaching)
+            else:
+                students = students.filter(teaching__name__in=teaching)
 
-            return students
+        if type(classe) == ClasseModel:
+            return students.filter(classe=classe)
 
-        return StudentModel.objects.none()
+        # classe is a string.
+        if classe[0].isdigit():
+            students = students.filter(classe__year=int(classe[0])).order_by('last_name',
+                                                                             'first_name')
+        else:
+            return StudentModel.objects.none()
+
+        if len(classe) > 1:
+            return students.filter(classe__letter=classe[1:].lower())
+
+        return students
 
 
 def get_classes(teaching: list=('all',), check_access: bool=False, user: User=None) -> QuerySet:
