@@ -430,10 +430,10 @@ class CasElevePDFGenAPI(APIView):
 
         # Use datetime object instead of plain text.
         for r in results:
-            r['datetime_encodage'] = timezone.datetime.strptime(r['datetime_encodage'], "%Y-%m-%dT%H:%M:%S.%f%z")
+            r['datetime_encodage'] = timezone.datetime.strptime(r['datetime_encodage'][:19], "%Y-%m-%dT%H:%M:%S")
             if r['info']:
                 continue
-            r['datetime_sanction'] = timezone.datetime.strptime(r['datetime_sanction'], "%Y-%m-%dT%H:%M:%S%z")
+            r['datetime_sanction'] = timezone.datetime.strptime(r['datetime_sanction'][:19], "%Y-%m-%dT%H:%M:%S")
         student = StudentModel.objects.get(matricule=request.GET['matricule_id'])
         check_student_photo(student)
         #TODO: Should we show current year statistics or all years statistics?
@@ -492,10 +492,10 @@ class AskSanctionCouncilPDFGenAPI(AskSanctionsPDFGenAPI):
 
     def modify_entries(self, results):
         for r in results:
-            r['datetime_sanction'] = timezone.datetime.strptime(r['datetime_sanction'],
-                                                                "%Y-%m-%dT%H:%M:%S%z")
-            r['datetime_conseil'] = timezone.datetime.strptime(r['datetime_conseil'],
-                                                               "%Y-%m-%dT%H:%M:%S%z")
+            r['datetime_sanction'] = timezone.datetime.strptime(r['datetime_sanction'][:19],
+                                                                "%Y-%m-%dT%H:%M:%S")
+            r['datetime_conseil'] = timezone.datetime.strptime(r['datetime_conseil'][:19],
+                                                               "%Y-%m-%dT%H:%M:%S")
         return results
 
 
@@ -506,6 +506,6 @@ class AskSanctionRetenuesPDFGenAPI(AskSanctionsPDFGenAPI):
 
     def modify_entries(self, results):
         for r in results:
-            r['datetime_sanction'] = timezone.datetime.strptime(r['datetime_sanction'],
-                                                                "%Y-%m-%dT%H:%M:%S%z")
+            r['datetime_sanction'] = timezone.datetime.strptime(r['datetime_sanction'][:19],
+                                                                "%Y-%m-%dT%H:%M:%S")
         return results
