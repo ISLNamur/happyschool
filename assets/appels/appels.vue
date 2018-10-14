@@ -54,6 +54,8 @@
                 @delete="askDelete(entry)"
                 @edit="editEntry(index)"
                 @processing="processEntry(index)"
+                @filterStudent="filterStudent($event)"
+                @showInfo="showInfo(entry)"
                 >
             </appel-entry>
         </b-container>
@@ -61,6 +63,9 @@
             @ok="deleteEntry" @cancel="currentEntry = null"
             :no-close-on-backdrop="true" :no-close-on-esc="true">
             Êtes-vous sûr de vouloir supprimer cet appel ?
+        </b-modal>
+        <b-modal :title="currentName" size="lg" ref="infoModal" centered ok-only @hidden="currentEntry = null">
+            <info v-if="currentEntry" :matricule="currentEntry.matricule_id" type="student"></info>
         </b-modal>
         <component v-bind:is="currentModal" ref="dynamicModal" :entry="currentEntry"
             :processing="processing" @update="loadEntries" @reset="currentEntry = null; processing = false">
@@ -107,6 +112,14 @@ export default {
             processing: false,
         }
     },
+    computed: {
+        currentName: function () {
+            if (this.currentEntry) {
+                return this.currentEntry.name;
+            }
+            return '';
+        },
+    },
     watch: {
         active: function (isActive) {
             if (isActive) {
@@ -127,6 +140,13 @@ export default {
             scroll(0, 0);
             return;
         },
+        filterStudent: function (matricule) {
+            this.showFilters = true;
+            this.$store.commit('addFilter',
+                {filterType: 'matricule_id', tag: matricule, value: matricule}
+            );
+            this.applyFilter()
+        },
         applyFilter: function () {
             this.filter = "";
             let storeFilters = this.$store.state.filters
@@ -142,6 +162,10 @@ export default {
             }
             this.currentPage = 1;
             this.loadEntries();
+        },
+        showInfo: function (entry) {
+            this.currentEntry = entry
+            this.$refs.infoModal.show();
         },
         askDelete: function (entry) {
             this.currentEntry = entry;
@@ -187,6 +211,7 @@ export default {
         'add-modal': AddModal,
         'filters': Filters,
         'app-menu': Menu,
+        'info': Info,
     },
 };
 </script>

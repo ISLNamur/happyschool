@@ -16,7 +16,6 @@
                     <b-form-row>
                         <b-col sm="8">
                             <b-form-group label="Nom" label-for="input-name" :state="inputStates.name">
-                                <!-- <b-form-input id="input-name" size="sm" type="text" placeholder="Nom et prénom"></b-form-input> -->
                                 <multiselect id="input-name"
                                     :internal-search="false"
                                     :options="nameOptions"

@@ -1,13 +1,27 @@
 <template>
     <div>
         <transition appear name="fade">
-            <b-card :title="title" :sub-title="subtitle" class="current-card">
-                <b-row align-h="end">
-                    <b-btn @click="$emit('processing')" v-if="!this.rowData.is_traiter" class="mr-2" size="sm">Traiter l'appel</b-btn>
-                    <b-link @click="$emit('edit')"
-                        class="card-link"><icon name="edit" scale="1" color="green"></icon></b-link>
-                    <b-link @click="$emit('delete')"
-                        class="card-link"><icon name="remove" scale="1" color="red"></icon></b-link>
+            <b-card class="px-4 mt-2 current-card" no-body>
+                <b-row>
+                    <b-col>
+                        <h5>
+                            <a v-if="rowData.is_student" class="clickable" @click="$emit('showInfo')">{{ title }}</a>
+                            <span v-else>{{ title }}</span>
+                            <b-btn v-if="rowData.is_student" variant="link" size="sm" @click="filterStudent">
+                                <icon name="eye" scale="1.2" class="align-text-middle"></icon>
+                            </b-btn>
+                        </h5>
+                    </b-col>
+                    <b-col sm="3" class="text-right">
+                        <b-btn @click="$emit('processing')" v-if="!this.rowData.is_traiter" class="mr-2" size="sm">Traiter l'appel</b-btn>
+                        <b-link @click="$emit('edit')"
+                            class="card-link"><icon name="edit" scale="1.3" color="green"></icon></b-link>
+                        <b-link @click="$emit('delete')"
+                            class="card-link"><icon name="trash" scale="1.3" color="red"></icon></b-link>
+                    </b-col>
+                </b-row>
+                <b-row class="entry-subtitle">
+                    <em>{{ subtitle }}</em>
                 </b-row>
                 <b-row class="text-center">
                     <b-col md="2" class="current-data">{{ rowData.object.display }}</b-col>
@@ -77,6 +91,11 @@
                 return Moment(this.rowData.datetime_appel).calendar();
             }
         },
+        methods: {
+            filterStudent: function () {
+                this.$emit('filterStudent', this.rowData.matricule_id);
+            }
+        }
     }
 </script>
 
@@ -95,5 +114,17 @@
     }
     .fade-enter, .fade-leave-to .fade-leave-active {
       opacity: 0
+    }
+
+    .entry-subtitle {
+        color: grey;
+    }
+    .clickable {
+        text-decoration: underline !important;
+        color: #0069d9 !important;
+    }
+
+    .clickable:hover {
+        cursor: pointer;
     }
 </style>
