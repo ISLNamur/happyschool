@@ -247,7 +247,7 @@ export default {
                     }).map(email => email.id);
                 }
             } else {
-                // this.resetModal();
+                this.resetModal();
             }
         },
     },
