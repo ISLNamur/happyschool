@@ -80,7 +80,7 @@ class AppelsView(LoginRequiredMixin,
                  PermissionRequiredMixin,
                  TemplateView):
     template_name = "appels/appels.html"
-    permission_required = ('appels.access_appels')
+    permission_required = ('appels.access_appel')
     filters = [{'value': 'name', 'text': 'Nom'},
                {'value': 'datetime_appel', 'text': "Date d'appel"},
                {'value': 'matricule_id', 'text': 'Matricule'},
