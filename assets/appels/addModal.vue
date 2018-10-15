@@ -37,7 +37,7 @@
                         </b-col>
                         <b-col sm="4">
                             <b-form-group label="Matricule" label-for="input-matricule">
-                                <b-form-input id="input-matricule" type="text" v-model="name.matricule" readonly></b-form-input>
+                                <b-form-input id="input-matricule" type="text" v-model="form.matricule_id" readonly></b-form-input>
                             </b-form-group>
                         </b-col>
                     </b-form-row>
@@ -212,7 +212,7 @@ export default {
     watch: {
         name: function () {
             // Update form data.
-            if (this.name.matricule) {
+            if (this.name && this.name.matricule) {
                 // First update form name data.
                 this.form.name = this.name.display;
                 if (!('is_teacher' in this.name)) {
@@ -376,8 +376,9 @@ export default {
             axios.post('/annuaire/api/people/', data, token)
             .then(response => {
                 // Avoid that a previous search overwrites a faster following search results.
-                if (this.searchId !== currentSearch)
+                if (this.searchId !== currentSearch) {
                     return;
+                }
                 const options = response.data.map(p => {
                     // Format entries.
                     let entry = {display: p.last_name + " " + p.first_name};
