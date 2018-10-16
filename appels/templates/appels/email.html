@@ -22,9 +22,9 @@
           </strong>
         </font></p></td>
         <td width='36%' bgcolor='#f79646'><p align='center'><font color='#FFFFFF' size='+1' face='Calibri'>P&eacute;riode
-            du {{ appel.datetime_motif_start|date:'d/m/y à H:i' }}</font></p>
+            du {{ appel.date_motif_start}} {% if appel.time_motif_start %}à {{ appel.time_motif_start }}{% endif %}</font></p>
             <p align='center'><font color='#FFFFFF' size='+1'
-                                    face='Calibri'> au {{ appel.datetime_motif_start|date:'d/m/y à H:i' }}</font></p></td>
+                                    face='Calibri'> au {{ appel.date_motif_end }}  {% if appel.time_motif_end %}à {{ appel.time_motif_end }}{% endif %}</font></p></td>
     </tr>
     <tr>
         <td height='340' bgcolor='#948b54'>
@@ -41,10 +41,7 @@
         </td>
 
         <td bgcolor='#c2d69a'>
-            <div align='justify'><p align='center'><strong><font color='#1f497d' size='+1' face='Calibri'>Autre
-                traitement r&eacute;serv&eacute; &agrave; l'appel :</font></strong></p>
-                <p align='center'><font
-                        color='#1f497d'><em><font face='Verdana, Arial, Helvetica, sans-serif'>{{ appel.traitement }}</font></em></font></p></div>
+
         </td>
     </tr>
 
