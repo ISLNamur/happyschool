@@ -19,6 +19,7 @@
 
 from django.contrib import admin
 
-from .models import Passage
+from .models import Passage, InfirmerieSettingsModel
 
 admin.site.register(Passage)
+admin.site.register(InfirmerieSettingsModel)

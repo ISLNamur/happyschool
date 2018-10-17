@@ -11,7 +11,9 @@
 		  <p>Pour information, {{ eleve.last_name }} {{ eleve.first_name }} est sorti(e) à l'infirmerie à {{ passage.datetime_sortie }}.</p>
 		  <p>Voici les remarques de sortie laissé à ce sujet par l'équipe de l'infirmerie :</p>
 		  <p>{{ passage.remarques_sortie }}</p>
-		  <p>Vous pouvez contacter l'infirmerie par téléphone au 180 pour plus de renseignements.</p>
+		  {% if phone_number %}
+      	  <p>Vous pouvez contacter l'infirmerie par téléphone au {{ phone_number }} pour plus de renseignements.</p>
+      	  {% endif %}
 		  <p>Bonne journée,</p>
 		  <p>L'équipe de l'infirmerie.</p>
 		  </div>

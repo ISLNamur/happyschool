@@ -18,7 +18,14 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.db import models
-from core.models import StudentModel
+from django.contrib.auth.models import Group
+from core.models import StudentModel, TeachingModel
+
+
+class InfirmerieSettingsModel(models.Model):
+    teachings = models.ManyToManyField(TeachingModel, default=None)
+    all_access = models.ManyToManyField(Group, default=None, blank=True)
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
 
 
 class Passage(models.Model):
@@ -27,7 +34,7 @@ class Passage(models.Model):
     datetime_arrive = models.DateTimeField("date d'arrivée")
     datetime_sortie = models.DateTimeField("date de sortie", null=True, blank=True)
     motifs_admission = models.CharField(max_length=2000)
-    remarques_sortie = models.CharField(max_length=2000)
+    remarques_sortie = models.CharField(max_length=2000, blank=True)
 
     class Meta:
         permissions = (
