@@ -29,12 +29,15 @@ from email.mime.image import MIMEImage
 from .models import EmailModel
 
 
-def send_email(to, subject, email_template, cc=None, images=None, context=None, attachments=None):
+def send_email(to, subject, email_template, cc=None, images=None, context=None, attachments=None, use_bcc=False):
     connection = get_connection()
     html_content = render_to_string(email_template, context)
     text_content = strip_tags(html_content)
 
     email = EmailMultiAlternatives(subject, text_content, settings.EMAIL_FROM, to, cc, connection)
+    if use_bcc:
+        email.to = []
+        email.bcc = to
     email.attach_alternative(html_content, "text/html")
 
     if images:
