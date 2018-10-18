@@ -61,6 +61,7 @@ def task_send_info_email(self, instance_id):
                        email_template="dossier_eleve/email_info.html",
                        context=context,
                        attachments=instance.attachments.all(),
+                       use_bcc=True,
                        )
         except Exception as err:
             send_email(to=teachers,
@@ -68,6 +69,7 @@ def task_send_info_email(self, instance_id):
                        email_template="dossier_eleve/email_info.html",
                        context=context,
                        attachments=instance.attachments.all(),
+                       use_bcc=True,
                        )
     else:
         print(teachers)
