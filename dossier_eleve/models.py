@@ -37,6 +37,7 @@ class DossierEleveSettingsModel(models.Model):
     teachings = models.ManyToManyField(TeachingModel, default=None)
     all_access = models.ManyToManyField(Group, default=None, blank=True)
     enable_submit_sanctions = models.BooleanField(default=True)
+    use_school_email = models.BooleanField(default=False)
 
 
 class InfoEleve(models.Model):

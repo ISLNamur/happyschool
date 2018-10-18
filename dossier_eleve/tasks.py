@@ -24,13 +24,14 @@ from django.conf import settings
 from core.email import send_email
 from core.models import ResponsibleModel, EmailModel
 
-from .models import CasEleve
+from .models import CasEleve, DossierEleveSettingsModel
 
 @shared_task(bind=True)
 def task_send_info_email(self, instance_id):
     instance = CasEleve.objects.get(id=instance_id)
     student = instance.matricule
     teachers_obj = ResponsibleModel.objects.filter(classe=student.classe)
+    dossier_eleve_settings = DossierEleveSettingsModel.objects.first()
 
     teachers = []
     context = {'student': student, 'info': instance, 'info_type': instance.info.info}
@@ -43,7 +44,10 @@ def task_send_info_email(self, instance_id):
                        attachments=instance.attachments.all(),
                        )
         else:
-            teachers.append(t.email_school)
+            if dossier_eleve_settings.use_school_email:
+                teachers.append(t.email_school)
+            else:
+                teachers.append(t.email)
 
     # Add coord and educs to email list
     teachers += map(lambda e: e.email, EmailModel.objects.filter(teaching=student.teaching,
