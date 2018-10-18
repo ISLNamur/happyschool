@@ -228,6 +228,7 @@ export default {
                 datetime_sanction: null,
                 sanction_faite: null,
                 send_to_teachers: false,
+                attachments: [],
             },
             attachments: [],
             uploadedFiles: [],
@@ -336,6 +337,7 @@ export default {
             this.form.datetime_sanction = null;
             this.form.sanction_faite = null;
             this.form.send_to_teachers = false;
+            this.form.attachments = [];
         },
         addFiles: function(evt) {
             for (let a in this.attachments) {
