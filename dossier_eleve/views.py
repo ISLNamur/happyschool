@@ -214,7 +214,6 @@ class AskSanctionsView(BaseDossierEleveView):
 
 class AskSanctionsFilter(BaseFilters):
     classe = filters.CharFilter(method='classe_by')
-    activate_all_retenues = filters.CharFilter(method='activate_all_retenues_by')
     activate_not_done = filters.CharFilter(method='activate_not_done_by')
     activate_waiting = filters.CharFilter(method='activate_waiting_by')
 
@@ -241,15 +240,6 @@ class AskSanctionsFilter(BaseFilters):
                 queryset = queryset.filter(matricule__classe__letter=value[1].lower())
         return queryset
 
-    def activate_all_retenues_by(self, queryset, name, value):
-        if value == 'true':
-            retenues = CasEleve.objects.filter(
-                matricule__isnull=False,
-                sanction_decision__is_retenue=True,
-                sanction_faite=False,
-            )
-            return retenues
-
     def activate_not_done_by(self, queryset, name, value):
         if value == 'true':
             return queryset.filter(datetime_sanction__lt=timezone.now())
@@ -271,6 +261,13 @@ class AskSanctionsViewSet(BaseModelViewSet):
 
     def get_queryset(self):
         sanctions = SanctionDecisionDisciplinaire.objects.filter(can_ask=True)
+        if self.request.GET.get("activate_all_retenues", None):
+            return CasEleve.objects.filter(
+                matricule__isnull=False,
+                sanction_decision__is_retenue=True,
+                sanction_faite=False,
+            )
+
         queryset = super().get_queryset().filter(sanction_decision__in=sanctions)
         return queryset
 
