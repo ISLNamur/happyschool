@@ -39,7 +39,8 @@ def task_send_info_email(self, instance_id):
             send_email(to=[settings.EMAIL_ADMIN],
                        subject='ISLN : À propos de ' + student.fullname + " non envoyé à %s" % t.full_name,
                        email_template="dossier_eleve/email_info.html",
-                       context=context
+                       context=context,
+                       attachments=instance.attachments.all(),
                        )
         else:
             teachers.append(t.email_school)
@@ -54,20 +55,23 @@ def task_send_info_email(self, instance_id):
             send_email(to=teachers,
                        subject='ISLN : À propos de ' + student.fullname,
                        email_template="dossier_eleve/email_info.html",
-                       context=context
+                       context=context,
+                       attachments=instance.attachments.all(),
                        )
         except Exception as err:
             send_email(to=teachers,
                        subject='ISLN : À propos de ' + student.fullname,
                        email_template="dossier_eleve/email_info.html",
-                       context=context
+                       context=context,
+                       attachments=instance.attachments.all(),
                        )
     else:
         print(teachers)
         send_email(to=[settings.EMAIL_ADMIN],
                    subject='ISLN : À propos de ' + student.fullname,
                    email_template="dossier_eleve/email_info.html",
-                   context=context
+                   context=context,
+                   attachments=instance.attachments.all(),
                    )
         for t in teachers:
             print("Sending email to : " + t)

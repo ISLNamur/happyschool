@@ -183,7 +183,7 @@
                                 </b-form-checkbox>
                         </b-form-group>
                         <b-form-checkbox v-model="form.send_to_teachers" :disabled="!educ && !coord">
-                            Envoyer l'info par email aux professeurs de la classe de l'élève.
+                            Envoyer l'info par email aux professeurs de la classe de l'élève (les fichiers seront joints).
                         </b-form-checkbox>
 
                     </b-form-row>

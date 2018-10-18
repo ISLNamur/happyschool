@@ -29,7 +29,7 @@ from email.mime.image import MIMEImage
 from .models import EmailModel
 
 
-def send_email(to, subject, email_template, cc=None, images=None, context=None):
+def send_email(to, subject, email_template, cc=None, images=None, context=None, attachments=None):
     connection = get_connection()
     html_content = render_to_string(email_template, context)
     text_content = strip_tags(html_content)
@@ -47,6 +47,9 @@ def send_email(to, subject, email_template, cc=None, images=None, context=None):
             msg_img.add_header('Content-Id', '<' + image_name + '>')
             email.attach(msg_img)
             fp.close()
+    if attachments:
+        for a in attachments:
+            email.attach_file(a.attachment.path)
             
     email.send()
 
