@@ -106,9 +106,12 @@ def get_menu(user: User, active_app: str=None) -> list:
     return menu
 
 
-def check_student_photo(student):
-    photos_dir =  Path(settings.BASE_DIR).joinpath("static/photos/")
+def check_student_photo(student, copy=True):
+    photos_dir = Path(settings.BASE_DIR).joinpath("static/photos/")
     student_photo = photos_dir.joinpath(str(student.matricule) + ".jpg")
     if not student_photo.is_file():
-        # Copy unknown.jpg to [matricule].jpg
-        shutil.copy(photos_dir.joinpath("unknown.jpg"), student_photo)
+        if copy:
+            # Copy unknown.jpg to [matricule].jpg
+            shutil.copy(photos_dir.joinpath("unknown.jpg"), student_photo)
+        return False
+    return True
