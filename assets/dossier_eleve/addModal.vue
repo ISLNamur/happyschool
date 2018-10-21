@@ -178,7 +178,7 @@
                                 <b-form-checkbox-group stacked v-model="form.visible_by_groups" name="visible_by_groups" :options="visibilityOptions">
                                 </b-form-checkbox-group>
                         </b-form-group>
-                        <b-form-checkbox v-model="form.send_to_teachers" :disabled="!educ && !coord">
+                        <b-form-checkbox v-model="form.send_to_teachers" :disabled="!$store.state.canSetSanction">
                             Envoyer l'info par email aux professeurs de la classe de l'élève (les fichiers seront joints).
                         </b-form-checkbox>
 
@@ -515,14 +515,15 @@ export default {
         setVisibilityGroups: function () {
             let settings = this.$store.state.settings;
             // Set options for checkboxes.
+            let options = new Set();
             let forcedVisibility = Object.keys(groups).map(x => groups[x].id);
             for (let g in user_groups) {
                 if (user_groups[g].id == groups.sysadmin.id) {
-                    this.visibilityOptions.push({value: groups.direction.id, text: groups.direction.text});
-                    this.visibilityOptions.push({value: groups.coordonator.id, text: groups.coordonator.text});
-                    this.visibilityOptions.push({value: groups.educator.id, text: groups.educator.text});
-                    this.visibilityOptions.push({value: groups.teacher.id, text: groups.teacher.text});
-                    this.visibilityOptions.push({value: groups.pms.id, text: groups.pms.text});
+                    options.add(JSON.stringify({value: groups.direction.id, text: groups.direction.text}));
+                    options.add(JSON.stringify({value: groups.coordonator.id, text: groups.coordonator.text}));
+                    options.add(JSON.stringify({value: groups.educator.id, text: groups.educator.text}));
+                    options.add(JSON.stringify({value: groups.teacher.id, text: groups.teacher.text}));
+                    options.add(JSON.stringify({value: groups.pms.id, text: groups.pms.text}));
                     forcedVisibility = [];
                     break;
                 }
@@ -530,7 +531,7 @@ export default {
                     for (let vg in settings.dir_allow_visibility_to) {
                         for (let cg in groups) {
                             if (groups[cg].id == settings.dir_allow_visibility_to[vg]) {
-                                this.visibilityOptions.push({value: groups[cg].id, text: groups[cg].text});
+                                options.add(JSON.stringify({value: groups[cg].id, text: groups[cg].text}));
                                 break;
                             }
                         }
@@ -541,7 +542,7 @@ export default {
                     for (let vg in settings.coord_allow_visibility_to) {
                         for (let cg in groups) {
                             if (groups[cg].id == settings.coord_allow_visibility_to[vg]) {
-                                this.visibilityOptions.push({value: groups[cg].id, text: groups[cg].text});
+                                options.add(JSON.stringify({value: groups[cg].id, text: groups[cg].text}));
                                 break;
                             }
                         }
@@ -552,7 +553,7 @@ export default {
                     for (let vg in settings.educ_allow_visibility_to) {
                         for (let cg in groups) {
                             if (groups[cg].id == settings.educ_allow_visibility_to[vg]) {
-                                this.visibilityOptions.push({value: groups[cg].id, text: groups[cg].text});
+                                options.add(JSON.stringify({value: groups[cg].id, text: groups[cg].text}));
                                 break;
                             }
                         }
@@ -563,7 +564,7 @@ export default {
                     for (let vg in settings.teacher_allow_visibility_to) {
                         for (let cg in groups) {
                             if (groups[cg].id == settings.teacher_allow_visibility_to[vg]) {
-                                this.visibilityOptions.push({value: groups[cg].id, text: groups[cg].text});
+                                options.add(JSON.stringify({value: groups[cg].id, text: groups[cg].text}));
                                 break;
                             }
                         }
@@ -574,7 +575,7 @@ export default {
                     for (let vg in settings.pms_allow_visibility_to) {
                         for (let cg in groups) {
                             if (groups[cg].id == settings.pms_allow_visibility_to[vg]) {
-                                this.visibilityOptions.push({value: groups[cg].id, text: groups[cg].text});
+                                options.add(JSON.stringify({value: groups[cg].id, text: groups[cg].text}));
                                 break;
                             }
                         }
@@ -583,6 +584,7 @@ export default {
                 }
             }
             this.forcedVisibility = forcedVisibility;
+            this.visibilityOptions = Array.from(options).map(x => {return JSON.parse(x);});
         },
     },
     components: {Multiselect, quillEditor, FileUpload},
