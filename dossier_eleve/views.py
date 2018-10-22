@@ -230,7 +230,7 @@ class CasEleveViewSet(BaseModelViewSet):
 
     def force_visibility(self, serializer):
         user_groups = self.request.user.groups.all()
-        groups = get_generic_groups().values()
+        groups = get_generic_groups()
         forced_visibility = set(groups.values())
         dossier_settings = get_settings()
         if user_groups.filter(id=groups["sysadmin"].id).exists():
