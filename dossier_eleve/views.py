@@ -102,7 +102,7 @@ class BaseDossierEleveView(LoginRequiredMixin,
         groups["direction"] = {"id": groups["direction"].id, "text": "Direction"}
         groups["coordonator"] = {"id": groups["coordonator"].id, "text": "Coordonateur"}
         groups["educator"] = {"id": groups["educator"].id, "text": "Educateur"}
-        groups["teacher"] = {"id": groups["teacher"].id, "text": "Professeur"}
+        groups["teacher"] = {"id": groups["teacher"].id, "text": "Professeur (titulaire)"}
         groups["pms"] = {"id": groups["pms"].id, "text": "PMS"}
         context['groups'] = groups
         return context
