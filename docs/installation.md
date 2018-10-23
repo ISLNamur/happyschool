@@ -117,6 +117,12 @@ Pour écrire les schémas dans la base de donnée :
 python3 manage.py makemigrations
 python3 manage.py migrate
 ```
+Certaines applications ont besoin que les groupes soient déjà accessibles pour
+pouvoir fonctionner. La commande suivante permet de les générer à partir
+du fichier `happyschool/settings.py`:
+```
+python3 manage.py creategroups
+```
 Vous pouvez créer un super utilisateur en répondant aux questions posées par :
 ```
 python3 manage.py createsuperuser
@@ -241,7 +247,12 @@ Pour créer les différents schémas dans la base de donnée, l'utilitaire
 python3 manage.py makemigrations
 python3 manage.py migrate
 ```
-
+Certaines applications ont besoin que les groupes soient déjà accessibles pour
+pouvoir fonctionner. La commande suivante permet de les générer à partir
+du fichier `happyschool/settings.py`:
+```
+python3 manage.py creategroups
+```
 Ensuite récupérez les fichiers statiques (css,…) utilisés par django et ses
 applications :
 ```
