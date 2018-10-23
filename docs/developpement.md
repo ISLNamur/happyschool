@@ -339,4 +339,12 @@ et qui se rechargera à chaque modification de fichiers.
 Nous avons maintenant notre partie *back-end* prête à l'emploi, il nous reste à
 développer la partie *front-end* qui sera principalement écrite en javascript avec
 le framework [Vue.js](https://vuejs.org/v2/guide/). Pour la suite, il est conseillé
-d'avoir lu, au moins en partie, la documentation et sa philosophie.
+d'avoir lu, au moins en partie, sa [documentation](https://vuejs.org/v2/guide/) et sa philosophie.
+
+Pour notre *front-end* nous avons tout d'abord besoin d'un point d'entrée,
+une page html pour servir notre code javascript ainsi que le context de
+notre application *i.e.* ses paramètres. Pour cela, ajoutons à notre fichier
+`views.py` les éléments suivants :
+```
+
+```
