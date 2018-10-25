@@ -92,7 +92,8 @@ class BaseModelViewSet(ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     permission_classes = (DjangoModelPermissions,)
     pagination_class = PageNumberSizePagination
-    user_field = "user"
+    user_field = None
+    username_field = "user"
 
     def get_queryset(self):
         if self.request.user.groups.intersection(self.get_group_all_access()).exists():
@@ -112,9 +113,13 @@ class BaseModelViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(**{
-            self.user_field: self.request.user.username,
+            self.username_field: self.request.user.username,
             }
         )
+        if self.user_field:
+            serializer.save(**{
+                self.user_field: self.request.user,
+            })
 
     def get_group_all_access(self):
         return Group.objects.none()
