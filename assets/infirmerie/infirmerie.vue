@@ -143,6 +143,7 @@ export default {
     methods: {
         changePage: function (page) {
             this.currentPage = page;
+	    this.loadEntries();
         },
         openModal: function (sortie) {
             this.$refs.addPassageModal.show(sortie);
