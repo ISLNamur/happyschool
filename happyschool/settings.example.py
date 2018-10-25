@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     # 'dossier_eleve',
     # 'mail_notification',
     # 'mail_answer',
+    # 'schedule_change',
 ]
 
 MIDDLEWARE = [

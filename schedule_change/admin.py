@@ -19,7 +19,8 @@
 
 from django.contrib import admin
 
-from .models import ScheduleChange
+from .models import ScheduleChangeModel, ScheduleChangeSettingsModel
 
 
-admin.site.register(ScheduleChange)
+admin.site.register(ScheduleChangeModel)
+admin.site.register(ScheduleChangeSettingsModel)

@@ -17,6 +17,7 @@ module.exports = {
 		dossier_eleve: './assets/js/dossier_eleve',
 		ask_sanctions: './assets/js/ask_sanctions',
 		infirmerie: './assets/js/infirmerie',
+		schedule_change: './assets/js/schedule_change',
 	},
 
 	output: {
@@ -30,7 +31,7 @@ module.exports = {
 			name: "commons",
 			chunks: ["menu", "schedule_change", "appels", "mail_notification",
 				"mail_notification_list", "members", "mail_answer", "dossier_eleve",
-				"ask_sanctions", "annuaire", "infirmerie",
+				"ask_sanctions", "annuaire", "infirmerie", "schedule_change",
 			],
 			minChunks: 2
 		}),

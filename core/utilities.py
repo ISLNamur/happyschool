@@ -101,6 +101,14 @@ def get_menu(user: User, active_app: str=None) -> list:
             "active": active_app == "mail_notification"
         })
 
+    if "schedule_change" in settings.INSTALLED_APPS and user.has_perm('schedule_change.access_schedule_change'):
+        apps.append({
+            "app": "schedule_change",
+            "display": "Changement Horaire",
+            "url": "/schedule_change",
+            "active": active_app == "schedule_change"
+        })
+
     menu = {"full_name": user.get_full_name(), "apps": apps}
 
     return menu

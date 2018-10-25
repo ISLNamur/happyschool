@@ -18,7 +18,10 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from rest_framework import serializers, fields
-from .models import ScheduleChange, ScheduleChangeSettings
+from core.serializers import ResponsibleSerializer
+from core.models import ResponsibleModel
+
+from .models import ScheduleChangeModel, ScheduleChangeSettingsModel
 
 
 class FlatArrayField(fields.Field):
@@ -30,22 +33,27 @@ class FlatArrayField(fields.Field):
 
 
 class ScheduleChangeSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField()
-    datetime_encodage = serializers.ReadOnlyField()
+    send_email_general = serializers.BooleanField(write_only=True, required=False)
+    send_email_substitute = serializers.BooleanField(write_only=True, required=False)
     classes = FlatArrayField()
-    teachers = FlatArrayField()
-    time_start = serializers.TimeField(allow_null=True)
-    time_end = serializers.TimeField(allow_null=True)
+
+    teachers_replaced = ResponsibleSerializer(read_only=True, many=True)
+    teachers_replaced_id = serializers.PrimaryKeyRelatedField(queryset=ResponsibleModel.objects.all(),
+                                                              source='teachers_replaced', required=False,
+                                                              allow_null=True, many=True)
+
+    teachers_substitute = ResponsibleSerializer(read_only=True, many=True)
+    teachers_substitute_id = serializers.PrimaryKeyRelatedField(queryset=ResponsibleModel.objects.all(),
+                                                              source='teachers_substitute', required=False,
+                                                              allow_null=True, many=True)
 
     class Meta:
-        model = ScheduleChange
-        fields = ('id', 'date_start', 'date_end', 'time_start',
-                  'time_end', 'activity', 'classes', 'teachers', 'place', 'comment', 'user', 'datetime_encodage')
+        model = ScheduleChangeModel
+        fields = '__all__'
+        read_only_fields = ('datetime_created', 'datetime_modified', 'user', 'created_by',)
 
 
 class ScheduleChangeSettingsSerializer(serializers.ModelSerializer):
-    teaching = serializers.SlugRelatedField(many=True, read_only=True, slug_field='name')
-
     class Meta:
-        model = ScheduleChangeSettings
+        model = ScheduleChangeSettingsModel
         fields = '__all__'
