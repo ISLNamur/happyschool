@@ -41,7 +41,7 @@ def get_settings():
     settings_infirmerie = InfirmerieSettingsModel.objects.first()
     if not settings_infirmerie:
         # Create default settings.
-        settings_dossier_eleve = InfirmerieSettingsModel.objects.create().save()
+        settings_infirmerie = InfirmerieSettingsModel.objects.create().save()
 
     return settings_infirmerie
 
