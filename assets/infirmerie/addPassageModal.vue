@@ -288,7 +288,7 @@ export default {
                 query: query,
                 teachings: this.$store.state.settings.teachings,
                 people: "student",
-                check_access: true,
+                check_access: false,
             };
             axios.post('/annuaire/api/people/', data, token)
             .then(response => {
