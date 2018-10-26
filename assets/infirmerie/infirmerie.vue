@@ -114,7 +114,7 @@ export default {
             currentPage: 1,
             showFilters: false,
             filter: "",
-            ordering: "",
+            ordering: "&ordering=-datetime_arrive",
             currentEntry: null,
             entries: [],
             entriesCount: 0,
