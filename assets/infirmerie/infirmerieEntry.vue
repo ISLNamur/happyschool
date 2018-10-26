@@ -69,11 +69,11 @@ export default {
                 return this.rowData.matricule.display;
             },
             arrival: function () {
-                return Moment(this.rowData.datetime_arrive).format('hh:mm DD/MM');
+                return Moment(this.rowData.datetime_arrive).format('HH:mm DD/MM');
             },
             departure: function () {
                 if (this.rowData.datetime_sortie) {
-                    return Moment(this.rowData.datetime_sortie).format('hh:mm DD/MM');
+                    return Moment(this.rowData.datetime_sortie).format('HH:mm DD/MM');
                 } else {
                     return "";
                 }
