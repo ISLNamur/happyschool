@@ -44,11 +44,11 @@ from z3c.rml import rml2pdf
 from unidecode import unidecode
 
 from core.utilities import get_menu, check_student_photo
-from core.people import People, get_classes
+from core.people import People, get_classes, get_years
 from core.models import StudentModel, ClasseModel, TeachingModel, ResponsibleModel, AdditionalStudentInfo
 from core.serializers import StudentSerializer, ResponsibleSerializer, ClasseSerializer,\
     StudentGeneralInfoSerializer, StudentContactInfoSerializer, StudentMedicalInfoSerializer,\
-    ResponsibleSensitiveSerializer
+    ResponsibleSensitiveSerializer, YearSerializer
 
 from .models import AnnuaireSettingsModel
 from .serializers import AnnuaireSettingsSerializer
@@ -430,6 +430,21 @@ def search_classes(query, teachings, check_access, user):
     return ClasseSerializer(classes, many=True).data
 
 
+def search_years(query, teachings, check_access, user):
+    if len(query) == 0:
+        return []
+
+    if not query[0].isdigit():
+        return []
+
+    if len(query) > 1:
+        if query[1] != "é" or query[1] != "e":
+            return []
+
+    years = get_classes(teaching=teachings, check_access=check_access, user=user).distinct('year', 'teaching')
+    return YearSerializer(years.filter(year=query[0]).order_by('year'), many=True).data
+
+
 def serialize_people(person):
     if not person:
         return {}
@@ -518,9 +533,13 @@ class SearchClassesAPI(APIView):
         query = request.data.get('query', '')
         teachings = TeachingModel.objects.filter(id__in=request.data.get('teachings', []))
         check_access = request.data.get('check_access', 0) == 1
+        years = request.data.get('years', 0) == 1
 
         classes = search_classes(query=query, teachings=teachings,
                                  check_access=check_access, user=request.user)
+        if years:
+            classes = search_years(query=query, teachings=teachings,
+                                   check_access=check_access, user=request.user) + classes
         return Response(classes)
 
 
