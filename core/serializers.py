@@ -77,6 +77,29 @@ class ClasseSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class YearField(serializers.Field):
+    def to_representation(self, value):
+        out = str(value.year)
+        if value.year == 1:
+            out += "ère année"
+        else:
+            out += "ème année"
+
+        out += " – " + value.teaching.display_name
+        return out
+
+    def to_internal_value(self, data):
+        return ClasseModel.objects.filter(year=data[0], teaching__display_name=data.split(" — ")[1]).first()
+
+
+class YearSerializer(serializers.ModelSerializer):
+    display = YearField(source='*')
+
+    class Meta:
+        model = ClasseModel
+        fields = ('display',)
+
+
 class TeachingSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeachingModel
