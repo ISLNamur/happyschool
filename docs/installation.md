@@ -258,7 +258,8 @@ Vous pouvez créer un super utilisateur en répondant aux questions posées par 
 python3 manage.py createsuperuser
 ```
 Ensuite récupérez les fichiers statiques (css,…) utilisés par django et ses
-applications :
+applications. Pour cela, assurez-vous que `DEBUG = FALSE` dans votre fichier
+`happyschool/settings.py` et lancez la commande suivante :
 ```
 python3 manage.py collectstatic
 ```
