@@ -253,6 +253,10 @@ du fichier `happyschool/settings.py`:
 ```
 python3 manage.py creategroups
 ```
+Vous pouvez créer un super utilisateur en répondant aux questions posées par :
+```
+python3 manage.py createsuperuser
+```
 Ensuite récupérez les fichiers statiques (css,…) utilisés par django et ses
 applications :
 ```
