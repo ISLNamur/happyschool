@@ -47,6 +47,7 @@ class Command(BaseCommand):
                 print("teaching__name: %s, not found" % proeco["teaching_name"])
                 continue
 
+            ldap_unique_attr = proeco.get("ldap_unique_attr", None)
             # ProEco student list.
             proeco_students = reader.get_students(year=current_year, fdb_server=proeco["server"], teaching=proeco["teaching_type"])
             print("%s students found" % len(proeco_students))
@@ -54,6 +55,7 @@ class Command(BaseCommand):
             for matricule, s in proeco_students.items():
                 try:
                     student = StudentModel.objects.get(matricule=matricule)
+                    student.inactive_from = None
                 except ObjectDoesNotExist:
                     student = StudentModel(matricule=matricule)
 
@@ -81,45 +83,68 @@ class Command(BaseCommand):
 
                 info.gender = s['gender']
                 info.scholar_year = s['year']
-                # info.previous_classe = s['previous_classe'] # TODO Implement previous classe.
-                info.orientation = s['orientation']
+                try:
+                    # info.previous_classe = s['previous_classe'] # TODO Implement previous classe.
+                    info.orientation = s['orientation']
 
-                info.birth_date = date(year=int(str(s['birth_date'])[:4]),
-                                       month=int(str(s['birth_date'])[4:6]),
-                                       day=int(str(s['birth_date'])[6:]))
-                info.street = s['address']
-                info.postal_code = s['postal_code']
-                info.locality = s['city']
+                    info.birth_date = date(year=int(str(s['birth_date'])[:4]),
+                                           month=int(str(s['birth_date'])[4:6]),
+                                           day=int(str(s['birth_date'])[6:]))
+                    info.street = s['address']
+                    info.postal_code = s['postal_code']
+                    info.locality = s['city']
 
-                info.student_phone = s['student_phone']
-                info.student_mobile = s['student_phone']
-                info.student_email = s['student_email']
+                    info.student_phone = s['student_phone']
+                    info.student_mobile = s['student_phone']
+                    info.student_email = s['student_email']
 
-                info.resp_last_name = s['resp_surname']
-                info.resp_first_name = s['resp_firstname']
-                info.resp_phone = s['phone']
-                info.resp_mobile = s['gsm']
-                info.resp_email = s['email']
+                    info.resp_last_name = s['resp_surname']
+                    info.resp_first_name = s['resp_firstname']
+                    info.resp_phone = s['phone']
+                    info.resp_mobile = s['gsm']
+                    info.resp_email = s['email']
 
-                info.father_last_name = s['father_surname']
-                info.father_first_name = s['father_firstname']
-                info.father_job = s['father_job']
-                info.father_phone = s['father_phone']
-                info.father_mobile = s['father_gsm']
-                info.father_email = s['father_email']
+                    info.father_last_name = s['father_surname']
+                    info.father_first_name = s['father_firstname']
+                    info.father_job = s['father_job']
+                    info.father_phone = s['father_phone']
+                    info.father_mobile = s['father_gsm']
+                    info.father_email = s['father_email']
 
-                info.mother_last_name = s['mother_surname']
-                info.mother_first_name = s['mother_firstname']
-                info.mother_job = s['mother_job']
-                info.mother_phone = s['mother_phone']
-                info.mother_mobile = s['mother_gsm']
-                info.mother_email = s['mother_email']
+                    info.mother_last_name = s['mother_surname']
+                    info.mother_first_name = s['mother_firstname']
+                    info.mother_job = s['mother_job']
+                    info.mother_phone = s['mother_phone']
+                    info.mother_mobile = s['mother_gsm']
+                    info.mother_email = s['mother_email']
 
-                info.doctor = s['medecin']
-                info.doctor_phone = s['medecin_phone']
-                info.mutual = s['mutuelle']
-                info.mutual_number = s['mutuelle_num']
-                info.medical_information = s['medical_info']
+                    info.doctor = s['medecin']
+                    info.doctor_phone = s['medecin_phone']
+                    info.mutual = s['mutuelle']
+                    info.mutual_number = s['mutuelle_num']
+                    info.medical_information = s['medical_info']
+                except KeyError:
+                    pass
+
+                # Set username and password
+                if settings.USE_LDAP_INFO and ldap_unique_attr:
+                    from core.ldap import get_ldap_connection
+                    conn = get_ldap_connection()
+                    base_dn = settings.AUTH_LDAP_USER_SEARCH.base_dn
+                    conn.search(base_dn,
+                                '(%s=%s)' % (ldap_unique_attr["student_ldap_attr"],
+                                             getattr(student, ldap_unique_attr["student_model_attr"])),
+                                attributes='*')
+                    for r in conn.response:
+                        username = r['attributes'][settings.AUTH_LDAP_USER_ATTR_MAP["username"]]
+                        password = r['attributes'][settings.AUTH_LDAP_USER_ATTR_MAP["password"]]
+                        # Server sometimes return a list (for multiple values).
+                        if type(username) == list:
+                            username = username[0]
+                        if type(password) == list:
+                            password = password[0]
+                        info.username = username
+                        info.password = password
 
                 info.save()
 
@@ -137,7 +162,6 @@ class Command(BaseCommand):
                     s.save()
 
             # # Sync teachers.
-            ldap_unique_attr = proeco.get("ldap_unique_attr", None)
             teachers = reader.get_teachers(year=current_year,
                                            fdb_server=proeco["server"],
                                            teaching=proeco["teaching_type"])
@@ -213,6 +237,7 @@ class Command(BaseCommand):
         resp.teaching.add(teaching_model)
 
         # Check if responsible's classes already exists.
+        resp.classe.clear()
         if responsible_type == 'teacher' and "classes" in data:
             for c in data['classes']:
                 try:
@@ -223,6 +248,7 @@ class Command(BaseCommand):
                 resp.classe.add(classe)
 
         # Check if responsible's tenures already exists.
+        resp.tenure.clear()
         if responsible_type == 'teacher' and data['tenure']:
             try:
                 tenure = ClasseModel.objects.get(year=int(data['tenure'][0]), letter=data['tenure'][1].lower(),
@@ -243,7 +269,7 @@ class Command(BaseCommand):
             conn = get_ldap_connection()
             base_dn = settings.AUTH_LDAP_USER_SEARCH.base_dn
             conn.search(base_dn,
-                        '(%s=%s)' % (ldap_unique_attr["ldap_attr"], getattr(resp, ldap_unique_attr["model_attr"])),
+                        '(%s=%s)' % (ldap_unique_attr["teacher_ldap_attr"], getattr(resp, ldap_unique_attr["teacher_model_attr"])),
                         attributes='*')
             for r in conn.response:
                 username = r['attributes'][settings.AUTH_LDAP_USER_ATTR_MAP["username"]]

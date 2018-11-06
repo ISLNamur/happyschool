@@ -296,8 +296,10 @@ if SYNC_FDB:
                                           user='complex_login', password='complex_pwd'),
             # A mapping of a unique attribute shared between ProEco and a LDAP server.
             "ldap_unique_attr": {
-                "ldap_attr": "id",  # Attribute from the LDAP server.
-                "model_attr": "matricule"  # Attribute from ResponsibleModel (matricule, email,…).
+                "teacher_ldap_attr":"id", # Attribute from the LDAP server for teachers.
+                "student_ldap_attr": "matricule", # Attribute from the LDAP server for students.
+                "teacher_model_attr": "matricule", # Attribute from ResponsibleModel (matricule, email,…).
+                "student_model_attr": "matricule", # Attribute from StudentModel (matricule,…).
             }
         }
     ]
