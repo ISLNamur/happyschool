@@ -427,7 +427,7 @@ def search_classes(query, teachings, check_access, user):
     if truncate:
         classes = classes[:100]
 
-    return ClasseSerializer(classes, many=True).data
+    return ClasseSerializer(classes, many=True, show_teaching=len(teachings) > 1).data
 
 
 def search_years(query, teachings, check_access, user):
@@ -442,7 +442,8 @@ def search_years(query, teachings, check_access, user):
             return []
 
     years = get_classes(teaching=teachings, check_access=check_access, user=user).distinct('year', 'teaching')
-    return YearSerializer(years.filter(year=query[0]).order_by('year'), many=True).data
+    return YearSerializer(years.filter(year=query[0]).order_by('year'), many=True,
+                          show_teaching=len(teachings) > 1).data
 
 
 def serialize_people(person):
