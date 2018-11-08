@@ -50,9 +50,10 @@ class Command(BaseCommand):
         if options['student']:
             student_synced = set()
             processed = 0
-            with open(options['student'], newline='') as student_csv:
+            with open(options['student'], newline='', encoding="utf-8-sig") as student_csv:
                 reader = csv.reader(student_csv, )
                 header = next(reader, None)
+                print(header)
                 column_map = {j: i for i, j in enumerate(header)}
                 for row in reader:
                     matricule = row[column_map['Matric Info']]
