@@ -70,7 +70,15 @@ class StudentMedicalInfoSerializer(serializers.ModelSerializer):
 
 
 class ClasseSerializer(serializers.ModelSerializer):
-    display = serializers.CharField(source='__str__', read_only=True)
+    # Enable showing/hiding teaching
+    def __init__(self, *args, **kwargs):
+        show_teaching = kwargs.pop("show_teaching", True)
+        if not show_teaching:
+            self.source_type = "compact_str"
+        else:
+            self.source_type = "__str__"
+        super().__init__(*args, **kwargs)
+        self.fields["display"] = serializers.CharField(source=self.source_type, read_only=True)
 
     class Meta:
         model = ClasseModel
@@ -78,6 +86,10 @@ class ClasseSerializer(serializers.ModelSerializer):
 
 
 class YearField(serializers.Field):
+    def __init__(self, *args, **kwargs):
+        self.show_teaching = kwargs.pop("show_teaching", True)
+        super().__init__(*args, **kwargs)
+
     def to_representation(self, value):
         out = str(value.year)
         if value.year == 1:
@@ -85,15 +97,24 @@ class YearField(serializers.Field):
         else:
             out += "ème année"
 
-        out += " – " + value.teaching.display_name
+        if self.show_teaching:
+            out += " – " + value.teaching.display_name
         return out
 
     def to_internal_value(self, data):
-        return ClasseModel.objects.filter(year=data[0], teaching__display_name=data.split(" — ")[1]).first()
+        if self.show_teaching:
+            return ClasseModel.objects.filter(year=data[0], teaching__display_name=data.split(" — ")[1]).first()
+        else:
+            return ClasseModel.objects.filter(year=data[0]).first()
 
 
 class YearSerializer(serializers.ModelSerializer):
-    display = YearField(source='*')
+    def __init__(self, *args, **kwargs):
+        self.show_teaching = kwargs.pop("show_teaching", True)
+        super().__init__(*args, **kwargs)
+        self.fields["display"] = YearField(source='*', show_teaching=self.show_teaching)
+
+    display = YearField(source='*', show_teaching=True)
 
     class Meta:
         model = ClasseModel
