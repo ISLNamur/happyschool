@@ -30,6 +30,9 @@ from .models import EmailModel
 
 
 def send_email(to, subject, email_template, cc=None, images=None, context=None, attachments=None, use_bcc=False):
+    if not to:
+        return
+
     connection = get_connection()
     html_content = render_to_string(email_template, context)
     text_content = strip_tags(html_content)
@@ -53,8 +56,15 @@ def send_email(to, subject, email_template, cc=None, images=None, context=None, 
     if attachments:
         for a in attachments:
             email.attach_file(a.attachment.path)
-            
-    email.send()
+
+    if settings.DEBUG:
+        if settings.EMAIL_ADMIN:
+            email.to = [settings.EMAIL_ADMIN]
+            email.send()
+        else:
+            print(email.body)
+    else:
+        email.send()
 
 
 def send_email_with_mg(recipients, subject, body, from_email="Informatique ISLN <informatique@isln.be>",attachments=()):
