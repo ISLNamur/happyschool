@@ -148,7 +148,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 LOGIN_URL = 'auth'
 LOGIN_REDIRECT_URL = 'annuaire'
 
-EMAIL_ADMIN = os.getenv("EMAIL_ADMIN", "admin@example.org")
+# Mostly use in debug mode to reroute emails.
+EMAIL_ADMIN = os.getenv("EMAIL_ADMIN", "")
 
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.server.com")
 EMAIL_PORT = os.getenv("EMAIL_PORT", 465)
