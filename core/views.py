@@ -56,7 +56,7 @@ class BaseFilters(filters.FilterSet):
             filters = {}
             for f in fields:
                 is_date_or_time = f.startswith("date") or f.startswith("time")
-                filters[f] = ['exact'] if not is_date_or_time else ['lt', 'gt']
+                filters[f] = ['exact'] if not is_date_or_time else ['lt', 'gt', 'lte', 'gte']
             return filters
         fields = generate_filters(fields_to_filter)
         filter_overrides = {
