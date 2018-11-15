@@ -25,6 +25,8 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import DjangoModelPermissions, IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
+
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
 from django_filters import rest_framework as filters
@@ -81,9 +83,15 @@ class BaseFilters(filters.FilterSet):
         return queryset.filter(datetime_encodage__gt=start, datetime_encodage__lt=end)
 
 
+class PageNumberSizePagination(PageNumberPagination):
+    page_size_query_param = "page_size"
+    max_page_size = 1000
+
+
 class BaseModelViewSet(ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     permission_classes = (DjangoModelPermissions,)
+    pagination_class = PageNumberSizePagination
     user_field = "user"
 
     def get_queryset(self):
