@@ -51,7 +51,9 @@ class Command(BaseCommand):
             student_synced = set()
             processed = 0
             with open(options['student'], newline='', encoding="utf-8-sig") as student_csv:
-                reader = csv.reader(student_csv, )
+                dialect = csv.Sniffer().sniff(student_csv.read(1024))
+                student_csv.seek(0)
+                reader = csv.reader(student_csv, dialect)
                 header = next(reader, None)
                 print(header)
                 column_map = {j: i for i, j in enumerate(header)}
@@ -121,7 +123,9 @@ class Command(BaseCommand):
             teacher_synced = set()
             processed = 0
             with open(options['teacher'], newline='') as teacher_csv:
-                reader = csv.reader(teacher_csv, )
+                dialect = csv.Sniffer().sniff(teacher_csv.read(1024))
+                teacher_csv.seek(0)
+                reader = csv.reader(teacher_csv, dialect)
                 header = next(reader, None)
                 column_map = {j: i for i, j in enumerate(header)}
                 for row in reader:
