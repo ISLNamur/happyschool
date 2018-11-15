@@ -150,7 +150,7 @@ export default {
         getPdf: function (evt) {
             evt.preventDefault();
 
-            let path = '/dossier_eleve/get_pdf/?';
+            let path = '/dossier_eleve/get_pdf/?page_size=500&';
 
             path += 'letter' in this.nameClasse ? 'classe=' : 'matricule_id=';
             path += this.nameClasse.id;

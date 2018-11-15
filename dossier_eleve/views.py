@@ -311,6 +311,7 @@ class AskSanctionsFilter(BaseFilters):
         return queryset
 
 
+
 class AskSanctionsViewSet(BaseModelViewSet):
     queryset = CasEleve.objects.filter(matricule__isnull=False, sanction_decision__isnull=False, sanction_faite=False)
     serializer_class = CasEleveSerializer

@@ -120,7 +120,7 @@ export default {
                 path += '&datetime_sanction__gt=' + this.date_retenues_from;
                 path += ' 00:00&datetime_sanction__lt=' + this.date_retenues_to + ' 23:59';
             }
-            path += "&ordering=matricule__classe__year,matricule__classe__letter,matricule__last_name";
+            path += "&ordering=matricule__classe__year,matricule__classe__letter,matricule__last_name&page_size=500";
             window.open(path);
         },
     },
