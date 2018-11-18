@@ -1,0 +1,15 @@
+{% extends "core/base_vue.html" %}
+
+{% block header %}
+<title>HappySchool : Administration</title>
+{% endblock %}
+{% block content %}
+<script>
+    const current_app = "admin";
+    const menu = {{ menu|safe }};
+</script>
+<div id="vue-app"></div>
+{% load render_bundle from webpack_loader %}
+{% render_bundle 'admin' %}
+
+{% endblock %}

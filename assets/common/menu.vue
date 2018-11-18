@@ -14,6 +14,7 @@
                     <b-nav-text><strong>{{ menuInfo.full_name }}</strong></b-nav-text>
                     <b-nav-item-dropdown text="Options" right>
                         <b-dropdown-item href="/core/profil/">Profil</b-dropdown-item>
+                        <b-dropdown-item v-if="menuInfo.admin_settings" href="/core/admin/">Administration</b-dropdown-item>
                         <b-dropdown-divider></b-dropdown-divider>
                         <b-dropdown-item href="/logout/">Se déconnecter</b-dropdown-item>
                     </b-nav-item-dropdown>
@@ -27,6 +28,10 @@
 <script>
 export default {
     props: ['menu-info'],
+    data: function () {
+        return {
+        }
+    },
 }
 </script>
 

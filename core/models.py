@@ -24,6 +24,10 @@ from django.forms import model_to_dict
 from .ldap import ldap_to_django, get_django_dict_from_ldap, get_ldap_connection
 
 
+class CoreSettingsModel(models.Model):
+    remote = models.URLField('URL vers un serveur HappySchool distant', blank=True, null=True, default=None)
+
+
 class TeachingModel(models.Model):
     display_name = models.CharField(max_length=100)
     name = models.CharField(max_length=100, help_text="Nom simple pour la programmation.")

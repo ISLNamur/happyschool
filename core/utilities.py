@@ -53,7 +53,7 @@ def in_scholar_year(date):
     return False
 
 
-def get_menu(user: User, active_app: str=None) -> list:
+def get_menu(user: User, active_app: str=None) -> dict:
     apps = [{
         "app": "annuaire",
         "display": "Annuaire",
@@ -110,6 +110,7 @@ def get_menu(user: User, active_app: str=None) -> list:
         })
 
     menu = {"full_name": user.get_full_name(), "apps": apps}
+    menu['admin_settings'] = user.has_perm('core.add_coresettingsmodel')
 
     return menu
 

@@ -24,6 +24,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 
 from core.models import StudentModel, TeachingModel, ClasseModel, ResponsibleModel
+from core.adminsettings.importclass import ImportStudentCSV
+
 
 class Command(BaseCommand):
     help = 'Import a csv file for student or teachers.'
@@ -48,76 +50,17 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options['student']:
-            student_synced = set()
-            processed = 0
             with open(options['student'], newline='', encoding="utf-8-sig") as student_csv:
-                dialect = csv.Sniffer().sniff(student_csv.read(1024))
-                student_csv.seek(0)
-                reader = csv.reader(student_csv, dialect)
-                header = next(reader, None)
-                print(header)
-                column_map = {j: i for i, j in enumerate(header)}
-                for row in reader:
-                    matricule = row[column_map['Matric Info']]
-                    last_name = row[column_map['Nom Elève']]
-                    first_name = row[column_map['Prénom Elève']]
-                    year = row[column_map['Année']][0]
-                    if not year.isdigit() and len(year) > 1:
-                        year = row[column_map['Année']][1]
-
-                    classe_letter = row[column_map['Classe']].lower()
-
-                    # Ignore students with empty values.
-                    if len(year) == 0 or len(classe_letter) == 0:
-                        print("Ignore %s %s, year or classe letter wrongly formatted!" % (last_name, first_name))
-                        continue
-
-                    try:
-                        student = StudentModel.objects.get(matricule=int(matricule))
-                        student.inactive_from = None
-                    except ObjectDoesNotExist:
-                        student = StudentModel(matricule=int(matricule))
-
-                    # Check if student's teaching already exists.
-                    try:
-                        teaching = TeachingModel.objects.get(name=options["implementation"])
-                    except ObjectDoesNotExist:
-                        teaching = TeachingModel(name=options["implementation"],
-                                                 display_name=options["implementation"].title())
-                        teaching.save()
-
-                    student.teaching = teaching
-
-                    # Check if student's classe already exists.
-                    try:
-                        classe = ClasseModel.objects.get(year=int(year),
-                                                         letter=classe_letter,
-                                                         teaching=teaching)
-                    except ObjectDoesNotExist:
-                        classe = ClasseModel(year=int(year),
-                                             letter=classe_letter,
-                                             teaching=teaching)
-                        classe.save()
-
-                    student.classe = classe
-                    student.first_name = first_name
-                    student.last_name = last_name
-                    student.save()
-
-                    student_synced.add(student.matricule)
-
-                    # Print progress.
-                    processed += 1
-                    if processed % 50 == 0:
-                        print(processed)
-
-            # Remove removed students.
-            all_students = StudentModel.objects.filter(teaching__name=options["implementation"])
-            for s in all_students:
-                if s.matricule not in student_synced:
-                    s.inactive_from = timezone.make_aware(timezone.datetime.now())
-                    s.classe = None
-                    s.save()
+                try:
+                    teaching = TeachingModel.objects.get(name=options["implementation"])
+                except ObjectDoesNotExist:
+                    teaching = TeachingModel(name=options["implementation"],
+                                             display_name=options["implementation"].title())
+                column_map = {'Matric Info': 'matricule', 'Nom Elève': 'last_name',
+                              'Prénom Elève': 'first_name', 'Année': 'year',
+                              'Classe': 'classe_letter'}
+                import_student_csv = ImportStudentCSV(teaching, column_map)
+                import_student_csv.sync(student_csv, has_header=True)
 
         if options['teacher']:
             teacher_synced = set()
