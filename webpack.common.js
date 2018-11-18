@@ -1,25 +1,27 @@
 var path = require('path');
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
+const fs = require('fs');
+
+function getEntries () {
+    return fs.readdirSync('./assets/js/')
+        .filter(
+            (file) => file.match(/.*\.js$/)
+        )
+        .map((file) => {
+            return {
+                name: file.substring(0, file.length - 3),
+                path: './assets/js/' + file
+            }
+        }).reduce((memo, file) => {
+            memo[file.name] = file.path
+            return memo;
+        }, {})
+}
 
 module.exports = {
 	context: __dirname,
-	entry: {
-		babelPolyfill: "babel-polyfill",
-		menu: './assets/js/menu',
-		annuaire: './assets/js/annuaire',
-		appels: './assets/js/appels',
-		mail_notification: './assets/js/mail_notification',
-		mail_notification_list: './assets/js/mail_notification_list',
-		members: './assets/js/members',
-		mail_answer: './assets/js/mail_answer',
-		answer: './assets/js/answer',
-		dossier_eleve: './assets/js/dossier_eleve',
-		ask_sanctions: './assets/js/ask_sanctions',
-		infirmerie: './assets/js/infirmerie',
-		schedule_change: './assets/js/schedule_change',
-	},
-
+	entry: getEntries(),
 	output: {
 		path: path.resolve('./static/bundles/'),
 		filename: "[name]-[hash].js"
@@ -32,6 +34,7 @@ module.exports = {
 			chunks: ["menu", "schedule_change", "appels", "mail_notification",
 				"mail_notification_list", "members", "mail_answer", "dossier_eleve",
 				"ask_sanctions", "annuaire", "infirmerie", "schedule_change",
+				"admin",
 			],
 			minChunks: 2
 		}),
