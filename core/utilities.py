@@ -80,7 +80,7 @@ def get_menu(user: User, active_app: str=None) -> list:
     if "absence_prof" in settings.INSTALLED_APPS and user.has_perm('absence_prof.access_absences'):
         apps.append({
             "app": "absence_prof",
-            "display": "Absence Prof",
+            "display": "Absences Profs",
             "url": "/absence_prof/",
             "active": active_app == "absence_prof"
         })
@@ -88,7 +88,7 @@ def get_menu(user: User, active_app: str=None) -> list:
     if "dossier_eleve" in settings.INSTALLED_APPS and user.has_perm('dossier_eleve.access_dossier_eleve'):
         apps.append({
             "app": "dossier_eleve",
-            "display": "Dossier des élèves",
+            "display": "Dossier élèves",
             "url": "/dossier_eleve/",
             "active": active_app == "dossier_eleve"
         })
@@ -96,7 +96,7 @@ def get_menu(user: User, active_app: str=None) -> list:
     if "mail_notification" in settings.INSTALLED_APPS and user.has_perm('mail_notification.access_mail_notification'):
         apps.append({
             "app": "mail_notification",
-            "display": "Envoi d'email",
+            "display": "Email",
             "url": "/mail_notification",
             "active": active_app == "mail_notification"
         })

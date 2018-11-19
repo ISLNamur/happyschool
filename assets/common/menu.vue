@@ -11,7 +11,7 @@
                     <b-nav-item :active="app.active" :href="app.url">{{ app.display}}</b-nav-item>
                 </b-navbar-nav>
                 <b-navbar-nav class="ml-auto">
-                    <b-nav-text>Connecté en tant que <strong>{{ menuInfo.full_name }}</strong></b-nav-text>
+                    <b-nav-text><strong>{{ menuInfo.full_name }}</strong></b-nav-text>
                     <b-nav-item-dropdown text="Options" right>
                         <b-dropdown-item href="/core/profil/">Profil</b-dropdown-item>
                         <b-dropdown-divider></b-dropdown-divider>
