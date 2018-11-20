@@ -31,7 +31,7 @@
                         <div>
                             <b-button variant="outline-success" @click="openModal(false)">
                                 <icon name="plus" scale="1" color="green"></icon>
-                                Ajouter un passage
+                                Ajouter un malade
                             </b-button>
                             <b-button variant="outline-secondary" v-b-toggle.filters>
                                 <icon name="search" scale="1"></icon>

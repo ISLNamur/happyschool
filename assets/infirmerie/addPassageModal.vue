@@ -20,7 +20,7 @@
 
 <template>
 <div>
-    <b-modal size="lg" title="Passage"
+    <b-modal size="lg" title="Malade"
         ok-title="Soumettre" cancel-title="Annuler" :ok-disabled="submitting"
         @ok="addPassage" @hidden="resetModal"
         ref="addPassageModal"
@@ -131,20 +131,18 @@ import axios from 'axios';
 window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
-const nullForm = {
-    matricule_id: null,
-    name: "",
-    datetime_arrive: null,
-    datetime_sortie: null,
-    motifs_admission: "",
-    remarques_sortie: "",
-    };
-
 export default {
     props: ['entry'],
     data: function () {
         return {
-            form: nullForm,
+            form: {
+                matricule_id: null,
+                name: "",
+                datetime_arrive: null,
+                datetime_sortie: null,
+                motifs_admission: "",
+                remarques_sortie: "",
+            },
             dateArrive: null,
             timeArrive: null,
             dateSortie: null,
@@ -232,14 +230,7 @@ export default {
             this.$refs.addPassageModal.hide();
         },
         resetModal: function () {
-            this.form = nullForm;
-            this.sortie = false;
-            this.dateArrive = null;
-            this.timeArrive = null;
-            this.dateSortie = null;
-            this.timeSortie = null;
-            this.name = null;
-            this.submitting = false;
+            Object.assign(this.$data, this.$options.data.call(this));
 
             this.$emit('reset');
         },
