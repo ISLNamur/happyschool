@@ -30,6 +30,7 @@ from .models import EmailModel
 
 
 def send_email(to, subject, email_template, cc=None, images=None, context=None, attachments=None, use_bcc=False):
+    to = list(to)
     if not to:
         return
 
