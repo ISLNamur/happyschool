@@ -180,6 +180,7 @@ class CasEleveViewSet(BaseModelViewSet):
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     filter_class = CasEleveFilter
     ordering_fields = ('datetime_encodage', "matricule__last_name")
+    user_field = 'created_by'
 
     def get_group_all_access(self):
         return get_settings().all_access.all()
