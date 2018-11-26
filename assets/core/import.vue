@@ -23,12 +23,14 @@
         <b-row>
             <h5>Format des champs</h5>
             <ul>
-                <li><strong>Année : </strong> L'année d'étude doit être un chiffre, regarde les deux premiers caractères. Par exemple, 2C ou P2 donneront 2.</li>
-                <li><strong>Classe : </strong> La classe peut être un ou plusieurs caractères. La classe sera automatiquement mis en minuscule dans la base de donnée, mais sera affichée en majustcule dans HappySchool.</li>
+                <li><strong>Année : </strong> L'année d'étude doit être un chiffre, seuls les deux premiers caractères sont considérés.
+                Par exemple, 2C ou P2 seront considérés comme la deuxième année.</li>
+                <li><strong>Classe : </strong> La classe peut être un ou plusieurs caractères. La classe sera automatiquement mis en minuscule dans la base de donnée,
+                mais sera affichée en majustcule dans HappySchool.</li>
                 <li><strong>Date de naissance :</strong> La date de naissance doit être sous la forme yyyymmdd. Par exemple, 20020322 donnera le 22 mars 2002.</li>
             </ul>
-            <b-alert show variant="warning">Le fichier csv soumit doit contenir l'entièreté des étudiants de l'établissement. Ceux qui ne sont pas présent (identifié par le matricule)
-                seront considérés comme inactifs (anciens) et pourront donc par la suite être réintégrés, par exemple dans un autre établissement.</b-alert>
+            <b-alert show variant="warning">Le fichier csv soumit doit contenir l'entièreté des étudiants de l'établissement. Ceux qui ne sont pas présent (identifié
+                par le matricule) seront considérés comme inactifs (anciens) et pourront donc par la suite être réintégrés, par exemple dans un autre établissement.</b-alert>
         </b-row>
         <b-row>
             <b-form>
