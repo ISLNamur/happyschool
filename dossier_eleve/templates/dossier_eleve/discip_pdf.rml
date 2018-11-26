@@ -41,7 +41,7 @@
             <para style="head_info" leftIndent="20">
             Année scolaire : <strong>{{ student.additionalstudentinfo.scholar_year }}-{{ student.additionalstudentinfo.scholar_year|add:"1" }}</strong>               
             Classe : {{ student.classe.compact_str|upper }}               
-            Classe précédente :  {% if student.previous_classe %}{{ student.previous_classe|upper }}{% else %}—{% endif %}           
+            Classe précédente :  {% if student.additionalstudentinfo.previous_classe %}{{ student.additionalstudentinfo.previous_classe|upper }}{% else %}—{% endif %}           
             {% if student.orientation %}Orientation : {{ student.additionalstudentinfo.orientation }}{% endif %}           
             Titulaire : {{ tenure }}
             </para>
