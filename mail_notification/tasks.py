@@ -56,7 +56,7 @@ def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=
     # Get recipients.
     recipients = [(email_notif.email_from.split("<")[1][:-1], None)] if "<" in email_notif.email_from else [email_notif.email_from]
     recipients += list(get_emails(email_notif.email_to, to_type, teaching, responsibles=responsibles,
-                                  template=email_notif.answers))
+                                  template=email_notif.answers, all_parents=True))
     recipients += [(settings.EMAIL_ADMIN, None), ('directeur@isln.be', None), ('sous-directeur@isln.be', None)]
     if settings.DEBUG:
         print(recipients)
@@ -91,12 +91,14 @@ def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=
                     if settings.DEBUG:
                         print("Error with %s" % r)
                         print(response.json)
-                    email_notif.errors = "Error with %s: %s" % (r, response.json)
+                        email_notif.errors += "Error w/ %s: %s |" % (r, response.status_code)
+                        if len(email_notif.errors) > 9000:
+                            break
                     break
 
                 else:
                     one_ok = True
-            time.sleep(1)
+            time.sleep(2)
         if one_ok:
             email_notif.errors = email_notif.errors.replace("Submitting.", "")
             email_notif.errors += "Sent."
@@ -234,17 +236,19 @@ def get_emails(email_to: list, to_type: str, teaching: str="secondaire", respons
         # Remove duplicates.
         students = set(students)
 
-        def get_parents_email(student):
+        def get_parents_email(student, to_resp=False):
             info = student.additionalstudentinfo
-            parents_email = {info.resp_email}
+            parents_email = set()
+            if to_resp:
+                parents_email.add(info.resp_email)
             if all_parents:
                 parents_email = parents_email.union({
                     info.mother_email,
                     info.father_email
                 })
 
-            # Remove None values.
-            return list(filter(lambda e: e is not None, parents_email))
+            # Remove None and empty values.
+            return list(filter(lambda e: e is not None and e is not "", parents_email))
 
         # Attach for each student an AnswerModel (template case).
         if template:
