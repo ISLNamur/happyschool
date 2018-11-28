@@ -18,6 +18,7 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 import json
+import requests
 
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
@@ -28,7 +29,7 @@ from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 
 from django_filters import rest_framework as filters
 
-from core.views import BaseModelViewSet, BaseFilters
+from core.views import BaseModelViewSet, BaseFilters, get_core_settings
 from core.utilities import get_menu
 from core.email import send_email
 
@@ -38,6 +39,8 @@ from .serializers import ScheduleChangeSettingsSerializer, ScheduleChangeSeriali
 
 def get_settings():
     settings_schedule = ScheduleChangeSettingsModel.objects.first()
+    # Ensure core settings is created.
+    get_core_settings()
     if not settings_schedule:
         # Create default settings.
         settings_schedule = ScheduleChangeSettingsModel.objects.create().save()
@@ -87,7 +90,8 @@ class ScheduleChangeViewSet(BaseModelViewSet):
         super().perform_create(serializer)
         change = serializer.save()
         self.notify_email(change, email_general, email_substitute, "Nouveau changement")
-
+        if get_settings().copy_to_remote:
+            self.copy_to_remote(requests.post, change.id)
 
     def perform_update(self, serializer):
         email_general = serializer.validated_data.pop('send_email_general')
@@ -95,6 +99,27 @@ class ScheduleChangeViewSet(BaseModelViewSet):
         super().perform_update(serializer)
         change = serializer.save()
         self.notify_email(change, email_general, email_substitute, "Changement modifié")
+        if get_settings().copy_to_remote:
+            self.copy_to_remote(requests.put, change.id)
+
+    def perform_destroy(self, instance):
+        if get_settings().copy_to_remote:
+            self.copy_to_remote(requests.delete, instance.id)
+        super().perform_destroy(instance)
+
+    def copy_to_remote(self, method, id):
+        core_settings = get_core_settings()
+        remote_url = core_settings.remote
+        # Ensure a slash at the end.
+        if remote_url[-1] != '/':
+            remote_url += '/'
+        remote_url += 'schedule_change/api/schedule_change/'
+        if method != requests.post:
+            remote_url += '%i/' % id
+        remote_token = core_settings.remote_token
+        headers = {'Authorization': 'Token %s' % remote_token}
+        self.request.data['id'] = id
+        method(remote_url, headers=headers, json=self.request.data)
 
     def notify_email(self, change, email_general, email_substitute, title):
         if email_general:

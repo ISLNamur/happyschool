@@ -38,14 +38,16 @@ class ScheduleChangeSerializer(serializers.ModelSerializer):
     classes = FlatArrayField()
 
     teachers_replaced = ResponsibleSerializer(read_only=True, many=True)
-    teachers_replaced_id = serializers.PrimaryKeyRelatedField(queryset=ResponsibleModel.objects.all(),
-                                                              source='teachers_replaced', required=False,
-                                                              allow_null=True, many=True)
+    teachers_replaced_id = serializers.SlugRelatedField(queryset=ResponsibleModel.objects.all(),
+                                                        source='teachers_replaced', required=False,
+                                                        allow_null=True, many=True,
+                                                        slug_field='matricule')
 
     teachers_substitute = ResponsibleSerializer(read_only=True, many=True)
-    teachers_substitute_id = serializers.PrimaryKeyRelatedField(queryset=ResponsibleModel.objects.all(),
-                                                              source='teachers_substitute', required=False,
-                                                              allow_null=True, many=True)
+    teachers_substitute_id = serializers.SlugRelatedField(queryset=ResponsibleModel.objects.all(),
+                                                          source='teachers_substitute', required=False,
+                                                          allow_null=True, many=True,
+                                                          slug_field='matricule')
 
     class Meta:
         model = ScheduleChangeModel

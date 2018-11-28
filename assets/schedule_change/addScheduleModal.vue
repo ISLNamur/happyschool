@@ -104,7 +104,7 @@
                     deselect-label="Cliquer dessus pour enlever"
                     v-model="form.teachers_replaced"
                     label="display"
-                    track-by="pk"
+                    track-by="matricule"
                     >
                     <span slot="noResult">Aucun professeur trouvé.</span>
                 </multiselect>
@@ -125,7 +125,7 @@
                     deselect-label="Cliquer dessus pour enlever"
                     v-model="form.teachers_substitute"
                     label="display"
-                    track-by="pk"
+                    track-by="matricule"
                     >
                     <span slot="noResult">Aucun professeur trouvé.</span>
                 </multiselect>
@@ -334,8 +334,8 @@ export default {
             let modal = this;
             // Copy form data.
             let data = Object.assign({}, this.form);
-            data.teachers_replaced_id = data.teachers_replaced.map(t => t.pk);
-            data.teachers_substitute_id = data.teachers_substitute.map(t => t.pk);
+            data.teachers_replaced_id = data.teachers_replaced.map(t => t.matricule);
+            data.teachers_substitute_id = data.teachers_substitute.map(t => t.matricule);
             // Send data.
             const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
             let path = '/schedule_change/api/schedule_change/';

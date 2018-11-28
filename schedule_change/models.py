@@ -27,6 +27,10 @@ class ScheduleChangeSettingsModel(models.Model):
     all_access = models.ManyToManyField(Group, default=None, blank=True)
     notify_by_email_to = models.ManyToManyField(EmailModel)
     email_school = models.BooleanField(default=False)
+    copy_to_remote = models.BooleanField(default=False, help_text="Copie toutes les entrées créées "
+                                                                  "sur le serveur distant (remote)."
+                                                                  "Le serveur distant doit être"
+                                                                  "configuré dans CoreSettingsModel")
 
 
 class ScheduleChangeModel(models.Model):
