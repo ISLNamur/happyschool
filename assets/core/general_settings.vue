@@ -21,7 +21,7 @@
     <div>
         <h4>Paramètres généraux</h4>
         <b-row>
-            <p>Pour le moment, HappySchool utilise principalement les pages d'administrations fournies par django. Petit à petit, la plupart des paramètres seront accessible directement par cet interface.</p>
+            <p>Pour le moment, HappySchool utilise principalement les pages d'administrations fournies par django.</p>
             <p><b-button href="/admin">Accèder à l'interface d'administration de django</b-button></p>
         </b-row>            
     </div>
