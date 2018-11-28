@@ -37,12 +37,21 @@ from django.core.exceptions import ObjectDoesNotExist, FieldError
 from django.views.generic import TemplateView
 from django.contrib.auth.models import Group
 
-from core.models import ResponsibleModel, TeachingModel, EmailModel
+from core.models import ResponsibleModel, TeachingModel, EmailModel, CoreSettingsModel
 from core.people import get_classes
 from core.permissions import IsSecretaryPermission
 from core.serializers import ResponsibleSensitiveSerializer, TeachingSerializer,\
     EmailSerializer
 from core.utilities import get_scholar_year, get_menu
+
+
+def get_core_settings():
+    settings_core = CoreSettingsModel.objects.first()
+    if not settings_core:
+        # Create default settings.
+        settings_core = CoreSettingsModel.objects.create().save()
+
+    return settings_core
 
 
 class BaseFilters(filters.FilterSet):
