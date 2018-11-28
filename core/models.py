@@ -25,7 +25,10 @@ from .ldap import ldap_to_django, get_django_dict_from_ldap, get_ldap_connection
 
 
 class CoreSettingsModel(models.Model):
-    remote = models.URLField('URL vers un serveur HappySchool distant', blank=True, null=True, default=None)
+    remote = models.URLField("Remote URL", help_text='URL vers un serveur HappySchool distant',
+                             blank=True, null=True, default=None)
+    remote_token = models.CharField(max_length=50, help_text="Token généré sur le serveur distant",
+                                    blank=True, null=True, default=None)
 
 
 class TeachingModel(models.Model):
