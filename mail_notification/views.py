@@ -153,6 +153,7 @@ class SendEmailsView(APIView):
     def post(self, request, *args, **kw):
         email_to_sent = EmailNotification()
         email_to_sent.email_from = request.data.get('email_from')
+        email_to_sent.to_type = request.data.get('to_type')
         email_to_sent.email_to = request.data.get('email_to')  # Come as  ['group1,group2,group3'].
         email_to_sent.subject = request.data.get('subject')
         email_to_sent.body = request.data.get('email_content')
@@ -180,7 +181,7 @@ class SendEmailsView(APIView):
 
         email_to_sent.errors = "Prepared."
 
-        to_type = request.data.get('to_type')
+
         send_type = request.data.get('send_type')
         responsibles = request.data.get('responsibles', 'true') == 'true'
 
@@ -189,7 +190,7 @@ class SendEmailsView(APIView):
 
         context = {
             'body': email_to_sent.body,
-            'to_teachers': to_type == 'teachers',
+            'to_teachers': email_to_sent.to_type == 'teachers',
         }
         if email_to_sent.attachments.all():
             html_files = "<ul>"
@@ -213,8 +214,6 @@ class SendEmailsView(APIView):
             countdown=5,
             kwargs={
             'pk': email_to_sent.pk,
-            'to_type': to_type,
-            'teaching': email_to_sent.teaching,
             'responsibles': responsibles,
         })
         return Response(status=status.HTTP_201_CREATED)

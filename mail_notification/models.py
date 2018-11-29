@@ -24,6 +24,7 @@ from time import strftime
 from django.db import models
 from django.contrib.auth.models import Group
 
+from core.models import EmailModel
 from mail_answer.models import MailTemplateModel
 
 
@@ -35,6 +36,10 @@ def unique_file_name(instance, filename):
 
 class EmailNotificationSettingsModel(models.Model):
     use_email_school = models.BooleanField(default=False)
+    add_cc_parents = models.ManyToManyField(EmailModel, related_name="add_cc_parents",
+                                            help_text="When sending an email to parents send a copy to those emails.")
+    add_cc_teachers = models.ManyToManyField(EmailModel, related_name="add_cc_teachers",
+                                             help_text="When sending an email to teachers send a copy to those emails.")
 
 
 class EmailAttachment(models.Model):
@@ -60,6 +65,7 @@ class EmailTag(models.Model):
 
 class EmailNotification(models.Model):
     email_to = models.CharField(max_length=500)
+    to_type = models.CharField(max_length=50, default="")
     email_from = models.EmailField()
     subject = models.CharField(max_length=200)
     body = models.TextField()

@@ -34,7 +34,6 @@ from mail_answer.models import MailAnswerSettingsModel as AnswersSettings
 from mail_answer.tasks import task_sync_mail_answers
 
 
-
 def get_settings():
     settings_email_notif = EmailNotificationSettingsModel.objects.first()
     if not settings_email_notif:
@@ -45,7 +44,7 @@ def get_settings():
 
 
 @shared_task(bind=True)
-def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=True, responsibles=True):
+def task_send_emails_notif(self, pk, one_by_one=True, responsibles=True):
     """ Send emails """
     # First sync media between local and distant server
     subprocess.run(settings.EMAIL_ATTACHMENTS_SYNC['rsync_command'], shell=True)
@@ -55,9 +54,17 @@ def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=
 
     # Get recipients.
     recipients = [(email_notif.email_from.split("<")[1][:-1], None)] if "<" in email_notif.email_from else [email_notif.email_from]
-    recipients += list(get_emails(email_notif.email_to, to_type, teaching, responsibles=responsibles,
+    recipients += list(get_emails(email_notif.email_to, email_notif.to_type, email_notif.teaching, responsibles=responsibles,
                                   template=email_notif.answers, all_parents=True))
-    recipients += [(settings.EMAIL_ADMIN, None), ('directeur@isln.be', None), ('sous-directeur@isln.be', None)]
+
+    # Add a carbon copy to recipients.
+    settings_email_notif = get_settings()
+    if email_notif.to_type == 'teachers':
+        recipients += list(map(lambda e: (e.email, None), settings_email_notif.add_cc_teachers.all()))
+    elif email_notif.to_type == 'parents':
+        recipients += list(map(lambda e: (e.email, None), settings_email_notif.add_cc_parents.all()))
+
+    # recipients += [(settings.EMAIL_ADMIN, None), ('directeur@isln.be', None), ('sous-directeur@isln.be', None)]
     if settings.DEBUG:
         print(recipients)
 
@@ -107,7 +114,7 @@ def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=
         if settings.DEBUG:
             send_email_with_sp([settings.EMAIL_ADMIN],
                                email_notif.subject,
-                               "<html>%s</html>" % email_notif.body,
+                               "<html>%s<br>%s</html>" % (email_notif.body, recipients),
                                from_email=email_notif.email_from,
                                attachments=attachments)
     else:
@@ -125,7 +132,7 @@ def task_send_emails_notif(self, pk, to_type, teaching="secondaire", one_by_one=
     email_notif.save()
 
 
-def get_emails(email_to: list, to_type: str, teaching: str="secondaire", responsibles: bool=True,
+def get_emails(email_to: list, to_type: str, teaching: str, responsibles: bool=True,
                template: MailTemplateModel=None, all_parents: bool=False) -> list():
     """
         Retrieve emails of the student's parent or teachers and responsibles.
