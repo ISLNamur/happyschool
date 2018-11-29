@@ -23,6 +23,8 @@ from rest_framework.routers import DefaultRouter
 
 from . import views
 
+app_name = 'schedule_change'
+
 urlpatterns = [
     path('', views.ScheduleChangeView.as_view(), name="schedule_change"),
 ]

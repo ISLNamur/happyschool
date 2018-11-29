@@ -28,4 +28,5 @@ def installed_apps(request):
         'app_dossier_eleve': 'dossier_eleve' in settings.INSTALLED_APPS,
         'app_appels': 'appels' in settings.INSTALLED_APPS,
         'app_mail_notification': 'mail_notification' in settings.INSTALLED_APPS,
+        'app_schedule_change': 'schedule_change' in settings.INSTALLED_APPS,
     }
