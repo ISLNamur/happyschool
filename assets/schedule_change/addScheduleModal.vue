@@ -302,6 +302,7 @@ export default {
                 teachings: this.$store.state.settings.teachings,
                 people: "responsible",
                 check_access: false,
+                active: false,
             };
             axios.post('/annuaire/api/people/', data, token)
             .then(response => {
