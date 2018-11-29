@@ -133,7 +133,7 @@ class ResponsibleModel(models.Model):
     last_name = models.CharField(max_length=200)
     matricule = models.BigIntegerField(blank=True, null=True, unique=True)
     teaching = models.ManyToManyField(TeachingModel, blank=True)
-    email = models.EmailField()
+    email = models.EmailField(blank=True, null=True)
     email_school = models.EmailField(blank=True, null=True)
     classe = models.ManyToManyField(ClasseModel, default=None, blank=True)
     tenure = models.ManyToManyField(ClasseModel,
