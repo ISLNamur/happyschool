@@ -59,17 +59,28 @@
             <div v-for="(group, index) in entriesGrouped"
                 v-bind:key="index"
                 >
-                <hr><h5 class="day">{{ calendar(group.day) }}</h5> <hr>
-                <schedule-change-entry
-                    v-for="entry in group.entries"
-                    v-bind:key="entry.id"
-                    v-bind:row-data="entry"
-                    @delete="askDelete(entry)"
-                    @edit="editEntry(entry, false)"
-                    @copy="editEntry(entry, true)"
-                    @showInfo="showInfo(entry)"
-                    >
-                </schedule-change-entry>
+                <hr><h5 class="day">{{ calendar(group.day) }}</h5>
+                <b-card class="d-none d-md-block d-lg-block d-xl-block" no-body>
+                    <b-row class="text-center">
+                        <b-col md="2"><strong>Changement</strong></b-col>
+                        <b-col md="2"><strong>Classes</strong></b-col>
+                        <b-col md="3"><strong>Absent(s)/indisponible(s)</strong></b-col>
+                    </b-row>
+                </b-card>
+                <div v-for="(subGroup, idx) in group.sameDayEntries" v-bind:key="idx">
+                    <hr class="smallhr"><strong>{{ time(subGroup) }}</strong>
+                    <hr class="smallhr">
+                    <schedule-change-entry
+                        v-for="entry in subGroup.sameHourEntries"
+                        v-bind:key="entry.id"
+                        v-bind:row-data="entry"
+                        @delete="askDelete(entry)"
+                        @edit="editEntry(entry, false)"
+                        @copy="editEntry(entry, true)"
+                        @showInfo="showInfo(entry)"
+                        >
+                    </schedule-change-entry>
+                </div>
             </div>
         </b-container>
         <b-modal ref="deleteModal" cancel-title="Annuler" hide-header centered
@@ -139,8 +150,34 @@ export default {
         calendar: function(date) {
             return Moment(date).calendar().split(" à")[0];
         },
+        time: function (entry) {
+            let result = "";
+            if (entry.time_start) {
+                result += entry.time_start.slice(0,5);
+
+                if (entry.time_end) {
+                    result += " à ";
+                } else {
+                    result = "À partir de " + result;
+                }
+            }
+
+            if (entry.time_end) {
+                if (!entry.time_start) {
+                    result += "Jusqu'à "
+                }
+                result += entry.time_end.slice(0,5);
+            }
+
+            if (result === "") {
+                result = "Toute la journée";
+            }
+
+            return result;
+        },
         changePage: function (page) {
             this.currentPage = page;
+            this.loadEntries();
         },
         openModal: function () {
             this.$refs.addScheduleModal.show();
@@ -196,7 +233,12 @@ export default {
                     return;
                 }
 
-                this.entriesGrouped = [{entries: [this.entries[0]], day: this.entries[0].date_change}];
+                this.entriesGrouped = [
+                    {sameDayEntries: [
+                        {sameHourEntries: [
+                            this.entries[0]], time_start: this.entries[0].time_start, time_end: this.entries[0].time_end},
+                            ], day: this.entries[0].date_change}
+                ];
                 if (this.entriesCount == 1) {
                     this.loaded = true;
                     return;
@@ -204,9 +246,21 @@ export default {
 
                 for (let e = 1; e < this.entries.length; e++) {
                     if (this.entriesGrouped[this.entriesGrouped.length - 1].day == this.entries[e].date_change) {
-                        this.entriesGrouped[this.entriesGrouped.length - 1].entries.push(this.entries[e]);
+                        let sameDay = this.entriesGrouped[this.entriesGrouped.length - 1];
+                        let entryCount = sameDay.sameDayEntries.length;
+                        if (sameDay.sameDayEntries[entryCount - 1].time_start == this.entries[e].time_start
+                            && sameDay.sameDayEntries[entryCount - 1].time_end == this.entries[e].time_end) {
+                            sameDay.sameDayEntries[entryCount - 1].sameHourEntries.push(this.entries[e]);
+                        } else {
+                            sameDay.sameDayEntries.push({sameHourEntries: [
+                            this.entries[e]], time_start: this.entries[e].time_start, time_end: this.entries[e].time_end});
+                        }
                     } else {
-                        this.entriesGrouped.push({entries: [this.entries[e]], day: this.entries[e].date_change});
+                        this.entriesGrouped.push({sameDayEntries: [
+                            {sameHourEntries: [
+                                this.entries[e]
+                                ], time_start: this.entries[e].time_start, time_end: this.entries[e].time_end},
+                        ], day: this.entries[e].date_change});
                     }
                 }
                 
@@ -242,5 +296,10 @@ export default {
 
 .day {
     text-align: center;
+}
+
+.smallhr {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 </style>
