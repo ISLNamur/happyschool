@@ -144,7 +144,7 @@ class ProfilView(LoginRequiredMixin, TemplateView):
 class MembersAPI(ModelViewSet):
     queryset = ResponsibleModel.objects.filter(is_teacher=False, is_educator=False)
     serializer_class = ResponsibleSensitiveSerializer
-    permission_classes = (IsAuthenticated, IsSecretaryPermission)
+    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
 
     def get_queryset(self):
         person_type = self.request.GET.get('person_type', None)
