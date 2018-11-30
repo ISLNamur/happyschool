@@ -180,10 +180,10 @@ class ScholarYearAPI(APIView):
         return Response(options)
 
 
-class TeachingViewSet(ReadOnlyModelViewSet):
+class TeachingViewSet(ModelViewSet):
     queryset = TeachingModel.objects.all()
     serializer_class = TeachingSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, DjangoModelPermissions)
 
 
 class EmailViewSet(ReadOnlyModelViewSet):
