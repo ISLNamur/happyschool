@@ -4,7 +4,7 @@ var BundleTracker = require('webpack-bundle-tracker');
 const fs = require('fs');
 
 function getEntries () {
-    return fs.readdirSync('./assets/js/')
+    let apps = fs.readdirSync('./assets/js/')
         .filter(
             (file) => file.match(/.*\.js$/)
         )
@@ -14,9 +14,11 @@ function getEntries () {
                 path: './assets/js/' + file
             }
         }).reduce((memo, file) => {
-            memo[file.name] = file.path
+            memo[file.name] = [file.path]
             return memo;
-        }, {})
+		}, {})
+	apps['polyfill'] = "@babel/polyfill";
+	return apps;
 }
 
 module.exports = {
@@ -31,9 +33,9 @@ module.exports = {
 		new BundleTracker({filename: './webpack-stats.json'}),
 		new webpack.optimize.CommonsChunkPlugin({
 			name: "commons",
-			chunks: ["menu", "schedule_change", "appels", "mail_notification",
+			chunks: ["menu", "annuaire", "schedule_change", "appels", "mail_notification",
 				"mail_notification_list", "members", "mail_answer", "dossier_eleve",
-				"ask_sanctions", "annuaire", "infirmerie", "schedule_change",
+				"ask_sanctions", "infirmerie", "schedule_change",
 				"admin",
 			],
 			minChunks: 2

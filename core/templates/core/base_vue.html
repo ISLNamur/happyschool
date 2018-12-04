@@ -17,6 +17,7 @@
             const user_groups = {% list_user_groups %};
             {% endautoescape %}
         </script>
+        {% render_bundle 'polyfill' %}
         {% render_bundle 'commons' %}
         {% block content %}{% endblock %}
     </body>
