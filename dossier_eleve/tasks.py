@@ -38,7 +38,7 @@ def task_send_info_email(self, instance_id):
     for t in teachers_obj:
         if not t.email_school:
             send_email(to=[settings.EMAIL_ADMIN],
-                       subject='ISLN : À propos de ' + student.fullname + " non envoyé à %s" % t.full_name,
+                       subject='ISLN : À propos de ' + student.fullname + " non envoyé à %s" % t.fullname,
                        email_template="dossier_eleve/email_info.html",
                        context=context,
                        attachments=instance.attachments.all(),
