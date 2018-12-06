@@ -18,12 +18,14 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 import os, requests
+import io
 
 from django.core.mail import EmailMultiAlternatives, get_connection
 # from django.core.mail.backends.smtp import
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
+from django.db.models.fields.files import FieldFile
 
 from email.mime.image import MIMEImage
 from .models import EmailModel
@@ -56,7 +58,10 @@ def send_email(to, subject, email_template, cc=None, images=None, context=None, 
             fp.close()
     if attachments:
         for a in attachments:
-            email.attach_file(a.attachment.path)
+            if isinstance(a, dict):
+                email.attach(filename=a['filename'], content=a['file'])
+            elif isinstance(a.attachment, FieldFile):
+                email.attach_file(a.attachment.path)
 
     if settings.DEBUG:
         if settings.EMAIL_ADMIN:
