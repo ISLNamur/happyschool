@@ -17,20 +17,30 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.urls import path
+from asgiref.sync import async_to_sync
+from channels.generic.websocket import JsonWebsocketConsumer
 
-from rest_framework.routers import DefaultRouter
 
-from . import views
+class ExportSummaryConsumer(JsonWebsocketConsumer):
 
-app_name = 'schedule_change'
+    def connect(self):
+        celery_id = self.scope['url_route']['kwargs']['celery_id']
+        self.group_name = 'schedule_change_export_summary_%s' % celery_id
 
-urlpatterns = [
-    path('', views.ScheduleChangeView.as_view(), name="schedule_change"),
-    path('api/summary_pdf/', views.SummaryPDFAPI.as_view()),
-]
+        async_to_sync(self.channel_layer.group_add)(
+            self.group_name,
+            self.channel_name
+        )
+        self.accept()
 
-router = DefaultRouter()
-router.register(r'api/schedule_change', views.ScheduleChangeViewSet)
+    def disconnect(self, close_code):
+        async_to_sync(self.channel_layer.group_discard)(
+            self.group_name,
+            self.channel_name
+        )
 
-urlpatterns += router.urls
+    def schedule_export_summary(self, event):
+        self.send_json({
+            "task": event["task"],
+            "file_url": event["file_url"],
+        })

@@ -22,10 +22,14 @@ import requests
 
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.http import HttpResponse
 from django.utils import timezone
 from django.db.models import F
 
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.status import HTTP_202_ACCEPTED
 
 from django_filters import rest_framework as filters
 
@@ -34,6 +38,7 @@ from core.utilities import get_menu
 from core.email import send_email
 
 from .models import ScheduleChangeSettingsModel, ScheduleChangeModel
+from .tasks import task_export
 from .serializers import ScheduleChangeSettingsSerializer, ScheduleChangeSerializer
 
 
@@ -53,6 +58,7 @@ class ScheduleChangeView(LoginRequiredMixin, PermissionRequiredMixin, TemplateVi
     permission_required = ('schedule_change.access_schedule_change')
     filters = [{'value': 'activate_ongoing', 'text': 'Prochains changements'},
                {'value': 'date_change', 'text': "Date du changement"},
+               {'value': 'activate_has_classe', 'text': 'Concerne une classe'},
                ]
 
     def get_context_data(self, **kwargs):
@@ -61,21 +67,24 @@ class ScheduleChangeView(LoginRequiredMixin, PermissionRequiredMixin, TemplateVi
         context['filters'] = json.dumps(self.filters)
         context['settings'] = json.dumps((ScheduleChangeSettingsSerializer(get_settings()).data))
         context['can_add'] = json.dumps(self.request.user.has_perm('schedule_change.add_schedulechangemodel'))
-
         return context
 
 
 class ScheduleChangeFilter(BaseFilters):
     activate_ongoing = filters.BooleanFilter(method="activate_ongoing_by")
+    activate_has_classe = filters.BooleanFilter(method="activate_has_classe_by")
 
     class Meta:
-        fields_to_filter = ('date_change', 'activate_ongoing')
+        fields_to_filter = ('date_change', 'activate_ongoing', 'activate_has_classe')
         model = ScheduleChangeModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
 
     def activate_ongoing_by(self, queryset, name, value):
         return queryset.filter(date_change__gte=timezone.now())
+
+    def activate_has_classe_by(self, queryset, name, value):
+        return queryset.exclude(classes__exact="")
 
 
 class ScheduleChangeViewSet(BaseModelViewSet):
@@ -140,3 +149,20 @@ class ScheduleChangeViewSet(BaseModelViewSet):
 
     def get_group_all_access(self):
         return get_settings().all_access.all()
+
+
+class SummaryPDFAPI(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, format=None) -> Response:
+        view_set = ScheduleChangeViewSet.as_view({'get': 'list'})
+        results = view_set(request._request).data['results']
+        changes = [c['id'] for c in results]
+
+        date_from = request.GET.get('date_schedule__gte')
+        date_to = request.GET.get('date_schedule__lte')
+        send_to_teachers = json.loads(request.GET.get('send_to_teachers', 'false'))
+
+        task = task_export.delay(changes, date_from, date_to, send_to_teachers)
+
+        return Response(status=HTTP_202_ACCEPTED, data=json.dumps(str(task)))

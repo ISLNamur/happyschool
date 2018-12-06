@@ -3,7 +3,7 @@
         <b-card class="px-3 current-card" no-body>
             <b-row class="text-center">
                 <b-col md="2" class="current-data"><em>{{ rowData.change }}</em></b-col>
-                <b-col md="2" class="current-data">{{ rowData.classes }}</b-col>
+                <b-col md="1" class="current-data">{{ rowData.classes }}</b-col>
                 <b-col md="3" class="current-data">
                     {{ formatTeachers(rowData.teachers_replaced) }}
                     <span  v-if="rowData.teachers_substitute.length > 0">
@@ -54,11 +54,11 @@
 
 <style>
     .current-card {
-        margin-top: 5px;
+        margin-top: .3rem;
     }
 
     .current-data {
-        margin-left: 4px;
+        margin-left: .2rem;
         background-color: rgba(104, 104, 104, 0.1);
     }
 

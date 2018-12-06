@@ -20,12 +20,20 @@
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 
+from django.conf import settings
+
 import core.routing
+
+routes = core.routing.websocket_urlpatterns
+
+if 'schedule_change' in settings.INSTALLED_APPS:
+    from schedule_change.routing import websocket_urlpatterns as patterns
+    routes += patterns
 
 application = ProtocolTypeRouter({
     'websocket': AuthMiddlewareStack(
         URLRouter(
-            core.routing.websocket_urlpatterns
+            routes,
         )
     ),
 })

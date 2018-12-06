@@ -1,0 +1,110 @@
+<!DOCTYPE document SYSTEM "rml.dtd">
+<document filename="council_{{ date_from|date:'Y-m-d' }}_{{ date_to|date:'Y-m-d' }}.pdf"
+          xmlns:doc="http://namespaces.zope.org/rml/doc">
+
+    <template showBoundary="0">
+        <!--define a 'frame' into which the content will flow.-->
+        <!--<pageTemplate id="main">-->
+             <!--<frame id="head" x1="10" y1="530" width="575" height="150"/>-->
+        <!--</pageTemplate>-->
+        <pageTemplate id="main" pagesize="(842,595)">
+            <!-- two frames are defined here: -->
+            <frame id="first" x1="60" y1="520" width="715" height="40"/>
+            <frame id="discip" x1="10" y1="10" width="815" height="480"/>
+        </pageTemplate>
+        <pageTemplate id="otherPages" pagesize="(842,595)">
+            <pageGraphics>
+                <drawString x="420" y="570">Changement horaire {{ date_from }} — {{ date_to }} (page <pageNumber/>)</drawString>
+            </pageGraphics>
+            <frame id="discip" x1="10" y1="10" width="815" height="520"/>
+        </pageTemplate>
+    </template>
+
+    <stylesheet>
+        <paraStyle name="title" fontName="Helvetica" fontSize="12" leading="14" alignment="center" />
+        <paraStyle name="head_info" fontName="Helvetica" fontSize="8" alignment="justify" />
+        <paraStyle name="warning" fontSize="12" borderColor="red"
+               borderWidth="2"
+                borderPadding="5 5"/>
+        <blockTableStyle id="cas">
+            <lineStyle kind="LINEABOVE" colorName="black" thickness="1"/>
+            <blockValign value="middle"/>
+        </blockTableStyle>
+
+    </stylesheet>
+
+    <story firstPageTemplate="main">
+        <keepInFrame frame="first" onOverflow="shrink">
+            <para style="title">
+                 <h1><strong>CHANGEMENTS HORAIRES {{ date_from }} — {{ date_to }}</strong></h1>
+            </para>
+            <spacer length="0.2cm" />
+            <para style="warning">
+                En retard dans votre matière, envie de reprendre une heure de cours supplémentaire,..., voici la liste des élèves en étude.
+                Veuillez prévenir si vous désirez reprendre une classe ou si une erreur s'est glissée{% if phone %} (téléphone : {{ phone }}){% endif %}. {{ responsible }}
+            </para>
+        </keepInFrame>
+
+        <setNextTemplate name="otherPages"/>
+        <blockTable colWidths="65 50 80 50 80 80 80 250" style="cas">
+            <tr>
+                <td><para><strong>Date</strong></para></td>
+                <td><para><strong>Heure</strong></para></td>
+                <td><para><strong>Changement</strong></para></td>
+                <td><para><strong>Classe</strong></para></td>
+                <td><para><strong>Absent / indisponible</strong></para></td>
+                <td><para><strong>Remplaçant</strong></para></td>
+                <td><para alignment="center"><strong>Local</strong></para></td>
+                <td><para><strong>Remarque</strong></para></td>
+            </tr>
+            {% for c in list %}
+            <tr>
+                <td>
+                    <para alignment="center">
+                    {{ c.date_change|date:'d/m/Y' }}
+                    </para>
+                </td>
+                <td>
+                    <para alignment="center">
+                    {{ c.time_start|date:"H:i" }} → {{ c.time_end|date:"H:i" }}
+                    </para>
+                </td>
+                <td>
+                    <para alignment="center">
+                    {{ c.change }}
+                    </para>
+                </td>
+                <td>
+                    <para alignment="center">
+                    {{ c.classes }}
+                    </para>
+                </td>
+                <td>
+                    <para alignment="center">
+                    {% for t in c.teachers_replaced.all %}
+                        {{ t.fullname }},
+                    {% endfor %}
+                    </para>
+                </td>
+                <td>
+                    <para alignment="center">
+                    {% for t in c.teachers_substitute.all %}
+                        {{ t.fullname }},
+                    {% endfor %}
+                    </para>
+                </td>
+                <td>
+                    <para alignment="center">
+                        {{ c.place }}
+                    </para>
+                </td>
+                <td><para alignment="justify">
+                        {{ c.comment }}
+                    </para>
+                </td>
+            </tr>
+            {% endfor %}
+        </blockTable>
+    </story>
+</document>
+

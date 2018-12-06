@@ -19,18 +19,8 @@
 
 from django.urls import path
 
-from rest_framework.routers import DefaultRouter
+from .consumers import ExportSummaryConsumer
 
-from . import views
-
-app_name = 'schedule_change'
-
-urlpatterns = [
-    path('', views.ScheduleChangeView.as_view(), name="schedule_change"),
-    path('api/summary_pdf/', views.SummaryPDFAPI.as_view()),
+websocket_urlpatterns = [
+    path('ws/schedule_change/export_summary/<slug:celery_id>/', ExportSummaryConsumer),
 ]
-
-router = DefaultRouter()
-router.register(r'api/schedule_change', views.ScheduleChangeViewSet)
-
-urlpatterns += router.urls
