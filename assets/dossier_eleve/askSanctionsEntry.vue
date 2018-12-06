@@ -147,7 +147,7 @@
             },
             setSanctionDone: function () {
                 const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-                const path = '/dossier_eleve/api/ask_sanctions/' + this.rowData.id + '/';
+                const path = '/dossier_eleve/api/ask_sanctions/' + this.rowData.id + '/?activate_all_retenues=true';
                 axios.patch(path, {sanction_faite: true}, token)
                 .then(response => {
                     this.$emit('done');
