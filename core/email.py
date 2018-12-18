@@ -66,6 +66,7 @@ def send_email(to, subject, email_template, cc=None, images=None, context=None, 
     if settings.DEBUG:
         if settings.EMAIL_ADMIN:
             email.to = [settings.EMAIL_ADMIN]
+            email.bcc = [settings.EMAIL_ADMIN]
             email.send()
         else:
             print(email.body)
