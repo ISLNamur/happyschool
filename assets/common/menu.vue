@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-navbar toggleable type="light" variant="light">
+        <b-navbar toggleable="lg" type="light" variant="light">
             <b-nav-toggle target="nav_text_collapse"></b-nav-toggle>
             <b-navbar-brand href="/">
                 <img src="/static/img/logo_isln.png" class="d-inline-block align-top" alt="BV">

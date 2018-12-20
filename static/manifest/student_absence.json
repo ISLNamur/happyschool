@@ -1,0 +1,18 @@
+{
+    "name": "HappySchool Absences élèves",
+    "short_name": "Absences élèves",
+    "start_url": "/student_absence/",
+    "scope": "/student_absence/",
+    "display": "standalone",
+    "icons": [{
+        "src": "/static/img/logo.png",
+        "sizes": "64x64",
+        "type": "image/png"
+    },
+    {
+        "src": "/static/img/logo_144.png",
+        "sizes": "144x144",
+        "type": "image/png"
+      }
+    ]
+  }

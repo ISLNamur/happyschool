@@ -72,6 +72,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+if DEBUG:
+    MIDDLEWARE.append('student_absence.middleware.SWHeaderMiddleware')
+
+
 ROOT_URLCONF = 'happyschool.urls'
 
 TEMPLATES = [

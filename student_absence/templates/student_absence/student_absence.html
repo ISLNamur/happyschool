@@ -1,0 +1,26 @@
+{% extends "core/base_vue.html" %}
+
+{% block header %}
+<title>HappySchool : Absences Élèves</title>
+<link rel="manifest" href="/static/manifest/student_absence.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="DC-Covers">
+<meta name="msapplication-TileImage" content="link to the image in static folder">
+<meta name="msapplication-TileColor" content="#000">
+
+{% endblock %}
+{% block content %}
+{% load render_bundle from webpack_loader %}
+
+<script>
+    const current_app = "student_absence";
+    const settings = JSON.parse('{{ settings|safe }}');;
+    const menu = {{ menu|safe }};
+    const filters = {{ filters|safe }};
+</script>
+<div id="vue-app"></div>
+
+{% render_bundle 'student_absence' %}
+
+{% endblock %}

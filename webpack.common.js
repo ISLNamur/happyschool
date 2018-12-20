@@ -2,6 +2,9 @@ var path = require('path');
 var webpack = require('webpack');
 var BundleTracker = require('webpack-bundle-tracker');
 const fs = require('fs');
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const swCachePlugin = require('sw-cache-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 function getEntries () {
     let apps = fs.readdirSync('./assets/js/')
@@ -25,22 +28,39 @@ module.exports = {
 	context: __dirname,
 	entry: getEntries(),
 	output: {
+		publicPath: '/static/bundles/',
 		path: path.resolve('./static/bundles/'),
 		filename: "[name]-[hash].js"
 	},
 
     plugins: [
+		new VueLoaderPlugin(),
 		new BundleTracker({filename: './webpack-stats.json'}),
-		new webpack.optimize.CommonsChunkPlugin({
-			name: "commons",
-			chunks: ["menu", "annuaire", "schedule_change", "appels", "mail_notification",
-				"mail_notification_list", "members", "mail_answer", "dossier_eleve",
-				"ask_sanctions", "infirmerie", "schedule_change",
-				"admin",
-			],
-			minChunks: 2
-		}),
+		new CopyPlugin([
+			{
+				from: '**', to: '', context: 'assets/sw/'
+			},
+			{
+				from: 'with-async-ittr-min.js', to: 'idb.js', context: 'node_modules/idb/build/iife/'
+			},
+		], { logLevel: 'debug' }),
+		new swCachePlugin(
+			{
+			  cacheName:'cacheName',
+			  ignore: [/.*\.map$/],
+			}
+		  )
 	],
+	optimization: {
+		namedModules: true, // NamedModulesPlugin()
+		splitChunks: { // CommonsChunkPlugin()
+			name: 'commons',
+			chunks: 'all',
+			minChunks: 2
+		},
+		noEmitOnErrors: true, // NoEmitOnErrorsPlugin
+		concatenateModules: true //ModuleConcatenationPlugin
+	},
 
 	resolve: {
 		alias: {

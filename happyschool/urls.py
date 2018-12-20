@@ -21,6 +21,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf import settings
 from django.views.generic import RedirectView
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from django.contrib.auth.views import LoginView, LogoutView, TemplateView
 
@@ -36,6 +37,9 @@ urlpatterns = [
 ]
 
 for app in ['infirmerie', 'appels', 'dossier_eleve', 'absence_prof', 'mail_notification', 'slas', 'mobility_survey',
-            'mail_answer', 'schedule_change']:
+            'mail_answer', 'schedule_change', 'student_absence']:
     if app in settings.INSTALLED_APPS:
         urlpatterns.append(url(r'^%s/' % (app), include('%s.urls' % (app))))
+
+if settings.DEBUG:
+    urlpatterns += staticfiles_urlpatterns()

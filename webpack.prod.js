@@ -4,12 +4,13 @@ const common = require('./webpack.common.js');
 var webpack = require('webpack');
 
 module.exports = merge(common, {
-    plugins: [
-        new MinifyPlugin({}, {}),
-        new webpack.DefinePlugin({
-          'process.env': {
-            NODE_ENV: '"production"'
-          }
-        })
-    ]
+  mode: 'production',
+  plugins: [
+      new MinifyPlugin({}, {}),
+      new webpack.DefinePlugin({
+        'process.env': {
+          NODE_ENV: '"production"'
+        }
+      })
+  ]
 });
