@@ -268,10 +268,10 @@ Supervisor
 [Supervisor](http://supervisord.org/) est un système de gestion des processus.
 Il a pour but de coordoner le (re)démarrage et l'arrêt des différents processus
 utilisés pour le bon fonctionnement d'Happyschool. Il s'installe avec
-`easy_install` :
+`pip` :
 ```
-sudo apt install python-setuptools
-sudo easy_install supervisor
+sudo apt install python-pip
+sudo pip install supervisor
 ```
 *Supervisor* se configure avec le fichier `/etc/supervisord.conf` (à créer) :
  ```
