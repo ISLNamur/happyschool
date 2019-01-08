@@ -473,7 +473,8 @@ export default {
                 })
             .then(response => {
                 app.importState = "Connecting to server…\n";
-                app.progressSocket = new WebSocket('ws://' + window.location.host + "/ws/core/import_student_state/" + JSON.parse(response.data) + "/");
+                const protocol = window.location.protocol === 'http:' ? 'ws' : 'wss';
+                app.progressSocket = new WebSocket(protocol + '://' + window.location.host + "/ws/core/import_student_state/" + JSON.parse(response.data) + "/");
                 app.progressSocket.onmessage = function (event) {
                     app.importState += JSON.parse(event.data)['status'] + '\n';
                 }

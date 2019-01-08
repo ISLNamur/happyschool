@@ -97,7 +97,8 @@ export default {
             const url = '/schedule_change/api/summary_pdf/?activate_has_classe=true&date_schedule__gte=' + this.export_from + '&date_schedule__lte=' + this.export_to + '&send_to_teachers=' + this.sendToTeachers;
             axios.get(url, token)
             .then(response => {
-                app.ws = new WebSocket('ws://' + window.location.host + "/ws/schedule_change/export_summary/" + JSON.parse(response.data) + "/");
+                const protocol = window.location.protocol === 'http:' ? 'ws' : 'wss';
+                app.ws = new WebSocket(protocol + '://' + window.location.host + "/ws/schedule_change/export_summary/" + JSON.parse(response.data) + "/");
                 app.ws.onmessage = function (event) {
                     window.open(window.location.host + JSON.parse(event.data)['file_url'],'_blank');
                     app.sendToTeachers = false;
