@@ -114,7 +114,6 @@ npm install
 
 Pour écrire les schémas dans la base de donnée :
 ```
-python3 manage.py makemigrations
 python3 manage.py migrate
 ```
 Certaines applications ont besoin que les groupes soient déjà accessibles pour
@@ -244,7 +243,6 @@ npm install
 Pour créer les différents schémas dans la base de donnée, l'utilitaire
 `manage.py`, fournit par django, vous permet de facilement le faire :
 ```
-python3 manage.py makemigrations
 python3 manage.py migrate
 ```
 Certaines applications ont besoin que les groupes soient déjà accessibles pour
