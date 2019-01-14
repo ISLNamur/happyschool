@@ -100,7 +100,7 @@ export default {
                 const protocol = window.location.protocol === 'http:' ? 'ws' : 'wss';
                 app.ws = new WebSocket(protocol + '://' + window.location.host + "/ws/schedule_change/export_summary/" + JSON.parse(response.data) + "/");
                 app.ws.onmessage = function (event) {
-                    window.open(window.location.host + JSON.parse(event.data)['file_url'],'_blank');
+                    window.open(JSON.parse(event.data)['file_url'],'_blank');
                     app.sendToTeachers = false;
                     app.buttonStr = "Créer le PDF";
                     app.processing = false;
