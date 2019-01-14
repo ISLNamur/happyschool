@@ -22,7 +22,7 @@
         <b-container>
             <b-card :title="lastName + ' ' + firstName" no-body>
                 <b-tabs card>
-                    <b-tab title="Info générale" active>
+                    <b-tab title="Fiche de l'élève" active>
                         <b-row>
                             <b-col md="5" sm="12">
                                 <div>
@@ -140,47 +140,53 @@
                             <dd class="col-7">{{ medical.medical_information }}</dd>
                         </dl>
                     </b-tab>
+                    <b-tab v-if="last_news && this.type != 'responsible'" :key=infoCount>
+                        <template slot="title">Info générales 
+                            <b-badge variant="info">{{ infoCount }}</b-badge>
+                        </template>
+                        <b-card header="Derniers messages du dossier des élèves" class="mt-2" v-if="dossier_eleve.length > 0">
+                            <b-row>
+                                <b-col cols="2"><strong>Date</strong></b-col>
+                                <b-col cols="2"><strong>Objet/Motif</strong></b-col>
+                                <b-col><strong>Message</strong></b-col>
+                            </b-row>
+                            <b-row v-for="cas in dossier_eleve" :key="cas.id" class="mb-2">
+                                <b-col cols="2" :class="cas.important ? ' important' : ''">{{ niceDate(cas.datetime_encodage) }}</b-col>
+                                <b-col cols="2" :class="cas.important ? ' important' : ''">{{ cas.sanction_decision ? cas.sanction_decision.sanction_decision : cas.info.info }}</b-col>
+                                <b-col :class="cas.important ? ' important' : ''"><div v-html="cas.explication_commentaire"></div></b-col>
+                            </b-row>
+                        </b-card>
+                        <b-card header="Derniers passages à l'infirmerie" class="mt-2" v-if="infirmerie.length > 0">
+                            <b-row>
+                                <b-col cols="2"><strong>Arrivé</strong></b-col>
+                                <b-col cols="2"><strong>Sortie</strong></b-col>
+                                <b-col cols="2"><strong>Motifs d'admission</strong></b-col>
+                                <b-col><strong>Remarques de sortie</strong></b-col>
+                            </b-row>
+                            <b-row  v-for="passage in infirmerie" :key="passage.id" class="mb-2">
+                                <b-col cols="2">{{ niceDate(passage.datetime_arrive) }}</b-col>
+                                <b-col cols="2">{{ passage.datetime_sortie ? niceDate(passage.datetime_sortie) : '' }}</b-col>
+                                <b-col cols="2">{{ passage.motifs_admission }}</b-col>
+                                <b-col>{{ passage.remarques_sortie }}</b-col>
+                            </b-row>
+                        </b-card>
+                        <b-card header="Derniers appels" class="mt-2"  v-if="appels.length > 0">
+                            <b-row>
+                                <b-col cols="2"><strong>Date</strong></b-col>
+                                <b-col cols="2"><strong>Objet</strong></b-col>
+                                <b-col cols="2"><strong>Motif</strong></b-col>
+                                <b-col><strong>Message</strong></b-col>
+                            </b-row>
+                            <b-row v-for="appel in appels" :key="appel.id" class="mb-2">
+                                <b-col cols="2">{{ niceDate(appel.datetime_appel) }}</b-col>
+                                <b-col cols="2">{{ appel.object.display }}</b-col>
+                                <b-col cols="2">{{ appel.motive.display }}</b-col>
+                                <b-col>{{ appel.commentaire }}</b-col>
+                            </b-row>
+                        </b-card>
+                        <p v-if="appels.length + dossier_eleve.length + infirmerie.length == 0"><em>Aucune donnée concernant l'élève n'est présente.</em></p>
+                    </b-tab>
                 </b-tabs>
-            </b-card>
-            <b-card v-if="last_news && dossier_eleve.length > 0" header="Derniers messages du dossier des élèves" class="mt-2">
-                <b-row>
-                    <b-col cols="2"><strong>Date</strong></b-col>
-                    <b-col cols="2"><strong>Objet/Motif</strong></b-col>
-                    <b-col><strong>Message</strong></b-col>
-                </b-row>
-                <b-row v-for="cas in dossier_eleve" :key="cas.id" class="mb-2">
-                    <b-col cols="2" :class="cas.important ? ' important' : ''">{{ niceDate(cas.datetime_encodage) }}</b-col>
-                    <b-col cols="2" :class="cas.important ? ' important' : ''">{{ cas.sanction_decision ? cas.sanction_decision.sanction_decision : cas.info.info }}</b-col>
-                    <b-col :class="cas.important ? ' important' : ''"><div v-html="cas.explication_commentaire"></div></b-col>
-                </b-row>
-            </b-card>
-            <b-card v-if="last_news && infirmerie.length > 0" header="Derniers passages à l'infirmerie" class="mt-2">
-                <b-row>
-                    <b-col cols="2"><strong>Arrivé</strong></b-col>
-                    <b-col cols="2"><strong>Sortie</strong></b-col>
-                    <b-col cols="2"><strong>Motifs d'admission</strong></b-col>
-                    <b-col><strong>Remarques de sortie</strong></b-col>
-                </b-row>
-                <b-row v-for="passage in infirmerie" :key="passage.id" class="mb-2">
-                    <b-col cols="2">{{ niceDate(passage.datetime_arrive) }}</b-col>
-                    <b-col cols="2">{{ passage.datetime_sortie ? niceDate(passage.datetime_sortie) : '' }}</b-col>
-                    <b-col cols="2">{{ passage.motifs_admission }}</b-col>
-                    <b-col>{{ passage.remarques_sortie }}</b-col>
-                </b-row>
-            </b-card>
-            <b-card v-if="last_news && appels.length > 0" header="Derniers appels" class="mt-2">
-                <b-row>
-                    <b-col cols="2"><strong>Date</strong></b-col>
-                    <b-col cols="2"><strong>Objet</strong></b-col>
-                    <b-col cols="2"><strong>Motif</strong></b-col>
-                    <b-col><strong>Message</strong></b-col>
-                </b-row>
-                <b-row v-for="appel in appels" :key="appel.id" class="mb-2">
-                    <b-col cols="2">{{ niceDate(appel.datetime_appel) }}</b-col>
-                    <b-col cols="2">{{ appel.object.display }}</b-col>
-                    <b-col cols="2">{{ appel.motive.display }}</b-col>
-                    <b-col>{{ appel.commentaire }}</b-col>
-                </b-row>
             </b-card>
         </b-container>
     </div>
@@ -227,6 +233,7 @@ export default {
             dossier_eleve: [],
             appels: [],
             infirmerie: [],
+            infoCount: 0,
         }
     },
     computed: {
@@ -234,7 +241,7 @@ export default {
             let path = '/static/photos'
             if (this.type == 'responsible') path += '_prof';
             return path + '/' + this.matricule + '.jpg'
-        }
+        },
     },
     watch: {
         matricule: function () {
@@ -256,6 +263,7 @@ export default {
             this.dossier_eleve = [];
             this.appels = [];
             this.infirmerie = [];
+            this.infoCount = 0;
         },
         niceDate: function (date) {
             return Moment(date).calendar();
@@ -295,20 +303,24 @@ export default {
                 });
 
                 if (this.last_news) {
-                    axios.get('/dossier_eleve/api/cas_eleve/?ordering=-datetime_encodage&matricule_id=' + this.matricule)
-                    .then(response => {
-                        this.dossier_eleve = response.data.results.slice(0, 5);
-                    });
+                    const config = {
+                        validateStatus: function (status) {
+                            return status >= 200 && status < 300 || status == 404;
+                        }
+                    }
+                    const promises = [
+                        axios.get('/dossier_eleve/api/cas_eleve/?ordering=-datetime_encodage&matricule_id=' + this.matricule, config),
+                        axios.get('/appels/api/appel/?ordering=-datetime_appel&matricule_id=' + this.matricule, config),
+                        axios.get('/infirmerie/api/passage/?ordering=-datetime_passage&matricule_id=' + this.matricule, config)
+                    ]
 
-                    axios.get('/appels/api/appel/?ordering=-datetime_appel&matricule_id=' + this.matricule)
-                    .then(response => {
-                        this.appels = response.data.results.slice(0, 5);
-                    });
-
-                    axios.get('/infirmerie/api/passage/?ordering=-datetime_passage&matricule_id=' + this.matricule)
-                    .then(response => {
-                        this.infirmerie = response.data.results.slice(0, 5);
-                    });
+                    Promise.all(promises)
+                    .then((response) => {
+                        this.dossier_eleve = response[0].data.results.slice(0, 5);
+                        this.appels = response[1].data.results.slice(0, 5);
+                        this.infirmerie = response[2].data.results.slice(0, 5);
+                        this.infoCount = this.dossier_eleve.length + this.infirmerie.length + this.appels.length;
+                    })
                 }
             } else if (this.type == 'responsible') {
                 axios.get('/annuaire/api/responsible/' + this.matricule + '/')
