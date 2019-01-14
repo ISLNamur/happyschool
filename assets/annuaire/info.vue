@@ -303,9 +303,10 @@ export default {
                 });
 
                 if (this.last_news) {
+                    // Don't fail promise with 404 error (not found thus no right).
                     const config = {
                         validateStatus: function (status) {
-                            return status >= 200 && status < 300 || status == 404;
+                            return status == 200 || status == 404;
                         }
                     }
                     const promises = [
@@ -316,9 +317,9 @@ export default {
 
                     Promise.all(promises)
                     .then((response) => {
-                        this.dossier_eleve = response[0].data.results.slice(0, 5);
-                        this.appels = response[1].data.results.slice(0, 5);
-                        this.infirmerie = response[2].data.results.slice(0, 5);
+                        if (response[0].data.results) this.dossier_eleve = response[0].data.results.slice(0, 5);
+                        if (response[1].data.results) this.appels = response[1].data.results.slice(0, 5);
+                        if (response[2].data.results) this.infirmerie = response[2].data.results.slice(0, 5);
                         this.infoCount = this.dossier_eleve.length + this.infirmerie.length + this.appels.length;
                     })
                 }
