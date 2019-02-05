@@ -1,0 +1,22 @@
+dist: xenial
+language: python
+before_install:
+  - sudo apt-get install -y python-dev libldap2-dev libsasl2-dev libssl-dev python3-pip git python3-dateutil postgresql-client python3-setuptools
+addons:
+  apt:
+    update: true
+services:
+  - postgresql
+before_script:
+  - psql -d 'template1' -c 'CREATE EXTENSION unaccent;' -U postgres
+  - psql -c "CREATE DATABASE happyschool;" -U postgres
+  - psql -c "CREATE USER happyschool WITH PASSWORD 'libreschool';" -U postgres
+  - psql -c "ALTER USER happyschool CREATEDB;" -U postgres
+install:
+  - pip3 install -r requirements.txt
+script:
+  - cp happyschool/settings.example.py happyschool/settings.py
+  - sed -i 's/DEBUG = False/DEBUG = True/g' happyschool/settings.py
+  - python3 manage.py makemigrations && python3 manage.py migrate
+  - coverage run --source='.' manage.py test
+  - coverage report
