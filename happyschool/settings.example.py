@@ -191,7 +191,8 @@ if USE_LDAP_INFO:
     AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=people,%s" % LDAP_DOMAIN,
                                        ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
 
-AUTH_LDAP_USER_ATTR_MAP = {"first_name": "cn", "last_name": "sn"}
+AUTH_LDAP_USER_ATTR_MAP = {"first_name": "cn", "last_name": "sn", "username": "uid",
+                           "password": "userPassword"}
 
 groups = [SYSADMIN_GROUP, DIRECTION_GROUP, TEACHER_GROUP, EDUCATOR_GROUP, SECRETARY_GROUP, PMS_GROUP, RECEPTION_GROUP]
 active_groups = map(lambda g: "cn=%s,ou=groups,%s" % (g, LDAP_DOMAIN), groups)
