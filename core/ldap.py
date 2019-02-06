@@ -37,7 +37,7 @@ ldap_to_django = {
     'an': 'year',
 
     'classe': 'classe',
-    'genEmail': 'gen_email',
+    'genEmail': 'email_school',
     'tenure': 'tenure',
     'id': 'matricule',
 
@@ -117,6 +117,14 @@ def get_django_dict_from_ldap(ldap_entry: dict) -> dict:
                 django_dict[django] = ldap_attributes[ldap]
         except KeyError:
             pass
+
+    if "objectClass" in ldap_attributes:
+        if "professeur" in ldap_attributes["objectClass"]:
+            django_dict["is_teacher"] = True
+            if "resp_email" in django_dict:
+                django_dict["email"] = django_dict["resp_email"]
+        if "educateur" in ldap_attributes["objectClass"]:
+            django_dict["is_educator"] = True
 
     return django_dict
 

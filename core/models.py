@@ -19,9 +19,8 @@
 
 from django.conf import settings
 from django.db import models
-from django.forms import model_to_dict
 
-from .ldap import ldap_to_django, get_django_dict_from_ldap, get_ldap_connection
+from .ldap import get_ldap_connection
 
 
 class CoreSettingsModel(models.Model):
