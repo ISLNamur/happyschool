@@ -1,5 +1,6 @@
 Happy School
 ================
+[![Build Status](https://travis-ci.com/ISLNamur/happyschool.svg?branch=master)](https://travis-ci.com/ISLNamur/happyschool)
 Concrètement, Happy school est une application de gestion administrative
 et pédagogique. Ainsi il propose de gérer différents aspects de l'école
 dont :
