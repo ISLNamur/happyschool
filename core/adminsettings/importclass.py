@@ -116,6 +116,8 @@ class ImportResponsible(ImportBase):
             if resp.matricule not in resp_synced:
                 resp.classe.clear()
             classe = self.get_value(entry, "classe")
+            if type(classe) != list:
+                classe = [classe]
             if classe:
                 for c in classe:
                     if len(c) < 2:
@@ -160,21 +162,23 @@ class ImportResponsible(ImportBase):
                 resp.is_teacher = True
 
             resp.save()
+            if not resp.matricule in resp_synced:
+                processed += 1
+                if processed % 50 == 0:
+                    self.print_log(processed)
             resp_synced.add(resp.matricule)
 
             # Print progress.
-            processed += 1
-            if processed % 50 == 0:
-                self.print_log(processed)
+
 
         # Set inactives.
-        self.print_log("Set inactive responsibles…")
-        all_resp = ResponsibleModel.objects.filter(teaching=self.teaching)
+        self.print_log("Set inactive teachers…")
+        all_resp = ResponsibleModel.objects.filter(teaching=self.teaching, is_teacher=True)
         for r in all_resp:
             if r.matricule not in resp_synced:
                 if not self.has_inactivity:
                     r.inactive_from = timezone.make_aware(timezone.datetime.now())
-                    r.classe = None
+                    r.classe.clear()
                     r.tenure = None
                     r.save()
                 else:
@@ -198,6 +202,55 @@ class ImportResponsibleLDAP(ImportResponsible):
                                attributes='*')
         ldap_entries = map(lambda entry: get_django_dict_from_ldap(entry), self.connection.response)
         super()._sync(ldap_entries)
+
+
+class ImportResponsibleCSV(ImportResponsible):
+    def __init__(self, teaching: TeachingModel, column_map: dict = None,
+                 column_index: dict = None, is_teacher: bool = False,
+                 is_educator: bool = False) -> None:
+
+        super().__init__(teaching=teaching)
+        self.is_teacher = is_teacher
+        self.is_educator = is_educator
+        self.column_map = column_map
+        if not column_index:
+            self.column_to_index = {j: i for i, j in
+                                    enumerate(["matricule", "last_name", "first_name",
+                                               "classe", "tenure"])}
+        else:
+            self.column_to_index = column_index
+
+    def sync(self, text: TextIO, ignore_first_line: bool=False,
+             has_header: bool=False) -> None:
+        # First detect dialect.
+        dialect = csv.Sniffer().sniff(text.readline())
+        # Return to start.
+        text.seek(0)
+
+        reader = csv.reader(text, dialect)
+        if ignore_first_line:
+            next(reader, None)
+        # Map column to row index with first line.
+        if has_header:
+            header = next(reader, None)
+            if self.column_map:
+                self.column_to_index = {self.column_map[j]: i for i, j in
+                                        enumerate(header)}
+            else:
+                self.column_to_index = {j: i for i, j in
+                                        enumerate(header)}
+
+        super()._sync(reader)
+
+    def get_value(self, entry: list, column: str) -> Union[int, str, date, None]:
+        if column == "is_teacher":
+            return self.is_teacher
+        if column == "is_educator":
+            return self.is_educator
+        try:
+            return self.format_value(entry[self.column_to_index[column]], column)
+        except KeyError:
+            return None
 
 
 class ImportStudent(ImportBase):

@@ -23,8 +23,8 @@ from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 
-from core.models import StudentModel, TeachingModel, ClasseModel, ResponsibleModel
-from core.adminsettings.importclass import ImportStudentCSV
+from core.models import TeachingModel
+from core.adminsettings.importclass import ImportStudentCSV, ImportResponsibleCSV
 
 
 class Command(BaseCommand):
@@ -34,13 +34,15 @@ class Command(BaseCommand):
         parser.add_argument(
             "-s",
             '--student',
-            help="Path to students csv file. Expected header columns: 'Nom Elève', 'Prénom Elève', 'Matric Info', 'Année', 'Classe'"
+            help="Path to students csv file. Expected header columns: 'Nom Elève', 'Prénom Elève',"
+                 " 'Matric Info', 'Année', 'Classe'"
         )
 
         parser.add_argument(
             "-t",
             '--teacher',
-            help="Path to teacher csv file. Expected header columns: 'Nom Enseignant', 'Prénom Enseignant', 'Matricule Ministère'"
+            help="Path to teacher csv file. Expected header columns: 'Nom Enseignant',"
+                 " 'Prénom Enseignant', 'Matricule Ministère', 'Classe'"
         )
 
         parser.add_argument(
@@ -58,59 +60,21 @@ class Command(BaseCommand):
                                              display_name=options["implementation"].title())
                 column_map = {'Matric Info': 'matricule', 'Nom Elève': 'last_name',
                               'Prénom Elève': 'first_name', 'Année': 'year',
-                              'Classe': 'classe_letter'}
+                              'Classe': 'classe_letter', 'Email': 'email'}
                 import_student_csv = ImportStudentCSV(teaching, column_map)
                 import_student_csv.sync(student_csv, has_header=True)
 
         if options['teacher']:
-            teacher_synced = set()
-            processed = 0
-            with open(options['teacher'], newline='') as teacher_csv:
-                dialect = csv.Sniffer().sniff(teacher_csv.read(1024))
-                teacher_csv.seek(0)
-                reader = csv.reader(teacher_csv, dialect)
-                header = next(reader, None)
-                column_map = {j: i for i, j in enumerate(header)}
-                for row in reader:
-                    matricule = row[column_map['Matricule Ministère']]
-                    last_name = row[column_map['Nom Enseignant']]
-                    first_name = row[column_map['Prénom Enseignant']]
-
-                    try:
-                        teacher = ResponsibleModel.objects.get(matricule=int(matricule))
-                        teacher.inactive_from = None
-                    except ObjectDoesNotExist:
-                        teacher = ResponsibleModel(matricule=int(matricule), is_teacher=True)
-
-                    teacher.first_name = first_name
-                    teacher.last_name = last_name
-                    teacher.save()
-
-                    # Check if teacher's teaching already exists.
-                    try:
-                        teaching = TeachingModel.objects.get(name=options["implementation"])
-                    except ObjectDoesNotExist:
-                        teaching = TeachingModel(name=options["implementation"],
-                                                 display_name=options["implementation"].title())
-                        teaching.save()
-
-                    teacher.teaching.add(teaching)
-
-
-
-                    teacher_synced.add(teacher.matricule)
-
-                    # Print progress.
-                    processed += 1
-                    if processed % 25 == 0:
-                        print(processed)
-
-            # Remove removed teachers.
-            all_teachers = ResponsibleModel.objects.filter(teaching__name=options["implementation"],
-                                                           is_teacher=True)
-            for t in all_teachers:
-                if t.matricule not in teacher_synced:
-                    t.inactive_from = timezone.make_aware(timezone.datetime.now())
-                    t.save()
+            with open(options['teacher'], newline='', encoding="utf-8-sig") as teacher_csv:
+                try:
+                    teaching = TeachingModel.objects.get(name=options["implementation"])
+                except ObjectDoesNotExist:
+                    teaching = TeachingModel(name=options["implementation"],
+                                             display_name=options["implementation"].title())
+                column_map = {'Matricule Ministère': 'matricule', 'Nom Enseignant': 'last_name',
+                              'Prénom Enseignant': 'first_name', 'Classe': 'classe',
+                              'Email': 'email'}
+                import_teacher_csv = ImportResponsibleCSV(teaching, column_map, is_teacher=True)
+                import_teacher_csv.sync(teacher_csv, has_header=True)
         return
 
