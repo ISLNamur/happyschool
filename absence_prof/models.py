@@ -17,7 +17,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
+from dateutil.relativedelta import relativedelta
+
+from django.utils import timezone
 from django.db import models
+
+from core.models import TeachingModel
+
+
+class AbsenceProfSettingsModel(models.Model):
+    teachings = models.ManyToManyField(TeachingModel, default=None)
 
 
 class MotifAbsence(models.Model):
@@ -33,11 +42,22 @@ class Absence(models.Model):
     motif = models.CharField(max_length=500)
     datetime_absence_start = models.DateTimeField("date du début de l'absence")
     datetime_absence_end = models.DateTimeField("date de la fin de l'absence")
-    datetime_encoding = models.DateTimeField("date de l'encodage")
-    comment = models.CharField(max_length=10000)
+    datetime_encoding = models.DateTimeField("date de l'encodage", auto_now_add=True)
+    comment = models.CharField(max_length=10000, blank=True)
     user = models.CharField(max_length=20)
 
     class Meta:
         permissions = (
             ('access_absences', 'Can access to absences data'),
         )
+
+    @property
+    def status(self):
+        if (self.datetime_absence_start < timezone.now()
+                and self.datetime_absence_end > timezone.now() - relativedelta(days=1)):
+            return "En cours"
+
+        if self.datetime_absence_start > timezone.now():
+            return "A venir"
+
+        return "Clôturé"

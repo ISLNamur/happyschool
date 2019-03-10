@@ -19,7 +19,8 @@
 
 from django.contrib import admin
 
-from .models import MotifAbsence, Absence
+from .models import MotifAbsence, Absence, AbsenceProfSettingsModel
 
 admin.site.register(Absence)
 admin.site.register(MotifAbsence)
+admin.site.register(AbsenceProfSettingsModel)

@@ -87,6 +87,7 @@ export default {
         },
         inputType: function() {
             if (!this.filterType) return "text";
+            if (this.filterType.startsWith("date_month")) return "month";
             if (this.filterType.startsWith("date_")) return "date";
             if (this.filterType.startsWith("datetime_")) return "date";
             if (this.filterType.startsWith("time_")) return "time";
