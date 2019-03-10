@@ -221,6 +221,7 @@ class ImportResponsibleLDAP(ImportResponsible):
                 resp = ResponsibleModel.objects.get(email=self.get_value(entry, "email"))
                 # Set definitive matricule.
                 resp.matricule = matricule
+                return resp
             except ObjectDoesNotExist:
                 return ResponsibleModel(matricule=matricule)
 
