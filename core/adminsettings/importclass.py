@@ -64,6 +64,15 @@ class ImportResponsible(ImportBase):
     def __init__(self, teaching: TeachingModel) -> None:
         super().__init__(teaching)
 
+    def get_responsible(self, entry):
+        matricule = int(self.get_value(entry, "matricule"))
+        if not matricule:
+            return None
+        try:
+            return ResponsibleModel.objects.get(matricule=matricule)
+        except ObjectDoesNotExist:
+            return ResponsibleModel(matricule=matricule)
+
     def _sync(self, iterable) -> None:
         if not self.teaching:
             self.print_log("teaching is missing, aborting.")
@@ -76,10 +85,6 @@ class ImportResponsible(ImportBase):
         self.print_log("Importing teachers…(%s)" % self.teaching.display_name)
         for entry in iterable:
             # First check mandatory field.
-            matricule = int(self.get_value(entry, "matricule"))
-            if not matricule:
-                self.print_log("No matricule found, skipping responsible.")
-                continue
             first_name = self.get_value(entry, "first_name")
             if not first_name:
                 self.print_log("No first name found, skipping responsible.")
@@ -88,10 +93,10 @@ class ImportResponsible(ImportBase):
             if not last_name:
                 self.print_log("No last name found, skipping responsible.")
                 continue
-            try:
-                resp = ResponsibleModel.objects.get(matricule=matricule)
-            except ObjectDoesNotExist:
-                resp = ResponsibleModel(matricule=matricule)
+            resp = self.get_responsible(entry)
+            if not resp:
+                self.print_log("No unique identifier found, skipping responsible.")
+                continue
             username = self.get_value(entry, "username")
             if username:
                 try:
@@ -116,7 +121,7 @@ class ImportResponsible(ImportBase):
             if resp.matricule not in resp_synced:
                 resp.classe.clear()
             classe = self.get_value(entry, "classe")
-            if type(classe) != list:
+            if classe and type(classe) != list:
                 classe = [classe]
             if classe:
                 for c in classe:
@@ -202,6 +207,22 @@ class ImportResponsibleLDAP(ImportResponsible):
                                attributes='*')
         ldap_entries = map(lambda entry: get_django_dict_from_ldap(entry), self.connection.response)
         super()._sync(ldap_entries)
+
+    def get_responsible(self, entry):
+        matricule = int(self.get_value(entry, "matricule"))
+        if not matricule:
+            return None
+
+        try:
+            return ResponsibleModel.objects.get(matricule=matricule)
+        except ObjectDoesNotExist:
+            # It may happen that responsible has a temporary matricule, search by email instead.
+            try:
+                resp = ResponsibleModel.objects.get(email=self.get_value(entry, "email"))
+                # Set definitive matricule.
+                resp.matricule = matricule
+            except ObjectDoesNotExist:
+                return ResponsibleModel(matricule=matricule)
 
 
 class ImportResponsibleCSV(ImportResponsible):
