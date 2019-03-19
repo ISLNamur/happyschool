@@ -478,9 +478,22 @@ def search_people(query, people_type, teachings, check_access, user, active=True
     if people_type == 'student':
         classe_years = get_classes(teachings, check_access=True,
                                    user=user) if check_access else None
-        people = StudentSerializer(
-            People().get_students_by_name(query, teachings, classes=classe_years, active=active)[:truncate_limit], many=True
-        ).data
+        if query == 'everybody':
+            students = StudentModel.objects.all()
+            if active:
+                students = students.filter(inactive_from__isnull=True)
+            if classe_years:
+                students = students.filter(classe__in=classe_years)
+            if teachings and 'all' not in teachings:
+                if type(teachings[0]) == TeachingModel:
+                    students = students.filter(teaching__in=teachings)
+                else:
+                    students = students.filter(teaching__name__in=teachings)
+            truncate_limit = len(students)
+        else:
+            students = People().get_students_by_name(query, teachings, classes=classe_years, active=active)[:truncate_limit]
+
+        people = StudentSerializer(students, many=True).data
 
     if people_type == 'responsible':
         people = ResponsibleSerializer(
