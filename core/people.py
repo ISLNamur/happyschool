@@ -300,7 +300,7 @@ class People:
         if not classe:
             return StudentModel.objects.none()
 
-        students = StudentModel.objects.all()
+        students = StudentModel.objects.all().order_by('last_name', 'first_name')
         if "all" not in teaching:
             if type(teaching[0]) == TeachingModel:
                 students = students.filter(teaching__in=teaching)
