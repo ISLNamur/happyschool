@@ -61,7 +61,7 @@
                 if (!this.rowData.is_traiter)
                     return ""
 
-                var subTitleStr = 'Traiter le ' + Moment(this.rowData.datetime_traitement).calendar();;
+                var subTitleStr = 'Traité ' + Moment(this.rowData.datetime_traitement).calendar();;
                 return  subTitleStr;
             },
             motif_start: function() {
