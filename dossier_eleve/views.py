@@ -555,8 +555,11 @@ class AskSanctionCouncilPDFGenAPI(AskSanctionsPDFGenAPI):
 
     def modify_entries(self, results):
         for r in results:
-            r['datetime_sanction'] = timezone.datetime.strptime(r['datetime_sanction'][:19],
-                                                                "%Y-%m-%dT%H:%M:%S")
+            if r['datetime_sanction']:
+                r['datetime_sanction'] = timezone.datetime.strptime(r['datetime_sanction'][:19],
+                                                                    "%Y-%m-%dT%H:%M:%S")
+            else:
+                r['datetime_sanction'] = None
             r['datetime_conseil'] = timezone.datetime.strptime(r['datetime_conseil'][:19],
                                                                "%Y-%m-%dT%H:%M:%S")
         return results
