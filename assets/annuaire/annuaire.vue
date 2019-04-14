@@ -54,6 +54,7 @@
                             @select="selected"
                             >
                             <span slot="noResult">Aucune personne trouvée.</span>
+                            <span slot="noOptions"></span>
 
                         </multiselect>
                     </b-form-group>

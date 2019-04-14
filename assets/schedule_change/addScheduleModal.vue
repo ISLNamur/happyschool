@@ -87,6 +87,7 @@
                     v-model="form.classes"
                     >
                     <span slot="noResult">Aucune classe trouvée.</span>
+                    <span slot="noOptions"></span>
                 </multiselect>
             </b-form-group>
             <b-form-group
@@ -107,6 +108,7 @@
                     track-by="matricule"
                     >
                     <span slot="noResult">Aucun professeur trouvé.</span>
+                    <span slot="noOptions"></span>
                 </multiselect>
             </b-form-group>
             <b-form-group
@@ -128,6 +130,7 @@
                     track-by="matricule"
                     >
                     <span slot="noResult">Aucun professeur trouvé.</span>
+                    <span slot="noOptions"></span>
                 </multiselect>
             </b-form-group>
             <b-form-group

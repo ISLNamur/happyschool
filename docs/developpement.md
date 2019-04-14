@@ -1018,6 +1018,7 @@ qui proposera à l'utilisateur d'ajouter/modifier une absence :
                             v-model="student"
                             >
                             <span slot="noResult">Aucune personne trouvée.</span>
+                            <span slot="noOptions"></span>
 
                         </multiselect>
                         <span slot="invalid-feedback">{{ errorMsg('student_id') }}</span>

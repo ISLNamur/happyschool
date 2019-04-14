@@ -67,9 +67,6 @@
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect'
-import 'vue-multiselect/dist/vue-multiselect.min.css'
-
 import Moment from 'moment';
 Moment.locale('fr');
 
@@ -127,7 +124,6 @@ export default {
     mounted: function () {
         this.show();
     },
-    components: {Multiselect},
 }
 </script>
 

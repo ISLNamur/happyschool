@@ -20,6 +20,7 @@
                             @search-change="getOptions"
                             :internalSearch="false"
                             >
+                            <span slot="noOptions"></span>
                         </multiselect>
                     </b-col>
             </b-input-group>

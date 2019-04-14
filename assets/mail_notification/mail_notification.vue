@@ -55,7 +55,8 @@
                                 deselect-label="Cliquer dessus pour enlever"
                                 v-model="emailFrom"
                                 >
-                                <span slot="noResult">Aucun destinataire trouvé.</span>
+                                <span slot="noResult">Aucun expéditeur trouvé.</span>
+                                <span slot="noOptions"></span>
                             </multiselect>
                             <b-alert variant="danger" :show="!emailFromState">
                                 Merci de choisir un expéditeur.
@@ -80,6 +81,7 @@
                                 v-model="emailTo"
                                 >
                                 <span slot="noResult">Aucun destinataire trouvé.</span>
+                                <span slot="noOptions"></span>
                             </multiselect>
                             <b-alert variant="danger" :show="!emailToState">
                                 Merci de choisir au moins un destinataire.
@@ -98,6 +100,7 @@
                                 label="name"
                                 placeholder="Ajouter un formulaire à remplir"
                                 >
+                                <span slot="noOptions"></span>
                             </multiselect>
                         </b-form-group>
                         <b-form-group label="Tag(s) : " description="Permet de facilement identifier l'email (CPE, CGQ,…)">
@@ -114,6 +117,7 @@
                                 v-model="tags"
                                 >
                                 <span slot="noResult">Aucun tag trouvé.</span>
+                                <span slot="noOptions"></span>
                             </multiselect>
                         </b-form-group>
 
