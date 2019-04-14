@@ -348,6 +348,7 @@ server {
         client_max_body_size 100m;
 
         location /static/ {
+				 add_header Service-Worker-Allowed "/";
                  alias /home/user/happyschool/static/; # Mettre le chemin vers les fichiers statiques. À MODIFIER.
         }
 
