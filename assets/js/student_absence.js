@@ -109,7 +109,6 @@ const store = new Vuex.Store({
             state.todayAbsences = absences;
         },
         updateStudentsClasses: function (state) {
-            console.log("coucou");
             state.lastUpdate = Moment().format("YYYY-MM-DD");
             this.commit('updatingStatus', true);
             const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
@@ -121,7 +120,6 @@ const store = new Vuex.Store({
             };
             axios.post('/annuaire/api/people/', data, token)
             .then(response => {
-                console.log('hello');
                 this.commit('updatingStatus', false);
             });
         },
@@ -186,7 +184,12 @@ var studentAbsenceApp = new Vue({
     mounted: function () {
         this.menuInfo = menu;
         // Update students and classes.
-        if (this.$store.state.lastUpdate < Moment().format("YYYY-MM-DD")) this.$store.commit("updateStudentsClasses");
+        if (this.$store.state.lastUpdate < Moment().format("YYYY-MM-DD")) {
+            const sleep = this.$store.state.lastUpdate == "" ? 3000 : 100;
+            setTimeout(() => {
+                this.$store.commit("updateStudentsClasses");
+            }, sleep);
+        }
         
         window.addEventListener('online', this.updateOnlineStatus);
         window.addEventListener('offline', this.updateOnlineStatus);

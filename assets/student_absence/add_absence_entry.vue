@@ -104,7 +104,6 @@ export default {
     },
     mounted: function () {
         this.baseAbsence = this.$store.getters.change({matricule: this.student.matricule, date_absence: this.date_absence, student: this.student})
-        console.log(this.baseAbsence);
         if (this.baseAbsence) {
             if ('morning' in this.baseAbsence && this.baseAbsence.morning) this.morning_absence = true;
             if ('afternoon' in this.baseAbsence && this.baseAbsence.afternoon) this.afternoon_absence = true;
