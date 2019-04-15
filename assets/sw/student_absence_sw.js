@@ -30,6 +30,7 @@ self.addEventListener('install', function(event) {
 
 self.addEventListener('activate', function(event) {
     event.waitUntil(
+        self.clients.claim(),
         caches.keys().then(function(keyList) {
             return Promise.all(keyList.map(function(key) {
                 if (!key.includes(hash)) {
