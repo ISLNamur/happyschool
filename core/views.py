@@ -37,7 +37,7 @@ from django.core.exceptions import ObjectDoesNotExist, FieldError
 from django.views.generic import TemplateView
 from django.contrib.auth.models import Group
 
-from core.models import ResponsibleModel, TeachingModel, EmailModel, CoreSettingsModel
+from core.models import ResponsibleModel, TeachingModel, EmailModel, CoreSettingsModel, StudentModel
 from core.people import get_classes
 from core.permissions import IsSecretaryPermission
 from core.serializers import ResponsibleSensitiveSerializer, TeachingSerializer,\
@@ -190,3 +190,19 @@ class EmailViewSet(ReadOnlyModelViewSet):
     queryset = EmailModel.objects.all().order_by("display")
     serializer_class = EmailSerializer
     permission_classes = (IsAuthenticated,)
+
+
+class BirthdayAPI(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, format=None):
+        people = self.request.GET.get('people', 'student')
+
+        birthday = []
+        today = timezone.now()
+        if people == 'student':
+            students = StudentModel.objects.filter(additionalstudentinfo__birth_date__month=today.month,
+                                                   additionalstudentinfo__birth_date__day=today.day,).order_by('teaching')
+            students = students.values_list('last_name', 'first_name', 'classe__year', 'classe__letter')
+            birthday += [{'name': "%s %s %s%s" % (s[0], s[1], s[2], s[3].upper())} for s in students]
+        return Response({'results': birthday})
