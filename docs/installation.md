@@ -193,13 +193,6 @@ sudo pip3 install django django-crispy-forms z3c.rml django_auth_ldap ldap3 unid
 À noter que l'installation se fait sur le système tout entier, pour gérer
 différentes versions il est alors mieux d'utiliser `virtualenv` ou apparenté.
 
-Par ailleurs, Happyschool utilise son propre système de widget pour le
-calendrier. Même s'il est en cours de remplacement, il est encore
-nécessaire de l'installer. Pour cela, la commande suivante va télécharger
-le code dans le dossier courant puis l'installer :
-```
-git clone https://github.com/Supermanu/django-bootstrap3-datetimepicker && cd django-bootstrap3-datetimepicker && sudo python3 setup.py install && cd ..
-```
 Happyschool
 ------------
 
@@ -273,7 +266,7 @@ sudo pip install supervisor
 ```
 *Supervisor* se configure avec le fichier `/etc/supervisord.conf` (à créer) :
  ```
-unix_http_server]
+[unix_http_server]
 file=/tmp/supervisor.sock   ; the path to the socket file
 
 [supervisord]
