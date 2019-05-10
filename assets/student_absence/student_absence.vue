@@ -31,6 +31,9 @@
                             <icon name="plus" scale="1" color="green" class="align-middle"></icon>
                             Ajouter absenses
                         </b-nav-item>
+                        <b-nav-item-dropdown>
+                            <b-dropdown-item @click="$store.commit('updateStudentsClasses')">Mettre à jour des étudiants</b-dropdown-item>
+                        </b-nav-item-dropdown>
                     </template>
                 </b-tabs>
             </b-row>
