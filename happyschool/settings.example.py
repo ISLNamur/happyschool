@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     # 'mail_notification',
     # 'mail_answer',
     # 'schedule_change',
+    # 'student_absence',
 ]
 
 MIDDLEWARE = [
@@ -130,7 +131,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -189,30 +189,33 @@ AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = True
 AUTH_LDAP_BIND_DN = os.getenv("LDAP_USER", "cn=admin,dc=example,dc=org")
 AUTH_LDAP_BIND_PASSWORD = os.getenv("LDAP_PWD", "ldap_password")
 AUTH_LDAP_SERVER_URI = "ldap://" + LDAP_HOST
+if AUTH_LDAP_BIND_AS_AUTHENTICATING_USER:
+    AUTHENTICATION_BACKENDS.append('django_auth_ldap.backend.LDAPBackend')
+
 if USE_LDAP_INFO:
     import ldap
     from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
     AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=people,%s" % LDAP_DOMAIN,
                                        ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
 
-AUTH_LDAP_USER_ATTR_MAP = {"first_name": "cn", "last_name": "sn", "username": "uid",
+    AUTH_LDAP_USER_ATTR_MAP = {"first_name": "cn", "last_name": "sn", "username": "uid",
                            "password": "userPassword"}
 
-groups = [SYSADMIN_GROUP, DIRECTION_GROUP, TEACHER_GROUP, EDUCATOR_GROUP, SECRETARY_GROUP, PMS_GROUP, RECEPTION_GROUP]
-active_groups = map(lambda g: "cn=%s,ou=groups,%s" % (g, LDAP_DOMAIN), groups)
+    groups = [SYSADMIN_GROUP, DIRECTION_GROUP, TEACHER_GROUP, EDUCATOR_GROUP, SECRETARY_GROUP, PMS_GROUP, RECEPTION_GROUP]
+    active_groups = map(lambda g: "cn=%s,ou=groups,%s" % (g, LDAP_DOMAIN), groups)
 
-AUTH_LDAP_USER_FLAGS_BY_GROUP = {
-    "is_active": list(active_groups),
-    "is_staff": "cn=sysadmin,ou=groups,%s" % LDAP_DOMAIN,
-    "is_superuser": "cn=sysadmin,ou=groups,%s" % LDAP_DOMAIN
+    AUTH_LDAP_USER_FLAGS_BY_GROUP = {
+        "is_active": list(active_groups),
+        "is_staff": "cn=sysadmin,ou=groups,%s" % LDAP_DOMAIN,
+        "is_superuser": "cn=sysadmin,ou=groups,%s" % LDAP_DOMAIN
     }
 
-AUTH_LDAP_GROUP_SEARCH = LDAPSearch("ou=groups,%s" % LDAP_DOMAIN,
+    AUTH_LDAP_GROUP_SEARCH = LDAPSearch("ou=groups,%s" % LDAP_DOMAIN,
                                         ldap.SCOPE_SUBTREE, "(objectClass=groupOfNames)"
                                     )
-AUTH_LDAP_GROUP_TYPE = GroupOfNamesType(name_attr="cn")
-AUTH_LDAP_FIND_GROUP_PERMS = True
-AUTH_LDAP_MIRROR_GROUPS = True
+    AUTH_LDAP_GROUP_TYPE = GroupOfNamesType(name_attr="cn")
+    AUTH_LDAP_FIND_GROUP_PERMS = True
+    AUTH_LDAP_MIRROR_GROUPS = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
