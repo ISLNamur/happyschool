@@ -202,7 +202,8 @@ class BirthdayAPI(APIView):
         today = timezone.now()
         if people == 'student':
             students = StudentModel.objects.filter(additionalstudentinfo__birth_date__month=today.month,
-                                                   additionalstudentinfo__birth_date__day=today.day,).order_by('teaching')
+                                                   additionalstudentinfo__birth_date__day=today.day,
+                                                   classe__isnull=False).order_by('teaching')
             students = students.values_list('last_name', 'first_name', 'classe__year', 'classe__letter')
             birthday += [{'name': "%s %s %s%s" % (s[0], s[1], s[2], s[3].upper())} for s in students]
         return Response({'results': birthday})
