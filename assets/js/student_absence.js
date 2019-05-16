@@ -26,6 +26,8 @@ import VuexPersistence from 'vuex-persist'
 import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
+import axios from 'axios';
+
 import Moment from 'moment';
 Moment.locale('fr');
 
@@ -49,7 +51,7 @@ const store = new Vuex.Store({
       filters: [],
       todayAbsences: {},
       changes: [],
-      onLine: navigator.onLine,
+      onLine: false,
       lastUpdate: "",
       updating: false,
     },
@@ -160,8 +162,6 @@ import AddAbsence from '../student_absence/add_absence.vue';
     ]
 });
 
-import axios from 'axios';
-
 import Menu from '../common/menu.vue';
 
 var studentAbsenceApp = new Vue({
@@ -171,11 +171,20 @@ var studentAbsenceApp = new Vue({
     router,
     template: '<div><app-menu :menu-info="menuInfo" v-if="$store.state.onLine"></app-menu><router-view></router-view></div>',
     methods: {
-        updateOnlineStatus(e) {
-            const {
-                type
-            } = e;
-            this.$store.commit('changeOnLineStatus', type === 'online');
+        checkOnlineStatus() {
+            axios.get("/", {timeout: 1000})
+            .then(resp => {
+                this.$store.commit('changeOnLineStatus', true);
+                setTimeout(() => {
+                    this.checkOnlineStatus();
+                }, 5000)
+            })
+            .catch(errors => {
+                this.$store.commit('changeOnLineStatus', false);
+                setTimeout(() => {
+                    this.checkOnlineStatus();
+                }, 5000)
+            })
         },
     },
     components: {
@@ -190,12 +199,6 @@ var studentAbsenceApp = new Vue({
                 this.$store.commit("updateStudentsClasses");
             }, sleep);
         }
-        
-        window.addEventListener('online', this.updateOnlineStatus);
-        window.addEventListener('offline', this.updateOnlineStatus);
+        this.checkOnlineStatus();
     },
-    beforeDestroy() {
-        window.removeEventListener('online', this.updateOnlineStatus);
-        window.removeEventListener('offline', this.updateOnlineStatus);
-    }
 });

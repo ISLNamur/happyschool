@@ -13,6 +13,7 @@ const hash = urlToCache[0].split("-")[1].split(".")[0];
 // Create an Annuaire.
 const dbPromise = idb.openDB("annuaire", 1, {
     upgrade(db, oldVersion, newVersion, transaction) {
+        console.log("upgrading db");
         db.createObjectStore('students', {
             keyPath: 'matricule'
         });
