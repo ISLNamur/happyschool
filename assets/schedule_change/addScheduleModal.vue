@@ -39,6 +39,9 @@
                     label="Catégorie"
                     >
                     <b-form-select v-model="form.category" :options="categoryOptions" value-field="id" text-field="category">
+                        <template slot="first">
+                            <option :value="null"></option>
+                        </template>
                     </b-form-select>
                 </b-form-group>
             </b-form-row>
