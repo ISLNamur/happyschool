@@ -20,7 +20,7 @@
 <template>
     <b-modal size="lg" title="Ajouter un changement"
         cancel-title="Annuler"
-        :ok-disabled="!form.change || (form.change == 'Voir commentaire' && form.comment == '') || submitting || !$store.state.canAdd"
+        :ok-disabled="!form.change || submitting || !$store.state.canAdd"
         ref="addModal"
         v-on:ok="submitForm"
         v-on:hidden="resetData"
@@ -30,14 +30,15 @@
                 <b-form-group
                     label="Type de changement"
                     >
-                    <b-form-select v-model="form.change">
-                        <option :value="null" disabled>Choisissez dans la liste</option>
-                        <option value="Arrivée tardive">Arrivée tardive</option>
-                        <option value="Étude">Étude</option>
-                        <option value="Remplacement">Remplacement</option>
-                        <option value="Départ anticipé">Départ anticipé</option>
-                        <option value="Activité">Activité</option>
-                        <option value="Voir commentaire">Voir commentaire</option>
+                    <b-form-select v-model="form.change" :options="$store.state.changeType" value-field="id" text-field="name">
+                    </b-form-select>
+                </b-form-group>
+            </b-form-row>
+            <b-form-row>
+                <b-form-group
+                    label="Catégorie"
+                    >
+                    <b-form-select v-model="form.category" :options="categoryOptions" value-field="id" text-field="category">
                     </b-form-select>
                 </b-form-group>
             </b-form-row>
@@ -136,7 +137,14 @@
             <b-form-group
                 label="Local/Lieu de subtitution"
                 >
-                <b-form-input type="text" v-model="form.place"></b-form-input>
+                <multiselect v-model="form.place" tag-placeholder="Ajouter le local/lieu"
+                    placeholder="Ajouter local/lieu" :taggable="true" :options="placesOptions" @tag="addPlaces"
+                    select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
+                    selected-label="Sélectionné"
+                    deselect-label="Cliquer dessus pour enlever"
+                    >
+                    <span slot="noOptions"></span>
+                </multiselect>
             </b-form-group>
             <b-form-group
                 label="Commentaire"
@@ -145,10 +153,10 @@
                     placeholder="Un commentaire sur le changement">
                 </b-form-textarea>
             </b-form-group>
-            <b-form-group
+            <b-form-group>
                 <b-form-checkbox v-model="form.send_email_general">Notifier le changement par courriel</b-form-checkbox>
             </b-form-group>
-            <b-form-group
+            <b-form-group>
                 <b-form-checkbox v-if="form.teachers_substitute.length > 0" v-model="form.send_email_substitute">Notifier le remplaçant par courriel</b-form-checkbox>
             </b-form-group>
         </b-form>
@@ -177,6 +185,7 @@ export default {
             searchId: -1,
             form: {
                 change: null,
+                category: null,
                 date_change: "",
                 time_start: null,
                 time_end: null,
@@ -192,10 +201,12 @@ export default {
             },
             classesOptions: [],
             classesLoading: false,
+            categoryOptions: [],
             teachersReplacedOptions: [],
             teachersReplacedLoading: false,
             teachersSubstituteOptions: [],
             teachersSubstituteLoading: false,
+            placesOptions: [],
             submitting: false,
             errors: {},
             inputStates: {
@@ -230,6 +241,10 @@ export default {
         },
     },
     methods: {
+        addPlaces: function (newPlace) {
+            this.placesOptions.push(newPlace);
+            this.form.place = newPlace;
+        },
         initArray: function (toArray) {
             if (toArray.length > 0) {
                 return toArray.split(", ");
@@ -238,10 +253,14 @@ export default {
             }
         },
         resetData: function () {
+            const places = this.placesOptions;
             Object.assign(this.$data, this.$options.data.call(this));
+            this.placesOptions = places;
+            this.categoryOptions = this.$store.state.changeCategory;
             this.$emit('reset');
         },
         show: function () {
+            this.categoryOptions = this.$store.state.changeCategory;
             this.$refs.addModal.show();
         },
         hide: function() {
@@ -253,6 +272,13 @@ export default {
             } else {
                 return "";
             }
+        },
+        getPlaces() {
+            const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            axios.get('/schedule_change/api/schedule_change_place/', token)
+            .then(resp => {
+                this.placesOptions = resp.data.results.map(p => p.name);
+            });
         },
         getStudentsClassesYears(query) {
             this.classesLoading = true;
@@ -357,5 +383,8 @@ export default {
         }
     },
     components: {Multiselect},
+    mounted: function () {
+        this.getPlaces();
+    }
 }
 </script>

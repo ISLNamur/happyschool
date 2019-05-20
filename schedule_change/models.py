@@ -35,8 +35,32 @@ class ScheduleChangeSettingsModel(models.Model):
                                                                   "configuré dans CoreSettingsModel")
 
 
+class ScheduleChangeTypeModel(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+
+class ScheduleChangeCategoryModel(models.Model):
+    category = models.CharField(max_length=100)
+    color = models.CharField(default="", max_length=6, help_text="Valeur hexadecimal de la couleur.")
+    icon = models.CharField(default="", max_length=50, help_text="Icône utilisée par Font Awesome 4.7.")
+
+    def __str__(self):
+        return "%s %s" % (self.category, self.color,)
+
+
+class ScheduleChangePlaceModel(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+
 class ScheduleChangeModel(models.Model):
-    change = models.CharField(max_length=100)
+    change = models.ForeignKey(ScheduleChangeTypeModel, on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey(ScheduleChangeCategoryModel, on_delete=models.SET_NULL, blank=True, null=True)
     date_change = models.DateField("Date")
     time_start = models.TimeField(null=True, blank=True)
     time_end = models.TimeField(null=True, blank=True)

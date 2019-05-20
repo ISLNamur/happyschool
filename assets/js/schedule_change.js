@@ -32,9 +32,40 @@ const store = new Vuex.Store({
         tag: "Activer",
         value: true,
     }],
+    changeType: [],
+    changeCategory: [],
     canAdd: can_add,
   },
+  actions: {
+    getChangeType (context) {
+        const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+        axios.get('/schedule_change/api/schedule_change_type/', token)
+        .then(resp => {
+            context.commit('setChangeType', resp.data.results);
+        })
+    },
+    getChangeCategory (context) {
+        const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+        axios.get('/schedule_change/api/schedule_change_category/', token)
+        .then(resp => {
+            context.commit('setChangeCategory', resp.data.results);
+        })
+    }
+},
   mutations: {
+      setChangeType: function (state, types) {
+        state.changeType = types;
+      },
+      setChangeCategory: function (state, categories) {
+        state.changeCategory = categories;
+
+        // Add style.
+        var sheet = document.createElement('style');
+        for (let c in categories) {
+            sheet.innerHTML +=  ".category-" + categories[c].id + " {background-color: #" + categories[c].color + "60;} ";
+        }
+        document.body.appendChild(sheet);
+      },
       addFilter: function (state, filter) {
           // If filter is a matricule, remove name filter to avoid conflict.
           if (filter.filterType === 'matricule_id') {
@@ -64,4 +95,8 @@ var scheduleChangeApp = new Vue({
     store,
     template: '<schedule-change/>',
     components: { ScheduleChange },
+    mounted: function () {
+        this.$store.dispatch('getChangeType');
+        this.$store.dispatch('getChangeCategory');
+    }
 })

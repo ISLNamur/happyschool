@@ -28,6 +28,7 @@ from django.db.models import F
 
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.views import APIView
+from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.response import Response
 from rest_framework.status import HTTP_202_ACCEPTED
 
@@ -37,9 +38,11 @@ from core.views import BaseModelViewSet, BaseFilters, get_core_settings
 from core.utilities import get_menu
 from core.email import send_email
 
-from .models import ScheduleChangeSettingsModel, ScheduleChangeModel
+from .models import ScheduleChangeSettingsModel, ScheduleChangeModel, ScheduleChangeTypeModel, ScheduleChangePlaceModel,\
+    ScheduleChangeCategoryModel
 from .tasks import task_export
-from .serializers import ScheduleChangeSettingsSerializer, ScheduleChangeSerializer
+from .serializers import ScheduleChangeSettingsSerializer, ScheduleChangeSerializer, ScheduleChangeTypeSerializer,\
+    ScheduleChangePlaceSerializer, ScheduleChangeCategorySerializer
 
 
 def get_settings():
@@ -85,6 +88,24 @@ class ScheduleChangeFilter(BaseFilters):
 
     def activate_has_classe_by(self, queryset, name, value):
         return queryset.exclude(classes__exact="")
+
+
+class ScheduleChangeTypeViewSet(ReadOnlyModelViewSet):
+    queryset = ScheduleChangeTypeModel.objects.all()
+    serializer_class = ScheduleChangeTypeSerializer
+    permission_classes = (IsAuthenticated,)
+
+
+class ScheduleChangeCategoryViewSet(ReadOnlyModelViewSet):
+    queryset = ScheduleChangeCategoryModel.objects.all()
+    serializer_class = ScheduleChangeCategorySerializer
+    permission_classes = (IsAuthenticated,)
+
+
+class ScheduleChangePlaceViewSet(ReadOnlyModelViewSet):
+    queryset = ScheduleChangePlaceModel.objects.all()
+    serializer_class = ScheduleChangePlaceSerializer
+    permission_classes = (IsAuthenticated,)
 
 
 class ScheduleChangeViewSet(BaseModelViewSet):

@@ -1,13 +1,17 @@
 <template>
     <transition appear name="fade">
-        <b-card class="px-3 current-card" no-body>
+        <b-card :class="setCardClass()" no-body>
             <b-row class="text-center">
-                <b-col md="2" class="current-data"><em>{{ rowData.change }}</em></b-col>
+                <b-col md="2" class="current-data">
+                    <icon v-if="rowData.category" :name="icon" v-b-tooltip.hover :title="category" class="align-text-bottom"></icon>
+                    <em>{{ formatChange(rowData.change) }}</em>
+                </b-col>
                 <b-col md="1" class="current-data">{{ rowData.classes }}</b-col>
                 <b-col md="3" class="current-data">
-                    {{ formatTeachers(rowData.teachers_replaced) }}
-                    <span  v-if="rowData.teachers_substitute.length > 0">
-                        <icon name="arrow-right" scale="1"></icon>
+                    <s v-if="rowData.teachers_substitute.length > 0">{{ formatTeachers(rowData.teachers_replaced) }}</s>
+                    <span v-else>{{ formatTeachers(rowData.teachers_replaced) }}</span>
+                    <span v-if="rowData.teachers_substitute.length > 0">
+                        <icon name="arrow-right"></icon>
                         {{ formatTeachers(rowData.teachers_substitute) }}
                     </span>
                 </b-col>
@@ -35,9 +39,27 @@
             rowData : {type: Object},
             deleting: {type: Boolean, default: false}
         },
+        computed: {
+            icon: function () {
+                if (this.rowData.category) return this.$store.state.changeCategory.filter(c => c.id == this.rowData.category)[0].icon;
+                return "";
+            },
+            category: function () {
+                if (this.rowData.category) return this.$store.state.changeCategory.filter(c => c.id == this.rowData.category)[0].category;
+                return "";
+            }
+        },
         methods: {
             formatTeachers: function (teachers) {
                 return teachers.map(t => t.display).join(", ");
+            },
+            formatChange: function (change) {
+                return this.$store.state.changeType.filter(c => c.id == change)[0].name;
+            },
+            setCardClass: function () {
+                let cat = "";
+                if (this.rowData.category) cat += "category-" + this.rowData.category;
+                return "px-3 current-card " + cat;
             },
             deleteEntry: function() {
                 this.$emit('delete');

@@ -21,7 +21,8 @@ from rest_framework import serializers, fields
 from core.serializers import ResponsibleSerializer
 from core.models import ResponsibleModel
 
-from .models import ScheduleChangeModel, ScheduleChangeSettingsModel
+from .models import ScheduleChangeModel, ScheduleChangeSettingsModel, ScheduleChangeTypeModel, ScheduleChangePlaceModel,\
+    ScheduleChangeCategoryModel
 
 
 class FlatArrayField(fields.Field):
@@ -30,6 +31,23 @@ class FlatArrayField(fields.Field):
 
     def to_representation(self, value):
         return ", ".join(value.split(";"))
+
+
+class ScheduleChangeTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ScheduleChangeTypeModel
+        fields = '__all__'
+
+
+class ScheduleChangeCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ScheduleChangeCategoryModel
+        fields = '__all__'
+
+class ScheduleChangePlaceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ScheduleChangePlaceModel
+        fields = '__all__'
 
 
 class ScheduleChangeSerializer(serializers.ModelSerializer):

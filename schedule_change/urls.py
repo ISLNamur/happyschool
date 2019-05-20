@@ -32,5 +32,8 @@ urlpatterns = [
 
 router = DefaultRouter()
 router.register(r'api/schedule_change', views.ScheduleChangeViewSet)
+router.register(r'api/schedule_change_type', views.ScheduleChangeTypeViewSet)
+router.register(r'api/schedule_change_place', views.ScheduleChangePlaceViewSet)
+router.register(r'api/schedule_change_category', views.ScheduleChangeCategoryViewSet)
 
 urlpatterns += router.urls

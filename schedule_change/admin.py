@@ -19,8 +19,12 @@
 
 from django.contrib import admin
 
-from .models import ScheduleChangeModel, ScheduleChangeSettingsModel
+from .models import ScheduleChangeModel, ScheduleChangeSettingsModel, ScheduleChangeCategoryModel,\
+    ScheduleChangeTypeModel, ScheduleChangePlaceModel
 
 
 admin.site.register(ScheduleChangeModel)
 admin.site.register(ScheduleChangeSettingsModel)
+admin.site.register(ScheduleChangeTypeModel)
+admin.site.register(ScheduleChangeCategoryModel)
+admin.site.register(ScheduleChangePlaceModel)
