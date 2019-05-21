@@ -94,7 +94,7 @@ export default {
                     xsrfCookieName: 'csrftoken',
                     xsrfHeaderName: 'X-CSRFToken',
             };
-            const url = '/schedule_change/api/summary_pdf/?activate_has_classe=true&date_schedule__gte=' + this.export_from + '&date_schedule__lte=' + this.export_to + '&send_to_teachers=' + this.sendToTeachers;
+            const url = '/schedule_change/api/summary_pdf/?activate_has_classe=true&date_change__gte=' + this.export_from + '&date_change__lte=' + this.export_to + '&send_to_teachers=' + this.sendToTeachers;
             axios.get(url, token)
             .then(response => {
                 const protocol = window.location.protocol === 'http:' ? 'ws' : 'wss';

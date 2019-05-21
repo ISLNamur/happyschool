@@ -78,7 +78,7 @@ class ScheduleChangeFilter(BaseFilters):
     activate_has_classe = filters.BooleanFilter(method="activate_has_classe_by")
 
     class Meta:
-        fields_to_filter = ('date_change', 'activate_ongoing', 'activate_has_classe')
+        fields_to_filter = ('date_change', 'activate_ongoing', 'activate_has_classe',)
         model = ScheduleChangeModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
@@ -109,7 +109,8 @@ class ScheduleChangePlaceViewSet(ReadOnlyModelViewSet):
 
 
 class ScheduleChangeViewSet(BaseModelViewSet):
-    queryset = ScheduleChangeModel.objects.all().order_by('date_change', F('time_start').asc(nulls_first=True), 'time_end')
+    queryset = ScheduleChangeModel.objects.all().order_by('date_change', F('time_start').asc(nulls_first=True),
+                                                          'time_end')
     serializer_class = ScheduleChangeSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     filter_class = ScheduleChangeFilter
@@ -180,8 +181,8 @@ class SummaryPDFAPI(APIView):
         results = view_set(request._request).data['results']
         changes = [c['id'] for c in results]
 
-        date_from = request.GET.get('date_schedule__gte')
-        date_to = request.GET.get('date_schedule__lte')
+        date_from = request.GET.get('date_change__gte')
+        date_to = request.GET.get('date_change__lte')
         send_to_teachers = json.loads(request.GET.get('send_to_teachers', 'false'))
 
         task = task_export.delay(changes, date_from, date_to, send_to_teachers)

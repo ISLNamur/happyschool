@@ -234,6 +234,7 @@ export default {
                 // Set the first group of changes (group by dates).
                 this.entriesCount = response.data.count;
                 if (this.entriesCount == 0) {
+                    this.entriesGrouped = [];
                     this.loaded = true;
                     return;
                 }
