@@ -26,6 +26,10 @@
         <paraStyle name="warning" fontSize="12" borderColor="red"
                borderWidth="2"
                 borderPadding="5 5"/>
+        <paraStyle name="normal" />
+        {% for cat in categories %}
+        <paraStyle name="{{ cat.category }}" backColor="#{{ cat.color }}" />
+        {% endfor %}
         <blockTableStyle id="cas">
             <lineStyle kind="LINEABOVE" colorName="black" thickness="1"/>
             <blockValign value="middle"/>
@@ -60,7 +64,7 @@
             {% for c in list %}
             <tr>
                 <td>
-                    <para alignment="center">
+                    <para style="{% if c.category %}{{ c.category.category }}{% else %}normal{% endif %}" alignment="center">
                     {{ c.date_change|date:'d/m/Y' }}
                     </para>
                 </td>

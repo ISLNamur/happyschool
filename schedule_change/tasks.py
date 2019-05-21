@@ -32,15 +32,17 @@ from core.models import ClasseModel, ResponsibleModel, TeachingModel
 from core.email import send_email
 
 from .views import get_core_settings
-from .models import ScheduleChangeSettingsModel, ScheduleChangeModel
+from .models import ScheduleChangeSettingsModel, ScheduleChangeModel, ScheduleChangeCategoryModel
 
 
 @shared_task(bind=True)
 def task_export(self, ids, date_from, date_to, send_to_teachers=False):
     changes = [ScheduleChangeModel.objects.get(id=c) for c in ids]
+    categories = ScheduleChangeCategoryModel.objects.all()
     context = {'date_from': date_from, 'date_to': date_to,
                'list': changes, 'phone': get_settings().responsible_phone,
-               'responsible': get_settings().responsible_name}
+               'responsible': get_settings().responsible_name,
+               'categories': categories}
     t = get_template('schedule_change/summary.rml')
     rml_str = t.render(context)
 
