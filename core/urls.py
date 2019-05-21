@@ -35,7 +35,8 @@ urlpatterns = [
     path('admin/', admin_views.AdminView.as_view()),
     path('api/testfile/', admin_views.TestFileAPIView.as_view()),
     path('api/import_students/', admin_views.ImportStudentAPIView.as_view()),
-    path('api/birthday/', views.BirthdayAPI.as_view(), name='birthday')
+    path('api/birthday/', views.BirthdayAPI.as_view(), name='birthday'),
+    path('api/calendar/', views.CalendarAPI.as_view(), name='calendar'),
 ]
 
 router = DefaultRouter()

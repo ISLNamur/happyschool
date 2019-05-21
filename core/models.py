@@ -211,3 +211,11 @@ class EmailModel(models.Model):
 
     def __str__(self):
         return self.display
+
+
+class ImportCalendarModel(models.Model):
+    name = models.CharField(max_length=200)
+    url = models.URLField(help_text="URL du calendrier ics.")
+
+    def __str__(self):
+        return self.name

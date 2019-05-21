@@ -19,6 +19,11 @@
 
 import json
 import warnings
+import requests
+
+from datetime import date
+
+from icalendar import Calendar
 
 from rest_framework.filters import OrderingFilter
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
@@ -37,7 +42,8 @@ from django.core.exceptions import ObjectDoesNotExist, FieldError
 from django.views.generic import TemplateView
 from django.contrib.auth.models import Group
 
-from core.models import ResponsibleModel, TeachingModel, EmailModel, CoreSettingsModel, StudentModel
+from core.models import ResponsibleModel, TeachingModel, EmailModel, CoreSettingsModel, StudentModel,\
+    ImportCalendarModel
 from core.people import get_classes
 from core.permissions import IsSecretaryPermission
 from core.serializers import ResponsibleSensitiveSerializer, TeachingSerializer,\
@@ -207,3 +213,25 @@ class BirthdayAPI(APIView):
             students = students.values_list('last_name', 'first_name', 'classe__year', 'classe__letter')
             birthday += [{'name': "%s %s %s%s" % (s[0], s[1], s[2], s[3].upper())} for s in students]
         return Response({'results': birthday})
+
+
+class CalendarAPI(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @staticmethod
+    def _today(event):
+        now = timezone.now()
+        if type(event['DTSTART'].dt) == date:
+            return now.date()
+        return now
+
+    def get(self, format=None):
+        events = []
+        for cal_ics in ImportCalendarModel.objects.all():
+            cal = Calendar.from_ical(requests.get(cal_ics.url).text)
+            evts = [{"calendar": cal_ics.name,"name": str(event['SUMMARY']), "begin": event['DTSTART'].dt.strftime("%d/%m/%Y"),
+                     "end": event['DTEND'].dt.strftime("%d/%m/%Y")} for event in cal.walk('VEVENT')
+                    if event['DTSTART'].dt > self._today(event) or event['DTSTART'].dt <= self._today(event) <= event['DTEND'].dt]
+            events += evts
+        events = sorted(events, key=lambda e: (e["begin"][6:], e["begin"][3:5], e["begin"][:2]))
+        return Response({'results': events})

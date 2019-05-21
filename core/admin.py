@@ -19,13 +19,25 @@
 
 from django.contrib import admin
 from .models import StudentModel, TeachingModel, ResponsibleModel, AdditionalStudentInfo,\
-    ClasseModel, EmailModel, YearModel, CoreSettingsModel
+    ClasseModel, EmailModel, YearModel, CoreSettingsModel, ImportCalendarModel
 
-admin.site.register(StudentModel)
+
+class StudentCoreAdmin(admin.ModelAdmin):
+    list_display = ('matricule', 'last_name', 'first_name', 'classe',)
+    search_fields = ['last_name', 'matricule']
+
+
+class ResponsibleCoreAdmin(admin.ModelAdmin):
+    list_display = ('matricule', 'last_name', 'first_name', 'is_teacher', 'is_educator', 'is_secretary', 'user',)
+    search_fields = ['last_name', 'matricule', 'user']
+
+
+admin.site.register(StudentModel, StudentCoreAdmin)
 admin.site.register(TeachingModel)
-admin.site.register(ResponsibleModel)
+admin.site.register(ResponsibleModel, ResponsibleCoreAdmin)
 admin.site.register(AdditionalStudentInfo)
 admin.site.register(ClasseModel)
 admin.site.register(EmailModel)
 admin.site.register(YearModel)
 admin.site.register(CoreSettingsModel)
+admin.site.register(ImportCalendarModel)
