@@ -77,7 +77,8 @@ self.addEventListener('fetch', function(event) {
             });
             return response;
           }());
-    } else {
+    } else if (event.request.url.includes("/student_absence")
+               || event.request.url.includes("/static/")) {
         event.respondWith(
             fetch(event.request)
             .then(response => {
@@ -96,5 +97,7 @@ self.addEventListener('fetch', function(event) {
                 });
             })
         );
+    } else {
+        return fetch(event.request);
     }
 });

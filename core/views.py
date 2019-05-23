@@ -29,6 +29,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK
 from rest_framework.permissions import DjangoModelPermissions, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 
@@ -235,3 +236,8 @@ class CalendarAPI(APIView):
             events += evts
         events = sorted(events, key=lambda e: (e["begin"][6:], e["begin"][3:5], e["begin"][:2]))
         return Response({'results': events})
+
+
+class PingAPI(APIView):
+    def get(self, format=None):
+        return Response(status=HTTP_200_OK)

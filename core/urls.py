@@ -37,6 +37,7 @@ urlpatterns = [
     path('api/import_students/', admin_views.ImportStudentAPIView.as_view()),
     path('api/birthday/', views.BirthdayAPI.as_view(), name='birthday'),
     path('api/calendar/', views.CalendarAPI.as_view(), name='calendar'),
+    path('ping/', views.PingAPI.as_view(), name='ping'),
 ]
 
 router = DefaultRouter()
