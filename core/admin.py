@@ -29,7 +29,7 @@ class StudentCoreAdmin(admin.ModelAdmin):
 
 class ResponsibleCoreAdmin(admin.ModelAdmin):
     list_display = ('matricule', 'last_name', 'first_name', 'is_teacher', 'is_educator', 'is_secretary', 'user',)
-    search_fields = ['last_name', 'matricule', 'user']
+    search_fields = ['last_name', 'matricule']
 
 
 admin.site.register(StudentModel, StudentCoreAdmin)
