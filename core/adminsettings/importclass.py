@@ -180,6 +180,10 @@ class ImportResponsible(ImportBase):
             if is_teacher:
                 resp.is_teacher = True
 
+            birth_date = self.get_value(entry, "birth_date")
+            if birth_date:
+                resp.birth_date = birth_date
+
             resp.save()
             if not resp.matricule in resp_synced:
                 processed += 1

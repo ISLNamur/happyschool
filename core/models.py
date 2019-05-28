@@ -152,6 +152,7 @@ class ResponsibleModel(models.Model):
                                 null=True,
                                 blank=True)
     inactive_from = models.DateTimeField(null=True, blank=True, default=None)
+    birth_date = models.DateField("birth date", null=True, blank=True)
 
     def __str__(self):
         """Return the full name with the last name first."""
