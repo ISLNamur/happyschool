@@ -25,7 +25,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 
 
-def get_scholar_year():
+def get_scholar_year() -> int:
+    """Get current scholar year. The scholar year starts the 8th of August."""
     current_date = timezone.now()
     year = current_date.year
     month = current_date.month
@@ -39,7 +40,7 @@ def get_scholar_year():
         return year
 
 
-def in_scholar_year(date):
+def in_scholar_year(date) -> bool:
     current_year = get_scholar_year()
     if date.year < current_year:
         return False
@@ -115,7 +116,7 @@ def get_menu(user: User, active_app: str=None) -> dict:
     return menu
 
 
-def check_student_photo(student, copy=True):
+def check_student_photo(student, copy=True) -> bool:
     photos_dir = Path(settings.BASE_DIR).joinpath("static/photos/")
     student_photo = photos_dir.joinpath(str(student.matricule) + ".jpg")
     if not student_photo.is_file():
