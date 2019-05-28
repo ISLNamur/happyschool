@@ -29,6 +29,7 @@ from django.contrib.auth.models import User
 from core.models import StudentModel, TeachingModel, ClasseModel, AdditionalStudentInfo,\
     ResponsibleModel
 from core.ldap import get_ldap_connection, get_django_dict_from_ldap
+from core.utilities import get_scholar_year
 
 
 class ImportBase:
@@ -59,7 +60,10 @@ class ImportBase:
 class ImportResponsible(ImportBase):
     """Base class for importing responsibles."""
     search_login_directory = False
+    ldap_unique_attr = "matricule"
     has_inactivity = False
+    ldap_connection = None
+    base_dn = None
 
     def __init__(self, teaching: TeachingModel) -> None:
         super().__init__(teaching)
@@ -80,9 +84,9 @@ class ImportResponsible(ImportBase):
         processed = 0
         resp_synced = set()
         if self.search_login_directory:
-            ldap_connection = get_ldap_connection()
-            base_dn = settings.AUTH_LDAP_USER_SEARCH.base_dn
-        self.print_log("Importing teachers…(%s)" % self.teaching.display_name)
+            self.ldap_connection = get_ldap_connection()
+            self.base_dn = settings.AUTH_LDAP_USER_SEARCH.base_dn
+        self.print_log("Importing responsibles…(%s)" % self.teaching.display_name)
         for entry in iterable:
             # First check mandatory field.
             first_name = self.get_value(entry, "first_name")
@@ -98,12 +102,20 @@ class ImportResponsible(ImportBase):
                 self.print_log("No unique identifier found, skipping responsible.")
                 continue
             username = self.get_value(entry, "username")
+            if self.search_login_directory:
+                matricule = self.get_value(entry, "matricule")
+                self.ldap_connection.search(self.base_dn, "(%s=%i)" % (self.ldap_unique_attr, matricule),
+                                            attributes='*')
+                for r in self.ldap_connection.response:
+                    ldap_info = get_django_dict_from_ldap(r)
+                    username = ldap_info['username']
             if username:
                 try:
                     user = User.objects.get(username=username)
                 except ObjectDoesNotExist:
                     user = User.objects.create_user(username)
                 resp.user = user
+
 
             resp.first_name = first_name
             resp.last_name = last_name
@@ -128,10 +140,10 @@ class ImportResponsible(ImportBase):
                     if len(c) < 2:
                         continue
                     try:
-                        classe_model = ClasseModel.objects.get(year=int(c[0]), letter=c[1].lower(),
+                        classe_model = ClasseModel.objects.get(year=int(c[0]), letter=c[1:].lower(),
                                                                teaching=self.teaching)
                     except ObjectDoesNotExist:
-                        classe_model = ClasseModel(year=int(c[0]), letter=c[1].lower(),
+                        classe_model = ClasseModel(year=int(c[0]), letter=c[1:].lower(),
                                                    teaching=self.teaching)
                         classe_model.save()
                     resp.classe.add(classe_model)
@@ -141,12 +153,14 @@ class ImportResponsible(ImportBase):
                 resp.tenure.clear()
             tenure = self.get_value(entry, "tenure")
             if tenure:
+                if type(tenure) == str:
+                    tenure = [tenure]
                 for t in tenure:
                     try:
-                        tenure_model = ClasseModel.objects.get(year=int(t[0]), letter=t[1].lower(),
+                        tenure_model = ClasseModel.objects.get(year=int(t[0]), letter=t[1:].lower(),
                                                                teaching=self.teaching)
                     except ObjectDoesNotExist:
-                        tenure_model = ClasseModel(year=int(t[0]), letter=t[1].lower(),
+                        tenure_model = ClasseModel(year=int(t[0]), letter=t[1:].lower(),
                                                    teaching=self.teaching)
                         tenure_model.save()
                     resp.tenure.add(tenure_model)
@@ -171,23 +185,22 @@ class ImportResponsible(ImportBase):
                 processed += 1
                 if processed % 50 == 0:
                     self.print_log(processed)
-            resp_synced.add(resp.matricule)
+            if is_teacher:
+                resp_synced.add(resp.matricule)
 
-            # Print progress.
-
-
-        # Set inactives.
-        self.print_log("Set inactive teachers…")
-        all_resp = ResponsibleModel.objects.filter(teaching=self.teaching, is_teacher=True)
-        for r in all_resp:
-            if r.matricule not in resp_synced:
-                if not self.has_inactivity:
-                    r.inactive_from = timezone.make_aware(timezone.datetime.now())
-                    r.classe.clear()
-                    r.tenure = None
-                    r.save()
-                else:
-                    r.delete()
+        # Set inactives teachers.
+        if len(resp_synced) != 0:
+            self.print_log("Set inactive teachers…")
+            all_resp = ResponsibleModel.objects.filter(teaching=self.teaching, is_teacher=True)
+            for r in all_resp:
+                if r.matricule not in resp_synced:
+                    if not self.has_inactivity:
+                        r.inactive_from = timezone.make_aware(timezone.datetime.now())
+                        r.classe.clear()
+                        r.tenure.clear()
+                        r.save()
+                    else:
+                        r.delete()
 
         self.print_log("Import done.")
 
@@ -275,6 +288,56 @@ class ImportResponsibleCSV(ImportResponsible):
             return None
 
 
+class ImportResponsibleFDB(ImportResponsible):
+    column_map = {
+        "last_name": "surname", "first_name": "firstname", "classe": "classes",
+    }
+    is_teacher = False
+    is_educator = False
+
+    def __init__(self, teaching: TeachingModel, fdb_server, search_login_directory: bool,
+                 teaching_type: str, ldap_unique_attr="matricule") -> None:
+        super().__init__(teaching)
+        self.server = fdb_server
+        self.teaching_type = teaching_type
+        self.search_login_directory = search_login_directory
+        self.ldap_unique_attr = ldap_unique_attr
+
+    def sync(self) -> None:
+        from libreschoolfdb.reader import get_teachers, get_educators
+        year = get_scholar_year()
+        self.print_log("Collecting teachers from ProEco database…")
+        teachers = get_teachers(year, self.server, self.teaching_type)
+        self.is_teacher = True
+        self.is_educator = False
+        self._sync(teachers.items())
+
+        self.print_log("Collecting educators from ProEco database…")
+        educators = get_educators(self.server)
+        self.is_teacher = False
+        self.is_educator = True
+        self._sync(educators.items())
+
+    def get_value(self, entry: dict, column: str) -> Union[int, str, date, None]:
+        if column == "matricule":
+            return entry[0]
+        if column == "is_teacher":
+            return self.is_teacher
+        if column == "is_educator":
+            return self.is_educator
+        elif column == "username" or column == "password":
+            return None
+        elif column in self.column_map:
+            if self.column_map[column] in entry[1]:
+                return entry[1][self.column_map[column]]
+            else:
+                return None
+        else:
+            if column in entry[1]:
+                return self.format_value(entry[1][column], column)
+            return None
+
+
 class ImportStudent(ImportBase):
     """Base class for importing students."""
 
@@ -291,9 +354,11 @@ class ImportStudent(ImportBase):
         "mother_job","mother_phone", "mother_mobile",
         "mother_email",
         "doctor", "doctor_phone", "mutual",
-        "mutual_number", "medical_information",
+        "medical_information",
         "birth_date", "username", "password",
     ]
+    ldap_connection = None
+    base_dn = None
 
     def __init__(self, teaching: TeachingModel, search_login_directory: bool = False) -> None:
         super().__init__(teaching)
@@ -315,9 +380,9 @@ class ImportStudent(ImportBase):
             return value.lower()
         if column == "birth_date":
             if type(value) == int:
-                return date(year=int(value[:4]),
-                            month=int(value[4:6]),
-                            day=int(value[6:]))
+                return date(year=int(str(value)[:4]),
+                            month=int(str(value)[4:6]),
+                            day=int(str(value)[6:]))
 
         return value
 
@@ -328,8 +393,8 @@ class ImportStudent(ImportBase):
         processed = 0
         student_synced = set()
         if self.search_login_directory:
-            ldap_connection = get_ldap_connection()
-            base_dn = settings.AUTH_LDAP_USER_SEARCH.base_dn
+            self.ldap_connection = get_ldap_connection()
+            self.base_dn = settings.AUTH_LDAP_USER_SEARCH.base_dn
         self.print_log("Importing students…(%s)" % self.teaching.display_name)
         for entry in iterable:
             # First check mandatory field.
@@ -396,8 +461,8 @@ class ImportStudent(ImportBase):
                 if val:
                     setattr(info, c, val)
             if self.search_login_directory:
-                ldap_connection.search(base_dn, "(id=%i)" % matricule, attributes='*')
-                for r in ldap_connection.response:
+                self.ldap_connection.search(self.base_dn, "(matricule=%i)" % matricule, attributes='*')
+                for r in self.ldap_connection.response:
                     ldap_info = get_django_dict_from_ldap(r)
                     info.username = ldap_info['username']
                     info.password = ldap_info['password']
@@ -468,3 +533,46 @@ class ImportStudentLDAP(ImportStudent):
                                attributes='*')
         ldap_entries = map(lambda entry: get_django_dict_from_ldap(entry), self.connection.response)
         super()._sync(ldap_entries)
+
+
+class ImportStudentFDB(ImportStudent):
+    column_map = {
+        "last_name": "surname", "first_name": "firstname", "year": "classe_year",
+        "doctor": "medecin", "doctor_phone": "medecin_phone", "mutual": "mutuelle",
+        "medical_information": "medical_info",
+        "street": "address", "locality": "city", "student_mobile": "student_gsm",
+        "resp_last_name": "resp_surname", "resp_first_name": "resp_firstname",
+        "resp_phone": "phone", "resp_mobile": "gsm", "resp_email": "email",
+        "father_last_name": "father_surname", "father_first_name": "father_firstname", "father_mobile": "father_gsm",
+        "mother_last_name": "mother_surname", "mother_first_name": "mother_firstname", "mother_mobile": "mother_gsm",
+    }
+    scholar_year = get_scholar_year()
+
+    def __init__(self, teaching: TeachingModel, fdb_server, search_login_directory, teaching_type) -> None:
+        super().__init__(teaching, search_login_directory)
+        self.server = fdb_server
+        self.teaching_type = teaching_type
+
+    def sync(self):
+        from libreschoolfdb.reader import get_students
+        self.print_log("Collecting students informations from ProEco database.")
+        students = get_students(year=self.scholar_year, fdb_server=self.server, teaching=self.teaching_type, absences_info=False)
+        # print(students)
+        super()._sync(students.items())
+
+    def get_value(self, entry: dict, column: str) -> Union[int, str, date, None]:
+        if column == "matricule":
+            return entry[0]
+        elif column == "previous_class":
+            if "previous_classe" in entry:
+                return entry["previous_classe"]
+            else:
+                return None
+        elif column == "username" or column == "password":
+            return None
+        elif column == "scholar_year":
+            return self.scholar_year
+        elif column in self.column_map:
+            return entry[1][self.column_map[column]]
+        else:
+            return self.format_value(entry[1][column], column)
