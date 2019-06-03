@@ -21,7 +21,7 @@ import json
 import warnings
 import requests
 
-from datetime import date
+from datetime import date, timedelta
 
 from icalendar import Calendar
 
@@ -231,8 +231,8 @@ class CalendarAPI(APIView):
         for cal_ics in ImportCalendarModel.objects.all():
             cal = Calendar.from_ical(requests.get(cal_ics.url).text)
             evts = [{"calendar": cal_ics.name,"name": str(event['SUMMARY']), "begin": event['DTSTART'].dt.strftime("%d/%m/%Y"),
-                     "end": event['DTEND'].dt.strftime("%d/%m/%Y")} for event in cal.walk('VEVENT')
-                    if event['DTSTART'].dt > self._today(event) or event['DTSTART'].dt <= self._today(event) <= event['DTEND'].dt]
+                     "end": (event['DTEND'].dt - timedelta(days=1)).strftime("%d/%m/%Y")} for event in cal.walk('VEVENT')
+                    if event['DTSTART'].dt > self._today(event) or event['DTSTART'].dt <= self._today(event) < event['DTEND'].dt]
             events += evts
         events = sorted(events, key=lambda e: (e["begin"][6:], e["begin"][3:5], e["begin"][:2]))
         return Response({'results': events})
