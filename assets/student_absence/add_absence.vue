@@ -144,19 +144,17 @@ export default {
             this.currentSearch = null;
         },
         getTodayAbsences: function () {
-            console.log('coucou');
             return this.$store.state.changes.filter(c => c.date_absence == this.date_absence);
         },
         getOldAbsences: function () {
-            console.log("hello");
             return this.$store.state.changes.filter(c => c.date_absence != this.date_absence);
         },
         removeChanges: function (changeType) {
-            const selected = changeType == 'oldChanges' ? this.selectedOldChanges : this.selectedChanges;
+            const selected = changeType == 'old' ? this.selectedOldChanges : this.selectedChanges;
             for (let rmch in selected) {
                 this.$store.commit('removeChange', selected[rmch]);
             }
-            if (changeType == 'oldChanges') {
+            if (changeType == 'old') {
                 this.selectedOldChanges = [];
             } else {
                 this.selectedChanges = [];
