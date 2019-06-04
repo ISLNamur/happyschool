@@ -84,14 +84,14 @@ class BaseFilters(filters.FilterSet):
             },
         }
 
-    def unique_by(self, queryset, name, value):
+    def unique_by(self, queryset, field_name, value):
         if value:
             # Distinct query in postgrsql asks to order_by the same column.
             return queryset.order_by(value).distinct(value)
         else:
             return queryset
 
-    def scholar_year_by(self, queryset, name, value):
+    def scholar_year_by(self, queryset, field_name, value):
         start_year = int(value[:4])
         end_year = start_year + 1
         start = timezone.datetime(year=start_year, month=8, day=20)

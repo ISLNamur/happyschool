@@ -1,5 +1,5 @@
-django>=2.0.10,<2.1
-django-filter<2.0
+django>=2.2,<2.3
+django-filter>=2.0
 redis
 channels>=2.1
 channels_redis>=2.2

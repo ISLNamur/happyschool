@@ -124,7 +124,7 @@ class DossierEleveView(BaseDossierEleveView):
 
 class CasEleveFilter(BaseFilters):
     classe = filters.CharFilter(method='classe_by')
-    activate_important = filters.BooleanFilter(name="important")
+    activate_important = filters.BooleanFilter(field_name="important")
     no_sanctions = filters.BooleanFilter(method="no_sanctions_by")
     no_infos = filters.BooleanFilter(method="no_infos_by")
 
@@ -135,7 +135,7 @@ class CasEleveFilter(BaseFilters):
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
 
-    def classe_by(self, queryset, name, value):
+    def classe_by(self, queryset, field_name, value):
         if not value[0].isdigit():
             return queryset
 
@@ -151,13 +151,13 @@ class CasEleveFilter(BaseFilters):
                 queryset = queryset.filter(matricule__classe__letter=value[1].lower())
         return queryset
 
-    def no_infos_by(self, queryset, name, value):
+    def no_infos_by(self, queryset, field_name, value):
         if value:
             return queryset.filter(sanction_decision__isnull=False)
         else:
             return queryset
 
-    def no_sanctions_by(self, queryset, name, value):
+    def no_sanctions_by(self, queryset, field_name, value):
         if value:
             return queryset.filter(info__isnull=False)
         else:
