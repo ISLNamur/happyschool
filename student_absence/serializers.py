@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
+from django.conf import settings
+
 from rest_framework import serializers
 
 from core.serializers import StudentSerializer, StudentModel
@@ -45,3 +47,23 @@ class StudentAbsenceSerializer(serializers.ModelSerializer):
         model = StudentAbsenceModel
         exclude = ('datetime_creation', 'datetime_update',)
         read_only_fields = ('user', 'username',)
+
+    def create(self, validated_data):
+        if StudentAbsenceSettingsModel.objects.first().sync_with_proeco:
+            self.sync_proeco(validated_data)
+        return super(StudentAbsenceSerializer, self).create(validated_data)
+
+    def update(self, instance, validated_data):
+        if StudentAbsenceSettingsModel.objects.first().sync_with_proeco:
+            self.sync_proeco(validated_data)
+        return super(StudentAbsenceSerializer, self).update(instance, validated_data)
+
+    @staticmethod
+    def sync_proeco(data: dict):
+        from libreschoolfdb import writer
+
+        server = [s['server'] for s in settings.SYNC_FDB_SERVER if s['teaching_name'] == data.get('student').teaching.name]
+        if len(server) != 0:
+            writer.set_student_absence(matricule=data.get('student').matricule, day=data.get('date_absence'),
+                                       morning=data.get('morning', None), afternoon=data.get('afternoon', None),
+                                       fdb_server=server[0])

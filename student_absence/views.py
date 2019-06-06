@@ -83,25 +83,6 @@ class StudentAbsenceViewSet(BaseModelViewSet):
     user_field = 'user'
     username_field = 'username'
 
-    def perform_create(self, serializer):
-        super().perform_create(serializer)
-        if get_settings().sync_with_proeco:
-            self.sync_proeco(serializer.instance)
-
-    def perform_update(self, serializer):
-        super().perform_update(serializer)
-        if get_settings().sync_with_proeco:
-            self.sync_proeco(serializer.instance)
-
-    @staticmethod
-    def sync_proeco(obj: StudentAbsenceModel):
-        from libreschoolfdb import writer
-
-        server = [s['server'] for s in settings.SYNC_FDB_SERVER if s['teaching_name'] == obj.student.teaching.name]
-        if len(server) != 0:
-            writer.set_student_absence(matricule=obj.student.matricule, day=obj.date_absence,
-                                       morning=obj.morning, afternoon=obj.afternoon, fdb_server=server[0])
-
 
 class AbsenceCountAPI(APIView):
     permission_classes = (IsAuthenticated,)
