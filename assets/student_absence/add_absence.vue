@@ -73,7 +73,7 @@
             </b-col>
         </b-row>
         <b-modal size="lg" id="tovalidate" title="Changements non validées"
-            cancel-title="Retour" :ok-title="validateChange" @ok="sendChanges">
+            cancel-title="Retour" @ok="sendChanges">
             <b-tabs v-model="tabIndex">
                 <b-tab title="Absences du jour">
                     <b-form-group class="mt-2">
@@ -98,6 +98,10 @@
                     <b-btn variant="danger" :disabled="selectedOldChanges.length == 0" @click="removeChanges('old')">Supprimer les élements sélectionnés</b-btn>
                 </b-tab>
             </b-tabs>
+            <template slot="modal-ok">
+                <icon v-if="sending" name="spinner" color="white" spin class="align-baseline"></icon>
+                {{ validateChange }}
+            </template>
         </b-modal>
     </div>
 </template>
@@ -127,6 +131,7 @@ export default {
             selectedOldChanges: [],
             selectedChanges: [],
             tabIndex: 0,
+            sending: false,
         }
     },
     computed: {
@@ -170,9 +175,8 @@ export default {
                     return s;
                 }).sort((a, b) => a.display.localeCompare(b.display));
             } else {
-                let saved = this.onLine ? this.savedAbsences : this.$store.state.todayAbsences;
-                if (saved[option.matricule]) {
-                    option.saved = this.saved[option.matricule];
+                if (option.matricule in this.$store.state.todayAbsences) {
+                    option.savedAbsence = this.$store.state.todayAbsences[option.matricule];
                 }
                 this.students = [option];
             }
@@ -240,14 +244,15 @@ export default {
                 });
             }
         },
-        sendChanges: function () {
+        sendChanges: function (evt) {
+            evt.preventDefault();
+            this.sending = true;
+            let app = this;
             const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
             const apiUrl = "/student_absence/api/student_absence/";
             const changesToSend = this.tabIndex == 0 ? this.getTodayAbsences() : this.getOldAbsences();
-            console.log(changesToSend)
             for (let c = changesToSend.length - 1; c >= 0; c--) {
                 let change = changesToSend[c];
-                console.log(change);
                 const request = apiUrl + "?student=" + change.matricule + "&date_absence__gte=" + change.date_absence + '&date_absence__lte=' + change.date_absence;
                 axios.get(request)
                 .then(response => {
@@ -257,16 +262,30 @@ export default {
                         if ('morning' in change) absence.morning = change.morning;
                         axios.put(apiUrl + absence.id + '/', absence, token);
                         this.$store.commit('removeChange', change);
-                        if (changesToSend.length == 0) this.loadAbsences(this.date_absence);
+                        if (c == 0) {
+                            app.sending = false;
+                            app.$bvModal.hide("tovalidate");
+                            setTimeout(() => {
+                                app.loadAbsences(this.date_absence);
+                            }, 1000);
+                            
+                        }
                     } else {
                         let absence = Object.assign({}, change);
                         delete Object.assign(absence, {["student_id"]: absence["matricule"] })["matricule"];
                         axios.post(apiUrl, absence, token)
                         .then(resp => {
                             this.$store.commit('removeChange', change);
-                            if (changesToSend.length == 0) this.loadAbsences(this.date_absence);
+                            if (c == 0) {
+                                app.sending = false;
+                                app.$bvModal.hide("tovalidate");
+                                setTimeout(() => {
+                                    app.loadAbsences(this.date_absence);
+                                }, 1000);
+                            }
                         })
                         .catch(function (error) {
+                            app.sending = false;
                             alert(error);
                         });
                     }
