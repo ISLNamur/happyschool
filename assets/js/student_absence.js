@@ -42,7 +42,8 @@ if ('serviceWorker' in navigator) {
   };
 
 const vuexLocal = new VuexPersistence({
-    storage: window.localStorage
+    storage: window.localStorage,
+    supportCircular: true,
 })
 
 const store = new Vuex.Store({
@@ -172,18 +173,18 @@ var studentAbsenceApp = new Vue({
     template: '<div><app-menu :menu-info="menuInfo" v-if="$store.state.onLine"></app-menu><router-view></router-view></div>',
     methods: {
         checkOnlineStatus() {
-            axios.get("/core/ping/", {timeout: 1000})
+            axios.get("/core/ping/", {timeout: 2000})
             .then(resp => {
                 this.$store.commit('changeOnLineStatus', true);
                 setTimeout(() => {
                     this.checkOnlineStatus();
-                }, 5000)
+                }, 10000)
             })
             .catch(errors => {
                 this.$store.commit('changeOnLineStatus', false);
                 setTimeout(() => {
                     this.checkOnlineStatus();
-                }, 5000)
+                }, 10000)
             })
         },
     },

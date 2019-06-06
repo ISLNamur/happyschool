@@ -38,6 +38,7 @@
     "babel-preset-env": "^1.7.0",
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.18",
+    "flatted": "^2.0.0",
     "idb": "^4.0.1",
     "moment": "^2.24.0",
     "push.js": "^1.0.9",
@@ -49,7 +50,7 @@
     "vue-router": "^3.0.4",
     "vue-select": "github:sagalbot/vue-select",
     "vuex": "^2.5.0",
-    "vuex-persist": "^2.0.0",
+    "vuex-persist": "^2.0.1",
     "webpack-merge": "^4.2.1"
   }
 }
