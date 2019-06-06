@@ -50,11 +50,18 @@ export default {
             lastAbsencesFields: {
                 'student.display': {
                     label: 'Élèves',
+                    formatter: value => {
+                        if (this.$store.state.settings.teachings.length == 1) {
+                            return value.split(" – ")[0];
+                        } else {
+                            return value;
+                        }
+                    }
                 },
                 'date_absence': {
                     label: 'Date',
                     formatter: value => {
-                        return Moment(value).calendar();
+                        return Moment(value).calendar().split(" à ")[0];
                     }
                 },
                 'morning': {
