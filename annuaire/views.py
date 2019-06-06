@@ -481,7 +481,7 @@ def search_people(query, people_type, teachings, check_access, user, active=True
         if query == 'everybody':
             students = StudentModel.objects.all()
             if active:
-                students = students.filter(inactive_from__isnull=True)
+                students = students.filter(inactive_from__isnull=True, classe__isnull=False)
             if classe_years:
                 students = students.filter(classe__in=classe_years)
             if teachings and 'all' not in teachings:
