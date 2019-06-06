@@ -240,4 +240,4 @@ class CalendarAPI(APIView):
 
 class PingAPI(APIView):
     def get(self, format=None):
-        return Response(status=HTTP_200_OK)
+        return Response(status=HTTP_200_OK, data={})
