@@ -37,6 +37,8 @@ from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMix
 
 from django_filters import rest_framework as filters
 
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
 from django.utils import timezone
 from django.db.models import CharField
 from django.core.exceptions import ObjectDoesNotExist, FieldError
@@ -226,6 +228,8 @@ class CalendarAPI(APIView):
             return now.date()
         return now
 
+    # Cache for 6 hours.
+    @method_decorator(cache_page(60 * 60 * 6))
     def get(self, format=None):
         events = []
         for cal_ics in ImportCalendarModel.objects.all():
