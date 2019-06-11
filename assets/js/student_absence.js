@@ -43,7 +43,6 @@ if ('serviceWorker' in navigator) {
 
 const vuexLocal = new VuexPersistence({
     storage: window.localStorage,
-    supportCircular: true,
 })
 
 const store = new Vuex.Store({
