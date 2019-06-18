@@ -32,6 +32,7 @@
                             Ajouter absenses
                         </b-nav-item>
                         <b-nav-item-dropdown>
+                            <b-dropdown-item to="notes">Notes</b-dropdown-item>
                             <b-dropdown-item @click="$store.commit('updateStudentsClasses')">Mettre à jour des étudiants</b-dropdown-item>
                         </b-nav-item-dropdown>
                     </template>

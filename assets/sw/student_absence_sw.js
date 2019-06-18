@@ -5,10 +5,8 @@ let assetsManager = new AssetsManager();
 let urlToCache = assetsManager.cacheEntries.filter(url => url.includes("commons") || url.includes("student_absence") || url.includes("polyfill"));
 urlToCache.push("/student_absence/");
 urlToCache.push("/student_absence/api/absence_count/");
-urlToCache.push("/static/css/bootstrap4.min.css");
-urlToCache.push("/static/img/logo_isln.png");
-
 const hash = urlToCache[0].split("-")[1].split(".")[0];
+
 
 // Create an Annuaire.
 const dbPromise = idb.openDB("annuaire", 1, {
@@ -43,7 +41,7 @@ self.addEventListener('activate', function(event) {
   });
 
 self.addEventListener('fetch', function(event) {
-    if (event.request.url.includes("/annuaire/api/people/")) {
+    if (event.request.url.includes("/student_absence/api/students_classes/")) {
         event.respondWith(async function() {
             const response = await fetch(event.request)
             .catch(error => {
@@ -63,9 +61,9 @@ self.addEventListener('fetch', function(event) {
                     // Get classe if any.
                     const classe_key = (data[s].classe.year + data[s].classe.letter).toUpperCase();
                     if (classe_key in classes) {
-                        classes[classe_key].push(data[s].matricule);
+                        classes[classe_key].students.push(data[s].matricule);
                     } else {
-                        classes[classe_key] = [data[s].matricule];
+                        classes[classe_key] = {students: [data[s].matricule], id: data[s].classe.id};
                     }
                 }
                 for (let classe in classes) {
@@ -77,8 +75,9 @@ self.addEventListener('fetch', function(event) {
             });
             return response;
           }());
-    } else if (event.request.url.includes("/student_absence")
-               || event.request.url.includes("/static/")) {
+    } else if (event.request.url.includes("/core/ping/")) {
+        return fetch(event.request);
+    } else {
         event.respondWith(
             fetch(event.request)
             .then(response => {
@@ -97,7 +96,6 @@ self.addEventListener('fetch', function(event) {
                 });
             })
         );
-    } else {
-        return fetch(event.request);
     }
-});
+    }
+);

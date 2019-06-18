@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import StudentAbsenceModel, StudentAbsenceSettingsModel
+from .models import StudentAbsenceModel, StudentAbsenceSettingsModel, ClasseNoteModel
 
 
 class StudentAbsenceAdmin(admin.ModelAdmin):
@@ -8,4 +8,5 @@ class StudentAbsenceAdmin(admin.ModelAdmin):
 
 
 admin.site.register(StudentAbsenceSettingsModel)
+admin.site.register(ClasseNoteModel)
 admin.site.register(StudentAbsenceModel, StudentAbsenceAdmin)

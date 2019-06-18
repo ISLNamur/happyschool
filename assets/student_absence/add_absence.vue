@@ -65,6 +65,14 @@
         </b-row>
         <b-row>
             <b-col>
+                <b-card v-if="classe">
+                    <p>Nombre d'étudiants : {{ students.length }}.</p>
+                    <div v-if="note.length > 0" v-html="note"></div>
+                </b-card>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
                 <b-list-group>
                     <add-absence-entry v-for="s in students" :key="s.matricule"
                         v-bind:student="s" v-bind:date_absence="date_absence">
@@ -132,6 +140,8 @@ export default {
             selectedChanges: [],
             tabIndex: 0,
             sending: false,
+            classe: null,
+            note: "",
         }
     },
     computed: {
@@ -146,6 +156,7 @@ export default {
     methods: {
         cleanStudents: function () {
             this.students = [];
+            this.classe = null;
             this.currentSearch = null;
         },
         getTodayAbsences: function () {
@@ -167,6 +178,7 @@ export default {
         },
         selected: function (option) {
             if (option.type == 'classe') {
+                this.classe = option.id;
                 this.students = option.students.map(s => {
                     if (s.matricule in this.$store.state.todayAbsences) {
                         s.savedAbsence = this.$store.state.todayAbsences[s.matricule];
@@ -174,7 +186,12 @@ export default {
                     }
                     return s;
                 }).sort((a, b) => a.display.localeCompare(b.display));
+                // Get notes if any.
+                if (this.classe in this.$store.state.notes) {
+                    this.note = this.$store.state.notes[this.classe].note;
+                }
             } else {
+                this.classe = null;
                 if (option.matricule in this.$store.state.todayAbsences) {
                     option.savedAbsence = this.$store.state.todayAbsences[option.matricule];
                 }
@@ -225,8 +242,8 @@ export default {
                             let students = [];
                             db.get("classes", classeKeys[o])
                             .then(studs => {
-                                for (let s in studs) {
-                                    db.get("students", studs[s])
+                                for (let s in studs.students) {
+                                    db.get("students", studs.students[s])
                                     .then(student => {
                                         students.push(student);
                                     })
@@ -235,7 +252,7 @@ export default {
                                     type: 'classe',
                                     students: students,
                                     display: classeKeys[o],
-                                    id: classeKeys[o],
+                                    id: studs.id,
                                 });
                             });
                         }

@@ -22,12 +22,18 @@ from django.conf import settings
 from rest_framework import serializers
 
 from core.serializers import StudentSerializer, StudentModel
-from .models import StudentAbsenceSettingsModel, StudentAbsenceModel, JustificationModel
+from .models import StudentAbsenceSettingsModel, StudentAbsenceModel, JustificationModel, ClasseNoteModel
 
 
 class StudentAbsenceSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentAbsenceSettingsModel
+        fields = '__all__'
+
+
+class ClasseNoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ClasseNoteModel
         fields = '__all__'
 
 

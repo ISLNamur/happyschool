@@ -30,15 +30,16 @@ from django_filters import rest_framework as filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
-from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 
 from core.utilities import get_menu
 from core.people import get_classes
 from core.models import ResponsibleModel, StudentModel
 from core.views import BaseFilters, BaseModelViewSet
 
-from .models import StudentAbsenceModel, StudentAbsenceSettingsModel, JustificationModel
-from .serializers import StudentAbsenceSettingsSerializer, StudentAbsenceSerializer, JustificationSerializer
+from .models import StudentAbsenceModel, StudentAbsenceSettingsModel, JustificationModel, ClasseNoteModel
+from .serializers import StudentAbsenceSettingsSerializer, StudentAbsenceSerializer, JustificationSerializer, \
+    ClasseNoteSerializer
 
 
 def get_settings():
@@ -74,14 +75,12 @@ class StudentAbsenceFilter(BaseFilters):
         filter_overrides = BaseFilters.Meta.filter_overrides
 
 
-class StudentAbsenceViewSet(BaseModelViewSet):
+class StudentAbsenceViewSet(ModelViewSet):
     queryset = StudentAbsenceModel.objects.filter(student__isnull=False)
     serializer_class = StudentAbsenceSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     filter_class = StudentAbsenceFilter
     ordering_fields = ('date_absence', 'datetime_update', 'datetime_creation',)
-    user_field = 'user'
-    username_field = 'username'
 
 
 class AbsenceCountAPI(APIView):
@@ -112,3 +111,11 @@ class AbsenceCountAPI(APIView):
 class JustificationViewSet(ReadOnlyModelViewSet):
     queryset = JustificationModel.objects.all()
     serializer_class = JustificationSerializer
+
+
+class ClasseNoteViewSet(ModelViewSet):
+    queryset = ClasseNoteModel.objects.all()
+    serializer_class = ClasseNoteSerializer
+    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('classe',)

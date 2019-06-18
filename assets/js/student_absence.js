@@ -32,7 +32,7 @@ import Moment from 'moment';
 Moment.locale('fr');
 
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/static/bundles/student_absence_sw.js', { scope: '/' }).then(function(reg) {
+    navigator.serviceWorker.register('/static/bundles/student_absence_sw.js', { scope: '/student_absence/' }).then(function(reg) {
       // registration worked.
       console.log('Registration succeeded. Scope is ' + reg.scope);
     }).catch(function(error) {
@@ -51,6 +51,7 @@ const store = new Vuex.Store({
       filters: [],
       todayAbsences: {},
       changes: [],
+      notes: {},
       onLine: false,
       lastUpdate: "",
       updating: false,
@@ -69,6 +70,9 @@ const store = new Vuex.Store({
         }
     },
     mutations: {
+        addNote: function (state, note) {
+            state.notes[note.classe] = note;
+        },
         addFilter: function (state, filter) {
             // If filter is a matricule, remove name filter to avoid conflict.
             if (filter.filterType === 'matricule_id') {
@@ -120,10 +124,16 @@ const store = new Vuex.Store({
                 people: 'student',
                 active: true,
             };
-            axios.post('/annuaire/api/people/', data, token)
+            axios.post('/student_absence/api/students_classes/', data, token)
             .then(response => {
                 this.commit('updatingStatus', false);
             });
+            axios.get('/student_absence/api/classenote/', token)
+            .then(response => {
+                for (let n in response.data.results) {
+                    this.commit('addNote', response.data.results[n]);
+                }
+            })
         },
         updatingStatus: function (state, updating) {
             state.updating = updating;
@@ -138,6 +148,7 @@ const store = new Vuex.Store({
 import StudentAbsence from '../student_absence/student_absence.vue';
 import Overview from '../student_absence/overview.vue';
 import AddAbsence from '../student_absence/add_absence.vue';
+import Notes from '../student_absence/notes.vue';
 
   const router = new VueRouter({
     routes: [
@@ -156,6 +167,10 @@ import AddAbsence from '../student_absence/add_absence.vue';
             {
                 path: 'add_absence',
                 component: AddAbsence,
+            },
+            {
+                path: 'notes',
+                component: Notes,
             },
         ]
     },

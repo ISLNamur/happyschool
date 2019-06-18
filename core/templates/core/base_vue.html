@@ -12,6 +12,15 @@
 
     <body class="d-flex h-100 flex-column">
         <script>
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/static/bundles/root_sw.js', { scope: '/' }).then(function(reg) {
+                    // registration worked.
+                    console.log('Registration succeeded. Scope is ' + reg.scope);
+                }).catch(function(error) {
+                    // registration failed.
+                    console.log('Registration failed with ' + error);
+                });
+            };
             {% load groups %}
             {% autoescape off %}
             const user = "{{ user }}";

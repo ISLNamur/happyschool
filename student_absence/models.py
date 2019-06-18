@@ -19,12 +19,21 @@
 
 from django.db import models
 from django.contrib.auth.models import User
-from core.models import StudentModel, TeachingModel, ResponsibleModel
+from core.models import StudentModel, TeachingModel, ResponsibleModel, ClasseModel
 
 
 class StudentAbsenceSettingsModel(models.Model):
     teachings = models.ManyToManyField(TeachingModel, default=None)
     sync_with_proeco = models.BooleanField("Synchronise les absences avec ProEco", default=False)
+
+
+class ClasseNoteModel(models.Model):
+    classe = models.OneToOneField(ClasseModel, on_delete=models.CASCADE)
+    note = models.TextField(blank=True)
+    datetime_creation = models.DateTimeField("Date et heure de création de la note",
+                                             auto_now_add=True)
+    datetime_update = models.DateTimeField("Date et heure de mise à jour de la note",
+                                           auto_now=True)
 
 
 class JustificationModel(models.Model):
