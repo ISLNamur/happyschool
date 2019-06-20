@@ -125,7 +125,7 @@ class EmailsList(APIView):
 
 
 class UploadFile(APIView):
-    parser_classes = (FileUploadParser,)
+    parser_classes = (MultiPartParser,)
     permission_classes = (IsAuthenticated, HasPermissions)
 
     def put(self, request, format=None):
