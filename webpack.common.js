@@ -43,6 +43,9 @@ module.exports = {
 			{
 				from: 'with-async-ittr-min.js', to: 'idb.js', context: 'node_modules/idb/build/iife/'
 			},
+			{
+				from: 'bootstrap.min.css', to: '', context: 'node_modules/bootstrap/dist/css/'
+			}
 		], { logLevel: 'debug' }),
 		new swCachePlugin(
 			{
