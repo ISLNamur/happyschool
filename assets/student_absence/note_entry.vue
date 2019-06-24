@@ -97,8 +97,11 @@ export default {
                     this.noteId = resp.data.results[0].id;
                     this.currentNote = resp.data.results[0].note;
                     this.datetime_update = resp.data.results[0].datetime_update;
+                } else {
+                    this.noteId = -1;
+                    this.currentNote = "";
+                    this.datetime_update = null;
                 }
-
             }) 
             .catch(err => {
                 alert(err);
@@ -139,6 +142,10 @@ export default {
                 this.noteId = resp.data.id;
                 this.$store.commit('addNote', data);
                 this.sending = false;
+                this.$bvToast.toast(`La note concernant la classe ${this.classe.display} a été enregistrée.`, {
+                    variant: 'success',
+                    noCloseButton: true,
+                })
             })
             .catch(err => {
                 alert(err);
