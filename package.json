@@ -45,7 +45,7 @@
     "reconnecting-websocket": "^3.2.2",
     "vue-awesome": "^2.3.8",
     "vue-hot-reload-api": "^2.3.3",
-    "vue-multiselect": "^2.1.4",
+    "vue-multiselect": "^2.1.6",
     "vue-quill-editor": "^3.0.6",
     "vue-router": "^3.0.4",
     "vue-select": "github:sagalbot/vue-select",
