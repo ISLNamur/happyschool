@@ -39,7 +39,8 @@
                 </b-col>
                 <b-col>
                     <b-form-group label="Recherche :" class="ml-4">
-                        <multiselect id="input-name"
+                        <multiselect ref="input"
+                            :showNoOptions="false"
                             :internal-search="false"
                             :options="searchOptions"
                             @search-change="getSearchOptions"
@@ -223,7 +224,40 @@ export default {
         },
         changeComponent: function (component) {
             this.currentComponent = component;
-        }
+        },
+        overloadInput: function () {
+            setTimeout(() => {
+                // Check if input is loaded.
+                let refInput = this.$refs.input;
+                if (refInput) {
+                    let input = refInput.$refs.search;
+                    input.focus();
+                    input.addEventListener('keypress', (e) => {
+                        if (e.key == 'Enter') {
+                            if (refInput.search && refInput.search.length > 1 && !isNaN(refInput.search)) {
+                                axios.get('/annuaire/api/student/' + refInput.search + '/')
+                                .then(resp => {
+                                    if (resp.data) {
+                                        this.students = [];
+                                        this.matricule = parseInt(refInput.search);
+                                        this.type = 'student';
+                                        this.classe = null;
+                                        refInput.search = "";
+                                    }
+                                })
+                                .catch(err => {
+                                    console.log("Aucun étudiant trouvé");
+                                })
+                            }
+                        }
+                    })
+                    return input;
+                } else {
+                    this.overloadInput();
+                }
+            }, 300)
+            
+        },
     },
     mounted: function () {
         axios.get('/core/api/teaching/')
@@ -233,6 +267,7 @@ export default {
         });
 
         this.menuInfo = menu;
+        this.overloadInput();
     },
     components: {
         'multiselect': Multiselect,
