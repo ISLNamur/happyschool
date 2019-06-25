@@ -22,7 +22,7 @@
     <div>
         <h4>Importer des photos</h4>
         <b-row>
-            <p>Les photos des étudiants doivent être sous la forme "numéro_de_matricule.jpg", par exemple 6143.jpg.</p>
+            <p>Les photos des étudiants doivent être sous la forme "numéro_de_matricule.jpg", par exemple 6143.<strong>jpg</strong>.</p>
         </b-row>
         <b-row>
             <b-form>

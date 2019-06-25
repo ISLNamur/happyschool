@@ -26,6 +26,7 @@
                     <b-list-group>
                         <b-list-group-item to="general"><strong>Général</strong></b-list-group-item>
                         <b-list-group-item to="import"><strong>Import</strong></b-list-group-item>
+                        <b-list-group-item to="photos"><strong>Photos</strong></b-list-group-item>
                     </b-list-group>
                 </b-col>
                 <b-col>
