@@ -17,11 +17,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import json
 import csv
 
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.conf import settings
 
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -86,3 +88,18 @@ class ImportStudentAPIView(APIView):
         task = task_test.delay(csv_text, teaching, columns, ignore_first_line)
         print(task)
         return Response(data=json.dumps(str(task)), status=status.HTTP_200_OK)
+
+
+class PhotoAPI(APIView):
+    parser_classes = (MultiPartParser,)
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request, format=None):
+        file_obj = request.FILES['file']
+        people = request.POST.get('people', 'student')
+        static_dir = settings.STATICFILES_DIRS[0] if settings.DEBUG else settings.STATIC_ROOT
+        photo_dir = "photos/" if people == "student" else "photos_prof"
+        photo_path = os.path.join(static_dir, photo_dir + file_obj.name)
+        with open(photo_path, "w+b") as f:
+            f.write(file_obj.read())
+        return Response(status=status.HTTP_201_CREATED)

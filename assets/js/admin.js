@@ -28,6 +28,7 @@ Vue.use(VueRouter)
 import Admin from '../core/admin.vue';
 import Import from '../core/import.vue';
 import GeneralSettings from '../core/general_settings.vue';
+import Photos from '../core/photos.vue';
 import Menu from '../common/menu.vue';
 
 const router = new VueRouter({
@@ -47,6 +48,10 @@ const router = new VueRouter({
             {
                 path: 'import',
                 component: Import,
+            },
+            {
+                path: 'photos',
+                component: Photos,
             },
         ]
     },
