@@ -143,7 +143,7 @@
                             <dd class="col-7">{{ medical.medical_information }}</dd>
                         </dl>
                     </b-tab>
-                    <b-tab v-if="last_news && this.type != 'responsible'" :key=infoCount>
+                    <b-tab v-if="!noNews && this.type != 'responsible'" :key=infoCount>
                         <template slot="title">Info générales 
                             <b-badge variant="info">{{ infoCount }}</b-badge>
                         </template>
@@ -210,9 +210,9 @@ Moment.locale('fr');
 
 export default {
     props: {
-        matricule: Number,
+        matricule: String,
         type: String,
-        last_news: {
+        noNews: {
             type: Boolean,
             default: false,
         }
@@ -249,7 +249,7 @@ export default {
     watch: {
         matricule: function () {
             this.loadInfo();
-        }
+        },
     },
     methods: {
         reset: function () {
@@ -272,7 +272,6 @@ export default {
             return Moment(date).calendar();
         },
         loadInfo: function () {
-            console.log('coucou');
             this.reset();
 
             if (this.type == 'student') {
@@ -306,7 +305,7 @@ export default {
                     this.important = response.data.results;
                 });
 
-                if (this.last_news) {
+                if (!this.noNews) {
                     // Don't fail promise with 404 error (not found thus no right).
                     const config = {
                         validateStatus: function (status) {

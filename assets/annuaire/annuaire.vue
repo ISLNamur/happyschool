@@ -61,34 +61,7 @@
                     </b-form-group>
                 </b-col>
             </b-row>
-            <b-row v-if="classe && !matricule">
-                <b-col>
-                    <p v-if="students.length > 0">
-                        Téléchargements :
-                        <b-button  target="_blank" rel="noopener noreferrer" :href="getClassePhoto">
-                            Photos de classe
-                        </b-button>
-                            <b-button  target="_blank" rel="noopener noreferrer" :href="getClasseListExcel">
-                                Liste des étudiants avec identifiants (excel)
-                            </b-button>
-                            <b-button  target="_blank" rel="noopener noreferrer" :href="getClasseListPDF">
-                                Liste des étudiants avec identifiants (PDF)
-                            </b-button>
-                    </p>
-                    <p v-else>Il n'y a pas d'élèves dans cette classe.</p>
-                    <b-list-group class="text-center">
-                        <b-list-group-item v-for="s in students" :key="s.matricule"
-                            button @click="selectStudent(s.matricule)"
-                            >
-                            {{ s.display }}
-                        </b-list-group-item>
-                    </b-list-group>
-                </b-col>
-            </b-row>
-            <p v-if="classe && matricule">
-                <b-btn @click="matricule=null">Retour à la classe</b-btn>
-            </p>
-            <info v-if="matricule" :matricule="matricule" :type="type" last_news></info>
+            <router-view></router-view>
         </b-container>
     </div>
 </template>
@@ -109,7 +82,6 @@ Vue.component('icon', Icon);
 import axios from 'axios';
 
 import Menu from '../common/menu.vue'
-import Info from './info.vue';
 
 export default {
     data: function () {
@@ -122,54 +94,17 @@ export default {
             search: null,
             searchOptions: [],
             searchLoading: false,
-            students: [],
-            type: null,
-            matricule: null,
-            classe: null,
+
         }
-    },
-    computed: {
-        getClassePhoto: function () {
-            if (!this.classe)
-                return '';
-
-            return '/annuaire/get_class_photo_pdf/' + this.classe.id + '/';
-        },
-        getClasseListExcel: function () {
-            if (!this.classe)
-                return '';
-
-            return '/annuaire/get_class_list_excel/' + this.classe.id + '/';
-        },
-        getClasseListPDF: function () {
-            if (!this.classe)
-                return '';
-
-            return '/annuaire/get_class_list_pdf/' + this.classe.id + '/';
-        },
     },
     methods: {
         selected: function (option) {
             if (option.type == 'classe') {
-                const data = {params: {classe: option.id}};
-                axios.get('/annuaire/api/studentclasse/', data)
-                .then(response => {
-                    this.students = response.data;
-                })
-                this.classe = option;
-                this.matricule = null;
+                this.$router.push(`/classe/${option.id}/`);
                 return;
             } else {
-                this.students = [];
-                this.matricule = option.id;
-                this.type = option.type;
-                this.classe = null;
+                this.$router.push(`/person/${option.type}/${option.id}/`);
             }
-        },
-        selectStudent: function (matricule) {
-            this.matricule = matricule;
-            // this.students = [];
-            this.type = 'student';
         },
         getSearchOptions: function (query) {
             // Ensure the last search is the first response.
@@ -222,9 +157,6 @@ export default {
                 this.searchOptions = options;
             });
         },
-        changeComponent: function (component) {
-            this.currentComponent = component;
-        },
         overloadInput: function () {
             setTimeout(() => {
                 // Check if input is loaded.
@@ -238,10 +170,7 @@ export default {
                                 axios.get('/annuaire/api/student/' + refInput.search + '/')
                                 .then(resp => {
                                     if (resp.data) {
-                                        this.students = [];
-                                        this.matricule = parseInt(refInput.search);
-                                        this.type = 'student';
-                                        this.classe = null;
+                                        this.$router.push(`/person/student/${refInput.search}/`)
                                         refInput.search = "";
                                     }
                                 })
@@ -271,7 +200,6 @@ export default {
     },
     components: {
         'multiselect': Multiselect,
-        'info': Info,
         'app-menu': Menu,
     }
 }

@@ -17,31 +17,30 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue';
+// import Vue from 'vue';
 
-import Vuex from 'vuex';
-Vue.use(Vuex);
+// import VueRouter from 'vue-router'
+// Vue.use(VueRouter)
 
-import routes from '../annuaire/routes.js';
+import Annuaire from '../annuaire/annuaire.vue';
+import Info from '../annuaire/info.vue';
+import ClassList from '../annuaire/classe.vue'
 
-import VueRouter from 'vue-router'
-Vue.use(VueRouter)
-
-const router = new VueRouter({
-    routes: routes
-});
-
-
-const store = new Vuex.Store({
-  state: {
-    settings: settings
-  },
-});
-
-var annuaireApp = new Vue({
-    el: '#vue-app',
-    data: {},
-    router,
-    store,
-    template: '<router-view></router-view>',
-})
+export default [
+    {
+        path: '/',
+        component: Annuaire,
+        children: [
+            {
+                path: '/person/:type/:matricule/',
+                component: Info,
+                props: true
+            },
+            {
+                path: '/classe/:classe/',
+                component: ClassList,
+                props: true
+            },
+        ]
+    },
+];
