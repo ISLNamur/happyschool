@@ -41,11 +41,14 @@
                                     <dd class="col-7">{{ email }}</dd>
                                     <dt class="col-5 text-right" v-if="emailSchool">Courriel de l'école</dt>
                                     <dd class="col-7" v-if="emailSchool">{{ emailSchool }}</dd>
-                                    <dt v-if="tenure && tenure.length > 0" class="col-5 text-right">Titulariat</dt>
-                                    <dd v-if="tenure" v-for="(t, index) in tenure" :key="t.id"
-                                        :class="{'col-7': index == 0, 'col-7 offset-5': index > 0}">
-                                        {{ t.year }}{{ t.letter.toUpperCase()}}
-                                    </dd>
+
+                                        <dt v-if="tenure" class="col-5 text-right">Titulariat</dt>
+                                        <dd v-if="tenure" v-for="(t, index) in tenure" :key="t.id"
+                                            :class="{'col-7': index == 0, 'col-7 offset-5': index > 0}">
+                                            {{ t.year }}{{ t.letter.toUpperCase()}}
+                                        </dd>
+                                        <dd v-if="tenure && tenure.length == 0" class="col-7"></dd>
+
                                     <dt class="col-5  text-right">Enseignement(s) </dt>
                                     <dd v-for="(t, index) in teachings" :key="t.id"
                                         :class="{'col-7': index == 0, 'col-7 offset-5': index > 0}">
@@ -253,7 +256,7 @@ export default {
             this.username = '';
             this.password = '';
             this.email = '';
-            this.email_alias = '';
+            this.emailSchool = '';
             this.student_info = {};
             this.contact = null;
             this.medical = null;
@@ -269,6 +272,7 @@ export default {
             return Moment(date).calendar();
         },
         loadInfo: function () {
+            console.log('coucou');
             this.reset();
 
             if (this.type == 'student') {
