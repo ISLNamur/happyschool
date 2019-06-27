@@ -476,7 +476,7 @@ class CasElevePDFGenAPI(APIView):
             output_stream = BytesIO()
             merger.write(output_stream)
             response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = 'filename; filename="' + classe.compact_str + '"'
+            response['Content-Disposition'] = 'filename; filename="' + classe.compact_str + '.pdf"'
             response.write(output_stream.getvalue())
             return response
 
