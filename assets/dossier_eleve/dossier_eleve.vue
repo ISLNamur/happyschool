@@ -84,7 +84,7 @@
                 Êtes-vous sûr de vouloir supprimer définitivement cette entrée ?
             </b-modal>
             <b-modal :title="currentName" size="lg" ref="infoModal" centered ok-only @hidden="currentEntry = null">
-                <info v-if="currentEntry" :matricule="currentEntry.matricule_id" type="student"></info>
+                <info v-if="currentEntry" :matricule="currentEntry.matricule_id" type="student" no-news></info>
             </b-modal>
             <component
                 v-bind:is="currentModal" ref="dynamicModal"

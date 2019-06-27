@@ -74,7 +74,7 @@
             Êtes-vous sûr de vouloir supprimer ce passage ?
         </b-modal>
         <b-modal :title="currentName" size="lg" ref="infoModal" centered ok-only @hidden="currentEntry = null">
-            <info v-if="currentEntry" :matricule="currentEntry.matricule_id" type="student"></info>
+            <info v-if="currentEntry" :matricule="currentEntry.matricule_id" type="student" no-news></info>
         </b-modal>
         <add-passage-modal ref="addPassageModal" :entry="currentEntry"
             @update="loadEntries" @reset="currentEntry = null">
