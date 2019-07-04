@@ -115,6 +115,8 @@ const store = new Vuex.Store({
             state.todayAbsences = absences;
         },
         updateStudentsClasses: function (state) {
+            if (!state.onLine) return;
+
             state.lastUpdate = Moment().format("YYYY-MM-DD");
             this.commit('updatingStatus', true);
             const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
@@ -207,13 +209,13 @@ var studentAbsenceApp = new Vue({
     },
     mounted: function () {
         this.menuInfo = menu;
+        this.checkOnlineStatus();
         // Update students and classes.
         if (this.$store.state.lastUpdate < Moment().format("YYYY-MM-DD")) {
-            const sleep = this.$store.state.lastUpdate == "" ? 3000 : 100;
+            const sleep = this.$store.state.lastUpdate == "" ? 3000 : 2500;
             setTimeout(() => {
                 this.$store.commit("updateStudentsClasses");
             }, sleep);
         }
-        this.checkOnlineStatus();
     },
 });
