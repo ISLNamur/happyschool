@@ -1,4 +1,4 @@
-django>=2.2,<2.3
+django>=2.2.3,<2.3
 django-filter>=2.0
 redis
 channels>=2.1
@@ -18,3 +18,4 @@ XlsxWriter
 requests==2.20.1
 icalendar
 git+https://github.com/Supermanu/django-bootstrap3-datetimepicker.git@dcb355c28755475932a79bf49e15ee6e60552b90#egg=django-bootstrap3-datetimepicker
+weasyprint
