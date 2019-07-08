@@ -21,6 +21,8 @@ import json
 
 from dateutil.relativedelta import relativedelta
 
+from django_weasyprint import WeasyTemplateView
+
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
@@ -54,6 +56,7 @@ class AbsenceProfView(LoginRequiredMixin,
     permission_required = ('absence_prof.access_absences')
     filters = [{'value': 'name', 'text': 'Nom'},
                {'value': 'activate_ongoing', 'text': 'Absences courantes'},
+               {'value': 'date_range', 'text': 'Absences pendant une période'},
                {'value': 'date_month', 'text': 'Absences par mois'},
                # {'value': 'matricule_id', 'text': 'Matricule'},
                ]
@@ -71,9 +74,11 @@ class AbsenceProfFilter(BaseFilters):
     activate_ongoing = filters.BooleanFilter(method="activate_ongoing_by")
     date_month__gte = filters.CharFilter(method="date_month__gte_by")
     date_month__lte = filters.CharFilter(method="date_month__lte_by")
+    date_range__gte = filters.CharFilter(method="date_range__gte_by")
+    date_range__lte = filters.CharFilter(method="date_range__lte_by")
 
     class Meta:
-        fields_to_filter = ('activate_ongoing', 'date_month__gte', 'date_month__lte', 'name',)
+        fields_to_filter = ('activate_ongoing', 'date_month__gte', 'date_month__lte', 'name', 'date_range__gte', 'date_range__lte',)
         model = Absence
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
@@ -88,6 +93,14 @@ class AbsenceProfFilter(BaseFilters):
     def date_month__lte_by(self, queryset, name, value):
         return queryset.filter(datetime_absence_start__month__lte=int(value[5:]),
                                datetime_absence_start__year__lte=int(value[:4]))
+
+    def date_range__gte_by(self, queryset, name, value):
+        for a in queryset.filter(datetime_absence_end__lte=value):
+            print("%s: %s - %s" % (a.name, a.datetime_absence_start, a.datetime_absence_end))
+        return queryset.filter(datetime_absence_end__gte=value)
+
+    def date_range__lte_by(self, queryset, name, value):
+        return queryset.filter(datetime_absence_start__lte=value)
 
 
 class AbsenceProfViewSet(ModelViewSet):
@@ -107,9 +120,9 @@ class AbsenceProfViewSet(ModelViewSet):
     def perform_update(self, serializer):
         p = serializer.save(user=self.request.user.username)
         self.send_emails(p, "[Absence prof] Modification de l'absence", False)
-    
-    """Send an email to notify new absence and change."""
+
     def send_emails(self, instance, subject, is_new):
+        """Send an email to notify new absence and change."""
         context = {'absence': instance, 'new': is_new}
         email.send_email(to=['educateurs@isln.be'], subject=subject,
                          email_template='absence_prof/email.html', context=context)
@@ -119,3 +132,20 @@ class MotifAbsenceViewSet(ReadOnlyModelViewSet):
     queryset = MotifAbsence.objects.all()
     serializer_class = MotifAbsenceSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+
+
+class ListPDF(LoginRequiredMixin,
+                        #    PermissionRequiredMixin,
+              WeasyTemplateView):
+    # permission_required = ('absence_prof.access_dossier_eleve')
+    template_name = "absence_prof/list.html"
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        view_set = AbsenceProfViewSet.as_view({'get': 'list'})
+        absences = view_set(self.request).data['results']
+        for a in absences:
+            a['datetime_absence_start'] = timezone.datetime.strptime(a['datetime_absence_start'][:10], "%Y-%m-%d")
+            a['datetime_absence_end'] = timezone.datetime.strptime(a['datetime_absence_end'][:10], "%Y-%m-%d")
+        context['absences'] = absences
+        return context

@@ -26,6 +26,7 @@ from . import views
 app_name = 'absence_prof'
 
 urlpatterns = [
+    path('list/', views.ListPDF.as_view()),
     path('', views.AbsenceProfView.as_view(), name="index"),
 ]
 

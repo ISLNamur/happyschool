@@ -36,6 +36,9 @@
                                 <icon name="search" scale="1"></icon>
                                 Ajouter des filtres
                             </b-button>
+                            <b-btn :href="'/absence_prof/list/?ordering=name&page_size=200' + filter" target="_blank">
+                                Exporter en PDF
+                            </b-btn>
                             <b-button :pressed.sync="active" variant="primary">
                                 <span v-if="active">Afficher tous les absences</span>
                                 <span v-else>Afficher absences courantes</span>

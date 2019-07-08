@@ -1,0 +1,52 @@
+<html>
+    <body>
+        <style>
+        @charset "UTF-8";
+        @page {
+            margin: 1cm;
+            counter-increment: page;
+            @bottom-right {
+                content: "Page " counter(page) "/" counter(pages);
+                border-top: .25pt solid #666;
+                width: 50%;
+            }
+        }
+
+        html {
+            color: #14213d;
+            font-size: 11pt;
+            line-height: 1.6;
+        }
+        html body {
+            margin: 0;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        td {
+            border: 1px solid #14213d;
+            padding: 1mm;
+
+        }
+        html table th, html table td {
+            text-align: center;
+        }
+        html table th:first-of-type, html table td:first-of-type {
+            text-align: left;
+        }
+        html table th:last-of-type, html table td:last-of-type {
+            text-align: right;
+        }
+        </style>
+        <table>
+        {% for absence in absences %}
+        <tr>
+            <td>{{ absence.name }}</td>
+            <td>{{ absence.datetime_absence_start|date:"d-m-Y" }} – {{ absence.datetime_absence_end|date:"d-m-Y" }}</td>
+            <td>{{ absence.motif }}</td>
+            <td>{{ absence.comment }}</td>
+        </tr>
+        {% endfor %}
+        </table>
+    </body>
+</html>
