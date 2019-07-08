@@ -61,7 +61,7 @@
                     </b-form-group>
                 </b-col>
             </b-row>
-            <router-view></router-view>
+            <transition name="slide-right" mode="out-in"><router-view></router-view></transition>
         </b-container>
     </div>
 </template>
