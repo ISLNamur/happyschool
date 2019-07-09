@@ -290,14 +290,16 @@ command=/usr/local/bin/daphne -b 0.0.0.0 -p 8080 happyschool.asgi:application --
 directory=/home/path/to/happyschool           ; directory to cwd to before exec (def no cwd)
 autostart=true                ; start at supervisord start (default: true)
 autorestart=true        ; when to restart if exited after running (def: unexpected)
+environment=HOME="/home/user",USER="user" ; directory to home folder and user name.
 
 [program:celery]
 command=celery -A happyschool worker -l info -f /var/log/celery.log
 directory=/home/path/to/happyschool
 autostart=true
 autorestart=true
+environment=HOME="/home/user",USER="user" ; directory to home folder and user name.
  ```
- Vérifiez que les chemins d'accès à Happyschool sont correctement configurés.
+ Vérifiez que les chemins d'accès à Happyschool ainsi que le nom d'utilisateur sont correctement configurés.
 
 Pour s'assurer que supervisor est bien lancé au démarrage de la machine,
 vous pouvez créer un service dans `/etc/systemd/system/supervisord.service`:
