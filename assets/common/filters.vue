@@ -8,6 +8,8 @@
                     </b-col>
                     <b-col sm="12" md="8">
                         <multiselect tag-placeholder="Ajouter cette recherche"
+                            ref="filters"
+                            :showNoOptions="false"
                             select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
                             selected-label="Sélectionné"
                             deselect-label="Cliquer dessus pour enlever"
@@ -113,8 +115,9 @@ export default {
                 this.filterSearchOptions = [];
                 return;
             }
-
-            let param = {'unique': this.filterType};
+            
+            let param = {};
+            if (!this.filterType.endsWith("display")) param['unique'] = this.filterType;
             param[this.filterType] = search;
             this.searchId += 1;
             let currentSearch = this.searchId;
@@ -227,6 +230,13 @@ export default {
     components: {Multiselect},
     mounted: function() {
         this.filterTypeOptions = filters;
+        setTimeout(() => {
+            // Check if filters is loaded.
+            let refInput = this.$refs.filters;
+            if (refInput) {
+                refInput.$refs.search.focus();
+            }
+        }, 500)
     }
 }
 
