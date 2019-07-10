@@ -19,12 +19,8 @@
 
 import Vue from 'vue'
 
-import Vuex from 'vuex';
-Vue.use(Vuex);
-import VuexPersistence from 'vuex-persist'
-
-import VueRouter from 'vue-router'
-Vue.use(VueRouter)
+import store from '../student_absence/store.js';
+import router from '../student_absence/router.js';
 
 import axios from 'axios';
 
@@ -40,144 +36,6 @@ if ('serviceWorker' in navigator) {
       console.log('Registration failed with ' + error);
     });
   };
-
-const vuexLocal = new VuexPersistence({
-    storage: window.localStorage,
-})
-
-const store = new Vuex.Store({
-    state: {
-      settings: settings,
-      filters: [],
-      todayAbsences: {},
-      changes: [],
-      notes: {},
-      onLine: false,
-      lastUpdate: "",
-      updating: false,
-    },
-    getters: {
-        change(state) {
-            return change => {
-                for (let c in state.changes) {
-                    if (state.changes[c].matricule == change.matricule && state.changes[c].date_absence == change.date_absence) {
-                        state.changes[c].index = c;
-                        return state.changes[c];
-                    }
-                }
-                return null;
-            }
-        }
-    },
-    mutations: {
-        addNote: function (state, note) {
-            state.notes[note.classe] = note;
-        },
-        addFilter: function (state, filter) {
-            // If filter is a matricule, remove name filter to avoid conflict.
-            if (filter.filterType === 'matricule_id') {
-                this.commit('removeFilter', 'name');
-            }
-  
-            // Overwrite same filter type.
-            this.commit('removeFilter', filter.filterType);
-  
-            state.filters.push(filter);
-        },
-        removeFilter: function (state, key) {
-            for (let f in state.filters) {
-                if (state.filters[f].filterType === key) {
-                    state.filters.splice(f, 1);
-                    break;
-                }
-            }
-        },
-        removeChange: function (state, change) {
-            for (let c in state.changes) {
-                if (state.changes[c].matricule == change.matricule && state.changes[c].date_absence == change.date_absence) {
-                    state.changes.splice(c, 1);
-                    break;
-                }
-            }
-        },
-        setChange: function (state, change) {
-            let oldChange = this.getters.change(change);
-            if (!oldChange) {
-                state.changes.push(change);
-            } else {
-                if ('morning' in change) state.changes[oldChange.index].morning = change.morning;
-                if ('afternoon' in change) state.changes[oldChange.index].afternoon = change.afternoon;
-                // Force update.
-                Vue.set(state.changes, oldChange.index, state.changes[oldChange.index]);
-            }
-        },
-        setTodayAbsences: function (state, absences) {
-            state.todayAbsences = absences;
-        },
-        updateStudentsClasses: function (state) {
-            if (!state.onLine) return;
-
-            state.lastUpdate = Moment().format("YYYY-MM-DD");
-            this.commit('updatingStatus', true);
-            const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-            const data = {
-                query: 'everybody',
-                teachings: state.settings.teachings,
-                people: 'student',
-                active: true,
-            };
-            axios.post('/student_absence/api/students_classes/', data, token)
-            .then(response => {
-                this.commit('updatingStatus', false);
-            });
-            axios.get('/student_absence/api/classenote/', token)
-            .then(response => {
-                for (let n in response.data.results) {
-                    this.commit('addNote', response.data.results[n]);
-                }
-            })
-        },
-        updatingStatus: function (state, updating) {
-            state.updating = updating;
-        },
-        changeOnLineStatus: function (state, onLine) {
-            state.onLine = onLine;
-        }
-    },
-    plugins: [vuexLocal.plugin],
-  });
-
-import StudentAbsence from '../student_absence/student_absence.vue';
-import Overview from '../student_absence/overview.vue';
-import AddAbsence from '../student_absence/add_absence.vue';
-import Notes from '../student_absence/notes.vue';
-
-  const router = new VueRouter({
-    routes: [
-    {
-        path: '',
-        component: StudentAbsence,
-        children: [
-            {
-                path: '',
-                component: Overview,
-            },
-            {
-                path: 'overview',
-                component: Overview,
-            },
-            {
-                path: 'add_absence',
-                component: AddAbsence,
-            },
-            {
-                path: 'notes',
-                component: Notes,
-            },
-        ]
-    },
-    ]
-});
 
 import Menu from '../common/menu.vue';
 
