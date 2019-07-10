@@ -31,6 +31,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
+from rest_framework.filters import OrderingFilter
 
 from core.utilities import get_menu
 from core.people import get_classes
@@ -56,7 +57,10 @@ class StudentAbsenceView(LoginRequiredMixin,
                          TemplateView):
     template_name = "student_absence/student_absence.html"
     permission_required = ('student_absence.access_student_absence')
-    filters = [{'value': 'name', 'text': 'Nom'},]
+    filters = [
+        {'value': 'student__display', 'text': 'Nom'},
+        {'value': 'student__matricule', 'text': 'Matricule'},
+    ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
@@ -68,8 +72,9 @@ class StudentAbsenceView(LoginRequiredMixin,
 
 
 class StudentAbsenceFilter(BaseFilters):
+    student__display = filters.CharFilter(method='people_name_by')
     class Meta:
-        fields_to_filter = ('student', 'date_absence',)
+        fields_to_filter = ('student', 'date_absence','student__display','student__matricule',)
         model = StudentAbsenceModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
@@ -79,6 +84,7 @@ class StudentAbsenceViewSet(ModelViewSet):
     queryset = StudentAbsenceModel.objects.filter(student__isnull=False)
     serializer_class = StudentAbsenceSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filter_class = StudentAbsenceFilter
     ordering_fields = ('date_absence', 'datetime_update', 'datetime_creation',)
 
