@@ -40,7 +40,7 @@ from django_filters import rest_framework as filters
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
 from django.utils import timezone
-from django.db.models import CharField
+from django.db.models import CharField, Q
 from django.core.exceptions import ObjectDoesNotExist, FieldError
 from django.views.generic import TemplateView
 from django.contrib.auth.models import Group
@@ -99,6 +99,26 @@ class BaseFilters(filters.FilterSet):
         start = timezone.datetime(year=start_year, month=8, day=20)
         end = timezone.datetime(year=end_year, month=8, day=19)
         return queryset.filter(datetime_encodage__gt=start, datetime_encodage__lt=end)
+    
+    def people_name_by(self, queryset, name, value):
+        tokens = value.split(" ")
+        people = queryset.none()
+
+        if len(tokens) > 1:
+            # First check compound last name.
+            people = queryset.filter(Q(student__last_name__unaccent__istartswith=" ".join(tokens[:2]))
+                                     | Q(student__last_name__unaccent__istartswith=" ".join(tokens[-2:])))
+            if len(people) == 0:
+                people = queryset.filter(Q(student__first_name__unaccent__iexact=tokens[0],
+                                           student__last_name__unaccent__istartswith=tokens[1])
+                                         | Q(student__first_name__unaccent__istartswith=tokens[1],
+                                             student__last_name__unaccent__iexact=tokens[0]))
+
+        if len(people) == 0:
+            for name_part in tokens:
+                people |= queryset.filter(Q(student__first_name__unaccent__istartswith=name_part)
+                                                    | Q(student__last_name__unaccent__istartswith=name_part))
+        return people
 
 
 class PageNumberSizePagination(PageNumberPagination):
