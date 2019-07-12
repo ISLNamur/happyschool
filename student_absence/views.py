@@ -56,7 +56,7 @@ class StudentAbsenceView(LoginRequiredMixin,
                          PermissionRequiredMixin,
                          TemplateView):
     template_name = "student_absence/student_absence.html"
-    permission_required = ('student_absence.access_student_absence')
+    permission_required = ('student_absence.view_studentabsencemodel')
     filters = [
         {'value': 'student__display', 'text': 'Nom'},
         {'value': 'student__matricule', 'text': 'Matricule'},
@@ -64,7 +64,7 @@ class StudentAbsenceView(LoginRequiredMixin,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['menu'] = json.dumps(get_menu(self.request.user, "appels"))
+        context['menu'] = json.dumps(get_menu(self.request.user, "student_absence"))
         context['filters'] = json.dumps(self.filters)
         context['settings'] = json.dumps((StudentAbsenceSettingsSerializer(get_settings()).data))
 
