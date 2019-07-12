@@ -155,6 +155,11 @@ if 'social_django' in INSTALLED_APPS:
         'social_core.pipeline.user.user_details',
     )
 
+SOCIAL_AUTH_POSTGRES_JSONFIELD = True
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'key'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'secret'
+SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
+
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
