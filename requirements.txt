@@ -20,3 +20,4 @@ icalendar
 git+https://github.com/Supermanu/django-bootstrap3-datetimepicker.git@dcb355c28755475932a79bf49e15ee6e60552b90#egg=django-bootstrap3-datetimepicker
 weasyprint
 django_weasyprint
+social-auth-app-django
