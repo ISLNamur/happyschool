@@ -49,7 +49,7 @@ module.exports = {
 		], { logLevel: 'debug' }),
 		new swCachePlugin(
 			{
-			  cacheName:'cacheName',
+			  cacheName: Date.now(),
 			  ignore: [/.*\.map$/],
 			}
 		  )

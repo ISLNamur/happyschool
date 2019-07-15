@@ -13,8 +13,14 @@
 
     <body class="d-flex h-100 flex-column">
         <script>
+            {% load get_files from webpack_loader %}
+            {% get_files 'commons' 'js' as commons_file %}
+            {% for file in commons_file %}
+            const hash = '{{ file.name }}'.split("-")[1].split(".")[0];
+            {% endfor %}
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/static/bundles/root_sw.js', { scope: '/' }).then(function(reg) {
+                navigator.serviceWorker.register('/static/bundles/root_sw.js?hash' + hash,
+                {scope: '/', updateViaCache: 'none',}).then(function(reg) {
                     // registration worked.
                     console.log('Registration succeeded. Scope is ' + reg.scope);
                 }).catch(function(error) {

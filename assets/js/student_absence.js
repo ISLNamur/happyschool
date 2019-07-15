@@ -28,7 +28,10 @@ import Moment from 'moment';
 Moment.locale('fr');
 
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/static/bundles/student_absence_sw.js', { scope: '/student_absence/' }).then(function(reg) {
+    navigator.serviceWorker.register('/static/bundles/student_absence_sw.js?hash=' + hash, {
+        updateViaCache: 'none',
+        scope: '/student_absence/',
+    }).then(function(reg) {
       // registration worked.
       console.log('Registration succeeded. Scope is ' + reg.scope);
     }).catch(function(error) {
