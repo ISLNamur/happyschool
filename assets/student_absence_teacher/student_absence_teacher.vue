@@ -1,0 +1,71 @@
+<!-- This file is part of Happyschool. -->
+<!--  -->
+<!-- Happyschool is the legal property of its developers, whose names -->
+<!-- can be found in the AUTHORS file distributed with this source -->
+<!-- distribution. -->
+<!--  -->
+<!-- Happyschool is free software: you can redistribute it and/or modify -->
+<!-- it under the terms of the GNU Affero General Public License as published by -->
+<!-- the Free Software Foundation, either version 3 of the License, or -->
+<!-- (at your option) any later version. -->
+<!--  -->
+<!-- Happyschool is distributed in the hope that it will be useful, -->
+<!-- but WITHOUT ANY WARRANTY; without even the implied warranty of -->
+<!-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the -->
+<!-- GNU Affero General Public License for more details. -->
+<!--  -->
+<!-- You should have received a copy of the GNU Affero General Public License -->
+<!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
+
+<template>
+    <div>
+        <div class="loading" v-if="!loaded"></div>
+        <app-menu v-if="loaded" :menu-info="menuInfo"></app-menu>
+        <b-container v-if="loaded">
+            <h1>Absence des élèves</h1>
+            <b-row class="mb-1">
+                <b-tabs>
+                    <template slot="tabs">
+                        <b-nav-item to="add_absence">
+                            <icon name="plus" scale="1" color="green" class="align-middle"></icon>
+                            Ajouter absenses/retards
+                        </b-nav-item>
+                        <b-nav-item to="list">Liste d'absences/retards</b-nav-item>
+                    </template>
+                </b-tabs>
+            </b-row>
+            <router-view></router-view>
+        </b-container>
+    </div>
+</template>
+
+<script>
+import Vue from 'vue';
+import BootstrapVue from 'bootstrap-vue'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+
+Vue.use(BootstrapVue);
+
+import 'vue-awesome/icons'
+import Icon from 'vue-awesome/components/Icon.vue'
+Vue.component('icon', Icon);
+
+
+import Menu from '../common/menu.vue'
+
+export default {
+    data: function () {
+        return {
+            menuInfo: {},
+            loaded: false,
+        }
+    },
+    mounted: function () {
+        this.menuInfo = menu;
+        this.loaded = true;
+    },
+    components: {
+        'app-menu': Menu,
+    }
+}
+</script>

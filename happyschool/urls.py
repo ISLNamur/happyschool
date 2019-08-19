@@ -42,7 +42,7 @@ urlpatterns = [
 ]
 
 for app in ['infirmerie', 'appels', 'dossier_eleve', 'absence_prof', 'mail_notification', 'slas', 'mobility_survey',
-            'mail_answer', 'schedule_change', 'student_absence']:
+            'mail_answer', 'schedule_change', 'student_absence', 'student_absence_teacher',]:
     if app in settings.INSTALLED_APPS:
         urlpatterns.append(url(r'^%s/' % (app), include('%s.urls' % (app))))
 
