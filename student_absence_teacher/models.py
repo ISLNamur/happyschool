@@ -18,12 +18,13 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.db import models
+from django.contrib.auth.models import User, Group
 
-from django.contrib.auth.models import User
 from core.models import StudentModel, TeachingModel, ResponsibleModel, ClasseModel
 
 class StudentAbsenceTeacherSettingsModel(models.Model):
     teachings = models.ManyToManyField(TeachingModel, default=None)
+    can_see_list = models.ManyToManyField(Group, default=None, blank=True, related_name="can_see_list")
 
 
 class LessonModel(models.Model):

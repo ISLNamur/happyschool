@@ -30,7 +30,7 @@
                             <icon name="plus" scale="1" color="green" class="align-middle"></icon>
                             Ajouter absenses/retards
                         </b-nav-item>
-                        <b-nav-item to="list">Liste d'absences/retards</b-nav-item>
+                        <b-nav-item v-if="can_access_list" to="list">Liste d'absences/retards</b-nav-item>
                     </template>
                 </b-tabs>
             </b-row>
@@ -58,6 +58,17 @@ export default {
         return {
             menuInfo: {},
             loaded: false,
+        }
+    },
+    computed: {
+        can_access_list: function () {
+            const access_groups = this.$store.state.settings.can_see_list;
+            for (let ag in this.$store.state.settings.can_see_list) {
+                for (let g in user_groups) {
+                    if (user_groups[g].id == access_groups[ag]) return true;
+                }
+            }
+            return false;
         }
     },
     mounted: function () {
