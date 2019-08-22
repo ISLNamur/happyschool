@@ -109,13 +109,21 @@ def get_menu(user: User, active_app: str=None) -> dict:
             "url": "/schedule_change",
             "active": active_app == "schedule_change"
         })
-    
+
     if "student_absence" in settings.INSTALLED_APPS and user.has_perm('student_absence.view_studentabsencemodel'):
         apps.append({
             "app": "student_absence",
             "display": "Abs. Élèves",
             "url": "/student_absence",
             "active": active_app == "student_absence"
+        })
+
+    if "student_absence_teacher" in settings.INSTALLED_APPS and user.has_perm('student_absence_teacher.view_studentabsenceteachermodel'):
+        apps.append({
+            "app": "student_absence_teacher",
+            "display": "Abs. Élèves (prof)",
+            "url": "/student_absence_teacher",
+            "active": active_app == "student_absence_teacher"
         })
 
     menu = {"full_name": user.get_full_name(), "apps": apps}
