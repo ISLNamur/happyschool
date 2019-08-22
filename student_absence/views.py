@@ -60,6 +60,8 @@ class StudentAbsenceView(LoginRequiredMixin,
     filters = [
         {'value': 'student__display', 'text': 'Nom'},
         {'value': 'student__matricule', 'text': 'Matricule'},
+        {'value': 'classe', 'text': 'Classe'},
+        {'value': 'date_absence', 'text': 'Date'},
     ]
 
     def get_context_data(self, **kwargs):
@@ -73,11 +75,22 @@ class StudentAbsenceView(LoginRequiredMixin,
 
 class StudentAbsenceFilter(BaseFilters):
     student__display = filters.CharFilter(method='people_name_by')
+    classe = filters.CharFilter(method='classe_by')
     class Meta:
         fields_to_filter = ('student', 'date_absence','student__display','student__matricule',)
         model = StudentAbsenceModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
+    
+    def classe_by(self, queryset, field_name, value):
+        if not value[0].isdigit():
+            return queryset
+
+        if len(value) > 0:
+            queryset = queryset.filter(student__classe__year=value[0])
+            if len(value) > 1:
+                queryset = queryset.filter(student__classe__letter__istartswith=value[1:])
+        return queryset
 
 
 class StudentAbsenceViewSet(ModelViewSet):
