@@ -100,7 +100,7 @@ export default {
             this.showAlert = Object.keys(this.$store.state.changes).length > 0;
         },
         promiseSavedData: function (model) {
-            const data = {params: {period: this.period.id, lesson: this.lesson.id, date: Moment().format('YYYY-MM-DD')}};
+            const data = {params: {period: this.period.id, lesson: this.lesson.id, [`date_${model}`]: Moment().format('YYYY-MM-DD')}};
             return axios.get(`/student_absence_teacher/api/${model}/`, data, token)
         },
         getAbsenceLateness: function (students) {

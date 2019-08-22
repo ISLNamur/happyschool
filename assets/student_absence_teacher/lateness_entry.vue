@@ -20,7 +20,7 @@
 <template>
     <div>
         <b-card>
-            <strong>{{ lateness.date }}</strong>:
+            <strong>{{ lateness.date_lateness }}</strong>:
             <a :href='`/annuaire/#/person/student/${lateness.student.matricule}/`'>
                 {{ lateness.student.display }}
             </a>

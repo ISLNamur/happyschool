@@ -20,7 +20,7 @@
 <template>
     <div>
         <b-card>
-            <strong>{{ absence.date }}</strong>:
+            <strong>{{ absence.date_absence }}</strong>:
             <a :href='`/annuaire/#/person/student/${absence.student.matricule}/`'>
                 {{ absence.student.display }}
             </a>

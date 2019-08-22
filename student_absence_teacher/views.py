@@ -54,6 +54,9 @@ class StudentAbsenceTeacherView(LoginRequiredMixin,
     filters = [
         {'value': 'student__display', 'text': 'Nom'},
         {'value': 'student__matricule', 'text': 'Matricule'},
+        {'value': 'classe', 'text': 'Classe'},
+        {'value': 'date_absence', 'text': 'Date absence'},
+        {'value': 'date_lateness', 'text': 'Date retard'},
     ]
 
     def get_context_data(self, **kwargs):
@@ -67,11 +70,22 @@ class StudentAbsenceTeacherView(LoginRequiredMixin,
 
 class StudentAbsenceTeacherFilter(BaseFilters):
     student__display = filters.CharFilter(method='people_name_by')
+    classe = filters.CharFilter(method='classe_by')
     class Meta:
-        fields_to_filter = ('student', 'date','student__display','student__matricule','student__classe',)
+        fields_to_filter = ('student', 'date_absence','student__display','student__matricule','student__classe',)
         model = StudentAbsenceTeacherModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
+
+    def classe_by(self, queryset, field_name, value):
+        if not value[0].isdigit():
+            return queryset
+
+        if len(value) > 0:
+            queryset = queryset.filter(student__classe__year=value[0])
+            if len(value) > 1:
+                queryset = queryset.filter(student__classe__letter__istartswith=value[1:])
+        return queryset
 
 
 class StudentAbsenceTeacherViewSet(ModelViewSet):
@@ -80,7 +94,7 @@ class StudentAbsenceTeacherViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filter_class = StudentAbsenceTeacherFilter
-    ordering_fields = ('date', 'datetime_update', 'datetime_creation', 'period', 'lesson',)
+    ordering_fields = ('date_absence', 'datetime_update', 'datetime_creation', 'period', 'lesson',)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -88,11 +102,22 @@ class StudentAbsenceTeacherViewSet(ModelViewSet):
 
 class StudentLatenessTeacherFilter(BaseFilters):
     student__display = filters.CharFilter(method='people_name_by')
+    classe = filters.CharFilter(method='classe_by')
     class Meta:
-        fields_to_filter = ('student', 'date','student__display','student__matricule', 'period', 'lesson',)
+        fields_to_filter = ('student', 'date_lateness','student__display','student__matricule', 'period', 'lesson',)
         model = StudentLatenessTeacherModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
+
+    def classe_by(self, queryset, field_name, value):
+        if not value[0].isdigit():
+            return queryset
+
+        if len(value) > 0:
+            queryset = queryset.filter(student__classe__year=value[0])
+            if len(value) > 1:
+                queryset = queryset.filter(student__classe__letter__istartswith=value[1:])
+        return queryset
 
 
 class StudentLatenessTeacherViewSet(ModelViewSet):
@@ -101,7 +126,7 @@ class StudentLatenessTeacherViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filter_class = StudentLatenessTeacherFilter
-    ordering_fields = ('date', 'datetime_update', 'datetime_creation',)
+    ordering_fields = ('date_lateness', 'datetime_update', 'datetime_creation',)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

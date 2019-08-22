@@ -44,7 +44,7 @@ class PeriodModel(models.Model):
 
 class StudentAbsenceTeacherModel(models.Model):
     student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)
-    date = models.DateField(auto_now=True)
+    date_absence = models.DateField(auto_now=True)
     lesson = models.ForeignKey(LessonModel, on_delete=models.SET_NULL, null=True)
     period = models.ForeignKey(PeriodModel, on_delete=models.SET_NULL, null=True)
     comment = models.TextField(blank=True)
@@ -57,7 +57,7 @@ class StudentAbsenceTeacherModel(models.Model):
 
 class StudentLatenessTeacherModel(models.Model):
     student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)
-    date = models.DateField(auto_now=True)
+    date_lateness = models.DateField(auto_now=True)
     lesson = models.ForeignKey(LessonModel, on_delete=models.SET_NULL, null=True)
     period = models.ForeignKey(PeriodModel, on_delete=models.SET_NULL, null=True)
     comment = models.TextField(blank=True)
