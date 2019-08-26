@@ -150,10 +150,12 @@ class BaseModelViewSet(ModelViewSet):
                 return self.queryset.none()
 
     def perform_create(self, serializer):
-        serializer.save(**{
-            self.username_field: self.request.user.username,
-            }
-        )
+        serializer.save()
+        if self.username_field:
+            serializer.save(**{
+                self.username_field: self.request.user.username,
+                }
+            )
         if self.user_field:
             serializer.save(**{
                 self.user_field: self.request.user,
