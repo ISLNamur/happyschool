@@ -19,7 +19,7 @@
 
 import json
 
-from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.templatetags.static import static
 from django.utils import timezone
 from django.conf import settings
 from django.db.models import Q
