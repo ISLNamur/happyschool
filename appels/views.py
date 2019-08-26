@@ -24,7 +24,6 @@ from django.utils import timezone
 from django.conf import settings
 from django.db.models import Q
 
-
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
@@ -37,7 +36,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from core import email
 from core.people import People, get_classes
 from core.views import BaseFilters, BaseModelViewSet
-from core.utilities import get_menu
+from core.utilities import get_menu, check_student_photo
 
 from .models import Appel, ObjectModel, MotiveModel, AppelsSettingsModel
 from .serializers import AppelSerializer, ObjectSerializer, MotiveSerializer, AppelsSettingsSerializer
@@ -57,10 +56,13 @@ def send_emails(appel):
     image = []
     name = appel.name
     if appel.is_student:
-        etudiant = People().get_student_by_id(appel.matricule.matricule)
-        name = str(etudiant)
-        context['etudiant'] = etudiant
-        image = [static("/photos/" + str(appel.matricule.matricule) + ".jpg")]
+        student = People().get_student_by_id(appel.matricule.matricule)
+        name = str(student)
+        context['etudiant'] = student
+        if check_student_photo(student, copy=False):
+            image = [static("/photos/" + str(appel.matricule.matricule) + ".jpg")]
+        else:
+            image = [static("/photos/unknown.jpg")]
 
     sent_to = list(
         filter(lambda e: e != 'robot@isln.be', map(lambda e: e.email, appel.emails.all())))
