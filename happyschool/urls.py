@@ -41,10 +41,28 @@ urlpatterns = [
     url(r'^$', RedirectView.as_view(url='annuaire/', permanent=False)),
 ]
 
-for app in ['infirmerie', 'appels', 'dossier_eleve', 'absence_prof', 'mail_notification', 'slas', 'mobility_survey',
-            'mail_answer', 'schedule_change', 'student_absence', 'student_absence_teacher',]:
-    if app in settings.INSTALLED_APPS:
-        urlpatterns.append(url(r'^%s/' % (app), include('%s.urls' % (app))))
+excluded_app = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'django.contrib.postgres',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'django_filters',
+    'channels',
+    'crispy_forms',
+    'social_django',
+    'webpack_loader',
+]
+
+for app in settings.INSTALLED_APPS:
+    if app in excluded_app:
+        continue
+
+    urlpatterns.append(url(r'^%s/' % (app), include('%s.urls' % (app))))
 
 if 'social_django' in settings.INSTALLED_APPS:
     urlpatterns.append(url('', include('social_django.urls', namespace='social')))
