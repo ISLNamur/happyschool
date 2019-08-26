@@ -25,3 +25,15 @@
   opacity: 0;
   transform: translate(-2em, 0);
 }
+
+.loading {
+  content: " ";
+  display: block;
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background-image: url(/static/img/spin.svg);
+  background-size: cover;
+  left: 50%;
+  top: 50%;
+}
