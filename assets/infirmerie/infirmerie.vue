@@ -85,6 +85,7 @@
 <script>
 import Vue from 'vue';
 import BootstrapVue from 'bootstrap-vue'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 import Info from '../annuaire/info.vue'
 
