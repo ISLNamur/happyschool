@@ -5,6 +5,7 @@
     <body>
         <p>Bonjour,</p>
         <p>Vous trouverez ci-joint un récapitulatif des changements d'horaires entre le {{ date_from }} et le  {{ date_to }}.</p>
+        {% if message %}<p><em>{{ message }}</em></p>{% endif %}
         <p>Vous pouvez consulter tous les changements en cours sur <a href="{{ url }}">HappySchool</a>.</p>
         <p>Merci pour votre attention</p>
     </body>

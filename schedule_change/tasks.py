@@ -36,7 +36,7 @@ from .models import ScheduleChangeSettingsModel, ScheduleChangeModel, ScheduleCh
 
 
 @shared_task(bind=True)
-def task_export(self, ids, date_from, date_to, send_to_teachers=False):
+def task_export(self, ids, date_from, date_to, send_to_teachers=False, message=""):
     changes = [ScheduleChangeModel.objects.get(id=c) for c in ids]
     categories = ScheduleChangeCategoryModel.objects.all()
     context = {'date_from': date_from, 'date_to': date_to,
@@ -63,7 +63,7 @@ def task_export(self, ids, date_from, date_to, send_to_teachers=False):
             [t.email for t in teachers_involved]
         url = core_settings.remote if settings.copy_to_remote else core_settings.root
         context = {'date_from': date_from, 'date_to': date_to,
-                   'url': url}
+                   'url': url, 'message': message}
         send_email(set(teachers_email), 'Changement horaire', 'schedule_change/email_summary.html',
                    context=context, attachments=attachments, use_bcc=True)
 

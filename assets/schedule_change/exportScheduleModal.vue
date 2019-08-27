@@ -46,10 +46,22 @@
                 <b-checkbox v-model="sendToTeachers">Envoyer le récapitulatif aux enseignants concernés</b-checkbox>
             </b-form-group>
         </b-row>
-            <template slot="modal-ok">
-                <icon v-if="processing" name="spinner" scale="1" spin class="align-baseline"></icon>
-                {{ buttonStr }}
-            </template>
+        <b-row>
+            <b-col>
+                <b-form-textarea
+                    v-if="sendToTeachers"
+                    v-model="message"
+                    placeholder="Message à inclure dans l'email"
+                    rows="3"
+                    max-rows="6"
+                    maxlength="240"
+                ></b-form-textarea>
+            </b-col>
+        </b-row>
+        <template slot="modal-ok">
+            <icon v-if="processing" name="spinner" scale="1" spin class="align-baseline"></icon>
+            {{ buttonStr }}
+        </template>
     </b-modal>
 </template>
 
@@ -63,6 +75,7 @@ export default {
             export_from: null,
             buttonStr: "Créer le pdf",
             sendToTeachers: false,
+            message: "",
             ws: null,
             processing: false,
         }
@@ -94,7 +107,9 @@ export default {
                     xsrfCookieName: 'csrftoken',
                     xsrfHeaderName: 'X-CSRFToken',
             };
-            const url = '/schedule_change/api/summary_pdf/?activate_has_classe=true&date_change__gte=' + this.export_from + '&date_change__lte=' + this.export_to + '&send_to_teachers=' + this.sendToTeachers;
+            const url = '/schedule_change/api/summary_pdf/?activate_has_classe=true&date_change__gte='
+            + this.export_from + '&date_change__lte=' + this.export_to + '&send_to_teachers=' + this.sendToTeachers
+            + '&message=' + encodeURIComponent(this.message);
             axios.get(url, token)
             .then(response => {
                 const protocol = window.location.protocol === 'http:' ? 'ws' : 'wss';

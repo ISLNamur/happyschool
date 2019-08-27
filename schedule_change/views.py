@@ -184,7 +184,8 @@ class SummaryPDFAPI(APIView):
         date_from = request.GET.get('date_change__gte')
         date_to = request.GET.get('date_change__lte')
         send_to_teachers = json.loads(request.GET.get('send_to_teachers', 'false'))
+        message = request.GET.get('message', "")
 
-        task = task_export.delay(changes, date_from, date_to, send_to_teachers)
+        task = task_export.delay(changes, date_from, date_to, send_to_teachers, message)
 
         return Response(status=HTTP_202_ACCEPTED, data=json.dumps(str(task)))
