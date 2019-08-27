@@ -116,7 +116,7 @@
                 </multiselect>
             </b-form-group>
             <b-form-group
-                v-if="form.change == 'Remplacement'"
+                v-if="isReplacement"
                 label="Prof/Educ(s) remplacant(s)"
                 >
                 <multiselect
@@ -242,6 +242,15 @@ export default {
                 }
             }
         },
+    },
+    computed: {
+        isReplacement: function () {
+            for (let ct in this.$store.state.changeType) {
+                if (this.$store.state.changeType[ct].name == 'Remplacement'
+                    && this.$store.state.changeType[ct].id == this.form.change) return true;
+            }
+            return false;
+        }
     },
     methods: {
         addPlaces: function (newPlace) {
