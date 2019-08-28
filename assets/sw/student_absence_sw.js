@@ -54,6 +54,8 @@ self.addEventListener('fetch', function(event) {
                 const students_store = students_tx.objectStore('students');
                 const classes_tx = db.transaction('classes', 'readwrite');
                 const classes_store = classes_tx.objectStore('classes');
+                classes_store.clear();
+                students_store.clear();
                 classes = {};
                 for (let s in data) {
                     // Put student.
