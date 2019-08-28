@@ -25,6 +25,8 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from django.contrib.auth.views import LoginView, LogoutView, TemplateView
 
+from core.utilities import EXCLUDED_APPS
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^core/', include('core.urls')),
@@ -41,25 +43,8 @@ urlpatterns = [
     url(r'^$', RedirectView.as_view(url='annuaire/', permanent=False)),
 ]
 
-excluded_app = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.postgres',
-    'rest_framework',
-    'rest_framework.authtoken',
-    'django_filters',
-    'channels',
-    'crispy_forms',
-    'social_django',
-    'webpack_loader',
-]
-
 for app in settings.INSTALLED_APPS:
-    if app in excluded_app:
+    if app in EXCLUDED_APPS:
         continue
 
     urlpatterns.append(url(r'^%s/' % (app), include('%s.urls' % (app))))

@@ -45,6 +45,17 @@ from .serializers import ScheduleChangeSettingsSerializer, ScheduleChangeSeriali
     ScheduleChangePlaceSerializer, ScheduleChangeCategorySerializer
 
 
+def get_menu_entry(active_app: str, user) -> dict:
+    if not user.has_perm('schedule_change.access_schedule_change'):
+        return {}
+    return {
+            "app": "schedule_change",
+            "display": "Changement Horaire",
+            "url": "/schedule_change",
+            "active": active_app == "schedule_change"
+    }
+
+
 def get_settings():
     settings_schedule = ScheduleChangeSettingsModel.objects.first()
     # Ensure core settings is created.

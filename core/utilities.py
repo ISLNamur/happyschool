@@ -19,10 +19,29 @@
 
 from pathlib import Path
 import shutil
+import importlib
 
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
+
+
+EXCLUDED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'django.contrib.postgres',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'django_filters',
+    'channels',
+    'crispy_forms',
+    'social_django',
+    'webpack_loader',
+]
 
 
 def get_scholar_year() -> int:
@@ -55,76 +74,20 @@ def in_scholar_year(date) -> bool:
 
 
 def get_menu(user: User, active_app: str=None) -> dict:
-    apps = [{
-        "app": "annuaire",
-        "display": "Annuaire",
-        "url": "/annuaire/",
-        "active": active_app == "annuaire"
-    }]
-
-    if "infirmerie" in settings.INSTALLED_APPS and user.has_perm('infirmerie.access_infirmerie'):
-        apps.append({
-            "app": "infirmerie",
-            "display": "Infirmerie",
-            "url": "/infirmerie",
-            "active": active_app == "infirmerie"
-        })
-
-    if "appels" in settings.INSTALLED_APPS and user.has_perm('appels.access_appel'):
-        apps.append({
-            "app": "appels",
-            "display": "Appels",
-            "url": "/appels/",
-            "active": active_app == "appels"
-        })
-
-    if "absence_prof" in settings.INSTALLED_APPS and user.has_perm('absence_prof.access_absences'):
-        apps.append({
-            "app": "absence_prof",
-            "display": "Abs. Profs",
-            "url": "/absence_prof/",
-            "active": active_app == "absence_prof"
-        })
-
-    if "dossier_eleve" in settings.INSTALLED_APPS and user.has_perm('dossier_eleve.access_dossier_eleve'):
-        apps.append({
-            "app": "dossier_eleve",
-            "display": "Dossier élèves",
-            "url": "/dossier_eleve/",
-            "active": active_app == "dossier_eleve"
-        })
-
-    if "mail_notification" in settings.INSTALLED_APPS and user.has_perm('mail_notification.access_mail_notification'):
-        apps.append({
-            "app": "mail_notification",
-            "display": "Email",
-            "url": "/mail_notification",
-            "active": active_app == "mail_notification"
-        })
-
-    if "schedule_change" in settings.INSTALLED_APPS and user.has_perm('schedule_change.access_schedule_change'):
-        apps.append({
-            "app": "schedule_change",
-            "display": "Changement Horaire",
-            "url": "/schedule_change",
-            "active": active_app == "schedule_change"
-        })
-
-    if "student_absence" in settings.INSTALLED_APPS and user.has_perm('student_absence.view_studentabsencemodel'):
-        apps.append({
-            "app": "student_absence",
-            "display": "Abs. Élèves",
-            "url": "/student_absence",
-            "active": active_app == "student_absence"
-        })
-
-    if "student_absence_teacher" in settings.INSTALLED_APPS and user.has_perm('student_absence_teacher.view_studentabsenceteachermodel'):
-        apps.append({
-            "app": "student_absence_teacher",
-            "display": "Abs. Élèves (prof)",
-            "url": "/student_absence_teacher",
-            "active": active_app == "student_absence_teacher"
-        })
+    apps = []
+    for app in settings.INSTALLED_APPS:
+        if app in EXCLUDED_APPS:
+            continue
+        if app == "core":
+            continue
+        try:
+            module = importlib.import_module("%s.views" % app)
+            get_menu_entry = getattr(module, 'get_menu_entry')
+            menu_entry = get_menu_entry(active_app, user)
+            if menu_entry:
+                apps.append(menu_entry)
+        except:
+            pass
 
     menu = {"full_name": user.get_full_name(), "apps": apps}
     menu['admin_settings'] = user.has_perm('core.add_coresettingsmodel')

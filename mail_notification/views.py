@@ -70,6 +70,16 @@ CYCLES = ['Cycle inférieur', 'Cycle supérieur']
 DEGREES = ["1er degré", "2ème degré", "3ème degré"]
 YEARS = ["1ère année", "2ème année", "3ème année", "4ème année", "5ème année", "6ème année"]
 
+def get_menu_entry(active_app, user):
+    if not user.has_perm('mail_notification.access_mail_notification'):
+        return {}
+    return {
+            "app": "mail_notification",
+            "display": "Email",
+            "url": "/mail_notification",
+            "active": active_app == "mail_notification"
+    }
+
 groups_with_access = [settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.SECRETARY_GROUP]
 for i in range(1,7):
     groups_with_access.append(settings.COORD_GROUP + str(i))

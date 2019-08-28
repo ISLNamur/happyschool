@@ -42,6 +42,16 @@ from .models import Appel, ObjectModel, MotiveModel, AppelsSettingsModel
 from .serializers import AppelSerializer, ObjectSerializer, MotiveSerializer, AppelsSettingsSerializer
 
 
+def get_menu_entry(active_app, user):
+    if not user.has_perm('appels.access_appel'):
+        return {}
+    return {
+            "app": "appels",
+            "display": "Appels",
+            "url": "/appels/",
+            "active": active_app == "appels"
+    }
+
 def get_settings():
     settings_appels = AppelsSettingsModel.objects.first()
     if not settings_appels:

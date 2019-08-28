@@ -43,6 +43,17 @@ from .serializers import StudentAbsenceSettingsSerializer, StudentAbsenceSeriali
     ClasseNoteSerializer
 
 
+def get_menu_entry(active_app: str, user) -> dict:
+    if not user.has_perm('student_absence.view_studentabsencemodel'):
+        return {}
+    return {
+            "app": "student_absence",
+            "display": "Abs. Élèves",
+            "url": "/student_absence",
+            "active": active_app == "student_absence"
+    }
+
+
 def get_settings():
     settings_student_absence = StudentAbsenceSettingsModel.objects.first()
     if not settings_student_absence:

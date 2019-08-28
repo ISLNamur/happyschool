@@ -54,6 +54,16 @@ from io import BytesIO
 from PyPDF2 import PdfFileMerger
 
 
+def get_menu_entry(active_app, user):
+    if not user.has_perm('dossier_eleve.access_dossier_eleve'):
+        return {}
+    return {
+            "app": "dossier_eleve",
+            "display": "Dossier élèves",
+            "url": "/dossier_eleve/",
+            "active": active_app == "dossier_eleve"
+    }
+
 def get_settings():
     settings_dossier_eleve = DossierEleveSettingsModel.objects.first()
     if not settings_dossier_eleve:

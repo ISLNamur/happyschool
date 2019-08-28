@@ -71,6 +71,14 @@ from .forms import ChercherEleveForm
 # teacher_man = TeacherManager()
 # educator_man = EducatorManager()
 
+def get_menu_entry(active_app, user):
+    return {
+        "app": "annuaire",
+        "display": "Annuaire",
+        "url": "/annuaire/",
+        "active": active_app == "annuaire"
+    }
+
 groups_with_access = [settings.SYSADMIN_GROUP, settings.TEACHER_GROUP, settings.DIRECTION_GROUP, settings.EDUCATOR_GROUP,
                       settings.SECRETARY_GROUP, settings.RECEPTION_GROUP, settings.PMS_GROUP]
 

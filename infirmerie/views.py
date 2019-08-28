@@ -37,6 +37,17 @@ from core.views import BaseModelViewSet, BaseFilters
 from .serializers import PassageSerializer, InfirmerieSettingsSerializer
 
 
+def get_menu_entry(active_app, user):
+    if not user.has_perm('infirmerie.access_infirmerie'):
+        return {}
+    return {
+            "app": "infirmerie",
+            "display": "Infirmerie",
+            "url": "/infirmerie",
+            "active": active_app == "infirmerie"
+    }
+
+
 def get_settings():
     settings_infirmerie = InfirmerieSettingsModel.objects.first()
     if not settings_infirmerie:

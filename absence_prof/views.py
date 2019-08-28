@@ -40,6 +40,17 @@ from .models import Absence, AbsenceProfSettingsModel, MotifAbsence
 from .serializers import AbsenceProfSettingsSerializer, AbsenceProfSerializer, MotifAbsenceSerializer
 
 
+def get_menu_entry(active_app, user):
+    if not user.has_perm('absence_prof.access_absences'):
+        return {}
+    return {
+            "app": "absence_prof",
+            "display": "Abs. Profs",
+            "url": "/absence_prof/",
+            "active": active_app == "absence_prof"
+    }
+
+
 def get_settings():
     settings_absence_prof = AbsenceProfSettingsModel.objects.first()
     if not settings_absence_prof:
