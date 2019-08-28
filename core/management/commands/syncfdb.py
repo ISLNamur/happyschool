@@ -34,12 +34,15 @@ class Command(BaseCommand):
         proecos = settings.SYNC_FDB_SERVER
         for proeco in proecos:
             teaching = TeachingModel.objects.get(name=proeco["teaching_name"])
+            classe_format = proeco["classe_format"] if "classe_format" in proeco else "%C"
             importation_student = ImportStudentFDB(teaching=teaching, fdb_server=proeco["server"],
                                                    teaching_type=proeco["teaching_type"],
-                                                   search_login_directory=settings.USE_LDAP_INFO)
+                                                   search_login_directory=settings.USE_LDAP_INFO,
+                                                   classe_format=classe_format)
             importation_responsible = ImportResponsibleFDB(teaching=teaching, fdb_server=proeco["server"],
                                                            teaching_type=proeco["teaching_type"],
                                                            search_login_directory=settings.USE_LDAP_INFO,
-                                                           ldap_unique_attr=proeco["ldap_unique_attr"]["teacher_ldap_attr"])
+                                                           ldap_unique_attr=proeco["ldap_unique_attr"]["teacher_ldap_attr"],
+                                                           classe_format=classe_format)
             importation_student.sync()
             importation_responsible.sync()

@@ -300,18 +300,21 @@ class ImportResponsibleFDB(ImportResponsible):
     is_educator = False
 
     def __init__(self, teaching: TeachingModel, fdb_server, search_login_directory: bool,
-                 teaching_type: str, ldap_unique_attr="matricule") -> None:
+                 teaching_type: str, ldap_unique_attr="matricule", classe_format="%C") -> None:
         super().__init__(teaching)
         self.server = fdb_server
         self.teaching_type = teaching_type
         self.search_login_directory = search_login_directory
         self.ldap_unique_attr = ldap_unique_attr
+        self.classe_format = classe_format
+
 
     def sync(self) -> None:
         from libreschoolfdb.reader import get_teachers, get_educators
         year = get_scholar_year()
         self.print_log("Collecting teachers from ProEco database…")
-        teachers = get_teachers(year, self.server, self.teaching_type)
+        teachers = get_teachers(year, self.server, self.teaching_type,
+                                classe_format=self.classe_format)
         self.is_teacher = True
         self.is_educator = False
         self._sync(teachers.items())
@@ -384,6 +387,9 @@ class ImportStudent(ImportBase):
             return value.lower()
         if column == "birth_date":
             if type(value) == int:
+                # Ignore dummy values
+                if value == 19000000:
+                    return date.today()
                 return date(year=int(str(value)[:4]),
                             month=int(str(value)[4:6]),
                             day=int(str(value)[6:]))
@@ -552,15 +558,18 @@ class ImportStudentFDB(ImportStudent):
     }
     scholar_year = get_scholar_year()
 
-    def __init__(self, teaching: TeachingModel, fdb_server, search_login_directory, teaching_type) -> None:
+    def __init__(self, teaching: TeachingModel, fdb_server, search_login_directory, teaching_type, classe_format="%C") -> None:
         super().__init__(teaching, search_login_directory)
         self.server = fdb_server
         self.teaching_type = teaching_type
+        self.classe_format = classe_format
 
     def sync(self):
         from libreschoolfdb.reader import get_students
         self.print_log("Collecting students informations from ProEco database.")
-        students = get_students(year=self.scholar_year, fdb_server=self.server, teaching=self.teaching_type, absences_info=False)
+        students = get_students(year=self.scholar_year, fdb_server=self.server,
+                                teaching=self.teaching_type, absences_info=False,
+                                classe_format=self.classe_format)
         # print(students)
         super()._sync(students.items())
 
