@@ -235,7 +235,10 @@ class ImportResponsibleLDAP(ImportResponsible):
         except ObjectDoesNotExist:
             # It may happen that responsible has a temporary matricule, search by email instead.
             try:
-                resp = ResponsibleModel.objects.get(email=self.get_value(entry, "email"))
+                email = self.get_value(entry, "email")
+                if not email:
+                    raise
+                resp = ResponsibleModel.objects.get(email=email)
                 # Set definitive matricule.
                 resp.matricule = matricule
                 return resp
