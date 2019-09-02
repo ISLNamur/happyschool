@@ -135,7 +135,7 @@ class AbsenceProfViewSet(ModelViewSet):
     def send_emails(self, instance, subject, is_new):
         """Send an email to notify new absence and change."""
         context = {'absence': instance, 'new': is_new}
-        email.send_email(to=['educateurs@isln.be'], subject=subject,
+        email.send_email(to=[], subject=subject,
                          email_template='absence_prof/email.html', context=context)
 
 
