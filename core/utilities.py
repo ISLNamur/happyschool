@@ -101,6 +101,6 @@ def check_student_photo(student, copy=True) -> bool:
     if not student_photo.is_file():
         if copy:
             # Copy unknown.jpg to [matricule].jpg
-            shutil.copy(photos_dir.joinpath("unknown.jpg"), student_photo)
+            shutil.copy(str(photos_dir.joinpath("unknown.jpg")), str(student_photo))
         return False
     return True
