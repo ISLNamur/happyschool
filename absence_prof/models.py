@@ -22,11 +22,12 @@ from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 from django.db import models
 
-from core.models import TeachingModel
+from core.models import TeachingModel, EmailModel
 
 
 class AbsenceProfSettingsModel(models.Model):
     teachings = models.ManyToManyField(TeachingModel, default=None)
+    emails = models.ManyToManyField(EmailModel, default=None, null=True)
 
 
 class MotifAbsence(models.Model):
