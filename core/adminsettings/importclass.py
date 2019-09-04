@@ -63,6 +63,7 @@ class ImportResponsible(ImportBase):
     ldap_unique_attr = "matricule"
     has_inactivity = False
     ldap_connection = None
+    username_attribute = "username"
     base_dn = None
 
     def __init__(self, teaching: TeachingModel) -> None:
@@ -101,7 +102,7 @@ class ImportResponsible(ImportBase):
             if not resp:
                 self.print_log("No unique identifier found, skipping responsible.")
                 continue
-            username = self.get_value(entry, "username")
+            username = self.get_value(entry, self.username_attribute)
             if self.search_login_directory:
                 matricule = self.get_value(entry, "matricule")
                 self.ldap_connection.search(self.base_dn, "(%s=%i)" % (self.ldap_unique_attr, matricule),
@@ -114,8 +115,12 @@ class ImportResponsible(ImportBase):
                     user = User.objects.get(username=username)
                 except ObjectDoesNotExist:
                     user = User.objects.create_user(username)
+                user.last_name = last_name
+                user.first_name = first_name
+                if "email" in self.username_attribute:
+                    user.email = user.username
+                user.save()
                 resp.user = user
-
 
             resp.first_name = first_name
             resp.last_name = last_name
@@ -303,13 +308,15 @@ class ImportResponsibleFDB(ImportResponsible):
     is_educator = False
 
     def __init__(self, teaching: TeachingModel, fdb_server, search_login_directory: bool,
-                 teaching_type: str, ldap_unique_attr="matricule", classe_format="%C") -> None:
+                 teaching_type: str, ldap_unique_attr="matricule", classe_format="%C",
+                 username_attribute=None) -> None:
         super().__init__(teaching)
         self.server = fdb_server
         self.teaching_type = teaching_type
         self.search_login_directory = search_login_directory
         self.ldap_unique_attr = ldap_unique_attr
         self.classe_format = classe_format
+        self.username_attribute = username_attribute
 
 
     def sync(self) -> None:
