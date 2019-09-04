@@ -29,7 +29,7 @@ class StudentAbsenceTeacherSettingsModel(models.Model):
 
 class LessonModel(models.Model):
     lesson = models.CharField(max_length=200)
-    classe = models.ForeignKey(ClasseModel, on_delete=models.CASCADE)
+    classe = models.ForeignKey(ClasseModel, on_delete=models.CASCADE, null=True)
 
 
 class PeriodModel(models.Model):
