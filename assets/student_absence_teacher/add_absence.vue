@@ -187,7 +187,7 @@ export default {
         .then(resp => {
             this.periodOptions = resp.data.results;
         })
-        axios.get('/student_absence_teacher/api/lesson/')
+        axios.get('/student_absence_teacher/api/lesson/?page_size=200')
         .then(resp => {
             this.lessonOptions = resp.data.results;
         })

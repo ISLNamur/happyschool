@@ -31,7 +31,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.filters import OrderingFilter
 
 from core.utilities import get_menu
-from core.views import BaseFilters
+from core.views import BaseFilters, PageNumberSizePagination
 
 from .models import StudentAbsenceTeacherSettingsModel, StudentAbsenceTeacherModel, StudentLatenessTeacherModel, PeriodModel, LessonModel
 from .serializers import StudentAbsenceTeacherSettingsSerializer, PeriodSerializer, LessonSerializer, StudentAbsenceTeacherSerializer, StudentLatenessTeacherSerializer
@@ -151,3 +151,4 @@ class PeriodViewSet(ReadOnlyModelViewSet):
 class LessonViewSet(ReadOnlyModelViewSet):
     queryset = LessonModel.objects.all()
     serializer_class = LessonSerializer
+    pagination_class = PageNumberSizePagination
