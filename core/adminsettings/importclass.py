@@ -24,7 +24,7 @@ from datetime import date
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 from core.models import StudentModel, TeachingModel, ClasseModel, AdditionalStudentInfo,\
     ResponsibleModel
@@ -110,7 +110,7 @@ class ImportResponsible(ImportBase):
                 for r in self.ldap_connection.response:
                     ldap_info = get_django_dict_from_ldap(r)
                     username = ldap_info['username']
-            if username:
+            if username and len(username.strip(" ")) > 0:
                 try:
                     user = User.objects.get(username=username)
                 except ObjectDoesNotExist:
@@ -178,12 +178,18 @@ class ImportResponsible(ImportBase):
             if email_school:
                 resp.email_school = email_school
 
+            educ_group = Group.objects.get(name="educateur")
             is_educator = self.get_value(entry, "is_educator")
             if is_educator:
                 resp.is_educator = True
+                if resp.user:
+                    educ_group.user_set.add(resp.user)
+            teach_group = Group.objects.get(name="professeur")
             is_teacher = self.get_value(entry, "is_teacher")
             if is_teacher:
                 resp.is_teacher = True
+                if resp.user:
+                    teach_group.user_set.add(resp.user)
 
             birth_date = self.get_value(entry, "birth_date")
             if birth_date:
