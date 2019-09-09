@@ -70,6 +70,8 @@ class StudentMedicalInfoSerializer(serializers.ModelSerializer):
 
 
 class ClasseSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(label='ID', read_only=False)
+
     # Enable showing/hiding teaching
     def __init__(self, *args, **kwargs):
         show_teaching = kwargs.pop("show_teaching", True)
@@ -122,6 +124,8 @@ class YearSerializer(serializers.ModelSerializer):
 
 
 class TeachingSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(label='ID', read_only=False)
+
     class Meta:
         model = TeachingModel
         fields = '__all__'

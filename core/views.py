@@ -46,11 +46,11 @@ from django.views.generic import TemplateView
 from django.contrib.auth.models import Group
 
 from core.models import ResponsibleModel, TeachingModel, EmailModel, CoreSettingsModel, StudentModel,\
-    ImportCalendarModel
+    ImportCalendarModel, ClasseModel
 from core.people import get_classes
 from core.permissions import IsSecretaryPermission
 from core.serializers import ResponsibleSensitiveSerializer, TeachingSerializer,\
-    EmailSerializer
+    EmailSerializer, ClasseSerializer
 from core.utilities import get_scholar_year, get_menu
 
 
@@ -215,6 +215,12 @@ class TeachingViewSet(ModelViewSet):
     queryset = TeachingModel.objects.all()
     serializer_class = TeachingSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions)
+
+
+class ClasseViewSet(ModelViewSet):
+    queryset = ClasseModel.objects.all()
+    serializer_class = ClasseSerializer
+    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
 
 
 class EmailViewSet(ReadOnlyModelViewSet):
