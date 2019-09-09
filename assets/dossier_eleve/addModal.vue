@@ -321,7 +321,7 @@ export default {
             this.infoOrSanction = null;
             this.demandeur = {};
             this.stats = {};
-            this.$refs.attachments.reset();
+            if (this.$refs.attachments) this.$refs.attachments.reset();
             this.uploadedFiles.splice(0, this.uploadedFiles.length);
 
             this.form.name = "";
