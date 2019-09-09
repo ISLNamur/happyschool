@@ -27,7 +27,7 @@ from core.models import TeachingModel, EmailModel
 
 class AbsenceProfSettingsModel(models.Model):
     teachings = models.ManyToManyField(TeachingModel, default=None)
-    emails = models.ManyToManyField(EmailModel, default=None, null=True)
+    emails = models.ManyToManyField(EmailModel, default=None)
 
 
 class MotifAbsence(models.Model):
@@ -42,7 +42,9 @@ class Absence(models.Model):
     name = models.CharField(max_length=500)
     motif = models.CharField(max_length=500)
     datetime_absence_start = models.DateTimeField("date du début de l'absence")
+    date_absence_start = models.DateField("Date du début de l'absence", default=timezone.now().today())
     datetime_absence_end = models.DateTimeField("date de la fin de l'absence")
+    date_absence_end = models.DateField("Date de la fin de l'absence", default=timezone.now().today())
     datetime_encoding = models.DateTimeField("date de l'encodage", auto_now_add=True)
     comment = models.CharField(max_length=10000, blank=True)
     user = models.CharField(max_length=20)
