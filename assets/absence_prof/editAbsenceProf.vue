@@ -54,10 +54,10 @@
                             <b-form-select v-model="form.motif" :options="motifOptions" required></b-form-select>
                         </b-form-group>
                         <b-form-group label="Date de début">
-                            <b-form-input v-model="form.datetime_absence_start" type="date" required></b-form-input>
+                            <b-form-input v-model="form.date_absence_start" type="date" required></b-form-input>
                         </b-form-group>
                         <b-form-group label="Date de fin">
-                            <b-form-input v-model="form.datetime_absence_end" type="date" required></b-form-input>
+                            <b-form-input v-model="form.date_absence_end" type="date" required></b-form-input>
                         </b-form-group>
                         <b-form-group label="commentaire">
                             <b-textarea v-model="form.comment"></b-textarea>
@@ -109,8 +109,8 @@ export default {
                 id_person: null,
                 name: null,
                 motif: null,
-                datetime_absence_start: null,
-                datetime_absence_end: null,
+                date_absence_start: null,
+                date_absence_end: null,
                 comment: "",
             },
             person: null,
@@ -131,8 +131,8 @@ export default {
                     this.form.id_person = resp.data.id_person;
                     this.form.motif = resp.data.motif;
                     this.form.name = resp.data.name;
-                    this.form.datetime_absence_start = resp.data.datetime_absence_start.split("T")[0];
-                    this.form.datetime_absence_end = resp.data.datetime_absence_end.split("T")[0];
+                    this.form.date_absence_start = resp.data.date_absence_start;
+                    this.form.date_absence_end = resp.data.date_absence_end;
                     this.form.comment = resp.data.comment;
                 }
             })
@@ -149,8 +149,6 @@ export default {
             this.sending = true;
             const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
             let data = Object.assign({}, this.form);
-            data.datetime_absence_start += " 00:01";
-            data.datetime_absence_end += " 23:59";
             let send = this.id ? axios.put : axios.post;
             let url = "/absence_prof/api/absence/";
             if (this.id) url += this.id + "/";

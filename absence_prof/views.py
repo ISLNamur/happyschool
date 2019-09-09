@@ -95,23 +95,23 @@ class AbsenceProfFilter(BaseFilters):
         filter_overrides = BaseFilters.Meta.filter_overrides
 
     def activate_ongoing_by(self, queryset, name, value):
-        return queryset.filter(datetime_absence_end__gt=timezone.now() - relativedelta(days=1))
+        return queryset.filter(date_absence_end__gt=timezone.now() - relativedelta(days=1))
 
     def date_month__gte_by(self, queryset, name, value):
-        return queryset.filter(datetime_absence_end__month__gte=int(value[5:]),
-                               datetime_absence_end__year__gte=int(value[:4]))
+        return queryset.filter(date_absence_end__month__gte=int(value[5:]),
+                               date_absence_end__year__gte=int(value[:4]))
 
     def date_month__lte_by(self, queryset, name, value):
-        return queryset.filter(datetime_absence_start__month__lte=int(value[5:]),
-                               datetime_absence_start__year__lte=int(value[:4]))
+        return queryset.filter(date_absence_start__month__lte=int(value[5:]),
+                               date_absence_start__year__lte=int(value[:4]))
 
     def date_range__gte_by(self, queryset, name, value):
-        for a in queryset.filter(datetime_absence_end__lte=value):
-            print("%s: %s - %s" % (a.name, a.datetime_absence_start, a.datetime_absence_end))
-        return queryset.filter(datetime_absence_end__gte=value)
+        for a in queryset.filter(date_absence_end__lte=value):
+            print("%s: %s - %s" % (a.name, a.date_absence_start, a.date_absence_end))
+        return queryset.filter(date_absence_end__gte=value)
 
     def date_range__lte_by(self, queryset, name, value):
-        return queryset.filter(datetime_absence_start__lte=value)
+        return queryset.filter(date_absence_start__lte=value)
 
 
 class AbsenceProfViewSet(ModelViewSet):
@@ -158,7 +158,7 @@ class ListPDF(LoginRequiredMixin,
         view_set = AbsenceProfViewSet.as_view({'get': 'list'})
         absences = view_set(self.request).data['results']
         for a in absences:
-            a['datetime_absence_start'] = timezone.datetime.strptime(a['datetime_absence_start'][:10], "%Y-%m-%d")
-            a['datetime_absence_end'] = timezone.datetime.strptime(a['datetime_absence_end'][:10], "%Y-%m-%d")
+            a['date_absence_start'] = timezone.datetime.strptime(a['date_absence_start'], "%Y-%m-%d")
+            a['date_absence_end'] = timezone.datetime.strptime(a['date_absence_end'], "%Y-%m-%d")
         context['absences'] = absences
         return context

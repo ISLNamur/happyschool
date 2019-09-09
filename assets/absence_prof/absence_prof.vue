@@ -107,7 +107,7 @@ export default {
             currentEntry: null,
             entriesCount: 0,
             filter: "",
-            ordering: "&ordering=datetime_absence_start",
+            ordering: "&ordering=date_absence_start",
             entries: [],
         }
     },

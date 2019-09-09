@@ -42,7 +42,7 @@
         {% for absence in absences %}
         <tr>
             <td>{{ absence.name }}</td>
-            <td>{{ absence.datetime_absence_start|date:"d-m-Y" }} – {{ absence.datetime_absence_end|date:"d-m-Y" }}</td>
+            <td>{{ absence.date_absence_start|date:"d-m-Y" }} – {{ absence.date_absence_end|date:"d-m-Y" }}</td>
             <td>{{ absence.motif }}</td>
             <td>{{ absence.comment }}</td>
         </tr>

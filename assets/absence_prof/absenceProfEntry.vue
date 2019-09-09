@@ -58,10 +58,10 @@ export default {
     },
     computed: {
         date: function () {
-            if (this.rowData.datetime_absence_start == this.rowData.datetime_absence_end)
-                return Moment(this.rowData.datetime_absence_start).format('DD/MM/YY');
+            if (this.rowData.date_absence_start == this.rowData.date_absence_end)
+                return Moment(this.rowData.date_absence_start).format('DD/MM/YY');
 
-            return Moment(this.rowData.datetime_absence_start).format('DD/MM/YY') + " → " + Moment(this.rowData.datetime_absence_end).format('DD/MM/YY');
+            return Moment(this.rowData.date_absence_start).format('DD/MM/YY') + " → " + Moment(this.rowData.date_absence_end).format('DD/MM/YY');
         },
         statusClass: function () {
             if (this.rowData.status == "A venir") return "avenir";

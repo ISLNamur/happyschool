@@ -41,9 +41,9 @@ class Absence(models.Model):
     id_person = models.BigIntegerField(blank=True, null=True, default=None)
     name = models.CharField(max_length=500)
     motif = models.CharField(max_length=500)
-    datetime_absence_start = models.DateTimeField("date du début de l'absence")
+    datetime_absence_start = models.DateTimeField("date du début de l'absence", null=True, blank=True)
     date_absence_start = models.DateField("Date du début de l'absence", default=timezone.now().today())
-    datetime_absence_end = models.DateTimeField("date de la fin de l'absence")
+    datetime_absence_end = models.DateTimeField("date de la fin de l'absence", null=True, blank=True)
     date_absence_end = models.DateField("Date de la fin de l'absence", default=timezone.now().today())
     datetime_encoding = models.DateTimeField("date de l'encodage", auto_now_add=True)
     comment = models.CharField(max_length=10000, blank=True)
@@ -56,11 +56,11 @@ class Absence(models.Model):
 
     @property
     def status(self):
-        if (self.datetime_absence_start < timezone.now()
-                and self.datetime_absence_end > timezone.now() - relativedelta(days=1)):
+        if (self.date_absence_start < timezone.now().date()
+                and self.date_absence_end > timezone.now().date() - relativedelta(days=1)):
             return "En cours"
 
-        if self.datetime_absence_start > timezone.now():
+        if self.date_absence_start > timezone.now().date():
             return "A venir"
 
         return "Clôturé"
