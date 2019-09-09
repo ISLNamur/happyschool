@@ -133,6 +133,8 @@ class ImportResponsible(ImportBase):
                 if inactive_from:
                     resp.inactive_from = timezone.make_aware(
                         timezone.datetime.combine(inactive_from, timezone.datetime.min.time()))
+                else:
+                    resp.inactive_from = None
 
             # Check if responsible's classes already exists.
             if resp.matricule not in resp_synced:
