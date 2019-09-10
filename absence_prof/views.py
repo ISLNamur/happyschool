@@ -137,6 +137,7 @@ class AbsenceProfViewSet(ModelViewSet):
         context = {'absence': instance, 'new': is_new}
         emails = list(get_settings().emails.all())
         if emails:
+            emails = [e.email for e in emails]
             email.send_email(to=emails, subject=subject,
                              email_template='absence_prof/email.html', context=context)
 
