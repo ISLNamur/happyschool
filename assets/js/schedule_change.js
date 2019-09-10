@@ -53,6 +53,10 @@ const store = new Vuex.Store({
     }
 },
   mutations: {
+      enableFullscreen: function (state) {
+        state.canAdd = false;
+        this.commit('addFilter', {filterType: 'activate_has_classe', tag: "Activer", value: true});
+      },
       setChangeType: function (state, types) {
         state.changeType = types;
       },

@@ -20,12 +20,12 @@
 <template>
     <div>
         <div class="loading" v-if="!loaded"></div>
-        <app-menu :menu-info="menu"></app-menu>
+        <app-menu v-if="!fullscreen" :menu-info="menu"></app-menu>
         <b-container v-if="loaded">
             <b-row>
                 <h2>Changement d'horaire</h2>
             </b-row>
-            <b-row>
+            <b-row v-if="!fullscreen">
                 <b-col>
                     <b-form-group>
                         <div>
@@ -49,7 +49,7 @@
                     </b-form-group>
                 </b-col>
             </b-row>
-            <b-row>
+            <b-row v-if="!fullscreen">
                 <b-col>
                         <b-collapse id="filters" v-model=showFilters>
                             <b-card>
@@ -58,7 +58,7 @@
                         </b-collapse>
                     </b-col>
             </b-row>
-            <b-pagination class="mt-1" :total-rows="entriesCount" v-model="currentPage" @change="changePage" :per-page="30">
+            <b-pagination v-if="!fullscreen" class="mt-1" :total-rows="entriesCount" v-model="currentPage" @change="changePage" :per-page="30">
             </b-pagination>
             <div v-for="(group, index) in entriesGrouped"
                 v-bind:key="index"
@@ -139,6 +139,7 @@ export default {
             entriesCount: 0,
             inputStates: {
             },
+            fullscreen: false,
         }
     },
     watch: {
@@ -274,8 +275,17 @@ export default {
                 this.loaded = true;
             });
         },
+        checkFullscreenMode: function () {
+            const url = new URL(window.location.href);
+            const fullscreen = url.searchParams.get("fullscreen");
+            if (fullscreen) {
+                this.fullscreen = true;
+                this.$store.commit('enableFullscreen');
+            }
+        },
     },
     mounted: function () {
+        this.checkFullscreenMode();
         this.menu = menu;
         this.applyFilter();
     },
