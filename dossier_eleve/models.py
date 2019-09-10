@@ -96,7 +96,7 @@ class CasEleve(models.Model):
     datetime_encodage = models.DateTimeField("date d'encodage", auto_now_add=True)
     datetime_modified = models.DateTimeField("Date de modification", auto_now=True)
     info = models.ForeignKey(InfoEleve, null=True, blank=True, on_delete=models.SET_NULL)
-    demandeur = models.CharField(max_length=50)
+    demandeur = models.CharField(max_length=100)
     sanction_decision = models.ForeignKey(SanctionDecisionDisciplinaire, null=True, blank=True, on_delete=models.SET_NULL)
     explication_commentaire = models.CharField(max_length=5000)
     attachments = models.ManyToManyField(CasAttachment, blank=True)
@@ -104,7 +104,7 @@ class CasEleve(models.Model):
     datetime_conseil = models.DateTimeField("date du conseil disciplinaire", null=True, blank=True)
     sanction_faite = models.NullBooleanField(default=None, null=True, blank=True)
     important = models.BooleanField(default=False)
-    user = models.CharField(max_length=20, default="")
+    user = models.CharField(max_length=100, default="")
     visible_by_educ = models.BooleanField(default=True) # Deprecated
     visible_by_tenure = models.BooleanField(default=False) # Deprecated
     visible_by_groups = models.ManyToManyField(Group, blank=True)
