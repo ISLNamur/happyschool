@@ -50,7 +50,7 @@ class Appel(models.Model):
                                     null=True, blank=True, default=None)
     name = models.CharField(max_length=100)
     is_student = models.BooleanField(default=True)
-    user = models.CharField(max_length=20, default="")
+    user = models.CharField(max_length=100, default="")
     objet = models.CharField(max_length=300)  # DEPRECATED, use object instead.
     motif = models.CharField(max_length=300)  # DEPRECATED, use motive instead.
     object = models.ForeignKey(ObjectModel, on_delete=models.CASCADE, null=True, blank=True)
