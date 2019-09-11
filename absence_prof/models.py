@@ -56,8 +56,8 @@ class Absence(models.Model):
 
     @property
     def status(self):
-        if (self.date_absence_start < timezone.now().date()
-                and self.date_absence_end > timezone.now().date() - relativedelta(days=1)):
+        if (self.date_absence_start <= timezone.now().date()
+                and self.date_absence_end >= timezone.now().date()):
             return "En cours"
 
         if self.date_absence_start > timezone.now().date():
