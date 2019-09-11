@@ -6,8 +6,8 @@
 </head>
 <body>
     <p>Bonjour ceci est une {% if new %}nouvelle {% else %}modification de l'{% endif %}absence.</p>
-    <p>La personne suivante <strong>{{ absence.name }}</strong> sera absente du {{ absence.datetime_absence_start|date:'d N Y' }}
-        au {{ absence.datetime_absence_end|date:'d N Y' }} pour le motif suivant : «<em>{{ absence.motif }}</em>» avec comme
+    <p>La personne suivante <strong>{{ absence.name }}</strong> sera absente du {{ absence.date_absence_start|date:'d N Y' }}
+        au {{ absence.date_absence_end|date:'d N Y' }} pour le motif suivant : «<em>{{ absence.motif }}</em>» avec comme
         commentaire : «<em>{{ absence.comment }}</em>».</p>
 
     <p>Bonne journée !</p>
