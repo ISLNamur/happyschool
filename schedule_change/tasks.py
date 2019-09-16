@@ -52,7 +52,8 @@ def task_export(self, ids, date_from, date_to, send_to_teachers=False, message="
     if send_to_teachers:
         classes = ClasseModel.objects.none()
         for c in changes:
-            classes |= get_classes_from_display(c.classes)
+            if c.classes:
+                classes |= get_classes_from_display(c.classes)
 
         teachers_involved = ResponsibleModel.objects.filter(
             Q(classe__in=classes) | Q(tenure__in=classes))
@@ -95,11 +96,14 @@ def get_classes_from_display(flat_classes: str) -> QuerySet:
     use_teaching_display = " — " in classes_str[0]
     classes_ids = []
     for cl in classes_str:
-        classe = cl.split(" – ")[0] if use_teaching_display else cl
+        classe = cl.split(" — ")[0] if use_teaching_display else cl
         year = classe[0]
-        classe_letter = classe[1:].lower()
-        teaching = TeachingModel.objects.get(display_name=cl.split(" – ")[1])\
+        teaching = TeachingModel.objects.get(display_name=cl.split(" — ")[1])\
             if use_teaching_display else get_settings().teachings.all()[0]
-        classes_ids.append(ClasseModel.objects.get(year=int(year), letter=classe_letter, teaching=teaching).id)
+        if "année" in classe:
+            classes_ids += [cm.id for cm in ClasseModel.objects.filter(year=int(year), teaching=teaching)]
+        else:
+            classe_letter = classe[1:].lower()
+            classes_ids.append(ClasseModel.objects.get(year=int(year), letter__iexact=classe_letter, teaching=teaching).id)
 
     return ClasseModel.objects.filter(pk__in=classes_ids)
