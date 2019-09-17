@@ -45,6 +45,7 @@
                                 label="display"
                                 track-by="matricule"
                                 :showNoOptions="false"
+                                :multiple="!id"
                                 >
                                 <span slot="noResult">Aucun responsable trouvé.</span>
                                 <span slot="noOptions"></span>
@@ -92,13 +93,6 @@ export default {
                 this.reset();
             }
         },
-        person: function (newVal, oldVal) {
-            if (newVal) {
-                console.log(this.person);
-                this.form.id_person = newVal.matricule;
-                this.form.name = newVal.display;
-            }
-        }
     },
     data: function () {
         return {
@@ -113,7 +107,7 @@ export default {
                 date_absence_end: null,
                 comment: "",
             },
-            person: null,
+            person: [],
             searchId: -1,
             sending: false,
         }
@@ -126,7 +120,7 @@ export default {
                     console.log(resp.data);
                     axios.get(`/annuaire/api/responsible/${resp.data.id_person}/`, token)
                     .then(resp => {
-                        this.person = resp.data;
+                        this.person = [resp.data];
                     })
                     this.form.id_person = resp.data.id_person;
                     this.form.motif = resp.data.motif;
@@ -148,11 +142,18 @@ export default {
 
             this.sending = true;
             const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-            let data = Object.assign({}, this.form);
-            let send = this.id ? axios.put : axios.post;
-            let url = "/absence_prof/api/absence/";
-            if (this.id) url += this.id + "/";
-            send(url, data, token)
+
+            const promises = [];
+            for (let p in this.person) {
+                let data = Object.assign({}, this.form);
+                data.id_person = this.person[p].matricule;
+                data.name = this.person[p].display;
+                let send = this.id ? axios.put : axios.post;
+                let url = "/absence_prof/api/absence/";
+                if (this.id) url += this.id + "/";
+                promises.push(send(url, data, token));
+            }
+            Promise.all(promises)
             .then(resp => {
                 this.sending = false;
                 this.$router.push('/',() => {
