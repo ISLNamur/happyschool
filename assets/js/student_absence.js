@@ -71,12 +71,5 @@ var studentAbsenceApp = new Vue({
     mounted: function () {
         this.menuInfo = menu;
         this.checkOnlineStatus();
-        // Update students and classes.
-        if (this.$store.state.lastUpdate < Moment().format("YYYY-MM-DD")) {
-            const sleep = this.$store.state.lastUpdate == "" ? 3000 : 2500;
-            setTimeout(() => {
-                this.$store.commit("updateStudentsClasses");
-            }, sleep);
-        }
     },
 });
