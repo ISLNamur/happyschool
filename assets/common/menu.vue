@@ -3,7 +3,7 @@
         <b-navbar toggleable="lg" type="light" variant="light">
             <b-nav-toggle target="nav_text_collapse"></b-nav-toggle>
             <b-navbar-brand href="/">
-                <img src="/static/img/logo_school.png" class="d-inline-block align-top" alt="BV">
+                <img src="/static/img/logo_school.png" class="d-inline-block align-top">
                 HappySchool
             </b-navbar-brand>
             <b-collapse is-nav id="nav_text_collapse">
