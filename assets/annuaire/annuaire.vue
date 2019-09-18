@@ -24,8 +24,8 @@
         <b-container v-if="loaded">
             <h1>Annuaire</h1>
             <b-row>
-                <b-col md="2" sm="12">
-                    <b-form-group label="Enseignement(s) :">
+                <b-col v-if="teachingsOptions.length > 1" md="2" sm="12">
+                    <b-form-group label="Établissement(s) :">
                         <b-form-select
                             multiple
                             :select-size="3"
