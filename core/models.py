@@ -129,7 +129,7 @@ class AdditionalStudentInfo(models.Model):
     medical_information = models.CharField(max_length=500, blank=True)
 
     username = models.CharField(max_length=20, blank=True)
-    password = models.CharField(max_length=20, blank=True)
+    password = models.CharField(max_length=200, blank=True)
 
 
 class ResponsibleModel(models.Model):
