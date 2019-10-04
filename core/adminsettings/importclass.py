@@ -362,6 +362,26 @@ class ImportResponsibleFDB(ImportResponsible):
                 return self.format_value(entry[1][column], column)
             return None
 
+    def get_responsible(self, entry):
+        matricule = int(self.get_value(entry, "matricule"))
+        if not matricule:
+            return None
+
+        try:
+            return ResponsibleModel.objects.get(matricule=matricule)
+        except ObjectDoesNotExist:
+            # It may happen that responsible has a temporary matricule, search by email instead.
+            try:
+                email = self.get_value(entry, "email")
+                if not email:
+                    raise
+                resp = ResponsibleModel.objects.get(email=email)
+                # Set definitive matricule.
+                resp.matricule = matricule
+                return resp
+            except ObjectDoesNotExist:
+                return ResponsibleModel(matricule=matricule)
+
 
 class ImportStudent(ImportBase):
     """Base class for importing students."""
