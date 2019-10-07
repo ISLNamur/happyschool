@@ -584,6 +584,12 @@ class ImportStudentLDAP(ImportStudent):
         ldap_entries = map(lambda entry: get_django_dict_from_ldap(entry), self.connection.response)
         super()._sync(ldap_entries)
 
+    def get_value(self, entry: dict, column: str) -> Union[int, str, date, None]:
+        if column == 'password':
+            if '{SHA512}' in entry[column]:
+                return 'Les données sensibles ne sont disponibles que sur https://local.isln.be'
+        return super().get_value(entry, column)
+
 
 class ImportStudentFDB(ImportStudent):
     column_map = {
