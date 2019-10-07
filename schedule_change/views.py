@@ -95,7 +95,7 @@ class ScheduleChangeFilter(BaseFilters):
         filter_overrides = BaseFilters.Meta.filter_overrides
 
     def activate_ongoing_by(self, queryset, name, value):
-        return queryset.filter(date_change__gte=timezone.now())
+        return queryset.filter(date_change__gte=timezone.now(), time_end__hour__gt=timezone.now().hour)
 
     def activate_has_classe_by(self, queryset, name, value):
         return queryset.exclude(classes__exact="")
