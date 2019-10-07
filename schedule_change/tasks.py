@@ -62,6 +62,16 @@ def task_export(self, ids, date_from, date_to, send_to_teachers=False, message="
         core_settings = get_core_settings()
         teachers_email = [t.email_school for t in teachers_involved] if settings.email_school else \
             [t.email for t in teachers_involved]
+        substitutes = []
+        for c in changes:
+            subs = c.teachers_substitute.filter(is_teacher=True)
+            if not subs:
+                continue
+            substitutes += [t.email_school for t in subs] if settings.email_school \
+                else [t.email for t in subs]
+
+        teachers_email += substitutes
+
         url = core_settings.remote if settings.copy_to_remote else core_settings.root
         context = {'date_from': date_from, 'date_to': date_to,
                    'url': url, 'message': message}
