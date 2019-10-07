@@ -10,7 +10,7 @@
         {% elif not change.time_start and change.time_end %}<p>Le changement a lieu jusqu'à <strong>{{ change.time_end }}</strong>.</p>{% endif %}
         <p>Classe(s) et/ou les année(s) concernée(s) : <em>{{ change.classes }}</em>.</p>
         <p>Prof/Educ(s) concerné(s) : <em>{% for teacher in change.teachers_replaced.all %}{{ teacher }},{% endfor %}</em></p>
-        {% if change.teachers_substitute %}<p>Prof/Educ(s) remplacé(s) : <em>{% for teacher in change.teachers_substitute.all %}{{ teacher }},{% endfor %}</em></p>{% endif %}
+        {% if change.teachers_substitute %}<p>Prof/Educ(s) remplaçant(s) : <em>{% for teacher in change.teachers_substitute.all %}{{ teacher }},{% endfor %}</em></p>{% endif %}
         <p>Local/lieu : <em>{{ change.place }}</em>,</p>
         <p>Commentaire : «<em>{{ change.comment }}</em>».</p>
     </body>
