@@ -9,3 +9,5 @@ assets/bundles/
 happyschool/settings.py
 static/bundles/
 .coverage
+static/photos/*jpg
+!static/photos/unknown.jpg
