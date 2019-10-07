@@ -508,6 +508,8 @@ class ImportStudent(ImportBase):
                 val = self.get_value(entry, c)
                 if val:
                     setattr(info, c, val)
+                else:
+                    setattr(info, c, "")
             if self.search_login_directory:
                 self.ldap_connection.search(self.base_dn, "(matricule=%i)" % matricule, attributes='*')
                 for r in self.ldap_connection.response:
