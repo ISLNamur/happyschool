@@ -1,5 +1,5 @@
 <!DOCTYPE document SYSTEM "rml.dtd">
-<document filename="council_{{ date_from|date:'Y-m-d' }}_{{ date_to|date:'Y-m-d' }}.pdf"
+<document filename="schedule_{{ date_from|date:'Y-m-d' }}_{{ date_to|date:'Y-m-d' }}.pdf"
           xmlns:doc="http://namespaces.zope.org/rml/doc">
 
     <template showBoundary="0">
@@ -50,7 +50,7 @@
         </keepInFrame>
 
         <setNextTemplate name="otherPages"/>
-        <blockTable colWidths="65 50 80 50 80 80 80 250" style="cas">
+        <blockTable colWidths="65 50 80 60 130 80 80 190" style="cas">
             <tr>
                 <td><para><strong>Date</strong></para></td>
                 <td><para><strong>Heure</strong></para></td>
