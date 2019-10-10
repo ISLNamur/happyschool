@@ -66,9 +66,9 @@
                 <hr><h5 class="day">{{ calendar(group.day) }}</h5>
                 <b-card class="d-none d-md-block d-lg-block d-xl-block" no-body>
                     <b-row class="text-center">
-                        <b-col md="2"><strong>Changement</strong></b-col>
+                        <b-col :md="fullscreen ? 3 : 2"><strong>Changement</strong></b-col>
                         <b-col :md="fullscreen ? 2 : 1"><strong>Classes</strong></b-col>
-                        <b-col md="3"><strong>Absent(s)/indisponible(s)</strong></b-col>
+                        <b-col :md="fullscreen ? '' : 3"><strong>Absent(s)/indisponible(s)</strong></b-col>
                     </b-row>
                 </b-card>
                 <div v-for="(subGroup, idx) in group.sameDayEntries" v-bind:key="idx">
