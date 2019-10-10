@@ -96,6 +96,7 @@ class ScheduleChangeFilter(BaseFilters):
 
     def activate_ongoing_by(self, queryset, name, value):
         return queryset.filter(Q(date_change__gte=timezone.now().date(), time_end__hour__gte=timezone.now().hour)
+                               | Q(date_change=timezone.now().date(), time_start=None, time_end=None)
                                | Q(date_change__gt=timezone.now()))
 
     def activate_has_classe_by(self, queryset, name, value):
