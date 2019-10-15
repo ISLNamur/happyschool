@@ -18,7 +18,10 @@
   "author": "ISLN",
   "license": "GPL-3.0",
   "devDependencies": {
+    "@babel/core": "^7.6.4",
+    "@babel/preset-env": "^7.6.3",
     "axios": "^0.19.0",
+    "babel-loader": "^8.0.6",
     "copy-webpack-plugin": "^5.0.2",
     "css-loader": "^0.28.11",
     "style-loader": "^0.18.2",
@@ -32,10 +35,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.4.3",
-    "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.5",
-    "babel-minify-webpack-plugin": "^0.3.1",
-    "babel-preset-env": "^1.7.0",
+    "@ericblade/quagga2": "0.0.5",
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.24",
     "idb": "^4.0.1",
