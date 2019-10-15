@@ -43,7 +43,7 @@
                             {{ formatTeachers(rowData.teachers_substitute) }}
                         </span>
                     </td>
-                    <td>
+                    <td align="right">
                         {{ rowData.place }}
                     </td>
                 </tr>
