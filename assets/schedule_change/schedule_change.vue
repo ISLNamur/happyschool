@@ -21,7 +21,7 @@
     <div>
         <div class="loading" v-if="!loaded"></div>
         <app-menu v-if="!fullscreen" :menu-info="menu"></app-menu>
-        <b-container v-if="loaded">
+        <b-container v-if="loaded" :fluid="fullscreen">
             <b-row>
                 <h2>Changement d'horaire</h2>
             </b-row>
@@ -65,11 +65,26 @@
                 >
                 <hr><h5 class="day">{{ calendar(group.day) }}</h5>
                 <b-card class="d-none d-md-block d-lg-block d-xl-block" no-body>
-                    <b-row class="text-center">
-                        <b-col :md="fullscreen ? 3 : 2"><strong>Changement</strong></b-col>
-                        <b-col :md="fullscreen ? 2 : 1"><strong>Classes</strong></b-col>
-                        <b-col :md="fullscreen ? '' : 3"><strong>Absent(s)/indisponible(s)</strong></b-col>
+                    <b-row class="text-center" v-if="!fullscreen">
+                        <b-col :cols="fullscreen ? 3 : 2"><strong>Changement</strong></b-col>
+                        <b-col :cols="fullscreen ? 2 : 1"><strong>Classes</strong></b-col>
+                        <b-col :cols="fullscreen ? '' : 3"><strong>Absent(s)/indisponible(s)</strong></b-col>
                     </b-row>
+                    <table v-else width="100%">
+                        <tr>
+                            <td width="20%">
+                                <strong>Changement</strong>
+                            </td>
+                            <td width="20%">
+                                <strong>Classes</strong>
+                            </td>
+                            <td>
+                                <strong>Absent(s)/indisponible(s)</strong>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                    </table>
                 </b-card>
                 <div v-for="(subGroup, idx) in group.sameDayEntries" v-bind:key="idx">
                     <hr class="smallhr"><strong>{{ time(subGroup) }}</strong>
@@ -277,8 +292,8 @@ export default {
             });
         },
         checkFullscreenMode: function () {
-            const url = new URL(window.location.href);
-            const fullscreen = url.searchParams.get("fullscreen");
+            const fullscreen = window.location.href.includes("fullscreen");
+            // const fullscreen = url.searchParams.get("fullscreen");
             if (fullscreen) {
                 this.fullscreen = true;
                 this.$store.commit('enableFullscreen');
