@@ -73,7 +73,7 @@ class TestFileAPIView(APIView):
 
 class ImportStudentAPIView(APIView):
     parser_classes = (MultiPartParser,)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminUser,)
 
     def post(self, request, format=None):
         csv_text = request.FILES['file'].read().decode("utf-8-sig")
@@ -92,7 +92,7 @@ class ImportStudentAPIView(APIView):
 
 class PhotoAPI(APIView):
     parser_classes = (MultiPartParser,)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminUser,)
 
     def post(self, request, format=None):
         file_obj = request.FILES['file']
