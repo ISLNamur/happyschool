@@ -50,6 +50,26 @@
                 </p>
             </b-col>
         </b-row>
+        <b-row>
+            <h5>Logo</h5>
+        </b-row>
+        <b-row>
+            <b-col>
+                <b-form>
+                    <b-form-row>
+                        <b-form-group description="Le logo doit être au format png.">
+                            <b-form-file v-model="logo" accept=".png" placeholder="Sélectionner le logo"></b-form-file>
+                        </b-form-group>
+                    </b-form-row>
+                </b-form>
+                <p class="card-text mt-2">
+                    <b-btn variant="light" @click="sendLogo" :disabled="!logo">
+                        <icon name="plus" scale="1" color="green"></icon>
+                        Envoyer
+                    </b-btn>
+                </p>
+            </b-col>
+        </b-row>
         <b-modal id="deleteModal" cancel-title="Annuler" hide-header centered
                 @ok="deleteTeaching" @hidden="resetTeachings">
             Êtes-vous sûr de vouloir supprimer {{ currentTeaching.display_name }} ({{ currentTeaching.name }})
@@ -95,6 +115,7 @@ export default {
             currentTeaching: {display_name: null, name: null},
             inputStates: {display_name: null, name: null},
             errors: {},
+            logo: null,
         }
     },
     watch: {
@@ -110,6 +131,21 @@ export default {
         },
     },
     methods: {
+        sendLogo: function () {
+            let data = new FormData();
+            data.append('file', this.logo)
+            axios.post('/core/api/logo/', data, token)
+            .then(resp => {
+                this.logo = null;
+                this.$bvToast.toast(`Le logo a été envoyé, actualisez la page pour voir le nouveau logo.`, {
+                    variant: 'success',
+                    noCloseButton: true,
+                });
+            })
+            .catch(err => {
+                alert(err);
+            })
+        },
         deleteTeaching: function () {
             axios.delete('/core/api/teaching/' + this.currentTeaching.id + '/', token);
         },

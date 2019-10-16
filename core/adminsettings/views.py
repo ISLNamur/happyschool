@@ -26,7 +26,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMix
 from django.conf import settings
 
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework import status
@@ -101,5 +101,17 @@ class PhotoAPI(APIView):
         photo_dir = "photos/" if people == "student" else "photos_prof"
         photo_path = os.path.join(static_dir, photo_dir + file_obj.name)
         with open(photo_path, "w+b") as f:
+            f.write(file_obj.read())
+        return Response(status=status.HTTP_201_CREATED)
+
+class LogoAPI(APIView):
+    parser_classes = (MultiPartParser,)
+    permission_classes = (IsAdminUser,)
+
+    def post(self, request, format=None):
+        file_obj = request.FILES['file']
+        static_dir = settings.STATICFILES_DIRS[0] if settings.DEBUG else settings.STATIC_ROOT
+        img_path = os.path.join(static_dir, "img/logo_school.png")
+        with open(img_path, "w+b") as f:
             f.write(file_obj.read())
         return Response(status=status.HTTP_201_CREATED)
