@@ -84,6 +84,27 @@ class ScheduleChangeView(LoginRequiredMixin, PermissionRequiredMixin, TemplateVi
         return context
 
 
+class ScheduleChangeViewReadOnly(TemplateView):
+    template_name = "schedule_change/schedule_change.html"
+    filters = [{'value': 'activate_ongoing', 'text': 'Prochains changements'},
+               {'value': 'date_change', 'text': "Date du changement"},
+               {'value': 'activate_has_classe', 'text': 'Concerne une classe'},
+               ]
+
+    def dispatch(self, request, *args, **kwargs):
+        if not get_settings().enable_fullscreen:
+            return HttpResponse(status=403)
+        return super().dispatch(request, *args, *kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['menu'] = json.dumps(get_menu(self.request.user, "schedule_change"))
+        context['filters'] = json.dumps(self.filters)
+        context['settings'] = json.dumps((ScheduleChangeSettingsSerializer(get_settings()).data))
+        context['can_add'] = json.dumps(False)
+        return context
+
+
 class ScheduleChangeFilter(BaseFilters):
     activate_ongoing = filters.BooleanFilter(method="activate_ongoing_by")
     activate_has_classe = filters.BooleanFilter(method="activate_has_classe_by")

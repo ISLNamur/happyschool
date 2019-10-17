@@ -25,6 +25,10 @@ from core.models import TeachingModel, EmailModel, ResponsibleModel
 class ScheduleChangeSettingsModel(models.Model):
     teachings = models.ManyToManyField(TeachingModel, default=None)
     all_access = models.ManyToManyField(Group, default=None, blank=True)
+    enable_fullscreen = models.BooleanField(default=False, help_text="Permet d'accéder à la page principale "
+                                                                     "en lecture avec l'adresse "
+                                                                     "/schedule_change/fullscreen/ et ce sans"
+                                                                     " authentification")
     notify_by_email_to = models.ManyToManyField(EmailModel)
     responsible_phone = models.CharField(max_length=30, default="")
     responsible_name = models.CharField(max_length=100, default="")
