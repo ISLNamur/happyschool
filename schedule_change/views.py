@@ -26,7 +26,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.db.models import F, Q
 
-from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions, DjangoModelPermissionsOrAnonReadOnly, IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.response import Response
@@ -98,7 +98,7 @@ class ScheduleChangeViewReadOnly(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['menu'] = json.dumps(get_menu(self.request.user, "schedule_change"))
+        context['menu'] = json.dumps({})
         context['filters'] = json.dumps(self.filters)
         context['settings'] = json.dumps((ScheduleChangeSettingsSerializer(get_settings()).data))
         context['can_add'] = json.dumps(False)
@@ -127,26 +127,26 @@ class ScheduleChangeFilter(BaseFilters):
 class ScheduleChangeTypeViewSet(ReadOnlyModelViewSet):
     queryset = ScheduleChangeTypeModel.objects.all()
     serializer_class = ScheduleChangeTypeSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
 class ScheduleChangeCategoryViewSet(ReadOnlyModelViewSet):
     queryset = ScheduleChangeCategoryModel.objects.all()
     serializer_class = ScheduleChangeCategorySerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
 class ScheduleChangePlaceViewSet(ReadOnlyModelViewSet):
     queryset = ScheduleChangePlaceModel.objects.all()
     serializer_class = ScheduleChangePlaceSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
 
 class ScheduleChangeViewSet(BaseModelViewSet):
     queryset = ScheduleChangeModel.objects.all().order_by('date_change', F('time_start').asc(nulls_first=True),
                                                           'time_end')
     serializer_class = ScheduleChangeSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
     filter_class = ScheduleChangeFilter
 
     def perform_create(self, serializer):
