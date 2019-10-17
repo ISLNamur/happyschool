@@ -55,7 +55,8 @@
                             <b-form-select v-model="form.motif" :options="motifOptions" required></b-form-select>
                         </b-form-group>
                         <b-form-group label="Date de début">
-                            <b-form-input v-model="form.date_absence_start" type="date" required></b-form-input>
+                            <b-form-input v-model="form.date_absence_start" type="date" required
+                                @change="updateEnd"></b-form-input>
                         </b-form-group>
                         <b-form-group label="Date de fin">
                             <b-form-input v-model="form.date_absence_end" type="date" required></b-form-input>
@@ -113,6 +114,9 @@ export default {
         }
     },
     methods: {
+        updateEnd: function (value) {
+            if (!this.form.date_absence_end) this.form.date_absence_end = value;
+        },
         loadAbsence: function () {
             axios.get(`/absence_prof/api/absence/${this.id}/`, token)
             .then(resp => {
