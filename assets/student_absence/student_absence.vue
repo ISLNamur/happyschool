@@ -29,11 +29,11 @@
                         <b-nav-item to="overview">Vue d'ensemble</b-nav-item>
                         <b-nav-item to="add_absence">
                             <icon name="plus" scale="1" color="green" class="align-middle"></icon>
-                            Ajouter absenses
+                            Ajouter absences
                         </b-nav-item>
                         <b-nav-item to="list">Liste d'absences</b-nav-item>
+                        <b-nav-item to="notes">Notes</b-nav-item>
                         <b-nav-item-dropdown>
-                            <b-dropdown-item to="notes">Notes</b-dropdown-item>
                             <b-dropdown-item @click="$store.commit('updateStudentsClasses')">Mettre à jour des étudiants</b-dropdown-item>
                         </b-nav-item-dropdown>
                     </template>
