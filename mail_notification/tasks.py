@@ -210,20 +210,24 @@ def get_emails(email_to: list, to_type: str, teaching: str, responsibles: bool=T
         students = []
         # Collect students
         for recip in recipients:
+            years = []
             # If it starts with a digit, it could be a class, a year or a degree.
             if recip[0].isdigit():
                 # Class length is only two.
                 if len(recip) == 2:
+                    years = [int(recip[0])]
                     classes = ClasseModel.objects.filter(year=int(recip[0]),
                                                          letter=recip[1].lower(),
                                                          teaching__name=teaching)
                 elif 'année' in recip:
+                    years = [int(recip[0])]
                     classes = ClasseModel.objects.filter(year=int(recip[0]),
                                                          teaching__name=teaching)
                 else:
                     # It is a degrée
+                    years = [int(recip[0]) * 2, int(recip[0]) * 2 - 1]
                     classes = ClasseModel.objects.filter(
-                        year__in=[int(recip[0]) * 2, int(recip[0]) * 2 - 1],
+                        year__in=years,
                         teaching__name=teaching)
             else:
                 # It is a cycle.
@@ -237,6 +241,10 @@ def get_emails(email_to: list, to_type: str, teaching: str, responsibles: bool=T
                 else:
                     years = []
                 classes = ClasseModel.objects.filter(year__in=years, teaching__name=teaching)
+
+            if responsibles:
+                resp_email = EmailModel.objects.filter(years__in=years, teaching__name=teaching)
+                emails += list(map(lambda e: (e.email, None), resp_email))
 
             students += list(StudentModel.objects.filter(classe__in=classes))
 

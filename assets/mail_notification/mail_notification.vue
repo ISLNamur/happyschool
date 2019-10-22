@@ -87,7 +87,7 @@
                                 Merci de choisir au moins un destinataire.
                             </b-alert>
                         </b-form-group>
-                        <b-form-group v-if="toType == 'teachers'">
+                        <b-form-group>
                             <b-form-checkbox v-model="responsibles">
                                 Également envoyer aux educateurs et coordonnateurs correspondants.
                             </b-form-checkbox>
