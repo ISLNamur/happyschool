@@ -141,7 +141,8 @@ class BaseModelViewSet(ModelViewSet):
         else:
             try:
                 teachings = ResponsibleModel.objects.get(user=self.request.user).teaching.all()
-                classes = get_classes(list(map(lambda t: t.name, teachings)), True, self.request.user)
+                classes = get_classes(list(map(lambda t: t.name, teachings)), True, self.request.user,
+                                      tenure_class_only=self.is_only_tenure())
                 try:
                     queryset = self.queryset.filter(student__classe__in=classes)
                 except FieldError:
@@ -165,6 +166,9 @@ class BaseModelViewSet(ModelViewSet):
 
     def get_group_all_access(self):
         return Group.objects.none()
+
+    def is_only_tenure(self):
+        return True
 
 
 class MembersView(LoginRequiredMixin,
