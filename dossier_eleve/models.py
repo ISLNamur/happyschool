@@ -58,6 +58,8 @@ class DossierEleveSettingsModel(models.Model):
                                                          related_name="pms_force_visibility_to")
     enable_submit_sanctions = models.BooleanField(default=True)
     use_school_email = models.BooleanField(default=False)
+    filter_teacher_entries_by_tenure = models.BooleanField(default=True,
+                                                           help_text="Si activé, seuls les titulaires peuvent voir les cas de leurs élèves.")
 
 
 class InfoEleve(models.Model):

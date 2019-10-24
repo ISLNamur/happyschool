@@ -451,6 +451,7 @@ export default {
                 teachings: this.$store.state.settings.teachings,
                 people: people,
                 check_access: true,
+                tenure_class_only: this.$store.state.settings.filter_teacher_entries_by_tenure,
             };
             axios.post('/annuaire/api/people/', data, token)
             .then(response => {

@@ -265,6 +265,8 @@ class CasEleveViewSet(BaseModelViewSet):
         visible_by = serializer.validated_data["visible_by_groups"] + list(forced_visibility)
         serializer.save(visible_by_groups=visible_by)
 
+    def is_only_tenure(self):
+        return get_settings().filter_teacher_entries_by_tenure
 
 class AskSanctionsView(BaseDossierEleveView):
     template_name = "dossier_eleve/ask_sanctions.html"
