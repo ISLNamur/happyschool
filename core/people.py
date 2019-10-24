@@ -323,7 +323,8 @@ class People:
         return students
 
 
-def get_classes(teaching: list=('all',), check_access: bool=False, user: User=None) -> QuerySet:
+def get_classes(teaching: list=('all',), check_access: bool=False, user: User=None,
+                tenure_class_only: bool=True) -> QuerySet:
     """
     Get the list of classes.
     :param teaching: A list of students' teachings.
@@ -358,7 +359,10 @@ def get_classes(teaching: list=('all',), check_access: bool=False, user: User=No
             return get_classes(teaching_models).filter(year__in=years)
 
         # It should be a teacher.
-        return responsible.tenure.all().filter(teaching__in=teaching_models)
+        if tenure_class_only:
+            return responsible.tenure.all().filter(teaching__in=teaching_models)
+        else:
+            return responsible.classe.all().filter(teaching__in=teaching_models)
     else:
         return ClasseModel.objects.filter(teaching__in=teaching_models)
 
