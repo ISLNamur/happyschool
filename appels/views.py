@@ -43,7 +43,7 @@ from .serializers import AppelSerializer, ObjectSerializer, MotiveSerializer, Ap
 
 
 def get_menu_entry(active_app, user):
-    if not user.has_perm('appels.access_appel'):
+    if not user.has_perm('appels.view_appel'):
         return {}
     return {
             "app": "appels",
@@ -92,7 +92,7 @@ class AppelsView(LoginRequiredMixin,
                  PermissionRequiredMixin,
                  TemplateView):
     template_name = "appels/appels.html"
-    permission_required = ('appels.access_appel')
+    permission_required = ('appels.view_appel')
     filters = [{'value': 'name', 'text': 'Nom'},
                {'value': 'datetime_appel', 'text': "Date d'appel"},
                {'value': 'matricule_id', 'text': 'Matricule'},

@@ -29,7 +29,7 @@
                                 {% if app_infirmerie and perms.infirmerie.access_infirmerie %}
                                 <li><a href="{% url 'infirmerie' %}">Infirmerie</a></li>
                                 {% endif %}
-                                {% if app_appels and perms.appels.access_appel %}
+                                {% if app_appels and perms.appels.view_appel %}
                                 <li><a href="{% url 'appels' %}">Appels</a></li>
                                 {% endif %}
                                 {% if app_absences and perms.absence_prof.access_absences %}
