@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.4.3",
-    "@ericblade/quagga2": "0.0.5",
+    "@ericblade/quagga2": "0.0.7",
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.24",
     "idb": "^4.0.1",
