@@ -47,10 +47,10 @@ var studentAbsenceApp = new Vue({
     data: {menuInfo: {}},
     store,
     router,
-    template: '<div><app-menu :menu-info="menuInfo" v-if="$store.state.onLine"></app-menu><router-view></router-view></div>',
+    template: '<div><app-menu :menu-info="menuInfo"></app-menu><router-view></router-view></div>',
     methods: {
         checkOnlineStatus() {
-            axios.get("/core/ping/", {timeout: 2000})
+            axios.get("/core/ping/", {timeout: 5000})
             .then(resp => {
                 this.$store.commit('changeOnLineStatus', true);
                 setTimeout(() => {
@@ -70,6 +70,8 @@ var studentAbsenceApp = new Vue({
     },
     mounted: function () {
         this.menuInfo = menu;
-        this.checkOnlineStatus();
+        setTimeout(() => {
+            this.checkOnlineStatus();
+        }, 5000);
     },
 });

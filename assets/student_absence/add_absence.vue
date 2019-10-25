@@ -30,10 +30,10 @@
                 </b-form-group>
             </b-col>
             <b-col class="text-right">
-                <b-btn v-b-modal.tovalidate :disabled="$store.state.changes.length == 0 || !$store.state.onLine">
+                <b-btn v-b-modal.tovalidate :disabled="$store.state.changes.length == 0">
                     Absences non validées
                 </b-btn>
-                <p v-if="$store.state.onLine"><icon name="signal" scale="1.2" color="green" class="align-baseline"></icon> Connecté</p>
+                <p v-if="onLine"><icon name="signal" scale="1.2" color="green" class="align-baseline"></icon> Connecté</p>
                 <p v-else><icon name="ban" scale="1.2" color="red" class="align-baseline"></icon> Déconnecté</p>
                 <p v-if="$store.state.updating"><icon name="spinner" color="green" spin class="align-baseline"></icon>Mise à jour des élèves</p>
             </b-col>
@@ -174,6 +174,7 @@ export default {
                 this.selectedOldChanges = [];
             } else {
                 this.selectedChanges = [];
+                this.cleanStudents();
             }
         },
         selected: function (option) {
@@ -183,6 +184,7 @@ export default {
                     if (s.matricule in this.$store.state.todayAbsences) {
                         s.savedAbsence = this.$store.state.todayAbsences[s.matricule];
                         s.savedAbsence.student = s;
+                        delete s.savedAbsence.student.savedAbsence;
                     }
                     return s;
                 }).sort((a, b) => a.display.localeCompare(b.display));
@@ -267,47 +269,51 @@ export default {
             let app = this;
             const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
             const apiUrl = "/student_absence/api/student_absence/";
+            // Is it old absences or absences of today?
             const changesToSend = this.tabIndex == 0 ? this.getTodayAbsences() : this.getOldAbsences();
-            for (let c = changesToSend.length - 1; c >= 0; c--) {
-                let change = changesToSend[c];
-                const request = apiUrl + "?student=" + change.matricule + "&date_absence__gte=" + change.date_absence + '&date_absence__lte=' + change.date_absence;
-                axios.get(request)
-                .then(response => {
+            const absenceChecks = changesToSend.map(c => {
+                const request = apiUrl + "?student=" + c.matricule + "&date_absence__gte=" + c.date_absence + '&date_absence__lte=' + c.date_absence;
+                return axios.get(request);
+            });
+            // First check if each change is new or not.
+            Promise.all(absenceChecks)
+            .then(responses => {
+                // Build a promise for each change.
+                const changeRequests = responses.map((response, index) => {
+                    const change = changesToSend[index];
                     if (response.data.results.length > 0) {
                         let absence = Object.assign({}, response.data.results[0]);
                         if ('afternoon' in change) absence.afternoon = change.afternoon;
                         if ('morning' in change) absence.morning = change.morning;
-                        axios.put(apiUrl + absence.id + '/', absence, token);
-                        this.$store.commit('removeChange', change);
-                        if (c == 0) {
-                            app.sending = false;
-                            app.$bvModal.hide("tovalidate");
-                            setTimeout(() => {
-                                app.loadAbsences(this.date_absence);
-                            }, 1000);
-                            
-                        }
+                        return axios.put(apiUrl + absence.id + '/', absence, token);
                     } else {
                         let absence = Object.assign({}, change);
                         delete Object.assign(absence, {["student_id"]: absence["matricule"] })["matricule"];
-                        axios.post(apiUrl, absence, token)
-                        .then(resp => {
-                            this.$store.commit('removeChange', change);
-                            if (c == 0) {
-                                app.sending = false;
-                                app.$bvModal.hide("tovalidate");
-                                setTimeout(() => {
-                                    app.loadAbsences(this.date_absence);
-                                }, 1000);
-                            }
-                        })
-                        .catch(function (error) {
-                            app.sending = false;
-                            alert(error);
-                        });
+                        return axios.post(apiUrl, absence, token)
                     }
-                });    
-            }
+                });
+                // Request changes and hope everything will resolve successfully.
+                Promise.all(changeRequests)
+                .then(responses => {
+                    for (let r in responses) {
+                        responses[r].data.matricule = responses[r].data.student_id;
+                        this.$store.commit('removeChange', responses[r].data);
+                    }
+                    app.$bvModal.hide("tovalidate");
+                    app.loadAbsences(this.date_absence);
+                    app.sending = false;
+                })
+                .catch(function (error) {
+                    app.sending = false;
+                    app.loadAbsences(this.date_absence);
+                    alert(error);
+                });
+            })
+            .catch(function (error) {
+                app.sending = false;
+                app.loadAbsences(app.date_absence);
+                alert(error);
+            });
         },
         loadAbsences: function (date) {
             this.cleanStudents();

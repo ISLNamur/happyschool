@@ -41,7 +41,7 @@ export default new Vuex.Store({
       todayAbsences: {},
       changes: [],
       notes: {},
-      onLine: false,
+      onLine: true,
       lastUpdate: "",
       updating: false,
     },
@@ -55,6 +55,15 @@ export default new Vuex.Store({
                     }
                 }
                 return null;
+            }
+        },
+        todayAbsences(state) {
+            return todayAbsence => {
+                for (let t in state.todayAbsences) {
+                    if (state.todayAbsences[t].matricule == todayAbsence.matricule && state.todayAbsences[t].date_absence == todayAbsence.date_absence) {
+                        return state.todayAbsences[t];
+                    }
+                }
             }
         }
     },
@@ -84,6 +93,9 @@ export default new Vuex.Store({
             }
         },
         setTodayAbsences: function (state, absences) {
+            for (let a in absences) {
+                if ('student' in absences[a]) delete absences[a].student.savedAbsence.student.savedAbsence;
+            }
             state.todayAbsences = absences;
         },
         updateStudentsClasses: function (state) {
