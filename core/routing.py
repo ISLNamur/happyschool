@@ -19,8 +19,9 @@
 
 from django.urls import path
 
-from .consumers import ImportStudentStateConsumer
+from .consumers import ImportStudentStateConsumer, UpdateStateConsumer
 
 websocket_urlpatterns = [
     path('ws/core/import_student_state/<slug:celery_id>/', ImportStudentStateConsumer),
+    path('ws/core/update/<slug:celery_id>/', UpdateStateConsumer),
 ]

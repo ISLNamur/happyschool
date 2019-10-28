@@ -20,6 +20,7 @@
 import time
 import io
 import json
+import subprocess
 
 from celery import shared_task
 
@@ -70,3 +71,27 @@ def task_test(self, csv_file, teaching, columns, ignore_first_line):
     column_index = {j: int(i[-1]) for i, j in json.loads(columns).items()}
     import_student_csv = WSImportStudentCSV(teaching_model, self.request.id, column_index)
     import_student_csv.sync(io_text, ignore_first_line=ignore_first_line, has_header=False)
+
+
+@shared_task(bind=True)
+def task_update(self):
+    channel_layer = get_channel_layer()
+    time.sleep(2)
+    with subprocess.Popen("./scripts/update.sh", shell=True, stdout=subprocess.PIPE, bufsize=1) as sp:
+        for line in sp.stdout:
+            async_to_sync(channel_layer.group_send)(
+                'core_update_state_%s' % self.request.id,
+                {
+                    'type': 'core.update.state',
+                    'task': self.request.id,
+                    'status': line.decode("utf-8"),
+                }
+            )
+    async_to_sync(channel_layer.group_send)(
+        'core_update_state_%s' % self.request.id,
+        {
+            'type': 'core.update.state',
+            'task': self.request.id,
+            'status': "\nMise à jour terminé",
+        }
+    )

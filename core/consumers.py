@@ -44,3 +44,27 @@ class ImportStudentStateConsumer(JsonWebsocketConsumer):
             "task": event["task"],
             "status": event["status"],
         })
+
+
+class UpdateStateConsumer(JsonWebsocketConsumer):
+    def connect(self):
+        celery_id = self.scope['url_route']['kwargs']['celery_id']
+        self.group_name = 'core_update_state_%s' % celery_id
+
+        async_to_sync(self.channel_layer.group_add)(
+            self.group_name,
+            self.channel_name
+        )
+        self.accept()
+
+    def disconnect(self, close_code):
+        async_to_sync(self.channel_layer.group_discard)(
+            self.group_name,
+            self.channel_name
+        )
+
+    def core_update_state(self, event):
+        self.send_json({
+            "task": event["task"],
+            "status": event["status"] ,
+        })

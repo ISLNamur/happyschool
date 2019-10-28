@@ -39,6 +39,7 @@ urlpatterns = [
     path('api/calendar/', views.CalendarAPI.as_view(), name='calendar'),
     path('api/photo/', admin_views.PhotoAPI.as_view(), name='photo'),
     path('api/logo/', admin_views.LogoAPI.as_view(), name='logo'),
+    path('api/update/', admin_views.UpdateAPIView.as_view(), name='update'),
     path('ping/', views.PingAPI.as_view(), name='ping'),
 ]
 

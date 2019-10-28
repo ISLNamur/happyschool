@@ -32,7 +32,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from core.utilities import get_menu
-from core.tasks import task_test
+from core.tasks import task_test, task_update
 from io import StringIO
 
 
@@ -87,6 +87,14 @@ class ImportStudentAPIView(APIView):
 
         task = task_test.delay(csv_text, teaching, columns, ignore_first_line)
         print(task)
+        return Response(data=json.dumps(str(task)), status=status.HTTP_200_OK)
+
+
+class UpdateAPIView(APIView):
+    permission_classes = (IsAdminUser,)
+
+    def get(self, request, format=None):
+        task = task_update.delay()
         return Response(data=json.dumps(str(task)), status=status.HTTP_200_OK)
 
 
