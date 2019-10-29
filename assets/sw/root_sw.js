@@ -4,7 +4,7 @@ let assetsManager = new AssetsManager();
 let urlToCache = assetsManager.cacheEntries.filter(url => url.includes("commons") || url.includes("polyfill"));
 
 urlToCache.push("/static/css/bootstrap4.min.css");
-urlToCache.push("/static/img/logo_isln.png");
+urlToCache.push("/static/img/logo.png");
 urlToCache.push("/static/img/favicon.ico");
 const hash = urlToCache[0].split("-")[1].split(".")[0];
 
