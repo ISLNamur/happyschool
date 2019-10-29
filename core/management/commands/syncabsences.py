@@ -62,7 +62,9 @@ class Command(BaseCommand):
                     continue
 
                 # Import absences.
-                absences = s['absences']
+                absences = s['absences'] if 'absences' in s else None
+                if not absences:
+                    continue
                 absences_processed = set()
                 for a in absences:
                     try:
