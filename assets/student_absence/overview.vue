@@ -22,6 +22,9 @@
         <b-card-group class="mt-2">
             <b-card title="Dernières absences">
                 <b-table striped hover :items="lastAbsences" :fields="lastAbsencesFields">
+                    <template slot="student.display" slot-scope="data">
+                        <a href="#/list" @click="filterStudent(data.item.student_id)">{{ data.value }}</a>
+                    </template>
                     <template slot="morning" slot-scope="data">
                         {{ data.value ? 'M' : '' }}
                     </template>
@@ -86,6 +89,11 @@ export default {
                     label: 'Total',
                 }
             }
+        }
+    },
+    methods: {
+        filterStudent(matricule) {
+            this.$store.commit('addFilter', {"tag": matricule, "filterType": "student__matricule", "value":matricule});
         }
     },
     mounted: function () {
