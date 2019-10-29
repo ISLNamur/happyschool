@@ -40,6 +40,7 @@ urlpatterns = [
     path('api/photo/', admin_views.PhotoAPI.as_view(), name='photo'),
     path('api/logo/', admin_views.LogoAPI.as_view(), name='logo'),
     path('api/update/', admin_views.UpdateAPIView.as_view(), name='update'),
+    path('api/restart/', admin_views.RestartAPIView.as_view(), name='restart'),
     path('ping/', views.PingAPI.as_view(), name='ping'),
 ]
 

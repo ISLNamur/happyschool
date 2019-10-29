@@ -20,6 +20,7 @@
 import os
 import json
 import csv
+import subprocess
 
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
@@ -96,6 +97,14 @@ class UpdateAPIView(APIView):
     def get(self, request, format=None):
         task = task_update.delay()
         return Response(data=json.dumps(str(task)), status=status.HTTP_200_OK)
+
+
+class RestartAPIView(APIView):
+    permission_classes = (IsAdminUser,)
+
+    def get(self, request, format=None):
+        subprocess.Popen("./scripts/restart.sh", shell=True)
+        return Response(status=status.HTTP_200_OK)
 
 
 class PhotoAPI(APIView):

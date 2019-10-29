@@ -22,9 +22,17 @@
     <div>
         <h4>Mise à jour</h4>
         <b-row>
+            <b-alert show variant="warning">Une fois la mise à jour terminée, veuillez redémarrer HappySchool.
+                Attention, une fois la mise à jour enclenchée, elle continuera même si la page est rafraîchie.
+            </b-alert>
+        </b-row>
+        <b-row>
             <b-btn @click="runUpdate" :disabled="updating">
                 <icon v-if="updating" name="spinner" scale="1" spin class="align-baseline"></icon>
                 Mettre à jour
+            </b-btn>
+            <b-btn variant="danger" @click="runRestart">
+                Redémarrer HappySchool
             </b-btn>
         </b-row>
         <b-row class="mt-2">
@@ -71,6 +79,17 @@ export default {
                         app.progressSocket.close();
                     }
                 }
+            })
+        },
+        runRestart: function () {
+            setTimeout(() => {
+                document.location.reload(true);
+            }, 10000);
+            axios.get('/core/api/restart/', token)
+            this.$bvToast.toast(`La page sera automatiquement rafraîchie dans 10 secondes.`, {
+                title: 'Attention',
+                variant: 'danger',
+                autoHideDelay: 10000,
             })
         }
     }
