@@ -32,6 +32,10 @@ Vue.use(Vuex);
 
 const vuexLocal = new VuexPersistence({
     storage: window.localStorage,
+    reducer: (state) => {
+        state['settings'] = settings;
+        return state;
+    },
 })
 
 export default new Vuex.Store({
@@ -101,12 +105,15 @@ export default new Vuex.Store({
         updateStudentsClasses: function (state) {
             state.lastUpdate = Moment().format("YYYY-MM-DD");
             this.commit('updatingStatus', true);
-            const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken' };
+            const filterForEduc = state.settings.filter_students_for_educ;
             const data = {
                 query: 'everybody',
                 teachings: state.settings.teachings,
                 people: 'student',
                 active: true,
+                check_access:  filterForEduc != 'none',
+                educ_by_years: filterForEduc == 'year',
             };
             axios.post('/student_absence/api/students_classes/', data, token)
             .then(response => {

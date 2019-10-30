@@ -23,8 +23,18 @@ from core.models import StudentModel, TeachingModel, ResponsibleModel, ClasseMod
 
 
 class StudentAbsenceSettingsModel(models.Model):
+    FILTER_NONE = "none"
+    FILTER_BY_YEAR = "year"
+    FILTER_BY_CLASS = "class"
+    FILTER_CHOICES = [
+        (FILTER_NONE, "No filter"),
+        (FILTER_BY_YEAR, "Filter by year"),
+        (FILTER_BY_CLASS, "Filter by class"),
+    ]
+
     teachings = models.ManyToManyField(TeachingModel, default=None)
     sync_with_proeco = models.BooleanField("Synchronise les absences avec ProEco", default=False)
+    filter_students_for_educ = models.CharField(max_length=5, choices=FILTER_CHOICES, default=FILTER_NONE)
 
 
 class ClasseNoteModel(models.Model):
