@@ -463,7 +463,8 @@ def serialize_people(person):
         return ResponsibleSerializer(person).data
 
 
-def search_people(query, people_type, teachings, check_access, user, tenure_class_only=True, active=True):
+def search_people(query, people_type, teachings, check_access, user,
+                  tenure_class_only=True, educ_by_years=True, active=True):
     if len(query) < 1:
         return []
 
@@ -485,7 +486,8 @@ def search_people(query, people_type, teachings, check_access, user, tenure_clas
 
     if people_type == 'student':
         classe_years = get_classes(teachings, check_access=True,
-                                   user=user, tenure_class_only=tenure_class_only) if check_access else None
+                                   user=user, tenure_class_only=tenure_class_only,
+                                   educ_by_years=educ_by_years) if check_access else None
         if query == 'everybody':
             students = StudentModel.objects.all()
             if active:
@@ -542,10 +544,12 @@ class SearchPeopleAPI(APIView):
         check_access = request.data.get('check_access', 0) == 1
         active = request.data.get('active', 1) == 1
         tenure_class_only = request.data.get('tenure_class_only', True)
+        educ_by_years = request.data.get('educ_by_years', True)
+        print(educ_by_years)
 
         people = search_people(query=query, people_type=people_type, teachings=teachings,
                                check_access=check_access, user=request.user, active=active,
-                               tenure_class_only=tenure_class_only)
+                               tenure_class_only=tenure_class_only, educ_by_years=educ_by_years)
         return Response(people)
 
 
