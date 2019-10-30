@@ -324,7 +324,7 @@ class People:
 
 
 def get_classes(teaching: list=('all',), check_access: bool=False, user: User=None,
-                tenure_class_only: bool=True) -> QuerySet:
+                tenure_class_only: bool=True, educ_by_years: bool=True) -> QuerySet:
     """
     Get the list of classes.
     :param teaching: A list of students' teachings.
@@ -352,11 +352,18 @@ def get_classes(teaching: list=('all',), check_access: bool=False, user: User=No
                                         settings.PMS_GROUP]).exists():
             return get_classes(teaching_models)
 
-        # Educators and coordonators have by years access.
-        if user.groups.filter(name__istartswith=settings.COORD_GROUP).exists() or \
-            user.groups.filter(name__istartswith=settings.EDUC_GROUP).exists():
+        # Coordonators have by years access.
+        if user.groups.filter(name__istartswith=settings.COORD_GROUP).exists():
             years = _get_years_by_group(user)
             return get_classes(teaching_models).filter(year__in=years)
+
+        # Educators have by years or by classes access.
+        if user.groups.filter(name__istartswith=settings.EDUC_GROUP).exists():
+            if educ_by_years:
+                years = _get_years_by_group(user)
+                return get_classes(teaching_models).filter(year__in=years)
+            else:
+                return responsible.classe.all().filter(teaching__in=teaching_models)
 
         # It should be a teacher.
         if tenure_class_only:
