@@ -31,6 +31,9 @@ def migrate_access_permission(apps, schema_editor):
         for g in old_permission.group_set.all():
             g.permissions.add(new_permission)
             g.save()
+        for u in old_permission.user_set.all():
+            u.user_permissions.add(new_permission)
+            u.save()
     except ObjectDoesNotExist:
         # Old permission never existed, skipping.
         pass
