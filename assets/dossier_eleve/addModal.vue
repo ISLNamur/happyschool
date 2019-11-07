@@ -151,12 +151,12 @@
                                 <span slot="invalid-feedback">{{ errorMsg('explication_commentaire') }}</span>
                             </b-form-group>
                             <b-form-group
-                                description="Ajouter un ou des fichiers. Accepte uniquement des fichiers pdf."
+                                description="Ajouter un ou des fichiers. Accepte uniquement des fichiers images et pdf."
                                 label="Fichier(s)"
                                 >
                                 <b-form-file
                                     multiple
-                                    accept=".pdf"
+                                    accept=".pdf, .jpg, .png, jpeg"
                                     v-model="attachments"
                                     ref="attachments"
                                     placeholder="Attacher un ou des fichiers."

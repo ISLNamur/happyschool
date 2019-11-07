@@ -34,7 +34,7 @@ from django_filters import rest_framework as filters
 from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions, BasePermission
-from rest_framework.parsers import FileUploadParser
+from rest_framework.parsers import MultiPartParser
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -417,7 +417,7 @@ class StatisticAPI(APIView):
 
 
 class UploadFile(APIView):
-    parser_classes = (FileUploadParser,)
+    parser_classes = (MultiPartParser,)
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, pk, format=None):
