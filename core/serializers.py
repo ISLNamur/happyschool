@@ -54,6 +54,12 @@ class StudentSerializer(serializers.ModelSerializer):
         depth = 1
 
 
+class StudentWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentModel
+        fields = ('matricule', 'first_name', 'last_name', 'classe', 'teaching', 'inactive_from',)
+
+
 class StudentGeneralInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdditionalStudentInfo
