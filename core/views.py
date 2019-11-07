@@ -50,7 +50,7 @@ from core.models import ResponsibleModel, TeachingModel, EmailModel, CoreSetting
 from core.people import get_classes
 from core.permissions import IsSecretaryPermission
 from core.serializers import ResponsibleSensitiveSerializer, TeachingSerializer,\
-    EmailSerializer, ClasseSerializer
+    EmailSerializer, ClasseSerializer, ResponsibleRemoteSerializer
 from core.utilities import get_scholar_year, get_menu
 
 
@@ -226,6 +226,12 @@ class TeachingViewSet(ModelViewSet):
 class ClasseViewSet(ModelViewSet):
     queryset = ClasseModel.objects.all()
     serializer_class = ClasseSerializer
+    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+
+
+class ResponsibleViewSet(ModelViewSet):
+    queryset = ResponsibleModel.objects.all()
+    serializer_class = ResponsibleRemoteSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
 
 

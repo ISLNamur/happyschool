@@ -49,5 +49,6 @@ router.register(r'api/members', views.MembersAPI)
 router.register(r'api/teaching', views.TeachingViewSet)
 router.register(r'api/email', views.EmailViewSet)
 router.register(r'api/classe', views.ClasseViewSet)
+router.register(r'api/responsible', views.ResponsibleViewSet)
 
 urlpatterns += router.urls

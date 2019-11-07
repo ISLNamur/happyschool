@@ -37,6 +37,14 @@ class ResponsibleSerializer(serializers.ModelSerializer):
         depth = 1
 
 
+class ResponsibleRemoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ResponsibleModel
+        fields = ('pk', 'matricule', 'last_name', 'first_name',
+                  'is_teacher', 'is_educator', 'is_secretary',
+                  'teaching', 'classe', 'tenure', 'email_school',)
+
+
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentModel
