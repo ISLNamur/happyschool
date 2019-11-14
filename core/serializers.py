@@ -19,6 +19,8 @@
 
 from rest_framework import serializers
 
+from django.contrib.auth.models import User, Group
+
 from core.models import *
 
 
@@ -151,3 +153,19 @@ class EmailSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailModel
         fields = '__all__'
+
+
+class GroupSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(label='ID', read_only=False)
+
+    class Meta:
+        model = Group
+        fields = ('id', 'name',)
+
+
+class UserSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(label='ID', read_only=False)
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'last_name', 'first_name', 'email', 'groups',)

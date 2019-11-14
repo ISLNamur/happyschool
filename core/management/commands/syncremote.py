@@ -18,10 +18,12 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.core.management.base import BaseCommand
+from django.contrib.auth.models import User, Group
 
 from core.views import get_core_settings
 from core.models import TeachingModel, ClasseModel, ResponsibleModel, StudentModel
-from core.serializers import TeachingSerializer, ClasseSerializer, ResponsibleRemoteSerializer, StudentWriteSerializer
+from core.serializers import TeachingSerializer, ClasseSerializer, ResponsibleRemoteSerializer, StudentWriteSerializer,\
+    GroupSerializer, UserSerializer
 
 
 class Command(BaseCommand):
@@ -44,6 +46,10 @@ class Command(BaseCommand):
         self.create_or_update_remote(TeachingModel, 'core/api/teaching', TeachingSerializer)
         print("Classes…")
         self.create_or_update_remote(ClasseModel, 'core/api/classe', ClasseSerializer)
+        print("Groups…")
+        self.create_or_update_remote(Group, 'core/api/group', GroupSerializer)
+        print("Users…")
+        self.create_or_update_remote(User, 'core/api/user', UserSerializer)
         print("Responsibles…")
         self.create_or_update_remote(ResponsibleModel, 'core/api/responsible', ResponsibleRemoteSerializer)
         print("Students…")

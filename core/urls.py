@@ -51,5 +51,7 @@ router.register(r'api/email', views.EmailViewSet)
 router.register(r'api/classe', views.ClasseViewSet)
 router.register(r'api/responsible', views.ResponsibleViewSet)
 router.register(r'api/student', views.StudentViewSet)
+router.register(r'api/user', views.UserViewSet)
+router.register(r'api/group', views.GroupViewSet)
 
 urlpatterns += router.urls

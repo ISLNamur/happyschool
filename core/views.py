@@ -43,14 +43,15 @@ from django.utils import timezone
 from django.db.models import CharField, Q
 from django.core.exceptions import ObjectDoesNotExist, FieldError
 from django.views.generic import TemplateView
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 
 from core.models import ResponsibleModel, TeachingModel, EmailModel, CoreSettingsModel, StudentModel,\
     ImportCalendarModel, ClasseModel
 from core.people import get_classes
 from core.permissions import IsSecretaryPermission
 from core.serializers import ResponsibleSensitiveSerializer, TeachingSerializer,\
-    EmailSerializer, ClasseSerializer, ResponsibleRemoteSerializer, StudentWriteSerializer
+    EmailSerializer, ClasseSerializer, ResponsibleRemoteSerializer, StudentWriteSerializer, UserSerializer,\
+    GroupSerializer
 from core.utilities import get_scholar_year, get_menu
 
 
@@ -245,6 +246,18 @@ class EmailViewSet(ReadOnlyModelViewSet):
     queryset = EmailModel.objects.all().order_by("display")
     serializer_class = EmailSerializer
     permission_classes = (IsAuthenticated,)
+
+
+class UserViewSet(ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+
+
+class GroupViewSet(ModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
 
 
 class BirthdayAPI(APIView):
