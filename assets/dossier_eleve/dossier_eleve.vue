@@ -31,8 +31,10 @@
                         <b-nav-item active href="/dossier_eleve/">Dossier des élèves</b-nav-item>
                         <b-nav-item href="/dossier_eleve/ask_sanctions">
                             <span class="text-danger">Demandes de sanction</span>
-                            <b-badge>{{ askSanctionsCount }}</b-badge>
-                            <b-badge variant="warning">{{ askSanctionsNotDoneCount }}</b-badge>
+                            <span v-if="$store.state.canSetSanction">
+                                <b-badge>{{ askSanctionsCount }}</b-badge>
+                                <b-badge variant="warning">{{ askSanctionsNotDoneCount }}</b-badge>
+                            </span>
                         </b-nav-item>
                     </template>
                 </b-tabs>
@@ -145,8 +147,8 @@ export default {
         },
         canAskSanction: function () {
             const enable = this.$store.state.settings.enable_submit_sanctions;
-            const canSetSanction = this.$store.state.canSetSanction;
-            return enable && canSetSanction;
+            const canAskSanction = this.$store.state.canAskSanction;
+            return enable && canAskSanction;
         }
     },
     methods: {

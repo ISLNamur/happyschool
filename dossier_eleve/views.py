@@ -107,6 +107,7 @@ class BaseDossierEleveView(LoginRequiredMixin,
         scholar_year = get_scholar_year()
         context['current_year'] = json.dumps('%i-%i' % (scholar_year, scholar_year + 1))
         context['can_set_sanction'] = json.dumps(self.request.user.has_perm('dossier_eleve.set_sanction'))
+        context['can_ask_sanction'] = json.dumps(self.request.user.has_perm('dossier_eleve.ask_sanction'))
         groups = get_generic_groups()
         groups["sysadmin"] = {"id": groups["sysadmin"].id, "text": "Admin"}
         groups["direction"] = {"id": groups["direction"].id, "text": "Direction"}
@@ -332,6 +333,7 @@ class AskSanctionsViewSet(BaseModelViewSet):
     filter_class = AskSanctionsFilter
     ordering_fields = ('datetime_encodage', 'datetime_sanction', 'matricule__classe__year',
                        'matricule__classe__letter', 'matricule__last_name')
+    user_field = 'created_by'
 
     def get_queryset(self):
         sanctions = SanctionDecisionDisciplinaire.objects.filter(can_ask=True)

@@ -19,7 +19,7 @@
 
 <template>
 <div>
-    <b-modal size="lg" title="Nouvelle demande"
+    <b-modal size="xl" title="Nouvelle demande"
         ok-title="Soumettre" cancel-title="Annuler"
         :ok-disabled="!form.sanction_decision_id"
         ref="askModal"
@@ -84,7 +84,7 @@
                             <span slot="invalid-feedback">{{ errorMsg('demandeur') }}</span>
                         </b-form-group>
                     </b-form-row>
-                    <b-form-row>
+                    <b-form-row v-if="$store.state.canSetSanction">
                         <b-form-checkbox v-model="form.important">
                             Marquer comme important.
                         </b-form-checkbox>
@@ -99,17 +99,19 @@
                                 </b-form-select>
                                 <span slot="invalid-feedback">{{ errorMsg('sanction_decision_id') }}</span>
                             </b-form-group>
-                            <b-form-group label="Date du conseil" label-for="input-date-conseil" :state="inputStates.datetime_conseil">
-                                <b-form-input id="input-date-conseil" type="date" v-model="form.datetime_conseil"></b-form-input>
-                                <span slot="invalid-feedback">{{ errorMsg('datetime_conseil') }}</span>
-                            </b-form-group>
-                            <b-form-group label="Date de la sanction" label-for="input-date-sanction" :state="inputStates.datetime_sanction">
-                                <b-form-input id="input-date-sanction" type="date" v-model="form.datetime_sanction"></b-form-input>
-                                <span slot="invalid-feedback">{{ errorMsg('datetime_sanction') }}</span>
-                            </b-form-group>
-                            <b-form-group label="Heure de la sanction" label-for="input-time-sanction">
-                                <b-form-input id="input-time-sanction" type="time" v-model="timeSanction"></b-form-input>
-                            </b-form-group>
+                            <div v-if="$store.state.canSetSanction">
+                                <b-form-group label="Date du conseil" label-for="input-date-conseil" :state="inputStates.datetime_conseil">
+                                    <b-form-input id="input-date-conseil" type="date" v-model="form.datetime_conseil"></b-form-input>
+                                    <span slot="invalid-feedback">{{ errorMsg('datetime_conseil') }}</span>
+                                </b-form-group>
+                                <b-form-group label="Date de la sanction" label-for="input-date-sanction" :state="inputStates.datetime_sanction">
+                                    <b-form-input id="input-date-sanction" type="date" v-model="form.datetime_sanction"></b-form-input>
+                                    <span slot="invalid-feedback">{{ errorMsg('datetime_sanction') }}</span>
+                                </b-form-group>
+                                <b-form-group label="Heure de la sanction" label-for="input-time-sanction">
+                                    <b-form-input id="input-time-sanction" type="time" v-model="timeSanction"></b-form-input>
+                                </b-form-group>
+                            </div>
                         </b-col>
                         <b-col sm="5">
                             <b-list-group>
@@ -299,7 +301,7 @@ export default {
             this.name = {matricule: null};
             this.demandeur = {};
             this.stats = {};
-            this.$refs.attachments.reset();
+            if (this.$refs.attachments) this.$refs.attachments.reset();
             this.uploadedFiles.splice(0, this.uploadedFiles.length);
 
             this.form.name = "";

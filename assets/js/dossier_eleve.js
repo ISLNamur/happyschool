@@ -33,6 +33,7 @@ const store = new Vuex.Store({
         value: currentYear,
     }],
     canSetSanction: canSetSanction,
+    canAskSanction: canAskSanction,
   },
   mutations: {
       addFilter: function (state, filter) {

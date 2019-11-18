@@ -65,7 +65,7 @@
                     </b-collapse>
                 </b-col>
             </b-row>
-            <b-row>
+            <b-row v-if="$store.state.canSetSanction">
                 <b-col>
                     <b-list-group>
                         <b-list-group-item>Demandes de sanction en attente : <b-badge>{{ entriesCount }}</b-badge></b-list-group-item>

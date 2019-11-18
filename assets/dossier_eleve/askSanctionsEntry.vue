@@ -31,18 +31,22 @@
                     </b-col>
                     <b-col sm="4">
                         <div class="text-right">
-                            <icon name="question-circle" color="blue" class="align-text-middle"
-                                v-if="!canSetSanctionDone"
-                                v-b-tooltip.hover title="La date de sanction doit être antérieure ou égale à aujourd'hui."
-                                >
-                            </icon>
-                            <b-form-checkbox :disabled="!canSetSanctionDone" @change="setSanctionDone">
-                                Sanction faite ?
-                            </b-form-checkbox>
-                            <b-btn variant="light" size="sm" @click="editEntry"
-                            class="card-link"><icon scale="1.3" name="edit" color="green" class="align-text-bottom"></icon></b-btn>
-                            <b-btn variant="light" size="sm" @click="deleteEntry"
-                            class="card-link"><icon scale="1.3" name="trash" color="red" class="align-text-bottom"></icon></b-btn>
+                            <span v-if="$store.state.canSetSanction">
+                                <icon name="question-circle" color="blue" class="align-text-middle"
+                                    v-if="!canSetSanctionDone"
+                                    v-b-tooltip.hover title="La date de sanction doit être antérieure ou égale à aujourd'hui."
+                                    >
+                                </icon>
+                                <b-form-checkbox :disabled="!canSetSanctionDone" @change="setSanctionDone">
+                                    Sanction faite ?
+                                </b-form-checkbox>
+                            </span>
+                            <span v-if="canEditSanction">
+                                <b-btn variant="light" size="sm" @click="editEntry"
+                                    class="card-link"><icon scale="1.3" name="edit" color="green" class="align-text-bottom"></icon></b-btn>
+                                <b-btn variant="light" size="sm" @click="deleteEntry"
+                                    class="card-link"><icon scale="1.3" name="trash" color="red" class="align-text-bottom"></icon></b-btn>
+                            </span>
                         </div>
                     </b-col>
                 </b-row>
@@ -133,6 +137,15 @@
                     // Check that sanction date is today or older.
                     return Moment(this.rowData.datetime_sanction).isSameOrBefore(Moment(), 'day');
                 }
+            },
+            canEditSanction: function () {
+                if (this.$store.state.canSetSanction)
+                    return true;
+
+                if (this.rowData.user == user)
+                    return true;
+
+                return false;
             }
         },
         methods: {
