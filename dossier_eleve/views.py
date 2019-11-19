@@ -517,7 +517,7 @@ class CasElevePDFGenAPI(APIView):
         context = {'statistics': StatisticAPI().gen_stats(request.user, student,
                                                           all_years=False)}
         tenure = ResponsibleModel.objects.filter(tenure=student.classe).first()
-        context['tenure'] = tenure.fullname
+        context['tenure'] = tenure.fullname if tenure else "—"
 
         context['student'] = student
         context['list'] = results
