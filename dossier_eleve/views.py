@@ -113,7 +113,10 @@ class BaseDossierEleveView(LoginRequiredMixin,
         groups["direction"] = {"id": groups["direction"].id, "text": "Direction"}
         groups["coordonator"] = {"id": groups["coordonator"].id, "text": "Coordonateur"}
         groups["educator"] = {"id": groups["educator"].id, "text": "Educateur"}
-        groups["teacher"] = {"id": groups["teacher"].id, "text": "Professeur (titulaire)"}
+        groups["teacher"] = {
+            "id": groups["teacher"].id,
+            "text": "Titulaire(s)" if settings_dossier_eleve.filter_teacher_entries_by_tenure else "Professeurs"
+        }
         groups["pms"] = {"id": groups["pms"].id, "text": "PMS"}
         context['groups'] = groups
         return context
