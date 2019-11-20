@@ -1,0 +1,36 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+django-filter = ">=2.0"
+redis = "*"
+channels = ">=2.1"
+channels-redis = ">=2.2"
+django-crispy-forms = ">=1.7"
+django-auth-ldap = ">=1.7"
+coverage = "*"
+psycopg2-binary = "*"
+celery = ">=4"
+django-webpack-loader = "*"
+djangorestframework = "*"
+ldap3 = "*"
+requests = "==2.20.1"
+icalendar = "*"
+django-bootstrap3-datetimepicker = {git = "https://github.com/Supermanu/django-bootstrap3-datetimepicker.git",ref = "dcb355c28755475932a79bf49e15ee6e60552b90"}
+django-weasyprint = "*"
+social-auth-app-django = "*"
+Django = ">=2.2.3,<2.3"
+Unidecode = "*"
+"z3c.rml" = "*"
+PyPDF2 = "*"
+XlsxWriter = "*"
+WeasyPrint = "*"
+python-escpos = "*"
+xlwt = "*"
+
+[requires]
+python_version = "3.7"
