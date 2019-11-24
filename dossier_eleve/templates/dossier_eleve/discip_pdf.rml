@@ -95,7 +95,7 @@
                 <td>
                     {% if c.sanction_decision %}
                     <para>
-                        {{ c.sanction_decision.sanction_decision }} à {{ c.datetime_sanction|date:"H:i" }} le {{ c.datetime_sanction|date:'d/m/Y' }}
+                        {{ c.sanction_decision.sanction_decision }}{% if c.datetime_sanction %} à {{ c.datetime_sanction|date:"H:i" }} le {{ c.datetime_sanction|date:'d/m/Y' }}{% endif %}
                     </para>
                     {% else %}
                     <para textColor="grey">

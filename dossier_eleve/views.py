@@ -513,7 +513,7 @@ class CasElevePDFGenAPI(APIView):
             r['datetime_encodage'] = timezone.datetime.strptime(r['datetime_encodage'][:19], "%Y-%m-%dT%H:%M:%S")
             if r['info']:
                 continue
-            r['datetime_sanction'] = timezone.datetime.strptime(r['datetime_sanction'][:19], "%Y-%m-%dT%H:%M:%S")
+            r['datetime_sanction'] = timezone.datetime.strptime(r['datetime_sanction'][:19], "%Y-%m-%dT%H:%M:%S") if r['datetime_sanction'] else None
         student = StudentModel.objects.get(matricule=request.GET['matricule_id'])
         check_student_photo(student)
         #TODO: Should we show current year statistics or all years statistics?
