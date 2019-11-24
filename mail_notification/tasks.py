@@ -65,8 +65,7 @@ def task_send_emails_notif(self, pk, one_by_one=True, responsibles=True):
         recipients += list(map(lambda e: (e.email, None), settings_email_notif.add_cc_parents.all()))
 
     # recipients += [(settings.EMAIL_ADMIN, None), ('directeur@isln.be', None), ('sous-directeur@isln.be', None)]
-    if settings.DEBUG:
-        print(recipients)
+    print(recipients)
 
     # Get attachments.
     attachments = list(map(lambda a: a.attachment.path, email_notif.attachments.all()))
@@ -82,6 +81,9 @@ def task_send_emails_notif(self, pk, one_by_one=True, responsibles=True):
     if one_by_one:
         one_ok = False
         for r, a in recipients:
+            # Ignore empty recipients
+            if not r:
+                continue
             email_body = "<html>%s</html>" % email_notif.body
             # Check if there is answer form attached to the email.
             if a:
@@ -94,6 +96,7 @@ def task_send_emails_notif(self, pk, one_by_one=True, responsibles=True):
                                    from_email=email_notif.email_from,
                                    attachments=attachments)
 
+                print(response.status_code)
                 if response.status_code != 200:
                     if settings.DEBUG:
                         print("Error with %s" % r)
@@ -101,6 +104,7 @@ def task_send_emails_notif(self, pk, one_by_one=True, responsibles=True):
                         email_notif.errors += "Error w/ %s: %s |" % (r, response.status_code)
                         if len(email_notif.errors) > 9000:
                             break
+                    email_notif.errors += "Error while sending %s: %s" % (r, response.status_code)
                     break
 
                 else:
