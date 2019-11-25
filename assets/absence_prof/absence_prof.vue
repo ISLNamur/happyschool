@@ -40,7 +40,7 @@
                                 Exporter en PDF
                             </b-btn>
                             <b-button :pressed.sync="active" variant="primary">
-                                <span v-if="active">Afficher tous les absences</span>
+                                <span v-if="active">Afficher toutes les absences</span>
                                 <span v-else>Afficher absences courantes</span>
                             </b-button>
                         </div>
