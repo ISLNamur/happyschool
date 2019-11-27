@@ -136,50 +136,6 @@ class ImportResponsible(ImportBase):
                 else:
                     resp.inactive_from = None
 
-            # Check if responsible's classes already exists.
-            if resp.matricule not in resp_synced:
-                resp.classe.clear()
-            classe = self.get_value(entry, "classe")
-            if classe and type(classe) != list:
-                classe = [classe]
-            if classe:
-                for c in classe:
-                    if len(c) < 2:
-                        continue
-                    try:
-                        classe_model = ClasseModel.objects.get(year=int(c[0]), letter=c[1:].lower(),
-                                                               teaching=self.teaching)
-                    except ObjectDoesNotExist:
-                        classe_model = ClasseModel(year=int(c[0]), letter=c[1:].lower(),
-                                                   teaching=self.teaching)
-                        classe_model.save()
-                    resp.classe.add(classe_model)
-
-            # Check if responsible's tenures already exists.
-            if resp.matricule not in resp_synced:
-                resp.tenure.clear()
-            tenure = self.get_value(entry, "tenure")
-            if tenure:
-                if type(tenure) == str:
-                    tenure = [tenure]
-                for t in tenure:
-                    try:
-                        tenure_model = ClasseModel.objects.get(year=int(t[0]), letter=t[1:].lower(),
-                                                               teaching=self.teaching)
-                    except ObjectDoesNotExist:
-                        tenure_model = ClasseModel(year=int(t[0]), letter=t[1:].lower(),
-                                                   teaching=self.teaching)
-                        tenure_model.save()
-                    resp.tenure.add(tenure_model)
-                    resp.classe.add(tenure_model)
-
-            email = self.get_value(entry, "email")
-            email_school = self.get_value(entry, "email_school")
-            if email:
-                resp.email = email
-            if email_school:
-                resp.email_school = email_school
-
             educ_group = Group.objects.get(name="educateur")
             is_educator = self.get_value(entry, "is_educator")
             if is_educator:
@@ -192,6 +148,52 @@ class ImportResponsible(ImportBase):
                 resp.is_teacher = True
                 if resp.user:
                     teach_group.user_set.add(resp.user)
+
+            # Update classes only for teachers
+            if is_teacher:
+                # Check if responsible's classes already exists.
+                if resp.matricule not in resp_synced:
+                    resp.classe.clear()
+                classe = self.get_value(entry, "classe")
+                if classe and type(classe) != list:
+                    classe = [classe]
+                if classe:
+                    for c in classe:
+                        if len(c) < 2:
+                            continue
+                        try:
+                            classe_model = ClasseModel.objects.get(year=int(c[0]), letter=c[1:].lower(),
+                                                                teaching=self.teaching)
+                        except ObjectDoesNotExist:
+                            classe_model = ClasseModel(year=int(c[0]), letter=c[1:].lower(),
+                                                    teaching=self.teaching)
+                            classe_model.save()
+                        resp.classe.add(classe_model)
+
+                # Check if responsible's tenures already exists.
+                if resp.matricule not in resp_synced:
+                    resp.tenure.clear()
+                tenure = self.get_value(entry, "tenure")
+                if tenure:
+                    if type(tenure) == str:
+                        tenure = [tenure]
+                    for t in tenure:
+                        try:
+                            tenure_model = ClasseModel.objects.get(year=int(t[0]), letter=t[1:].lower(),
+                                                                teaching=self.teaching)
+                        except ObjectDoesNotExist:
+                            tenure_model = ClasseModel(year=int(t[0]), letter=t[1:].lower(),
+                                                    teaching=self.teaching)
+                            tenure_model.save()
+                        resp.tenure.add(tenure_model)
+                        resp.classe.add(tenure_model)
+
+            email = self.get_value(entry, "email")
+            email_school = self.get_value(entry, "email_school")
+            if email:
+                resp.email = email
+            if email_school:
+                resp.email_school = email_school
 
             birth_date = self.get_value(entry, "birth_date")
             if birth_date:
