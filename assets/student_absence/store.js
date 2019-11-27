@@ -40,14 +40,15 @@ const vuexLocal = new VuexPersistence({
 
 export default new Vuex.Store({
     state: {
-      settings: settings,
-      filters: [],
-      todayAbsences: {},
-      changes: [],
-      notes: {},
-      onLine: true,
-      lastUpdate: "",
-      updating: false,
+        settings: settings,
+        filters: [],
+        todayAbsences: {},
+        changes: [],
+        notes: {},
+        onLine: true,
+        lastUpdate: "",
+        updating: false,
+        forceAllAccess: false,
     },
     getters: {
         change(state) {
@@ -72,6 +73,10 @@ export default new Vuex.Store({
         }
     },
     mutations: {
+        toggleForceAllAccess: function (state) {
+            state.forceAllAccess = !state.forceAllAccess;
+            this.commit('updateStudentsClasses');
+        },
         addNote: function (state, note) {
             state.notes[note.classe] = note;
         },
@@ -112,12 +117,13 @@ export default new Vuex.Store({
                 teachings: state.settings.teachings,
                 people: 'student',
                 active: true,
-                check_access:  filterForEduc != 'none',
-                educ_by_years: filterForEduc == 'year',
+                check_access:  filterForEduc != 'none' && !state.forceAllAccess,
+                educ_by_years: filterForEduc == 'year' && !state.forceAllAccess,
             };
             axios.post('/student_absence/api/students_classes/', data, token)
             .then(response => {
                 this.commit('updatingStatus', false);
+                document.location.reload(true);
             });
             axios.get('/student_absence/api/classenote/', token)
             .then(response => {

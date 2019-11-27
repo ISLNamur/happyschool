@@ -97,15 +97,18 @@ export default {
         }
     },
     mounted: function () {
-        axios.get('/student_absence/api/student_absence/?ordering=-datetime_creation&page_size=15')
+        let url = '/student_absence/api/student_absence/?ordering=-datetime_creation&page_size=15';
+        if (this.$store.state.forceAllAccess)
+            url += '&forceAllAccess=1';
+        axios.get(url)
         .then(response => {
             this.lastAbsences = response.data.results;
         });
 
-        axios.get('/student_absence/api/absence_count/')
-        .then(response => {
-            this.absenceCount = response.data;
-        });
+        // axios.get('/student_absence/api/absence_count/')
+        // .then(response => {
+        //     this.absenceCount = response.data;
+        // });
 
     }
 }

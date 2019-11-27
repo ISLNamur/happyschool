@@ -4,7 +4,7 @@ importScripts('/static/bundles/idb.js');
 let assetsManager = new AssetsManager();
 let urlToCache = assetsManager.cacheEntries.filter(url => url.includes("commons") || url.includes("student_absence") || url.includes("polyfill"));
 urlToCache.push("/student_absence/");
-urlToCache.push("/student_absence/api/absence_count/");
+// urlToCache.push("/student_absence/api/absence_count/");
 const hash = urlToCache[0].split("-")[1].split(".")[0];
 
 

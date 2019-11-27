@@ -35,6 +35,9 @@
                         <b-nav-item to="notes">Notes</b-nav-item>
                         <b-nav-item-dropdown>
                             <b-dropdown-item @click="$store.commit('updateStudentsClasses')">Mettre à jour des étudiants</b-dropdown-item>
+                            <b-dropdown-item @click="$store.commit('toggleForceAllAccess')">
+                                {{ $store.state.forceAllAccess ? "Activer" : "Désactiver" }} la restriction par classe
+                                </b-dropdown-item>
                         </b-nav-item-dropdown>
                     </template>
                 </b-tabs>

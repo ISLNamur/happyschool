@@ -113,6 +113,14 @@ class StudentAbsenceViewSet(ModelViewSet):
     filter_class = StudentAbsenceFilter
     ordering_fields = ('date_absence', 'datetime_update', 'datetime_creation',)
 
+    def get_queryset(self):
+        filtering = get_settings().filter_students_for_educ
+        if filtering == "none" or self.request.query_params.get('forceAllAccess', False):
+            return self.queryset
+
+        classes = get_classes(check_access=True, user=self.request.user, educ_by_years=filtering == "year")
+        return self.queryset.filter(student__classe__in=classes)
+
 
 class AbsenceCountAPI(APIView):
     permission_classes = (IsAuthenticated,)
