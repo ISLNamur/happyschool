@@ -19,6 +19,10 @@
 
 <template>
     <div>
+        <b-col>
+        <b-btn @click="retour"> Retour </b-btn>
+        </b-col>
+        </br>
         <b-container>
             <b-card :title="lastName + ' ' + firstName" no-body>
                 <b-tabs card>
@@ -196,7 +200,9 @@
 </template>
 
 <script>
-import Vue from 'vue';
+import VueRouter from 'vue-router'
+import Vue from 'vue'
+Vue.use(VueRouter)
 import BootstrapVue from 'bootstrap-vue'
 
 import 'vue-awesome/icons'
@@ -252,6 +258,9 @@ export default {
         },
     },
     methods: {
+        retour(){
+            this.$router.go(-1)
+        },
         reset: function () {
             this.username = '';
             this.password = '';
