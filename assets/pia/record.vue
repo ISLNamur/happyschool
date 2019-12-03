@@ -22,7 +22,7 @@
             <b-row>
                 <h3>PIA : Nouveau</h3>
             </b-row>
-            <b-row class="sticky-top">
+            <b-row class="sticky-top p-2 first-line">
                 <b-col>
                     <b-btn to="/">Retour à la liste des PIA</b-btn>
                 </b-col>
@@ -178,7 +178,14 @@
             </b-row>
             <b-row>
                 <b-col>
-                    <goal :goal="-1" :pia="-1"></goal>
+                    <b-btn @click="goals.unshift({})">Ajouter un objectif transversal</b-btn>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <goal class="mt-2" v-for="(goal, index) in goals" :key="goal.id" :goal="goal"
+                        ref="goals" @remove="removeGoal(index)">
+                    </goal>
                 </b-col>
             </b-row>
             <b-row>
@@ -210,7 +217,7 @@ export default {
             if (newVal) {
                 // Reset data.
                 Object.assign(this.$data, this.$options.data());
-                this.loadPIA(newVal);
+                this.initApp();
             } else {
                 this.reset();
             }
@@ -234,15 +241,27 @@ export default {
                 disorder: [],
                 disorder_response: [],
                 schedule: [],
-            }
+            },
+            goals: [],
         }
     },
     methods: {
         reset: function () {
 
         },
-        submit: function (evt) {
-            evt.preventDefault();
+        removeGoal: function (goalIndex) {
+            let app = this;
+            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer l'objectif transversal ?", {
+                okTitle: 'Oui',
+                cancelTitle: 'Non',
+                centered: true,
+            }).then(resp => {
+                if (resp) {
+                    axios.delete('/pia/api/goal/' + app.goals[goalIndex].id + '/', token)
+                    .then(ret => app.goals.splice(goalIndex, 1))
+                    .catch(err => alert(err));
+                }
+            })
         },
         getPeople: function (searchQuery, person) {
             person = person.split("-")[0];
@@ -268,13 +287,30 @@ export default {
                 return this.form.disorder.map(x => x.id).includes(d.disorder);
             });
         },
+        showSuccess: function (recordId) {
+            let app = this;
+            app.sending = false;
+            if (app.id) {
+                app.$root.$bvToast.toast(`Les données ont bien été sauvegardée`, {
+                    variant: 'success',
+                    noCloseButton: true,
+                })
+            } else {
+                app.$router.push('/edit/' + recordId + '/',() => {
+                    app.$root.$bvToast.toast(`Les données ont bien été sauvegardée`, {
+                        variant: 'success',
+                        noCloseButton: true,
+                    })
+                });
+            }
+        },
         submit: function (evt) {
             evt.preventDefault();
 
             let app = this;
             this.sending = true;
             const data = Object.assign({}, this.form);
-            data.student = data.student.matricule;
+            data.student_id = data.student.matricule;
             data.disorder = data.disorder.map(d => d.id);
             data.disorder_response = data.disorder_response.map(dr => dr.id);
             data.referent = data.referent.map(r => r.matricule);
@@ -285,21 +321,42 @@ export default {
             if (this.id) url += this.id + "/";
             send(url, data, token)
             .then(resp => {
-                this.sending = false;
-                if (this.id) {
-                    app.$root.$bvToast.toast(`Les données ont bien été sauvegardée`, {
-                        variant: 'success',
-                        noCloseButton: true,
-                    })
-                } else {
-                    app.$router.push('/edit/' + this.id + '/',() => {
-                        app.$root.$bvToast.toast(`Les données ont bien été sauvegardée`, {
-                            variant: 'success',
-                            noCloseButton: true,
-                        })
-                    });
+                const recordId = resp.data.id;
+                // No goals, no promises.
+                if (this.goals.length == 0) {
+                    this.showSuccess(recordId);
+                    return;
                 }
+
+                const promises = this.$refs.goals.map(g => g.submit(recordId));
+                Promise.all(promises)
+                .then(resps => {
+                    // Update goals and subgoals component with response.
+                    const subgoalPromises = [];
+                    resps.forEach((r, i) => {
+                        if (!('id' in app.$refs.goals[i])) {
+                            app.goals.splice(i, 1, r.data);
+                            subgoalPromises.concat(app.$refs.goals[i].submitSubGoal(app.goals[i].id));
+                        }
+                    })
+                    Promise.all(subgoalPromises)
+                    .then(resps => {
+                        this.showSuccess(recordId);
+                    })
+                    .catch(err => {
+                        console.log('coucou');
+                        app.sending = false;
+                        alert(err)
+                    });
+                })
+                .catch(err => {
+                    console.log('hello');
+                    app.sending = false;
+                    alert(err);
+                })
+
             }).catch(function (error) {
+                console.log('salut');
                 app.sending = false;
                 alert(error);
             });
@@ -319,16 +376,25 @@ export default {
                 this.form.disorder = this.disorderOptions.filter(d => resp.data.disorder.includes(d.id));
                 this.form.disorder_response = this.disorderResponseAll.filter(dr => resp.data.disorder_response.includes(dr.id));
             });
+        },
+        initApp: function () {
+            const promises = [axios.get('/pia/api/disorder/'), axios.get('/pia/api/disorder_response/')]
+            Promise.all(promises)
+            .then(resps => {
+                this.disorderOptions = resps[0].data.results;
+                this.disorderResponseAll = resps[1].data.results;
+                if (this.id) this.loadPIA(this.id);
+            });
+
+            // Load goals.
+            if (this.id) {
+                axios.get('/pia/api/goal/?pia_model=' + this.id)
+                .then(resp => this.goals = resp.data.results);
+            }       
         }
     },
     mounted: function () {
-        const promises = [axios.get('/pia/api/disorder/'), axios.get('/pia/api/disorder_response/')]
-        Promise.all(promises)
-        .then(resps => {
-            this.disorderOptions = resps[0].data.results;
-            this.disorderResponseAll = resps[1].data.results;
-            if (this.id) this.loadPIA(this.id);
-        });
+        this.initApp();
     },
     components: {
         Multiselect,
@@ -336,3 +402,9 @@ export default {
     }
 }
 </script>
+
+<style>
+.first-line {
+    background-color: rgba(236, 236, 236, 0.8);
+}
+</style>

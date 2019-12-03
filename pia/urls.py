@@ -37,5 +37,7 @@ router.register(r'api/cross_goal', views.CrossGoalViewSet)
 router.register(r'api/assessment', views.AssessmentViewSet)
 router.register(r'api/branch', views.BranchViewSet)
 router.register(r'api/branch_goal', views.BranchGoalViewSet)
+router.register(r'api/goal', views.GoalViewSet)
+router.register(r'api/subgoal', views.SubGoalViewSet)
 
 urlpatterns += router.urls

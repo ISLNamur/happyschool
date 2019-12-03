@@ -19,7 +19,7 @@
 
 <template>
     <div>
-        <b-card>
+        <b-card bg-variant="light">
             <b-form-row>
                 <b-col>
                     <b-form-group label="Branche">
@@ -39,6 +39,9 @@
                             <span slot="noOptions"></span>
                         </multiselect>
                     </b-form-group>
+                </b-col>
+                <b-col cols="2">
+                    <b-btn @click="$emit('remove')" variant="danger">Supprimer</b-btn>
                 </b-col>
             </b-form-row>
             <b-form-row>
@@ -93,11 +96,18 @@
                             :showNoOptions="false"
                             label="assessment"
                             track-by="id"
-                            multiple
                             >
                             <span slot="noResult">Aucune évaluation trouvée.</span>
                             <span slot="noOptions"></span>
                         </multiselect>
+                    </b-form-group>
+                </b-col>
+            </b-form-row>
+            <b-form-row>
+                <b-col>
+                    <b-form-group label="Aide en engagement des parents">
+                        <quill-editor v-model="parentCommitment" :options="editorOptions">
+                        </quill-editor>
                     </b-form-group>
                 </b-col>
             </b-form-row>
@@ -115,8 +125,15 @@ import {quillEditor} from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 
+const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+
 export default {
-    props: [],
+    props: {
+        subgoal: {
+            type: Object,
+            default: {},
+        },
+    },
     data: function () {
         return {
             branchOptions: [],
@@ -128,7 +145,8 @@ export default {
             selfAssessment: "",
             assessmentAll: [],
             assessmentOptions: [],
-            assessment: [],
+            assessment: null,
+            parentCommitment: "À completer",
             editorOptions: {
                 modules: {
                     toolbar: [
@@ -145,33 +163,65 @@ export default {
         }
     },
     methods: {
+        assignSubgoal: function () {
+            if ('id' in this.subgoal) {
+                this.branch = this.branchOptions.filter(b => b.id == this.subgoal.branch)[0];
+                this.givenHelp = this.subgoal.given_help;
+                this.selfAssessment = this.subgoal.self_assessment;
+                this.parentCommitment = this.subgoal.parent_commitment;
+                this.assessment = this.assessmentAll.filter(a => a.id == this.subgoal.assessment)[0];
+
+                const subgoals = this.subgoal.branch_goals.split(";");
+                this.branchGoal = this.branchGoalAll.filter(bg => subgoals.includes(bg.goal));
+                const newSubgoals = subgoals.filter(sg => !this.branchGoalAll.map(bg => bg.goal).includes(sg));
+                newSubgoals.forEach(nsg => this.addBranchGoalTag(nsg));
+            }
+        },
         addBranchGoalTag: function (tag) {
             this.branchGoal.push({id: -1, goal: tag})
         },
-        updateBranchGoal: function () {
-            this.branchGoalOptions = this.branchGoalAll.filter(bg => bg.branch == this.branch.id);
+        updateBranchGoal: function (branch) {
+            this.branchGoalOptions = this.branchGoalAll.filter(bg => bg.branch == branch.id);
         },
         updateAssessment: function () {
             this.assessmentOptions = this.assessmentAll.filter(a => {
-                return a.branches.includes(this.branch.id);
-                // Check intersection between branch.id and assessment.branches.
-                // return this.branch.map(x => x.id).filter(g => a.branches.includes(g));
+                if (a.branches.length > 0) return a.branches.includes(this.branch.id);
+
+                return true;
             });
-        }
+        },
+        submit: function(goalId) {
+            const data = {
+                goal: goalId,
+                branch: this.branch.id,
+                branch_goals: this.branchGoal.length > 0 ? this.branchGoal.reduce((acc, bg) => acc + ";" + bg.goal, "").slice(1) : "",
+                given_help: this.givenHelp,
+                self_assessment: this.selfAssessment,
+                assessment: this.assessment.id,
+                parent_commitment: this.parentCommitment,
+            };
+            let url = '/pia/api/subgoal/';
+            if ('id' in this.subgoal) url += this.subgoal.id + '/';
+            if ('id' in this.subgoal) return axios.put(url, data, token);
+
+            return axios.post(url, data, token);
+        },
     },
     mounted: function () {
-        axios.get('/pia/api/branch/')
-        .then(resp => {
-            this.branchOptions = resp.data.results;
-        })
-        axios.get('/pia/api/branch_goal/')
-        .then(resp => {
-            this.branchGoalAll = resp.data.results;
-        })
-        axios.get('/pia/api/assessment/')
-        .then(resp => {
-            this.assessmentAll = resp.data.results;
-        })
+        const promises = [
+            axios.get('/pia/api/branch/'),
+            axios.get('/pia/api/branch_goal/'),
+            axios.get('/pia/api/assessment/'),
+        ]
+
+        Promise.all(promises)
+        .then(resps => {
+            this.branchOptions = resps[0].data.results;
+            this.branchGoalAll = resps[1].data.results;
+            this.assessmentAll = resps[2].data.results;
+
+            this.assignSubgoal();
+        });
     },
     components: {
         Multiselect,

@@ -17,12 +17,20 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
-from rest_framework import serializers
+from rest_framework import serializers, fields
 
 from core.models import StudentModel, ResponsibleModel
 from core.serializers import StudentSerializer, ResponsibleSerializer
 
 from . import models
+
+
+class FlatArrayField(fields.Field):
+    def to_internal_value(self, data):
+        return ";".join(data)
+
+    def to_representation(self, value):
+        return ", ".join(value.split(";"))
 
 
 class PIASettingsSerializer(serializers.ModelSerializer):

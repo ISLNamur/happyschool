@@ -79,7 +79,7 @@ class BranchGoalModel(models.Model):
 
 class AssessmentModel(models.Model):
     assessment = models.CharField(max_length=200)
-    cross_goals = models.ManyToManyField(CrossGoalModel)
+    cross_goals = models.ManyToManyField(CrossGoalModel, blank=True)
     branches = models.ManyToManyField(BranchGoalModel, blank=True)
 
     def __str__(self):
@@ -92,7 +92,7 @@ class GoalModel(models.Model):
     date_end = models.DateField()
     cross_goals = models.CharField(max_length=2000)
     given_help = models.CharField(max_length=1000)
-    responsible = models.ManyToManyField(ResponsibleModel)
+    responsible = models.ManyToManyField(ResponsibleModel, blank=True)
     self_assessment = models.CharField(max_length=2000)
     assessment = models.ForeignKey(AssessmentModel, on_delete=models.SET_NULL, null=True)
     datetime_creation = models.DateTimeField(auto_now_add=True)
@@ -107,3 +107,5 @@ class SubGoalModel(models.Model):
     self_assessment = models.CharField(max_length=2000)
     assessment = models.ForeignKey(AssessmentModel, on_delete=models.SET_NULL, null=True)
     parent_commitment = models.CharField(max_length=2000)
+    datetime_creation = models.DateTimeField(auto_now_add=True)
+    datetime_update = models.DateTimeField(auto_now=True)

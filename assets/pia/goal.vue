@@ -21,10 +21,15 @@
     <div>
         <b-card>
             <b-form-row>
-                <b-form inline>
-                    Du <b-form-input type="date" v-model="date_start" class="mr-sm-2"></b-form-input>
-                    au <b-form-input type="date" v-model="date_end"></b-form-input>
-                </b-form>
+                <b-col>
+                    <b-form inline>
+                        Du <b-form-input type="date" v-model="date_start" class="mr-sm-2"></b-form-input>
+                        au <b-form-input type="date" v-model="date_end"></b-form-input>
+                    </b-form>
+                </b-col>
+                <b-col cols="2" align-self="end">
+                    <b-btn @click="$emit('remove')" variant="danger">Supprimer</b-btn>
+                </b-col>
             </b-form-row>
             <b-form-row>
                 <b-col>
@@ -78,7 +83,6 @@
                             :showNoOptions="false"
                             label="assessment"
                             track-by="id"
-                            multiple
                             >
                             <span slot="noResult">Aucune évaluation trouvée.</span>
                             <span slot="noOptions"></span>
@@ -88,7 +92,15 @@
             </b-form-row>
             <b-row>
                 <b-col>
-                    <subgoal></subgoal>
+                    <b-btn @click="subGoals.unshift({})" variant="info">Ajouter un objectif de branche</b-btn>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <subgoal v-for="(subgoal, index) in subGoals" :key="subgoal.id" :subgoal="subgoal"
+                        ref="subgoals" class="mt-2" @remove="removeSubGoal(index)"
+                        >
+                    </subgoal>
                 </b-col>
             </b-row>
         </b-card>
@@ -107,8 +119,19 @@ import 'quill/dist/quill.snow.css'
 
 import Subgoal from './subgoal.vue';
 
+const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+
 export default {
-    props: [],
+    props: {
+        goal: {
+            type: Object,
+            default: {},
+        },
+        pia_model: {
+            type: Number,
+            default: -1,
+        }
+    },
     data: function () {
         return {
             date_start: null,
@@ -119,7 +142,7 @@ export default {
             selfAssessment: "",
             assessmentAll: [],
             assessmentOptions: [],
-            assessment: [],
+            assessment: null,
             editorOptions: {
                 modules: {
                     toolbar: [
@@ -133,9 +156,39 @@ export default {
                 },
                 placeholder: ""
             },
+            subGoals: [],
         }
     },
     methods: {
+        removeSubGoal: function (subGoalIndex) {
+            let app = this;
+            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer l'objectif de branche ?", {
+                okTitle: 'Oui',
+                cancelTitle: 'Non',
+                centered: true,
+            }).then(resp => {
+                if (resp) {
+                    axios.delete('/pia/api/subgoal/' + app.subGoals[subGoalIndex].id + '/', token)
+                    .then(ret => app.subGoals.splice(subGoalIndex, 1))
+                    .catch(err => alert(err));
+                }
+            })
+        },
+        assignGoal: function () {
+            if ('id' in this.goal) {
+                this.date_start = this.goal.date_start;
+                this.date_end = this.goal.date_end;
+                this.givenHelp = this.goal.given_help;
+                this.selfAssessment = this.goal.self_assessment;
+                this.assessment = this.assessmentAll.filter(a => a.id == this.goal.assessment)[0];
+
+                // Assign crossGoals
+                let goals = this.goal.cross_goals.split(";");
+                this.crossGoal = this.crossGoalOptions.filter(cg => goals.includes(cg.goal));
+                let newGoals = goals.filter(g => !this.crossGoalOptions.map(cg => cg.goal).includes(g));
+                newGoals.forEach(ng => this.addCrossGoalTag(ng));
+            }
+        },
         addCrossGoalTag: function (tag) {
             this.crossGoal.push({id: -1, goal: tag})
         },
@@ -144,16 +197,45 @@ export default {
                 // Check intersection between crossGoal.id and assessment.cross_goals.
                 return this.crossGoal.map(x => x.id).filter(g => a.cross_goals.includes(g));
             });
+        },
+        submit: function (piaId) {
+            if (this.goal) {
+                const crossGoals = this.crossGoal.reduce((acc, cg) => acc + ";" + cg.goal, "");
+                const data = {
+                    pia_model: piaId,
+                    date_start: this.date_start,
+                    date_end: this.date_end,
+                    given_help: this.givenHelp,
+                    self_assessment: this.selfAssessment,
+                    assessment: this.assessment.id,
+                    cross_goals: this.crossGoal.length > 0 ? crossGoals.slice(1) : null,
+                }
+
+                const isNew = 'id' in this.goal;
+                const url =  isNew ? '/pia/api/goal/' + this.goal.id + '/' : '/pia/api/goal/';
+                return isNew ? axios.put(url, data, token) : axios.post(url, data, token);
+            }
+        },
+        submitSubGoal: function (goalId) {
+            // Check if there is at least one subgoal.
+            if (this.subGoals.length == 0) return [];
+
+            return this.$refs.subgoals.map(sg => sg.submit(goalId));
         }
     },
     mounted: function () {
-        axios.get('/pia/api/cross_goal/')
-        .then(resp => {
-            this.crossGoalOptions = resp.data.results;
-        })
-        axios.get('/pia/api/assessment/')
-        .then(resp => {
-            this.assessmentAll = resp.data.results;
+        const promises = [
+            axios.get('/pia/api/cross_goal/'),
+            axios.get('/pia/api/assessment/'),
+        ];
+        if (this.goal.id) promises.push(axios.get('/pia/api/subgoal/?goal=' + this.goal.id));
+        Promise.all(promises)
+        .then(resps => {
+            this.crossGoalOptions = resps[0].data.results;
+            this.assessmentAll = resps[1].data.results;
+            this.assignGoal();
+            this.updateAssessment();
+            if (this.goal.id) this.subGoals = resps[2].data.results;
         })
     },
     components: {

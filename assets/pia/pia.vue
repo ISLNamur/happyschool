@@ -19,7 +19,21 @@
 
 <template>
     <div>
-        <entry v-for="entry in entries" :key="entry.id" :rowData="entry"></entry>
+        <b-container>
+            <b-row>
+                <h2>Plan Individuel d'Apprentissage</h2>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <b-btn variant="success" to="/new">Ajouter un PIA</b-btn>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <entry v-for="entry in entries" :key="entry.id" :rowData="entry"></entry>
+                </b-col>
+            </b-row>
+        </b-container>
     </div>
 </template>
 

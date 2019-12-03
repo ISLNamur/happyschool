@@ -23,7 +23,9 @@ from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMix
 from django.views.generic import TemplateView
 
 from rest_framework.filters import OrderingFilter
-from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
+
+from django_filters import rest_framework as filters
 
 from core.models import TeachingModel
 from core.utilities import get_menu
@@ -34,7 +36,7 @@ from . import serializers
 
 
 def get_menu_entry(active_app: str, user) -> dict:
-    if not user.has_perm('pia.view_pia'):
+    if not user.has_perm('pia.view_piamodel'):
         return {}
     return {
             "app": "pia",
@@ -61,7 +63,7 @@ class PIAView(LoginRequiredMixin,
               PermissionRequiredMixin,
               TemplateView):
     template_name = "pia/pia.html"
-    permission_required = ('pia.view_pia')
+    permission_required = ('pia.view_piamodel',)
     filters = [
         {'value': 'student__display', 'text': 'Nom'},
         {'value': 'student__matricule', 'text': 'Matricule'},
@@ -81,6 +83,24 @@ class PIAViewSet(BaseModelViewSet):
     queryset = models.PIAModel.objects.filter(student__inactive_from__isnull=True)
     serializer_class = serializers.PIASerializer
     username_field = None
+
+
+class GoalViewSet(ModelViewSet):
+    queryset = models.GoalModel.objects.all()
+    serializer_class = serializers.GoalSerializer
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
+    filterset_fields = ('pia_model',)
+    ordering_fields = ['date_start', 'date_end', 'datetime_creation']
+    ordering = ['-date_start']
+
+
+class SubGoalViewSet(ModelViewSet):
+    queryset = models.SubGoalModel.objects.all()
+    serializer_class = serializers.SubGoalSerializer
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
+    filterset_fields = ('goal',)
+    ordering_fields = ['datetime_creation']
+    ordering = ['-datetime_creation']
 
 
 class DisorderViewSet(ReadOnlyModelViewSet):
