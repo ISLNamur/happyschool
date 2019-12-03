@@ -22,7 +22,7 @@
         <b-card bg-variant="light">
             <b-form-row>
                 <b-col>
-                    <b-form-group label="Branche">
+                    <b-form-group label="Branche" label-cols="2">
                         <multiselect
                             :options="branchOptions"
                             placeholder="Choisisser une branche"
@@ -35,6 +35,7 @@
                             label="branch"
                             track-by="id"
                             >
+                            <template slot="singleLabel" slot-scope="props"><strong>{{ props.option.branch }}</strong></template>
                             <span slot="noResult">Aucune branche trouvée.</span>
                             <span slot="noOptions"></span>
                         </multiselect>
@@ -46,7 +47,7 @@
             </b-form-row>
             <b-form-row>
                 <b-col>
-                    <b-form-group label="Objectif spécifique">
+                    <b-form-group label="Objectif spécifique" label-cols="2">
                         <multiselect
                             :options="branchGoalOptions"
                             placeholder="Choisisser un ou des objectifs"
@@ -70,7 +71,7 @@
             </b-form-row>
             <b-form-row>
                 <b-col>
-                    <b-form-group label="Aide(s)">
+                    <b-form-group label="Aide(s)" label-cols="2">
                         <quill-editor v-model="givenHelp" :options="editorOptions">
                         </quill-editor>
                     </b-form-group>

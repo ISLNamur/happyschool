@@ -113,7 +113,7 @@
             </b-row>
             <b-row>
                 <b-col>
-                    <b-form-group label="Trouble d'apprentissage">
+                    <b-form-group label="Trouble d'apprentissage" label-cols="3">
                         <multiselect
                             :options="disorderOptions"
                             placeholder="Sélectionner le ou les différents troubles"
@@ -135,7 +135,7 @@
             </b-row>
             <b-row>
                 <b-col>
-                    <b-form-group label="Aménagements raisonnables liés au trouble">
+                    <b-form-group label="Aménagements raisonnables liés au trouble" label-cols="3">
                         <multiselect
                             :options="disorderResponseOptions"
                             placeholder="Sélectionner le ou les différents aménagements"
@@ -156,7 +156,7 @@
             </b-row>
             <b-row>
                 <b-col>
-                    <b-form-group label="Aménagements d'horaire">
+                    <b-form-group label="Aménagements d'horaire" label-cols="3">
                         <multiselect
                             :options="scheduleOptions"
                             placeholder="Sélectionner le ou les différents adaptations"
@@ -178,7 +178,7 @@
             </b-row>
             <b-row>
                 <b-col>
-                    <b-btn @click="goals.unshift({})">Ajouter un objectif transversal</b-btn>
+                    <b-btn @click="goals.unshift({id: -1})">Ajouter un objectif transversal</b-btn>
                 </b-col>
             </b-row>
             <b-row>
@@ -257,9 +257,13 @@ export default {
                 centered: true,
             }).then(resp => {
                 if (resp) {
-                    axios.delete('/pia/api/goal/' + app.goals[goalIndex].id + '/', token)
-                    .then(ret => app.goals.splice(goalIndex, 1))
-                    .catch(err => alert(err));
+                    if (app.goals[goalIndex].id >= 0) {
+                        axios.delete('/pia/api/goal/' + app.goals[goalIndex].id + '/', token)
+                        .then(ret => app.goals.splice(goalIndex, 1))
+                        .catch(err => alert(err));
+                    } else {
+                        app.goals.splice(goalIndex, 1);
+                    }
                 }
             })
         },
@@ -389,8 +393,10 @@ export default {
             // Load goals.
             if (this.id) {
                 axios.get('/pia/api/goal/?pia_model=' + this.id)
-                .then(resp => this.goals = resp.data.results);
-            }       
+                .then(resp => {
+                    this.goals = resp.data.results
+                });
+            }
         }
     },
     mounted: function () {

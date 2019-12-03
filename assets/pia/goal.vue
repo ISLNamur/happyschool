@@ -22,87 +22,92 @@
         <b-card>
             <b-form-row>
                 <b-col>
+                    <strong>
                     <b-form inline>
                         Du <b-form-input type="date" v-model="date_start" class="mr-sm-2"></b-form-input>
                         au <b-form-input type="date" v-model="date_end"></b-form-input>
                     </b-form>
+                    </strong>
                 </b-col>
-                <b-col cols="2" align-self="end">
+                <b-col cols="4" align-self="end">
+                    <b-btn @click="toggleExpand" variant="light">{{ expanded ? "Cacher" : "Voir" }}</b-btn>
                     <b-btn @click="$emit('remove')" variant="danger">Supprimer</b-btn>
                 </b-col>
             </b-form-row>
-            <b-form-row>
-                <b-col>
-                    <b-form-group label="Objectif transversal">
-                        <multiselect
-                            :options="crossGoalOptions"
-                            placeholder="Choisisser un ou des objectifs"
-                            tag-placeholder="Ajouter un nouvel objectif"
-                            select-label=""
-                            selected-label="Sélectionné"
-                            deselect-label="Cliquer dessus pour enlever"
-                            v-model="crossGoal"
-                            :showNoOptions="false"
-                            @tag="addCrossGoalTag"
-                            @input="updateAssessment"
-                            label="goal"
-                            track-by="goal"
-                            multiple taggable
+            <b-collapse v-model="expanded" :id="Math.random().toString(36).substring(7)">
+                <b-form-row class="mt-2">
+                    <b-col>
+                        <b-form-group label="Objectif transversal" label-cols="3">
+                            <multiselect
+                                :options="crossGoalOptions"
+                                placeholder="Choisisser un ou des objectifs"
+                                tag-placeholder="Ajouter un nouvel objectif"
+                                select-label=""
+                                selected-label="Sélectionné"
+                                deselect-label="Cliquer dessus pour enlever"
+                                v-model="crossGoal"
+                                :showNoOptions="false"
+                                @tag="addCrossGoalTag"
+                                @input="updateAssessment"
+                                label="goal"
+                                track-by="goal"
+                                multiple taggable
+                                >
+                                <span slot="noResult">Aucun aménagements trouvé.</span>
+                                <span slot="noOptions"></span>
+                            </multiselect>
+                        </b-form-group>
+                    </b-col>
+                </b-form-row>
+                <b-form-row>
+                    <b-col>
+                        <b-form-group label="Aide(s)" label-cols="2">
+                            <quill-editor v-model="givenHelp" :options="editorOptions">
+                            </quill-editor>
+                        </b-form-group>
+                    </b-col>
+                </b-form-row>
+                <b-form-row>
+                    <b-col>
+                        <b-form-group label="Auto-évaluation">
+                            <quill-editor v-model="selfAssessment" :options="editorOptions">
+                            </quill-editor>
+                        </b-form-group>
+                    </b-col>
+                    <b-col>
+                        <b-form-group label="Évaluation">
+                            <multiselect
+                                :options="assessmentOptions"
+                                placeholder="Choisisser une ou des évaluations"
+                                tag-placeholder="Ajouter l'évaluation"
+                                select-label=""
+                                selected-label="Sélectionné"
+                                deselect-label="Cliquer dessus pour enlever"
+                                v-model="assessment"
+                                :showNoOptions="false"
+                                label="assessment"
+                                track-by="id"
+                                >
+                                <span slot="noResult">Aucune évaluation trouvée.</span>
+                                <span slot="noOptions"></span>
+                            </multiselect>
+                        </b-form-group>
+                    </b-col>
+                </b-form-row>
+                <b-row>
+                    <b-col>
+                        <b-btn @click="subGoals.unshift({})" variant="info">Ajouter un objectif de branche</b-btn>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <subgoal v-for="(subgoal, index) in subGoals" :key="subgoal.id" :subgoal="subgoal"
+                            ref="subgoals" class="mt-2" @remove="removeSubGoal(index)"
                             >
-                            <span slot="noResult">Aucun aménagements trouvé.</span>
-                            <span slot="noOptions"></span>
-                        </multiselect>
-                    </b-form-group>
-                </b-col>
-            </b-form-row>
-            <b-form-row>
-                <b-col>
-                    <b-form-group label="Aide(s)">
-                        <quill-editor v-model="givenHelp" :options="editorOptions">
-                        </quill-editor>
-                    </b-form-group>
-                </b-col>
-            </b-form-row>
-            <b-form-row>
-                <b-col>
-                    <b-form-group label="Auto-évaluation">
-                        <quill-editor v-model="selfAssessment" :options="editorOptions">
-                        </quill-editor>
-                    </b-form-group>
-                </b-col>
-                <b-col>
-                    <b-form-group label="Évaluation">
-                        <multiselect
-                            :options="assessmentOptions"
-                            placeholder="Choisisser une ou des évaluations"
-                            tag-placeholder="Ajouter l'évaluation"
-                            select-label=""
-                            selected-label="Sélectionné"
-                            deselect-label="Cliquer dessus pour enlever"
-                            v-model="assessment"
-                            :showNoOptions="false"
-                            label="assessment"
-                            track-by="id"
-                            >
-                            <span slot="noResult">Aucune évaluation trouvée.</span>
-                            <span slot="noOptions"></span>
-                        </multiselect>
-                    </b-form-group>
-                </b-col>
-            </b-form-row>
-            <b-row>
-                <b-col>
-                    <b-btn @click="subGoals.unshift({})" variant="info">Ajouter un objectif de branche</b-btn>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <subgoal v-for="(subgoal, index) in subGoals" :key="subgoal.id" :subgoal="subgoal"
-                        ref="subgoals" class="mt-2" @remove="removeSubGoal(index)"
-                        >
-                    </subgoal>
-                </b-col>
-            </b-row>
+                        </subgoal>
+                    </b-col>
+                </b-row>
+            </b-collapse>
         </b-card>
     </div>
 </template>
@@ -130,6 +135,10 @@ export default {
         pia_model: {
             type: Number,
             default: -1,
+        },
+        showExpanded: {
+            type: Boolean,
+            default: false,
         }
     },
     data: function () {
@@ -157,9 +166,13 @@ export default {
                 placeholder: ""
             },
             subGoals: [],
+            expanded: false,
         }
     },
     methods: {
+        toggleExpand: function () {
+            this.expanded = !this.expanded;
+        },
         removeSubGoal: function (subGoalIndex) {
             let app = this;
             this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer l'objectif de branche ?", {
@@ -168,14 +181,19 @@ export default {
                 centered: true,
             }).then(resp => {
                 if (resp) {
-                    axios.delete('/pia/api/subgoal/' + app.subGoals[subGoalIndex].id + '/', token)
-                    .then(ret => app.subGoals.splice(subGoalIndex, 1))
-                    .catch(err => alert(err));
+                    if (app.pia_model >= 0) {
+                        axios.delete('/pia/api/subgoal/' + app.subGoals[subGoalIndex].id + '/', token)
+                        .then(ret => app.subGoals.splice(subGoalIndex, 1))
+                        .catch(err => alert(err));
+                    } else {
+                        app.subGoals.splice(subGoalIndex, 1);
+                    }
+                    
                 }
             })
         },
         assignGoal: function () {
-            if ('id' in this.goal) {
+            if (this.goal.id >= 0) {
                 this.date_start = this.goal.date_start;
                 this.date_end = this.goal.date_end;
                 this.givenHelp = this.goal.given_help;
@@ -211,9 +229,9 @@ export default {
                     cross_goals: this.crossGoal.length > 0 ? crossGoals.slice(1) : null,
                 }
 
-                const isNew = 'id' in this.goal;
-                const url =  isNew ? '/pia/api/goal/' + this.goal.id + '/' : '/pia/api/goal/';
-                return isNew ? axios.put(url, data, token) : axios.post(url, data, token);
+                const isNew = this.goal.id < 0;
+                const url =  !isNew ? '/pia/api/goal/' + this.goal.id + '/' : '/pia/api/goal/';
+                return !isNew ? axios.put(url, data, token) : axios.post(url, data, token);
             }
         },
         submitSubGoal: function (goalId) {
@@ -224,18 +242,20 @@ export default {
         }
     },
     mounted: function () {
+        if (this.goal.id < 0) this.expanded = true;
+
         const promises = [
             axios.get('/pia/api/cross_goal/'),
             axios.get('/pia/api/assessment/'),
         ];
-        if (this.goal.id) promises.push(axios.get('/pia/api/subgoal/?goal=' + this.goal.id));
+        if (this.goal.id >= 0) promises.push(axios.get('/pia/api/subgoal/?goal=' + this.goal.id));
         Promise.all(promises)
         .then(resps => {
             this.crossGoalOptions = resps[0].data.results;
             this.assessmentAll = resps[1].data.results;
             this.assignGoal();
             this.updateAssessment();
-            if (this.goal.id) this.subGoals = resps[2].data.results;
+            if (this.goal.id >= 0) this.subGoals = resps[2].data.results;
         })
     },
     components: {
