@@ -20,6 +20,7 @@
 <template>
     <div>
         <b-container>
+            <b-btn class="mb-2" @click="$router.go(-1)"> Retour à l'annuaire </b-btn>
             <b-card :title="lastName + ' ' + firstName" no-body>
                 <b-tabs card>
                     <b-tab title="Fiche de l'élève" active>
