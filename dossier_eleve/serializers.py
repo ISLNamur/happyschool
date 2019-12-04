@@ -21,6 +21,7 @@ from rest_framework import serializers
 
 from core.serializers import StudentSerializer
 from .models import *
+from . import views
 
 
 class DossierEleveSettingsSerializer(serializers.ModelSerializer):
@@ -59,6 +60,9 @@ class CasEleveSerializer(serializers.ModelSerializer):
                                                  allow_null=True)
 
     def validate_sanction_decision_id(self, value):
+        # If submit sanction is not enable, ignore validation.
+        if not views.get_settings().enable_submit_sanctions:
+            return value
         if not self.context['request'].user.has_perm('dossier_eleve.ask_sanction'):
             raise serializers.ValidationError("Vous n'avez pas les droits nécessaire pour ajouter/modifier une sanction")
         return value
