@@ -20,7 +20,7 @@
 <template>
     <b-container>
             <b-row>
-                <h3>PIA : Nouveau</h3>
+                <h3>PIA : {{ id ? "Modifier" : "Nouveau" }}</h3>
             </b-row>
             <b-row class="sticky-top p-2 first-line">
                 <b-col>
@@ -53,6 +53,7 @@
                                     label="display"
                                     track-by="matricule"
                                     :showNoOptions="false"
+                                    :disabled="id"
                                     >
                                     <span slot="noResult">Aucun responsable trouvé.</span>
                                     <span slot="noOptions"></span>
