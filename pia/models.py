@@ -42,14 +42,33 @@ class DisorderResponseModel(models.Model):
         return "%s (%s)" % (self.response, self.disorder)
 
 
+class ScheduleAdjustmentModel(models.Model):
+    """Adjustment made in the student's schedule.
+
+    Attributes:
+        schedule_adjustment Description of the schedule adjustment.
+    """
+
+    schedule_adjustment = models.CharField(
+        max_length=200,
+        help_text="Description de l'aménagement horaire"
+        )
+
+
 class PIAModel(models.Model):
+    """Main model for a PIA.
+    A PIA is attached to a student and indenpendant of the student's year.
+    """
+
     student = models.OneToOneField(StudentModel, on_delete=models.CASCADE)
     referent = models.ManyToManyField(ResponsibleModel, related_name="referent")
     sponsor = models.ManyToManyField(ResponsibleModel, related_name="sponsor")
     disorder = models.ManyToManyField(DisorderModel)
     disorder_response = models.ManyToManyField(DisorderResponseModel)
+    schedule_adjustment = models.ManyToManyField(ScheduleAdjustmentModel)
 
     def __str__(self):
+        """String representation of the PIAModel, return the student's description."""
         return str(self.student)
 
 

@@ -113,6 +113,13 @@ class DisorderResponseViewSet(ReadOnlyModelViewSet):
     serializer_class = serializers.DisorderResponseSerializer
 
 
+class ScheduleAdjustmentViewSet(ReadOnlyModelViewSet):
+    """Read only view set for schedule adjustment model."""
+
+    queryset = models.ScheduleAdjustmentModel.objects.all()
+    serializer_class = serializers.ScheduleAdjustmentSerializer
+
+
 class CrossGoalViewSet(ReadOnlyModelViewSet):
     queryset = models.CrossGoalModel.objects.all()
     serializer_class = serializers.CrossGoalSerializer
