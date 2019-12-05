@@ -52,7 +52,7 @@ class ScheduleAdjustmentModel(models.Model):
     schedule_adjustment = models.CharField(
         max_length=200,
         help_text="Description de l'aménagement horaire"
-        )
+    )
 
 
 class PIAModel(models.Model):
@@ -97,10 +97,19 @@ class BranchGoalModel(models.Model):
 
 
 class AssessmentModel(models.Model):
-    assessment = models.CharField(max_length=200)
-    cross_goals = models.ManyToManyField(CrossGoalModel, blank=True)
-    branches = models.ManyToManyField(BranchGoalModel, blank=True)
+    """Assessment model of a goal (cross goal or branch goal).
 
+        Attributes:
+            assessment Description of the assessment.
+    """
+
+    assessment = models.CharField(
+        max_length=200,
+        help_text="Description de l'évaluation."
+    )
+
+    """String representation of the AssessmentModel, return the description of
+    the assessment."""
     def __str__(self):
         return self.assessment
 

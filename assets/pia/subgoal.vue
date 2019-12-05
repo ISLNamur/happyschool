@@ -58,7 +58,6 @@
                             v-model="branchGoal"
                             :showNoOptions="false"
                             @tag="addBranchGoalTag"
-                            @input="updateAssessment"
                             label="goal"
                             track-by="goal"
                             multiple taggable
@@ -144,7 +143,6 @@ export default {
             branchGoal: [],
             givenHelp: "",
             selfAssessment: "",
-            assessmentAll: [],
             assessmentOptions: [],
             assessment: null,
             parentCommitment: "À completer",
@@ -170,7 +168,7 @@ export default {
                 this.givenHelp = this.subgoal.given_help;
                 this.selfAssessment = this.subgoal.self_assessment;
                 this.parentCommitment = this.subgoal.parent_commitment;
-                this.assessment = this.assessmentAll.filter(a => a.id == this.subgoal.assessment)[0];
+                this.assessment = this.assessmentOptions.filter(a => a.id == this.subgoal.assessment)[0];
 
                 const subgoals = this.subgoal.branch_goals.split(";");
                 this.branchGoal = this.branchGoalAll.filter(bg => subgoals.includes(bg.goal));
@@ -183,13 +181,6 @@ export default {
         },
         updateBranchGoal: function (branch) {
             this.branchGoalOptions = this.branchGoalAll.filter(bg => bg.branch == branch.id);
-        },
-        updateAssessment: function () {
-            this.assessmentOptions = this.assessmentAll.filter(a => {
-                if (a.branches.length > 0) return a.branches.includes(this.branch.id);
-
-                return true;
-            });
         },
         submit: function(goalId) {
             const data = {
@@ -219,7 +210,7 @@ export default {
         .then(resps => {
             this.branchOptions = resps[0].data.results;
             this.branchGoalAll = resps[1].data.results;
-            this.assessmentAll = resps[2].data.results;
+            this.assessmentOptions = resps[2].data.results;
 
             this.assignSubgoal();
         });

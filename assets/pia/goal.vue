@@ -48,7 +48,6 @@
                                 v-model="crossGoal"
                                 :showNoOptions="false"
                                 @tag="addCrossGoalTag"
-                                @input="updateAssessment"
                                 label="goal"
                                 track-by="goal"
                                 multiple taggable
@@ -149,7 +148,6 @@ export default {
             crossGoal: [],
             givenHelp: "",
             selfAssessment: "",
-            assessmentAll: [],
             assessmentOptions: [],
             assessment: null,
             editorOptions: {
@@ -198,7 +196,7 @@ export default {
                 this.date_end = this.goal.date_end;
                 this.givenHelp = this.goal.given_help;
                 this.selfAssessment = this.goal.self_assessment;
-                this.assessment = this.assessmentAll.filter(a => a.id == this.goal.assessment)[0];
+                this.assessment = this.assessmentOptions.filter(a => a.id == this.goal.assessment)[0];
 
                 // Assign crossGoals
                 let goals = this.goal.cross_goals.split(";");
@@ -209,12 +207,6 @@ export default {
         },
         addCrossGoalTag: function (tag) {
             this.crossGoal.push({id: -1, goal: tag})
-        },
-        updateAssessment: function () {
-            this.assessmentOptions = this.assessmentAll.filter(a => {
-                // Check intersection between crossGoal.id and assessment.cross_goals.
-                return this.crossGoal.map(x => x.id).filter(g => a.cross_goals.includes(g));
-            });
         },
         submit: function (piaId) {
             if (this.goal) {
@@ -252,9 +244,8 @@ export default {
         Promise.all(promises)
         .then(resps => {
             this.crossGoalOptions = resps[0].data.results;
-            this.assessmentAll = resps[1].data.results;
+            this.assessmentOptions = resps[1].data.results;
             this.assignGoal();
-            this.updateAssessment();
             if (this.goal.id >= 0) this.subGoals = resps[2].data.results;
         })
     },
