@@ -23,6 +23,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMix
 from django.views.generic import TemplateView
 
 from rest_framework.filters import OrderingFilter
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 
 from django_filters import rest_framework as filters
@@ -103,14 +104,21 @@ class SubGoalViewSet(ModelViewSet):
     ordering = ['-datetime_creation']
 
 
+class LargePagination(PageNumberPagination):
+    """A default pagination of 100 items."""
+    page_size = 100
+
+
 class DisorderViewSet(ReadOnlyModelViewSet):
     queryset = models.DisorderModel.objects.all()
     serializer_class = serializers.DisorderSerializer
+    pagination_class = LargePagination
 
 
 class DisorderResponseViewSet(ReadOnlyModelViewSet):
     queryset = models.DisorderResponseModel.objects.all()
     serializer_class = serializers.DisorderResponseSerializer
+    pagination_class = LargePagination
 
 
 class ScheduleAdjustmentViewSet(ReadOnlyModelViewSet):
@@ -118,23 +126,28 @@ class ScheduleAdjustmentViewSet(ReadOnlyModelViewSet):
 
     queryset = models.ScheduleAdjustmentModel.objects.all()
     serializer_class = serializers.ScheduleAdjustmentSerializer
+    pagination_class = LargePagination
 
 
 class CrossGoalViewSet(ReadOnlyModelViewSet):
     queryset = models.CrossGoalModel.objects.all()
     serializer_class = serializers.CrossGoalSerializer
+    pagination_class = LargePagination
 
 
 class AssessmentViewSet(ReadOnlyModelViewSet):
     queryset = models.AssessmentModel.objects.all()
     serializer_class = serializers.AssessmentSerializer
+    pagination_class = LargePagination
 
 
 class BranchViewSet(ReadOnlyModelViewSet):
     queryset = models.BranchModel.objects.all()
     serializer_class = serializers.BranchSerializer
+    pagination_class = LargePagination
 
 
 class BranchGoalViewSet(ReadOnlyModelViewSet):
     queryset = models.BranchGoalModel.objects.all()
     serializer_class = serializers.BranchGoalSerializer
+    pagination_class = LargePagination
