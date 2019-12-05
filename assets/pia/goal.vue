@@ -181,7 +181,7 @@ export default {
                 centered: true,
             }).then(resp => {
                 if (resp) {
-                    if (app.pia_model >= 0) {
+                    if (app.goal.id >= 0) {
                         axios.delete('/pia/api/subgoal/' + app.subGoals[subGoalIndex].id + '/', token)
                         .then(ret => app.subGoals.splice(subGoalIndex, 1))
                         .catch(err => alert(err));
