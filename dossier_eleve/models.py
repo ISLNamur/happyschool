@@ -39,7 +39,8 @@ class DossierEleveSettingsModel(models.Model):
         default=None,
         blank=True,
         help_text="""Permet à un membre du ou des groupes sélectionnés ayant accès qu'à
-        certains niveaux, d'avoir accès à tous les niveaux."""
+        certains niveaux, d'avoir accès à tous les niveaux.
+        """
     )
     dir_allow_visibility_to = models.ManyToManyField(
         Group, default=None, blank=True,
@@ -67,7 +68,7 @@ class DossierEleveSettingsModel(models.Model):
         related_name="coord_force_visibility_to",
         help_text="""Les groupes selectionés auront forcément la visibilité sur les cas venant
         d'un coordonateur. Ne concerne que les groupes 'direction', 'coordonateur',
-        'educateur', 'professeur' et 'pms'.""""
+        'educateur', 'professeur' et 'pms'."""
     )
     educ_allow_visibility_to = models.ManyToManyField(
         Group, default=None, blank=True,
@@ -81,7 +82,7 @@ class DossierEleveSettingsModel(models.Model):
         related_name="educ_force_visibility_to",
         help_text="""Les groupes selectionés auront forcément la visibilité sur les cas venant
         d'un éducateur. Ne concerne que les groupes 'direction', 'coordonateur',
-        'educateur', 'professeur' et 'pms'.""""
+        'educateur', 'professeur' et 'pms'."""
     )
     teacher_allow_visibility_to = models.ManyToManyField(
         Group, default=None, blank=True,
@@ -95,7 +96,7 @@ class DossierEleveSettingsModel(models.Model):
         related_name="teacher_force_visibility_to",
         help_text="""Les groupes selectionés auront forcément la visibilité sur les cas venant
         d'un professeur. Ne concerne que les groupes 'direction', 'coordonateur',
-        'educateur', 'professeur' et 'pms'.""""
+        'educateur', 'professeur' et 'pms'."""
     )
     pms_allow_visibility_to = models.ManyToManyField(
         Group, default=None, blank=True,
@@ -109,7 +110,7 @@ class DossierEleveSettingsModel(models.Model):
         related_name="pms_force_visibility_to",
         help_text="""Les groupes selectionés auront forcément la visibilité sur les cas venant
         du pms. Ne concerne que les groupes 'direction', 'coordonateur',
-        'educateur', 'professeur' et 'pms'.""""
+        'educateur', 'professeur' et 'pms'."""
     )
     enable_submit_sanctions = models.BooleanField(default=True)
     use_school_email = models.BooleanField(default=False)
