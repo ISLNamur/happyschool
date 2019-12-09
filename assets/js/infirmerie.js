@@ -22,45 +22,66 @@ import Vue from 'vue'
 import Vuex from 'vuex';
 Vue.use(Vuex);
 
+import router from '../infirmerie/router.js';
+
+
 import axios from 'axios';
 
 const store = new Vuex.Store({
-  state: {
-    settings: settings,
-    filters: [{
-        filterType: 'activate_ongoing',
-        tag: "Activer",
-        value: true,
-    }],
-  },
-  mutations: {
-      addFilter: function (state, filter) {
-          // If filter is a matricule, remove name filter to avoid conflict.
-          if (filter.filterType === 'matricule_id') {
-              this.commit('removeFilter', 'name');
-          }
+    state: {
+        settings: settings,
+        filters: [{
+            filterType: 'activate_ongoing',
+            tag: "Activer",
+            value: true,
+        }],
+    },
+    mutations: {
+        addFilter: function(state, filter) {
+            // If filter is a matricule, remove name filter to avoid conflict.
+            if (filter.filterType === 'matricule_id') {
+                this.commit('removeFilter', 'name');
+            }
 
-          // Overwrite same filter type.
-          this.commit('removeFilter', filter.filterType);
+            // Overwrite same filter type.
+            this.commit('removeFilter', filter.filterType);
 
-          state.filters.push(filter);
-      },
-      removeFilter: function (state, key) {
-          for (let f in state.filters) {
-              if (state.filters[f].filterType === key) {
-                  state.filters.splice(f, 1);
-                  break;
-              }
-          }
-      },
-  },
+            state.filters.push(filter);
+        },
+        removeFilter: function(state, key) {
+            for (let f in state.filters) {
+                if (state.filters[f].filterType === key) {
+                    state.filters.splice(f, 1);
+                    break;
+                }
+            }
+        },
+    },
 });
 
 import Infirmerie from '../infirmerie/infirmerie.vue';
+import Menu from '../common/menu.vue';
 
 var appelsApp = new Vue({
     el: '#vue-app',
+    data: {
+        menuInfo: {},
+        transitionName: "slide-left",
+    },
     store,
-    template: '<infirmerie/>',
-    components: { Infirmerie },
+    router,
+    template: `
+    <div>
+    <app-menu :menu-info="menuInfo"></app-menu>
+      <transition :name="transitionName" mode="out-in">
+        <router-view></router-view>
+      </transition>
+    </div>`,
+    mounted: function() {
+        this.menuInfo = menu;
+    },
+    components: {
+        'app-menu': Menu,
+    }
+
 })

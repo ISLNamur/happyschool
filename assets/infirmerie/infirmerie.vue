@@ -20,7 +20,6 @@
 <template>
     <div>
         <div class="loading" v-if="!loaded"></div>
-        <app-menu :menu-info="menu"></app-menu>
         <b-container v-if="loaded">
             <b-row>
                 <h2>Infirmerie</h2>
@@ -29,7 +28,7 @@
                 <b-col>
                     <b-form-group>
                         <div>
-                            <b-button variant="outline-success" @click="openModal(false)">
+                            <b-button variant="outline-success" to="/new/">
                                 <icon name="plus" scale="1" color="green"></icon>
                                 Ajouter un malade
                             </b-button>
@@ -47,12 +46,12 @@
             </b-row>
             <b-row>
                 <b-col>
-                        <b-collapse id="filters" v-model=showFilters>
-                            <b-card>
-                                <filters app="infirmerie" model="infirmerie" ref="filters" @update="applyFilter"></filters>
-                            </b-card>
-                        </b-collapse>
-                    </b-col>
+                    <b-collapse id="filters" v-model=showFilters>
+                        <b-card>
+                            <filters app="infirmerie" model="infirmerie" ref="filters" @update="applyFilter"></filters>
+                        </b-card>
+                    </b-collapse>
+                </b-col>
             </b-row>
             <b-pagination class="mt-1" :total-rows="entriesCount" v-model="currentPage" @change="changePage" :per-page="20">
             </b-pagination>
@@ -83,16 +82,16 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import Vue from "vue";
+import BootstrapVue from "bootstrap-vue"
+import "bootstrap-vue/dist/bootstrap-vue.css"
 
 import Info from '../annuaire/info.vue'
 
 import Filters from '../common/filters.vue'
 import Menu from '../common/menu.vue'
 
-import AddPassageModal from './addPassageModal.vue'
+import AddPassage from './addPassage.vue'
 
 import axios from 'axios';
 window.axios = axios;
@@ -144,13 +143,13 @@ export default {
     methods: {
         changePage: function (page) {
             this.currentPage = page;
-	    this.loadEntries();
+	        this.loadEntries();
         },
         openModal: function (sortie) {
             this.$refs.addPassageModal.show(sortie);
         },
         showInfo: function (entry) {
-            this.currentEntry = entry
+            this.currentEntry = entry;
             this.$refs.infoModal.show();
         },
         filterStudent: function (matricule) {
@@ -207,7 +206,7 @@ export default {
         this.applyFilter();
     },
     components: {
-        'add-passage-modal': AddPassageModal,
+        'add-passage': AddPassage,
         'filters': Filters,
         'app-menu': Menu,
         'info': Info,
