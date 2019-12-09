@@ -35,31 +35,88 @@ def unique_file_name(instance, filename):
 
 class DossierEleveSettingsModel(models.Model):
     teachings = models.ManyToManyField(TeachingModel, default=None)
-    all_access = models.ManyToManyField(Group, default=None, blank=True)
-    dir_allow_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
-                                                           related_name="dir_allow_visibility_to")
-    dir_force_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
-                                                           related_name="dir_force_visibility_to")
-    coord_allow_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
-                                                             related_name="coord_allow_visibility_to")
-    coord_force_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
-                                                     related_name="coord_force_visibility_to")
-    educ_allow_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
-                                                          related_name="educ_allow_visibility_to")
-    educ_force_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
-                                                       related_name="educ_force_visibility_to")
-    teacher_allow_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
-                                                      related_name="teacher_allow_visibility_to")
-    teacher_force_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
-                                                      related_name="teacher_force_visibility_to")
-    pms_allow_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
-                                                         related_name="pms_allow_visibility_to")
-    pms_force_visibility_to = models.ManyToManyField(Group, default=None, blank=True,
-                                                         related_name="pms_force_visibility_to")
+    all_access = models.ManyToManyField(Group,
+        default=None,
+        blank=True,
+        help_text="""Permet à un membre du ou des groupes sélectionnés ayant accès qu'à
+        certains niveaux, d'avoir accès à tous les niveaux."""
+    )
+    dir_allow_visibility_to = models.ManyToManyField(
+        Group, default=None, blank=True,
+        related_name="dir_allow_visibility_to",
+        help_text="""La liste des groupes qui seront affichés pour le choix de la visibilité
+        par un membre de la direction. Ne concerne que les groupes 'direction', 'coordonateur',
+        'educateur', 'professeur' et 'pms'."""
+    )
+    dir_force_visibility_to = models.ManyToManyField(
+        Group, default=None, blank=True,
+        related_name="dir_force_visibility_to",
+        help_text="""Les groupes selectionés auront forcément la visibilité sur les cas venant
+        de la direction. Ne concerne que les groupes 'direction', 'coordonateur',
+        'educateur', 'professeur' et 'pms'."""
+    )
+    coord_allow_visibility_to = models.ManyToManyField(
+        Group, default=None, blank=True,
+        related_name="coord_allow_visibility_to",
+        help_text="""La liste des groupes qui seront affichés pour le choix de la visibilité
+        par un membre des coordonateurs. Ne concerne que les groupes 'direction', 'coordonateur',
+        'educateur', 'professeur' et 'pms'."""
+    )
+    coord_force_visibility_to = models.ManyToManyField(
+        Group, default=None, blank=True,
+        related_name="coord_force_visibility_to",
+        help_text="""Les groupes selectionés auront forcément la visibilité sur les cas venant
+        d'un coordonateur. Ne concerne que les groupes 'direction', 'coordonateur',
+        'educateur', 'professeur' et 'pms'.""""
+    )
+    educ_allow_visibility_to = models.ManyToManyField(
+        Group, default=None, blank=True,
+        related_name="educ_allow_visibility_to",
+        help_text="""La liste des groupes qui seront affichés pour le choix de la visibilité
+        par un membre des éducateurs. Ne concerne que les groupes 'direction', 'coordonateur',
+        'educateur', 'professeur' et 'pms'."""
+    )
+    educ_force_visibility_to = models.ManyToManyField(
+        Group, default=None, blank=True,
+        related_name="educ_force_visibility_to",
+        help_text="""Les groupes selectionés auront forcément la visibilité sur les cas venant
+        d'un éducateur. Ne concerne que les groupes 'direction', 'coordonateur',
+        'educateur', 'professeur' et 'pms'.""""
+    )
+    teacher_allow_visibility_to = models.ManyToManyField(
+        Group, default=None, blank=True,
+        related_name="teacher_allow_visibility_to",
+        help_text="""La liste des groupes qui seront affichés pour le choix de la visibilité
+        par un membre des professeurs. Ne concerne que les groupes 'direction', 'coordonateur',
+        'educateur', 'professeur' et 'pms'."""
+    )
+    teacher_force_visibility_to = models.ManyToManyField(
+        Group, default=None, blank=True,
+        related_name="teacher_force_visibility_to",
+        help_text="""Les groupes selectionés auront forcément la visibilité sur les cas venant
+        d'un professeur. Ne concerne que les groupes 'direction', 'coordonateur',
+        'educateur', 'professeur' et 'pms'.""""
+    )
+    pms_allow_visibility_to = models.ManyToManyField(
+        Group, default=None, blank=True,
+        related_name="pms_allow_visibility_to",
+        help_text="""La liste des groupes qui seront affichés pour le choix de la visibilité
+        par un membre du pms. Ne concerne que les groupes 'direction', 'coordonateur',
+        'educateur', 'professeur' et 'pms'."""
+    )
+    pms_force_visibility_to = models.ManyToManyField(
+        Group, default=None, blank=True,
+        related_name="pms_force_visibility_to",
+        help_text="""Les groupes selectionés auront forcément la visibilité sur les cas venant
+        du pms. Ne concerne que les groupes 'direction', 'coordonateur',
+        'educateur', 'professeur' et 'pms'.""""
+    )
     enable_submit_sanctions = models.BooleanField(default=True)
     use_school_email = models.BooleanField(default=False)
-    filter_teacher_entries_by_tenure = models.BooleanField(default=True,
-                                                           help_text="Si activé, seuls les titulaires peuvent voir les cas de leurs élèves.")
+    filter_teacher_entries_by_tenure = models.BooleanField(
+        default=True,
+        help_text="Si activé, seuls les titulaires peuvent voir les cas de leurs élèves."
+    )
 
 
 class InfoEleve(models.Model):
