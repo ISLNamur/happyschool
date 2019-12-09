@@ -35,7 +35,7 @@ class DisorderModel(models.Model):
 
 
 class DisorderResponseModel(models.Model):
-    disorder = models.OneToOneField(DisorderModel, on_delete=models.CASCADE)
+    disorder = models.ForeignKey(DisorderModel, on_delete=models.CASCADE)
     response = models.CharField(max_length=1000)
 
     def __str__(self):
@@ -137,3 +137,25 @@ class SubGoalModel(models.Model):
     parent_commitment = models.CharField(max_length=2000)
     datetime_creation = models.DateTimeField(auto_now_add=True)
     datetime_update = models.DateTimeField(auto_now=True)
+
+
+class ClassCouncilPIAModel(models.Model):
+    """Class council model. A class council happens at a specific
+    date and makes a statement for each branch of the progress and
+    difficulties.
+    """
+
+    pia_model = models.ForeignKey(PIAModel, on_delete=models.CASCADE)
+    date_council = models.DateField()
+    datetime_creation = models.DateTimeField(auto_now_add=True)
+    datetime_update = models.DateTimeField(auto_now=True)
+
+
+class BranchStatementModel(models.Model):
+    """Statement from a class council for a specific branch."""
+
+    class_council = models.ForeignKey(ClassCouncilPIAModel, on_delete=models.CASCADE)
+    branch = models.ForeignKey(BranchModel, on_delete=models.CASCADE)
+    resources = models.CharField(max_length=2000)
+    difficulties = models.CharField(max_length=2000)
+    others = models.CharField(max_length=1000)
