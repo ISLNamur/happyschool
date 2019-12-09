@@ -20,7 +20,7 @@
 <template>
     <b-container>
             <b-row>
-                <h3>PIA : Nouveau</h3>
+                <h3>PIA : {{ id ? "Modifier" : "Nouveau" }}</h3>
             </b-row>
             <b-row class="sticky-top p-2 first-line">
                 <b-col>
@@ -53,6 +53,7 @@
                                     label="display"
                                     track-by="matricule"
                                     :showNoOptions="false"
+                                    :disabled="id"
                                     >
                                     <span slot="noResult">Aucun responsable trouvé.</span>
                                     <span slot="noOptions"></span>
@@ -158,12 +159,14 @@
                 <b-col>
                     <b-form-group label="Aménagements d'horaire" label-cols="3">
                         <multiselect
-                            :options="scheduleOptions"
+                            :options="scheduleAdjustmentOptions"
                             placeholder="Sélectionner le ou les différents adaptations"
                             select-label=""
                             selected-label="Sélectionné"
                             deselect-label="Cliquer dessus pour enlever"
-                            v-model="form.schedule"
+                            v-model="form.schedule_adjustment"
+                            track-by="id"
+                            label="schedule_adjustment"
                             :showNoOptions="false"
                             multiple
                             >
@@ -231,6 +234,10 @@ export default {
             disorderResponseOptions: [],
             scheduleOptions: [],
             disorderResponseAll: [],
+            /**
+             * Available options for schedule adjustment select.
+             */
+            scheduleAdjustmentOptions: [],
             searchId: -1,
             sending: false,
             form: {
@@ -240,7 +247,7 @@ export default {
                 sponsor: [],
                 disorder: [],
                 disorder_response: [],
-                schedule: [],
+                schedule_adjustment: [],
             },
             goals: [],
         }
@@ -319,6 +326,7 @@ export default {
             data.disorder_response = data.disorder_response.map(dr => dr.id);
             data.referent = data.referent.map(r => r.matricule);
             data.sponsor = data.sponsor.map(s => s.matricule);
+            data.schedule_adjustment = data.schedule_adjustment.map(sa => sa.id);
 
             let send = this.id ? axios.put : axios.post;
             let url = '/pia/api/pia/';
@@ -365,6 +373,11 @@ export default {
                 alert(error);
             });
         },
+        /**
+        * Assign record data from a request.
+        * 
+        * @param {Number} newId The id of the record.
+        */
         loadPIA: function (newId) {
             axios.get('/pia/api/pia/' + newId + '/')
             .then(resp => {
@@ -379,14 +392,26 @@ export default {
                 })
                 this.form.disorder = this.disorderOptions.filter(d => resp.data.disorder.includes(d.id));
                 this.form.disorder_response = this.disorderResponseAll.filter(dr => resp.data.disorder_response.includes(dr.id));
+                this.form.schedule_adjustment = this.scheduleAdjustmentOptions.filter(sa => resp.data.schedule_adjustment.includes(sa.id));
             });
         },
+        /**
+         * Initialize the component.
+         * 
+         * It will request options for the select inputs and if editing, call
+         * the retrieval of the current data record (goals included).
+         */
         initApp: function () {
-            const promises = [axios.get('/pia/api/disorder/'), axios.get('/pia/api/disorder_response/')]
+            const promises = [
+                axios.get('/pia/api/disorder/'),
+                axios.get('/pia/api/disorder_response/'),
+                axios.get('/pia/api/schedule_adjustment/')
+            ];
             Promise.all(promises)
             .then(resps => {
                 this.disorderOptions = resps[0].data.results;
                 this.disorderResponseAll = resps[1].data.results;
+                this.scheduleAdjustmentOptions = resps[2].data.results;
                 if (this.id) this.loadPIA(this.id);
             });
 

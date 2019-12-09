@@ -68,6 +68,16 @@ class DisorderResponseSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ScheduleAdjustmentSerializer(serializers.ModelSerializer):
+    """Serializer of a schedule adjustment.
+
+        Expose all field of the model.
+    """
+    class Meta:
+        model = models.ScheduleAdjustmentModel
+        fields = '__all__'
+
+
 class CrossGoalSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.CrossGoalModel

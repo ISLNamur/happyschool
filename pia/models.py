@@ -35,21 +35,40 @@ class DisorderModel(models.Model):
 
 
 class DisorderResponseModel(models.Model):
-    disorder = models.OneToOneField(DisorderModel, on_delete=models.CASCADE)
+    disorder = models.ForeignKey(DisorderModel, on_delete=models.CASCADE)
     response = models.CharField(max_length=1000)
 
     def __str__(self):
         return "%s (%s)" % (self.response, self.disorder)
 
 
+class ScheduleAdjustmentModel(models.Model):
+    """Adjustment made in the student's schedule.
+
+    Attributes:
+        schedule_adjustment Description of the schedule adjustment.
+    """
+
+    schedule_adjustment = models.CharField(
+        max_length=200,
+        help_text="Description de l'aménagement horaire"
+    )
+
+
 class PIAModel(models.Model):
+    """Main model for a PIA.
+    A PIA is attached to a student and indenpendant of the student's year.
+    """
+
     student = models.OneToOneField(StudentModel, on_delete=models.CASCADE)
     referent = models.ManyToManyField(ResponsibleModel, related_name="referent")
     sponsor = models.ManyToManyField(ResponsibleModel, related_name="sponsor")
     disorder = models.ManyToManyField(DisorderModel)
     disorder_response = models.ManyToManyField(DisorderResponseModel)
+    schedule_adjustment = models.ManyToManyField(ScheduleAdjustmentModel)
 
     def __str__(self):
+        """String representation of the PIAModel, return the student's description."""
         return str(self.student)
 
 
@@ -78,10 +97,19 @@ class BranchGoalModel(models.Model):
 
 
 class AssessmentModel(models.Model):
-    assessment = models.CharField(max_length=200)
-    cross_goals = models.ManyToManyField(CrossGoalModel, blank=True)
-    branches = models.ManyToManyField(BranchGoalModel, blank=True)
+    """Assessment model of a goal (cross goal or branch goal).
 
+        Attributes:
+            assessment Description of the assessment.
+    """
+
+    assessment = models.CharField(
+        max_length=200,
+        help_text="Description de l'évaluation."
+    )
+
+    """String representation of the AssessmentModel, return the description of
+    the assessment."""
     def __str__(self):
         return self.assessment
 
@@ -109,3 +137,25 @@ class SubGoalModel(models.Model):
     parent_commitment = models.CharField(max_length=2000)
     datetime_creation = models.DateTimeField(auto_now_add=True)
     datetime_update = models.DateTimeField(auto_now=True)
+
+
+class ClassCouncilPIAModel(models.Model):
+    """Class council model. A class council happens at a specific
+    date and makes a statement for each branch of the progress and
+    difficulties.
+    """
+
+    pia_model = models.ForeignKey(PIAModel, on_delete=models.CASCADE)
+    date_council = models.DateField()
+    datetime_creation = models.DateTimeField(auto_now_add=True)
+    datetime_update = models.DateTimeField(auto_now=True)
+
+
+class BranchStatementModel(models.Model):
+    """Statement from a class council for a specific branch."""
+
+    class_council = models.ForeignKey(ClassCouncilPIAModel, on_delete=models.CASCADE)
+    branch = models.ForeignKey(BranchModel, on_delete=models.CASCADE)
+    resources = models.CharField(max_length=2000)
+    difficulties = models.CharField(max_length=2000)
+    others = models.CharField(max_length=1000)
