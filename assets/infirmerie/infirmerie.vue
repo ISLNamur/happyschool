@@ -28,6 +28,13 @@
                 <b-col>
                     <b-form-group>
                         <div>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+                            <!--change modal to page-->
+=======
+>>>>>>> 1d400d37917c545bde3bf11a1d60884faf3e138a
+>>>>>>> c3c31ee4217ce651e11ecf7dcec712f3bd59d660
                             <b-button variant="outline-success" to="/new/">
                                 <icon name="plus" scale="1" color="green"></icon>
                                 Ajouter un malade
