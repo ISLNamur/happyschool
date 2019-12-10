@@ -80,10 +80,16 @@ class PIAView(LoginRequiredMixin,
         return context
 
 
+class LargePagination(PageNumberPagination):
+    """A default pagination of 100 items."""
+    page_size = 100
+
+
 class PIAViewSet(BaseModelViewSet):
     queryset = models.PIAModel.objects.filter(student__inactive_from__isnull=True)
     serializer_class = serializers.PIASerializer
     username_field = None
+    pagination_class = LargePagination
 
 
 class GoalViewSet(ModelViewSet):
@@ -93,6 +99,7 @@ class GoalViewSet(ModelViewSet):
     filterset_fields = ('pia_model',)
     ordering_fields = ['date_start', 'date_end', 'datetime_creation']
     ordering = ['-date_start']
+    pagination_class = LargePagination
 
 
 class SubGoalViewSet(ModelViewSet):
@@ -102,6 +109,7 @@ class SubGoalViewSet(ModelViewSet):
     filterset_fields = ('goal',)
     ordering_fields = ['datetime_creation']
     ordering = ['-datetime_creation']
+    pagination_class = LargePagination
 
 
 class BranchStatementViewSet(ModelViewSet):
@@ -109,6 +117,7 @@ class BranchStatementViewSet(ModelViewSet):
     serializer_class = serializers.BranchStatementSerializer
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filterset_fields = ('class_council',)
+    pagination_class = LargePagination
 
 
 class ClassCouncilPIAViewSet(ModelViewSet):
@@ -116,11 +125,7 @@ class ClassCouncilPIAViewSet(ModelViewSet):
     serializer_class = serializers.ClassCouncilPIASerializer
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filterset_fields = ('pia_model',)
-
-
-class LargePagination(PageNumberPagination):
-    """A default pagination of 100 items."""
-    page_size = 100
+    pagination_class = LargePagination
 
 
 class DisorderViewSet(ReadOnlyModelViewSet):
