@@ -112,3 +112,25 @@ class SubGoalSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.SubGoalModel
         fields = '__all__'
+
+
+class BranchStatementSerializer(serializers.ModelSerializer):
+    """Serializer of a BranchStatementModel.
+
+    Expose all field of the model.
+    """
+
+    class Meta:
+        model = models.BranchStatementModel
+        fields = '__all__'
+
+
+class ClassCouncilPIASerializer(serializers.ModelSerializer):
+    """Serializer of a class council.
+    
+    Expose all field of the model.
+    """
+
+    class Meta:
+        model = models.ClassCouncilPIAModel
+        fields = '__all__'

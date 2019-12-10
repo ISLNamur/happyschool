@@ -179,12 +179,12 @@ export default {
                 centered: true,
             }).then(resp => {
                 if (resp) {
-                    if (app.goal.id >= 0) {
+                    if (app.goal.id < 0 || !('id' in app.subGoals[subGoalIndex])) {
+                        app.subGoals.splice(subGoalIndex, 1);
+                    } else {
                         axios.delete('/pia/api/subgoal/' + app.subGoals[subGoalIndex].id + '/', token)
                         .then(ret => app.subGoals.splice(subGoalIndex, 1))
                         .catch(err => alert(err));
-                    } else {
-                        app.subGoals.splice(subGoalIndex, 1);
                     }
                     
                 }

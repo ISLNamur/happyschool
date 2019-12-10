@@ -40,5 +40,7 @@ router.register(r'api/branch', views.BranchViewSet)
 router.register(r'api/branch_goal', views.BranchGoalViewSet)
 router.register(r'api/goal', views.GoalViewSet)
 router.register(r'api/subgoal', views.SubGoalViewSet)
+router.register(r'api/class_council', views.ClassCouncilPIAViewSet)
+router.register(r'api/branch_statement', views.BranchStatementViewSet)
 
 urlpatterns += router.urls

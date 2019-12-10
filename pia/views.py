@@ -104,6 +104,20 @@ class SubGoalViewSet(ModelViewSet):
     ordering = ['-datetime_creation']
 
 
+class BranchStatementViewSet(ModelViewSet):
+    queryset = models.BranchStatementModel.objects.all()
+    serializer_class = serializers.BranchStatementSerializer
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
+    filterset_fields = ('class_council',)
+
+
+class ClassCouncilPIAViewSet(ModelViewSet):
+    queryset = models.ClassCouncilPIAModel.objects.all()
+    serializer_class = serializers.ClassCouncilPIASerializer
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
+    filterset_fields = ('pia_model',)
+
+
 class LargePagination(PageNumberPagination):
     """A default pagination of 100 items."""
     page_size = 100

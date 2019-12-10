@@ -53,7 +53,7 @@
                                     label="display"
                                     track-by="matricule"
                                     :showNoOptions="false"
-                                    :disabled="id"
+                                    :disabled="parseInt(id) >= 0"
                                     >
                                     <span slot="noResult">Aucun responsable trouvé.</span>
                                     <span slot="noOptions"></span>
@@ -177,6 +177,21 @@
                 </b-col>
             </b-row>
             <b-row>
+                <h4>Conseil de classe</h4>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <b-btn @click="classCouncil.unshift({id: -1})">Ajouter un conseil de classe</b-btn>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <class-council v-for="(council, index) in classCouncil" :key="council.id" :class_council="council"
+                        ref="councils" class="mt-2" @remove="removeClassCouncil(index)">
+                    </class-council>
+                </b-col>
+            </b-row>
+            <b-row class="mt-2">
                 <h4>Objectifs</h4>
             </b-row>
             <b-row>
@@ -205,6 +220,7 @@ import 'vue-multiselect/dist/vue-multiselect.min.css';
 
 import {getPeopleByName} from '../common/search.js';
 import Goal from './goal.vue';
+import ClassCouncil from './class_council.vue';
 
 const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
 
@@ -234,9 +250,7 @@ export default {
             disorderResponseOptions: [],
             scheduleOptions: [],
             disorderResponseAll: [],
-            /**
-             * Available options for schedule adjustment select.
-             */
+            /** Available options for schedule adjustment select.  */
             scheduleAdjustmentOptions: [],
             searchId: -1,
             sending: false,
@@ -250,6 +264,8 @@ export default {
                 schedule_adjustment: [],
             },
             goals: [],
+            /** List of class council related to this PIA. */
+            classCouncil: [],
         }
     },
     methods: {
@@ -270,6 +286,29 @@ export default {
                         .catch(err => alert(err));
                     } else {
                         app.goals.splice(goalIndex, 1);
+                    }
+                }
+            })
+        },
+        /**
+         * Remove a class council.
+         * 
+         * @param: {String} councilIndex The index of the class council.
+         */
+        removeClassCouncil: function (councilIndex) {
+            let app = this;
+            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer ce conseil de classe ?", {
+                okTitle: 'Oui',
+                cancelTitle: 'Non',
+                centered: true,
+            }).then(resp => {
+                if (resp) {
+                    if (app.classCouncil[councilIndex].id >= 0) {
+                        axios.delete('/pia/api/class_council/' + app.classCouncil[councilIndex].id + '/', token)
+                        .then(ret => app.classCouncil.splice(councilIndex, 1))
+                        .catch(err => alert(err));
+                    } else {
+                        app.classCouncil.splice(councilIndex, 1);
                     }
                 }
             })
@@ -335,40 +374,51 @@ export default {
             .then(resp => {
                 const recordId = resp.data.id;
                 // No goals, no promises.
-                if (this.goals.length == 0) {
+                if (this.goals.length == 0 && this.classCouncil.length == 0) {
                     this.showSuccess(recordId);
                     return;
                 }
 
-                const promises = this.$refs.goals.map(g => g.submit(recordId));
-                Promise.all(promises)
+                const goalPromises = this.$refs.goals.map(g => g.submit(recordId));
+                const classCouncilPromises = this.$refs.councils.map(c => c.submit(recordId));
+                Promise.all(goalPromises.concat(classCouncilPromises))
                 .then(resps => {
                     // Update goals and subgoals component with response.
-                    const subgoalPromises = [];
-                    resps.forEach((r, i) => {
+                    const subPromises = [];
+                    const goalResponses = resps.filter(r => r.config.url.includes("/pia/api/goal/"));
+                    const councilResponses = resps.filter(r => r.config.url.includes("/pia/api/class_council/"));
+
+                    // Get subgoal promises.
+                    goalResponses.forEach((r, i) => {
                         if (!('id' in app.$refs.goals[i])) {
                             app.goals.splice(i, 1, r.data);
-                            subgoalPromises.concat(app.$refs.goals[i].submitSubGoal(app.goals[i].id));
+                            subPromises.concat(app.$refs.goals[i].submitSubGoal(app.goals[i].id));
                         }
                     })
-                    Promise.all(subgoalPromises)
+
+                    // Get branch statement promises.
+                    councilResponses.forEach((r, i) => {
+                        if (!('id' in app.$refs.councils[i])) {
+                            app.classCouncil.splice(i, 1, r.data);
+                            subPromises.concat(app.$refs.councils[i].submitBranchStatement(app.classCouncil[i].id));
+                        }
+                    })
+
+                    Promise.all(subPromises)
                     .then(resps => {
                         this.showSuccess(recordId);
                     })
                     .catch(err => {
-                        console.log('coucou');
                         app.sending = false;
                         alert(err)
                     });
                 })
                 .catch(err => {
-                    console.log('hello');
                     app.sending = false;
                     alert(err);
                 })
 
             }).catch(function (error) {
-                console.log('salut');
                 app.sending = false;
                 alert(error);
             });
@@ -399,7 +449,7 @@ export default {
          * Initialize the component.
          * 
          * It will request options for the select inputs and if editing, call
-         * the retrieval of the current data record (goals included).
+         * the retrieval of the current data record (goals and council included).
          */
         initApp: function () {
             const promises = [
@@ -415,12 +465,16 @@ export default {
                 if (this.id) this.loadPIA(this.id);
             });
 
-            // Load goals.
+            // Load goals and class council.
             if (this.id) {
                 axios.get('/pia/api/goal/?pia_model=' + this.id)
                 .then(resp => {
                     this.goals = resp.data.results
                 });
+                axios.get('/pia/api/class_council/?pia_model=' + this.id)
+                .then(resp => {
+                    this.classCouncil = resp.data.results;
+                })
             }
         }
     },
@@ -429,7 +483,8 @@ export default {
     },
     components: {
         Multiselect,
-        Goal
+        Goal,
+        ClassCouncil,
     }
 }
 </script>
