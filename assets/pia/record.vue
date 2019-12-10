@@ -332,10 +332,21 @@ export default {
                 // this.searching = false;
             })
         },
-        updateDisorderResponse: function () {
+        updateDisorderResponse: function (selected) {
             this.disorderResponseOptions = this.disorderResponseAll.filter(d => {
                 return this.form.disorder.map(x => x.id).includes(d.disorder);
             });
+
+            if (selected.length == 0) return;
+
+            // Append corresponding disorder response.
+            const lastDisorder = selected[selected.length -1];
+            const newDisorderResponse = this.disorderResponseAll.filter(d => {
+                const matchDisorder = d.disorder == lastDisorder.id;
+                const alreadySelected = this.form.disorder_response.map(dr => dr.id).includes(d.id);
+                return matchDisorder && !alreadySelected;
+            });
+            this.form.disorder_response = this.form.disorder_response.concat(newDisorderResponse);
         },
         showSuccess: function (recordId) {
             let app = this;
