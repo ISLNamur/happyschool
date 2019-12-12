@@ -17,16 +17,27 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
+
 import Vue from 'vue';
+import Vuex from 'vuex';
 
-import store from '../dossier_eleve/store.js';
+import {addFilter, removeFilter} from '../common/filters.js';
 
-import DossierEleve from '../dossier_eleve/dossier_eleve.vue';
+Vue.use(Vuex);
 
-var mailNotificationApp = new Vue({
-    el: '#vue-app',
-    data: {},
-    store,
-    template: '<dossier-eleve/>',
-    components: { DossierEleve },
-})
+export default new Vuex.Store({
+    state: {
+      settings: settings,
+      filters: [{
+          filterType: 'scholar_year',
+          tag: currentYear,
+          value: currentYear,
+      }],
+      canSetSanction: canSetSanction,
+      canAskSanction: canAskSanction,
+    },
+    mutations: {
+        addFilter: addFilter,
+        removeFilter: removeFilter,
+    }
+  });
