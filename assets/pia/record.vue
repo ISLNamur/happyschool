@@ -390,8 +390,8 @@ export default {
                     return;
                 }
 
-                const goalPromises = this.$refs.goals.map(g => g.submit(recordId));
-                const classCouncilPromises = this.$refs.councils.map(c => c.submit(recordId));
+                const goalPromises = this.goals.length != 0 ? this.$refs.goals.map(g => g.submit(recordId)) : [];
+                const classCouncilPromises = this.classCouncil.length != 0 ? this.$refs.councils.map(c => c.submit(recordId)) : [];
                 Promise.all(goalPromises.concat(classCouncilPromises))
                 .then(resps => {
                     // Update goals and subgoals component with response.
