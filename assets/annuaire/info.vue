@@ -159,6 +159,14 @@
                                 <b-col cols="2" :class="cas.important ? ' important' : ''">{{ cas.sanction_decision ? cas.sanction_decision.sanction_decision : cas.info.info }}</b-col>
                                 <b-col :class="cas.important ? ' important' : ''"><div v-html="cas.explication_commentaire"></div></b-col>
                             </b-row>
+                            <b-row>
+                                <b-col>
+                                    <b-btn :href="'/dossier_eleve/?matricule=' + matricule ">
+                                        <icon name="eye" scale="1"></icon>
+                                        Voir tous les cas dans le dossier des élèves
+                                    </b-btn>
+                                </b-col>
+                            </b-row>
                         </b-card>
                         <b-card header="Derniers passages à l'infirmerie" class="mt-2" v-if="infirmerie.length > 0">
                             <b-row>
