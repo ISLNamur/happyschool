@@ -215,10 +215,19 @@ export default {
                 this.loaded = true;
             });
         },
+        checkMatriculeFilter: function () {
+            // const fullscreen = window.location.href.includes("matricule");
+            const matricule = (new URL(document.location)).searchParams.get("matricule");
+            if (matricule) {
+                this.$store.commit('addFilter', {filterType: "matricule_id", value: matricule, tag: matricule});
+                this.showFilters = true;
+            }
+        }
     },
     mounted: function () {
         this.menuInfo = menu;
 
+        this.checkMatriculeFilter();
         this.applyFilter();
         this.loadEntries();
 
