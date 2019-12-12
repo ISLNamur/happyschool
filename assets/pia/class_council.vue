@@ -153,6 +153,8 @@ export default {
             .then(resp => {
                 this.branch_statement = resp.data.results;
             })
+        } else {
+            this.expanded = true;
         }
 
         this.assignClassCouncil();
