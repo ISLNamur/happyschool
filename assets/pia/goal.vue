@@ -60,6 +60,14 @@
                 </b-form-row>
                 <b-form-row>
                     <b-col>
+                        <b-form-group label="Indicateur(s)/Action(s)" label-cols="2">
+                            <quill-editor v-model="indicatorAction" :options="editorOptions">
+                            </quill-editor>
+                        </b-form-group>
+                    </b-col>
+                </b-form-row>
+                <b-form-row>
+                    <b-col>
                         <b-form-group label="Aide(s)" label-cols="2">
                             <quill-editor v-model="givenHelp" :options="editorOptions">
                             </quill-editor>
@@ -147,6 +155,7 @@ export default {
             crossGoalOptions: [],
             crossGoal: [],
             givenHelp: "",
+            indicatorAction: "",
             selfAssessment: "",
             assessmentOptions: [],
             assessment: null,
@@ -194,6 +203,7 @@ export default {
             if (this.goal.id >= 0) {
                 this.date_start = this.goal.date_start;
                 this.date_end = this.goal.date_end;
+                this.indicatorAction = this.goal.indicator_action;
                 this.givenHelp = this.goal.given_help;
                 this.selfAssessment = this.goal.self_assessment;
                 this.assessment = this.assessmentOptions.filter(a => a.id == this.goal.assessment)[0];
@@ -215,6 +225,7 @@ export default {
                     pia_model: piaId,
                     date_start: this.date_start,
                     date_end: this.date_end,
+                    indicator_action: this.indicatorAction,
                     given_help: this.givenHelp,
                     self_assessment: this.selfAssessment,
                     assessment: this.assessment.id,

@@ -70,6 +70,14 @@
             </b-form-row>
             <b-form-row>
                 <b-col>
+                    <b-form-group label="Indicateur(s)/Action(s)" label-cols="2">
+                        <quill-editor v-model="indicatorAction" :options="editorOptions">
+                        </quill-editor>
+                    </b-form-group>
+                </b-col>
+            </b-form-row>
+            <b-form-row>
+                <b-col>
                     <b-form-group label="Aide(s)" label-cols="2">
                         <quill-editor v-model="givenHelp" :options="editorOptions">
                         </quill-editor>
@@ -141,6 +149,7 @@ export default {
             branchGoalAll: [],
             branchGoalOptions: [],
             branchGoal: [],
+            indicatorAction: "",
             givenHelp: "",
             selfAssessment: "",
             assessmentOptions: [],
@@ -165,6 +174,7 @@ export default {
         assignSubgoal: function () {
             if ('id' in this.subgoal) {
                 this.branch = this.branchOptions.filter(b => b.id == this.subgoal.branch)[0];
+                this.indicatorAction = this.subgoal.indicator_action;
                 this.givenHelp = this.subgoal.given_help;
                 this.selfAssessment = this.subgoal.self_assessment;
                 this.parentCommitment = this.subgoal.parent_commitment;
@@ -187,6 +197,7 @@ export default {
                 goal: goalId,
                 branch: this.branch.id,
                 branch_goals: this.branchGoal.length > 0 ? this.branchGoal.reduce((acc, bg) => acc + ";" + bg.goal, "").slice(1) : "",
+                indicator_action: this.indicatorAction,
                 given_help: this.givenHelp,
                 self_assessment: this.selfAssessment,
                 assessment: this.assessment.id,
