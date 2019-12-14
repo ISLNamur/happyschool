@@ -25,12 +25,21 @@
             </b-row>
             <b-row>
                 <b-col>
-                    <b-btn variant="success" to="/new">Ajouter un PIA</b-btn>
+                    <b-btn
+                        variant="success"
+                        to="/new"
+                    >
+                        Ajouter un PIA
+                    </b-btn>
                 </b-col>
             </b-row>
             <b-row>
                 <b-col>
-                    <entry v-for="entry in entries" :key="entry.id" :rowData="entry"></entry>
+                    <entry
+                        v-for="entry in entries"
+                        :key="entry.id"
+                        :row-data="entry"
+                    />
                 </b-col>
             </b-row>
         </b-container>
@@ -38,34 +47,34 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
-import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue';
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import Vue from "vue";
+import BootstrapVue from "bootstrap-vue";
+import "bootstrap-vue/dist/bootstrap-vue.css";
 
-import 'vue-awesome/icons'
-import Icon from 'vue-awesome/components/Icon.vue'
+import "vue-awesome/icons";
+import Icon from "vue-awesome/components/Icon.vue";
 
 Vue.use(BootstrapVue);
-Vue.component('icon', Icon);
+Vue.component("icon", Icon);
 
-import Entry from './entry.vue';
+import Entry from "./entry.vue";
 
 export default {
     data: function () {
         return {
             entries: [],
-        }
+        };
     },
     mounted: function () {
-        axios.get('/pia/api/pia/')
-        .then(resp => {
-            this.entries = resp.data.results;
-        });
+        axios.get("/pia/api/pia/")
+            .then(resp => {
+                this.entries = resp.data.results;
+            });
     },
     components: {
         Entry
     }
-}
+};
 </script>

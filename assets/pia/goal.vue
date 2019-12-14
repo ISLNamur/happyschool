@@ -23,21 +23,48 @@
             <b-form-row>
                 <b-col>
                     <strong>
-                    <b-form inline>
-                        Du <b-form-input type="date" v-model="date_start" class="mr-sm-2"></b-form-input>
-                        au <b-form-input type="date" v-model="date_end"></b-form-input>
-                    </b-form>
+                        <b-form inline>
+                            Du<b-form-input
+                                type="date"
+                                v-model="date_start"
+                                class="mr-sm-2 ml-2"
+                            />
+                            au<b-form-input
+                                type="date"
+                                v-model="date_end"
+                                class="ml-2"
+                            />
+                        </b-form>
                     </strong>
                 </b-col>
-                <b-col cols="4" align-self="end">
-                    <b-btn @click="toggleExpand" variant="light">{{ expanded ? "Cacher" : "Voir" }}</b-btn>
-                    <b-btn @click="$emit('remove')" variant="danger">Supprimer</b-btn>
+                <b-col
+                    cols="4"
+                    align-self="end"
+                >
+                    <b-btn
+                        @click="toggleExpand"
+                        variant="light"
+                    >
+                        {{ expanded ? "Cacher" : "Voir" }}
+                    </b-btn>
+                    <b-btn
+                        @click="$emit('remove')"
+                        variant="danger"
+                    >
+                        Supprimer
+                    </b-btn>
                 </b-col>
             </b-form-row>
-            <b-collapse v-model="expanded" :id="Math.random().toString(36).substring(7)">
+            <b-collapse
+                v-model="expanded"
+                :id="Math.random().toString(36).substring(7)"
+            >
                 <b-form-row class="mt-2">
                     <b-col>
-                        <b-form-group label="Objectif transversal" label-cols="3">
+                        <b-form-group
+                            label="Objectif transversal"
+                            label-cols="3"
+                        >
                             <multiselect
                                 :options="crossGoalOptions"
                                 placeholder="Choisisser un ou des objectifs"
@@ -46,39 +73,52 @@
                                 selected-label="Sélectionné"
                                 deselect-label="Cliquer dessus pour enlever"
                                 v-model="crossGoal"
-                                :showNoOptions="false"
+                                :show-no-options="false"
                                 @tag="addCrossGoalTag"
                                 label="goal"
                                 track-by="goal"
-                                multiple taggable
-                                >
+                                multiple
+                                taggable
+                            >
                                 <span slot="noResult">Aucun aménagements trouvé.</span>
-                                <span slot="noOptions"></span>
+                                <span slot="noOptions" />
                             </multiselect>
                         </b-form-group>
                     </b-col>
                 </b-form-row>
                 <b-form-row>
                     <b-col>
-                        <b-form-group label="Indicateur(s)/Action(s)" label-cols="2">
-                            <quill-editor v-model="indicatorAction" :options="editorOptions">
-                            </quill-editor>
+                        <b-form-group
+                            label="Indicateur(s)/Action(s)"
+                            label-cols="2"
+                        >
+                            <quill-editor
+                                v-model="indicatorAction"
+                                :options="editorOptions"
+                            />
                         </b-form-group>
                     </b-col>
                 </b-form-row>
                 <b-form-row>
                     <b-col>
-                        <b-form-group label="Aide(s)" label-cols="2">
-                            <quill-editor v-model="givenHelp" :options="editorOptions">
-                            </quill-editor>
+                        <b-form-group
+                            label="Aide(s)"
+                            label-cols="2"
+                        >
+                            <quill-editor
+                                v-model="givenHelp"
+                                :options="editorOptions"
+                            />
                         </b-form-group>
                     </b-col>
                 </b-form-row>
                 <b-form-row>
                     <b-col>
                         <b-form-group label="Auto-évaluation">
-                            <quill-editor v-model="selfAssessment" :options="editorOptions">
-                            </quill-editor>
+                            <quill-editor
+                                v-model="selfAssessment"
+                                :options="editorOptions"
+                            />
                         </b-form-group>
                     </b-col>
                     <b-col>
@@ -91,27 +131,36 @@
                                 selected-label="Sélectionné"
                                 deselect-label="Cliquer dessus pour enlever"
                                 v-model="assessment"
-                                :showNoOptions="false"
+                                :show-no-options="false"
                                 label="assessment"
                                 track-by="id"
-                                >
+                            >
                                 <span slot="noResult">Aucune évaluation trouvée.</span>
-                                <span slot="noOptions"></span>
+                                <span slot="noOptions" />
                             </multiselect>
                         </b-form-group>
                     </b-col>
                 </b-form-row>
                 <b-row>
                     <b-col>
-                        <b-btn @click="subGoals.unshift({})" variant="info">Ajouter un objectif de branche</b-btn>
+                        <b-btn
+                            @click="subGoals.unshift({})"
+                            variant="info"
+                        >
+                            Ajouter un objectif de branche
+                        </b-btn>
                     </b-col>
                 </b-row>
                 <b-row>
                     <b-col>
-                        <subgoal v-for="(subgoal, index) in subGoals" :key="subgoal.id" :subgoal="subgoal"
-                            ref="subgoals" class="mt-2" @remove="removeSubGoal(index)"
-                            >
-                        </subgoal>
+                        <subgoal
+                            v-for="(subgoal, index) in subGoals"
+                            :key="subgoal.id"
+                            :subgoal="subgoal"
+                            ref="subgoals"
+                            class="mt-2"
+                            @remove="removeSubGoal(index)"
+                        />
                     </b-col>
                 </b-row>
             </b-collapse>
@@ -120,24 +169,24 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
-import Multiselect from 'vue-multiselect';
-import 'vue-multiselect/dist/vue-multiselect.min.css';
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import {quillEditor} from 'vue-quill-editor'
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
+import {quillEditor} from "vue-quill-editor";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
 
-import Subgoal from './subgoal.vue';
+import Subgoal from "./subgoal.vue";
 
-const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
     props: {
         goal: {
             type: Object,
-            default: {},
+            default: () => {},
         },
         pia_model: {
             type: Number,
@@ -162,19 +211,19 @@ export default {
             editorOptions: {
                 modules: {
                     toolbar: [
-                        ['bold', 'italic', 'underline', 'strike'],
-                        ['blockquote'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        [{ 'indent': '-1'}, { 'indent': '+1' }],
-                        [{ 'align': [] }],
-                        ['clean']
+                        ["bold", "italic", "underline", "strike"],
+                        ["blockquote"],
+                        [{ "list": "ordered"}, { "list": "bullet" }],
+                        [{ "indent": "-1"}, { "indent": "+1" }],
+                        [{ "align": [] }],
+                        ["clean"]
                     ]
                 },
                 placeholder: ""
             },
             subGoals: [],
             expanded: false,
-        }
+        };
     },
     methods: {
         toggleExpand: function () {
@@ -183,21 +232,21 @@ export default {
         removeSubGoal: function (subGoalIndex) {
             let app = this;
             this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer l'objectif de branche ?", {
-                okTitle: 'Oui',
-                cancelTitle: 'Non',
+                okTitle: "Oui",
+                cancelTitle: "Non",
                 centered: true,
             }).then(resp => {
                 if (resp) {
-                    if (app.goal.id < 0 || !('id' in app.subGoals[subGoalIndex])) {
+                    if (app.goal.id < 0 || !("id" in app.subGoals[subGoalIndex])) {
                         app.subGoals.splice(subGoalIndex, 1);
                     } else {
-                        axios.delete('/pia/api/subgoal/' + app.subGoals[subGoalIndex].id + '/', token)
-                        .then(ret => app.subGoals.splice(subGoalIndex, 1))
-                        .catch(err => alert(err));
+                        axios.delete("/pia/api/subgoal/" + app.subGoals[subGoalIndex].id + "/", token)
+                            .then(() => app.subGoals.splice(subGoalIndex, 1))
+                            .catch(err => alert(err));
                     }
                     
                 }
-            })
+            });
         },
         assignGoal: function () {
             if (this.goal.id >= 0) {
@@ -216,7 +265,7 @@ export default {
             }
         },
         addCrossGoalTag: function (tag) {
-            this.crossGoal.push({id: -1, goal: tag})
+            this.crossGoal.push({id: -1, goal: tag});
         },
         submit: function (piaId) {
             if (this.goal) {
@@ -230,10 +279,10 @@ export default {
                     self_assessment: this.selfAssessment,
                     assessment: this.assessment.id,
                     cross_goals: this.crossGoal.length > 0 ? crossGoals.slice(1) : null,
-                }
+                };
 
                 const isNew = this.goal.id < 0;
-                const url =  !isNew ? '/pia/api/goal/' + this.goal.id + '/' : '/pia/api/goal/';
+                const url =  !isNew ? "/pia/api/goal/" + this.goal.id + "/" : "/pia/api/goal/";
                 return !isNew ? axios.put(url, data, token) : axios.post(url, data, token);
             }
         },
@@ -248,22 +297,22 @@ export default {
         if (this.goal.id < 0) this.expanded = true;
 
         const promises = [
-            axios.get('/pia/api/cross_goal/'),
-            axios.get('/pia/api/assessment/'),
+            axios.get("/pia/api/cross_goal/"),
+            axios.get("/pia/api/assessment/"),
         ];
-        if (this.goal.id >= 0) promises.push(axios.get('/pia/api/subgoal/?goal=' + this.goal.id));
+        if (this.goal.id >= 0) promises.push(axios.get("/pia/api/subgoal/?goal=" + this.goal.id));
         Promise.all(promises)
-        .then(resps => {
-            this.crossGoalOptions = resps[0].data.results;
-            this.assessmentOptions = resps[1].data.results;
-            this.assignGoal();
-            if (this.goal.id >= 0) this.subGoals = resps[2].data.results;
-        })
+            .then(resps => {
+                this.crossGoalOptions = resps[0].data.results;
+                this.assessmentOptions = resps[1].data.results;
+                this.assignGoal();
+                if (this.goal.id >= 0) this.subGoals = resps[2].data.results;
+            });
     },
     components: {
         Multiselect,
         quillEditor,
         Subgoal,
     }
-}
+};
 </script>

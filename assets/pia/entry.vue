@@ -19,18 +19,46 @@
 
 <template>
     <div>
-        <transition appear name="fade">
-            <b-card class="px-4 mt-2" no-body>
+        <transition
+            appear
+            name="fade"
+        >
+            <b-card
+                class="px-4 mt-2"
+                no-body
+            >
                 <b-row>
                     <b-col>
                         <h5>{{ rowData.student.display }}</h5>
                     </b-col>
                     <b-col sm="2">
                         <div class="text-right">
-                            <b-btn variant="light" size="sm" :to="'/edit/' + rowData.id + '/'"
-                            class="card-link"><icon scale="1.3" name="edit" color="green" class="align-text-bottom"></icon></b-btn>
-                            <b-btn variant="light" size="sm" @click="deleteEntry"
-                            class="card-link"><icon scale="1.3" name="trash" color="red" class="align-text-bottom"></icon></b-btn>
+                            <b-btn
+                                variant="light"
+                                size="sm"
+                                :to="'/edit/' + rowData.id + '/'"
+                                class="card-link"
+                            >
+                                <icon
+                                    scale="1.3"
+                                    name="edit"
+                                    color="green"
+                                    class="align-text-bottom"
+                                />
+                            </b-btn>
+                            <b-btn
+                                variant="light"
+                                size="sm"
+                                @click="deleteEntry"
+                                class="card-link"
+                            >
+                                <icon
+                                    scale="1.3"
+                                    name="trash"
+                                    color="red"
+                                    class="align-text-bottom"
+                                />
+                            </b-btn>
                         </div>
                     </b-col>
                 </b-row>
@@ -40,16 +68,19 @@
 </template>
 
 <script>
-import Moment from 'moment';
-Moment.locale('fr');
+import Moment from "moment";
+Moment.locale("fr");
 
 export default {
     props: {
-        rowData : {type: Object},
+        rowData : {
+            type: Object,
+            default: () => {},
+        } 
     },
     data: function () {
         return {
-        }
+        };
     },
     computed: {
     },
@@ -58,5 +89,5 @@ export default {
             this.$emit("delete");
         }
     }
-}
+};
 </script>

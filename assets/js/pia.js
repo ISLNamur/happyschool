@@ -17,42 +17,43 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue';
+import Vue from "vue";
 
-import Vuex from 'vuex';
+import Vuex from "vuex";
 Vue.use(Vuex);
 
-import store from '../absence_prof/store.js';
-import router from '../pia/router.js';
-import Menu from '../common/menu.vue';
+import store from "../absence_prof/store.js";
+import router from "../pia/router.js";
+import Menu from "../common/menu.vue";
 
 
-var absenceProf = new Vue({
-    el: '#vue-app',
+new Vue({
+    el: "#vue-app",
     data: {
-      menuInfo: {},
-      transitionName: "slide-left",
+        menuInfo: {},
+        transitionName: "slide-left",
     },
     store,
     router,
     template:`
     <div>
-      <app-menu :menu-info="menuInfo"></app-menu>
-      <transition :name="transitionName" mode="out-in">
+        <app-menu :menu-info="menuInfo"></app-menu>
+            <transition :name="transitionName" mode="out-in">
         <router-view></router-view>
-      </transition>
+        </transition>
     </div>`,
     mounted: function () {
-      this.menuInfo = menu;
+        // eslint-disable-next-line no-undef
+        this.menuInfo = menu;
     },
     components: {
-      'app-menu': Menu,
+        "app-menu": Menu,
     },
     watch: {
-      '$route' (to, from) {
-        const toDepth = to.path.split('/').length
-        const fromDepth = from.path.split('/').length
-        this.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
-      }
+        "$route" (to, from) {
+            const toDepth = to.path.split("/").length;
+            const fromDepth = from.path.split("/").length;
+            this.transitionName = toDepth < fromDepth ? "slide-right" : "slide-left";
+        }
     }
-})
+});

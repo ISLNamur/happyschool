@@ -17,29 +17,29 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue';
-import VueRouter from 'vue-router';
+import Vue from "vue";
+import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
-import PIA from '../pia/pia.vue';
-import Record from '../pia/record.vue';
+import PIA from "../pia/pia.vue";
+import Record from "../pia/record.vue";
 
 export default new VueRouter({
     routes: [
-    {
-        path: '',
-        component: PIA,
-    },
-    {
-        path: '/edit/:id/',
-        component: Record,
-        props: true
-    },
-    {
-        path: '/new/',
-        component: Record,
-        props: true
-    },
+        {
+            path: "",
+            component: PIA,
+        },
+        {
+            path: "/edit/:id/",
+            component: Record,
+            props: true
+        },
+        {
+            path: "/new/",
+            component: Record,
+            props: true
+        },
     ]
 });

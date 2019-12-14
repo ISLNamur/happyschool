@@ -22,31 +22,61 @@
         <b-row>
             <b-col>
                 <b-form-row>
-                <b-col>
-                    <strong>
-                    <b-form inline>
-                        Date du conseil de classe <b-form-input type="date" v-model="date_council"></b-form-input>
-                    </b-form>
-                    </strong>
-                </b-col>
-                <b-col cols="4" align-self="end">
-                    <b-btn @click="toggleExpand" variant="light">{{ expanded ? "Cacher" : "Voir" }}</b-btn>
-                    <b-btn @click="$emit('remove')" variant="danger">Supprimer</b-btn>
-                </b-col>
-            </b-form-row>
+                    <b-col>
+                        <strong>
+                            <b-form inline>
+                                Date du conseil de classe
+                                <b-form-input
+                                    type="date"
+                                    v-model="date_council"
+                                    class="ml-1"
+                                />
+                            </b-form>
+                        </strong>
+                    </b-col>
+                    <b-col
+                        cols="4"
+                        align-self="end"
+                    >
+                        <b-btn
+                            @click="toggleExpand"
+                            variant="light"
+                        >
+                            {{ expanded ? "Cacher" : "Voir" }}
+                        </b-btn>
+                        <b-btn
+                            @click="$emit('remove')"
+                            variant="danger"
+                        >
+                            Supprimer
+                        </b-btn>
+                    </b-col>
+                </b-form-row>
             </b-col>
         </b-row>
-        <b-collapse v-model="expanded" :id="Math.random().toString(36).substring(7)">
+        <b-collapse
+            v-model="expanded"
+            :id="Math.random().toString(36).substring(7)"
+        >
             <b-row>
                 <b-col>
-                    <b-btn @click="branch_statement.unshift({})" variant="info">Ajouter une branche</b-btn>
+                    <b-btn
+                        @click="branch_statement.unshift({})"
+                        variant="info"
+                    >
+                        Ajouter une branche
+                    </b-btn>
                 </b-col>
             </b-row>
             <b-row>
                 <b-col>
-                    <branch-statement v-for="(branch, index) in branch_statement" :key="branch.id"
-                        :branch_statement="branch" ref="statements" @remove="removeBranchStatement(index)">
-                    </branch-statement>
+                    <branch-statement
+                        v-for="(branch, index) in branch_statement"
+                        :key="branch.id"
+                        :branch_statement="branch"
+                        ref="statements"
+                        @remove="removeBranchStatement(index)"
+                    />
                 </b-col>
             </b-row>
         </b-collapse>
@@ -54,11 +84,11 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 import BranchStatement from "./branch_statement.vue";
 
-const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 /**
  * Root component for showing class council.
@@ -68,6 +98,7 @@ export default {
         /** class_council data from database (read-only). id is -1 if new. */
         class_council: {
             type: Object,
+            default: () => {},
         },
     },
     data: function () {
@@ -78,7 +109,7 @@ export default {
             branch_statement: [],
             /** State if the list of branch should be shown. */
             expanded: false,
-        }
+        };
     },
     methods: {
         /** Toggle the visibility of the list of branch statement */
@@ -94,11 +125,11 @@ export default {
             const data = {
                 pia_model: piaId,
                 date_council: this.date_council,
-            }
+            };
 
             const isNew = this.class_council.id < 0;
-            let url = '/pia/api/class_council/';
-            if (!isNew) url += this.class_council.id + '/';
+            let url = "/pia/api/class_council/";
+            if (!isNew) url += this.class_council.id + "/";
 
             const send = isNew ? axios.post : axios.put;
             return send(url, data, token);
@@ -130,29 +161,29 @@ export default {
         removeBranchStatement: function (branchStatementIndex) {
             let app = this;
             this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer cette branche ?", {
-                okTitle: 'Oui',
-                cancelTitle: 'Non',
+                okTitle: "Oui",
+                cancelTitle: "Non",
                 centered: true,
             }).then(resp => {
                 if (resp) {
-                    if (app.class_council.id < 0 || !('id' in app.branch_statement[branchStatementIndex])) {
+                    if (app.class_council.id < 0 || !("id" in app.branch_statement[branchStatementIndex])) {
                         app.branch_statement.splice(branchStatementIndex, 1);
                     } else {
-                        axios.delete('/pia/api/branch_statement/' + app.branch_statement[branchStatementIndex].id + '/', token)
-                        .then(ret => app.branch_statement.splice(branchStatementIndex, 1))
-                        .catch(err => alert(err));
+                        axios.delete("/pia/api/branch_statement/" + app.branch_statement[branchStatementIndex].id + "/", token)
+                            .then(() => app.branch_statement.splice(branchStatementIndex, 1))
+                            .catch(err => alert(err));
                     }
                     
                 }
-            })
+            });
         },
     },
     mounted: function () {
         if (this.class_council.id >= 0) {
-            axios.get('/pia/api/branch_statement/?class_council=' + this.class_council.id)
-            .then(resp => {
-                this.branch_statement = resp.data.results;
-            })
+            axios.get("/pia/api/branch_statement/?class_council=" + this.class_council.id)
+                .then(resp => {
+                    this.branch_statement = resp.data.results;
+                });
         } else {
             this.expanded = true;
         }
@@ -162,5 +193,5 @@ export default {
     components: {
         BranchStatement,
     }
-}
+};
 </script>

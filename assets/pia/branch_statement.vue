@@ -23,35 +23,64 @@
             <b-col>
                 <strong>{{ branchStatement ? branchStatement.branch : "" }}</strong>
             </b-col>
-            <b-col cols="2" class="text-right">
-                <b-btn variant="light" size="sm" @click="editing = true"
-                    class="card-link mb-1">
-                    <icon scale="1.3" name="edit" color="green" class="align-text-bottom"></icon>
+            <b-col
+                cols="2"
+                class="text-right"
+            >
+                <b-btn
+                    variant="light"
+                    size="sm"
+                    @click="editing = true"
+                    class="card-link mb-1"
+                >
+                    <icon
+                        scale="1.3"
+                        name="edit"
+                        color="green"
+                        class="align-text-bottom"
+                    />
                 </b-btn>
-                <b-btn variant="light" size="sm" @click="$emit('remove')"
-                    class="card-link">
-                    <icon scale="1.3" name="trash" color="red" class="align-text-bottom"></icon>
+                <b-btn
+                    variant="light"
+                    size="sm"
+                    @click="$emit('remove')"
+                    class="card-link"
+                >
+                    <icon
+                        scale="1.3"
+                        name="trash"
+                        color="red"
+                        class="align-text-bottom"
+                    />
                 </b-btn>
             </b-col>
         </b-row>
         <b-row>
             <b-col>
                 <span class="text-muted">Ressources</span>
-                <div v-html="resources"></div>
+                <div v-html="resources" />
             </b-col>
             <b-col>
                 <span class="text-muted">Difficultés</span>
-                <div v-html="difficulties"></div>
+                <div v-html="difficulties" />
             </b-col>
             <b-col>
                 <span class="text-muted">Autres</span>
-                <div v-html="others"></div>
+                <div v-html="others" />
             </b-col>
         </b-row>
-        <b-modal v-model="editing" size="xl" title="Éditer" ok-only>
+        <b-modal
+            v-model="editing"
+            size="xl"
+            title="Éditer"
+            ok-only
+        >
             <b-form-row>
                 <b-col>
-                    <b-form-group label="Branche" label-cols="2">
+                    <b-form-group
+                        label="Branche"
+                        label-cols="2"
+                    >
                         <multiselect
                             :options="branchOptions"
                             placeholder="Choisisser une branche"
@@ -59,13 +88,18 @@
                             selected-label="Sélectionné"
                             deselect-label="Cliquer dessus pour enlever"
                             v-model="branchStatement"
-                            :showNoOptions="false"
+                            :show-no-options="false"
                             label="branch"
                             track-by="id"
+                        >
+                            <template
+                                slot="singleLabel"
+                                slot-scope="props"
                             >
-                            <template slot="singleLabel" slot-scope="props"><strong>{{ props.option.branch }}</strong></template>
+                                <strong>{{ props.option.branch }}</strong>
+                            </template>
                             <span slot="noResult">Aucune branche trouvée.</span>
-                            <span slot="noOptions"></span>
+                            <span slot="noOptions" />
                         </multiselect>
                     </b-form-group>
                 </b-col>
@@ -73,24 +107,30 @@
             <b-form-row>
                 <b-col>
                     <b-form-group label="Ressources">
-                        <quill-editor v-model="resources" :options="editorOptions">
-                        </quill-editor>
+                        <quill-editor
+                            v-model="resources"
+                            :options="editorOptions"
+                        />
                     </b-form-group>
                 </b-col>
             </b-form-row>
             <b-form-row>
                 <b-col>
                     <b-form-group label="Difficultés">
-                        <quill-editor v-model="difficulties" :options="editorOptions">
-                        </quill-editor>
+                        <quill-editor
+                            v-model="difficulties"
+                            :options="editorOptions"
+                        />
                     </b-form-group>
                 </b-col>
             </b-form-row>
             <b-form-row>
                 <b-col>
                     <b-form-group label="Autres">
-                        <quill-editor v-model="others" :options="editorOptions">
-                        </quill-editor>
+                        <quill-editor
+                            v-model="others"
+                            :options="editorOptions"
+                        />
                     </b-form-group>
                 </b-col>
             </b-form-row>
@@ -99,16 +139,16 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
-import Multiselect from 'vue-multiselect';
-import 'vue-multiselect/dist/vue-multiselect.min.css';
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import {quillEditor} from 'vue-quill-editor'
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
+import {quillEditor} from "vue-quill-editor";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
 
-const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 /**
  * A branch statement from a class council.
@@ -118,6 +158,7 @@ export default {
         /** branch_statement data from database (read-only). */
         branch_statement: {
             type: Object,
+            default: () => {},
         },
     },
     data: function () {
@@ -135,25 +176,25 @@ export default {
             editorOptions: {
                 modules: {
                     toolbar: [
-                        ['bold', 'italic', 'underline', 'strike'],
-                        ['blockquote'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        [{ 'indent': '-1'}, { 'indent': '+1' }],
-                        [{ 'align': [] }],
-                        ['clean']
+                        ["bold", "italic", "underline", "strike"],
+                        ["blockquote"],
+                        [{ "list": "ordered"}, { "list": "bullet" }],
+                        [{ "indent": "-1"}, { "indent": "+1" }],
+                        [{ "align": [] }],
+                        ["clean"]
                     ]
                 },
                 placeholder: ""
             },
-        }
+        };
     },
     methods: {
         initBranchStatement: function () {
-            axios.get('/pia/api/branch/')
-            .then(resp => {
-                this.branchOptions = resp.data.results;
-                this.branchStatement = this.branchOptions.filter(b => b.id == this.branch_statement.branch)[0];
-            });
+            axios.get("/pia/api/branch/")
+                .then(resp => {
+                    this.branchOptions = resp.data.results;
+                    this.branchStatement = this.branchOptions.filter(b => b.id == this.branch_statement.branch)[0];
+                });
             this.resources = this.branch_statement.resources;
             this.difficulties = this.branch_statement.difficulties;
             this.others = this.branch_statement.others;
@@ -169,12 +210,12 @@ export default {
                 resources: this.resources,
                 difficulties: this.difficulties,
                 others: this.others,
-            }
+            };
 
-            let url = '/pia/api/branch_statement/';
-            if ('id' in this.branch_statement) url += this.branch_statement.id + "/";
+            let url = "/pia/api/branch_statement/";
+            if ("id" in this.branch_statement) url += this.branch_statement.id + "/";
 
-            const send = 'id' in this.branch_statement ? axios.put : axios.post;
+            const send = "id" in this.branch_statement ? axios.put : axios.post;
             return send(url, data, token);
         },
     },
@@ -185,5 +226,5 @@ export default {
         quillEditor,
         Multiselect,
     }
-}
+};
 </script>

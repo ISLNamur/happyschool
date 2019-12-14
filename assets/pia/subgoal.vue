@@ -22,7 +22,10 @@
         <b-card bg-variant="light">
             <b-form-row>
                 <b-col>
-                    <b-form-group label="Branche" label-cols="2">
+                    <b-form-group
+                        label="Branche"
+                        label-cols="2"
+                    >
                         <multiselect
                             :options="branchOptions"
                             placeholder="Choisisser une branche"
@@ -30,24 +33,37 @@
                             selected-label="Sélectionné"
                             deselect-label="Cliquer dessus pour enlever"
                             v-model="branch"
-                            :showNoOptions="false"
+                            :show-no-options="false"
                             @input="updateBranchGoal"
                             label="branch"
                             track-by="id"
+                        >
+                            <template
+                                slot="singleLabel"
+                                slot-scope="props"
                             >
-                            <template slot="singleLabel" slot-scope="props"><strong>{{ props.option.branch }}</strong></template>
+                                <strong>{{ props.option.branch }}</strong>
+                            </template>
                             <span slot="noResult">Aucune branche trouvée.</span>
-                            <span slot="noOptions"></span>
+                            <span slot="noOptions" />
                         </multiselect>
                     </b-form-group>
                 </b-col>
                 <b-col cols="2">
-                    <b-btn @click="$emit('remove')" variant="danger">Supprimer</b-btn>
+                    <b-btn
+                        @click="$emit('remove')"
+                        variant="danger"
+                    >
+                        Supprimer
+                    </b-btn>
                 </b-col>
             </b-form-row>
             <b-form-row>
                 <b-col>
-                    <b-form-group label="Objectif spécifique" label-cols="2">
+                    <b-form-group
+                        label="Objectif spécifique"
+                        label-cols="2"
+                    >
                         <multiselect
                             :options="branchGoalOptions"
                             placeholder="Choisisser un ou des objectifs"
@@ -56,39 +72,52 @@
                             selected-label="Sélectionné"
                             deselect-label="Cliquer dessus pour enlever"
                             v-model="branchGoal"
-                            :showNoOptions="false"
+                            :show-no-options="false"
                             @tag="addBranchGoalTag"
                             label="goal"
                             track-by="goal"
-                            multiple taggable
-                            >
+                            multiple
+                            taggable
+                        >
                             <span slot="noResult">Aucun objectif trouvé.</span>
-                            <span slot="noOptions"></span>
+                            <span slot="noOptions" />
                         </multiselect>
                     </b-form-group>
                 </b-col>
             </b-form-row>
             <b-form-row>
                 <b-col>
-                    <b-form-group label="Indicateur(s)/Action(s)" label-cols="2">
-                        <quill-editor v-model="indicatorAction" :options="editorOptions">
-                        </quill-editor>
+                    <b-form-group
+                        label="Indicateur(s)/Action(s)"
+                        label-cols="2"
+                    >
+                        <quill-editor
+                            v-model="indicatorAction"
+                            :options="editorOptions"
+                        />
                     </b-form-group>
                 </b-col>
             </b-form-row>
             <b-form-row>
                 <b-col>
-                    <b-form-group label="Aide(s)" label-cols="2">
-                        <quill-editor v-model="givenHelp" :options="editorOptions">
-                        </quill-editor>
+                    <b-form-group
+                        label="Aide(s)"
+                        label-cols="2"
+                    >
+                        <quill-editor
+                            v-model="givenHelp"
+                            :options="editorOptions"
+                        />
                     </b-form-group>
                 </b-col>
             </b-form-row>
             <b-form-row>
                 <b-col>
                     <b-form-group label="Auto-évaluation">
-                        <quill-editor v-model="selfAssessment" :options="editorOptions">
-                        </quill-editor>
+                        <quill-editor
+                            v-model="selfAssessment"
+                            :options="editorOptions"
+                        />
                     </b-form-group>
                 </b-col>
                 <b-col>
@@ -101,12 +130,12 @@
                             selected-label="Sélectionné"
                             deselect-label="Cliquer dessus pour enlever"
                             v-model="assessment"
-                            :showNoOptions="false"
+                            :show-no-options="false"
                             label="assessment"
                             track-by="id"
-                            >
+                        >
                             <span slot="noResult">Aucune évaluation trouvée.</span>
-                            <span slot="noOptions"></span>
+                            <span slot="noOptions" />
                         </multiselect>
                     </b-form-group>
                 </b-col>
@@ -114,8 +143,10 @@
             <b-form-row>
                 <b-col>
                     <b-form-group label="Aide en engagement des parents">
-                        <quill-editor v-model="parentCommitment" :options="editorOptions">
-                        </quill-editor>
+                        <quill-editor
+                            v-model="parentCommitment"
+                            :options="editorOptions"
+                        />
                     </b-form-group>
                 </b-col>
             </b-form-row>
@@ -124,22 +155,22 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
-import Multiselect from 'vue-multiselect';
-import 'vue-multiselect/dist/vue-multiselect.min.css';
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import {quillEditor} from 'vue-quill-editor'
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
+import {quillEditor} from "vue-quill-editor";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
 
-const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
     props: {
         subgoal: {
             type: Object,
-            default: {},
+            default: () => {},
         },
     },
     data: function () {
@@ -158,21 +189,21 @@ export default {
             editorOptions: {
                 modules: {
                     toolbar: [
-                        ['bold', 'italic', 'underline', 'strike'],
-                        ['blockquote'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        [{ 'indent': '-1'}, { 'indent': '+1' }],
-                        [{ 'align': [] }],
-                        ['clean']
+                        ["bold", "italic", "underline", "strike"],
+                        ["blockquote"],
+                        [{ "list": "ordered"}, { "list": "bullet" }],
+                        [{ "indent": "-1"}, { "indent": "+1" }],
+                        [{ "align": [] }],
+                        ["clean"]
                     ]
                 },
                 placeholder: ""
             },
-        }
+        };
     },
     methods: {
         assignSubgoal: function () {
-            if ('id' in this.subgoal) {
+            if ("id" in this.subgoal) {
                 this.branch = this.branchOptions.filter(b => b.id == this.subgoal.branch)[0];
                 this.indicatorAction = this.subgoal.indicator_action;
                 this.givenHelp = this.subgoal.given_help;
@@ -187,7 +218,7 @@ export default {
             }
         },
         addBranchGoalTag: function (tag) {
-            this.branchGoal.push({id: -1, goal: tag})
+            this.branchGoal.push({id: -1, goal: tag});
         },
         updateBranchGoal: function (branch) {
             this.branchGoalOptions = this.branchGoalAll.filter(bg => bg.branch == branch.id);
@@ -203,32 +234,32 @@ export default {
                 assessment: this.assessment.id,
                 parent_commitment: this.parentCommitment,
             };
-            let url = '/pia/api/subgoal/';
-            if ('id' in this.subgoal) url += this.subgoal.id + '/';
-            if ('id' in this.subgoal) return axios.put(url, data, token);
+            let url = "/pia/api/subgoal/";
+            if ("id" in this.subgoal) url += this.subgoal.id + "/";
+            if ("id" in this.subgoal) return axios.put(url, data, token);
 
             return axios.post(url, data, token);
         },
     },
     mounted: function () {
         const promises = [
-            axios.get('/pia/api/branch/'),
-            axios.get('/pia/api/branch_goal/'),
-            axios.get('/pia/api/assessment/'),
-        ]
+            axios.get("/pia/api/branch/"),
+            axios.get("/pia/api/branch_goal/"),
+            axios.get("/pia/api/assessment/"),
+        ];
 
         Promise.all(promises)
-        .then(resps => {
-            this.branchOptions = resps[0].data.results;
-            this.branchGoalAll = resps[1].data.results;
-            this.assessmentOptions = resps[2].data.results;
+            .then(resps => {
+                this.branchOptions = resps[0].data.results;
+                this.branchGoalAll = resps[1].data.results;
+                this.assessmentOptions = resps[2].data.results;
 
-            this.assignSubgoal();
-        });
+                this.assignSubgoal();
+            });
     },
     components: {
         Multiselect,
         quillEditor,
     }
-}
+};
 </script>
