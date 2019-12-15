@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 ipython = "*"
+flake8 = "*"
 
 [packages]
 django-filter = ">=2.0"
