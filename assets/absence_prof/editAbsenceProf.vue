@@ -19,65 +19,95 @@
 
 <template>
     <b-container>
-            <b-row>
-                <h3>Absence Prof : {{ this.id ? "Modification" : "Ajout" }}</h3>
-            </b-row>
-            <b-row>
-                <b-btn to="/">Retour à la liste des absences</b-btn>
-            </b-row>
-            <b-row>
-                <b-col sm="4">
-                    <b-img rounded :src="`/static/photos_prof/${form.id_person}.jpg`" fluid alt="Photo de la personne" />
-                </b-col>
-                <b-col>
-                    <b-form @submit="submit" @reset="reset">
-                        <b-form-group>
-                            <multiselect
-                                :internal-search="false"
-                                :options="responsibleOptions"
-                                @search-change="getResponsibles"
-                                placeholder="Personne absente"
-                                :loading="searching"
-                                select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
-                                selected-label="Sélectionné"
-                                deselect-label="Cliquer dessus pour enlever"
-                                v-model="person"
-                                label="display"
-                                track-by="matricule"
-                                :showNoOptions="false"
-                                :multiple="!id"
-                                >
-                                <span slot="noResult">Aucun responsable trouvé.</span>
-                                <span slot="noOptions"></span>
-                            </multiselect>
-                        </b-form-group>
-                        <b-form-group>
-                            <b-form-select v-model="form.motif" :options="motifOptions" required></b-form-select>
-                        </b-form-group>
-                        <b-form-group label="Date de début">
-                            <b-form-input v-model="form.date_absence_start" type="date" required
-                                @change="updateEnd"></b-form-input>
-                        </b-form-group>
-                        <b-form-group label="Date de fin">
-                            <b-form-input v-model="form.date_absence_end" type="date" required></b-form-input>
-                        </b-form-group>
-                        <b-form-group label="commentaire">
-                            <b-textarea v-model="form.comment"></b-textarea>
-                        </b-form-group>
-                        <b-button type="submit" variant="primary" :disabled="sending">Soumettre</b-button>
-                    </b-form>
-                </b-col>
-            </b-row>
+        <b-row>
+            <h3>Absence Prof : {{ this.id ? "Modification" : "Ajout" }}</h3>
+        </b-row>
+        <b-row>
+            <b-btn to="/">
+                Retour à la liste des absences
+            </b-btn>
+        </b-row>
+        <b-row>
+            <b-col sm="4">
+                <b-img
+                    rounded
+                    :src="`/static/photos_prof/${form.id_person}.jpg`"
+                    fluid
+                    alt="Photo de la personne"
+                />
+            </b-col>
+            <b-col>
+                <b-form
+                    @submit="submit"
+                    @reset="reset"
+                >
+                    <b-form-group>
+                        <multiselect
+                            :internal-search="false"
+                            :options="responsibleOptions"
+                            @search-change="getResponsibles"
+                            placeholder="Personne absente"
+                            :loading="searching"
+                            select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
+                            selected-label="Sélectionné"
+                            deselect-label="Cliquer dessus pour enlever"
+                            v-model="person"
+                            label="display"
+                            track-by="matricule"
+                            :show-no-options="false"
+                            :multiple="!id"
+                        >
+                            <span slot="noResult">Aucun responsable trouvé.</span>
+                            <span slot="noOptions" />
+                        </multiselect>
+                    </b-form-group>
+                    <b-form-group>
+                        <b-form-select
+                            v-model="form.motif"
+                            :options="motifOptions"
+                            required
+                        />
+                    </b-form-group>
+                    <b-form-group label="Date de début">
+                        <b-form-input
+                            v-model="form.date_absence_start"
+                            type="date"
+                            required
+                            @change="updateEnd"
+                        />
+                    </b-form-group>
+                    <b-form-group label="Date de fin">
+                        <b-form-input
+                            v-model="form.date_absence_end"
+                            type="date"
+                            required
+                        />
+                    </b-form-group>
+                    <b-form-group label="commentaire">
+                        <b-textarea v-model="form.comment" />
+                    </b-form-group>
+                    <b-button
+                        type="submit"
+                        variant="primary"
+                        :disabled="sending"
+                    >
+                        Soumettre
+                    </b-button>
+                </b-form>
+            </b-col>
+        </b-row>
     </b-container>
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect';
-import 'vue-multiselect/dist/vue-multiselect.min.css';
+import axios from "axios";
 
-import {getPeopleByName} from '../common/search.js';
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
 
-const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+import {getPeopleByName} from "../common/search.js";
+
+const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
     props: {
@@ -87,7 +117,7 @@ export default {
         }
     },
     watch: {
-        id: function (newVal, oldVal) {
+        id: function (newVal) {
             if (newVal) {
                 this.loadAbsence(newVal);
             } else {
@@ -111,7 +141,7 @@ export default {
             person: [],
             searchId: -1,
             sending: false,
-        }
+        };
     },
     methods: {
         updateEnd: function (value) {
@@ -119,24 +149,24 @@ export default {
         },
         loadAbsence: function () {
             axios.get(`/absence_prof/api/absence/${this.id}/`, token)
-            .then(resp => {
-                if (resp.data) {
-                    console.log(resp.data);
-                    axios.get(`/annuaire/api/responsible/${resp.data.id_person}/`, token)
-                    .then(resp => {
-                        this.person = [resp.data];
-                    })
-                    this.form.id_person = resp.data.id_person;
-                    this.form.motif = resp.data.motif;
-                    this.form.name = resp.data.name;
-                    this.form.date_absence_start = resp.data.date_absence_start;
-                    this.form.date_absence_end = resp.data.date_absence_end;
-                    this.form.comment = resp.data.comment;
-                }
-            })
-            .catch(err => {
-                alert(err);
-            })
+                .then(resp => {
+                    if (resp.data) {
+                        console.log(resp.data);
+                        axios.get(`/annuaire/api/responsible/${resp.data.id_person}/`, token)
+                            .then(resp => {
+                                this.person = [resp.data];
+                            });
+                        this.form.id_person = resp.data.id_person;
+                        this.form.motif = resp.data.motif;
+                        this.form.name = resp.data.name;
+                        this.form.date_absence_start = resp.data.date_absence_start;
+                        this.form.date_absence_end = resp.data.date_absence_end;
+                        this.form.comment = resp.data.comment;
+                    }
+                })
+                .catch(err => {
+                    alert(err);
+                });
         },
         reset: function () {
 
@@ -145,7 +175,7 @@ export default {
             evt.preventDefault();
 
             this.sending = true;
-            const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
             const promises = [];
             for (let p in this.person) {
@@ -158,53 +188,53 @@ export default {
                 promises.push(send(url, data, token));
             }
             Promise.all(promises)
-            .then(resp => {
-                this.sending = false;
-                this.$router.push('/',() => {
-                    this.$root.$bvToast.toast(`Les données ont bien été envoyées`, {
-                        variant: 'success',
-                        noCloseButton: true,
-                    })
+                .then(() => {
+                    this.sending = false;
+                    this.$router.push("/",() => {
+                        this.$root.$bvToast.toast("Les données ont bien été envoyées", {
+                            variant: "success",
+                            noCloseButton: true,
+                        });
+                    });
+                })
+                .catch(err => {
+                    alert("Une erreur est survenue lors de la soumission : " + err);
+                    this.sending = false;
                 });
-            })
-            .catch(err => {
-                alert("Une erreur est survenue lors de la soumission : " + err);
-                this.sending = false;
-            })
         },
         getResponsibles: function (query) {
             this.searchId += 1;
             let currentSearch = this.searchId;
             this.searching = true;
 
-            getPeopleByName(query, this.$store.state.settings.teachings, 'responsible')
-            .then( (resp) => {
+            getPeopleByName(query, this.$store.state.settings.teachings, "responsible")
+                .then( (resp) => {
                 // Avoid that a previous search overwrites a faster following search results.
-                if (this.searchId !== currentSearch)
-                    return;
-                this.responsibleOptions = resp.data;
-                this.searching = false;
-            })
-            .catch( (err) => {
-                alert(err);
-                this.searching = false;
-            })
+                    if (this.searchId !== currentSearch)
+                        return;
+                    this.responsibleOptions = resp.data;
+                    this.searching = false;
+                })
+                .catch( (err) => {
+                    alert(err);
+                    this.searching = false;
+                });
         }
     },
     mounted: function () {
-        const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-        axios.get('/absence_prof/api/motif/', token)
-        .then(resp => {
-            this.motifOptions = resp.data.results.map(v => {return {value: v.motif, text: v.motif}});
-        })
-        .catch(err => {
-            alert("Unable to get motives");
-        })
+        const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+        axios.get("/absence_prof/api/motif/", token)
+            .then(resp => {
+                this.motifOptions = resp.data.results.map(v => {return {value: v.motif, text: v.motif};});
+            })
+            .catch(() => {
+                alert("Unable to get motives");
+            });
 
         if (this.id) this.loadAbsence();
     },
     components: {
         Multiselect
     }
-}
+};
 </script>

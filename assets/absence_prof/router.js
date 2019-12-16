@@ -17,29 +17,29 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Vue from "vue";
+import VueRouter from "vue-router";
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
-import AbsenceProf from '../absence_prof/absence_prof.vue';
-import EditAbsenceProf from '../absence_prof/editAbsenceProf.vue';
+import AbsenceProf from "../absence_prof/absence_prof.vue";
+import EditAbsenceProf from "../absence_prof/editAbsenceProf.vue";
 
 export default new VueRouter({
     routes: [
         {
-            path: '/',
+            path: "/",
             component: AbsenceProf,
         },
         {
-            path: '/edit/:id/',
+            path: "/edit/:id/",
             component: EditAbsenceProf,
             props: true
         },
         {
-            path: '/new/',
+            path: "/new/",
             component: EditAbsenceProf,
             props: true
         },
-        ]
+    ]
 });

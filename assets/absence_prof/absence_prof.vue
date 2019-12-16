@@ -19,7 +19,10 @@
 
 <template>
     <div>
-        <div class="loading" v-if="!loaded"></div>
+        <div
+            class="loading"
+            v-if="!loaded"
+        />
         <b-container v-if="loaded">
             <b-row>
                 <h2>Absence Prof</h2>
@@ -28,18 +31,37 @@
                 <b-col>
                     <b-form-group>
                         <div>
-                            <b-button variant="outline-success" to="/new/">
-                                <icon name="plus" scale="1" color="green"></icon>
+                            <b-button
+                                variant="outline-success"
+                                to="/new/"
+                            >
+                                <icon
+                                    name="plus"
+                                    scale="1"
+                                    color="green"
+                                />
                                 Ajouter une absence
                             </b-button>
-                            <b-button variant="outline-secondary" v-b-toggle.filters>
-                                <icon name="search" scale="1"></icon>
+                            <b-button
+                                variant="outline-secondary"
+                                v-b-toggle.filters
+                            >
+                                <icon
+                                    name="search"
+                                    scale="1"
+                                />
                                 Ajouter des filtres
                             </b-button>
-                            <b-btn :href="'/absence_prof/list/?ordering=name&page_size=200' + filter" target="_blank">
+                            <b-btn
+                                :href="'/absence_prof/list/?ordering=name&page_size=200' + filter"
+                                target="_blank"
+                            >
                                 Exporter en PDF
                             </b-btn>
-                            <b-button :pressed.sync="active" variant="primary">
+                            <b-button
+                                :pressed.sync="active"
+                                variant="primary"
+                            >
                                 <span v-if="active">Afficher toutes les absences</span>
                                 <span v-else>Afficher absences courantes</span>
                             </b-button>
@@ -49,53 +71,75 @@
             </b-row>
             <b-row>
                 <b-col>
-                        <b-collapse id="filters" v-model=showFilters>
-                            <b-card>
-                                <filters app="absence_prof" model="absence" ref="filters" @update="applyFilter"></filters>
-                            </b-card>
-                        </b-collapse>
-                    </b-col>
+                    <b-collapse
+                        id="filters"
+                        v-model="showFilters"
+                    >
+                        <b-card>
+                            <filters
+                                app="absence_prof"
+                                model="absence"
+                                ref="filters"
+                                @update="applyFilter"
+                            />
+                        </b-card>
+                    </b-collapse>
+                </b-col>
             </b-row>
-            <b-pagination class="mt-1" :total-rows="entriesCount" v-model="currentPage" @change="changePage" :per-page="20">
-            </b-pagination>
+            <b-pagination
+                class="mt-1"
+                :total-rows="entriesCount"
+                v-model="currentPage"
+                @change="changePage"
+                :per-page="20"
+            />
             <absence-prof-entry
                 v-for="entry in entries"
-                v-bind:key="entry.id"
-                v-bind:row-data="entry"
+                :key="entry.id"
+                :row-data="entry"
                 @delete="askDelete(entry)"
                 @edit="editEntry(entry)"
-                >
-            </absence-prof-entry>
+            />
         </b-container>
-        <b-modal ref="deleteModal" cancel-title="Annuler" hide-header centered
-            @ok="deleteEntry" @cancel="currentEntry = null"
-            :no-close-on-backdrop="true" :no-close-on-esc="true">
+        <b-modal
+            ref="deleteModal"
+            cancel-title="Annuler"
+            hide-header
+            centered
+            @ok="deleteEntry"
+            @cancel="currentEntry = null"
+            :no-close-on-backdrop="true"
+            :no-close-on-esc="true"
+        >
             Êtes-vous sûr de vouloir supprimer cette absence ({{ name }}) ?
         </b-modal>
     </div>
 </template>
 
 <script>
-import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue';
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import Vue from "vue";
+import BootstrapVue from "bootstrap-vue";
+import "bootstrap-vue/dist/bootstrap-vue.css";
 
-import Moment from 'moment';
-Moment.locale('fr');
+import Moment from "moment";
+Moment.locale("fr");
 
-import axios from 'axios';
+import axios from "axios";
 window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
-import 'vue-awesome/icons'
-import Icon from 'vue-awesome/components/Icon.vue'
+import "vue-awesome/icons";
+import Icon from "vue-awesome/components/Icon.vue";
 
-import Filters from '../common/filters.vue';
+import Filters from "../common/filters.vue";
 
-import AbsenceProfEntry from './absenceProfEntry.vue';
+import AbsenceProfEntry from "./absenceProfEntry.vue";
 
-Vue.component('icon', Icon);
+Vue.component("icon", Icon);
 Vue.use(BootstrapVue);
+
+const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+
 export default {
     data: function () {
         return {
@@ -109,16 +153,16 @@ export default {
             filter: "",
             ordering: "&ordering=date_absence_start",
             entries: [],
-        }
+        };
     },
     watch: {
         active: function (isActive) {
             if (isActive) {
-                this.$store.commit('addFilter',
-                    {filterType: 'activate_ongoing', tag: "Activer", value: true}
+                this.$store.commit("addFilter",
+                    {filterType: "activate_ongoing", tag: "Activer", value: true}
                 );
             } else {
-                this.$store.commit('removeFilter', 'activate_ongoing');
+                this.$store.commit("removeFilter", "activate_ongoing");
             }
             this.applyFilter();
         }
@@ -140,11 +184,10 @@ export default {
             this.$refs.deleteModal.show();
         },
         deleteEntry: function () {
-            const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-            axios.delete('/absence_prof/api/absence/' + this.currentEntry.id + '/', token)
-            .then(response => {
-                this.loadEntries();
-            });
+            axios.delete("/absence_prof/api/absence/" + this.currentEntry.id + "/", token)
+                .then(() => {
+                    this.loadEntries();
+                });
 
             this.currentEntry = null;
         },
@@ -152,16 +195,16 @@ export default {
             this.currentEntry = entry;
         },
         loadEntries: function () {
-            axios.get('/absence_prof/api/absence/?page_size=20&page=' + this.currentPage + this.filter + this.ordering)
-            .then(response => {
-                this.entries = response.data.results;
-                this.entriesCount = response.data.count;
-                this.loaded = true;
-            })
+            axios.get("/absence_prof/api/absence/?page_size=20&page=" + this.currentPage + this.filter + this.ordering)
+                .then(response => {
+                    this.entries = response.data.results;
+                    this.entriesCount = response.data.count;
+                    this.loaded = true;
+                });
         },
         applyFilter: function () {
             this.filter = "";
-            let storeFilters = this.$store.state.filters
+            let storeFilters = this.$store.state.filters;
             for (let f in storeFilters) {
                 if (storeFilters[f].filterType.startsWith("date")
                     || storeFilters[f].filterType.startsWith("time")) {
@@ -180,10 +223,10 @@ export default {
         this.applyFilter();
     },
     components: {
-        'filters': Filters,
-        'absence-prof-entry': AbsenceProfEntry,
+        "filters": Filters,
+        "absence-prof-entry": AbsenceProfEntry,
     },
-}
+};
 </script>
 
 <style>

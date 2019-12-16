@@ -17,29 +17,25 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue';
-import Vuex from 'vuex';
-import VuexPersistence from 'vuex-persist';
+import Vue from "vue";
+import Vuex from "vuex";
 
 Vue.use(Vuex);
 
-const vuexLocal = new VuexPersistence({
-    storage: window.localStorage,
-})
-
 export default new Vuex.Store({
     state: {
-      settings: settings,
-      filters: [{
-        filterType: 'activate_ongoing',
-        tag: "Activer",
-        value: true,
-      }],
+        // eslint-disable-next-line no-undef
+        settings: settings,
+        filters: [{
+            filterType: "activate_ongoing",
+            tag: "Activer",
+            value: true,
+        }],
     },
     mutations: {
         addFilter: function (state, filter) {
             // Overwrite same filter type.
-            this.commit('removeFilter', filter.filterType);
+            this.commit("removeFilter", filter.filterType);
   
             state.filters.push(filter);
         },
@@ -52,5 +48,4 @@ export default new Vuex.Store({
             }
         },
     },
-    // plugins: [vuexLocal.plugin],
-  });
+});
