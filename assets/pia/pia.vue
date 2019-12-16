@@ -36,9 +36,10 @@
             <b-row>
                 <b-col>
                     <entry
-                        v-for="entry in entries"
+                        v-for="(entry, index) in entries"
                         :key="entry.id"
                         :row-data="entry"
+                        @delete="deleteRecord(index)"
                     />
                 </b-col>
             </b-row>
@@ -61,11 +62,36 @@ Vue.component("icon", Icon);
 
 import Entry from "./entry.vue";
 
+const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+
+/**
+ * The main PIA component. It lists all of the PIA records.
+ */
 export default {
     data: function () {
         return {
             entries: [],
         };
+    },
+    methods: {
+        /**
+         * Delete a PIA record.
+         * 
+         * @param {Number} index Index of the pia entry.
+         */
+        deleteRecord: function (index) {
+            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer ce PIA ?", {
+                okTitle: "Oui",
+                cancelTitle: "Non",
+                centered: true,
+            }).then(resp => {
+                if (resp) {
+                    axios.delete("/pia/api/pia/" + this.entries[index].id + "/", token)
+                        .then(() => this.entries.splice(index, 1))
+                        .catch(err => alert(err));
+                }
+            });
+        }
     },
     mounted: function () {
         axios.get("/pia/api/pia/")
