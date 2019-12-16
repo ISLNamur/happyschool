@@ -35,6 +35,7 @@
                 <b-btn
                     @click="submit"
                     variant="primary"
+                    :disabled="!form.student"
                 >
                     Sauver
                 </b-btn>
@@ -73,7 +74,10 @@
                 </b-form-row>
                 <b-form-row>
                     <b-col md="6">
-                        <b-form-group label="Référent(s)">
+                        <b-form-group
+                            label="Référent(s)"
+                            :state="inputStates.referent"
+                        >
                             <multiselect
                                 id="responsible-0"
                                 :internal-search="false"
@@ -92,10 +96,14 @@
                                 <span slot="noResult">Aucun responsable trouvé.</span>
                                 <span slot="noOptions" />
                             </multiselect>
+                            <span slot="invalid-feedback">{{ errorMsg('referent') }}</span>
                         </b-form-group>
                     </b-col>
                     <b-col>
-                        <b-form-group label="Parrain/Marraine">
+                        <b-form-group
+                            label="Parrain/Marraine"
+                            :state="inputStates.referent"
+                        >
                             <multiselect
                                 id="responsible-1"
                                 :internal-search="false"
@@ -114,6 +122,7 @@
                                 <span slot="noResult">Aucun responsable trouvé.</span>
                                 <span slot="noOptions" />
                             </multiselect>
+                            <span slot="invalid-feedback">{{ errorMsg('sponsor') }}</span>
                         </b-form-group>
                     </b-col>
                 </b-form-row>
@@ -127,6 +136,7 @@
                 <b-form-group
                     label="Trouble d'apprentissage"
                     label-cols="3"
+                    :state="inputStates.disorder"
                 >
                     <multiselect
                         :options="disorderOptions"
@@ -144,6 +154,7 @@
                         <span slot="noResult">Aucun trouble trouvé.</span>
                         <span slot="noOptions" />
                     </multiselect>
+                    <span slot="invalid-feedback">{{ errorMsg('disorder') }}</span>
                 </b-form-group>
             </b-col>
         </b-row>
@@ -152,6 +163,7 @@
                 <b-form-group
                     label="Aménagements raisonnables liés au trouble"
                     label-cols="3"
+                    :state="inputStates.disorder_response"
                 >
                     <multiselect
                         :options="disorderResponseOptions"
@@ -168,6 +180,7 @@
                         <span slot="noResult">Aucun aménagements trouvé.</span>
                         <span slot="noOptions" />
                     </multiselect>
+                    <span slot="invalid-feedback">{{ errorMsg('disorder_response') }}</span>
                 </b-form-group>
             </b-col>
         </b-row>
@@ -176,6 +189,7 @@
                 <b-form-group
                     label="Aménagements d'horaire"
                     label-cols="3"
+                    :state="inputStates.schedule_adjustment"
                 >
                     <multiselect
                         :options="scheduleAdjustmentOptions"
@@ -192,6 +206,7 @@
                         <span slot="noResult">Aucun aménagements trouvé.</span>
                         <span slot="noOptions" />
                     </multiselect>
+                    <span slot="invalid-feedback">{{ errorMsg('schedule_adjustment') }}</span>
                 </b-form-group>
             </b-col>
         </b-row>
@@ -262,17 +277,6 @@ export default {
             default: null,
         }
     },
-    watch: {
-        id: function (newVal) {
-            if (newVal) {
-                // Reset data.
-                Object.assign(this.$data, this.$options.data());
-                this.initApp();
-            } else {
-                this.reset();
-            }
-        },
-    },
     data: function () {
         return {
             responsibleOptions: [],
@@ -297,11 +301,55 @@ export default {
             goals: [],
             /** List of class council related to this PIA. */
             classCouncil: [],
+            errors: {},
+            /** List of input error states. */
+            inputStates: {
+                "student": null,
+                "referent": null,
+                "sponsor": null,
+                "disorder": null,
+                "disorder_response": null,
+                "schedule_adjustment": null
+            },
         };
     },
+    watch: {
+        id: function (newVal) {
+            if (newVal) {
+                // Reset data.
+                Object.assign(this.$data, this.$options.data());
+                this.initApp();
+            } else {
+                this.reset();
+            }
+        },
+        /**
+         * Handle returned errors states.
+         * 
+         * @param {Object} newErrors Errors states with error message.
+         */
+        errors: function (newErrors) {
+            Object.keys(this.inputStates).forEach(key => {
+                if (key in newErrors) {
+                    this.inputStates[key] = newErrors[key].length == 0;
+                } else {
+                    this.inputStates[key] = null;
+                }
+            });
+        },
+    },
     methods: {
-        reset: function () {
-
+        /** 
+         * Assign text error if any.
+         * 
+         * @param {String} err Field name.
+         */
+        errorMsg(err) {
+            if (err in this.errors) {
+                return this.errors[err][0];
+            } else {
+                return "";
+            }
         },
         removeGoal: function (goalIndex) {
             let app = this;
@@ -462,7 +510,7 @@ export default {
 
                 }).catch(function (error) {
                     app.sending = false;
-                    alert(error);
+                    app.errors = error.response.data;
                 });
         },
         /**
