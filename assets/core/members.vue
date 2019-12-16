@@ -19,128 +19,248 @@
 
 <template>
     <div>
-        <app-menu :menu-info="menuInfo"></app-menu>
+        <app-menu :menu-info="menuInfo" />
         <b-container v-cloak>
             <h1>Gestion du personnels</h1>
             <b-row>
                 <p class="card-text mb-2 ml-3">
-                    <b-btn v-b-modal.addGroupModal variant="primary">
-                        <icon name="plus" scale="1"></icon>
+                    <b-btn
+                        v-b-modal.addGroupModal
+                        variant="primary"
+                    >
+                        <icon
+                            name="plus"
+                            scale="1"
+                        />
                         Ajouter un groupe
                     </b-btn>
                 </p>
             </b-row>
             <b-row>
                 <b-col>
-                <b-card-group columns>
-                    <b-card header="<b>Secrétaires</b>">
-                        <b-list-group>
-                            <b-list-group-item  v-for="item in secretary" :key="item.pk">
-                                {{ item.last_name }} {{ item.first_name }}
-                            </b-list-group-item>
-                        </b-list-group>
-                    </b-card>
-                    <b-card>
-                        <div slot="header">
-                            <b>Autres personnels</b>
-                                <icon id="others-info" name="info-circle" color="blue" scale="1"></icon>
-                            <b-tooltip target="others-info" title="Personnes responsables"></b-tooltip>
-                        </div>
-                        <b-list-group>
-                            <b-list-group-item v-for="item in others" :key="item.pk"
-                                class="d-flex justify-content-between align-items-center"
-                                v-b-popover.hover="item.email">
-                                {{ item.last_name }} {{ item.first_name }}
-                                <div>
-                                    <b-btn v-b-modal.addModal variant="light"
-                                        @click="fillModal(item)">
-                                        <icon name="edit" scale="1" color="green"></icon>
-                                    </b-btn>
-                                    <b-btn v-b-modal.deleteModal variant="light"
-                                        class="card-link" @click="currentItem = item">
-                                        <icon name="remove" scale="1" color="red"></icon>
-                                    </b-btn>
-                                </div>
-                            </b-list-group-item>
-                        </b-list-group>
-                        <p class="card-text mt-2">
-                            <b-btn v-b-modal.addModal variant="light">
-                                <icon name="plus" scale="1" color="green"></icon>
-                                Ajouter
-                            </b-btn>
-                        </p>
-                    </b-card>
-                    <b-card v-for="g in groups" :key="g.id">
-                        <div slot="header">
-                            <b>{{ g.name }}</b>
-                            <b-btn v-b-modal.deleteGroupModal variant="light"
-                            class="card-link" @click="currentGroup = g">
-                                <icon name="remove" scale="1" color="red"></icon>
-                            </b-btn>
-                        </div>
-                        <b-list-group>
-                            <b-list-group-item  v-for="p in otherEmails[g.id]" :key="p.id" v-b-popover.hover="p.email"
-                                class="d-flex justify-content-between align-items-center">
-                                {{ p.last_name }} {{ p.first_name }}
-                                <div>
-                                    <b-btn v-b-modal.addModal variant="light"
-                                        @click="fillModal(p)">
-                                        <icon name="edit" scale="1" color="green"></icon>
-                                    </b-btn>
-                                    <b-btn v-b-modal.deleteModal variant="light"
-                                        class="card-link" @click="currentItem = p">
-                                        <icon name="remove" scale="1" color="red"></icon>
-                                    </b-btn>
-                                </div>
-                            </b-list-group-item>
-                        </b-list-group>
-                        <p class="card-text mt-2">
-                            <b-btn v-b-modal.addModal variant="light" @click="group = g.id">
-                                <icon name="plus" scale="1" color="green"></icon>
-                                Ajouter
-                            </b-btn>
-                        </p>
-                    </b-card>
-                </b-card-group>
-            </b-col>
+                    <b-card-group columns>
+                        <b-card header="<b>Secrétaires</b>">
+                            <b-list-group>
+                                <b-list-group-item
+                                    v-for="item in secretary"
+                                    :key="item.pk"
+                                >
+                                    {{ item.last_name }} {{ item.first_name }}
+                                </b-list-group-item>
+                            </b-list-group>
+                        </b-card>
+                        <b-card>
+                            <div slot="header">
+                                <b>Autres personnels</b>
+                                <icon
+                                    id="others-info"
+                                    name="info-circle"
+                                    color="blue"
+                                    scale="1"
+                                />
+                                <b-tooltip
+                                    target="others-info"
+                                    title="Personnes responsables"
+                                />
+                            </div>
+                            <b-list-group>
+                                <b-list-group-item
+                                    v-for="item in others"
+                                    :key="item.pk"
+                                    class="d-flex justify-content-between align-items-center"
+                                    v-b-popover.hover="item.email"
+                                >
+                                    {{ item.last_name }} {{ item.first_name }}
+                                    <div>
+                                        <b-btn
+                                            v-b-modal.addModal
+                                            variant="light"
+                                            @click="fillModal(item)"
+                                        >
+                                            <icon
+                                                name="edit"
+                                                scale="1"
+                                                color="green"
+                                            />
+                                        </b-btn>
+                                        <b-btn
+                                            v-b-modal.deleteModal
+                                            variant="light"
+                                            class="card-link"
+                                            @click="currentItem = item"
+                                        >
+                                            <icon
+                                                name="remove"
+                                                scale="1"
+                                                color="red"
+                                            />
+                                        </b-btn>
+                                    </div>
+                                </b-list-group-item>
+                            </b-list-group>
+                            <p class="card-text mt-2">
+                                <b-btn
+                                    v-b-modal.addModal
+                                    variant="light"
+                                >
+                                    <icon
+                                        name="plus"
+                                        scale="1"
+                                        color="green"
+                                    />
+                                    Ajouter
+                                </b-btn>
+                            </p>
+                        </b-card>
+                        <b-card
+                            v-for="g in groups"
+                            :key="g.id"
+                        >
+                            <div slot="header">
+                                <b>{{ g.name }}</b>
+                                <b-btn
+                                    v-b-modal.deleteGroupModal
+                                    variant="light"
+                                    class="card-link"
+                                    @click="currentGroup = g"
+                                >
+                                    <icon
+                                        name="remove"
+                                        scale="1"
+                                        color="red"
+                                    />
+                                </b-btn>
+                            </div>
+                            <b-list-group>
+                                <b-list-group-item
+                                    v-for="p in otherEmails[g.id]"
+                                    :key="p.id"
+                                    v-b-popover.hover="p.email"
+                                    class="d-flex justify-content-between align-items-center"
+                                >
+                                    {{ p.last_name }} {{ p.first_name }}
+                                    <div>
+                                        <b-btn
+                                            v-b-modal.addModal
+                                            variant="light"
+                                            @click="fillModal(p)"
+                                        >
+                                            <icon
+                                                name="edit"
+                                                scale="1"
+                                                color="green"
+                                            />
+                                        </b-btn>
+                                        <b-btn
+                                            v-b-modal.deleteModal
+                                            variant="light"
+                                            class="card-link"
+                                            @click="currentItem = p"
+                                        >
+                                            <icon
+                                                name="remove"
+                                                scale="1"
+                                                color="red"
+                                            />
+                                        </b-btn>
+                                    </div>
+                                </b-list-group-item>
+                            </b-list-group>
+                            <p class="card-text mt-2">
+                                <b-btn
+                                    v-b-modal.addModal
+                                    variant="light"
+                                    @click="group = g.id"
+                                >
+                                    <icon
+                                        name="plus"
+                                        scale="1"
+                                        color="green"
+                                    />
+                                    Ajouter
+                                </b-btn>
+                            </p>
+                        </b-card>
+                    </b-card-group>
+                </b-col>
             </b-row>
         </b-container>
-        <b-modal id="deleteModal" cancel-title="Annuler" hide-header centered v-on:ok="deleteCoreEntry">
+        <b-modal
+            id="deleteModal"
+            cancel-title="Annuler"
+            hide-header
+            centered
+            @ok="deleteCoreEntry"
+        >
             Êtes-vous sûr de vouloir supprimer {{ currentItem.last_name }} {{ currentItem.first_name }} ?
         </b-modal>
-        <b-modal id="deleteGroupModal" cancel-title="Annuler" hide-header centered v-on:ok="deleteGroup">
+        <b-modal
+            id="deleteGroupModal"
+            cancel-title="Annuler"
+            hide-header
+            centered
+            @ok="deleteGroup"
+        >
             Êtes-vous sûr de vouloir supprimer {{ currentGroup.name }} ?
         </b-modal>
-        <b-modal id="addGroupModal" ref="addGroupModal" cancel-title="Annuler"
+        <b-modal
+            id="addGroupModal"
+            ref="addGroupModal"
+            cancel-title="Annuler"
             title="Ajouter un groupe"
             centered
-            @ok="addGroup" @hidden="resetGroupModal">
+            @ok="addGroup"
+            @hidden="resetGroupModal"
+        >
             <b-form>
-                <b-form-input type="text" v-model="groupName" placeholder="Nom du groupe"></b-form-input>
+                <b-form-input
+                    type="text"
+                    v-model="groupName"
+                    placeholder="Nom du groupe"
+                />
             </b-form>
         </b-modal>
-        <b-modal id="addModal" ref="addModal"
-                cancel-title="Annuler"
-                title="Ajouter une personne"
-                ok-title="Ajouter"
-                centered
-                @ok="addEntry" @hidden="resetModal">
+        <b-modal
+            id="addModal"
+            ref="addModal"
+            cancel-title="Annuler"
+            title="Ajouter une personne"
+            ok-title="Ajouter"
+            centered
+            @ok="addEntry"
+            @hidden="resetModal"
+        >
             <form>
-                <b-form-input type="text" v-model="last_name" placeholder="Nom"
-                    id="last_name" aria-describedby="lastNameFeedback"
-                    :state="inputStates.last_name"></b-form-input>
+                <b-form-input
+                    type="text"
+                    v-model="last_name"
+                    placeholder="Nom"
+                    id="last_name"
+                    aria-describedby="lastNameFeedback"
+                    :state="inputStates.last_name"
+                />
                 <b-form-invalid-feedback id="lastNameFeedback">
                     {{ errorMsg('last_name') }}
                 </b-form-invalid-feedback>
-                <b-form-input type="text" v-model="first_name" placeholder="Prénom"
-                    id="first_name" aria-describedby="firstNameFeedback"
-                    :state="inputStates.first_name"></b-form-input>
+                <b-form-input
+                    type="text"
+                    v-model="first_name"
+                    placeholder="Prénom"
+                    id="first_name"
+                    aria-describedby="firstNameFeedback"
+                    :state="inputStates.first_name"
+                />
                 <b-form-invalid-feedback id="firstNameFeedback">
                     {{ errorMsg('first_name') }}
                 </b-form-invalid-feedback>
-                <b-form-input type="email" v-model="email" placeholder="Email"
-                    id="email" aria-describedby="emailFeedback"
-                    :state="inputStates.email"></b-form-input>
+                <b-form-input
+                    type="email"
+                    v-model="email"
+                    placeholder="Email"
+                    id="email"
+                    aria-describedby="emailFeedback"
+                    :state="inputStates.email"
+                />
                 <b-form-invalid-feedback id="emailFeedback">
                     {{ errorMsg('email') }}
                 </b-form-invalid-feedback>
@@ -150,19 +270,19 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import BootstrapVue from 'bootstrap-vue'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import Vue from "vue";
+import BootstrapVue from "bootstrap-vue";
+import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 
-import axios from 'axios';
+import axios from "axios";
 
-import 'vue-awesome/icons'
-import Icon from 'vue-awesome/components/Icon.vue'
+import "vue-awesome/icons";
+import Icon from "vue-awesome/components/Icon.vue";
 
-Vue.component('icon', Icon);
+Vue.component("icon", Icon);
 
-import Menu from '../common/menu.vue';
+import Menu from "../common/menu.vue";
 
 export default {
     data: function () {
@@ -187,11 +307,11 @@ export default {
                 first_name: null,
             },
             mail_notification: true,
-        }
+        };
     },
     watch: {
-        errors: function (newErrors, oldErrors) {
-            let inputs = ['email', 'last_name', 'first_name'];
+        errors: function (newErrors) {
+            let inputs = ["email", "last_name", "first_name"];
             for (let u in inputs) {
                 if (inputs[u] in newErrors) {
                     this.inputStates[inputs[u]] = newErrors[inputs[u]].length == 0;
@@ -213,8 +333,8 @@ export default {
             this.last_name = item.last_name;
             this.first_name = item.first_name;
             this.email = item.email;
-            this.pk = 'group' in item ? item.id : item.pk;
-            if ('group' in item) {
+            this.pk = "group" in item ? item.id : item.pk;
+            if ("group" in item) {
                 this.group = item.group;
             }
         },
@@ -230,77 +350,77 @@ export default {
         },
         loadCorePeople(personType) {
             // Load person type.
-            let param = { 'person_type': personType };
+            let param = { "person_type": personType };
             axios.get("/core/api/members", {params: param})
-            .then(response => {
-                this[personType] = response.data.results;
-            });
+                .then(response => {
+                    this[personType] = response.data.results;
+                });
         },
         loadOtherPeople() {
-            axios.get('/mail_notification/api/other_email/')
-            .then(response => {
-                for (let g in this.groups) {
-                    let id = this.groups[g].id;
-                    let results = response.data.results.filter(e => e.group === id);
-                    // So we are sure vue knows that the list changed.
-                    Vue.set(this.otherEmails, id, results);
-                }
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+            axios.get("/mail_notification/api/other_email/")
+                .then(response => {
+                    for (let g in this.groups) {
+                        let id = this.groups[g].id;
+                        let results = response.data.results.filter(e => e.group === id);
+                        // So we are sure vue knows that the list changed.
+                        Vue.set(this.otherEmails, id, results);
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
         },
         loadGroups() {
             axios.get("/mail_notification/api/other_email_group/")
-            .then(response => {
-                this.groups = response.data.results;
-                this.loadOtherPeople();
-            });
+                .then(response => {
+                    this.groups = response.data.results;
+                    this.loadOtherPeople();
+                });
         },
         deleteCoreEntry() {
-            let token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-            let isCore = !('group' in this.currentItem);
-            let path = isCore ? '/core/api/members/' : '/mail_notification/api/other_email/';
+            let token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            let isCore = !("group" in this.currentItem);
+            let path = isCore ? "/core/api/members/" : "/mail_notification/api/other_email/";
             let id = isCore ? this.currentItem.pk : this.currentItem.id;
             axios.delete(path + id, token)
-            .then(response => {
-                if (isCore) {
-                    this.loadCorePeople('others');
-                } else {
-                    this.loadOtherPeople();
-                }
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+                .then(() => {
+                    if (isCore) {
+                        this.loadCorePeople("others");
+                    } else {
+                        this.loadOtherPeople();
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
         },
         deleteGroup() {
-            let token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-            let path = '/mail_notification/api/other_email_group/' + this.currentGroup.id + '/';
+            let token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            let path = "/mail_notification/api/other_email_group/" + this.currentGroup.id + "/";
             axios.delete(path, token)
-            .then(response => {
-                this.loadGroups();
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+                .then(() => {
+                    this.loadGroups();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
         },
         addGroup(evt) {
             evt.preventDefault();
 
-            let token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            let token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             let data = {name: this.groupName};
-            axios.post('/mail_notification/api/other_email_group/', data, token)
-            .then(response => {
-                let id = response.data.id;
-                this.groups.push({'id': id, 'name': this.groupName});
-                this.resetGroupModal();
+            axios.post("/mail_notification/api/other_email_group/", data, token)
+                .then(response => {
+                    let id = response.data.id;
+                    this.groups.push({"id": id, "name": this.groupName});
+                    this.resetGroupModal();
 
-                this.$refs.addGroupModal.hide();
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+                    this.$refs.addGroupModal.hide();
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
         },
         addEntry(evt) {
             evt.preventDefault();
@@ -318,30 +438,31 @@ export default {
             // Check if this is a modification.
             if (this.pk) path += this.pk.toString() + "/";
 
-            let token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            let token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             let send = this.pk ? axios.put(path, data, token) : axios.post(path, data, token);
-            send.then(response => {
+            send.then(() => {
                 // Reload custom groups.
-                if ('group' in data) {
+                if ("group" in data) {
                     this.loadOtherPeople();
                 } else {
                     // Reload people list.
-                    this.loadCorePeople('others');
+                    this.loadCorePeople("others");
                 }
                 // Reset errors if any.
                 this.errors = {};
                 this.$refs.addModal.hide();
             })
-            .catch(function (error) {
-                app.errors = error.response.data;
-            });
+                .catch(function (error) {
+                    app.errors = error.response.data;
+                });
         }
     },
     mounted: function () {
+        // eslint-disable-next-line no-undef
         this.menuInfo = menu;
         // Load people.
-        this.loadCorePeople('secretary');
-        this.loadCorePeople('others');
+        this.loadCorePeople("secretary");
+        this.loadCorePeople("others");
 
         // Load other people (non core) if mail notification is enabled.
         if (!this.mail_notification) return;
@@ -349,9 +470,9 @@ export default {
         this.loadGroups();
     },
     components: {
-        'app-menu': Menu,
+        "app-menu": Menu,
     }
-}
+};
 </script>
 
 <style>

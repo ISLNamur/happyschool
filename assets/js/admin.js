@@ -17,68 +17,63 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue';
+import Vue from "vue";
 
-import Vuex from 'vuex';
+import Vuex from "vuex";
 Vue.use(Vuex);
 
-import VueRouter from 'vue-router'
-Vue.use(VueRouter)
+import VueRouter from "vue-router";
+Vue.use(VueRouter);
 
-import Admin from '../core/admin.vue';
-import Import from '../core/import.vue';
-import GeneralSettings from '../core/general_settings.vue';
-import Photos from '../core/photos.vue';
-import Update from '../core/update.vue';
-import Menu from '../common/menu.vue';
+import Admin from "../core/admin.vue";
+import Import from "../core/import.vue";
+import GeneralSettings from "../core/general_settings.vue";
+import Photos from "../core/photos.vue";
+import Update from "../core/update.vue";
+import Menu from "../common/menu.vue";
 
 const router = new VueRouter({
     routes: [
-    {
-        path: '',
-        component: Admin,
-        children: [
-            {
-                path: '',
-                component: GeneralSettings,
-            },
-            {
-                path: 'general',
-                component: GeneralSettings,
-            },
-            {
-                path: 'import',
-                component: Import,
-            },
-            {
-                path: 'photos',
-                component: Photos,
-            },
-            {
-                path: 'update',
-                component: Update,
-            },
-        ]
-    },
+        {
+            path: "",
+            component: Admin,
+            children: [
+                {
+                    path: "",
+                    component: GeneralSettings,
+                },
+                {
+                    path: "general",
+                    component: GeneralSettings,
+                },
+                {
+                    path: "import",
+                    component: Import,
+                },
+                {
+                    path: "photos",
+                    component: Photos,
+                },
+                {
+                    path: "update",
+                    component: Update,
+                },
+            ]
+        },
     ]
 });
 
-// const store = new Vuex.Store({
-//   state: {
-//     settings: settings
-//   },
-// });
-
-var adminApp = new Vue({
-    el: '#vue-app',
+new Vue({
+    el: "#vue-app",
     data: {menuInfo: {}},
     // store,
     router,
-    template: '<div><app-menu :menu-info="menuInfo"></app-menu><router-view></router-view></div>',
+    template: "<div><app-menu :menu-info=\"menuInfo\"></app-menu><router-view></router-view></div>",
     mounted: function () {
+        // eslint-disable-next-line no-undef
         this.menuInfo = menu;
     },
     components: {
-        'app-menu': Menu,
+        "app-menu": Menu,
     }
 });

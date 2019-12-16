@@ -24,14 +24,22 @@
             <b-row>
                 <b-col sm="3">
                     <b-list-group>
-                        <b-list-group-item to="general"><strong>Général</strong></b-list-group-item>
-                        <b-list-group-item to="import"><strong>Import</strong></b-list-group-item>
-                        <b-list-group-item to="photos"><strong>Photos</strong></b-list-group-item>
-                        <b-list-group-item to="update"><strong>Mise à jour</strong></b-list-group-item>
+                        <b-list-group-item to="general">
+                            <strong>Général</strong>
+                        </b-list-group-item>
+                        <b-list-group-item to="import">
+                            <strong>Import</strong>
+                        </b-list-group-item>
+                        <b-list-group-item to="photos">
+                            <strong>Photos</strong>
+                        </b-list-group-item>
+                        <b-list-group-item to="update">
+                            <strong>Mise à jour</strong>
+                        </b-list-group-item>
                     </b-list-group>
                 </b-col>
                 <b-col>
-                    <router-view></router-view>
+                    <router-view />
                 </b-col>
             </b-row>
         </b-container>
@@ -39,26 +47,24 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import BootstrapVue from 'bootstrap-vue'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import Vue from "vue";
+import BootstrapVue from "bootstrap-vue";
+import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 
-import axios from 'axios';
+import "vue-awesome/icons";
+import Icon from "vue-awesome/components/Icon.vue";
 
-import 'vue-awesome/icons'
-import Icon from 'vue-awesome/components/Icon.vue'
-
-Vue.component('icon', Icon);
+Vue.component("icon", Icon);
 
 export default {
     data: function () {
         return {
-        }
+        };
     },
     mounted: function () {
     },
     components: {
     }
-}
+};
 </script>

@@ -26,33 +26,48 @@
         </b-row>
         <b-row>
             <b-form>
-            <b-form-row>
-                <b-form-group label="Type de personne">
-                    <b-form-select v-model="people" :options="peopleOptions"></b-form-select>
-                </b-form-group>
-            </b-form-row>
-            <b-form-row v-if="people">
-                <b-form-group label="Photos">
-                    <b-form-file v-model="photos" accept=".jpg" placeholder="Choisir les photos..." multiple
-                        :file-name-formatter="formatNames">
-                    </b-form-file>
-                </b-form-group>
-            </b-form-row>
-            <b-form-row v-if="people && photos.length > 0">
-                <b-form-group>
-                        <b-btn @click="uploadPhotos" :disabled="sending">
-                            <b-spinner small label="Sending..." v-if="sending" variant="light"></b-spinner>
+                <b-form-row>
+                    <b-form-group label="Type de personne">
+                        <b-form-select
+                            v-model="people"
+                            :options="peopleOptions"
+                        />
+                    </b-form-group>
+                </b-form-row>
+                <b-form-row v-if="people">
+                    <b-form-group label="Photos">
+                        <b-form-file
+                            v-model="photos"
+                            accept=".jpg"
+                            placeholder="Choisir les photos..."
+                            multiple
+                            :file-name-formatter="formatNames"
+                        />
+                    </b-form-group>
+                </b-form-row>
+                <b-form-row v-if="people && photos.length > 0">
+                    <b-form-group>
+                        <b-btn
+                            @click="uploadPhotos"
+                            :disabled="sending"
+                        >
+                            <b-spinner
+                                small
+                                label="Sending..."
+                                v-if="sending"
+                                variant="light"
+                            />
                             {{ sendingButton }}
                         </b-btn>
                     </b-form-group>
-            </b-form-row>
+                </b-form-row>
             </b-form>
         </b-row>
     </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
     data: function () {
@@ -64,23 +79,23 @@ export default {
             photos: [],
             sending: false,
             currentPhoto: 0,
-        }
+        };
     },
     computed: {
         sendingButton: function () {
             if (this.sending) {
                 return `En cours d'envoi (${this.currentPhoto}/${this.photos.length})`;
             } else {
-                return "Envoyer"
+                return "Envoyer";
             }
         }
     },
     methods: {
         formatNames(files) {
             if (files.length === 1) {
-                return files[0].name
+                return files[0].name;
             } else {
-                return `${files.length} photos sélectionnées`
+                return `${files.length} photos sélectionnées`;
             }
         },
         uploadPhotos: function () {
@@ -90,43 +105,43 @@ export default {
         uploadPhoto: function () {
             let app = this;
             const header = {
-                xsrfCookieName: 'csrftoken',
-                xsrfHeaderName: 'X-CSRFToken',
-                headers: {'Content-Disposition': 'form-data; name="file"; filename="' + this.photos[this.currentPhoto].name.normalize() + '"'},
-            }
+                xsrfCookieName: "csrftoken",
+                xsrfHeaderName: "X-CSRFToken",
+                headers: {"Content-Disposition": "form-data; name=\"file\"; filename=\"" + this.photos[this.currentPhoto].name.normalize() + "\""},
+            };
             let data = new FormData();
-            data.append('file', this.photos[this.currentPhoto]);
-            data.append('people', this.people);
-            axios.post('/core/api/photo/', data, header)
-            .then(resp => {
-                this.currentPhoto += 1;
-                if (this.currentPhoto == this.photos.length) {
-                    this.currentPhoto = 0;
-                    this.sending = false;
-                } else {
-                    this.uploadPhoto()
-                }
-            })
-            .catch(err => {
-                // Try again.
-                data = new FormData();
-                data.append('file', app.photos[app.currentPhoto]);
-                data.append('people', app.people);
-                axios.post('/core/api/photo/', data, header)
-                .then(resp => {
-                    app.currentPhoto += 1;
-                    if (app.currentPhoto == app.photos.length) {
-                        app.currentPhoto = 0;
-                        app.sending = false;
+            data.append("file", this.photos[this.currentPhoto]);
+            data.append("people", this.people);
+            axios.post("/core/api/photo/", data, header)
+                .then(() => {
+                    this.currentPhoto += 1;
+                    if (this.currentPhoto == this.photos.length) {
+                        this.currentPhoto = 0;
+                        this.sending = false;
                     } else {
-                        app.uploadPhoto()
+                        this.uploadPhoto();
                     }
                 })
-                .catch(err => {
-                    alert("Unable to send photo: " + app.photos[app.currentPhoto].name)
-                })
-            })
+                .catch(() => {
+                // Try again.
+                    data = new FormData();
+                    data.append("file", app.photos[app.currentPhoto]);
+                    data.append("people", app.people);
+                    axios.post("/core/api/photo/", data, header)
+                        .then(() => {
+                            app.currentPhoto += 1;
+                            if (app.currentPhoto == app.photos.length) {
+                                app.currentPhoto = 0;
+                                app.sending = false;
+                            } else {
+                                app.uploadPhoto();
+                            }
+                        })
+                        .catch(() => {
+                            alert("Unable to send photo: " + app.photos[app.currentPhoto].name);
+                        });
+                });
         }
     }
-}
+};
 </script>
