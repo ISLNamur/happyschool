@@ -47,7 +47,7 @@ from core.people import People, get_classes
 
 from .serializers import *
 from .models import *
-from .tasks import task_send_info_email
+from .tasks import task_send_info_email, send_sanction_to_student_resp
 
 from z3c.rml import rml2pdf
 from io import BytesIO
@@ -217,12 +217,19 @@ class CasEleveViewSet(BaseModelViewSet):
         serializer.validated_data.pop('send_to_teachers')
 
         super().perform_create(serializer)
-        serializer.save(created_by=self.request.user)
+        cas = serializer.save(created_by=self.request.user)
         if send_to_teachers:
             task_send_info_email.apply_async(
                 countdown=1,
                 kwargs={'instance_id': serializer.save().id}
             )
+        
+        if cas.sanction_decision:
+            if cas.sanction_decision.send_email_at_creation_to_responsible:
+                send_sanction_to_student_resp.apply_async(
+                    countdown=1,
+                    kwargs={"instance_id": cas.id}
+                )
 
         if serializer.validated_data["info"]:
             self.force_visibility(serializer)

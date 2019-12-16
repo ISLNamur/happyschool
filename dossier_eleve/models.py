@@ -131,6 +131,11 @@ class SanctionDecisionDisciplinaire(models.Model):
     sanction_decision = models.CharField(max_length=200)
     is_retenue = models.BooleanField(default=False)
     can_ask = models.BooleanField(default=False)
+    send_email_at_creation_to_responsible = models.BooleanField(
+        default=False,
+        help_text="""Si activé, envoi automatiquement un email au responsable de l'élève à la création
+            d'un cas (pas d'une demande)."""
+    )
 
     def __str__(self):
         return self.sanction_decision

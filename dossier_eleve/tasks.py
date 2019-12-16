@@ -26,6 +26,21 @@ from core.models import ResponsibleModel, EmailModel
 
 from .models import CasEleve, DossierEleveSettingsModel
 
+
+@shared_task(bind=True)
+def send_sanction_to_student_resp(self, instance_id):
+    instance = CasEleve.objects.get(id=instance_id)
+    student = instance.matricule
+    context = {'student': student, 'sanction': instance}
+    recipient = student.additionalstudentinfo.resp_email
+    send_email(
+        to=[recipient],
+        subject="Sanction concernant %s" % student.fullname,
+        email_template="dossier_eleve/email_sanction.html",
+        context=context
+    )
+
+
 @shared_task(bind=True)
 def task_send_info_email(self, instance_id):
     instance = CasEleve.objects.get(id=instance_id)
