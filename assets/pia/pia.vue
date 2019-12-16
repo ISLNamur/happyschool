@@ -29,8 +29,23 @@
                         variant="success"
                         to="/new"
                     >
+                        <icon
+                            name="plus"
+                            scale="1"
+                        />
                         Ajouter un PIA
                     </b-btn>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <b-pagination
+                        class="mt-1"
+                        :total-rows="entriesCount"
+                        v-model="currentPage"
+                        @change="changePage"
+                        :per-page="20"
+                    />
                 </b-col>
             </b-row>
             <b-row>
@@ -71,6 +86,8 @@ export default {
     data: function () {
         return {
             entries: [],
+            currentPage: 1,
+            entriesCount: 0,
         };
     },
     methods: {
@@ -91,13 +108,27 @@ export default {
                         .catch(err => alert(err));
                 }
             });
-        }
+        },
+        /**
+         * Change the currently displayed page.
+         * 
+         * @param {Number} page The page number to display.
+         */
+        changePage: function (page) {
+            this.currentPage = page;
+            this.loadEntries();
+        },
+        /** Load or reload PIA entries. */
+        loadEntries: function () {
+            axios.get("/pia/api/pia/")
+                .then(resp => {
+                    this.entries = resp.data.results;
+                    this.entriesCount = resp.data.count;
+                });
+        },
     },
     mounted: function () {
-        axios.get("/pia/api/pia/")
-            .then(resp => {
-                this.entries = resp.data.results;
-            });
+        this.loadEntries();
     },
     components: {
         Entry
