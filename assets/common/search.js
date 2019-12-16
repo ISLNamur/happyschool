@@ -17,11 +17,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import axios from 'axios';
+import axios from "axios";
 
-export function getPeopleByName(query, teachings, people = 'all', checkAccess = false) {
+export function getPeopleByName(query, teachings, people = "all", checkAccess = false) {
     // console.log(teachings);
-    const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+    const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
     const data = {
         query: query,
         teachings: teachings,
@@ -29,5 +29,5 @@ export function getPeopleByName(query, teachings, people = 'all', checkAccess = 
         check_access: checkAccess,
     };
 
-    return axios.post('/annuaire/api/people/', data, token);
+    return axios.post("/annuaire/api/people/", data, token);
 }

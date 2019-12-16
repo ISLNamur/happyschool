@@ -2,53 +2,87 @@
     <b-form>
         <b-form-group label="Ajouter un filtre">
             <b-input-group>
-                    <b-col sm="12" md="4">
-                            <b-form-select :options="filterTypeOptions" v-model="filterType" @input="cleanDate">
-                            </b-form-select>
-                    </b-col>
-                    <b-col sm="12" md="8">
-                        <multiselect tag-placeholder="Ajouter cette recherche"
-                            ref="filters"
-                            :showNoOptions="false"
-                            select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
-                            selected-label="Sélectionné"
-                            deselect-label="Cliquer dessus pour enlever"
-                            placeholder="Filtrer par…"
-                            :value="filtersValue"
-                            :options="filterSearchOptions" track-by="value"
-                            :multiple="true" :taggable="true" @remove="removeFilter"
-                            @select="addFilter" @tag="addCustomTag"
-                            :customLabel="niceLabel" :disabled="selectDisabled"
-                            @search-change="getOptions"
-                            :internalSearch="false"
-                            >
-                            <span slot="noOptions"></span>
-                        </multiselect>
-                    </b-col>
+                <b-col
+                    sm="12"
+                    md="4"
+                >
+                    <b-form-select
+                        :options="filterTypeOptions"
+                        v-model="filterType"
+                        @input="cleanDate"
+                    />
+                </b-col>
+                <b-col
+                    sm="12"
+                    md="8"
+                >
+                    <multiselect
+                        tag-placeholder="Ajouter cette recherche"
+                        ref="filters"
+                        :show-no-options="false"
+                        select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
+                        selected-label="Sélectionné"
+                        deselect-label="Cliquer dessus pour enlever"
+                        placeholder="Filtrer par…"
+                        :value="filtersValue"
+                        :options="filterSearchOptions"
+                        track-by="value"
+                        :multiple="true"
+                        :taggable="true"
+                        @remove="removeFilter"
+                        @select="addFilter"
+                        @tag="addCustomTag"
+                        :custom-label="niceLabel"
+                        :disabled="selectDisabled"
+                        @search-change="getOptions"
+                        :internal-search="false"
+                    >
+                        <span slot="noOptions" />
+                    </multiselect>
+                </b-col>
             </b-input-group>
         </b-form-group>
         <b-form-group v-if="inputType != 'text'">
             <b-form-row>
                 <b-col sm="2">
-                    <p class="text-right">À partir de </p>
+                    <p class="text-right">
+                        À partir de
+                    </p>
                 </b-col>
                 <b-col sm="3">
-                    <b-form-input :type="inputType" v-model="dateTime1" :max="dateTime2" />
+                    <b-form-input
+                        :type="inputType"
+                        v-model="dateTime1"
+                        :max="dateTime2"
+                    />
                 </b-col>
                 <b-col sm="2">
-                    <p class="text-right">jusqu'à </p>
+                    <p class="text-right">
+                        jusqu'à
+                    </p>
                 </b-col>
                 <b-col sm="3">
-                    <b-form-input :type="inputType" v-model="dateTime2" :min="dateTime1" />
+                    <b-form-input
+                        :type="inputType"
+                        v-model="dateTime2"
+                        :min="dateTime1"
+                    />
                 </b-col>
                 <b-col sm="2">
-                    <b-button variant="success" style="display:inline" class="mt-sm-0 mt-1"
+                    <b-button
+                        variant="success"
+                        style="display:inline"
+                        class="mt-sm-0 mt-1"
                         @click="addDateTimeTag"
                         :disabled="dateTime1 === null || dateTime2 === null"
-                        >
+                    >
                         Ajouter
                     </b-button>
-                    <b-button variant="danger" @click="removeFilter('current')" class="mt-xl-0 mt-1">
+                    <b-button
+                        variant="danger"
+                        @click="removeFilter('current')"
+                        class="mt-xl-0 mt-1"
+                    >
                         Retirer
                     </b-button>
                 </b-col>
@@ -58,11 +92,20 @@
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect'
-import axios from 'axios';
+import Multiselect from "vue-multiselect";
+import axios from "axios";
 
 export default {
-    props: ['app', 'model'],
+    props: {
+        "app": {
+            type: String,
+            default: ""
+        },
+        "model": {
+            type: String,
+            default: ""
+        }
+    },
     data: function () {
         return {
             filterType: null,
@@ -117,66 +160,66 @@ export default {
             }
             
             let param = {};
-            if (!this.filterType.endsWith("display")) param['unique'] = this.filterType;
+            if (!this.filterType.endsWith("display")) param["unique"] = this.filterType;
             param[this.filterType] = search;
             this.searchId += 1;
             let currentSearch = this.searchId;
-            if (this.filterType == 'classe') {
-                const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            if (this.filterType == "classe") {
+                const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
                 let data = {
                     query: search,
                     teachings: this.$store.state.settings.teachings,
                     check_access: 1
-                }
-                axios.post('/annuaire/api/classes/', data, token)
-                .then(response => {
-                    if (this.searchId !== currentSearch)
-                        return;
-                    this.filterSearchOptions = Array.from(response.data.map(i => ({
-                        'tag': i.display,
-                        'filterType': 'classe',
-                        'value': i.year + i.letter,
-                    })))
-                })
+                };
+                axios.post("/annuaire/api/classes/", data, token)
+                    .then(response => {
+                        if (this.searchId !== currentSearch)
+                            return;
+                        this.filterSearchOptions = Array.from(response.data.map(i => ({
+                            "tag": i.display,
+                            "filterType": "classe",
+                            "value": i.year + i.letter,
+                        })));
+                    });
                 return;
-            } else if (this.filterType == 'scholar_year') {
-                axios.get('/core/api/scholar_year/?scholar_year=' + search)
-                .then(response => {
-                    if (this.searchId !== currentSearch)
-                        return;
-                    this.filterSearchOptions = Array.from(response.data.map(i => ({
-                        'tag': i,
-                        'filterType': 'scholar_year',
-                        'value': i,
-                    })))
-                })
+            } else if (this.filterType == "scholar_year") {
+                axios.get("/core/api/scholar_year/?scholar_year=" + search)
+                    .then(response => {
+                        if (this.searchId !== currentSearch)
+                            return;
+                        this.filterSearchOptions = Array.from(response.data.map(i => ({
+                            "tag": i,
+                            "filterType": "scholar_year",
+                            "value": i,
+                        })));
+                    });
                 return;
-            } else if (this.filterType.startsWith('activate_')) {
+            } else if (this.filterType.startsWith("activate_")) {
                 this.filterSearchOptions = [{
-                    'tag': 'Activer',
-                    'filterType': this.filterType,
-                    'value': true,
-                }]
+                    "tag": "Activer",
+                    "filterType": this.filterType,
+                    "value": true,
+                }];
                 return;
             }
 
             axios.get("/" + this.app + "/api/" + this.model + "/", {params: param})
-            .then(response => {
-                if (this.searchId !== currentSearch)
-                    return;
-                let results = [];
-                if (this.filterType.includes('__')) {
-                    const subTypes = this.filterType.split('__');
-                    results = response.data.results.map(i => i[subTypes[0]][subTypes[1]]);
-                } else {
-                    results = response.data.results.map(i => i[this.filterType]);
-                }
-                this.filterSearchOptions = Array.from(new Set(results)).map(i => ({
-                    'tag': i,
-                    'filterType': this.filterType,
-                    'value': i
-                }));
-            });
+                .then(response => {
+                    if (this.searchId !== currentSearch)
+                        return;
+                    let results = [];
+                    if (this.filterType.includes("__")) {
+                        const subTypes = this.filterType.split("__");
+                        results = response.data.results.map(i => i[subTypes[0]][subTypes[1]]);
+                    } else {
+                        results = response.data.results.map(i => i[this.filterType]);
+                    }
+                    this.filterSearchOptions = Array.from(new Set(results)).map(i => ({
+                        "tag": i,
+                        "filterType": this.filterType,
+                        "value": i
+                    }));
+                });
 
         },
         cleanDate: function() {
@@ -197,10 +240,10 @@ export default {
             let blankTime1 = this.filterType.startsWith("datetime") ? " 00:00" : "";
             let blankTime2 = this.filterType.startsWith("datetime") ? " 23:59" : "";
             const tag = {
-                'filterType': this.filterType,
+                "filterType": this.filterType,
                 value: this.dateTime1 + blankTime1 + "_" + this.dateTime2 + blankTime2,
                 tag: this.dateTime1 + " " + this.dateTime2
-            }
+            };
             this.addFilter(tag);
         },
         addCustomTag: function (tag) {
@@ -208,27 +251,28 @@ export default {
                 filterType: this.filterType,
                 tag: tag,
                 value: tag,
-            }
+            };
             this.addFilter(newTag);
         },
-        addFilter(addedObject, id) {
-            this.$store.commit('addFilter', addedObject);
+        addFilter(addedObject) {
+            this.$store.commit("addFilter", addedObject);
             this.updateFilters();
         },
-        removeFilter(removedObject, id) {
-            if (removedObject == 'current') {
-                this.$store.commit('removeFilter', this.filterType);
+        removeFilter(removedObject) {
+            if (removedObject == "current") {
+                this.$store.commit("removeFilter", this.filterType);
             } else {
-                this.$store.commit('removeFilter', removedObject.filterType);
+                this.$store.commit("removeFilter", removedObject.filterType);
             }
             this.updateFilters();
         },
         updateFilters() {
-            this.$emit('update');
+            this.$emit("update");
         }
     },
     components: {Multiselect},
     mounted: function() {
+        // eslint-disable-next-line no-undef
         this.filterTypeOptions = filters;
         setTimeout(() => {
             // Check if filters is loaded.
@@ -236,9 +280,9 @@ export default {
             if (refInput) {
                 refInput.$refs.search.focus();
             }
-        }, 500)
+        }, 500);
     }
-}
+};
 
 </script>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

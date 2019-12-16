@@ -19,12 +19,12 @@
 
 function addFilter (state, filter) {
     // If filter is a matricule, remove name filter to avoid conflict.
-    if (filter.filterType === 'matricule_id') {
-        this.commit('removeFilter', 'name');
+    if (filter.filterType === "matricule_id") {
+        this.commit("removeFilter", "name");
     }
 
     // Overwrite same filter type.
-    this.commit('removeFilter', filter.filterType);
+    this.commit("removeFilter", filter.filterType);
 
     state.filters.push(filter);
 }
@@ -40,7 +40,7 @@ function removeFilter (state, key) {
 
 function getFilters (filters) {
     let filter = "";
-    let storeFilters = filters
+    let storeFilters = filters;
     for (let f in storeFilters) {
         if (storeFilters[f].filterType.startsWith("date")
             || storeFilters[f].filterType.startsWith("time")) {
