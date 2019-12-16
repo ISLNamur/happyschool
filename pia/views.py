@@ -89,7 +89,6 @@ class PIAViewSet(BaseModelViewSet):
     queryset = models.PIAModel.objects.filter(student__inactive_from__isnull=True)
     serializer_class = serializers.PIASerializer
     username_field = None
-    pagination_class = LargePagination
 
 
 class GoalViewSet(ModelViewSet):
