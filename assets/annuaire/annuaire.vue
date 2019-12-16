@@ -19,12 +19,22 @@
 
 <template>
     <div>
-        <div class="loading" v-if="!loaded"></div>
-        <app-menu v-if="loaded" :menu-info="menuInfo"></app-menu>
+        <div
+            class="loading"
+            v-if="!loaded"
+        />
+        <app-menu
+            v-if="loaded"
+            :menu-info="menuInfo"
+        />
         <b-container v-if="loaded">
             <h1>Annuaire</h1>
             <b-row>
-                <b-col v-if="teachingsOptions.length > 1" md="2" sm="12">
+                <b-col
+                    v-if="teachingsOptions.length > 1"
+                    md="2"
+                    sm="12"
+                >
                     <b-form-group label="Établissement(s) :">
                         <b-form-select
                             multiple
@@ -33,14 +43,17 @@
                             :options="teachingsOptions"
                             value-field="id"
                             text-field="display_name"
-                            >
-                        </b-form-select>
+                        />
                     </b-form-group>
                 </b-col>
                 <b-col>
-                    <b-form-group label="Recherche :" class="ml-4">
-                        <multiselect ref="input"
-                            :showNoOptions="false"
+                    <b-form-group
+                        label="Recherche :"
+                        class="ml-4"
+                    >
+                        <multiselect
+                            ref="input"
+                            :show-no-options="false"
                             :internal-search="false"
                             :options="searchOptions"
                             @search-change="getSearchOptions"
@@ -53,35 +66,39 @@
                             track-by="id"
                             v-model="search"
                             @select="selected"
-                            >
+                        >
                             <span slot="noResult">Aucune personne trouvée.</span>
-                            <span slot="noOptions"></span>
-
+                            <span slot="noOptions" />
                         </multiselect>
                     </b-form-group>
                 </b-col>
             </b-row>
-            <transition name="slide-right" mode="out-in"><router-view></router-view></transition>
+            <transition
+                name="slide-right"
+                mode="out-in"
+            >
+                <router-view />
+            </transition>
         </b-container>
     </div>
 </template>
 
 <script>
-import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue'
+import Vue from "vue";
+import BootstrapVue from "bootstrap-vue";
 
 Vue.use(BootstrapVue);
 
-import Multiselect from 'vue-multiselect'
-import 'vue-multiselect/dist/vue-multiselect.min.css'
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import 'vue-awesome/icons'
-import Icon from 'vue-awesome/components/Icon.vue'
-Vue.component('icon', Icon);
+import "vue-awesome/icons";
+import Icon from "vue-awesome/components/Icon.vue";
+Vue.component("icon", Icon);
 
-import axios from 'axios';
+import axios from "axios";
 
-import Menu from '../common/menu.vue'
+import Menu from "../common/menu.vue";
 
 export default {
     data: function () {
@@ -95,11 +112,11 @@ export default {
             searchOptions: [],
             searchLoading: false,
 
-        }
+        };
     },
     methods: {
         selected: function (option) {
-            if (option.type == 'classe') {
+            if (option.type == "classe") {
                 this.$router.push(`/classe/${option.id}/`);
                 return;
             } else {
@@ -111,51 +128,51 @@ export default {
             this.searchId += 1;
             let currentSearch = this.searchId;
 
-            const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             const data = {
                 query: query,
                 teachings: this.teachings.length > 0 ? this.teachings : this.teachingsOptions.map(t => t.id),
-                people: 'all',
+                people: "all",
                 check_access: false,
             };
-            axios.post('/annuaire/api/people_or_classes/', data, token)
-            .then(response => {
-                if (this.searchId !== currentSearch)
-                    return;
+            axios.post("/annuaire/api/people_or_classes/", data, token)
+                .then(response => {
+                    if (this.searchId !== currentSearch)
+                        return;
 
-                const options = response.data.map(p => {
-                    if (Number.isNaN(Number.parseInt(query[0]))) {
+                    const options = response.data.map(p => {
+                        if (Number.isNaN(Number.parseInt(query[0]))) {
                         // It is a student or a responsible.
-                        if ('is_secretary' in p) {
+                            if ("is_secretary" in p) {
                             // It is a responsible.
-                            let teachings = " —";
-                            for (let t in p.teaching) {
-                                teachings += " " + p.teaching[t].display_name;
-                            }
+                                let teachings = " —";
+                                for (let t in p.teaching) {
+                                    teachings += " " + p.teaching[t].display_name;
+                                }
 
-                            return {
-                                display: p.last_name + ' ' + p.first_name + teachings,
-                                id: p.matricule,
-                                type: 'responsible',
-                            };
-                        } else {
+                                return {
+                                    display: p.last_name + " " + p.first_name + teachings,
+                                    id: p.matricule,
+                                    type: "responsible",
+                                };
+                            } else {
                             // It is a student.
-                            return {
-                                display: p.display,
-                                id: p.matricule,
-                                type: 'student',
+                                return {
+                                    display: p.display,
+                                    id: p.matricule,
+                                    type: "student",
+                                };
                             }
-                        }
-                    } else {
+                        } else {
                         // It is a classe.
-                        let classe = p;
-                        classe.type = 'classe';
-                        return classe;
-                    }
-                })
+                            let classe = p;
+                            classe.type = "classe";
+                            return classe;
+                        }
+                    });
 
-                this.searchOptions = options;
-            });
+                    this.searchOptions = options;
+                });
         },
         overloadInput: function () {
             setTimeout(() => {
@@ -164,45 +181,46 @@ export default {
                 if (refInput) {
                     let input = refInput.$refs.search;
                     input.focus();
-                    input.addEventListener('keypress', (e) => {
-                        if (e.key == 'Enter') {
+                    input.addEventListener("keypress", (e) => {
+                        if (e.key == "Enter") {
                             if (refInput.search && refInput.search.length > 1 && !isNaN(refInput.search)) {
-                                axios.get('/annuaire/api/student/' + refInput.search + '/')
-                                .then(resp => {
-                                    if (resp.data) {
-                                        this.$router.push(`/person/student/${refInput.search}/`)
-                                        refInput.search = "";
-                                    }
-                                })
-                                .catch(err => {
-                                    console.log("Aucun étudiant trouvé");
-                                })
+                                axios.get("/annuaire/api/student/" + refInput.search + "/")
+                                    .then(resp => {
+                                        if (resp.data) {
+                                            this.$router.push(`/person/student/${refInput.search}/`);
+                                            refInput.search = "";
+                                        }
+                                    })
+                                    .catch(() => {
+                                        console.log("Aucun étudiant trouvé");
+                                    });
                             }
                         }
-                    })
+                    });
                     return input;
                 } else {
                     this.overloadInput();
                 }
-            }, 300)
+            }, 300);
             
         },
     },
     mounted: function () {
-        axios.get('/core/api/teaching/')
-        .then(response => {
-            this.teachingsOptions = response.data.results;
-            this.loaded = true;
-        });
+        axios.get("/core/api/teaching/")
+            .then(response => {
+                this.teachingsOptions = response.data.results;
+                this.loaded = true;
+            });
 
+        // eslint-disable-next-line no-undef
         this.menuInfo = menu;
         this.overloadInput();
     },
     components: {
-        'multiselect': Multiselect,
-        'app-menu': Menu,
+        "multiselect": Multiselect,
+        "app-menu": Menu,
     }
-}
+};
 </script>
 
 <style>

@@ -22,22 +22,22 @@
 // import VueRouter from 'vue-router'
 // Vue.use(VueRouter)
 
-import Annuaire from '../annuaire/annuaire.vue';
-import Info from '../annuaire/info.vue';
-import ClassList from '../annuaire/classe.vue'
+import Annuaire from "../annuaire/annuaire.vue";
+import Info from "../annuaire/info.vue";
+import ClassList from "../annuaire/classe.vue";
 
 export default [
     {
-        path: '/',
+        path: "/",
         component: Annuaire,
         children: [
             {
-                path: '/person/:type/:matricule/',
+                path: "/person/:type/:matricule/",
                 component: Info,
                 props: true
             },
             {
-                path: '/classe/:classe/',
+                path: "/classe/:classe/",
                 component: ClassList,
                 props: true
             },

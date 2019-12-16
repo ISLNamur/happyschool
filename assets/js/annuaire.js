@@ -17,15 +17,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue';
+import Vue from "vue";
 
-import Vuex from 'vuex';
+import Vuex from "vuex";
 Vue.use(Vuex);
 
-import routes from '../annuaire/routes.js';
+import routes from "../annuaire/routes.js";
 
-import VueRouter from 'vue-router'
-Vue.use(VueRouter)
+import VueRouter from "vue-router";
+Vue.use(VueRouter);
 
 const router = new VueRouter({
     routes: routes
@@ -33,15 +33,16 @@ const router = new VueRouter({
 
 
 const store = new Vuex.Store({
-  state: {
-    settings: settings
-  },
+    state: {
+        // eslint-disable-next-line no-undef
+        settings: settings
+    },
 });
 
-var annuaireApp = new Vue({
-    el: '#vue-app',
+new Vue({
+    el: "#vue-app",
     data: {},
     router,
     store,
-    template: '<router-view></router-view>',
-})
+    template: "<router-view></router-view>",
+});
