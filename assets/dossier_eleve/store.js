@@ -17,27 +17,28 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
+/* eslint-disable no-undef */
 
-import Vue from 'vue';
-import Vuex from 'vuex';
+import Vue from "vue";
+import Vuex from "vuex";
 
-import {addFilter, removeFilter} from '../common/filters.js';
+import {addFilter, removeFilter} from "../common/filters.js";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
-      settings: settings,
-      filters: [{
-          filterType: 'scholar_year',
-          tag: currentYear,
-          value: currentYear,
-      }],
-      canSetSanction: canSetSanction,
-      canAskSanction: canAskSanction,
+        settings: settings,
+        filters: [{
+            filterType: "scholar_year",
+            tag: currentYear,
+            value: currentYear,
+        }],
+        canSetSanction: canSetSanction,
+        canAskSanction: canAskSanction,
     },
     mutations: {
         addFilter: addFilter,
         removeFilter: removeFilter,
     }
-  });
+});

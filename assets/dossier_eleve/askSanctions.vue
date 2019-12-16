@@ -19,8 +19,14 @@
 
 <template>
     <div>
-        <div class="loading" v-if="!loaded"></div>
-        <app-menu v-if="loaded" :menu-info="menuInfo"></app-menu>
+        <div
+            class="loading"
+            v-if="!loaded"
+        />
+        <app-menu
+            v-if="loaded"
+            :menu-info="menuInfo"
+        />
         <b-container v-if="loaded">
             <b-row>
                 <h2>Demandes de sanction</h2>
@@ -28,8 +34,15 @@
             <b-row class="mb-2">
                 <b-tabs>
                     <template slot="tabs">
-                        <b-nav-item href="/dossier_eleve/">Dossier des élèves</b-nav-item>
-                        <b-nav-item active href="/dossier_eleve/ask_sanctions">Demandes de sanction</b-nav-item>
+                        <b-nav-item href="/dossier_eleve/">
+                            Dossier des élèves
+                        </b-nav-item>
+                        <b-nav-item
+                            active
+                            href="/dossier_eleve/ask_sanctions"
+                        >
+                            Demandes de sanction
+                        </b-nav-item>
                     </template>
                 </b-tabs>
             </b-row>
@@ -37,20 +50,43 @@
                 <b-col>
                     <b-form-group>
                         <div>
-                            <b-btn variant="primary" @click="openDynamicModal('ask-modal')">
-                                <icon name="plus" scale="1" class="align-middle"></icon>
+                            <b-btn
+                                variant="primary"
+                                @click="openDynamicModal('ask-modal')"
+                            >
+                                <icon
+                                    name="plus"
+                                    scale="1"
+                                    class="align-middle"
+                                />
                                 Nouvelle demande
                             </b-btn>
-                            <b-btn variant="secondary" @click="openDynamicModal('ask-export-modal')">
-                                <icon name="file" scale="1" ></icon>
+                            <b-btn
+                                variant="secondary"
+                                @click="openDynamicModal('ask-export-modal')"
+                            >
+                                <icon
+                                    name="file"
+                                    scale="1"
+                                />
                                 Export
                             </b-btn>
-                            <b-btn variant="outline-secondary" v-b-toggle.filters>
-                                <icon name="search" scale="1"></icon>
+                            <b-btn
+                                variant="outline-secondary"
+                                v-b-toggle.filters
+                            >
+                                <icon
+                                    name="search"
+                                    scale="1"
+                                />
                                 Ajouter des filtres
                             </b-btn>
-                            <b-btn variant="outline-secondary" :pressed="retenues_mode" @click="retenues_mode = !retenues_mode">
-                                <span v-if=retenues_mode>Cacher</span><span v-else>Afficher</span> toutes les retenues
+                            <b-btn
+                                variant="outline-secondary"
+                                :pressed="retenues_mode"
+                                @click="retenues_mode = !retenues_mode"
+                            >
+                                <span v-if="retenues_mode">Cacher</span><span v-else>Afficher</span> toutes les retenues
                             </b-btn>
                         </div>
                     </b-form-group>
@@ -58,9 +94,17 @@
             </b-row>
             <b-row>
                 <b-col>
-                    <b-collapse id="filters" v-model=showFilters>
+                    <b-collapse
+                        id="filters"
+                        v-model="showFilters"
+                    >
                         <b-card>
-                            <filters app="dossier_eleve" model="ask_sanctions" ref="filters" @update="applyFilter"></filters>
+                            <filters
+                                app="dossier_eleve"
+                                model="ask_sanctions"
+                                ref="filters"
+                                @update="applyFilter"
+                            />
                         </b-card>
                     </b-collapse>
                 </b-col>
@@ -69,107 +113,151 @@
                 <b-col>
                     <b-list-group>
                         <b-list-group-item>Demandes de sanction en attente : <b-badge>{{ entriesCount }}</b-badge></b-list-group-item>
-                        <b-list-group-item button @click="addFilter('activate_not_done', 'Activer', true)">
-                            Sanctions non faites <strong>à traiter</strong> : <b-badge variant="danger">{{ entriesNotDone }}</b-badge>
+                        <b-list-group-item
+                            button
+                            @click="addFilter('activate_not_done', 'Activer', true)"
+                        >
+                            Sanctions non faites <strong>à traiter</strong> : <b-badge variant="danger">
+                                {{ entriesNotDone }}
+                            </b-badge>
                         </b-list-group-item>
-                        <b-list-group-item button v-if="entriesWaiting > 0" @click="addFilter('activate_waiting', 'Activer', true)">
-                            En attentes de validations : <b-badge variant="warning">{{ entriesWaiting }}</b-badge>
+                        <b-list-group-item
+                            button
+                            v-if="entriesWaiting > 0"
+                            @click="addFilter('activate_waiting', 'Activer', true)"
+                        >
+                            En attentes de validations : <b-badge variant="warning">
+                                {{ entriesWaiting }}
+                            </b-badge>
                         </b-list-group-item>
                     </b-list-group>
                 </b-col>
             </b-row>
-            <b-pagination class="mt-1" :total-rows="entriesCount" v-model="currentPage" @change="changePage" :per-page="20">
-            </b-pagination>
-            <b-card no-body class="current-card d-none d-md-block d-lg-block d-xl-block">
+            <b-pagination
+                class="mt-1"
+                :total-rows="entriesCount"
+                v-model="currentPage"
+                @change="changePage"
+                :per-page="20"
+            />
+            <b-card
+                no-body
+                class="current-card d-none d-md-block d-lg-block d-xl-block"
+            >
                 <b-row class="text-center">
-                    <b-col cols="2"><strong>Type de sanctions</strong></b-col>
-                    <b-col cols="2"><strong>Conseil de discipline</strong></b-col>
-                    <b-col cols="2"><strong>Date de la sanction</strong></b-col>
+                    <b-col cols="2">
+                        <strong>Type de sanctions</strong>
+                    </b-col>
+                    <b-col cols="2">
+                        <strong>Conseil de discipline</strong>
+                    </b-col>
+                    <b-col cols="2">
+                        <strong>Date de la sanction</strong>
+                    </b-col>
                     <b-col><strong>Commentaire(s)</strong></b-col>
                 </b-row>
             </b-card>
             <ask-sanctions-entry
                 v-for="(entry, index) in entries"
-                v-bind:key="entry.id"
-                v-bind:row-data="entry"
+                :key="entry.id"
+                :row-data="entry"
                 @delete="askDelete(entry)"
                 @edit="editEntry(index)"
                 @filterStudent="filterStudent($event)"
                 @showInfo="showInfo(entry)"
                 @done="loadEntries"
-                >
-            </ask-sanctions-entry>
-            <b-modal ref="deleteModal" cancel-title="Annuler" hide-header centered
-                @ok="deleteEntry" @cancel="currentEntry = null"
-                :no-close-on-backdrop="true" :no-close-on-esc="true">
+            />
+            <b-modal
+                ref="deleteModal"
+                cancel-title="Annuler"
+                hide-header
+                centered
+                @ok="deleteEntry"
+                @cancel="currentEntry = null"
+                :no-close-on-backdrop="true"
+                :no-close-on-esc="true"
+            >
                 Êtes-vous sûr de vouloir supprimer définitivement cette entrée ?
             </b-modal>
-            <b-modal :title="currentName" size="lg" ref="infoModal" centered ok-only @hidden="currentEntry = null">
-                <info v-if="currentEntry" :matricule="currentEntry.matricule_id" type="student"></info>
+            <b-modal
+                :title="currentName"
+                size="lg"
+                ref="infoModal"
+                centered
+                ok-only
+                @hidden="currentEntry = null"
+            >
+                <info
+                    v-if="currentEntry"
+                    :matricule="currentEntry.matricule_id"
+                    type="student"
+                />
             </b-modal>
             <component
-                v-bind:is="currentModal" ref="dynamicModal"
-                @update="loadEntries" @reset="currentEntry = null"
-                :entry="currentEntry">
-            </component>
+                :is="currentModal"
+                ref="dynamicModal"
+                @update="loadEntries"
+                @reset="currentEntry = null"
+                :entry="currentEntry"
+            />
         </b-container>
     </div>
 </template>
 
 <script>
-import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import Vue from "vue";
+import BootstrapVue from "bootstrap-vue";
+import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 
-import 'vue-awesome/icons'
-import Icon from 'vue-awesome/components/Icon.vue'
-Vue.component('icon', Icon);
+import "vue-awesome/icons";
+import Icon from "vue-awesome/components/Icon.vue";
+Vue.component("icon", Icon);
 
-import axios from 'axios';
+import axios from "axios";
 window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
-import Info from '../annuaire/info.vue'
+import Info from "../annuaire/info.vue";
 
-import AskSanctionsEntry from './askSanctionsEntry.vue'
-import AskModal from './askModal.vue'
-import AskExportModal from './askExportModal.vue'
-import Filters from '../common/filters.vue'
-import Menu from '../common/menu.vue'
+import AskSanctionsEntry from "./askSanctionsEntry.vue";
+import AskModal from "./askModal.vue";
+import AskExportModal from "./askExportModal.vue";
+import Filters from "../common/filters.vue";
+import Menu from "../common/menu.vue";
 
 export default {
     data: function () {
         return {
             menuInfo: {},
             showFilters: false,
-            filter: '',
-            ordering: '&ordering=datetime_sanction',
+            filter: "",
+            ordering: "&ordering=datetime_sanction",
             entriesCount: 0,
             currentPage: 1,
             entries: [],
             entriesNotDone: 0,
             entriesWaiting: 0,
             currentEntry: null,
-            currentModal: 'ask-modal',
+            currentModal: "ask-modal",
             retenues_mode: false,
             loaded: false,
-        }
+        };
     },
     computed: {
         currentName: function () {
             if (this.currentEntry) {
                 return this.currentEntry.matricule.display;
             }
-            return '';
+            return "";
         }
     },
     watch: {
         retenues_mode: function (mode) {
             if (mode) {
-                this.addFilter('activate_all_retenues', 'Activer', true);
+                this.addFilter("activate_all_retenues", "Activer", true);
             } else {
-                this.$store.commit('removeFilter', 'activate_all_retenues');
+                this.$store.commit("removeFilter", "activate_all_retenues");
                 this.applyFilter();
             }
         }
@@ -186,18 +274,18 @@ export default {
         },
         filterStudent: function (matricule) {
             this.showFilters = true;
-            this.$store.commit('addFilter',
-                {filterType: 'matricule_id', tag: matricule, value: matricule}
+            this.$store.commit("addFilter",
+                {filterType: "matricule_id", tag: matricule, value: matricule}
             );
-            this.applyFilter()
+            this.applyFilter();
         },
         showInfo: function (entry) {
-            this.currentEntry = entry
+            this.currentEntry = entry;
             this.$refs.infoModal.show();
         },
         applyFilter: function () {
             this.filter = "";
-            let storeFilters = this.$store.state.filters
+            let storeFilters = this.$store.state.filters;
             for (let f in storeFilters) {
                 if (storeFilters[f].filterType.startsWith("date")
                     || storeFilters[f].filterType.startsWith("time")) {
@@ -217,64 +305,65 @@ export default {
         },
         editEntry: function(index) {
             this.currentEntry = this.entries[index];
-            this.openDynamicModal('ask-modal');
+            this.openDynamicModal("ask-modal");
         },
         deleteEntry: function () {
-            const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-            axios.delete('/dossier_eleve/api/ask_sanctions/' + this.currentEntry.id + '/', token)
-            .then(response => {
-                this.loadEntries();
-            });
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            axios.delete("/dossier_eleve/api/ask_sanctions/" + this.currentEntry.id + "/", token)
+                .then(() => {
+                    this.loadEntries();
+                });
 
             this.currentEntry = null;
         },
         addFilter: function(filterType, tag, value) {
             this.showFilters = true;
-            this.$store.commit('addFilter',
-                {'filterType': filterType, 'tag': tag, 'value': value}
+            this.$store.commit("addFilter",
+                {"filterType": filterType, "tag": tag, "value": value}
             );
-            this.applyFilter()
+            this.applyFilter();
         },
         loadEntries: function () {
-            axios.get('/dossier_eleve/api/ask_sanctions/?page=' + this.currentPage + this.filter + this.ordering)
-            .then(response => {
-                this.entriesCount = response.data.count;
-                this.entries = response.data.results;
-                this.loaded = true;
+            axios.get("/dossier_eleve/api/ask_sanctions/?page=" + this.currentPage + this.filter + this.ordering)
+                .then(response => {
+                    this.entriesCount = response.data.count;
+                    this.entries = response.data.results;
+                    this.loaded = true;
 
-                // Get other counts.
-                this.getEntriesNotDone();
-                this.getEntriesWaiting();
-            });
+                    // Get other counts.
+                    this.getEntriesNotDone();
+                    this.getEntriesWaiting();
+                });
         },
         getEntriesNotDone: function () {
-            axios.get('/dossier_eleve/api/ask_sanctions/?page=' + this.currentPage + this.filter + this.ordering + '&activate_not_done=true')
-            .then(response => {
-                this.entriesNotDone = response.data.count;
-            })
+            axios.get("/dossier_eleve/api/ask_sanctions/?page=" + this.currentPage + this.filter + this.ordering + "&activate_not_done=true")
+                .then(response => {
+                    this.entriesNotDone = response.data.count;
+                });
         },
         getEntriesWaiting: function () {
-            axios.get('/dossier_eleve/api/ask_sanctions/?page=' + this.currentPage + this.filter + this.ordering + '&activate_waiting=true')
-            .then(response => {
-                this.entriesWaiting = response.data.count;
-            })
+            axios.get("/dossier_eleve/api/ask_sanctions/?page=" + this.currentPage + this.filter + this.ordering + "&activate_waiting=true")
+                .then(response => {
+                    this.entriesWaiting = response.data.count;
+                });
         }
     },
     mounted: function () {
+        // eslint-disable-next-line no-undef
         this.menuInfo = menu;
 
         this.applyFilter();
         this.loadEntries();
     },
     components: {
-        'filters': Filters,
-        'ask-sanctions-entry': AskSanctionsEntry,
-        'ask-modal': AskModal,
-        'ask-export-modal': AskExportModal,
-        'info': Info,
-        'app-menu': Menu,
+        "filters": Filters,
+        "ask-sanctions-entry": AskSanctionsEntry,
+        "ask-modal": AskModal,
+        "ask-export-modal": AskExportModal,
+        "info": Info,
+        "app-menu": Menu,
     }
-}
+};
 </script>
 
 <style>

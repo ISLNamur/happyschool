@@ -17,16 +17,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue';
+import Vue from "vue";
 
-import store from '../dossier_eleve/store.js';
+import store from "../dossier_eleve/store.js";
 
-import DossierEleve from '../dossier_eleve/dossier_eleve.vue';
+import DossierEleve from "../dossier_eleve/dossier_eleve.vue";
 
-var mailNotificationApp = new Vue({
-    el: '#vue-app',
+new Vue({
+    el: "#vue-app",
     data: {},
     store,
-    template: '<dossier-eleve/>',
+    template: "<dossier-eleve/>",
     components: { DossierEleve },
-})
+});

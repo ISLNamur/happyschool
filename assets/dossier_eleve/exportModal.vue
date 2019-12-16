@@ -18,74 +18,104 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-<div>
-    <b-modal size="lg" title="Exporter des données dans un fichier"
-        ok-title="Créer pdf" :ok-only="true"
-        :ok-disabled="!isOk"
-        ref="exportModal"
-        @ok="getPdf" @hidden="resetModal"
+    <div>
+        <b-modal
+            size="lg"
+            title="Exporter des données dans un fichier"
+            ok-title="Créer pdf"
+            :ok-only="true"
+            :ok-disabled="!isOk"
+            ref="exportModal"
+            @ok="getPdf"
+            @hidden="resetModal"
         >
-        <b-tabs v-model="tabIndex">
-            <b-tab title="Sommaire" active>
-                <b-row>
-                    <b-col>
-                        <b-form-group label="Nom, prénom ou classe" label-for="input-name-classe">
-                            <multiselect id="input-name-classe"
-                                :internal-search="false"
-                                :options="nameClasseOptions"
-                                @search-change="getNameClasseOptions"
-                                :loading="nameClasseLoading"
-                                placeholder="Rechercher un étudiant ou une classe…"
-                                select-label=""
-                                selected-label="Sélectionné"
-                                deselect-label=""
-                                label="display"
-                                track-by="id"
-                                v-model="nameClasse"
+            <b-tabs v-model="tabIndex">
+                <b-tab
+                    title="Sommaire"
+                    active
+                >
+                    <b-row>
+                        <b-col>
+                            <b-form-group
+                                label="Nom, prénom ou classe"
+                                label-for="input-name-classe"
+                            >
+                                <multiselect
+                                    id="input-name-classe"
+                                    :internal-search="false"
+                                    :options="nameClasseOptions"
+                                    @search-change="getNameClasseOptions"
+                                    :loading="nameClasseLoading"
+                                    placeholder="Rechercher un étudiant ou une classe…"
+                                    select-label=""
+                                    selected-label="Sélectionné"
+                                    deselect-label=""
+                                    label="display"
+                                    track-by="id"
+                                    v-model="nameClasse"
                                 >
-                                <span slot="noResult">Aucune personne trouvée.</span>
-                                <span slot="noOptions"></span>
-
-                            </multiselect>
-                        </b-form-group>
-                        <b-form-group label="Type de données">
-                            <b-form-checkbox v-model="info">Informations</b-form-checkbox>
-                            <b-form-checkbox v-model="sanction">Sanctions</b-form-checkbox>
-                            <b-form-checkbox v-model="allYears">Toutes années scolaires confondues</b-form-checkbox>
-                        </b-form-group>
-                    </b-col>
-                </b-row>
-            </b-tab>
-            <b-tab title="Filtre courant" disabled>
-                <p>
-                    Vous pouvez exporter l'affichage courant (toutes pages confondues).
-                </p>
-                <p>
-                    Le nombre de cas filtré est de : {{ entriesCount }}
-                </p>
-                <b-alert variant="warning" :show="entriesCount > 100 && entriesCount < 1000">
-                    Le nombre de cas est relativement grand. La génération du pdf peut prendre un certain temps.
-                </b-alert>
-                <b-alert variant="danger" :show="entriesCount >= 1000">
-                    Le nombre de cas est très grand ! Êtes-vous sûr de vouloir exporter autant de cas ?
-                </b-alert>
-            </b-tab>
-        </b-tabs>
-    </b-modal>
-</div>
+                                    <span slot="noResult">Aucune personne trouvée.</span>
+                                    <span slot="noOptions" />
+                                </multiselect>
+                            </b-form-group>
+                            <b-form-group label="Type de données">
+                                <b-form-checkbox v-model="info">
+                                    Informations
+                                </b-form-checkbox>
+                                <b-form-checkbox v-model="sanction">
+                                    Sanctions
+                                </b-form-checkbox>
+                                <b-form-checkbox v-model="allYears">
+                                    Toutes années scolaires confondues
+                                </b-form-checkbox>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                </b-tab>
+                <b-tab
+                    title="Filtre courant"
+                    disabled
+                >
+                    <p>
+                        Vous pouvez exporter l'affichage courant (toutes pages confondues).
+                    </p>
+                    <p>
+                        Le nombre de cas filtré est de : {{ entriesCount }}
+                    </p>
+                    <b-alert
+                        variant="warning"
+                        :show="entriesCount > 100 && entriesCount < 1000"
+                    >
+                        Le nombre de cas est relativement grand. La génération du pdf peut prendre un certain temps.
+                    </b-alert>
+                    <b-alert
+                        variant="danger"
+                        :show="entriesCount >= 1000"
+                    >
+                        Le nombre de cas est très grand ! Êtes-vous sûr de vouloir exporter autant de cas ?
+                    </b-alert>
+                </b-tab>
+            </b-tabs>
+        </b-modal>
+    </div>
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect'
-import 'vue-multiselect/dist/vue-multiselect.min.css'
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import Moment from 'moment';
-Moment.locale('fr');
+import Moment from "moment";
+Moment.locale("fr");
 
-import axios from 'axios';
+import axios from "axios";
 
 export default {
-    props: ['entriesCount'],
+    props: {
+        "entriesCount": {
+            type: Number,
+            default: 0,
+        },
+    },
     data: function () {
         return {
             searchId: 0,
@@ -96,7 +126,7 @@ export default {
             info: true,
             sanction: true,
             allYears: false,
-        }
+        };
     },
     computed: {
         isOk: function () {
@@ -105,6 +135,7 @@ export default {
             } else if (this.tabIndex == 1) {
                 return true;
             }
+            return false;
         },
     },
     methods: {
@@ -123,43 +154,44 @@ export default {
         getNameClasseOptions: function (query) {
             this.searchId += 1;
             let currentSearch = this.searchId;
-            const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             const data = {
                 query: query,
                 teachings: this.$store.state.settings.teachings,
-                people: 'student',
+                people: "student",
                 check_access: true,
             };
-            axios.post('/annuaire/api/people_or_classes/', data, token)
-            .then(response => {
-                if (this.searchId !== currentSearch)
-                    return;
+            axios.post("/annuaire/api/people_or_classes/", data, token)
+                .then(response => {
+                    if (this.searchId !== currentSearch)
+                        return;
 
-                const options = response.data.map(p => {
-                    if (Number.isNaN(Number.parseInt(query[0]))) {
+                    const options = response.data.map(p => {
+                        if (Number.isNaN(Number.parseInt(query[0]))) {
                         // It is a student.
-                        const classe = " " + p.classe.year + p.classe.letter.toUpperCase();
-                        return {display: p.last_name + ' ' + p.first_name + classe + ' – ' + p.teaching.display_name, id: p.matricule}
-                    } else {
+                            const classe = " " + p.classe.year + p.classe.letter.toUpperCase();
+                            return {display: p.last_name + " " + p.first_name + classe + " – " + p.teaching.display_name, id: p.matricule};
+                        } else {
                         // It is a classe.
-                        return p;
-                    }
-                })
-                this.nameClasseOptions = options;
-            });
+                            return p;
+                        }
+                    });
+                    this.nameClasseOptions = options;
+                });
         },
         getPdf: function (evt) {
             evt.preventDefault();
 
-            let path = '/dossier_eleve/get_pdf/?page_size=500&';
+            let path = "/dossier_eleve/get_pdf/?page_size=500&";
 
-            path += 'letter' in this.nameClasse ? 'classe=' : 'matricule_id=';
+            path += "letter" in this.nameClasse ? "classe=" : "matricule_id=";
             path += this.nameClasse.id;
 
-            path += this.info ? '' : '&no_infos=true';
-            path += this.sanction ? '' : '&no_sanctions=true';
-            path += this.allYears ? '' : '&scholar_year=' + currentYear ;
-            path += '&ordering=matricule__last_name';
+            path += this.info ? "" : "&no_infos=true";
+            path += this.sanction ? "" : "&no_sanctions=true";
+            // eslint-disable-next-line no-undef
+            path += this.allYears ? "" : "&scholar_year=" + currentYear ;
+            path += "&ordering=matricule__last_name";
 
             window.open(path);
         },
@@ -168,7 +200,7 @@ export default {
         this.show();
     },
     components: {Multiselect},
-}
+};
 </script>
 
 <style>

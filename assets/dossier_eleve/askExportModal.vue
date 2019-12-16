@@ -18,62 +18,88 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-<div>
-    <b-modal size="lg" title="Exporter des données dans un fichier"
-        ok-title="Créer pdf" :ok-only="true"
-        ref="askExportModal"
-        @ok="getPdf" @hidden="resetModal"
+    <div>
+        <b-modal
+            size="lg"
+            title="Exporter des données dans un fichier"
+            ok-title="Créer pdf"
+            :ok-only="true"
+            ref="askExportModal"
+            @ok="getPdf"
+            @hidden="resetModal"
         >
-        <b-tabs v-model="tabIndex">
-            <b-tab title="Conseil de discipline" active>
-                <b-row class="mt-4">
-                    <b-col>
-                        <b-form-row>
-                            <b-form-group label="À partir du">
-                                <input type="date" v-model="date_council_from" :max="date_council_to" />
-                            </b-form-group>
-                        </b-form-row>
-                    </b-col>
-                    <b-col>
-                        <b-form-row>
-                            <b-form-group label="Jusqu'au">
-                                <input type="date" v-model="date_council_to" :min="date_council_from" />
-                            </b-form-group>
-                        </b-form-row>
-                    </b-col>
-                </b-row>
-            </b-tab>
-            <b-tab title="Retenues">
-                <b-row class="mt-4">
-                    <b-col>
-                        <b-form-row>
-                            <b-form-group label="À partir du">
-                                <input type="date" v-model="date_retenues_from" :max="date_retenues_to" />
-                            </b-form-group>
-                        </b-form-row>
-                    </b-col>
-                    <b-col>
-                        <b-form-row>
-                            <b-form-group label="Jusqu'au">
-                                <input type="date" v-model="date_retenues_to" :min="date_retenues_from" />
-                            </b-form-group>
-                        </b-form-row>
-                    </b-col>
-                </b-row>
-            </b-tab>
-        </b-tabs>
-    </b-modal>
-</div>
+            <b-tabs v-model="tabIndex">
+                <b-tab
+                    title="Conseil de discipline"
+                    active
+                >
+                    <b-row class="mt-4">
+                        <b-col>
+                            <b-form-row>
+                                <b-form-group label="À partir du">
+                                    <input
+                                        type="date"
+                                        v-model="date_council_from"
+                                        :max="date_council_to"
+                                    >
+                                </b-form-group>
+                            </b-form-row>
+                        </b-col>
+                        <b-col>
+                            <b-form-row>
+                                <b-form-group label="Jusqu'au">
+                                    <input
+                                        type="date"
+                                        v-model="date_council_to"
+                                        :min="date_council_from"
+                                    >
+                                </b-form-group>
+                            </b-form-row>
+                        </b-col>
+                    </b-row>
+                </b-tab>
+                <b-tab title="Retenues">
+                    <b-row class="mt-4">
+                        <b-col>
+                            <b-form-row>
+                                <b-form-group label="À partir du">
+                                    <input
+                                        type="date"
+                                        v-model="date_retenues_from"
+                                        :max="date_retenues_to"
+                                    >
+                                </b-form-group>
+                            </b-form-row>
+                        </b-col>
+                        <b-col>
+                            <b-form-row>
+                                <b-form-group label="Jusqu'au">
+                                    <input
+                                        type="date"
+                                        v-model="date_retenues_to"
+                                        :min="date_retenues_from"
+                                    >
+                                </b-form-group>
+                            </b-form-row>
+                        </b-col>
+                    </b-row>
+                </b-tab>
+            </b-tabs>
+        </b-modal>
+    </div>
 </template>
 
 <script>
-import Moment from 'moment';
-Moment.locale('fr');
-
-import axios from 'axios';
+import Moment from "moment";
+Moment.locale("fr");
 
 export default {
-    props: ['entriesCount'],
+    props: {
+        "entriesCount": {
+            type: Number,
+            default: 0
+        },
+    },
     data: function () {
         return {
             tabIndex: 0,
@@ -81,7 +107,7 @@ export default {
             date_council_to: null,
             date_retenues_from: null,
             date_retenues_to: null,
-        }
+        };
     },
     watch: {
         date_council_from: function (date) {
@@ -108,14 +134,14 @@ export default {
         getPdf: function (evt) {
             evt.preventDefault();
 
-            let path = '/dossier_eleve/get_pdf_'
+            let path = "/dossier_eleve/get_pdf_";
             if (this.tabIndex == 0) {
-                path += 'council/?datetime_conseil__gt=' + this.date_council_from;
-                path += ' 00:00&datetime_conseil__lt=' + this.date_council_to + ' 23:59';
+                path += "council/?datetime_conseil__gt=" + this.date_council_from;
+                path += " 00:00&datetime_conseil__lt=" + this.date_council_to + " 23:59";
             } else if (this.tabIndex == 1) {
-                path += 'retenues/?activate_all_retenues=true'
-                path += '&datetime_sanction__gt=' + this.date_retenues_from;
-                path += ' 00:00&datetime_sanction__lt=' + this.date_retenues_to + ' 23:59';
+                path += "retenues/?activate_all_retenues=true";
+                path += "&datetime_sanction__gt=" + this.date_retenues_from;
+                path += " 00:00&datetime_sanction__lt=" + this.date_retenues_to + " 23:59";
             }
             path += "&ordering=matricule__classe__year,matricule__classe__letter,matricule__last_name&page_size=500";
             window.open(path);
@@ -124,7 +150,7 @@ export default {
     mounted: function () {
         this.show();
     },
-}
+};
 </script>
 
 <style>

@@ -19,46 +19,109 @@
 
 <template>
     <div>
-        <transition appear name="fade">
-            <b-card :class="'px-4 mt-2 current-card ' + cardClass" no-body>
+        <transition
+            appear
+            name="fade"
+        >
+            <b-card
+                :class="'px-4 mt-2 current-card ' + cardClass"
+                no-body
+            >
                 <b-row class="entry-title">
                     <b-col>
-                        <h5><a class="clickable" @click="$emit('showInfo')">{{ title }}</a>
-                            <b-btn variant="link" size="sm" @click="filterStudent">
-                                <icon name="eye" scale="1.2" class="align-text-middle"></icon>
+                        <h5>
+                            <a
+                                class="clickable"
+                                @click="$emit('showInfo')"
+                            >{{ title }}</a>
+                            <b-btn
+                                variant="link"
+                                size="sm"
+                                @click="filterStudent"
+                            >
+                                <icon
+                                    name="eye"
+                                    scale="1.2"
+                                    class="align-text-middle"
+                                />
                             </b-btn>
                         </h5>
                     </b-col>
                     <b-col sm="2">
                         <div class="text-right">
-                            <b-btn variant="light" size="sm" @click="editEntry"
-                            class="card-link"><icon scale="1.3" name="edit" color="green" class="align-text-bottom"></icon></b-btn>
-                            <b-btn variant="light" size="sm" @click="deleteEntry"
-                            class="card-link"><icon scale="1.3" name="trash" color="red" class="align-text-bottom"></icon></b-btn>
+                            <b-btn
+                                variant="light"
+                                size="sm"
+                                @click="editEntry"
+                                class="card-link"
+                            >
+                                <icon
+                                    scale="1.3"
+                                    name="edit"
+                                    color="green"
+                                    class="align-text-bottom"
+                                />
+                            </b-btn>
+                            <b-btn
+                                variant="light"
+                                size="sm"
+                                @click="deleteEntry"
+                                class="card-link"
+                            >
+                                <icon
+                                    scale="1.3"
+                                    name="trash"
+                                    color="red"
+                                    class="align-text-bottom"
+                                />
+                            </b-btn>
                         </div>
                     </b-col>
                 </b-row>
                 <b-row class="entry-subtitle">
                     <em>{{ subtitle }}</em>
-                    <a @click="editEntry"><icon name="paperclip" color="blue" v-if="rowData.attachments.length > 0"></icon></a>
+                    <a @click="editEntry"><icon
+                        name="paperclip"
+                        color="blue"
+                        v-if="rowData.attachments.length > 0"
+                    /></a>
                 </b-row>
                 <b-row class="text-center">
-                    <b-col md="2" class="category">
-                        <icon name="info" scale="1.2" v-if="isInfo" color="blue" class="align-text-bottom"></icon>
-                        <icon name="bell" scale="1.2" v-else color="red" class="align-text-bottom"></icon>
+                    <b-col
+                        md="2"
+                        class="category"
+                    >
+                        <icon
+                            name="info"
+                            scale="1.2"
+                            v-if="isInfo"
+                            color="blue"
+                            class="align-text-bottom"
+                        />
+                        <icon
+                            name="bell"
+                            scale="1.2"
+                            v-else
+                            color="red"
+                            class="align-text-bottom"
+                        />
                         {{ category }}
                     </b-col>
                     <b-col class="current-data mb-1 mr-1">
-                        <span v-html="comment">
-                        </span>
-                        <b-btn class="move-up" size="sm" variant="light" v-if="comment.length > 150" @click="expand = !expand">
+                        <span v-html="comment" />
+                        <b-btn
+                            class="move-up"
+                            size="sm"
+                            variant="light"
+                            v-if="comment.length > 150"
+                            @click="expand = !expand"
+                        >
                             <icon
                                 color="grey"
                                 class="align-text-top"
                                 scale="1.1"
                                 :name="expand ? 'angle-double-up' : 'angle-double-down'"
-                                >
-                            </icon>
+                            />
                         </b-btn>
                     </b-col>
                 </b-row>
@@ -67,76 +130,81 @@
     </div>
 </template>
 <script>
-    import Moment from 'moment';
-    Moment.locale('fr');
+import Moment from "moment";
+Moment.locale("fr");
 
-    export default {
-        props: {
-            rowData : {type: Object},
+export default {
+    props: {
+        rowData : {
+            type: Object,
+            default: () => {}
         },
-        data: function () {
-            return {
-                expand: false,
+    },
+    data: function () {
+        return {
+            expand: false,
+        };
+    },
+    computed: {
+        title: function () {
+            let student = this.rowData.matricule;
+            let title = student.last_name;
+            title += " " + student.first_name;
+            title += " " + student.classe.year + student.classe.letter.toUpperCase();
+            title += " (" + student.teaching.display_name + ")";
+            return title;
+        },
+        subtitle: function () {
+            let subtitle = "";
+            if (this.rowData.datetime_sanction) {
+                subtitle += "Sanction : " + Moment(this.rowData.datetime_sanction).format("DD/MM/YY") + ". ";
+            }
+            subtitle += "Demandé par " + this.rowData.demandeur + " (" + Moment(this.rowData.datetime_encodage).calendar() + ")";
+            return subtitle;
+        },
+        category: function() {
+            if (this.rowData.info)
+                return this.rowData.info.info ;
+
+            if (this.rowData.sanction_decision)
+                return this.rowData.sanction_decision.sanction_decision;
+            
+            return "";
+        },
+        cardClass: function () {
+            const info_sanction = this.isInfo ? "info" : "sanction_decision";
+            const important = this.rowData.important ? "important " : "";
+            return important + info_sanction;
+        },
+        isInfo: function () {
+            return this.rowData.info ? true : false;
+        },
+        comment: function () {
+            const regex = /(<([^>]+)>)/ig;
+            const commentLength = this.rowData.explication_commentaire.replace(regex, "").length;
+            if (this.expand || commentLength < 151) {
+                return this.rowData.explication_commentaire;
+            } else {
+                const diffLength = this.rowData.explication_commentaire.length - commentLength;
+                let comment = this.rowData.explication_commentaire.substring(0, 150 + diffLength) + "…";
+                if (comment.startsWith("<p>"))
+                    comment += "</p>";
+                return comment;
             }
         },
-        computed: {
-            title: function () {
-                let student = this.rowData.matricule;
-                let title = student.last_name
-                title += " " + student.first_name;
-                title += " " + student.classe.year + student.classe.letter.toUpperCase();
-                title += " (" + student.teaching.display_name + ")";
-                return title;
-            },
-            subtitle: function () {
-                let subtitle = "";
-                if (this.rowData.datetime_sanction) {
-                    subtitle += "Sanction : " + Moment(this.rowData.datetime_sanction).format('DD/MM/YY') + ". "
-                }
-                subtitle += "Demandé par " + this.rowData.demandeur + " (" + Moment(this.rowData.datetime_encodage).calendar() + ")"
-                return subtitle;
-            },
-            category: function() {
-                if (this.rowData.info)
-                    return this.rowData.info.info ;
-
-                if (this.rowData.sanction_decision)
-                    return this.rowData.sanction_decision.sanction_decision;
-            },
-            cardClass: function () {
-                const info_sanction = this.isInfo ? 'info' : 'sanction_decision'
-                const important = this.rowData.important ? 'important ' : ''
-                return important + info_sanction;
-            },
-            isInfo: function () {
-                return this.rowData.info ? true : false;
-            },
-            comment: function () {
-                const regex = /(<([^>]+)>)/ig;
-                const commentLength = this.rowData.explication_commentaire.replace(regex, "").length;
-                if (this.expand || commentLength < 151) {
-                    return this.rowData.explication_commentaire;
-                } else {
-                    const diffLength = this.rowData.explication_commentaire.length - commentLength;
-                    let comment = this.rowData.explication_commentaire.substring(0, 150 + diffLength) + "…";
-                    if (comment.startsWith("<p>"))
-                        comment += "</p>";
-                    return comment;
-                }
-            },
+    },
+    methods: {
+        deleteEntry: function () {
+            this.$emit("delete");
         },
-        methods: {
-            deleteEntry: function () {
-                this.$emit('delete');
-            },
-            editEntry: function () {
-                this.$emit('edit');
-            },
-            filterStudent: function () {
-                this.$emit('filterStudent', this.rowData.matricule_id);
-            }
+        editEntry: function () {
+            this.$emit("edit");
+        },
+        filterStudent: function () {
+            this.$emit("filterStudent", this.rowData.matricule_id);
         }
     }
+};
 </script>
 
 <style>

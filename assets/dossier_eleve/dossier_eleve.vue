@@ -19,16 +19,27 @@
 
 <template>
     <div>
-        <div class="loading" v-if="!loaded"></div>
-        <app-menu :menu-info="menuInfo"></app-menu>
+        <div
+            class="loading"
+            v-if="!loaded"
+        />
+        <app-menu :menu-info="menuInfo" />
         <b-container v-if="loaded">
             <b-row>
                 <h2>Dossier des élèves</h2>
             </b-row>
-            <b-row class="mb-2" v-if="canAskSanction">
+            <b-row
+                class="mb-2"
+                v-if="canAskSanction"
+            >
                 <b-tabs>
                     <template slot="tabs">
-                        <b-nav-item active href="/dossier_eleve/">Dossier des élèves</b-nav-item>
+                        <b-nav-item
+                            active
+                            href="/dossier_eleve/"
+                        >
+                            Dossier des élèves
+                        </b-nav-item>
                         <b-nav-item href="/dossier_eleve/ask_sanctions">
                             <span class="text-danger">Demandes de sanction</span>
                             <span v-if="$store.state.canSetSanction">
@@ -43,16 +54,35 @@
                 <b-col>
                     <b-form-group>
                         <div>
-                            <b-btn variant="primary" @click="openDynamicModal('add-modal')">
-                                <icon name="plus" scale="1" class="align-middle"></icon>
+                            <b-btn
+                                variant="primary"
+                                @click="openDynamicModal('add-modal')"
+                            >
+                                <icon
+                                    name="plus"
+                                    scale="1"
+                                    class="align-middle"
+                                />
                                 Nouveau cas
                             </b-btn>
-                            <b-btn variant="secondary" @click="openDynamicModal('export-modal')">
-                                <icon name="file" scale="1" ></icon>
+                            <b-btn
+                                variant="secondary"
+                                @click="openDynamicModal('export-modal')"
+                            >
+                                <icon
+                                    name="file"
+                                    scale="1"
+                                />
                                 Export
                             </b-btn>
-                            <b-btn variant="outline-secondary" v-b-toggle.filters>
-                                <icon name="search" scale="1"></icon>
+                            <b-btn
+                                variant="outline-secondary"
+                                v-b-toggle.filters
+                            >
+                                <icon
+                                    name="search"
+                                    scale="1"
+                                />
                                 Ajouter des filtres
                             </b-btn>
                         </div>
@@ -61,65 +91,104 @@
             </b-row>
             <b-row>
                 <b-col>
-                        <b-collapse id="filters" v-model=showFilters>
-                            <b-card>
-                                <filters app="dossier_eleve" model="cas_eleve" ref="filters" @update="applyFilter"></filters>
-                            </b-card>
-                        </b-collapse>
-                    </b-col>
+                    <b-collapse
+                        id="filters"
+                        v-model="showFilters"
+                    >
+                        <b-card>
+                            <filters
+                                app="dossier_eleve"
+                                model="cas_eleve"
+                                ref="filters"
+                                @update="applyFilter"
+                            />
+                        </b-card>
+                    </b-collapse>
+                </b-col>
             </b-row>
-            <b-pagination class="mt-1" :total-rows="entriesCount" v-model="currentPage" @change="changePage" :per-page="20">
-            </b-pagination>
+            <b-pagination
+                class="mt-1"
+                :total-rows="entriesCount"
+                v-model="currentPage"
+                @change="changePage"
+                :per-page="20"
+            />
             <cas-eleve-entry
                 v-for="(entry, index) in entries"
-                v-bind:key="entry.id"
-                v-bind:row-data="entry"
+                :key="entry.id"
+                :row-data="entry"
                 @delete="askDelete(entry)"
                 @edit="editEntry(index)"
                 @filterStudent="filterStudent($event)"
                 @showInfo="showInfo(entry)"
-                >
-            </cas-eleve-entry>
-            <b-modal ref="deleteModal" cancel-title="Annuler" hide-header centered
-                @ok="deleteEntry" @cancel="currentEntry = null"
-                :no-close-on-backdrop="true" :no-close-on-esc="true">
+            />
+            <b-modal
+                ref="deleteModal"
+                cancel-title="Annuler"
+                hide-header
+                centered
+                @ok="deleteEntry"
+                @cancel="currentEntry = null"
+                :no-close-on-backdrop="true"
+                :no-close-on-esc="true"
+            >
                 Êtes-vous sûr de vouloir supprimer définitivement cette entrée ?
             </b-modal>
-            <b-modal :title="currentName" size="lg" ref="infoModal" centered ok-only @hidden="currentEntry = null">
-                <info v-if="currentEntry" :matricule="currentEntry.matricule_id" type="student" no-news></info>
+            <b-modal
+                :title="currentName"
+                size="lg"
+                ref="infoModal"
+                centered
+                ok-only
+                @hidden="currentEntry = null"
+            >
+                <info
+                    v-if="currentEntry"
+                    :matricule="currentEntry.matricule_id"
+                    type="student"
+                    no-news
+                />
             </b-modal>
             <component
-                v-bind:is="currentModal" ref="dynamicModal"
-                @update="loadEntries" @reset="currentEntry = null"
-                :entry="currentEntry" :entriesCount="entriesCount">
-            </component>
-            <b-pagination class="mt-1" :total-rows="entriesCount" v-model="currentPage" @change="changePage" :per-page="20">
-            </b-pagination>
+                :is="currentModal"
+                ref="dynamicModal"
+                @update="loadEntries"
+                @reset="currentEntry = null"
+                :entry="currentEntry"
+                :entries-count="entriesCount"
+            />
+            <b-pagination
+                class="mt-1"
+                :total-rows="entriesCount"
+                v-model="currentPage"
+                @change="changePage"
+                :per-page="20"
+            />
         </b-container>
     </div>
 </template>
 
 <script>
-import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import Vue from "vue";
+import BootstrapVue from "bootstrap-vue";
+import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 
-import 'vue-awesome/icons'
-import Icon from 'vue-awesome/components/Icon.vue'
-Vue.component('icon', Icon);
+import "vue-awesome/icons";
+import Icon from "vue-awesome/components/Icon.vue";
+Vue.component("icon", Icon);
 
-import axios from 'axios';
+import axios from "axios";
 window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
-import Info from '../annuaire/info.vue'
+import Info from "../annuaire/info.vue";
 
-import Filters from '../common/filters.vue'
-import Menu from '../common/menu.vue'
-import CasEleveEntry from './casEleveEntry.vue'
-import AddModal from './addModal.vue'
-import ExportModal from './exportModal.vue'
+import Filters from "../common/filters.vue";
+import Menu from "../common/menu.vue";
+import CasEleveEntry from "./casEleveEntry.vue";
+import AddModal from "./addModal.vue";
+import ExportModal from "./exportModal.vue";
 
 export default {
     data: function () {
@@ -136,14 +205,14 @@ export default {
             loaded: false,
             askSanctionsCount: 0,
             askSanctionsNotDoneCount: 0,
-        }
+        };
     },
     computed: {
         currentName: function () {
             if (this.currentEntry) {
                 return this.currentEntry.matricule.display;
             }
-            return '';
+            return "";
         },
         canAskSanction: function () {
             const enable = this.$store.state.settings.enable_submit_sanctions;
@@ -161,22 +230,22 @@ export default {
         },
         openDynamicModal: function (modal) {
             this.currentModal = modal;
-            if ('dynamicModal' in this.$refs) this.$refs.dynamicModal.show();
+            if ("dynamicModal" in this.$refs) this.$refs.dynamicModal.show();
         },
         showInfo: function (entry) {
-            this.currentEntry = entry
+            this.currentEntry = entry;
             this.$refs.infoModal.show();
         },
         filterStudent: function (matricule) {
             this.showFilters = true;
-            this.$store.commit('addFilter',
-                {filterType: 'matricule_id', tag: matricule, value: matricule}
+            this.$store.commit("addFilter",
+                {filterType: "matricule_id", tag: matricule, value: matricule}
             );
-            this.applyFilter()
+            this.applyFilter();
         },
         applyFilter: function () {
             this.filter = "";
-            let storeFilters = this.$store.state.filters
+            let storeFilters = this.$store.state.filters;
             for (let f in storeFilters) {
                 if (storeFilters[f].filterType.startsWith("date")
                     || storeFilters[f].filterType.startsWith("time")) {
@@ -196,59 +265,60 @@ export default {
         },
         editEntry: function(index) {
             this.currentEntry = this.entries[index];
-            this.openDynamicModal('add-modal');
+            this.openDynamicModal("add-modal");
         },
         deleteEntry: function () {
-            const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-            axios.delete('/dossier_eleve/api/cas_eleve/' + this.currentEntry.id + '/', token)
-            .then(response => {
-                this.loadEntries();
-            });
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            axios.delete("/dossier_eleve/api/cas_eleve/" + this.currentEntry.id + "/", token)
+                .then(() => {
+                    this.loadEntries();
+                });
 
             this.currentEntry = null;
         },
         loadEntries: function () {
-            axios.get('/dossier_eleve/api/cas_eleve/?page=' + this.currentPage + this.filter + this.ordering)
-            .then(response => {
-                this.entriesCount = response.data.count;
-                this.entries = response.data.results;
-                this.loaded = true;
-            });
+            axios.get("/dossier_eleve/api/cas_eleve/?page=" + this.currentPage + this.filter + this.ordering)
+                .then(response => {
+                    this.entriesCount = response.data.count;
+                    this.entries = response.data.results;
+                    this.loaded = true;
+                });
         },
         checkMatriculeFilter: function () {
             // const fullscreen = window.location.href.includes("matricule");
             const matricule = (new URL(document.location)).searchParams.get("matricule");
             if (matricule) {
-                this.$store.commit('addFilter', {filterType: "matricule_id", value: matricule, tag: matricule});
+                this.$store.commit("addFilter", {filterType: "matricule_id", value: matricule, tag: matricule});
                 this.showFilters = true;
             }
         }
     },
     mounted: function () {
+        // eslint-disable-next-line no-undef
         this.menuInfo = menu;
 
         this.checkMatriculeFilter();
         this.applyFilter();
         this.loadEntries();
 
-        axios.get('/dossier_eleve/api/ask_sanctions/?page=' + this.currentPage + this.filter + this.ordering)
-        .then(response => {
-            this.askSanctionsCount = response.data.count;
-        });
-        axios.get('/dossier_eleve/api/ask_sanctions/?page=' + this.currentPage + this.filter + this.ordering + '&activate_not_done=true')
-        .then(response => {
-            this.askSanctionsNotDoneCount = response.data.count;
-        })
+        axios.get("/dossier_eleve/api/ask_sanctions/?page=" + this.currentPage + this.filter + this.ordering)
+            .then(response => {
+                this.askSanctionsCount = response.data.count;
+            });
+        axios.get("/dossier_eleve/api/ask_sanctions/?page=" + this.currentPage + this.filter + this.ordering + "&activate_not_done=true")
+            .then(response => {
+                this.askSanctionsNotDoneCount = response.data.count;
+            });
     },
     components: {
-        'filters': Filters,
-        'cas-eleve-entry': CasEleveEntry,
-        'add-modal': AddModal,
-        'export-modal': ExportModal,
-        'info': Info,
-        'app-menu': Menu,
+        "filters": Filters,
+        "cas-eleve-entry": CasEleveEntry,
+        "add-modal": AddModal,
+        "export-modal": ExportModal,
+        "info": Info,
+        "app-menu": Menu,
     }
-}
+};
 </script>
 
 <style>

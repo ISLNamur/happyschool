@@ -19,54 +19,116 @@
 
 <template>
     <div>
-        <transition appear name="fade">
-            <b-card :class="'px-4 mt-2 current-card '" no-body>
+        <transition
+            appear
+            name="fade"
+        >
+            <b-card
+                :class="'px-4 mt-2 current-card '"
+                no-body
+            >
                 <b-row class="entry-title">
                     <b-col>
-                        <h5><a class="clickable" @click="$emit('showInfo')">{{ title }}</a>
-                            <b-btn variant="link" size="sm" @click="filterStudent">
-                                <icon name="eye" scale="1.2" class="align-text-middle"></icon>
+                        <h5>
+                            <a
+                                class="clickable"
+                                @click="$emit('showInfo')"
+                            >{{ title }}</a>
+                            <b-btn
+                                variant="link"
+                                size="sm"
+                                @click="filterStudent"
+                            >
+                                <icon
+                                    name="eye"
+                                    scale="1.2"
+                                    class="align-text-middle"
+                                />
                             </b-btn>
                         </h5>
                     </b-col>
                     <b-col sm="4">
                         <div class="text-right">
                             <span v-if="$store.state.canSetSanction">
-                                <icon name="question-circle" color="blue" class="align-text-middle"
+                                <icon
+                                    name="question-circle"
+                                    color="blue"
+                                    class="align-text-middle"
                                     v-if="!canSetSanctionDone"
-                                    v-b-tooltip.hover title="La date de sanction doit être antérieure ou égale à aujourd'hui."
-                                    >
-                                </icon>
-                                <b-form-checkbox :disabled="!canSetSanctionDone" @change="setSanctionDone">
+                                    v-b-tooltip.hover
+                                    title="La date de sanction doit être antérieure ou égale à aujourd'hui."
+                                />
+                                <b-form-checkbox
+                                    :disabled="!canSetSanctionDone"
+                                    @change="setSanctionDone"
+                                >
                                     Sanction faite ?
                                 </b-form-checkbox>
                             </span>
                             <span v-if="canEditSanction">
-                                <b-btn variant="light" size="sm" @click="editEntry"
-                                    class="card-link"><icon scale="1.3" name="edit" color="green" class="align-text-bottom"></icon></b-btn>
-                                <b-btn variant="light" size="sm" @click="deleteEntry"
-                                    class="card-link"><icon scale="1.3" name="trash" color="red" class="align-text-bottom"></icon></b-btn>
+                                <b-btn
+                                    variant="light"
+                                    size="sm"
+                                    @click="editEntry"
+                                    class="card-link"
+                                ><icon
+                                    scale="1.3"
+                                    name="edit"
+                                    color="green"
+                                    class="align-text-bottom"
+                                /></b-btn>
+                                <b-btn
+                                    variant="light"
+                                    size="sm"
+                                    @click="deleteEntry"
+                                    class="card-link"
+                                ><icon
+                                    scale="1.3"
+                                    name="trash"
+                                    color="red"
+                                    class="align-text-bottom"
+                                /></b-btn>
                             </span>
                         </div>
                     </b-col>
                 </b-row>
-                <b-row class="entry-subtitle"><em>{{ subtitle }}</em></b-row>
+                <b-row class="entry-subtitle">
+                    <em>{{ subtitle }}</em>
+                </b-row>
                 <b-row>
-                    <b-col md="2" class="category">
+                    <b-col
+                        md="2"
+                        class="category"
+                    >
                         {{ category }}
                     </b-col>
-                    <b-col md="2" class="text-center">{{ date_council }}</b-col>
-                    <b-col md="2" class="text-center">{{ date_sanction }}</b-col>
+                    <b-col
+                        md="2"
+                        class="text-center"
+                    >
+                        {{ date_council }}
+                    </b-col>
+                    <b-col
+                        md="2"
+                        class="text-center"
+                    >
+                        {{ date_sanction }}
+                    </b-col>
                     <b-col class="current-data mb-1 mr-1">
-                        <span v-html="comment"></span>
-                        <b-btn class="move-up" size="sm" variant="light" v-if="comment.length > 100" @click="expand = !expand">
+                        <span v-html="comment" />
+                        <b-btn
+                            class="move-up"
+                            size="sm"
+                            variant="light"
+                            v-if="comment.length > 100"
+                            @click="expand = !expand"
+                        >
                             <icon
                                 color="grey"
                                 class="align-text-top"
                                 scale="1.1"
                                 :name="expand ? 'angle-double-up' : 'angle-double-down'"
-                                >
-                            </icon>
+                            />
                         </b-btn>
                     </b-col>
                 </b-row>
@@ -75,104 +137,108 @@
     </div>
 </template>
 <script>
-    import Moment from 'moment';
-    Moment.locale('fr');
+import Moment from "moment";
+Moment.locale("fr");
 
-    import axios from 'axios';
+import axios from "axios";
 
-    export default {
-        props: {
-            rowData : {type: Object},
+export default {
+    props: {
+        rowData : {
+            type: Object,
+            default: () => {},
         },
-        data: function () {
-            return {
-                expand: false,
+    },
+    data: function () {
+        return {
+            expand: false,
+        };
+    },
+    computed: {
+        title: function () {
+            let student = this.rowData.matricule;
+            let title = student.last_name;
+            title += " " + student.first_name;
+            title += " " + student.classe.year + student.classe.letter.toUpperCase();
+            title += " (" + student.teaching.display_name + ")";
+            return title;
+        },
+        subtitle: function () {
+            return "Demandé par " + this.rowData.demandeur + " (" + Moment(this.rowData.datetime_encodage).calendar() + ")";
+        },
+        category: function () {
+            return this.rowData.sanction_decision.sanction_decision;
+        },
+        date_sanction: function () {
+            return this.rowData.datetime_sanction ? Moment(this.rowData.datetime_sanction).format("DD/MM/YY") : "";
+        },
+        date_council: function () {
+            const datetime_conseil = this.rowData.datetime_conseil ? Moment(this.rowData.datetime_conseil).format("DD/MM/YY") : null;
+            if (datetime_conseil)
+                return datetime_conseil;
+            if (!this.rowData.datetime_sanction) {
+                return "À définir";
+            } else {
+                return "Hors-conseil";
             }
         },
-        computed: {
-            title: function () {
-                let student = this.rowData.matricule;
-                let title = student.last_name
-                title += " " + student.first_name;
-                title += " " + student.classe.year + student.classe.letter.toUpperCase();
-                title += " (" + student.teaching.display_name + ")";
-                return title;
-            },
-            subtitle: function () {
-                return "Demandé par " + this.rowData.demandeur + " (" + Moment(this.rowData.datetime_encodage).calendar() + ")";
-            },
-            category: function () {
-                return this.rowData.sanction_decision.sanction_decision;
-            },
-            date_sanction: function () {
-                return this.rowData.datetime_sanction ? Moment(this.rowData.datetime_sanction).format('DD/MM/YY') : '';
-            },
-            date_council: function () {
-                const datetime_conseil = this.rowData.datetime_conseil ? Moment(this.rowData.datetime_conseil).format('DD/MM/YY') : null;
-                if (datetime_conseil)
-                    return datetime_conseil;
-                if (!this.rowData.datetime_sanction) {
-                    return 'À définir';
-                } else {
-                    return 'Hors-conseil'
-                }
-            },
-            comment: function () {
-                const regex = /(<([^>]+)>)/ig;
-                const commentLength = this.rowData.explication_commentaire.replace(regex, "").length;
-                if (this.expand || commentLength < 101) {
-                    return this.rowData.explication_commentaire;
-                } else {
-                    const diffLength = this.rowData.explication_commentaire.length - commentLength;
-                    let comment = this.rowData.explication_commentaire.substring(0, 100 + diffLength) + "…";
-                    if (comment.startsWith("<p>"))
-                        comment += "</p>";
-                    return comment;
-                }
-            },
-            canSetSanctionDone: function () {
-                if (this.date_sanction === '') {
-                    return false;
-                } else {
-                    // Check that sanction date is today or older.
-                    return Moment(this.rowData.datetime_sanction).isSameOrBefore(Moment(), 'day');
-                }
-            },
-            canEditSanction: function () {
-                if (this.$store.state.canSetSanction)
-                    return true;
-
-                if (this.rowData.user == user)
-                    return true;
-
+        comment: function () {
+            const regex = /(<([^>]+)>)/ig;
+            const commentLength = this.rowData.explication_commentaire.replace(regex, "").length;
+            if (this.expand || commentLength < 101) {
+                return this.rowData.explication_commentaire;
+            } else {
+                const diffLength = this.rowData.explication_commentaire.length - commentLength;
+                let comment = this.rowData.explication_commentaire.substring(0, 100 + diffLength) + "…";
+                if (comment.startsWith("<p>"))
+                    comment += "</p>";
+                return comment;
+            }
+        },
+        canSetSanctionDone: function () {
+            if (this.date_sanction === "") {
                 return false;
+            } else {
+                // Check that sanction date is today or older.
+                return Moment(this.rowData.datetime_sanction).isSameOrBefore(Moment(), "day");
             }
         },
-        methods: {
-            deleteEntry: function () {
-                this.$emit('delete');
-            },
-            editEntry: function () {
-                this.$emit('edit');
-            },
-            filterStudent: function () {
-                this.$emit('filterStudent', this.rowData.matricule_id);
-            },
-            setSanctionDone: function () {
-                const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-                const allow_retenues = this.rowData.sanction_decision.is_retenue ? '/?activate_all_retenues=true' : '/';
-                const path = '/dossier_eleve/api/ask_sanctions/' + this.rowData.id + allow_retenues;
-                axios.patch(path, {sanction_faite: true}, token)
-                .then(response => {
-                    this.$emit('done');
+        canEditSanction: function () {
+            if (this.$store.state.canSetSanction)
+                return true;
+
+            // eslint-disable-next-line no-undef
+            if (this.rowData.user == user)
+                return true;
+
+            return false;
+        }
+    },
+    methods: {
+        deleteEntry: function () {
+            this.$emit("delete");
+        },
+        editEntry: function () {
+            this.$emit("edit");
+        },
+        filterStudent: function () {
+            this.$emit("filterStudent", this.rowData.matricule_id);
+        },
+        setSanctionDone: function () {
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            const allow_retenues = this.rowData.sanction_decision.is_retenue ? "/?activate_all_retenues=true" : "/";
+            const path = "/dossier_eleve/api/ask_sanctions/" + this.rowData.id + allow_retenues;
+            axios.patch(path, {sanction_faite: true}, token)
+                .then(() => {
+                    this.$emit("done");
                 })
                 .catch(function (error) {
                     alert(error);
                 });
 
-            }
         }
     }
+};
 </script>
 
 <style>

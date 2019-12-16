@@ -18,199 +18,305 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-<div>
-    <b-modal size="lg" title="Nouveau cas"
-        ok-title="Soumettre" cancel-title="Annuler"
-        :ok-disabled="!(form.info_id || form.sanction_decision_id)"
-        ref="addModal"
-        @ok="addCas" @hidden="resetModal"
+    <div>
+        <b-modal
+            size="lg"
+            title="Nouveau cas"
+            ok-title="Soumettre"
+            cancel-title="Annuler"
+            :ok-disabled="!(form.info_id || form.sanction_decision_id)"
+            ref="addModal"
+            @ok="addCas"
+            @hidden="resetModal"
         >
-        <b-row>
-            <b-col sm="4">
-                <div>
-                    <b-img rounded :src="'/static/photos/' + name.matricule + '.jpg'" fluid alt="Photo de l'élève" />
-                </div>
-            </b-col>
-            <b-col>
-                <b-form>
-                    <b-form-row>
-                        <b-col sm="8">
-                            <b-form-group label="Nom" label-for="input-name" :state="inputStates.name">
-                                <multiselect id="input-name"
+            <b-row>
+                <b-col sm="4">
+                    <div>
+                        <b-img
+                            rounded
+                            :src="'/static/photos/' + name.matricule + '.jpg'"
+                            fluid
+                            alt="Photo de l'élève"
+                        />
+                    </div>
+                </b-col>
+                <b-col>
+                    <b-form>
+                        <b-form-row>
+                            <b-col sm="8">
+                                <b-form-group
+                                    label="Nom"
+                                    label-for="input-name"
+                                    :state="inputStates.name"
+                                >
+                                    <multiselect
+                                        id="input-name"
+                                        :internal-search="false"
+                                        :options="nameOptions"
+                                        @search-change="getNameOptions"
+                                        :loading="nameLoading"
+                                        placeholder="Rechercher un étudiant…"
+                                        select-label=""
+                                        selected-label="Sélectionné"
+                                        deselect-label=""
+                                        label="display"
+                                        track-by="matricule"
+                                        v-model="name"
+                                    >
+                                        <span slot="noResult">Aucune personne trouvée.</span>
+                                        <span slot="noOptions" />
+                                    </multiselect>
+                                    <span slot="invalid-feedback">{{ errorMsg('name') }}</span>
+                                </b-form-group>
+                            </b-col>
+                            <b-col sm="4">
+                                <b-form-group
+                                    label="Matricule"
+                                    label-for="input-matricule"
+                                >
+                                    <b-form-input
+                                        id="input-matricule"
+                                        type="text"
+                                        v-model="name.matricule"
+                                        readonly
+                                    />
+                                </b-form-group>
+                            </b-col>
+                        </b-form-row>
+                        <b-form-row>
+                            <b-form-group
+                                label="Demandeur"
+                                label-for="input-demandeur"
+                                :state="inputStates.demandeur"
+                            >
+                                <multiselect
+                                    id="input-demandeur"
                                     :internal-search="false"
-                                    :options="nameOptions"
-                                    @search-change="getNameOptions"
-                                    :loading="nameLoading"
-                                    placeholder="Rechercher un étudiant…"
+                                    :options="demandeurOptions"
+                                    @search-change="getDemandeurOptions"
+                                    :loading="demandeurLoading"
+                                    placeholder="Rechercher un responsable…"
                                     select-label=""
                                     selected-label="Sélectionné"
                                     deselect-label=""
                                     label="display"
-                                    track-by="matricule"
-                                    v-model="name"
-                                    >
-                                    <span slot="noResult">Aucune personne trouvée.</span>
-                                    <span slot="noOptions"></span>
-
+                                    track-by="display"
+                                    v-model="demandeur"
+                                >
+                                    <span slot="noResult">Aucun responsable trouvée.</span>
+                                    <span slot="noOptions" />
                                 </multiselect>
-                                <span slot="invalid-feedback">{{ errorMsg('name') }}</span>
+                                <span slot="invalid-feedback">{{ errorMsg('demandeur') }}</span>
                             </b-form-group>
-                        </b-col>
-                        <b-col sm="4">
-                            <b-form-group label="Matricule" label-for="input-matricule">
-                                <b-form-input id="input-matricule" type="text" v-model="name.matricule" readonly></b-form-input>
-                            </b-form-group>
-                        </b-col>
-                    </b-form-row>
-                    <b-form-row>
-                        <b-form-group label="Demandeur" label-for="input-demandeur" :state="inputStates.demandeur">
-                            <multiselect id="input-demandeur"
-                                :internal-search="false"
-                                :options="demandeurOptions"
-                                @search-change="getDemandeurOptions"
-                                :loading="demandeurLoading"
-                                placeholder="Rechercher un responsable…"
-                                select-label=""
-                                selected-label="Sélectionné"
-                                deselect-label=""
-                                label="display"
-                                track-by="display"
-                                v-model="demandeur"
-                                >
-                                <span slot="noResult">Aucun responsable trouvée.</span>
-                                <span slot="noOptions"></span>
-
-                            </multiselect>
-                            <span slot="invalid-feedback">{{ errorMsg('demandeur') }}</span>
-                        </b-form-group>
-                    </b-form-row>
-                    <b-form-row>
-                        <b-form-checkbox v-model="form.important">
-                            Marquer comme important.
-                        </b-form-checkbox>
-                    </b-form-row>
-                    <b-form-row>
-                        <b-form-group label="Type d'info">
-                            <b-form-radio-group id="info-or-sanction" v-model="infoOrSanction" :disabled="entry ? true : false">
-                                <b-form-radio value="info">Non disciplinaire</b-form-radio>
-                                <b-form-radio value="sanction-decision" :disabled="!$store.state.canSetSanction">Disciplinaire</b-form-radio>
-                            </b-form-radio-group>
-                        </b-form-group>
-                    </b-form-row>
-                    <div v-if="infoOrSanction == 'info'">
-                        <b-form-row>
-                            <b-col>
-                                <b-form-group label="Info" label-for="input-info" :state="inputStates.info_id">
-                                    <b-form-select id="input-info" v-model="form.info_id" :options="infoOptions">
-                                        <template slot="first">
-                                            <option :value="null" disabled>Choisissez un type d'info</option>
-                                        </template>
-                                    </b-form-select>
-                                    <span slot="invalid-feedback">{{ errorMsg('info_id') }}</span>
-                                </b-form-group>
-                            </b-col>
                         </b-form-row>
-                    </div>
-                    <div v-if="infoOrSanction == 'sanction-decision'">
                         <b-form-row>
-                            <b-col sm="7">
-                                <b-form-group label="Info disciplinaire" label-for="input-info" :state="inputStates.sanction_decision_id">
-                                    <b-form-select id="input-info" v-model="form.sanction_decision_id" :options="sanctionDecisionOptions">
-                                        <template slot="first">
-                                            <option :value="null" disabled>Choisissez dans la liste</option>
-                                        </template>
-                                    </b-form-select>
-                                    <span slot="invalid-feedback">{{ errorMsg('sanction_decision_id') }}</span>
-                                </b-form-group>
-                                <b-form-group label="Date de la sanction" label-for="input-date-sanction" :state="inputStates.datetime_sanction">
-                                    <b-form-input id="input-date-sanction" type="date" v-model="form.datetime_sanction"></b-form-input>
-                                    <span slot="invalid-feedback">{{ errorMsg('datetime_sanction') }}</span>
-                                </b-form-group>
-                                <b-form-group v-if="form.sanction_faite !== null" label-for="input-sanction-faite">
-                                    <b-form-checkbox id="input-sanction-faite"
-                                        v-model="form.sanction_faite">
-                                        Sanction faite ?
-                                    </b-form-checkbox>
-                                </b-form-group>
-                            </b-col>
-                            <b-col sm="5">
-                                <b-list-group>
-                                    <b-list-group-item class="d-flex justify-content-between align-items-center"
-                                        v-for="(val, index) in stats" :key="index">
-                                        <strong>{{ val.display }} :</strong> {{ val.value }}
-                                    </b-list-group-item>
-                                </b-list-group>
-                            </b-col>
+                            <b-form-checkbox v-model="form.important">
+                                Marquer comme important.
+                            </b-form-checkbox>
                         </b-form-row>
-                    </div>
-                    <b-form-row v-if="infoOrSanction">
-                        <b-col>
-                            <b-form-group label="Commentaires" label-for="input-comment" :state="inputStates.explication_commentaire">
-                                <quill-editor v-model="form.explication_commentaire" :options="editorOptions">
-                                </quill-editor>
-                                <span slot="invalid-feedback">{{ errorMsg('explication_commentaire') }}</span>
-                            </b-form-group>
-                            <b-form-group
-                                description="Ajouter un ou des fichiers. Accepte uniquement des fichiers images et pdf."
-                                label="Fichier(s)"
+                        <b-form-row>
+                            <b-form-group label="Type d'info">
+                                <b-form-radio-group
+                                    id="info-or-sanction"
+                                    v-model="infoOrSanction"
+                                    :disabled="entry ? true : false"
                                 >
-                                <b-form-file
-                                    multiple
-                                    accept=".pdf, .jpg, .png, jpeg"
-                                    v-model="attachments"
-                                    ref="attachments"
-                                    placeholder="Attacher un ou des fichiers."
-                                    choose-label="Attacher un ou des fichiers"
-                                    drop-label="Déposer des fichiers ici"
-                                    plain
-                                    @input="addFiles"
+                                    <b-form-radio value="info">
+                                        Non disciplinaire
+                                    </b-form-radio>
+                                    <b-form-radio
+                                        value="sanction-decision"
+                                        :disabled="!$store.state.canSetSanction"
                                     >
-                                </b-form-file>
-                                <b-list-group v-for="(item, index) in uploadedFiles" :key="index">
-                                    <file-upload :id=item.id :file="item.file" path="/dossier_eleve/upload_file/"
-                                        :removestr="5"
-                                        @delete="deleteFile(index)" @setdata="setFileData(index, $event)">
-                                    </file-upload>
-                                </b-list-group>
+                                        Disciplinaire
+                                    </b-form-radio>
+                                </b-form-radio-group>
                             </b-form-group>
-                        </b-col>
-                    </b-form-row>
-                    <b-form-row v-if="infoOrSanction == 'info'">
-                        <b-form-group v-if="visibilityOptions.length > 0" label="Donner la visibilité à :">
-                                <b-form-checkbox-group stacked v-model="form.visible_by_groups" name="visible_by_groups" :options="visibilityOptions">
-                                </b-form-checkbox-group>
-                        </b-form-group>
-                        <b-form-checkbox v-model="form.send_to_teachers" :disabled="!$store.state.canSetSanction">
-                            Envoyer l'info par email aux professeurs de la classe de l'élève (les fichiers seront joints).
-                        </b-form-checkbox>
-
-                    </b-form-row>
-                </b-form>
-            </b-col>
-        </b-row>
-    </b-modal>
-</div>
+                        </b-form-row>
+                        <div v-if="infoOrSanction == 'info'">
+                            <b-form-row>
+                                <b-col>
+                                    <b-form-group
+                                        label="Info"
+                                        label-for="input-info"
+                                        :state="inputStates.info_id"
+                                    >
+                                        <b-form-select
+                                            id="input-info"
+                                            v-model="form.info_id"
+                                            :options="infoOptions"
+                                        >
+                                            <template slot="first">
+                                                <option
+                                                    :value="null"
+                                                    disabled
+                                                >
+                                                    Choisissez un type d'info
+                                                </option>
+                                            </template>
+                                        </b-form-select>
+                                        <span slot="invalid-feedback">{{ errorMsg('info_id') }}</span>
+                                    </b-form-group>
+                                </b-col>
+                            </b-form-row>
+                        </div>
+                        <div v-if="infoOrSanction == 'sanction-decision'">
+                            <b-form-row>
+                                <b-col sm="7">
+                                    <b-form-group
+                                        label="Info disciplinaire"
+                                        label-for="input-info"
+                                        :state="inputStates.sanction_decision_id"
+                                    >
+                                        <b-form-select
+                                            id="input-info"
+                                            v-model="form.sanction_decision_id"
+                                            :options="sanctionDecisionOptions"
+                                        >
+                                            <template slot="first">
+                                                <option
+                                                    :value="null"
+                                                    disabled
+                                                >
+                                                    Choisissez dans la liste
+                                                </option>
+                                            </template>
+                                        </b-form-select>
+                                        <span slot="invalid-feedback">{{ errorMsg('sanction_decision_id') }}</span>
+                                    </b-form-group>
+                                    <b-form-group
+                                        label="Date de la sanction"
+                                        label-for="input-date-sanction"
+                                        :state="inputStates.datetime_sanction"
+                                    >
+                                        <b-form-input
+                                            id="input-date-sanction"
+                                            type="date"
+                                            v-model="form.datetime_sanction"
+                                        />
+                                        <span slot="invalid-feedback">{{ errorMsg('datetime_sanction') }}</span>
+                                    </b-form-group>
+                                    <b-form-group
+                                        v-if="form.sanction_faite !== null"
+                                        label-for="input-sanction-faite"
+                                    >
+                                        <b-form-checkbox
+                                            id="input-sanction-faite"
+                                            v-model="form.sanction_faite"
+                                        >
+                                            Sanction faite ?
+                                        </b-form-checkbox>
+                                    </b-form-group>
+                                </b-col>
+                                <b-col sm="5">
+                                    <b-list-group>
+                                        <b-list-group-item
+                                            class="d-flex justify-content-between align-items-center"
+                                            v-for="(val, index) in stats"
+                                            :key="index"
+                                        >
+                                            <strong>{{ val.display }} :</strong> {{ val.value }}
+                                        </b-list-group-item>
+                                    </b-list-group>
+                                </b-col>
+                            </b-form-row>
+                        </div>
+                        <b-form-row v-if="infoOrSanction">
+                            <b-col>
+                                <b-form-group
+                                    label="Commentaires"
+                                    label-for="input-comment"
+                                    :state="inputStates.explication_commentaire"
+                                >
+                                    <quill-editor
+                                        v-model="form.explication_commentaire"
+                                        :options="editorOptions"
+                                    />
+                                    <span slot="invalid-feedback">{{ errorMsg('explication_commentaire') }}</span>
+                                </b-form-group>
+                                <b-form-group
+                                    description="Ajouter un ou des fichiers. Accepte uniquement des fichiers images et pdf."
+                                    label="Fichier(s)"
+                                >
+                                    <b-form-file
+                                        multiple
+                                        accept=".pdf, .jpg, .png, jpeg"
+                                        v-model="attachments"
+                                        ref="attachments"
+                                        placeholder="Attacher un ou des fichiers."
+                                        choose-label="Attacher un ou des fichiers"
+                                        drop-label="Déposer des fichiers ici"
+                                        plain
+                                        @input="addFiles"
+                                    />
+                                    <b-list-group
+                                        v-for="(item, index) in uploadedFiles"
+                                        :key="index"
+                                    >
+                                        <file-upload
+                                            :id="item.id"
+                                            :file="item.file"
+                                            path="/dossier_eleve/upload_file/"
+                                            :removestr="5"
+                                            @delete="deleteFile(index)"
+                                            @setdata="setFileData(index, $event)"
+                                        />
+                                    </b-list-group>
+                                </b-form-group>
+                            </b-col>
+                        </b-form-row>
+                        <b-form-row v-if="infoOrSanction == 'info'">
+                            <b-form-group
+                                v-if="visibilityOptions.length > 0"
+                                label="Donner la visibilité à :"
+                            >
+                                <b-form-checkbox-group
+                                    stacked
+                                    v-model="form.visible_by_groups"
+                                    name="visible_by_groups"
+                                    :options="visibilityOptions"
+                                />
+                            </b-form-group>
+                            <b-form-checkbox
+                                v-model="form.send_to_teachers"
+                                :disabled="!$store.state.canSetSanction"
+                            >
+                                Envoyer l'info par email aux professeurs de la classe de l'élève (les fichiers seront joints).
+                            </b-form-checkbox>
+                        </b-form-row>
+                    </b-form>
+                </b-col>
+            </b-row>
+        </b-modal>
+    </div>
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect'
-import 'vue-multiselect/dist/vue-multiselect.min.css'
+/* eslint-disable no-undef */
 
-import {quillEditor} from 'vue-quill-editor'
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import Moment from 'moment';
-Moment.locale('fr');
+import {quillEditor} from "vue-quill-editor";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
 
-import axios from 'axios';
+import Moment from "moment";
+Moment.locale("fr");
+
+import axios from "axios";
 window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
-import FileUpload from '../common/file_upload.vue';
+import FileUpload from "../common/file_upload.vue";
 
 export default {
-    props: ['entry'],
+    props: {
+        "entry": {
+            type: Object,
+            default: () => {}
+        }
+    },
     data: function () {
         return {
             form: {
@@ -246,7 +352,7 @@ export default {
                 name: null,
                 info_id: null,
                 sanction_decision_id: null,
-                demandeur: null,
+                demandeur: null,
                 explication_commentaire: null,
             },
             coord: false,
@@ -256,12 +362,12 @@ export default {
             editorOptions: {
                 modules: {
                     toolbar: [
-                        ['bold', 'italic', 'underline', 'strike'],
-                        ['blockquote'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        [{ 'indent': '-1'}, { 'indent': '+1' }],
-                        [{ 'align': [] }],
-                        ['clean']
+                        ["bold", "italic", "underline", "strike"],
+                        ["blockquote"],
+                        [{ "list": "ordered"}, { "list": "bullet" }],
+                        [{ "indent": "-1"}, { "indent": "+1" }],
+                        [{ "align": [] }],
+                        ["clean"]
                     ]
                 },
                 placeholder: ""
@@ -276,25 +382,25 @@ export default {
                 this.form.name = this.name.display;
                 this.form.matricule_id = this.name.matricule;
                 // Get statistics.
-                axios.get('dossier_eleve/api/statistics/' + this.name.matricule + '/')
-                .then(response => {
-                    this.stats = JSON.parse(response.data);
-                })
-                .catch(function (error) {
-                    alert(error);
-                });
+                axios.get("dossier_eleve/api/statistics/" + this.name.matricule + "/")
+                    .then(response => {
+                        this.stats = JSON.parse(response.data);
+                    })
+                    .catch(function (error) {
+                        alert(error);
+                    });
             }
         },
         infoOrSanction: function (newChoice) {
             // Reset other part of the form (sanction_decision or info).
-            if (newChoice == 'info') {
+            if (newChoice == "info") {
                 this.form.sanction_decision_id = null;
             } else {
                 this.form.info_id = null;
             }
         },
-        errors: function (newErrors, oldErrors) {
-            let inputs = ['name', 'info_id', 'sanction_decision_id', 'demandeur', 'explication_commentaire'];
+        errors: function (newErrors) {
+            let inputs = ["name", "info_id", "sanction_decision_id", "demandeur", "explication_commentaire"];
             for (let u in inputs) {
                 if (inputs[u] in newErrors) {
                     this.inputStates[inputs[u]] = newErrors[inputs[u]].length == 0;
@@ -303,7 +409,7 @@ export default {
                 }
             }
         },
-        entry: function (entry, oldEntry) {
+        entry: function (entry) {
             this.setEntry(entry);
         },
     },
@@ -315,7 +421,7 @@ export default {
             this.$refs.addModal.hide();
         },
         resetModal: function () {
-            this.$emit('reset');
+            this.$emit("reset");
 
             this.name = {matricule: null};
             this.infoOrSanction = null;
@@ -337,7 +443,7 @@ export default {
             this.form.send_to_teachers = false;
             this.form.attachments = [];
         },
-        addFiles: function(evt) {
+        addFiles: function() {
             for (let a in this.attachments) {
                 this.uploadedFiles.push({file: this.attachments[a], id: -1});
             }
@@ -364,22 +470,22 @@ export default {
                 this.name = {
                     display: entry.name,
                     matricule: entry.matricule_id,
-                }
+                };
                 this.demandeur = {
                     display: entry.demandeur,
-                }
+                };
                 this.form.explication_commentaire = entry.explication_commentaire;
                 this.form.info_id = entry.info_id;
                 this.form.important = entry.important;
                 this.form.sanction_decision_id = entry.sanction_decision_id;
                 if (entry.datetime_sanction) {
                     let datetime = Moment(entry.datetime_sanction);
-                    this.form.datetime_sanction = datetime.format('YYYY-MM-DD');
-                    this.timeSanction = datetime.format('HH:MM');
+                    this.form.datetime_sanction = datetime.format("YYYY-MM-DD");
+                    this.timeSanction = datetime.format("HH:MM");
                 }
                 this.form.sanction_faite = entry.sanction_faite;
 
-                this.infoOrSanction = entry.info_id ? 'info' : 'sanction-decision';
+                this.infoOrSanction = entry.info_id ? "info" : "sanction-decision";
                 if (entry.info_id) {
                     this.form.visible_by_groups = entry.visible_by_groups;
                 }
@@ -401,7 +507,7 @@ export default {
             this.form.demandeur = this.demandeur.display;
             let data = this.form;
             // Set visibility for all if it's sanction_decision.
-            if (this.infoOrSanction == 'sanction-decision') {
+            if (this.infoOrSanction == "sanction-decision") {
                 // Set visibility to all.
                 data.visible_by_groups = Object.keys(groups).map(x => groups[x].id);
             }
@@ -418,34 +524,34 @@ export default {
 
             let modal = this;
             // Send data.
-            const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
-            let path = '/dossier_eleve/api/cas_eleve/'
-            if (this.entry) path += this.entry.id + '/'
+            let path = "/dossier_eleve/api/cas_eleve/";
+            if (this.entry) path += this.entry.id + "/";
             const send = this.entry ? axios.put(path, data, token) : axios.post(path, data, token);
 
-            send.then(response => {
+            send.then(() => {
                 this.hide();
                 this.errors = {};
-                this.$emit('update');
+                this.$emit("update");
             }).catch(function (error) {
                 modal.errors = error.response.data;
             });
         },
         getNameOptions(query) {
-            return this.getPeopleOptions(query, 'student');
+            return this.getPeopleOptions(query, "student");
         },
         getDemandeurOptions(query) {
-            return this.getPeopleOptions(query, 'responsible');
+            return this.getPeopleOptions(query, "responsible");
         },
         getPeopleOptions(query, people) {
             let app = this;
             this.searchId += 1;
             let currentSearch = this.searchId;
-            if (people == 'student') this.nameLoading = true;
-            if (people == 'responsible') this.demandeurLoading = true;
+            if (people == "student") this.nameLoading = true;
+            if (people == "responsible") this.demandeurLoading = true;
 
-            const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             const data = {
                 query: query,
                 teachings: this.$store.state.settings.teachings,
@@ -453,67 +559,67 @@ export default {
                 check_access: true,
                 tenure_class_only: this.$store.state.settings.filter_teacher_entries_by_tenure,
             };
-            axios.post('/annuaire/api/people/', data, token)
-            .then(response => {
+            axios.post("/annuaire/api/people/", data, token)
+                .then(response => {
                 // Avoid that a previous search overwrites a faster following search results.
-                if (this.searchId !== currentSearch)
-                    return;
-                const options = response.data.map(p => {
+                    if (this.searchId !== currentSearch)
+                        return;
+                    const options = response.data.map(p => {
                     // Format entries.
-                    let entry = {display: p.last_name + " " + p.first_name, matricule: p.matricule};
-                    if ('is_secretary' in p) {
+                        let entry = {display: p.last_name + " " + p.first_name, matricule: p.matricule};
+                        if ("is_secretary" in p) {
                         // It's a responsible.
-                        let teachings = " —";
-                        for (let t in p.teaching) {
-                            teachings += " " + p.teaching[t].display_name;
-                        }
-                        entry.display += teachings;
-                    } else {
+                            let teachings = " —";
+                            for (let t in p.teaching) {
+                                teachings += " " + p.teaching[t].display_name;
+                            }
+                            entry.display += teachings;
+                        } else {
                         // It's a student.
-                        entry.display += " " + p.classe.year + p.classe.letter.toUpperCase();
-                        entry.display += " – " + p.teaching.display_name;
+                            entry.display += " " + p.classe.year + p.classe.letter.toUpperCase();
+                            entry.display += " – " + p.teaching.display_name;
+                        }
+                        return entry;
+                    });
+                    if (people == "student") {
+                        this.nameLoading = false;
+                        this.nameOptions = options;
+                    } else if (people == "responsible") {
+                        this.demandeurLoading = false;
+                        this.demandeurOptions = options;
                     }
-                    return entry;
+                })
+                .catch(function (error) {
+                    alert(error);
+                    app.nameLoading = false;
                 });
-                if (people == 'student') {
-                    this.nameLoading = false;
-                    this.nameOptions = options;
-                } else if (people == 'responsible') {
-                    this.demandeurLoading = false;
-                    this.demandeurOptions = options;
-                }
-            })
-            .catch(function (error) {
-                alert(error);
-                app.nameLoading = false;
-            });
         },
         setSanctionDecisionOptions: function() {
             // Set sanctions and decisions options.
-            axios.get('/dossier_eleve/api/sanction_decision/')
-            .then(response => {
-                this.sanctionDecisionOptions = response.data.results.map(m => {
-                    let entry = {value: m.id, text: m.sanction_decision};
-                    if (this.$store.state.settings.enable_submit_sanctions) {
-                        entry['disabled'] = m.can_ask;
-                    }
-                    return entry;
-                })
-
-                // Keep sanction decision entry.
-                if (this.$store.state.settings.enable_submit_sanctions) {
-                    this.sanctionDecisionOptions = this.sanctionDecisionOptions.filter(s => {
-                        if (this.form.sanction_decision_id === s.value || !s.disabled) {
-                            return true;
-                        } else {
-                            return false;
+            axios.get("/dossier_eleve/api/sanction_decision/")
+                .then(response => {
+                    this.sanctionDecisionOptions = response.data.results.map(m => {
+                        let entry = {value: m.id, text: m.sanction_decision};
+                        if (this.$store.state.settings.enable_submit_sanctions) {
+                            entry["disabled"] = m.can_ask;
                         }
+                        return entry;
                     });
-                }
-            })
-            .catch(function (error) {
-                alert(error);
-            });
+
+                    // Keep sanction decision entry.
+                    if (this.$store.state.settings.enable_submit_sanctions) {
+                        this.sanctionDecisionOptions = this.sanctionDecisionOptions.filter(s => {
+                            if (this.form.sanction_decision_id === s.value || !s.disabled) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        });
+                    }
+                })
+                .catch(function (error) {
+                    alert(error);
+                });
         },
         setVisibilityGroups: function () {
             let settings = this.$store.state.settings;
@@ -600,19 +706,19 @@ export default {
         this.show();
 
         // Set info options.
-        axios.get('/dossier_eleve/api/info/')
-        .then(response => {
-            this.infoOptions = response.data.results.map(m => {
-                return {value: m.id, text: m.info};
+        axios.get("/dossier_eleve/api/info/")
+            .then(response => {
+                this.infoOptions = response.data.results.map(m => {
+                    return {value: m.id, text: m.info};
+                });
+            })
+            .catch(function (error) {
+                alert(error);
             });
-        })
-        .catch(function (error) {
-            alert(error);
-        });
 
         this.setSanctionDecisionOptions();
     }
-}
+};
 </script>
 
 <style>
