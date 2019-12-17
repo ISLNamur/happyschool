@@ -22,82 +22,124 @@
         <b-row>
             <b-form-group>
                 <b-form-checkbox-group stacked>
-                        <b-form-checkbox v-for="(option, index) in options" :key="option.id" :value="option.id">
-                            <b-form inline>
+                    <b-form-checkbox
+                        v-for="(option, index) in options"
+                        :key="option.id"
+                        :value="option.id"
+                    >
+                        <b-form inline>
                             {{ option.text }}
-                            <b-form-input class="ml-1" v-if="option.input" type="text"></b-form-input>
-                            <b-btn v-b-modal.addOptionModal variant="light" class="ml-1"
-                                @click="editOption(index)">
-                                <icon name="edit" color="green"></icon>
+                            <b-form-input
+                                class="ml-1"
+                                v-if="option.input"
+                                type="text"
+                            />
+                            <b-btn
+                                v-b-modal.addOptionModal
+                                variant="light"
+                                class="ml-1"
+                                @click="editOption(index)"
+                            >
+                                <icon
+                                    name="edit"
+                                    color="green"
+                                />
                             </b-btn>
-                            <b-btn variant="light" :disabled="disabled" @click="removeOption(index)" class="ml-1">
-                                <icon name="remove" color="red"></icon>
+                            <b-btn
+                                variant="light"
+                                :disabled="disabled"
+                                @click="removeOption(index)"
+                                class="ml-1"
+                            >
+                                <icon
+                                    name="remove"
+                                    color="red"
+                                />
                             </b-btn>
-                            </b-form>
-                        </b-form-checkbox>
+                        </b-form>
+                    </b-form-checkbox>
                 </b-form-checkbox-group>
             </b-form-group>
         </b-row>
         <b-row>
-            <b-btn v-b-modal.addOptionModal variant="success"><icon name="plus"></icon>Ajouter une option</b-btn>
+            <b-btn
+                v-b-modal.addOptionModal
+                variant="success"
+            >
+                <icon name="plus" />Ajouter une option
+            </b-btn>
         </b-row>
-        <b-modal ref="addOptionModal" id="addOptionModal"
+        <b-modal
+            ref="addOptionModal"
+            id="addOptionModal"
             :disabled="disabled"
             cancel-title="Annuler"
             title="Ajouter une option"
             centered
             @ok="addOption"
-            @hidden="resetModal">
+            @hidden="resetModal"
+        >
             <b-form>
-                <b-form-input v-model="textInput" placeholder="Texte du choix"></b-form-input>
-                <b-form-checkbox v-model="checkInclude">Inclure une entrée.</b-form-checkbox>
+                <b-form-input
+                    v-model="textInput"
+                    placeholder="Texte du choix"
+                />
+                <b-form-checkbox v-model="checkInclude">
+                    Inclure une entrée.
+                </b-form-checkbox>
             </b-form>
         </b-modal>
     </div>
 </template>
 
 <script>
-import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue'
-
-import axios from 'axios';
+import axios from "axios";
 
 export default {
-    props: ['options', 'disabled'],
+    props: {
+        "options": {
+            type: Array,
+            default: () => []
+        },
+        "disabled": {
+            type: Boolean,
+            default: false,
+        }
+    },
     data: function () {
         return {
             selected: [],
             textInput: "",
             checkInclude: false,
             itemIndex: -1,
-        }
+        };
     },
     methods: {
         addOption: function () {
-            let token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            let token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             if (this.itemIndex < 0) {
                 // Create new option.
                 let data = {text: this.textInput, input: this.checkInclude};
-                axios.post('/mail_answer/api/options/', data, token)
-                .then(response => {
-                    data.id = response.data.id;
-                    this.options.push(data);
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+                axios.post("/mail_answer/api/options/", data, token)
+                    .then(response => {
+                        data.id = response.data.id;
+                        this.options.push(data);
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
             } else {
                 // Update option.
                 let data = this.options[this.itemIndex];
                 data.text = this.textInput;
                 data.input = this.checkInclude;
-                axios.put('/mail_answer/api/options/' + this.options[this.itemIndex].id + '/', data, token)
-                .then(response => {
-                    this.options[this.itemIndex] = data;
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+                axios.put("/mail_answer/api/options/" + this.options[this.itemIndex].id + "/", data, token)
+                    .then(() => {
+                        this.options[this.itemIndex] = data;
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
             }
         },
         editOption: function(index) {
@@ -106,14 +148,14 @@ export default {
             this.itemIndex = index;
         },
         removeOption: function(index) {
-            let token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-            axios.delete('/mail_answer/api/options/' + this.options[index].id + '/', token)
-            .then(response => {
-                this.options.splice(index, 1);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+            let token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            axios.delete("/mail_answer/api/options/" + this.options[index].id + "/", token)
+                .then(() => {
+                    this.options.splice(index, 1);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
         },
         resetModal: function () {
             this.textInput = "";
@@ -121,7 +163,7 @@ export default {
             this.itemIndex = -1;
         },
     }
-}
+};
 </script>
 
 <style>

@@ -17,23 +17,24 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue';
+import Vue from "vue";
 
-import Vuex from 'vuex';
+import Vuex from "vuex";
 Vue.use(Vuex);
 
-import MailAnswer from '../mail_answer/mail_answer.vue';
+import MailAnswer from "../mail_answer/mail_answer.vue";
 
 const store = new Vuex.Store({
-  state: {
-    settings: settings
-  },
+    state: {
+        // eslint-disable-next-line no-undef
+        settings: settings
+    },
 });
 
-var mailNotificationApp = new Vue({
-    el: '#vue-app',
+new Vue({
+    el: "#vue-app",
     data: {settings: {}},
     store,
-    template: '<mail-answer/>',
+    template: "<mail-answer/>",
     components: { MailAnswer },
-})
+});

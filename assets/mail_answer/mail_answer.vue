@@ -19,42 +19,41 @@
 
 <template>
     <div>
-        <app-menu :menu-info="menuInfo"></app-menu>
+        <app-menu :menu-info="menuInfo" />
         <b-container>
             <h1>Réponse d'email</h1>
-                <component v-bind:is="currentComponent"
-                    :id="templateId"
-                    @changeComponent="changeComponent($event)"
-                    @changeId="templateId = $event">
-                </component>
+            <component
+                :is="currentComponent"
+                :id="templateId"
+                @changeComponent="changeComponent($event)"
+                @changeId="templateId = $event"
+            />
         </b-container>
     </div>
 </template>
 
 <script>
-import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue'
+import Vue from "vue";
+import BootstrapVue from "bootstrap-vue";
 Vue.use(BootstrapVue);
 
-import 'vue-awesome/icons'
-import Icon from 'vue-awesome/components/Icon.vue'
-Vue.component('icon', Icon);
+import "vue-awesome/icons";
+import Icon from "vue-awesome/components/Icon.vue";
+Vue.component("icon", Icon);
 
-import axios from 'axios';
+import MailTemplateList from "./mail_template_list.vue";
+import MailTemplate from "./mail_template.vue";
+import MailAnswerList from "./mail_answer_list.vue";
 
-import MailTemplateList from './mail_template_list.vue';
-import MailTemplate from './mail_template.vue';
-import MailAnswerList from './mail_answer_list.vue';
-
-import Menu from '../common/menu.vue';
+import Menu from "../common/menu.vue";
 
 export default {
     data: function () {
         return {
             menuInfo: {},
-            currentComponent: 'mail-template-list',
+            currentComponent: "mail-template-list",
             templateId: null,
-        }
+        };
     },
     methods: {
         changeComponent: function (component) {
@@ -62,15 +61,16 @@ export default {
         }
     },
     mounted: function () {
+        // eslint-disable-next-line no-undef
         this.menuInfo = menu;
     },
     components: {
-        'mail-template-list': MailTemplateList,
-        'mail-template': MailTemplate,
-        'mail-answer-list': MailAnswerList,
-        'app-menu': Menu,
+        "mail-template-list": MailTemplateList,
+        "mail-template": MailTemplate,
+        "mail-answer-list": MailAnswerList,
+        "app-menu": Menu,
     }
-}
+};
 </script>
 
 <style>

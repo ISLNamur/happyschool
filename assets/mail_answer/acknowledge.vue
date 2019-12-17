@@ -20,43 +20,61 @@
 <template>
     <div>
         <b-row>
-            <b-btn v-b-modal.changeAckModal variant="light" class="mr-1"
-                @click="changedText = text">
-                <icon name="edit" scale="1" color="green"></icon>
+            <b-btn
+                v-b-modal.changeAckModal
+                variant="light"
+                class="mr-1"
+                @click="changedText = text"
+            >
+                <icon
+                    name="edit"
+                    scale="1"
+                    color="green"
+                />
             </b-btn>
             <b-form-checkbox id="acknowledgement">
                 {{ text }}
             </b-form-checkbox>
         </b-row>
-        <b-modal ref="changeAckModal" id="changeAckModal"
+        <b-modal
+            ref="changeAckModal"
+            id="changeAckModal"
             cancel-title="Annuler"
             title="Changer le  texte"
             centered
-            @ok="changeAck">
+            @ok="changeAck"
+        >
             <b-form>
-                <b-form-textarea v-model="changedText" placeholder="Texte de confirmation" :rows="3"></b-form-textarea>
+                <b-form-textarea
+                    v-model="changedText"
+                    placeholder="Texte de confirmation"
+                    :rows="3"
+                />
             </b-form>
         </b-modal>
     </div>
 </template>
 
 <script>
-import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue'
 
 export default {
-    props: ['text'],
+    props: {
+        "text": {
+            type: String,
+            default: "",
+        }
+    },
     data: function () {
         return {
             changedText: "",
-        }
+        };
     },
     methods: {
         changeAck: function() {
-            this.$emit('update', this.changedText);
+            this.$emit("update", this.changedText);
         },
     }
-}
+};
 </script>
 
 <style>

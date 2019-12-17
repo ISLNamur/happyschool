@@ -21,33 +21,70 @@
     <div>
         <b-row>
             <p>
-                <b-btn variant="primary" @click="$emit('changeComponent', 'mail-template-list')">Revenir à la liste des modèles</b-btn>
+                <b-btn
+                    variant="primary"
+                    @click="$emit('changeComponent', 'mail-template-list')"
+                >
+                    Revenir à la liste des modèles
+                </b-btn>
             </p>
         </b-row>
-        <b-row >
+        <b-row>
             <b-col>
                 <b-card-group columns>
-                    <b-card :header="'Année ' + key"  v-for="(classes, key) in answers" :key="key" class="mb-2">
+                    <b-card
+                        :header="'Année ' + key"
+                        v-for="(classes, key) in answers"
+                        :key="key"
+                        class="mb-2"
+                    >
                         <b-list-group>
-                            <b-list-group-item button v-for="(classe, index) in classes" :key="index"
+                            <b-list-group-item
+                                button
+                                v-for="(classe, index) in classes"
+                                :key="index"
                                 class="d-flex justify-content-between align-items-center"
-                                @click="loadAnswers(classe[1][0])" v-b-modal.list-answers>
+                                @click="loadAnswers(classe[1][0])"
+                                v-b-modal.list-answers
+                            >
                                 {{ classe[0] }}
-                                <b-badge pill>{{ classe[1][0].answered_count }}/{{ classe[1][0].answers_count }}</b-badge>
+                                <b-badge pill>
+                                    {{ classe[1][0].answered_count }}/{{ classe[1][0].answers_count }}
+                                </b-badge>
                             </b-list-group-item>
                         </b-list-group>
                     </b-card>
                 </b-card-group>
             </b-col>
         </b-row>
-        <b-modal id="list-answers" :title="currentClasse.classe_name" size="lg" :ok-only="true">
+        <b-modal
+            id="list-answers"
+            :title="currentClasse.classe_name"
+            size="lg"
+            :ok-only="true"
+        >
             <b-list-group>
-                <b-list-group-item v-for="(answer, index) in currentAnswers" :key="index">
+                <b-list-group-item
+                    v-for="(answer, index) in currentAnswers"
+                    :key="index"
+                >
                     <span :class="answer.is_answered ? '' : 'font-italic' ">{{ answer.student_name }}</span>
                     <em v-if="!answer.is_answered">(en attente d'une réponse)</em>
-                    <b-btn variant="light" v-if="answer.is_answered" v-b-toggle="'answer-' + index">Réponse</b-btn>
-                    <b-collapse :id="'answer-' + index" class="mt-2">
-                        <answer-result :answer="answer.answer" :template="template"></answer-result>
+                    <b-btn
+                        variant="light"
+                        v-if="answer.is_answered"
+                        v-b-toggle="'answer-' + index"
+                    >
+                        Réponse
+                    </b-btn>
+                    <b-collapse
+                        :id="'answer-' + index"
+                        class="mt-2"
+                    >
+                        <answer-result
+                            :answer="answer.answer"
+                            :template="template"
+                        />
                     </b-collapse>
                 </b-list-group-item>
             </b-list-group>
@@ -56,15 +93,17 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue'
+import axios from "axios";
 
-import axios from 'axios';
-
-import AnswerResult from './answer_result.vue';
+import AnswerResult from "./answer_result.vue";
 
 export default {
-    props: ['id'],
+    props: {
+        "id": {
+            type: String,
+            default: "-1"
+        }
+    },
     data: function () {
         return {
             answers: {},
@@ -72,70 +111,70 @@ export default {
             loading: true,
             currentClasse: {},
             currentAnswers: [],
-        }
+        };
     },
     methods: {
         loadData: function () {
-            const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-            const url = '/mail_answer/api/answers_classes/' + this.id + '/';
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            const url = "/mail_answer/api/answers_classes/" + this.id + "/";
 
             // Get answers.
             axios.get(url, token)
-            .then(response => {
-                let byYear = this.groupBy(response.data, ans => ans.classe_year);
-                for (const [year, classes] of byYear.entries()) {
-                    this.$set(this.answers, year, Array.from(this.groupBy(classes, c => c.classe_name)));
-                }
-                this.loading = false;
-            })
-            .catch(function (error) {
-                alert(error);
-            });
+                .then(response => {
+                    let byYear = this.groupBy(response.data, ans => ans.classe_year);
+                    for (const [year, classes] of byYear.entries()) {
+                        this.$set(this.answers, year, Array.from(this.groupBy(classes, c => c.classe_name)));
+                    }
+                    this.loading = false;
+                })
+                .catch(function (error) {
+                    alert(error);
+                });
 
             // Get template.
-            axios.get('/mail_answer/api/mail_template/' + this.id + '/', token)
-            .then(response => {
-                this.template = response.data;
-                const choices = this.template.choices;
-                this.template.choices = {};
-                for (let c in choices) {
-                    axios.get('/mail_answer/api/choices/' + choices[c] + '/', token)
-                    .then(r => {
-                        this.$set(this.template.choices, r.data.id, r.data.text);
-                    })
-                    .catch(function (error) {
-                        alert(error);
-                    });
-                }
-                const options = this.template.options;
-                this.template.options = {};
-                for (let o in options) {
-                    axios.get('/mail_answer/api/options/' + options[o] + '/', token)
-                    .then(r => {
-                        this.$set(this.template.options, r.data.id, r.data.text);
-                    })
-                    .catch(function (error) {
-                        alert(error);
-                    });
-                }
-            })
-            .catch(function (error) {
-                alert(error);
-            });
+            axios.get("/mail_answer/api/mail_template/" + this.id + "/", token)
+                .then(response => {
+                    this.template = response.data;
+                    const choices = this.template.choices;
+                    this.template.choices = {};
+                    for (let c in choices) {
+                        axios.get("/mail_answer/api/choices/" + choices[c] + "/", token)
+                            .then(r => {
+                                this.$set(this.template.choices, r.data.id, r.data.text);
+                            })
+                            .catch(function (error) {
+                                alert(error);
+                            });
+                    }
+                    const options = this.template.options;
+                    this.template.options = {};
+                    for (let o in options) {
+                        axios.get("/mail_answer/api/options/" + options[o] + "/", token)
+                            .then(r => {
+                                this.$set(this.template.options, r.data.id, r.data.text);
+                            })
+                            .catch(function (error) {
+                                alert(error);
+                            });
+                    }
+                })
+                .catch(function (error) {
+                    alert(error);
+                });
         },
         loadAnswers: function (classe) {
             this.currentClasse = classe;
-            const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-            const url = '/mail_answer/api/answers/' + this.id + '/' + classe.classe_id + '/';
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            const url = "/mail_answer/api/answers/" + this.id + "/" + classe.classe_id + "/";
 
             // Get answers.
             axios.get(url, token)
-            .then(response => {
-                this.currentAnswers = response.data;
-            })
-            .catch(function (error) {
-                alert(error);
-            });
+                .then(response => {
+                    this.currentAnswers = response.data;
+                })
+                .catch(function (error) {
+                    alert(error);
+                });
         },
         groupBy: function (list, keyGetter) {
             const map = new Map();
@@ -155,7 +194,7 @@ export default {
         this.loadData();
     },
     components: {AnswerResult}
-}
+};
 </script>
 
 <style>

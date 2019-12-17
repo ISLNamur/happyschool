@@ -21,26 +21,48 @@
     <div>
         <b-row>
             <p>
-                <b-button v-if="!(remoteInUse && isRemote)"
-                    variant="primary" @click="editTemplate(null)">
-                    <icon name="plus"></icon>
+                <b-button
+                    v-if="!(remoteInUse && isRemote)"
+                    variant="primary"
+                    @click="editTemplate(null)"
+                >
+                    <icon name="plus" />
                     Ajouter un template
                 </b-button>
             </p>
         </b-row>
-        <b-row v-for="template in templates" :key="template.id" class="mb-2">
+        <b-row
+            v-for="template in templates"
+            :key="template.id"
+            class="mb-2"
+        >
             <b-col>
                 <b-card :title="template.name">
                     <p class="card-text">
-                        Utilisé par un envoi d'email : <icon :name="template.is_used ? 'check' : 'times'" scale="1.2"
-                                                             :color="template.is_used ? 'green' : 'red'"></icon>
+                        Utilisé par un envoi d'email : <icon
+                            :name="template.is_used ? 'check' : 'times'"
+                            scale="1.2"
+                            :color="template.is_used ? 'green' : 'red'"
+                        />
                     </p>
-                    <b-button v-if="!(remoteInUse && !(isRemote == template.is_used))" @click="editTemplate(template.id)"><icon name="edit"></icon>Modifier</b-button>
-                    <b-button v-if="template.is_used && !(remoteInUse && !isRemote)" @click="showAnswers(template.id)" variant="light">
-                        <icon name="eye"></icon>
+                    <b-button
+                        v-if="!(remoteInUse && !(isRemote == template.is_used))"
+                        @click="editTemplate(template.id)"
+                    >
+                        <icon name="edit" />Modifier
+                    </b-button>
+                    <b-button
+                        v-if="template.is_used && !(remoteInUse && !isRemote)"
+                        @click="showAnswers(template.id)"
+                        variant="light"
+                    >
+                        <icon name="eye" />
                         Voir les réponses
                     </b-button>
-                    <a v-if="template.is_used && remoteInUse && !isRemote" :href="$store.state.settings.remote_url + 'mail_answer'">
+                    <a
+                        v-if="template.is_used && remoteInUse && !isRemote"
+                        :href="$store.state.settings.remote_url + 'mail_answer'"
+                    >
                         Voir les réponses et/ou modifier le modèle
                     </a>
                 </b-card>
@@ -50,16 +72,13 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue'
-
-import axios from 'axios';
+import axios from "axios";
 
 export default {
     data: function () {
         return {
             templates: [],
-        }
+        };
     },
     computed: {
         remoteInUse: function () {
@@ -71,30 +90,30 @@ export default {
     },
     methods: {
         loadData: function () {
-            let token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-            let url = '/mail_answer/api/mail_template/';
+            let token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            let url = "/mail_answer/api/mail_template/";
             axios.get(url, token)
-            .then(response => {
-                this.templates = response.data.results;
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
+                .then(response => {
+                    this.templates = response.data.results;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
         },
         editTemplate: function (id) {
-            this.$emit('changeId', id);
-            this.$emit('changeComponent', 'mail-template');
+            this.$emit("changeId", id);
+            this.$emit("changeComponent", "mail-template");
         },
         showAnswers: function (id) {
-            this.$emit('changeId', id);
-            this.$emit('changeComponent', 'mail-answer-list');
+            this.$emit("changeId", id);
+            this.$emit("changeComponent", "mail-answer-list");
         }
     },
     mounted: function () {
         this.loadData();
     },
     components: {}
-}
+};
 </script>
 
 <style>
