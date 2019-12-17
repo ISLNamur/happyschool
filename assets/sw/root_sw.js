@@ -1,5 +1,7 @@
-importScripts('/static/bundles/AssetsManager.js');
+// eslint-disable-next-line no-undef
+importScripts("/static/bundles/AssetsManager.js");
 
+// eslint-disable-next-line no-undef
 let assetsManager = new AssetsManager();
 let urlToCache = assetsManager.cacheEntries.filter(url => url.includes("commons") || url.includes("polyfill"));
 
@@ -8,15 +10,15 @@ urlToCache.push("/static/img/logo.png");
 urlToCache.push("/static/img/favicon.ico");
 const hash = urlToCache[0].split("-")[1].split(".")[0];
 
-self.addEventListener('install', function(event) {
+self.addEventListener("install", function(event) {
     event.waitUntil(
-      caches.open(hash).then(function(cache) {
-        return cache.addAll(urlToCache);
-      })
+        caches.open(hash).then(function(cache) {
+            return cache.addAll(urlToCache);
+        })
     );
 });
 
-self.addEventListener('activate', function(event) {
+self.addEventListener("activate", function(event) {
     event.waitUntil(
         self.clients.claim(),
         caches.keys().then(function(keyList) {
@@ -27,30 +29,30 @@ self.addEventListener('activate', function(event) {
             }));
         })
     );
-  });
+});
 
-  self.addEventListener('fetch', function(event) {
+self.addEventListener("fetch", function(event) {
     if (event.request.url.includes("/core/ping")) {
         return fetch(event.request);
     } else {
         event.respondWith(
             fetch(event.request)
-            .then(response => {
-                caches.open(hash).then(function(cache) {
-                    cache.put(event.request, response)
-                    .catch(err => {
+                .then(response => {
+                    caches.open(hash).then(function(cache) {
+                        cache.put(event.request, response)
+                            .catch(() => {
                         
+                            });
                     });
-                });
-                return response.clone();
-            })
-            .catch(function () {
-                return caches.match(event.request)
-                .catch(error => {
-                    return caches.match('/annuaire/');
-                });
-            })
+                    return response.clone();
+                })
+                .catch(function () {
+                    return caches.match(event.request)
+                        .catch(() => {
+                            return caches.match("/annuaire/");
+                        });
+                })
         );
     }
-    }
+}
 );
