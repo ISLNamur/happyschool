@@ -20,24 +20,19 @@
 <template>
     <div>
         <b-row>
-            <b-col><note-entry></note-entry></b-col>
+            <b-col><note-entry /></b-col>
         </b-row>
     </div>
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect'
-import 'vue-multiselect/dist/vue-multiselect.min.css'
-
-import axios from 'axios';
-
-import NoteEntry from '../student_absence/note_entry.vue';
+import NoteEntry from "../student_absence/note_entry.vue";
 
 export default {
     data: function () {
         return {
-        }
+        };
     },
-    components: {Multiselect, NoteEntry},
-}
+    components: {NoteEntry},
+};
 </script>

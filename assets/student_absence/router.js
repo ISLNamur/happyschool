@@ -17,44 +17,44 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue';
-import VueRouter from 'vue-router';
+import Vue from "vue";
+import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
-import StudentAbsence from '../student_absence/student_absence.vue';
-import Overview from '../student_absence/overview.vue';
-import AddAbsence from '../student_absence/add_absence.vue';
-import Notes from '../student_absence/notes.vue';
-import List from '../student_absence/list.vue';
+import StudentAbsence from "../student_absence/student_absence.vue";
+import Overview from "../student_absence/overview.vue";
+import AddAbsence from "../student_absence/add_absence.vue";
+import Notes from "../student_absence/notes.vue";
+import List from "../student_absence/list.vue";
 
 export default new VueRouter({
     routes: [
-    {
-        path: '',
-        component: StudentAbsence,
-        children: [
-            {
-                path: '',
-                component: Overview,
-            },
-            {
-                path: 'overview',
-                component: Overview,
-            },
-            {
-                path: 'add_absence',
-                component: AddAbsence,
-            },
-            {
-                path: 'notes',
-                component: Notes,
-            },
-            {
-                path: 'list',
-                component: List,
-            }
-        ]
-    },
+        {
+            path: "",
+            component: StudentAbsence,
+            children: [
+                {
+                    path: "",
+                    component: Overview,
+                },
+                {
+                    path: "overview",
+                    component: Overview,
+                },
+                {
+                    path: "add_absence",
+                    component: AddAbsence,
+                },
+                {
+                    path: "notes",
+                    component: Notes,
+                },
+                {
+                    path: "list",
+                    component: List,
+                }
+            ]
+        },
     ]
 });

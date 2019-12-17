@@ -20,83 +20,102 @@
 <template>
     <b-list-group-item>
         <b-row>
-        <b-col cols="3">{{ student.last_name }} {{ student.first_name }}</b-col>
-        <b-col>
-            <b-row>
-                <b-col>
-                    <div class="text-right">
-                    <strong>Matin </strong>
-                    <label class="switch">
-                        <input type="checkbox" class="primary" v-model="morning_absence"
-                        @click="updateAbsence('morning')">
-                        <span class="slider round"></span>
-                    </label>
-                    </div>
-                </b-col>
-                <b-col>
-                    <div class="text-right">
-                    <strong>Après-midi </strong>
-                    <label class="switch">
-                        <input type="checkbox" class="primary" v-model="afternoon_absence"
-                        @click="updateAbsence('afternoon')">
-                        <span class="slider round"></span>
-                    </label>
-                    </div>
-                </b-col>
-            </b-row>
-        </b-col>
+            <b-col cols="3">
+                {{ student.last_name }} {{ student.first_name }}
+            </b-col>
+            <b-col>
+                <b-row>
+                    <b-col>
+                        <div class="text-right">
+                            <strong>Matin </strong>
+                            <label class="switch">
+                                <input
+                                    type="checkbox"
+                                    class="primary"
+                                    v-model="morning_absence"
+                                    @click="updateAbsence('morning')"
+                                >
+                                <span class="slider round" />
+                            </label>
+                        </div>
+                    </b-col>
+                    <b-col>
+                        <div class="text-right">
+                            <strong>Après-midi </strong>
+                            <label class="switch">
+                                <input
+                                    type="checkbox"
+                                    class="primary"
+                                    v-model="afternoon_absence"
+                                    @click="updateAbsence('afternoon')"
+                                >
+                                <span class="slider round" />
+                            </label>
+                        </div>
+                    </b-col>
+                </b-row>
+            </b-col>
         </b-row>
     </b-list-group-item>
 </template>
 
 <script>
 export default {
-    props: ['date_absence', 'student',],
+    props: {
+        "date_absence": {
+            type: Object,
+            default: () => {}
+        },
+        "student": {
+            type: Object,
+            default: () => {}
+        }
+    },
     data: function () {
         return {
             morning_absence: false,
             afternoon_absence: false,
             baseAbsence: {},
-        }
+        };
     },
     methods: {
         updateAbsence: function (partDay) {
-            this.changeAbsence(!this[partDay + '_absence'], partDay);
+            this.changeAbsence(!this[partDay + "_absence"], partDay);
         },
         changeAbsence: function (isAbsent, partDay) {
             let absence = {matricule: this.student.matricule, date_absence: this.date_absence, student: this.student};
             if (!(partDay in this.baseAbsence)) {
                 if (isAbsent) {
                     absence[partDay] = isAbsent;
-                    this.$store.commit('setChange', absence);
+                    this.$store.commit("setChange", absence);
                 } else {
-                    const otherPartDay = partDay == 'morning' ? 'afternoon' : 'morning';
-                    this.$store.commit('removeChange', absence);
+                    const otherPartDay = partDay == "morning" ? "afternoon" : "morning";
+                    this.$store.commit("removeChange", absence);
                     if (otherPartDay in this.baseAbsence) {
-                        if (this[otherPartDay + '_absence'] != this.baseAbsence[otherPartDay]) {
-                            absence[otherPartDay] = this[otherPartDay + '_absence'];
-                            this.$store.commit('setChange', absence);
+                        if (this[otherPartDay + "_absence"] != this.baseAbsence[otherPartDay]) {
+                            absence[otherPartDay] = this[otherPartDay + "_absence"];
+                            this.$store.commit("setChange", absence);
                         }
-                    } else if (this[otherPartDay + '_absence']) {
-                        absence[otherPartDay] = this[otherPartDay + '_absence'];
-                            this.$store.commit('setChange', absence);
+                    } else if (this[otherPartDay + "_absence"]) {
+                        absence[otherPartDay] = this[otherPartDay + "_absence"];
+                        this.$store.commit("setChange", absence);
                     }
                 }
             } else {
                 if (this.baseAbsence[partDay] != isAbsent) {
                     absence[partDay] = isAbsent;
-                    this.$store.commit('setChange', absence);
+                    this.$store.commit("setChange", absence);
                 } else {
-                    const otherPartDay = partDay == 'morning' ? 'afternoon' : 'morning';
-                    this.$store.commit('removeChange', absence);
+                    const otherPartDay = partDay == "morning" ? "afternoon" : "morning";
+                    this.$store.commit("removeChange", absence);
                     if (otherPartDay in this.baseAbsence) {
-                        if (this[otherPartDay + '_absence'] != this.baseAbsence[otherPartDay]) {
-                            absence[otherPartDay] = this[otherPartDay + '_absence'];
-                            this.$store.commit('setChange', absence);
+                        if (this[otherPartDay + "_absence"] != this.baseAbsence[otherPartDay]) {
+                            absence[otherPartDay] = this[otherPartDay + "_absence"];
+                            this.$store.commit("setChange", absence);
                         }
-                    } else if (this[otherPartDay + '_absence']) {
-                        absence[otherPartDay] = this[otherPartDay + '_absence'];
-                            this.$store.commit('setChange', absence);
+                    } else if (this[otherPartDay + "_absence"]) {
+                        absence[otherPartDay] = this[otherPartDay + "_absence"];
+                        this.$store.commit("setChange", absence);
                     }
                 }
             }
@@ -106,20 +125,20 @@ export default {
         const absence = {matricule: this.student.matricule, date_absence: this.date_absence, student: this.student};
         this.baseAbsence = this.$store.getters.change(absence);
         if (this.baseAbsence) {
-            if ('morning' in this.baseAbsence && this.baseAbsence.morning) this.morning_absence = true;
-            if ('afternoon' in this.baseAbsence && this.baseAbsence.afternoon) this.afternoon_absence = true;
+            if ("morning" in this.baseAbsence && this.baseAbsence.morning) this.morning_absence = true;
+            if ("afternoon" in this.baseAbsence && this.baseAbsence.afternoon) this.afternoon_absence = true;
         } else {
             const savedAbsence = this.$store.getters.todayAbsences(absence);
             if (savedAbsence) {
                 this.baseAbsence = savedAbsence;
-                if ('morning' in this.baseAbsence && this.baseAbsence.morning) this.morning_absence = true;
-                if ('afternoon' in this.baseAbsence && this.baseAbsence.afternoon) this.afternoon_absence = true;
+                if ("morning" in this.baseAbsence && this.baseAbsence.morning) this.morning_absence = true;
+                if ("afternoon" in this.baseAbsence && this.baseAbsence.afternoon) this.afternoon_absence = true;
             } else {
                 this.baseAbsence = {};
             }
         }
     }
-}
+};
 </script>
 
 <style>

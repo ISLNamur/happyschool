@@ -17,29 +17,31 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue';
-import Vuex from 'vuex';
-import VuexPersistence from 'vuex-persist';
+import Vue from "vue";
+import Vuex from "vuex";
+import VuexPersistence from "vuex-persist";
 
-import axios from 'axios';
+import axios from "axios";
 
-import Moment from 'moment';
-Moment.locale('fr');
+import Moment from "moment";
+Moment.locale("fr");
 
-import {addFilter, removeFilter} from '../common/filters.js';
+import {addFilter, removeFilter} from "../common/filters.js";
 
 Vue.use(Vuex);
 
 const vuexLocal = new VuexPersistence({
     storage: window.localStorage,
     reducer: (state) => {
-        state['settings'] = settings;
+        // eslint-disable-next-line no-undef
+        state["settings"] = settings;
         return state;
     },
-})
+});
 
 export default new Vuex.Store({
     state: {
+        // eslint-disable-next-line no-undef
         settings: settings,
         filters: [],
         todayAbsences: {},
@@ -60,7 +62,7 @@ export default new Vuex.Store({
                     }
                 }
                 return null;
-            }
+            };
         },
         todayAbsences(state) {
             return todayAbsence => {
@@ -69,13 +71,13 @@ export default new Vuex.Store({
                         return state.todayAbsences[t];
                     }
                 }
-            }
+            };
         }
     },
     mutations: {
         toggleForceAllAccess: function (state) {
             state.forceAllAccess = !state.forceAllAccess;
-            this.commit('updateStudentsClasses');
+            this.commit("updateStudentsClasses");
         },
         addNote: function (state, note) {
             state.notes[note.classe] = note;
@@ -95,42 +97,42 @@ export default new Vuex.Store({
             if (!oldChange) {
                 state.changes.push(change);
             } else {
-                if ('morning' in change) state.changes[oldChange.index].morning = change.morning;
-                if ('afternoon' in change) state.changes[oldChange.index].afternoon = change.afternoon;
+                if ("morning" in change) state.changes[oldChange.index].morning = change.morning;
+                if ("afternoon" in change) state.changes[oldChange.index].afternoon = change.afternoon;
                 // Force update.
                 Vue.set(state.changes, oldChange.index, state.changes[oldChange.index]);
             }
         },
         setTodayAbsences: function (state, absences) {
             for (let a in absences) {
-                if ('student' in absences[a]) delete absences[a].student.savedAbsence.student.savedAbsence;
+                if ("student" in absences[a]) delete absences[a].student.savedAbsence.student.savedAbsence;
             }
             state.todayAbsences = absences;
         },
         updateStudentsClasses: function (state) {
             state.lastUpdate = Moment().format("YYYY-MM-DD");
-            this.commit('updatingStatus', true);
-            const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken' };
+            this.commit("updatingStatus", true);
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
             const filterForEduc = state.settings.filter_students_for_educ;
             const data = {
-                query: 'everybody',
+                query: "everybody",
                 teachings: state.settings.teachings,
-                people: 'student',
+                people: "student",
                 active: true,
-                check_access:  filterForEduc != 'none' && !state.forceAllAccess,
-                educ_by_years: filterForEduc == 'year' && !state.forceAllAccess,
+                check_access:  filterForEduc != "none" && !state.forceAllAccess,
+                educ_by_years: filterForEduc == "year" && !state.forceAllAccess,
             };
-            axios.post('/student_absence/api/students_classes/', data, token)
-            .then(response => {
-                this.commit('updatingStatus', false);
-                document.location.reload(true);
-            });
-            axios.get('/student_absence/api/classenote/', token)
-            .then(response => {
-                for (let n in response.data.results) {
-                    this.commit('addNote', response.data.results[n]);
-                }
-            })
+            axios.post("/student_absence/api/students_classes/", data, token)
+                .then(() => {
+                    this.commit("updatingStatus", false);
+                    document.location.reload(true);
+                });
+            axios.get("/student_absence/api/classenote/", token)
+                .then(response => {
+                    for (let n in response.data.results) {
+                        this.commit("addNote", response.data.results[n]);
+                    }
+                });
         },
         updatingStatus: function (state, updating) {
             state.updating = updating;
@@ -140,4 +142,4 @@ export default new Vuex.Store({
         }
     },
     plugins: [vuexLocal.plugin],
-  });
+});

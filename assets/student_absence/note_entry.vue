@@ -21,41 +21,48 @@
     <div>
         <b-card>
             <multiselect
-            :internal-search="false"
-            :options="classeOptions"
-            @search-change="getClasseOptions"
-            @select="getNote"
-            :loading="classeLoading"
-            placeholder="Rechercher une classe…"
-            select-label=""
-            selected-label="Sélectionné"
-            deselect-label=""
-            label="display"
-            track-by="id"
-            v-model="classe"
+                :internal-search="false"
+                :options="classeOptions"
+                @search-change="getClasseOptions"
+                @select="getNote"
+                :loading="classeLoading"
+                placeholder="Rechercher une classe…"
+                select-label=""
+                selected-label="Sélectionné"
+                deselect-label=""
+                label="display"
+                track-by="id"
+                v-model="classe"
             >
-            <span slot="noResult">Aucune personne trouvée.</span>
-            <span slot="noOptions"></span>
-            >
+                <span slot="noResult">Aucune personne trouvée.</span>
+                <span slot="noOptions" />
+                >
             </multiselect>
             <b-form-group>
-                <quill-editor v-model="currentNote" :options="editorOptions">
-                </quill-editor>
+                <quill-editor
+                    v-model="currentNote"
+                    :options="editorOptions"
+                />
             </b-form-group>
-            <b-btn :disabled="disabledSubmit" @click="sendData()" >Envoyer</b-btn>
+            <b-btn
+                :disabled="disabledSubmit"
+                @click="sendData()"
+            >
+                Envoyer
+            </b-btn>
         </b-card>
     </div>
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect'
-import 'vue-multiselect/dist/vue-multiselect.min.css'
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import axios from 'axios';
+import axios from "axios";
 
-import {quillEditor} from 'vue-quill-editor'
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
+import {quillEditor} from "vue-quill-editor";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
 
 export default {
     data: function () {
@@ -71,17 +78,17 @@ export default {
             editorOptions: {
                 modules: {
                     toolbar: [
-                        ['bold', 'italic', 'underline', 'strike'],
-                        ['blockquote'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        [{ 'indent': '-1'}, { 'indent': '+1' }],
-                        [{ 'align': [] }],
-                        ['clean']
+                        ["bold", "italic", "underline", "strike"],
+                        ["blockquote"],
+                        [{ "list": "ordered"}, { "list": "bullet" }],
+                        [{ "indent": "-1"}, { "indent": "+1" }],
+                        [{ "align": [] }],
+                        ["clean"]
                     ]
                 },
                 placeholder: ""
             },
-        }
+        };
     },
     computed: {
         disabledSubmit: function () {
@@ -90,22 +97,22 @@ export default {
     },
     methods: {
         getNote(option) {
-            const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             axios.get("/student_absence/api/classenote/?classe=" + option.id, token)
-            .then(resp => {
-                if (resp.data.results.length > 0) {
-                    this.noteId = resp.data.results[0].id;
-                    this.currentNote = resp.data.results[0].note;
-                    this.datetime_update = resp.data.results[0].datetime_update;
-                } else {
-                    this.noteId = -1;
-                    this.currentNote = "";
-                    this.datetime_update = null;
-                }
-            }) 
-            .catch(err => {
-                alert(err);
-            })
+                .then(resp => {
+                    if (resp.data.results.length > 0) {
+                        this.noteId = resp.data.results[0].id;
+                        this.currentNote = resp.data.results[0].note;
+                        this.datetime_update = resp.data.results[0].datetime_update;
+                    } else {
+                        this.noteId = -1;
+                        this.currentNote = "";
+                        this.datetime_update = null;
+                    }
+                }) 
+                .catch(err => {
+                    alert(err);
+                });
 
         },
         getClasseOptions(query) {
@@ -113,18 +120,18 @@ export default {
             this.searchId += 1;
             let currentSearch = this.searchId;
 
-            const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             const data = {
                 query: query,
                 teachings: this.$store.state.settings.teachings,
                 check_access: false,
             };
-            axios.post('/annuaire/api/classes/', data, token)
-            .then(resp => {
-                if (this.searchId !== currentSearch)
-                    return;
-                this.classeOptions = resp.data;
-            })
+            axios.post("/annuaire/api/classes/", data, token)
+                .then(resp => {
+                    if (this.searchId !== currentSearch)
+                        return;
+                    this.classeOptions = resp.data;
+                });
         },
         sendData() {
             this.sending = true;
@@ -135,24 +142,24 @@ export default {
             const data = {
                 note: this.currentNote,
                 classe: this.classe.id,
-            }
-            const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            };
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             send(url, data, token)
-            .then(resp => {
-                this.noteId = resp.data.id;
-                this.$store.commit('addNote', data);
-                this.sending = false;
-                this.$bvToast.toast(`La note concernant la classe ${this.classe.display} a été enregistrée.`, {
-                    variant: 'success',
-                    noCloseButton: true,
+                .then(resp => {
+                    this.noteId = resp.data.id;
+                    this.$store.commit("addNote", data);
+                    this.sending = false;
+                    this.$bvToast.toast(`La note concernant la classe ${this.classe.display} a été enregistrée.`, {
+                        variant: "success",
+                        noCloseButton: true,
+                    });
                 })
-            })
-            .catch(err => {
-                alert(err);
-                this.sending = false;
-            })
+                .catch(err => {
+                    alert(err);
+                    this.sending = false;
+                });
         }
     },
     components: {Multiselect, quillEditor},
-}
+};
 </script>

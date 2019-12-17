@@ -22,37 +22,55 @@
         <b-row>
             <b-col>
                 <b-card>
-                    <filters app="student_absence" model="student_absence" ref="filters" @update="applyFilter"></filters>
+                    <filters
+                        app="student_absence"
+                        model="student_absence"
+                        ref="filters"
+                        @update="applyFilter"
+                    />
                 </b-card>
             </b-col>
         </b-row>
         <b-row>
             <b-col>
-                <b-pagination class="mt-1" :total-rows="entriesCount" v-model="currentPage" @change="changePage" :per-page="20">
-                </b-pagination>
+                <b-pagination
+                    class="mt-1"
+                    :total-rows="entriesCount"
+                    v-model="currentPage"
+                    @change="changePage"
+                    :per-page="20"
+                />
             </b-col>
         </b-row>
         <b-row>
             <b-col>
-                <absence-entry v-for="absence in absences" :key="absence.id" :absence="absence">
-                </absence-entry>
+                <absence-entry
+                    v-for="absence in absences"
+                    :key="absence.id"
+                    :absence="absence"
+                />
             </b-col>
         </b-row>
         <b-row v-if="entriesCount > 10">
             <b-col>
-                <b-pagination class="mt-2" :total-rows="entriesCount" v-model="currentPage" @change="changePage" :per-page="20">
-                </b-pagination>
+                <b-pagination
+                    class="mt-2"
+                    :total-rows="entriesCount"
+                    v-model="currentPage"
+                    @change="changePage"
+                    :per-page="20"
+                />
             </b-col>
         </b-row>
     </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 import AbsenceEntry from "./absence_entry.vue";
-import Filters from '../common/filters.vue'
-import {getFilters} from '../common/filters.js';
+import Filters from "../common/filters.vue";
+import {getFilters} from "../common/filters.js";
 
 export default {
     data: function () {
@@ -62,7 +80,7 @@ export default {
             filter: "",
             currentPage: 1,
             entriesCount: 0,
-        }
+        };
     },
     methods: {
         changePage: function (page) {
@@ -77,14 +95,14 @@ export default {
             this.loadEntries();
         },
         loadEntries: function () {
-            let url = '/student_absence/api/student_absence/?ordering=-date_absence' + this.filter + '&page=' + this.currentPage;
+            let url = "/student_absence/api/student_absence/?ordering=-date_absence" + this.filter + "&page=" + this.currentPage;
             if (this.$store.state.forceAllAccess)
-                url += '&forceAllAccess=1';
+                url += "&forceAllAccess=1";
             axios.get(url)
-            .then(response => {
-                this.entriesCount = response.data.count;
-                this.absences = response.data.results;
-            });
+                .then(response => {
+                    this.entriesCount = response.data.count;
+                    this.absences = response.data.results;
+                });
         }
     },
     mounted: function () {
@@ -94,5 +112,5 @@ export default {
         AbsenceEntry,
         Filters,
     }
-}
+};
 </script>

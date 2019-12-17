@@ -26,42 +26,55 @@
             <b-row>
                 <b-tabs>
                     <template slot="tabs">
-                        <b-nav-item to="overview">Vue d'ensemble</b-nav-item>
+                        <b-nav-item to="overview">
+                            Vue d'ensemble
+                        </b-nav-item>
                         <b-nav-item to="add_absence">
-                            <icon name="plus" scale="1" color="green" class="align-middle"></icon>
+                            <icon
+                                name="plus"
+                                scale="1"
+                                color="green"
+                                class="align-middle"
+                            />
                             Ajouter absences
                         </b-nav-item>
-                        <b-nav-item to="list">Liste d'absences</b-nav-item>
-                        <b-nav-item to="notes">Notes</b-nav-item>
+                        <b-nav-item to="list">
+                            Liste d'absences
+                        </b-nav-item>
+                        <b-nav-item to="notes">
+                            Notes
+                        </b-nav-item>
                         <b-nav-item-dropdown>
-                            <b-dropdown-item @click="$store.commit('updateStudentsClasses')">Mettre à jour des étudiants</b-dropdown-item>
+                            <b-dropdown-item @click="$store.commit('updateStudentsClasses')">
+                                Mettre à jour des étudiants
+                            </b-dropdown-item>
                             <b-dropdown-item @click="$store.commit('toggleForceAllAccess')">
                                 {{ $store.state.forceAllAccess ? "Activer" : "Désactiver" }} la restriction par classe
-                                </b-dropdown-item>
+                            </b-dropdown-item>
                         </b-nav-item-dropdown>
                     </template>
                 </b-tabs>
             </b-row>
-            <router-view></router-view>
+            <router-view />
         </b-container>
     </div>
 </template>
 
 <script>
-import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue';
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import Vue from "vue";
+import BootstrapVue from "bootstrap-vue";
+import "bootstrap-vue/dist/bootstrap-vue.css";
 
 Vue.use(BootstrapVue);
 
-import 'vue-awesome/icons'
-import Icon from 'vue-awesome/components/Icon.vue'
-Vue.component('icon', Icon);
+import "vue-awesome/icons";
+import Icon from "vue-awesome/components/Icon.vue";
+Vue.component("icon", Icon);
 
 export default {
     data: function () {
         return {
-        }
+        };
     }
-}
+};
 </script>

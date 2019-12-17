@@ -21,38 +21,60 @@
     <div>
         <b-card-group class="mt-2">
             <b-card title="Dernières absences">
-                <b-table striped hover :items="lastAbsences" :fields="lastAbsencesFields">
-                    <template slot="student.display" slot-scope="data">
-                        <a href="#/list" @click="filterStudent(data.item.student_id)">{{ data.value }}</a>
+                <b-table
+                    striped
+                    hover
+                    :items="lastAbsences"
+                    :fields="lastAbsencesFields"
+                >
+                    <template
+                        slot="student.display"
+                        slot-scope="data"
+                    >
+                        <a
+                            href="#/list"
+                            @click="filterStudent(data.item.student_id)"
+                        >{{ data.value }}</a>
                     </template>
-                    <template slot="morning" slot-scope="data">
+                    <template
+                        slot="morning"
+                        slot-scope="data"
+                    >
                         {{ data.value ? 'M' : '' }}
                     </template>
-                    <template slot="afternoon" slot-scope="data">
+                    <template
+                        slot="afternoon"
+                        slot-scope="data"
+                    >
                         {{ data.value ? 'A' : '' }}
                     </template>
                 </b-table>
             </b-card>
             <b-card title="Élèves absents (en ½ jours)">
-                <b-table striped hover :items="absenceCount" :fields="absenceCountFields"></b-table>
+                <b-table
+                    striped
+                    hover
+                    :items="absenceCount"
+                    :fields="absenceCountFields"
+                />
             </b-card>
         </b-card-group>
     </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
-import Moment from 'moment';
-Moment.locale('fr');
+import Moment from "moment";
+Moment.locale("fr");
 
 export default {
     data: function () {
         return {
             lastAbsences: [],
             lastAbsencesFields: {
-                'student.display': {
-                    label: 'Élèves',
+                "student.display": {
+                    label: "Élèves",
                     formatter: value => {
                         if (this.$store.state.settings.teachings.length == 1) {
                             return value.split(" – ")[0];
@@ -61,49 +83,49 @@ export default {
                         }
                     }
                 },
-                'date_absence': {
-                    label: 'Date',
+                "date_absence": {
+                    label: "Date",
                     formatter: value => {
                         return Moment(value).calendar().split(" à ")[0];
                     }
                 },
-                'morning': {
-                    label: '',
+                "morning": {
+                    label: "",
                 },
-                'afternoon': {
-                    label: ''
+                "afternoon": {
+                    label: ""
                 }
             },
             absenceCount: [],
             absenceCountFields: {
-                'student': {
-                    label: 'Élèves',
+                "student": {
+                    label: "Élèves",
                 },
-                'half_day_diff': {
-                    label: 'Non just.',
+                "half_day_diff": {
+                    label: "Non just.",
                 },
-                'half_day_just': {
-                    label: 'Just.'
+                "half_day_just": {
+                    label: "Just."
                 },
-                'half_day_miss': {
-                    label: 'Total',
+                "half_day_miss": {
+                    label: "Total",
                 }
             }
-        }
+        };
     },
     methods: {
         filterStudent(matricule) {
-            this.$store.commit('addFilter', {"tag": matricule, "filterType": "student__matricule", "value":matricule});
+            this.$store.commit("addFilter", {"tag": matricule, "filterType": "student__matricule", "value":matricule});
         }
     },
     mounted: function () {
-        let url = '/student_absence/api/student_absence/?ordering=-datetime_creation&page_size=15';
+        let url = "/student_absence/api/student_absence/?ordering=-datetime_creation&page_size=15";
         if (this.$store.state.forceAllAccess)
-            url += '&forceAllAccess=1';
+            url += "&forceAllAccess=1";
         axios.get(url)
-        .then(response => {
-            this.lastAbsences = response.data.results;
-        });
+            .then(response => {
+                this.lastAbsences = response.data.results;
+            });
 
         // axios.get('/student_absence/api/absence_count/')
         // .then(response => {
@@ -111,5 +133,5 @@ export default {
         // });
 
     }
-}
+};
 </script>

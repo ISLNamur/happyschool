@@ -17,58 +17,60 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue'
+import Vue from "vue";
 
-import store from '../student_absence/store.js';
-import router from '../student_absence/router.js';
+import store from "../student_absence/store.js";
+import router from "../student_absence/router.js";
 
-import axios from 'axios';
+import axios from "axios";
 
-import Moment from 'moment';
-Moment.locale('fr');
+import Moment from "moment";
+Moment.locale("fr");
 
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/static/bundles/student_absence_sw.js?hash=' + hash, {
-        updateViaCache: 'none',
-        scope: '/student_absence/',
+if ("serviceWorker" in navigator) {
+    // eslint-disable-next-line no-undef
+    navigator.serviceWorker.register("/static/bundles/student_absence_sw.js?hash=" + hash, {
+        updateViaCache: "none",
+        scope: "/student_absence/",
     }).then(function(reg) {
-      // registration worked.
-      console.log('Registration succeeded. Scope is ' + reg.scope);
+        // registration worked.
+        console.log("Registration succeeded. Scope is " + reg.scope);
     }).catch(function(error) {
-      // registration failed.
-      console.log('Registration failed with ' + error);
+        // registration failed.
+        console.log("Registration failed with " + error);
     });
-  };
+}
 
-import Menu from '../common/menu.vue';
+import Menu from "../common/menu.vue";
 
-var studentAbsenceApp = new Vue({
-    el: '#vue-app',
+new Vue({
+    el: "#vue-app",
     data: {menuInfo: {}},
     store,
     router,
-    template: '<div><app-menu :menu-info="menuInfo"></app-menu><router-view></router-view></div>',
+    template: "<div><app-menu :menu-info=\"menuInfo\"></app-menu><router-view></router-view></div>",
     methods: {
         checkOnlineStatus() {
             axios.get("/core/ping/", {timeout: 5000})
-            .then(resp => {
-                this.$store.commit('changeOnLineStatus', true);
-                setTimeout(() => {
-                    this.checkOnlineStatus();
-                }, 10000)
-            })
-            .catch(errors => {
-                this.$store.commit('changeOnLineStatus', false);
-                setTimeout(() => {
-                    this.checkOnlineStatus();
-                }, 10000)
-            })
+                .then(() => {
+                    this.$store.commit("changeOnLineStatus", true);
+                    setTimeout(() => {
+                        this.checkOnlineStatus();
+                    }, 10000);
+                })
+                .catch(() => {
+                    this.$store.commit("changeOnLineStatus", false);
+                    setTimeout(() => {
+                        this.checkOnlineStatus();
+                    }, 10000);
+                });
         },
     },
     components: {
-        'app-menu': Menu,
+        "app-menu": Menu,
     },
     mounted: function () {
+        // eslint-disable-next-line no-undef
         this.menuInfo = menu;
         setTimeout(() => {
             this.checkOnlineStatus();
