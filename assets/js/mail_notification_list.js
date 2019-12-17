@@ -17,19 +17,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Appyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue';
+import Vue from "vue";
+import BootstrapVue from "bootstrap-vue";
 
-import 'bootstrap-vue/dist/bootstrap-vue.css';
+import "bootstrap-vue/dist/bootstrap-vue.css";
 
-import 'vue-awesome/icons'
-import Icon from 'vue-awesome/components/Icon.vue'
+import "vue-awesome/icons";
+import Icon from "vue-awesome/components/Icon.vue";
 
 Vue.use(BootstrapVue);
-Vue.component('icon', Icon);
+Vue.component("icon", Icon);
 
-var mailNotificationListApp = new Vue({
-    el: '#vue-app',
+new Vue({
+    el: "#vue-app",
     data: function () {
     },
 });

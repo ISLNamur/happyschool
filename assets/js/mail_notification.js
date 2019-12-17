@@ -17,12 +17,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Appyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue';
+import Vue from "vue";
 
-import MailNotification from '../mail_notification/mail_notification.vue';
+import MailNotification from "../mail_notification/mail_notification.vue";
 
-var mailNotificationApp = new Vue({
-    el: '#vue-app',
-    template: '<mail-notification/>',
+new Vue({
+    el: "#vue-app",
+    template: "<mail-notification/>",
     components: { MailNotification }
-})
+});

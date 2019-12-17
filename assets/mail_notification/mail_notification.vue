@@ -1,13 +1,24 @@
 <template>
     <div v-cloak>
-        <app-menu :menu-info="menuInfo"></app-menu>
+        <app-menu :menu-info="menuInfo" />
         <b-container v-cloak>
             <b-row>
                 <b-nav tabs>
-                    <b-nav-item active href="/mail_notification/">Envoyer un email</b-nav-item>
-                    <b-nav-item href="/mail_notification/list/">Liste des emails envoyés</b-nav-item>
-                    <b-nav-item href="/mail_answer/">Gestion des modèles</b-nav-item>
-                    <b-nav-item href="/core/members/">Gestion des personnes</b-nav-item>
+                    <b-nav-item
+                        active
+                        href="/mail_notification/"
+                    >
+                        Envoyer un email
+                    </b-nav-item>
+                    <b-nav-item href="/mail_notification/list/">
+                        Liste des emails envoyés
+                    </b-nav-item>
+                    <b-nav-item href="/mail_answer/">
+                        Gestion des modèles
+                    </b-nav-item>
+                    <b-nav-item href="/core/members/">
+                        Gestion des personnes
+                    </b-nav-item>
                 </b-nav>
             </b-row>
             <b-row>
@@ -15,10 +26,17 @@
                     <div>
                         <b-form-group
                             label="Choisissez d'abord l'enseignement : "
+                        >
+                            <b-form-radio-group
+                                v-model="teaching"
+                                name="teaching"
                             >
-                            <b-form-radio-group v-model="teaching" name="teaching">
-                                <b-form-radio value="secondaire">Secondaire</b-form-radio>
-                                <b-form-radio value="primaire">Primaire</b-form-radio>
+                                <b-form-radio value="secondaire">
+                                    Secondaire
+                                </b-form-radio>
+                                <b-form-radio value="primaire">
+                                    Primaire
+                                </b-form-radio>
                             </b-form-radio-group>
                         </b-form-group>
                     </div>
@@ -26,27 +44,42 @@
                         <h3>Enseignement : {{ teaching.toUpperCase() }}</h3>
                         <b-form-group
                             label="Le type de destinataires : "
+                        >
+                            <b-form-radio-group
+                                v-model="toType"
+                                name="toType"
+                                @change="warnChoice"
                             >
-                            <b-form-radio-group v-model="toType" name="toType" @change="warnChoice">
-                                <b-form-radio value="teachers">Professeurs</b-form-radio>
-                                <b-form-radio value="parents">Parents</b-form-radio>
+                                <b-form-radio value="teachers">
+                                    Professeurs
+                                </b-form-radio>
+                                <b-form-radio value="parents">
+                                    Parents
+                                </b-form-radio>
                             </b-form-radio-group>
                         </b-form-group>
                         <b-form-group
                             v-if="toType == 'parents'"
                             description="Si «Par parent» est choisi, un parent ayant plusieurs enfants ne recevra qu'un seul email. À contrario, si «Par élève» est choisi, un parent ayant plusieurs élèves recevra un email par élève."
                             label="Type d'envoi : "
+                        >
+                            <b-form-radio-group
+                                v-model="sendType"
+                                name="sendType"
                             >
-                            <b-form-radio-group v-model="sendType" name="sendType">
-                                <b-form-radio value="parents">Par parent</b-form-radio>
-                                <b-form-radio value="students">Par élève</b-form-radio>
+                                <b-form-radio value="parents">
+                                    Par parent
+                                </b-form-radio>
+                                <b-form-radio value="students">
+                                    Par élève
+                                </b-form-radio>
                             </b-form-radio-group>
                         </b-form-group>
                         <b-form-group
                             description="Sélectionner à partir de quelle adresse l'email sera envoyé."
                             label="Expéditeur* : "
                             :state="emailFromState"
-                            >
+                        >
                             <multiselect
                                 :options="emailFromOptions"
                                 placeholder="Sélectionner un expéditeur"
@@ -54,11 +87,14 @@
                                 selected-label="Sélectionné"
                                 deselect-label="Cliquer dessus pour enlever"
                                 v-model="emailFrom"
-                                >
+                            >
                                 <span slot="noResult">Aucun expéditeur trouvé.</span>
-                                <span slot="noOptions"></span>
+                                <span slot="noOptions" />
                             </multiselect>
-                            <b-alert variant="danger" :show="!emailFromState">
+                            <b-alert
+                                variant="danger"
+                                :show="!emailFromState"
+                            >
                                 Merci de choisir un expéditeur.
                             </b-alert>
                         </b-form-group>
@@ -67,7 +103,7 @@
                             description="Ajouter un cycle et/ou un degré, une année, une classe…"
                             label="Destinataires* : "
                             :state="emailToState"
-                            >
+                        >
                             <multiselect
                                 :internal-search="false"
                                 :options="emailToOptions"
@@ -79,11 +115,14 @@
                                 selected-label="Sélectionné"
                                 deselect-label="Cliquer dessus pour enlever"
                                 v-model="emailTo"
-                                >
+                            >
                                 <span slot="noResult">Aucun destinataire trouvé.</span>
-                                <span slot="noOptions"></span>
+                                <span slot="noOptions" />
                             </multiselect>
-                            <b-alert variant="danger" :show="!emailToState">
+                            <b-alert
+                                variant="danger"
+                                :show="!emailToState"
+                            >
                                 Merci de choisir au moins un destinataire.
                             </b-alert>
                         </b-form-group>
@@ -96,14 +135,17 @@
                             <multiselect
                                 v-model="template"
                                 :options="templateOptions"
-                                trackBy="id"
+                                track-by="id"
                                 label="name"
                                 placeholder="Ajouter un formulaire à remplir"
-                                >
-                                <span slot="noOptions"></span>
+                            >
+                                <span slot="noOptions" />
                             </multiselect>
                         </b-form-group>
-                        <b-form-group label="Tag(s) : " description="Permet de facilement identifier l'email (CPE, CGQ,…)">
+                        <b-form-group
+                            label="Tag(s) : "
+                            description="Permet de facilement identifier l'email (CPE, CGQ,…)"
+                        >
                             <multiselect
                                 :internal-search="false"
                                 :options="tagsOptions"
@@ -115,22 +157,26 @@
                                 selected-label="Sélectionné"
                                 deselect-label="Cliquer dessus pour enlever"
                                 v-model="tags"
-                                >
+                            >
                                 <span slot="noResult">Aucun tag trouvé.</span>
-                                <span slot="noOptions"></span>
+                                <span slot="noOptions" />
                             </multiselect>
                         </b-form-group>
 
                         <b-form-group
                             label="Sujet* : "
-                            >
-                            <b-form-input v-model="subject" type="text" placeholder="Sujet de l'email"></b-form-input>
+                        >
+                            <b-form-input
+                                v-model="subject"
+                                type="text"
+                                placeholder="Sujet de l'email"
+                            />
                         </b-form-group>
 
                         <b-form-group
                             description="Ajouter une ou des pièces jointes à l'email. Accepte uniquement des fichiers pdf."
                             label="Pièce(s) jointe(s) : "
-                            >
+                        >
                             <b-form-file
                                 multiple
                                 accept=".pdf"
@@ -141,69 +187,102 @@
                                 drop-label="Déposer des fichiers ici"
                                 plain
                                 @input="addFiles"
-                                >
-                            </b-form-file>
-                            <b-list-group v-for="(item, index) in uploadedFiles" :key="index">
-                                <file-upload :id=item.id :file="item.file" path="/mail_notification/upload_file/"
-                                    @delete="deleteFile(index)" @setdata="setFileData(index, $event)">
-                                </file-upload>
+                            />
+                            <b-list-group
+                                v-for="(item, index) in uploadedFiles"
+                                :key="index"
+                            >
+                                <file-upload
+                                    :id="item.id"
+                                    :file="item.file"
+                                    path="/mail_notification/upload_file/"
+                                    @delete="deleteFile(index)"
+                                    @setdata="setFileData(index, $event)"
+                                />
                             </b-list-group>
                         </b-form-group>
                         <b-form-group
                             :description="explanation_mail"
                             label="Email : "
-                            >
-                            <quill-editor :content="emailContent"
+                        >
+                            <quill-editor
+                                :content="emailContent"
                                 :options="editorOptions"
                                 @change="onEditorChange($event)"
-                                >
-                            </quill-editor>
-                            <div class="html ql-editor" v-html='replaceContent()'></div>
+                            />
+                            <div
+                                class="html ql-editor"
+                                v-html="replaceContent()"
+                            />
                         </b-form-group>
-                        <b-button type="submit" variant="primary">Envoyer</b-button>
+                        <b-button
+                            type="submit"
+                            variant="primary"
+                        >
+                            Envoyer
+                        </b-button>
                     </div>
                 </b-form>
             </b-row>
         </b-container>
-        <b-modal v-model="showModal" centered>
-            <p v-if="sending"><icon name="refresh" scale="1" spin></icon> Envoi des emails en cours…</p>
-            <p v-if="!sending && !hasError">La demande d'envoi des emails a été soumise !<p>
-            <p v-if="!sending && hasError">Désolé, une erreur est survenue lors de l'envoi du mail. Merci de réessayer plus tard ou de contacter un administrateur.<p>
-            <div slot="modal-footer" class="w-100">
-                <b-btn size="sm" class="float-right" variant="primary" @click="showModal=false">
+        <b-modal
+            v-model="showModal"
+            centered
+        >
+            <p v-if="sending">
+                <icon
+                    name="refresh"
+                    scale="1"
+                    spin
+                /> Envoi des emails en cours…
+            </p>
+            <p v-if="!sending && !hasError">
+                La demande d'envoi des emails a été soumise !
+            </p><p /><p v-if="!sending && hasError">
+                Désolé, une erreur est survenue lors de l'envoi du mail. Merci de réessayer plus tard ou de contacter un administrateur.
+            </p><p /><div
+                slot="modal-footer"
+                class="w-100"
+            >
+                <b-btn
+                    size="sm"
+                    class="float-right"
+                    variant="primary"
+                    @click="showModal=false"
+                >
                     OK
                 </b-btn>
-           </div>
+            </div>
         </b-modal>
     </div>
 </template>
 
 <script>
-import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue';
+import Vue from "vue";
+import BootstrapVue from "bootstrap-vue";
 Vue.use(BootstrapVue);
 
-import {quillEditor} from 'vue-quill-editor'
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
-import Quill from 'quill'
-var Block = Quill.import('blots/block');
-Block.tagName = 'DIV';
+import {quillEditor} from "vue-quill-editor";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import Quill from "quill";
+var Block = Quill.import("blots/block");
+Block.tagName = "DIV";
 Quill.register(Block, true);
 
-import 'bootstrap-vue/dist/bootstrap-vue.css';
-import 'vue-multiselect/dist/vue-multiselect.min.css'
+import "bootstrap-vue/dist/bootstrap-vue.css";
+import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import 'vue-awesome/icons'
-import Icon from 'vue-awesome/components/Icon.vue'
-import axios from 'axios';
-import Multiselect from 'vue-multiselect';
+import "vue-awesome/icons";
+import Icon from "vue-awesome/components/Icon.vue";
+import axios from "axios";
+import Multiselect from "vue-multiselect";
 
-import FileUpload from '../common/file_upload.vue';
-import AppMenu from '../common/menu.vue';
+import FileUpload from "../common/file_upload.vue";
+import AppMenu from "../common/menu.vue";
 
 Vue.use(BootstrapVue);
-Vue.component('icon', Icon);
+Vue.component("icon", Icon);
 
 export default {
     data: function () {
@@ -211,7 +290,7 @@ export default {
             menuInfo: {},
             explanation_mail:"",
             /*`Dans le cas d'un message «Par élève»,
-            les variables {{ nom }} et {{ classe }} seront automatiquement converties en nom et classe de l'élève.
+            les variables {{ nom }} et {{ classe }} seront automatiquement converties en nom et classe de l'élève.
             Vous pouvez voir le résultat directement dans la prévisualisation.`,*/
             toType: "teachers",
             subject: "",
@@ -239,29 +318,29 @@ export default {
             editorOptions: {
                 modules: {
                     toolbar: [
-                        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-                        ['blockquote'],
-                        ['link', 'image'],
+                        ["bold", "italic", "underline", "strike"],        // toggled buttons
+                        ["blockquote"],
+                        ["link", "image"],
 
-                        [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-                        [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-                        [{ 'direction': 'rtl' }],                         // text direction
+                        [{ "header": 1 }, { "header": 2 }],               // custom button values
+                        [{ "list": "ordered"}, { "list": "bullet" }],
+                        [{ "script": "sub"}, { "script": "super" }],      // superscript/subscript
+                        [{ "indent": "-1"}, { "indent": "+1" }],          // outdent/indent
+                        [{ "direction": "rtl" }],                         // text direction
 
-                        [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+                        [{ "size": ["small", false, "large", "huge"] }],  // custom dropdown
 
-                        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-                        [{ 'font': [] }],
-                        [{ 'align': [] }],
+                        [{ "color": [] }, { "background": [] }],          // dropdown with defaults from theme
+                        [{ "font": [] }],
+                        [{ "align": [] }],
 
-                        ['clean']
+                        ["clean"]
                     ]
                 },
-                placeholder: 'Ecrivez le mail ici.'
+                placeholder: "Ecrivez le mail ici."
             },
             preshow: ""
-        }
+        };
     },
     watch: {
         teaching: function() {
@@ -270,32 +349,32 @@ export default {
             // Reset fields.
             this.emailFrom = "";
             this.responsibles = false;
-            //TODO reset all other fields.
-            axios.get('/mail_notification/get_senders/' + this.teaching + '/')
-            .then(response => {
-                this.emailFromOptions = response.data.map(m => m.sender_email_name + " <" + m.sender_email + ">");
-           });
+            //TODO reset all other fields.
+            axios.get("/mail_notification/get_senders/" + this.teaching + "/")
+                .then(response => {
+                    this.emailFromOptions = response.data.map(m => m.sender_email_name + " <" + m.sender_email + ">");
+                });
         }
     },
     methods: {
         warnChoice: function() {
-            if (this.toType === "teachers") alert('Vous avez choisi d\'envoyer aux parents.');
+            if (this.toType === "teachers") alert("Vous avez choisi d'envoyer aux parents.");
         },
         reset: function() {
-                this.toType = "teachers";
-                this.subject = "";
-                this.emailFrom = "";
-                this.emailTo = [];
-                this.tags = [];
-                this.emailContent = "";
-                this.preshow = "";
-                this.$refs.attachments.reset();
-                this.uploadedFiles.splice(0, this.uploadedFiles.length);
-                this.teaching = null;
-                this.hasError = false;
-                this.responsibles = true;
+            this.toType = "teachers";
+            this.subject = "";
+            this.emailFrom = "";
+            this.emailTo = [];
+            this.tags = [];
+            this.emailContent = "";
+            this.preshow = "";
+            this.$refs.attachments.reset();
+            this.uploadedFiles.splice(0, this.uploadedFiles.length);
+            this.teaching = null;
+            this.hasError = false;
+            this.responsibles = true;
         },
-        addFiles: function(evt) {
+        addFiles: function() {
             for (let a in this.attachments) {
                 this.uploadedFiles.push({file: this.attachments[a], id: -1});
             }
@@ -323,88 +402,89 @@ export default {
         },
         getEmailToOptions: function (search) {
             this.emailToLoading = true;
-            axios.get('/mail_notification/get_email_to_options/' + this.teaching + '/' + this.toType + '/?query='+search)
-            .then(response => {
-                this.emailToOptions = response.data;
-                this.emailToLoading = false;
-           });
-       },
-       getTagsOptions: function (search) {
-           this.tagsLoading = true;
-           axios.get('/mail_notification/get_tags_options/?query='+search)
-           .then(response => {
-               this.tagsOptions = response.data;
-               this.tagsLoading = false;
-          });
-       },
-       onEditorChange({editor, html, text}) {
-           this.emailContent = html;
-       },
-       onSubmit (evt) {
-           evt.preventDefault();
-           if (!this.emailFrom) {
-               this.emailFromState = false;
-           } else {
-               this.emailFromState = true;
-           }
-           if (this.emailTo.length == 0) {
-               this.emailToState = false;
-           } else {
-               this.emailToState = true;
-           }
-           if (this.emailTo.length === 0 || !this.emailFrom) return;
+            axios.get("/mail_notification/get_email_to_options/" + this.teaching + "/" + this.toType + "/?query="+search)
+                .then(response => {
+                    this.emailToOptions = response.data;
+                    this.emailToLoading = false;
+                });
+        },
+        getTagsOptions: function (search) {
+            this.tagsLoading = true;
+            axios.get("/mail_notification/get_tags_options/?query="+search)
+                .then(response => {
+                    this.tagsOptions = response.data;
+                    this.tagsLoading = false;
+                });
+        },
+        onEditorChange(event) {
+            this.emailContent = event.html;
+        },
+        onSubmit (evt) {
+            evt.preventDefault();
+            if (!this.emailFrom) {
+                this.emailFromState = false;
+            } else {
+                this.emailFromState = true;
+            }
+            if (this.emailTo.length == 0) {
+                this.emailToState = false;
+            } else {
+                this.emailToState = true;
+            }
+            if (this.emailTo.length === 0 || !this.emailFrom) return;
 
-           // Ready to send emails.
-           this.sending = true;
-           this.showModal = true;
-           var formData = new FormData();
-           formData.append('to_type', this.toType);
-           formData.append('email_to', this.emailTo);
-           formData.append('responsibles', this.responsibles);
-           formData.append('email_from', this.emailFrom);
-           formData.append('send_type', this.sendType);
-           formData.append('email_content', this.emailContent);
-           formData.append('subject', this.subject);
-           formData.append('teaching', this.teaching);
-           if (this.template) formData.append('template', this.template.id);
-           var attachments = [];
-           for (let u in this.uploadedFiles) {
-               attachments.push(this.uploadedFiles[u].id);
-           }
-           formData.append('attachments', attachments);
+            // Ready to send emails.
+            this.sending = true;
+            this.showModal = true;
+            var formData = new FormData();
+            formData.append("to_type", this.toType);
+            formData.append("email_to", this.emailTo);
+            formData.append("responsibles", this.responsibles);
+            formData.append("email_from", this.emailFrom);
+            formData.append("send_type", this.sendType);
+            formData.append("email_content", this.emailContent);
+            formData.append("subject", this.subject);
+            formData.append("teaching", this.teaching);
+            if (this.template) formData.append("template", this.template.id);
+            var attachments = [];
+            for (let u in this.uploadedFiles) {
+                attachments.push(this.uploadedFiles[u].id);
+            }
+            formData.append("attachments", attachments);
 
-           const thisApp = this;
-           axios.post(
-               'send_emails/',
-               formData,
-               {
-                   xsrfCookieName: 'csrftoken',
-                   xsrfHeaderName: 'X-CSRFToken',
-               }
-           ).then(function (response) {
-               thisApp.sending = false;
-               thisApp.reset();
-           }).catch(function (error) {
-               thisApp.sending = false;
-               thisApp.hasError = true;
-           });
+            const thisApp = this;
+            axios.post(
+                "send_emails/",
+                formData,
+                {
+                    xsrfCookieName: "csrftoken",
+                    xsrfHeaderName: "X-CSRFToken",
+                }
+            ).then(() => {
+                thisApp.sending = false;
+                thisApp.reset();
+            }).catch(() => {
+                thisApp.sending = false;
+                thisApp.hasError = true;
+            });
         }
     },
     components: {Multiselect, quillEditor, FileUpload, AppMenu},
     mounted: function () {
+        // eslint-disable-next-line no-undef
         this.menuInfo = menu;
         this.getTagsOptions("");
 
         // Get templates.
-        axios.get('/mail_answer/api/mail_template/?is_used=0')
-        .then(response => {
-            this.templateOptions = response.data.results;
-        })
-        .catch(function (error) {
-            alert(error);
-        });
+        axios.get("/mail_answer/api/mail_template/?is_used=0")
+            .then(response => {
+                this.templateOptions = response.data.results;
+            })
+            .catch(function (error) {
+                alert(error);
+            });
     }
-}
+};
 </script>
 
 <style>
