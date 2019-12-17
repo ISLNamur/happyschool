@@ -18,29 +18,40 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-modal size="lg" title="Ajouter un changement"
+    <b-modal
+        size="lg"
+        title="Ajouter un changement"
         cancel-title="Annuler"
         :ok-disabled="!form.change || submitting || !$store.state.canAdd"
         ref="addModal"
-        v-on:ok="submitForm"
-        v-on:hidden="resetData"
-        >
+        @ok="submitForm"
+        @hidden="resetData"
+    >
         <b-form>
             <b-form-row>
                 <b-form-group
                     label="Type de changement"
-                    >
-                    <b-form-select v-model="form.change" :options="$store.state.changeType" value-field="id" text-field="name">
-                    </b-form-select>
+                >
+                    <b-form-select
+                        v-model="form.change"
+                        :options="$store.state.changeType"
+                        value-field="id"
+                        text-field="name"
+                    />
                 </b-form-group>
             </b-form-row>
             <b-form-row>
                 <b-form-group
                     label="Catégorie"
+                >
+                    <b-form-select
+                        v-model="form.category"
+                        :options="categoryOptions"
+                        value-field="id"
+                        text-field="category"
                     >
-                    <b-form-select v-model="form.category" :options="categoryOptions" value-field="id" text-field="category">
                         <template slot="first">
-                            <option :value="null"></option>
+                            <option :value="null" />
                         </template>
                     </b-form-select>
                 </b-form-group>
@@ -50,10 +61,11 @@
                     id="date-start-input-group"
                     label="Date"
                     :state="inputStates.date_change"
-                    >
-
-                    <b-form-input type="date" v-model="form.date_change">
-                    </b-form-input>
+                >
+                    <b-form-input
+                        type="date"
+                        v-model="form.date_change"
+                    />
                     <span slot="invalid-feedback">{{ errorMsg('date_change') }}</span>
                 </b-form-group>
             </b-form-row>
@@ -62,22 +74,28 @@
                     id="time-start-input-group"
                     label="Heure début"
                     :state="inputStates.time_start"
-                    >
-                    <b-form-input type="time" v-model="form.time_start"></b-form-input>
+                >
+                    <b-form-input
+                        type="time"
+                        v-model="form.time_start"
+                    />
                     <span slot="invalid-feedback">{{ errorMsg('time_start') }}</span>
                 </b-form-group>
                 <b-form-group
                     id="time-end-input-group"
                     label="Heure fin"
                     :state="inputStates.time_end"
-                    >
-                    <b-form-input type="time" v-model="form.time_end"></b-form-input>
+                >
+                    <b-form-input
+                        type="time"
+                        v-model="form.time_end"
+                    />
                     <span slot="invalid-feedback">{{ errorMsg('time_end') }}</span>
                 </b-form-group>
             </b-form-row>
             <b-form-group
                 label="Classe(s) et/ou année(s) concernée(s)"
-                >
+            >
                 <multiselect
                     :internal-search="false"
                     :options="classesOptions"
@@ -89,14 +107,14 @@
                     selected-label="Sélectionné"
                     deselect-label="Cliquer dessus pour enlever"
                     v-model="form.classes"
-                    >
+                >
                     <span slot="noResult">Aucune classe trouvée.</span>
-                    <span slot="noOptions"></span>
+                    <span slot="noOptions" />
                 </multiselect>
             </b-form-group>
             <b-form-group
                 label="Prof/Educ(s) absent(s) et/ou indisponible(s)"
-                >
+            >
                 <multiselect
                     :internal-search="false"
                     :options="teachersReplacedOptions"
@@ -110,15 +128,15 @@
                     v-model="form.teachers_replaced"
                     label="display"
                     track-by="matricule"
-                    >
+                >
                     <span slot="noResult">Aucun professeur trouvé.</span>
-                    <span slot="noOptions"></span>
+                    <span slot="noOptions" />
                 </multiselect>
             </b-form-group>
             <b-form-group
                 v-if="isReplacement"
                 label="Prof/Educ(s) remplacant(s)"
-                >
+            >
                 <multiselect
                     :internal-search="false"
                     :options="teachersSubstituteOptions"
@@ -132,56 +150,79 @@
                     v-model="form.teachers_substitute"
                     label="display"
                     track-by="matricule"
-                    >
+                >
                     <span slot="noResult">Aucun professeur trouvé.</span>
-                    <span slot="noOptions"></span>
+                    <span slot="noOptions" />
                 </multiselect>
             </b-form-group>
             <b-form-group
                 label="Local/Lieu de subtitution"
-                >
-                <multiselect v-model="form.place" tag-placeholder="Ajouter le local/lieu"
-                    placeholder="Ajouter local/lieu" :taggable="true" :options="placesOptions" @tag="addPlaces"
+            >
+                <multiselect
+                    v-model="form.place"
+                    tag-placeholder="Ajouter le local/lieu"
+                    placeholder="Ajouter local/lieu"
+                    :taggable="true"
+                    :options="placesOptions"
+                    @tag="addPlaces"
                     select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
                     selected-label="Sélectionné"
                     deselect-label="Cliquer dessus pour enlever"
-                    >
-                    <span slot="noOptions"></span>
+                >
+                    <span slot="noOptions" />
                 </multiselect>
             </b-form-group>
             <b-form-group
                 label="Commentaire"
+            >
+                <b-form-textarea
+                    v-model="form.comment"
+                    :rows="2"
+                    placeholder="Un commentaire sur le changement"
+                />
+            </b-form-group>
+            <b-form-group>
+                <b-form-checkbox v-model="form.send_email_general">
+                    Notifier le changement par courriel
+                </b-form-checkbox>
+            </b-form-group>
+            <b-form-group>
+                <b-form-checkbox
+                    v-if="form.teachers_substitute.length > 0"
+                    v-model="form.send_email_substitute"
                 >
-                <b-form-textarea v-model="form.comment" :rows="2"
-                    placeholder="Un commentaire sur le changement">
-                </b-form-textarea>
-            </b-form-group>
-            <b-form-group>
-                <b-form-checkbox v-model="form.send_email_general">Notifier le changement par courriel</b-form-checkbox>
-            </b-form-group>
-            <b-form-group>
-                <b-form-checkbox v-if="form.teachers_substitute.length > 0" v-model="form.send_email_substitute">Notifier le remplaçant par courriel</b-form-checkbox>
+                    Notifier le remplaçant par courriel
+                </b-form-checkbox>
             </b-form-group>
         </b-form>
         <template slot="modal-ok">
-            <icon v-if="submitting" name="spinner" scale="1" spin class="align-baseline"></icon>
+            <icon
+                v-if="submitting"
+                name="spinner"
+                scale="1"
+                spin
+                class="align-baseline"
+            />
             Soumettre
         </template>
     </b-modal>
 </template>
 
 <script>
-import Moment from 'moment';
-Moment.locale('fr');
+import Moment from "moment";
+Moment.locale("fr");
 
-import Multiselect from 'vue-multiselect'
-import 'vue-multiselect/dist/vue-multiselect.min.css'
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import axios from 'axios';
+import axios from "axios";
 
 export default {
     props: {
-        entry: null,
+        entry: {
+            type: Object,
+            default: () => null,
+        }
     },
     data: function () {
         return {
@@ -227,12 +268,12 @@ export default {
                 if (this.form.time_end) this.form.time_end = this.form.time_end.slice(0, 5);
                 this.form.classes = this.initArray(this.form.classes);
                 this.form.teachers_replaced_id = this.form.teachers_replaced;
-                this.form.teachers_substitute_id = this.form.teachers_substitute_id;
+                this.form.teachers_substitute_id = this.form.teachers_substitute;
             } else {
                 this.resetData();
             }
         },
-        errors: function (newErrors, oldErrors) {
+        errors: function (newErrors) {
             let inputs = Object.keys(this.inputStates);
             for (let u in inputs) {
                 if (inputs[u] in newErrors) {
@@ -246,7 +287,7 @@ export default {
     computed: {
         isReplacement: function () {
             for (let ct in this.$store.state.changeType) {
-                if (this.$store.state.changeType[ct].name == 'Remplacement'
+                if (this.$store.state.changeType[ct].name == "Remplacement"
                     && this.$store.state.changeType[ct].id == this.form.change) return true;
             }
             return false;
@@ -269,7 +310,7 @@ export default {
             Object.assign(this.$data, this.$options.data.call(this));
             this.placesOptions = places;
             this.categoryOptions = this.$store.state.changeCategory;
-            this.$emit('reset');
+            this.$emit("reset");
         },
         show: function () {
             this.categoryOptions = this.$store.state.changeCategory;
@@ -286,11 +327,11 @@ export default {
             }
         },
         getPlaces() {
-            const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-            axios.get('/schedule_change/api/schedule_change_place/', token)
-            .then(resp => {
-                this.placesOptions = resp.data.results.map(p => p.name);
-            });
+            const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            axios.get("/schedule_change/api/schedule_change_place/", token)
+                .then(resp => {
+                    this.placesOptions = resp.data.results.map(p => p.name);
+                });
         },
         getStudentsClassesYears(query) {
             this.classesLoading = true;
@@ -298,28 +339,28 @@ export default {
             let app = this;
             this.searchId += 1;
             let currentSearch = this.searchId;
-            const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             const data = {
                 query: query,
                 teachings: this.$store.state.settings.teachings,
                 check_access: false,
                 years: true,
             };
-            axios.post('/annuaire/api/classes/', data, token)
-            .then(response => {
+            axios.post("/annuaire/api/classes/", data, token)
+                .then(response => {
                 // Avoid that a previous search overwrites a faster following search results.
-                if (this.searchId !== currentSearch)
-                    return;
-                const options = response.data.map(p => {
-                    return p.display;
+                    if (this.searchId !== currentSearch)
+                        return;
+                    const options = response.data.map(p => {
+                        return p.display;
+                    });
+                    this.classesLoading = false;
+                    this.classesOptions = options;
+                })
+                .catch(function (error) {
+                    alert(error);
+                    app.classesLoading = false;
                 });
-                this.classesLoading = false;
-                this.classesOptions = options;
-            })
-            .catch(function (error) {
-                alert(error);
-                app.classesLoading = false;
-            });
         },
         getTeachersReplaced(query) {
             this.getTeachers(query, "replaced");
@@ -337,7 +378,7 @@ export default {
             this.searchId += 1;
             let currentSearch = this.searchId;
 
-            const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             const data = {
                 query: query,
                 teachings: this.$store.state.settings.teachings,
@@ -345,28 +386,28 @@ export default {
                 check_access: false,
                 active: false,
             };
-            axios.post('/annuaire/api/people/', data, token)
-            .then(response => {
+            axios.post("/annuaire/api/people/", data, token)
+                .then(response => {
                 // Avoid that a previous search overwrites a faster following search results.
-                if (this.searchId !== currentSearch)
-                    return;
-                const options = response.data;
-                if (teacherType == "replaced") {
-                    this.teachersReplacedLoading = false;
-                    this.teachersReplacedOptions = options;
-                } else {
-                    this.teachersSubstituteLoading = false;
-                    this.teachersSubstituteOptions = options;
-                }
-            })
-            .catch(function (error) {
-                alert(error);
-                if (teacherType == "replaced") {
-                    app.teachersReplacedLoading = false;
-                } else {
-                    app.teachersSubstituteLoading = false;
-                }
-            });
+                    if (this.searchId !== currentSearch)
+                        return;
+                    const options = response.data;
+                    if (teacherType == "replaced") {
+                        this.teachersReplacedLoading = false;
+                        this.teachersReplacedOptions = options;
+                    } else {
+                        this.teachersSubstituteLoading = false;
+                        this.teachersSubstituteOptions = options;
+                    }
+                })
+                .catch(function (error) {
+                    alert(error);
+                    if (teacherType == "replaced") {
+                        app.teachersReplacedLoading = false;
+                    } else {
+                        app.teachersSubstituteLoading = false;
+                    }
+                });
         },
         submitForm: function (evt) {
             evt.preventDefault();
@@ -380,15 +421,15 @@ export default {
             if (data.time_start == "") data.time_start = null;
             if (data.time_end == "") data.time_end = null;
             // Send data.
-            const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-            let path = '/schedule_change/api/schedule_change/';
+            const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            let path = "/schedule_change/api/schedule_change/";
             const isPut = this.entry && this.entry.id;
-            if (isPut) path += this.form.id + '/'
+            if (isPut) path += this.form.id + "/";
             const send = isPut ? axios.put(path, data, token) : axios.post(path, data, token);
-            send.then(response => {
+            send.then(() => {
                 this.hide();
                 this.errors = {};
-                this.$emit('update');
+                this.$emit("update");
                 this.submitting = false;
             }).catch(function (error) {
                 modal.submitting = false;
@@ -400,5 +441,5 @@ export default {
     mounted: function () {
         this.getPlaces();
     }
-}
+};
 </script>

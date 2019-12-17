@@ -18,32 +18,47 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-modal size="lg" title="Exporter un récapitulatif"
+    <b-modal
+        size="lg"
+        title="Exporter un récapitulatif"
         cancel-title="Annuler"
         :ok-disabled="!export_to || !export_from || processing"
         ref="exportModal"
-        v-on:ok="submitExport"
-        v-on:hidden="resetModal"
-        >
+        @ok="submitExport"
+        @hidden="resetModal"
+    >
         <b-row class="mt-2">
             <b-col>
                 <b-form-row>
                     <b-form-group label="À partir du">
-                        <input type="date" v-model="export_from" :max="export_to" />
+                        <input
+                            type="date"
+                            v-model="export_from"
+                            :max="export_to"
+                        >
                     </b-form-group>
                 </b-form-row>
             </b-col>
             <b-col>
                 <b-form-row>
                     <b-form-group label="Jusqu'au">
-                        <input type="date" v-model="export_to" :min="export_from" />
+                        <input
+                            type="date"
+                            v-model="export_to"
+                            :min="export_from"
+                        >
                     </b-form-group>
                 </b-form-row>
             </b-col>
         </b-row>
-        <b-row class="ml-2" v-if="$store.state.canAdd">
+        <b-row
+            class="ml-2"
+            v-if="$store.state.canAdd"
+        >
             <b-form-group>
-                <b-checkbox v-model="sendToTeachers">Envoyer le récapitulatif aux enseignants concernés</b-checkbox>
+                <b-checkbox v-model="sendToTeachers">
+                    Envoyer le récapitulatif aux enseignants concernés
+                </b-checkbox>
             </b-form-group>
         </b-row>
         <b-row>
@@ -55,18 +70,24 @@
                     rows="3"
                     max-rows="6"
                     maxlength="240"
-                ></b-form-textarea>
+                />
             </b-col>
         </b-row>
         <template slot="modal-ok">
-            <icon v-if="processing" name="spinner" scale="1" spin class="align-baseline"></icon>
+            <icon
+                v-if="processing"
+                name="spinner"
+                scale="1"
+                spin
+                class="align-baseline"
+            />
             {{ buttonStr }}
         </template>
     </b-modal>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
     data: function () {
@@ -78,7 +99,7 @@ export default {
             message: "",
             ws: null,
             processing: false,
-        }
+        };
     },
     watch: {
         sendToTeachers: function (state) {
@@ -101,30 +122,30 @@ export default {
         submitExport: function (event) {
             event.preventDefault();
             let app = this;
-            this.buttonStr = "Traitement en cours"
+            this.buttonStr = "Traitement en cours";
             this.processing = true;
             const token = {
-                    xsrfCookieName: 'csrftoken',
-                    xsrfHeaderName: 'X-CSRFToken',
+                xsrfCookieName: "csrftoken",
+                xsrfHeaderName: "X-CSRFToken",
             };
-            const url = '/schedule_change/api/summary_pdf/?page_size=500&date_change__gte='
-            + this.export_from + '&date_change__lte=' + this.export_to + '&send_to_teachers=' + this.sendToTeachers
-            + '&message=' + encodeURIComponent(this.message);
+            const url = "/schedule_change/api/summary_pdf/?page_size=500&date_change__gte="
+            + this.export_from + "&date_change__lte=" + this.export_to + "&send_to_teachers=" + this.sendToTeachers
+            + "&message=" + encodeURIComponent(this.message);
             axios.get(url, token)
-            .then(response => {
-                const protocol = window.location.protocol === 'http:' ? 'ws' : 'wss';
-                app.ws = new WebSocket(protocol + '://' + window.location.host + "/ws/schedule_change/export_summary/" + JSON.parse(response.data) + "/");
-                app.ws.onmessage = function (event) {
-                    window.open(JSON.parse(event.data)['file_url'],'_blank');
-                    app.sendToTeachers = false;
-                    app.buttonStr = "Créer le PDF";
-                    app.processing = false;
-                }
-            })
+                .then(response => {
+                    const protocol = window.location.protocol === "http:" ? "ws" : "wss";
+                    app.ws = new WebSocket(protocol + "://" + window.location.host + "/ws/schedule_change/export_summary/" + JSON.parse(response.data) + "/");
+                    app.ws.onmessage = function (event) {
+                        window.open(JSON.parse(event.data)["file_url"],"_blank");
+                        app.sendToTeachers = false;
+                        app.buttonStr = "Créer le PDF";
+                        app.processing = false;
+                    };
+                });
         },
         resetModal: function () {
             Object.assign(this.$data, this.$options.data.call(this));
         }
     }
-}
+};
 </script>
