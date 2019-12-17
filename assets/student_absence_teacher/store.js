@@ -17,20 +17,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue';
-import Vuex from 'vuex';
+import Vue from "vue";
+import Vuex from "vuex";
 
-import axios from 'axios';
-
-import {addFilter, removeFilter} from '../common/filters.js';
+import {addFilter, removeFilter} from "../common/filters.js";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
     state: {
-      settings: settings,
-      filters: [],
-      changes: {},
+        // eslint-disable-next-line no-undef
+        settings: settings,
+        filters: [],
+        changes: {},
     },
     mutations: {
         addFilter: addFilter,

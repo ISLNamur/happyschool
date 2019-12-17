@@ -22,44 +22,65 @@
         <b-row>
             <b-col>
                 <b-card>
-                    <filters app="student_absence" model="student_absence" ref="filters" @update="applyFilter"></filters>
+                    <filters
+                        app="student_absence"
+                        model="student_absence"
+                        ref="filters"
+                        @update="applyFilter"
+                    />
                 </b-card>
             </b-col>
         </b-row>
         <b-row>
             <b-col>
-                <b-pagination class="mt-1" :total-rows="entriesCount" v-model="currentPage" @change="changePage" :per-page="20">
-                </b-pagination>
+                <b-pagination
+                    class="mt-1"
+                    :total-rows="entriesCount"
+                    v-model="currentPage"
+                    @change="changePage"
+                    :per-page="20"
+                />
             </b-col>
         </b-row>
         <b-row>
             <b-col>
                 <h3>Absences</h3>
-                <absence-entry v-for="absence in absences" :key="absence.id" :absence="absence">
-                </absence-entry>
+                <absence-entry
+                    v-for="absence in absences"
+                    :key="absence.id"
+                    :absence="absence"
+                />
             </b-col>
             <b-col>
                 <h3>Retards</h3>
-                <lateness-entry v-for="lateness in latenesses" :key="lateness.id" :lateness="lateness">
-                </lateness-entry>
+                <lateness-entry
+                    v-for="lateness in latenesses"
+                    :key="lateness.id"
+                    :lateness="lateness"
+                />
             </b-col>
         </b-row>
         <b-row v-if="entriesCount > 10">
             <b-col>
-                <b-pagination class="mt-2" :total-rows="entriesCount" v-model="currentPage" @change="changePage" :per-page="20">
-                </b-pagination>
+                <b-pagination
+                    class="mt-2"
+                    :total-rows="entriesCount"
+                    v-model="currentPage"
+                    @change="changePage"
+                    :per-page="20"
+                />
             </b-col>
         </b-row>
     </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 import AbsenceEntry from "./absence_entry.vue";
 import LatenessEntry from "./lateness_entry.vue";
-import Filters from '../common/filters.vue'
-import {getFilters} from '../common/filters.js';
+import Filters from "../common/filters.vue";
+import {getFilters} from "../common/filters.js";
 
 export default {
     data: function () {
@@ -70,7 +91,7 @@ export default {
             filter: "",
             currentPage: 1,
             entriesCount: 0,
-        }
+        };
     },
     methods: {
         changePage: function (page) {
@@ -85,15 +106,15 @@ export default {
             this.loadEntries();
         },
         loadEntries: function () {
-            const getAbsences = axios.get('/student_absence_teacher/api/absence/?ordering=-date' + this.filter + '&page=' + this.currentPage);
-            const getLatenesses = axios.get('/student_absence_teacher/api/lateness/?ordering=-date' + this.filter + '&page=' + this.currentPage);
+            const getAbsences = axios.get("/student_absence_teacher/api/absence/?ordering=-date" + this.filter + "&page=" + this.currentPage);
+            const getLatenesses = axios.get("/student_absence_teacher/api/lateness/?ordering=-date" + this.filter + "&page=" + this.currentPage);
 
             Promise.all([getAbsences, getLatenesses])
-            .then(responses => {
-                this.absences = responses[0].data.results;
-                this.latenesses = responses[1].data.results;
-                this.entriesCount = Math.max(responses[0].data.count, responses[1].data.count);
-            })
+                .then(responses => {
+                    this.absences = responses[0].data.results;
+                    this.latenesses = responses[1].data.results;
+                    this.entriesCount = Math.max(responses[0].data.count, responses[1].data.count);
+                });
         }
     },
     mounted: function () {
@@ -104,5 +125,5 @@ export default {
         LatenessEntry,
         Filters,
     }
-}
+};
 </script>

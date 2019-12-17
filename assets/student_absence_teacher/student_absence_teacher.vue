@@ -19,52 +19,70 @@
 
 <template>
     <div>
-        <div class="loading" v-if="!loaded"></div>
-        <app-menu v-if="loaded" :menu-info="menuInfo"></app-menu>
+        <div
+            class="loading"
+            v-if="!loaded"
+        />
+        <app-menu
+            v-if="loaded"
+            :menu-info="menuInfo"
+        />
         <b-container v-if="loaded">
             <h1>Absence des élèves</h1>
             <b-row class="mb-1">
                 <b-tabs>
                     <template slot="tabs">
                         <b-nav-item to="add_absence">
-                            <icon name="plus" scale="1" color="green" class="align-middle"></icon>
+                            <icon
+                                name="plus"
+                                scale="1"
+                                color="green"
+                                class="align-middle"
+                            />
                             Ajouter absenses/retards
                         </b-nav-item>
-                        <b-nav-item v-if="can_access_list" to="list">Liste d'absences/retards</b-nav-item>
+                        <b-nav-item
+                            v-if="can_access_list"
+                            to="list"
+                        >
+                            Liste d'absences/retards
+                        </b-nav-item>
                     </template>
                 </b-tabs>
             </b-row>
-            <router-view></router-view>
+            <router-view />
         </b-container>
     </div>
 </template>
 
 <script>
-import Vue from 'vue';
-import BootstrapVue from 'bootstrap-vue'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import Vue from "vue";
+import BootstrapVue from "bootstrap-vue";
+import "bootstrap-vue/dist/bootstrap-vue.css";
 
 Vue.use(BootstrapVue);
 
-import 'vue-awesome/icons'
-import Icon from 'vue-awesome/components/Icon.vue'
-Vue.component('icon', Icon);
+import "vue-awesome/icons";
+import Icon from "vue-awesome/components/Icon.vue";
+Vue.component("icon", Icon);
 
 
-import Menu from '../common/menu.vue'
+import Menu from "../common/menu.vue";
 
 export default {
     data: function () {
         return {
             menuInfo: {},
             loaded: false,
-        }
+        };
     },
     computed: {
         can_access_list: function () {
             const access_groups = this.$store.state.settings.can_see_list;
             for (let ag in this.$store.state.settings.can_see_list) {
+                // eslint-disable-next-line no-undef
                 for (let g in user_groups) {
+                    // eslint-disable-next-line no-undef
                     if (user_groups[g].id == access_groups[ag]) return true;
                 }
             }
@@ -72,11 +90,12 @@ export default {
         }
     },
     mounted: function () {
+        // eslint-disable-next-line no-undef
         this.menuInfo = menu;
         this.loaded = true;
     },
     components: {
-        'app-menu': Menu,
+        "app-menu": Menu,
     }
-}
+};
 </script>

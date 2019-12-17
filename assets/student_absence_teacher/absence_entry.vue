@@ -21,29 +21,34 @@
     <div>
         <b-card>
             <strong>{{ absence.date_absence }}</strong>:
-            <a :href='`/annuaire/#/person/student/${absence.student.matricule}/`'>
+            <a :href="`/annuaire/#/person/student/${absence.student.matricule}/`">
                 {{ absence.student.display }}
             </a>
-             ({{ absence.lesson.lesson }} : {{ absence.period.name }})
-             <p>{{ absence.comment }}</p>
+            ({{ absence.lesson.lesson }} : {{ absence.period.name }})
+            <p>{{ absence.comment }}</p>
         </b-card>
     </div>
 </template>
 
 <script>
-import Vue from 'vue';
+import Vue from "vue";
 
-import 'vue-awesome/icons'
-import Icon from 'vue-awesome/components/Icon.vue'
-Vue.component('icon', Icon);
+import "vue-awesome/icons";
+import Icon from "vue-awesome/components/Icon.vue";
+Vue.component("icon", Icon);
 
 export default {
-    props: ["absence"],
+    props: {
+        "absence": {
+            type: Object,
+            default: () => {}
+        }
+    },
     data: function () {
         return {
-        }
+        };
     },
     computed: {
     }
-}
+};
 </script>

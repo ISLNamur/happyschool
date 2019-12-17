@@ -17,15 +17,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue'
+import Vue from "vue";
 
-import store from '../student_absence_teacher/store.js';
-import router from '../student_absence_teacher/router.js';
+import store from "../student_absence_teacher/store.js";
+import router from "../student_absence_teacher/router.js";
 
-var studentAbsenceTeacherApp = new Vue({
-    el: '#vue-app',
+new Vue({
+    el: "#vue-app",
     data: {},
     router,
     store,
-    template: '<router-view></router-view>',
-})
+    template: "<router-view></router-view>",
+});

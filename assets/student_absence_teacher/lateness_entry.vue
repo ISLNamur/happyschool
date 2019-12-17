@@ -21,29 +21,34 @@
     <div>
         <b-card>
             <strong>{{ lateness.date_lateness }}</strong>:
-            <a :href='`/annuaire/#/person/student/${lateness.student.matricule}/`'>
+            <a :href="`/annuaire/#/person/student/${lateness.student.matricule}/`">
                 {{ lateness.student.display }}
             </a>
-             ({{ lateness.lesson.lesson }} : {{ lateness.period.name }})
-             <p>{{ lateness.comment }}</p>
+            ({{ lateness.lesson.lesson }} : {{ lateness.period.name }})
+            <p>{{ lateness.comment }}</p>
         </b-card>
     </div>
 </template>
 
 <script>
-import Vue from 'vue';
+import Vue from "vue";
 
-import 'vue-awesome/icons'
-import Icon from 'vue-awesome/components/Icon.vue'
-Vue.component('icon', Icon);
+import "vue-awesome/icons";
+import Icon from "vue-awesome/components/Icon.vue";
+Vue.component("icon", Icon);
 
 export default {
-    props: ["lateness"],
+    props: {
+        "lateness": {
+            type: Object,
+            default: () => {}
+        }
+    },
     data: function () {
         return {
-        }
+        };
     },
     computed: {
     }
-}
+};
 </script>

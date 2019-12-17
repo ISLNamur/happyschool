@@ -30,9 +30,9 @@
                     label="display"
                     track-by="id"
                     v-model="period"
-                    :showNoOptions="false"
+                    :show-no-options="false"
                     @input="getStudents"
-                    >
+                >
                     <span slot="noResult">Aucune période ne correspond à votre recherche.</span>
                 </multiselect>
             </b-col>
@@ -46,27 +46,40 @@
                     label="lesson"
                     track-by="id"
                     v-model="lesson"
-                    :showNoOptions="false"
+                    :show-no-options="false"
                     @input="getStudents"
-                    >
+                >
                     <span slot="noResult">Aucune classe ne correspond à votre recherche.</span>
                 </multiselect>
             </b-col>
         </b-row>
         <b-row class="mt-2">
             <b-col cols="3">
-                <b-btn @click="sendChanges" :disabled="!showAlert">Valider les changements</b-btn>
+                <b-btn
+                    @click="sendChanges"
+                    :disabled="!showAlert"
+                >
+                    Valider les changements
+                </b-btn>
             </b-col>
             <b-col>
-                <b-alert :show="showAlert" variant="warning">Il y a des changements non-validés !</b-alert>
+                <b-alert
+                    :show="showAlert"
+                    variant="warning"
+                >
+                    Il y a des changements non-validés !
+                </b-alert>
             </b-col>
         </b-row>
         <b-row class="mt-2">
             <b-col>
                 <b-list-group>
-                    <add-absence-entry v-for="s in students" :key="s.matricule"
-                        :student="s" @update="computeAlert">
-                    </add-absence-entry>
+                    <add-absence-entry
+                        v-for="s in students"
+                        :key="s.matricule"
+                        :student="s"
+                        @update="computeAlert"
+                    />
                 </b-list-group>
             </b-col>
         </b-row>
@@ -74,15 +87,15 @@
 </template>
 
 <script>
-import Multiselect from 'vue-multiselect'
-import 'vue-multiselect/dist/vue-multiselect.min.css'
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import axios from 'axios';
-import Moment from 'moment';
+import axios from "axios";
+import Moment from "moment";
 
-import AddAbsenceEntry from './add_absence_entry.vue';
+import AddAbsenceEntry from "./add_absence_entry.vue";
 
-const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
+const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
     data: function () {
@@ -93,40 +106,40 @@ export default {
             lesson: null,
             students: [],
             showAlert: false,
-        }
+        };
     },
     methods: {
         computeAlert: function () {
             this.showAlert = Object.keys(this.$store.state.changes).length > 0;
         },
         promiseSavedData: function (model) {
-            const data = {params: {period: this.period.id, lesson: this.lesson.id, [`date_${model}`]: Moment().format('YYYY-MM-DD')}};
-            return axios.get(`/student_absence_teacher/api/${model}/`, data, token)
+            const data = {params: {period: this.period.id, lesson: this.lesson.id, [`date_${model}`]: Moment().format("YYYY-MM-DD")}};
+            return axios.get(`/student_absence_teacher/api/${model}/`, data, token);
         },
         getAbsenceLateness: function (students) {
             // We need both the lesson and the period.
             if (!this.period || !this.lesson) return;
 
-            const models = ['absence', 'lateness'];
+            const models = ["absence", "lateness"];
             Promise.all([this.promiseSavedData(models[0]), this.promiseSavedData(models[1])])
-            .then(resps => {
-                for (let resp in resps) {
-                    for (let r in resps[resp].data.results) {
-                        const object = resps[resp].data.results[r];
-                        object.choice = models[resp];
-                        for (let s in students) {
-                            if (students[s].matricule == object.student_id) {
-                                students[s]['saved'] = object;
-                                break;
+                .then(resps => {
+                    for (let resp in resps) {
+                        for (let r in resps[resp].data.results) {
+                            const object = resps[resp].data.results[r];
+                            object.choice = models[resp];
+                            for (let s in students) {
+                                if (students[s].matricule == object.student_id) {
+                                    students[s]["saved"] = object;
+                                    break;
+                                }
                             }
                         }
                     }
-                }
-                this.students = students;
-            })
-            .catch(err => {
-                alert(err);
-            });
+                    this.students = students;
+                })
+                .catch(err => {
+                    alert(err);
+                });
         },
         getStudents: function (input) {
             this.students = [];
@@ -135,24 +148,24 @@ export default {
 
             const classe = this.lesson.classe;
             axios.get("/annuaire/api/studentclasse/?classe=" + classe)
-            .then(resp => {
-                this.$store.commit('resetChanges');
-                this.showAlert = 0;
-                this.getAbsenceLateness(resp.data);
-            });
+                .then(resp => {
+                    this.$store.commit("resetChanges");
+                    this.showAlert = 0;
+                    this.getAbsenceLateness(resp.data);
+                });
 
         },
         sendChanges: function () {
             const changes = this.$store.state.changes;
-            const promises = []
+            const promises = [];
             for (let matricule in changes) {
                 const change = changes[matricule];
-                if (('old_choice' in change && change.old_choice != change.choice)
-                    || change.choice == 'presence') {
+                if (("old_choice" in change && change.old_choice != change.choice)
+                    || change.choice == "presence") {
                     promises.push(axios.delete(`/student_absence_teacher/api/${change.old_choice}/${change.id}/`, token));
                 }
 
-                if (change.choice != 'presence') {
+                if (change.choice != "presence") {
                     const send = change.is_new ? axios.post : axios.put;
                     let url = "/student_absence_teacher/api/" + change.choice + "/";
                     if (!change.is_new) url += change.id + "/";
@@ -161,38 +174,38 @@ export default {
                         lesson_id: this.lesson.id,
                         period_id: this.period.id,
                         comment: change.comment,
-                    }
+                    };
                     promises.push(send(url, data, token));
                 }
             }
             Promise.all(promises)
-            .then(resps => {
-                for (let r in resps) {
-                    this.$store.commit("removeChange", resps[r].data.student_id);
-                }
-                this.$bvToast.toast(`Les changements ont été sauvés.`, {
-                    variant: 'success',
-                    noCloseButton: true,
+                .then(resps => {
+                    for (let r in resps) {
+                        this.$store.commit("removeChange", resps[r].data.student_id);
+                    }
+                    this.$bvToast.toast("Les changements ont été sauvés.", {
+                        variant: "success",
+                        noCloseButton: true,
+                    });
+                    this.getStudents(this.lesson);
+                    this.computeAlert();
+                })
+                .catch(err => {
+                    alert(err);
                 });
-                this.getStudents(this.lesson);
-                this.computeAlert();
-            })
-            .catch(err => {
-                alert(err);
-            })
         }
     },
     mounted: function () {
-        axios.get('/student_absence_teacher/api/period/')
-        .then(resp => {
-            this.periodOptions = resp.data.results;
-        })
-        axios.get('/student_absence_teacher/api/lesson/?page_size=200')
-        .then(resp => {
-            this.lessonOptions = resp.data.results;
-        })
+        axios.get("/student_absence_teacher/api/period/")
+            .then(resp => {
+                this.periodOptions = resp.data.results;
+            });
+        axios.get("/student_absence_teacher/api/lesson/?page_size=200")
+            .then(resp => {
+                this.lessonOptions = resp.data.results;
+            });
     },
     components: {Multiselect, AddAbsenceEntry,},
 
-}
+};
 </script>
