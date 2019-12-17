@@ -1,6 +1,9 @@
-importScripts('/static/bundles/AssetsManager.js');
-importScripts('/static/bundles/idb.js');
+// eslint-disable-next-line no-undef
+importScripts("/static/bundles/AssetsManager.js");
+// eslint-disable-next-line no-undef
+importScripts("/static/bundles/idb.js");
 
+// eslint-disable-next-line no-undef
 let assetsManager = new AssetsManager();
 let urlToCache = assetsManager.cacheEntries.filter(url => url.includes("commons") || url.includes("student_absence") || url.includes("polyfill"));
 urlToCache.push("/student_absence/");
@@ -9,25 +12,26 @@ const hash = urlToCache[0].split("-")[1].split(".")[0];
 
 
 // Create an Annuaire.
+// eslint-disable-next-line no-undef
 const dbPromise = idb.openDB("annuaire", 1, {
-    upgrade(db, oldVersion, newVersion, transaction) {
+    upgrade(db) {
         console.log("upgrading db");
-        db.createObjectStore('students', {
-            keyPath: 'matricule'
+        db.createObjectStore("students", {
+            keyPath: "matricule"
         });
-        db.createObjectStore('classes');
+        db.createObjectStore("classes");
     }
-})
+});
 
-self.addEventListener('install', function(event) {
+self.addEventListener("install", function(event) {
     event.waitUntil(
-      caches.open(hash).then(function(cache) {
-        return cache.addAll(urlToCache);
-      })
+        caches.open(hash).then(function(cache) {
+            return cache.addAll(urlToCache);
+        })
     );
 });
 
-self.addEventListener('activate', function(event) {
+self.addEventListener("activate", function(event) {
     event.waitUntil(
         self.clients.claim(),
         caches.keys().then(function(keyList) {
@@ -38,25 +42,25 @@ self.addEventListener('activate', function(event) {
             }));
         })
     );
-  });
+});
 
-self.addEventListener('fetch', function(event) {
+self.addEventListener("fetch", function(event) {
     if (event.request.url.includes("/student_absence/api/students_classes/")) {
         event.respondWith(async function() {
             const response = await fetch(event.request)
-            .catch(error => {
-                return new Response({status: 200});
-            });
+                .catch(() => {
+                    return new Response({status: 200});
+                });
             const data = await response.clone().json();
             dbPromise.then(db => {
                 console.log("updating students");
-                const students_tx = db.transaction('students', 'readwrite');
-                const students_store = students_tx.objectStore('students');
-                const classes_tx = db.transaction('classes', 'readwrite');
-                const classes_store = classes_tx.objectStore('classes');
+                const students_tx = db.transaction("students", "readwrite");
+                const students_store = students_tx.objectStore("students");
+                const classes_tx = db.transaction("classes", "readwrite");
+                const classes_store = classes_tx.objectStore("classes");
                 classes_store.clear();
                 students_store.clear();
-                classes = {};
+                let classes = {};
                 for (let s in data) {
                     // Put student.
                     students_store.put(data[s]);
@@ -69,35 +73,35 @@ self.addEventListener('fetch', function(event) {
                     }
                 }
                 for (let classe in classes) {
-                    if (classes.hasOwnProperty(classe)) {
+                    if (Object.prototype.hasOwnProperty.call(classes, classe)) {
                         classes_store.put(classes[classe], classe);
                     }
                 }
                 return classes_tx.complete;
             });
             return response;
-          }());
+        }());
     } else if (event.request.url.includes("/core/ping/")) {
         return fetch(event.request);
     } else {
         event.respondWith(
             fetch(event.request)
-            .then(response => {
-                caches.open(hash).then(function(cache) {
-                    cache.put(event.request, response)
-                    .catch(err => {
-                        
+                .then(response => {
+                    caches.open(hash).then(function(cache) {
+                        cache.put(event.request, response)
+                            .catch(() => {
+
+                            });
                     });
-                });
-                return response.clone();
-            })
-            .catch(function () {
-                return caches.match(event.request)
-                .catch(error => {
-                    return caches.match('/student_absence/');
-                });
-            })
+                    return response.clone();
+                })
+                .catch(function () {
+                    return caches.match(event.request)
+                        .catch(() => {
+                            return caches.match("/student_absence/");
+                        });
+                })
         );
     }
-    }
+}
 );
