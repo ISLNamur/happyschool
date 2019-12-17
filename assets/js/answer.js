@@ -17,20 +17,21 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue';
+import Vue from "vue";
 
-import Answer from '../mail_answer/answer.vue';
+import Answer from "../mail_answer/answer.vue";
 
-var mailNotificationApp = new Vue({
-    el: '#vue-app',
+new Vue({
+    el: "#vue-app",
     data: {
         uuid: null,
-        component: '',
+        component: "",
     },
-    template: '<component :is="component" :uuid="uuid"/>',
-    components: { 'answer': Answer },
+    template: "<component :is=\"component\" :uuid=\"uuid\"/>",
+    components: { "answer": Answer },
     mounted: function () {
+        // eslint-disable-next-line no-undef
         this.uuid = uuid;
-        this.component = 'answer';
+        this.component = "answer";
     }
-})
+});
