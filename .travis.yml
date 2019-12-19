@@ -20,3 +20,5 @@ script:
   - python3 manage.py makemigrations && python3 manage.py migrate
   - coverage run --source='.' manage.py test
   - coverage report
+  - npm install
+  - npx eslint --ext .js,.vue assets/
