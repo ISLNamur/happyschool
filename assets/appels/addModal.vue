@@ -275,8 +275,8 @@ export default {
         default: null
     }, 
     processing:{
-        type: String,
-        default: null
+        type: Boolean,
+        default: false
     }},
     data: function () {
         return {
