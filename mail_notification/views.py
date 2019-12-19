@@ -95,7 +95,7 @@ def index(request):
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name__in=groups_with_access), login_url='no_access')
 def get_list(request):
-    emails = EmailNotification.objects.all().order_by("-datetime_created")[:15]
+    emails = EmailNotification.objects.all().order_by("-datetime_created")[:20]
     return render(request, 'mail_notification/list.html',
                   context={'emails': emails,
                            'menu': json.dumps(get_menu(request.user, "mail_notification"))})

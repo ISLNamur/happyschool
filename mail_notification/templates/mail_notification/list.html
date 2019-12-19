@@ -18,13 +18,15 @@
                     <b-card title="{{ email.subject }}"
                         sub-title="Envoyé à : {{ email.email_to }} ({{ email.teaching }}) à partir de : {{ email.email_from }}">
                         <p class="card-text">
+                            Destination : {{ email.to_type|upper }} <br/>
+                            Date : {{ email.datetime_created }} <br/>
                             État : {{ email.errors }}
                         </p>
                         <p>
                             Message {% if email.attachments.all|length > 0 %}<icon name="paperclip"></icon>{% endif %} :
                         </p>
                         <b-card>
-                            {{ email.body|truncatewords_html:5|safe }}
+                            {{ email.body|truncatewords_html:10|safe }}
                         </b-card>
                     </b-card>
                 </b-col>

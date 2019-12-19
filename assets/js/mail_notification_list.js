@@ -31,5 +31,6 @@ Vue.component("icon", Icon);
 new Vue({
     el: "#vue-app",
     data: function () {
+        return {};
     },
 });
