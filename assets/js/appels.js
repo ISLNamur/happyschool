@@ -23,6 +23,8 @@ import Vuex from "vuex";
 Vue.use(Vuex);
 
 import axios from "axios";
+import router from "../appels/router.js";
+import Menu from "../common/menu.vue";
 
 const store = new Vuex.Store({
     state: {
@@ -72,11 +74,35 @@ const store = new Vuex.Store({
 
 store.dispatch("loadEmails");
 
-import Appels from "../appels/appels.vue";
+
 
 new Vue({
     el: "#vue-app",
+    data: {
+        menuInfo: {},
+        transitionName: "slide-left",
+    },
     store,
-    template: "<appels/>",
-    components: { Appels },
+    router,
+    template: `
+    <div>
+      <app-menu :menu-info="menuInfo"></app-menu>
+      <transition :name="transitionName" mode="out-in">
+        <router-view></router-view>
+      </transition>
+    </div>`,
+    mounted: function() {
+        // eslint-disable-next-line no-undef
+        this.menuInfo = menu;
+    },
+    components: {
+        "app-menu": Menu,
+    },
+    watch: {
+        "$route" (to, from) {
+            const toDepth = to.path.split("/").length;
+            const fromDepth = from.path.split("/").length;
+            this.transitionName = toDepth < fromDepth ? "slide-right" : "slide-left";
+        }
+    }
 });

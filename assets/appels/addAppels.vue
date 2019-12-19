@@ -1,16 +1,17 @@
 <template>
     <div>
-        <b-modal
-            size="lg"
-            :title="(processing ? 'Traiter' : 'Ajouter/Modifier') + ' un appel'"
-            cancel-title="Annuler"
-            ref="addModal"
-            :ok-disabled="loading"
-            @ok="addAppel"
-            @hidden="resetModal"
-        >
+        <b-container>
+            <b-row>
+                <h3>{{ this.state=="1" ? "Traiter" : "Ajout/Modifier" }} un appel</h3>
+            </b-row>
             <b-row>
                 <b-col sm="4">
+                    <b-btn
+                        class="mb-2"
+                        to="/"
+                    >
+                        Retour à la liste des appels
+                    </b-btn>
                     <div>
                         <b-img
                             rounded
@@ -21,7 +22,9 @@
                     </div>
                 </b-col>
                 <b-col>
-                    <b-form>
+                    <b-form
+                        @submit="addAppel"
+                    >
                         <b-form-row>
                             <b-col sm="8">
                                 <b-form-group
@@ -110,7 +113,7 @@
                                 </b-form-group>
                             </b-col>
                         </b-form-row>
-                        <div v-if="!processing || form.is_traiter">
+                        <div v-if="this.state==0 || form.is_traiter">
                             <b-form-row>
                                 <b-col>
                                     <b-form-group
@@ -197,7 +200,7 @@
                                 </b-col>
                             </b-form-row>
                         </div>
-                        <div v-if="processing || form.is_traiter">
+                        <div v-if="this.state==1 || form.is_traiter">
                             <b-form-row>
                                 <b-form-group label="Destinataire(s) : ">
                                     <b-form-checkbox-group
@@ -241,6 +244,13 @@
                                 </b-form-group>
                             </b-col>
                         </b-form-row>
+                        <b-button
+                            type="submit"
+                            variant="primary"
+                            :disabled="loading"
+                        >
+                            {{ this.state==1 ? 'Traiter' : 'Soumettre' }}
+                        </b-button>
                     </b-form>
                 </b-col>
             </b-row>
@@ -252,9 +262,9 @@
                     spin
                     class="align-baseline"
                 />
-                {{ processing ? 'Traiter' : 'Soumettre' }}
+                {{ this.state==1 ? 'Traiter' : 'Soumettre' }}
             </template>
-        </b-modal>
+        </b-container>
     </div>
 </template>
 
@@ -274,14 +284,22 @@ export default {
         type: Object,
         default: null
     }, 
+    state:{
+        type: String,
+        default: "0",
+    },
     processing:{
         type: Boolean,
         default: false
+    },
+    id: {
+        type: String,
+        default: null,
     }},
     data: function () {
         return {
             form: {
-                name: "",
+                name: null,
                 matricule_id: null,
                 responsible_pk: null,
                 object_id: null,
@@ -300,7 +318,7 @@ export default {
             timeAppel: null,
             objectOptions: [],
             motiveOptions: [],
-            name: {matricule: null},
+            name: null,
             nameOptions: [],
             nameLoading: false,
             searchId: 0,
@@ -333,8 +351,15 @@ export default {
         }
     },
     watch: {
+        id: function (newVal) {
+            if (newVal) {
+                this.setEntry(newVal);
+            } else {
+                this.reset();
+            }
+        },
         name: function () {
-            // Update form data.
+            //Update form data.
             if (this.name && this.name.matricule) {
                 // First update form name data.
                 this.form.name = this.name.display;
@@ -356,90 +381,56 @@ export default {
                 }
             }
         },
-        entry: function (entry) {
-            if (entry) {
-                this.setEntry(entry);
-                // Precheck emails.
-                if (this.processing && this.form.is_student) {
-                    this.form.emails = this.$store.state.emails.filter(email => {
-                        if (this.name.teaching.id == email.teaching
-                            && email.years.includes(this.name.classe.year)) {
-                            return true;
-                        }
-                        return false;
-                    }).map(email => email.id);
-                }
-            } else {
-                this.resetModal();
-            }
-        },
     },
     methods: {
-        show: function () {
-            if (!this.entry) {
-                const nowDate = Moment().format("YYYY-MM-DD");
-                const nowTime = Moment().format("HH:mm");
-                this.form.datetime_appel = nowDate;
-                this.timeAppel = nowTime;
-                this.form.date_motif_start = nowDate;
-                this.form.date_motif_end = nowDate;
-            }
-            this.$refs.addModal.show();
-        },
-        hide: function () {
-            this.$refs.addModal.hide();
-        },
-        resetModal: function () {
-            this.$emit("reset");
-
-            this.form = {
-                name: "",
-                matricule_id: null,
-                responsible_pk: null,
-                object_id: null,
-                motive_id: null,
-                date_motif_start: null,
-                time_motif_start: null,
-                date_motif_end: null,
-                time_motif_end: null,
-                datetime_appel: null,
-                commentaire: "",
-                emails: [],
-                custom_email: null,
-                is_student: false,
-                is_traiter: false,
-            };
-
-            this.name = {matricule: null};
-            this.timeAppel = null;
-        },
         setEntry: function (entry) {
-            if (entry.matricule) {
-                this.name = entry.matricule;
-                this.name.is_student = true;
-            } else {
-                this.name = entry.responsible;
-                this.name.is_student = false;
-            }
-            this.form = {
-                id: entry.id,
-                name: entry.name,
-                matricule_id: entry.matricule_id,
-                responsible_pk: entry.responsible_pk,
-                object_id: entry.object.id,
-                motive_id: entry.motive.id,
-                date_motif_start: Moment(entry.date_motif_start).format("YYYY-MM-DD"),
-                time_motif_start: entry.time_motif_start ? Moment(entry.time_motif_start, "hh:mm:ss").format("hh:mm") : null,
-                date_motif_end: Moment(entry.date_motif_end).format("YYYY-MM-DD"),
-                time_motif_end: entry.time_motif_end ? Moment(entry.time_motif_end, "hh:mm:ss").format("hh:mm") : null,
-                datetime_appel: Moment(entry.datetime_appel).format("YYYY-MM-DD"),
-                commentaire: entry.commentaire,
-                emails: entry.emails,
-                custom_email: entry.custom_email,
-                is_student: entry.is_student,
-                is_traiter: entry.is_traiter,
-            };
-            this.timeAppel = Moment(entry.datetime_appel).format("HH:mm");
+            const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            axios.get(`/appels/api/appel/${this.id}/`, token)
+                .then(resp => {
+                    if (resp.data) {
+                        entry=resp.data,
+                        this.form = {
+                            id: entry.id,
+                            name: entry.name,
+                            matricule_id: entry.matricule_id,
+                            responsible_pk: entry.responsible_pk,
+                            object_id: entry.object.id,
+                            motive_id: entry.motive.id,
+                            date_motif_start: Moment(entry.date_motif_start).format("YYYY-MM-DD"),
+                            time_motif_start: entry.time_motif_start ? Moment(entry.time_motif_start, "hh:mm:ss").format("hh:mm") : null,
+                            date_motif_end: Moment(entry.date_motif_end).format("YYYY-MM-DD"),
+                            time_motif_end: entry.time_motif_end ? Moment(entry.time_motif_end, "hh:mm:ss").format("hh:mm") : null,
+                            datetime_appel: Moment(entry.datetime_appel).format("YYYY-MM-DD"),
+                            commentaire: entry.commentaire,
+                            emails: entry.emails,
+                            custom_email: entry.custom_email,
+                            is_student: entry.is_student,
+                            is_traiter: entry.is_traiter,
+                        };
+                        this.name = resp.data.matricule;
+                        if (entry.matricule) {
+                            this.name = entry.matricule;
+                            this.name.is_student = true;
+                        } else {
+                            this.name = entry.responsible;
+                            this.name.is_student = false;
+                        }
+                        this.timeAppel = Moment(entry.datetime_appel).format("HH:mm");
+                        if (entry) {
+                        // Precheck emails.
+                            if (!this.processing && this.form.is_student) {
+                                
+                                this.form.emails = this.$store.state.emails.filter(email => {
+                                    if (this.name.teaching.id == email.teaching
+                                    && email.years.includes(this.name.classe.year)) {
+                                        return true;
+                                    }
+                                    return false;
+                                }).map(email => email.id);
+                            }
+                        }
+                    }
+                });
         },
         errorMsg(err) {
             if (err in this.errors) {
@@ -450,7 +441,6 @@ export default {
         },
         addAppel: function (evt) {
             evt.preventDefault();
-
             this.loading = true;
             // Copy form data.
             let data = Object.assign({}, this.form);
@@ -459,9 +449,11 @@ export default {
             data.datetime_appel += time;
 
             // Set is_student field and responsible's matricule.
-            data.is_student = this.name.is_student;
+            if (this.name){
+                data.is_student = this.name.is_student;
+            }
             if (!data.is_student) {
-                if (!this.entry) {
+                if (!this.form.id) {
                     data.responsible_pk = data.matricule_id;
                 }
                 data.matricule_id = null;
@@ -471,17 +463,32 @@ export default {
             // Send data.
             const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             let path = "/appels/api/appel/";
-            if (this.entry) path += this.form.id + "/";
-            const send = this.entry ? axios.put(path, data, token) : axios.post(path, data, token);
+            if (this.form.id) path += this.form.id + "/";
+            
+            const send = this.form.id ? axios.put(path, data, token) : axios.post(path, data, token);
             send.then(() => {
-                this.hide();
                 this.errors = {};
                 this.$emit("update");
                 this.loading = false;
-            }).catch(function (error) {
-                modal.loading = false;
-                modal.errors = error.response.data;
-            });
+                if(this.form.id){
+                    this.$router.push("/",() => {
+                        this.$root.$bvToast.toast("L'appel a été envoyé.", {
+                            variant: "success",
+                            noCloseButton: true,
+                        });
+                    });
+                } else {this.$router.push("/",() => {
+                    this.$root.$bvToast.toast("L'appel a été créé. Traiter l'appel pour envoyé l'information par courriel.", {
+                        variant: "success",
+                        noCloseButton: true,
+                    });
+                });
+                }            
+            })
+                .catch(function (error) {
+                    modal.loading = false;
+                    modal.errors = error.response.data;
+                });
         },
         getNameOptions(query) {
             let app = this;
@@ -534,6 +541,16 @@ export default {
     },
     components: {Multiselect},
     mounted: function () {
+        if (!this.entry) {
+            const nowDate = Moment().format("YYYY-MM-DD");
+            const nowTime = Moment().format("HH:mm");
+            this.form.datetime_appel = nowDate;
+            this.form.time_motif_end = nowTime;
+            this.form.time_motif_start = nowTime;
+            this.timeAppel = nowTime;
+            this.form.date_motif_start = nowDate;
+            this.form.date_motif_end = nowDate;
+        }
         // Set motive options.
         axios.get("/appels/api/motive/")
             .then(response => {
@@ -548,6 +565,7 @@ export default {
                     return {value: m.id, text: m.display};
                 });
             });
+        if (this.id) this.setEntry();
     }
 };
 </script>
