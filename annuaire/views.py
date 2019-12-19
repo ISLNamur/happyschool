@@ -545,7 +545,6 @@ class SearchPeopleAPI(APIView):
         active = request.data.get('active', 1) == 1
         tenure_class_only = request.data.get('tenure_class_only', True)
         educ_by_years = request.data.get('educ_by_years', True)
-        print(educ_by_years)
 
         people = search_people(query=query, people_type=people_type, teachings=teachings,
                                check_access=check_access, user=request.user, active=active,
