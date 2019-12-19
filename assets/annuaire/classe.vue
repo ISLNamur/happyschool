@@ -20,7 +20,10 @@
 <template>
     <b-row>
         <b-col>
-            <p v-if="students.length > 0">
+            <div
+                v-if="students.length > 0"
+                class="mb-2"
+            >
                 Téléchargements :
                 <b-button
                     target="_blank"
@@ -29,21 +32,23 @@
                 >
                     Photos de classe
                 </b-button>
-                <b-button
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    :href="getClasseListExcel"
-                >
-                    Liste des étudiants avec identifiants (excel)
-                </b-button>
-                <b-button
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    :href="getClasseListPDF"
-                >
-                    Liste des étudiants avec identifiants (PDF)
-                </b-button>
-            </p>
+                <span v-if="$store.state.settings.show_credentials">
+                    <b-button
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        :href="getClasseListExcel"
+                    >
+                        Liste des étudiants avec identifiants (excel)
+                    </b-button>
+                    <b-button
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        :href="getClasseListPDF"
+                    >
+                        Liste des étudiants avec identifiants (PDF)
+                    </b-button>
+                </span>
+            </div>
             <p v-else>
                 Il n'y a pas d'élèves dans cette classe.
             </p>

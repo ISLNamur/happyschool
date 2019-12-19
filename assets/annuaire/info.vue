@@ -164,7 +164,10 @@
                                         {{ student_info.postal_code }} – {{ student_info.locality }}
                                     </dd>
                                 </dl>
-                                <dl class="row">
+                                <dl
+                                    class="row"
+                                    v-if="$store.state.settings.show_credentials"
+                                >
                                     <dt class="col-5 text-right">
                                         Nom d'utilisateur
                                     </dt>

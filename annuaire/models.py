@@ -27,3 +27,8 @@ class AnnuaireSettingsModel(models.Model):
                                                             help_text="Permet aux groupes sélectionnés de voir les données sensibles comme le nom d'utilisateur.")
     can_see_student_contact = models.ManyToManyField(Group, default=None, blank=True, related_name="can_see_student_contact")
     can_see_student_medical = models.ManyToManyField(Group, default=None, blank=True, related_name="can_see_student_medical")
+    show_credentials = models.BooleanField(
+        default=True,
+        help_text="""Permet d'afficher/cacher les champs utilisateur/mot de passe dans la fiche info
+            et ainsi que la liste des mots de passe des élèves par classe"""
+    )
