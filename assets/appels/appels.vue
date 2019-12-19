@@ -4,7 +4,6 @@
             class="loading"
             v-if="!loaded"
         />
-        <app-menu :menu-info="menuInfo" />
         <b-container v-if="loaded">
             <b-row>
                 <h2>Appels</h2>
@@ -15,7 +14,7 @@
                         <div>
                             <b-button
                                 variant="outline-success"
-                                @click="openDynamicModal('add-modal')"
+                                to="/add/"
                             >
                                 <icon
                                     name="plus"
@@ -125,14 +124,6 @@
                 no-news
             />
         </b-modal>
-        <component
-            :is="currentModal"
-            ref="dynamicModal"
-            :entry="currentEntry"
-            :processing="processing"
-            @update="loadEntries"
-            @reset="currentEntry = null; processing = false"
-        />
     </div>
 </template>
 
@@ -144,9 +135,6 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 import Info from "../annuaire/info.vue";
 
 import Filters from "../common/filters.vue";
-import Menu from "../common/menu.vue";
-
-import AddModal from "./addModal.vue";
 
 import axios from "axios";
 window.axios = axios;
@@ -168,7 +156,6 @@ export default {
             currentPage: 1,
             entries: [],
             currentEntry: null,
-            currentModal: "add-modal",
             filter: "",
             ordering: "&ordering=-datetime_appel",
             menuInfo: {},
@@ -246,7 +233,6 @@ export default {
         },
         editEntry: function(index) {
             this.currentEntry = this.entries[index];
-            this.openDynamicModal("add-modal");
         },
         processEntry: function(index) {
             this.processing = true;
@@ -260,22 +246,15 @@ export default {
                     this.loaded = true;
                 });
         },
-        openDynamicModal: function (modal) {
-            this.currentModal = modal;
-            this.$refs.dynamicModal.show();
-        }
     },
     mounted: function() {
         // eslint-disable-next-line no-undef
         this.menuInfo = menu;
-
         this.applyFilter();
         this.loadEntries();
     },
     components: {
-        "add-modal": AddModal,
         "filters": Filters,
-        "app-menu": Menu,
         "info": Info,
     },
 };

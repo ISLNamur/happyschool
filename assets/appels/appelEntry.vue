@@ -37,6 +37,7 @@
                     >
                         <b-btn
                             @click="$emit('processing')"
+                            :to="'/edit/' + rowData.id + '/1'"
                             v-if="!this.rowData.is_traiter"
                             class="mr-2"
                             size="sm"
@@ -44,7 +45,7 @@
                             Traiter l'appel
                         </b-btn>
                         <b-link
-                            @click="$emit('edit')"
+                            :to="'/edit/' + rowData.id + '/0'"
                             class="card-link"
                         >
                             <icon
