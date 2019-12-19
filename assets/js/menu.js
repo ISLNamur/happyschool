@@ -17,13 +17,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Appyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue'
-import BootstrapVue from 'bootstrap-vue'
+import Vue from "vue";
+import BootstrapVue from "bootstrap-vue";
 
 Vue.use(BootstrapVue);
 
-var menu = new Vue({
-    el: '#menu',
+new Vue({
+    el: "#menu",
     data: {
     },
     mounted: function () {
