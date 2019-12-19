@@ -17,21 +17,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue'
+import Vue from "vue";
 
-import Vuex from 'vuex';
+import Vuex from "vuex";
 Vue.use(Vuex);
 
-import router from '../infirmerie/router.js';
-
-
-import axios from 'axios';
+import router from "../infirmerie/router.js";
 
 const store = new Vuex.Store({
     state: {
+        // eslint-disable-next-line no-undef
         settings: settings,
         filters: [{
-            filterType: 'activate_ongoing',
+            filterType: "activate_ongoing",
             tag: "Activer",
             value: true,
         }],
@@ -39,12 +37,12 @@ const store = new Vuex.Store({
     mutations: {
         addFilter: function(state, filter) {
             // If filter is a matricule, remove name filter to avoid conflict.
-            if (filter.filterType === 'matricule_id') {
-                this.commit('removeFilter', 'name');
+            if (filter.filterType === "matricule_id") {
+                this.commit("removeFilter", "name");
             }
 
             // Overwrite same filter type.
-            this.commit('removeFilter', filter.filterType);
+            this.commit("removeFilter", filter.filterType);
 
             state.filters.push(filter);
         },
@@ -59,11 +57,10 @@ const store = new Vuex.Store({
     },
 });
 
-import Infirmerie from '../infirmerie/infirmerie.vue';
-import Menu from '../common/menu.vue';
+import Menu from "../common/menu.vue";
 
-var appelsApp = new Vue({
-    el: '#vue-app',
+new Vue({
+    el: "#vue-app",
     data: {
         menuInfo: {},
         transitionName: "slide-left",
@@ -78,10 +75,11 @@ var appelsApp = new Vue({
       </transition>
     </div>`,
     mounted: function() {
+        // eslint-disable-next-line no-undef
         this.menuInfo = menu;
     },
     components: {
-        'app-menu': Menu,
+        "app-menu": Menu,
     }
 
-})
+});

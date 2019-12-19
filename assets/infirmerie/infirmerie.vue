@@ -19,7 +19,10 @@
 
 <template>
     <div>
-        <div class="loading" v-if="!loaded"></div>
+        <div
+            class="loading"
+            v-if="!loaded"
+        />
         <b-container v-if="loaded">
             <b-row>
                 <h2>Infirmerie</h2>
@@ -28,15 +31,31 @@
                 <b-col>
                     <b-form-group>
                         <div>
-                            <b-button variant="outline-success" to="/new/">
-                                <icon name="plus" scale="1" color="green"></icon>
+                            <b-button
+                                variant="outline-success"
+                                to="/new/"
+                            >
+                                <icon
+                                    name="plus"
+                                    scale="1"
+                                    color="green"
+                                />
                                 Ajouter un malade
                             </b-button>
-                            <b-button variant="outline-secondary" v-b-toggle.filters>
-                                <icon name="search" scale="1"></icon>
+                            <b-button
+                                variant="outline-secondary"
+                                v-b-toggle.filters
+                            >
+                                <icon
+                                    name="search"
+                                    scale="1"
+                                />
                                 Ajouter des filtres
                             </b-button>
-                            <b-button :pressed.sync="active" variant="primary">
+                            <b-button
+                                :pressed.sync="active"
+                                variant="primary"
+                            >
                                 <span v-if="active">Afficher tous les malades</span>
                                 <span v-else>Afficher les malades présents</span>
                             </b-button>
@@ -46,63 +65,88 @@
             </b-row>
             <b-row>
                 <b-col>
-                    <b-collapse id="filters" v-model=showFilters>
+                    <b-collapse
+                        id="filters"
+                        v-model="showFilters"
+                    >
                         <b-card>
-                            <filters app="infirmerie" model="infirmerie" ref="filters" @update="applyFilter"></filters>
+                            <filters
+                                app="infirmerie"
+                                model="infirmerie"
+                                ref="filters"
+                                @update="applyFilter"
+                            />
                         </b-card>
                     </b-collapse>
                 </b-col>
             </b-row>
-            <b-pagination class="mt-1" :total-rows="entriesCount" v-model="currentPage" @change="changePage" :per-page="20">
-            </b-pagination>
+            <b-pagination
+                class="mt-1"
+                :total-rows="entriesCount"
+                v-model="currentPage"
+                @change="changePage"
+                :per-page="20"
+            />
             <infirmerie-entry
                 v-for="(entry, index) in entries"
-                v-bind:key="entry.id"
-                v-bind:row-data="entry"
+                :key="entry.id"
+                :row-data="entry"
                 @delete="askDelete(entry)"
                 @edit="editEntry(index, false)"
                 @sortie="editEntry(index, true)"
                 @filterStudent="filterStudent($event)"
                 @showInfo="showInfo(entry)"
-                >
-            </infirmerie-entry>
+            />
         </b-container>
-        <b-modal ref="deleteModal" cancel-title="Annuler" hide-header centered
-            @ok="deleteEntry" @cancel="currentEntry = null"
-            :no-close-on-backdrop="true" :no-close-on-esc="true">
+        <b-modal
+            ref="deleteModal"
+            cancel-title="Annuler"
+            hide-header
+            centered
+            @ok="deleteEntry"
+            @cancel="currentEntry = null"
+            :no-close-on-backdrop="true"
+            :no-close-on-esc="true"
+        >
             Êtes-vous sûr de vouloir supprimer ce passage ?
         </b-modal>
-        <b-modal :title="currentName" size="lg" ref="infoModal" centered ok-only @hidden="currentEntry = null">
-            <info v-if="currentEntry" :matricule="currentEntry.matricule_id" type="student" no-news></info>
+        <b-modal
+            :title="currentName"
+            size="lg"
+            ref="infoModal"
+            centered
+            ok-only
+            @hidden="currentEntry = null"
+        >
+            <info
+                v-if="currentEntry"
+                :matricule="currentEntry.matricule_id"
+                type="student"
+                no-news
+            />
         </b-modal>
-        <add-passage-modal ref="addPassageModal" :entry="currentEntry"
-            @update="loadEntries" @reset="currentEntry = null">
-        </add-passage-modal>
     </div>
 </template>
 
 <script>
 import Vue from "vue";
-import BootstrapVue from "bootstrap-vue"
-import "bootstrap-vue/dist/bootstrap-vue.css"
+import BootstrapVue from "bootstrap-vue";
+import "bootstrap-vue/dist/bootstrap-vue.css";
 
-import Info from '../annuaire/info.vue'
+import Info from "../annuaire/info.vue";
 
-import Filters from '../common/filters.vue'
-import Menu from '../common/menu.vue'
+import Filters from "../common/filters.vue";
 
-import AddPassage from './addPassage.vue'
-
-import axios from 'axios';
+import axios from "axios";
 window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
-import 'vue-awesome/icons'
-import Icon from 'vue-awesome/components/Icon.vue'
-import InfirmerieEntry from './infirmerieEntry.vue'
+import "vue-awesome/icons";
+import Icon from "vue-awesome/components/Icon.vue";
+import InfirmerieEntry from "./infirmerieEntry.vue";
 
-Vue.component('icon', Icon);
-Vue.component('infirmerie-entry', InfirmerieEntry);
+Vue.component("icon", Icon);
+Vue.component("infirmerie-entry", InfirmerieEntry);
 
 Vue.use(BootstrapVue);
 export default {
@@ -121,7 +165,7 @@ export default {
             inputStates: {
                 "name": null,
             }
-        }
+        };
     },
     computed: {
         currentName: function () {
@@ -131,11 +175,11 @@ export default {
     watch: {
         active: function (isActive) {
             if (isActive) {
-                this.$store.commit('addFilter',
-                    {filterType: 'activate_ongoing', tag: "Activer", value: true}
+                this.$store.commit("addFilter",
+                    {filterType: "activate_ongoing", tag: "Activer", value: true}
                 );
             } else {
-                this.$store.commit('removeFilter', 'activate_ongoing');
+                this.$store.commit("removeFilter", "activate_ongoing");
             }
             this.applyFilter();
         }
@@ -143,7 +187,7 @@ export default {
     methods: {
         changePage: function (page) {
             this.currentPage = page;
-	        this.loadEntries();
+            this.loadEntries();
         },
         openModal: function (sortie) {
             this.$refs.addPassageModal.show(sortie);
@@ -154,14 +198,14 @@ export default {
         },
         filterStudent: function (matricule) {
             this.showFilters = true;
-            this.$store.commit('addFilter',
-                {filterType: 'matricule_id', tag: matricule, value: matricule}
+            this.$store.commit("addFilter",
+                {filterType: "matricule_id", tag: matricule, value: matricule}
             );
             this.applyFilter();
         },
         applyFilter: function () {
             this.filter = "";
-            let storeFilters = this.$store.state.filters
+            let storeFilters = this.$store.state.filters;
             for (let f in storeFilters) {
                 if (storeFilters[f].filterType.startsWith("date")
                     || storeFilters[f].filterType.startsWith("time")) {
@@ -180,11 +224,11 @@ export default {
             this.$refs.deleteModal.show();
         },
         deleteEntry: function () {
-            const token = { xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-            axios.delete('/infirmerie/api/passage/' + this.currentEntry.id, token)
-            .then(response => {
-                this.loadEntries();
-            });
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            axios.delete("/infirmerie/api/passage/" + this.currentEntry.id, token)
+                .then(() => {
+                    this.loadEntries();
+                });
 
             this.currentEntry = null;
         },
@@ -193,25 +237,24 @@ export default {
             this.openModal(sortie);
         },
         loadEntries: function () {
-            axios.get('/infirmerie/api/passage/?page=' + this.currentPage + this.filter + this.ordering)
-            .then(response => {
-                this.entries = response.data.results;
-                this.entriesCount = response.data.count;
-                this.loaded = true;
-            });
+            axios.get("/infirmerie/api/passage/?page=" + this.currentPage + this.filter + this.ordering)
+                .then(response => {
+                    this.entries = response.data.results;
+                    this.entriesCount = response.data.count;
+                    this.loaded = true;
+                });
         },
     },
     mounted: function() {
+        // eslint-disable-next-line no-undef
         this.menu = menu;
         this.applyFilter();
     },
     components: {
-        'add-passage': AddPassage,
-        'filters': Filters,
-        'app-menu': Menu,
-        'info': Info,
+        "filters": Filters,
+        "info": Info,
     },
-}
+};
 </script>
 <style>
 .loading {

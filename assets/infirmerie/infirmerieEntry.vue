@@ -19,33 +19,92 @@
 
 <template>
     <div>
-        <transition appear name="fade">
-            <b-card class="'px-4 mt-2" no-body>
+        <transition
+            appear
+            name="fade"
+        >
+            <b-card
+                class="'px-4 mt-2"
+                no-body
+            >
                 <b-row>
                     <b-col>
-                        <h5><a class="clickable" @click="$emit('showInfo')">{{ title }}</a>
-                            <b-btn variant="link" size="sm" @click="filterStudent">
-                                <icon name="eye" scale="1.2" class="align-text-middle"></icon>
+                        <h5>
+                            <a
+                                class="clickable"
+                                @click="$emit('showInfo')"
+                            >{{ title }}</a>
+                            <b-btn
+                                variant="link"
+                                size="sm"
+                                @click="filterStudent"
+                            >
+                                <icon
+                                    name="eye"
+                                    scale="1.2"
+                                    class="align-text-middle"
+                                />
                             </b-btn>
                         </h5>
                     </b-col>
                     <b-col sm="2">
                         <div class="text-right">
-                            <b-btn variant="light" size="sm" :to="'/edit/' + rowData.id + '/0'"
-                            class="card-link"><icon scale="1.3" name="edit" color="green" class="align-text-bottom"></icon></b-btn>
-                            <b-btn variant="light" size="sm" @click="deleteEntry"
-                            class="card-link"><icon scale="1.3" name="trash" color="red" class="align-text-bottom"></icon></b-btn>
+                            <b-btn
+                                variant="light"
+                                size="sm"
+                                :to="'/edit/' + rowData.id + '/0'"
+                                class="card-link"
+                            >
+                                <icon
+                                    scale="1.3"
+                                    name="edit"
+                                    color="green"
+                                    class="align-text-bottom"
+                                />
+                            </b-btn>
+                            <b-btn
+                                variant="light"
+                                size="sm"
+                                @click="deleteEntry"
+                                class="card-link"
+                            >
+                                <icon
+                                    scale="1.3"
+                                    name="trash"
+                                    color="red"
+                                    class="align-text-bottom"
+                                />
+                            </b-btn>
                         </div>
                     </b-col>
                 </b-row>
                 <b-row class="text-center">
-                    <b-col md="2" class="current-data"><strong>Arrivée :</strong> {{ arrival }}</b-col>
-                    <b-col md="2" class="current-data">
-                        <span v-if="rowData.datetime_sortie"><strong>Départ :</strong>{{ departure }}</span>
-                        <b-btn v-else class="mb-1" size="sm" :to="'/edit/' + rowData.id + '/1'">Encoder départ</b-btn>
+                    <b-col
+                        md="2"
+                        class="current-data"
+                    >
+                        <strong>Arrivée :</strong> {{ arrival }}
                     </b-col>
-                    <b-col class="current-data">{{ rowData.motifs_admission }}</b-col>
-                    <b-col class="current-data">{{ rowData.remarques_sortie }}</b-col>
+                    <b-col
+                        md="2"
+                        class="current-data"
+                    >
+                        <span v-if="rowData.datetime_sortie"><strong>Départ :</strong>{{ departure }}</span>
+                        <b-btn
+                            v-else
+                            class="mb-1"
+                            size="sm"
+                            :to="'/edit/' + rowData.id + '/1'"
+                        >
+                            Encoder départ
+                        </b-btn>
+                    </b-col>
+                    <b-col class="current-data">
+                        {{ rowData.motifs_admission }}
+                    </b-col>
+                    <b-col class="current-data">
+                        {{ rowData.remarques_sortie }}
+                    </b-col>
                 </b-row>
             </b-card>
         </transition>
@@ -53,47 +112,50 @@
 </template>
 
 <script>
-import Moment from 'moment';
-Moment.locale('fr');
+import Moment from "moment";
+Moment.locale("fr");
 
 export default {
-        props: {
-            rowData : {type: Object},
+    props: {
+        rowData : {
+            type: Object,
+            default: () => {},
         },
-        data: function () {
-            return {
-            }
+    },
+    data: function () {
+        return {
+        };
+    },
+    computed: {
+        title: function () {
+            return this.rowData.matricule.display;
         },
-        computed: {
-            title: function () {
-                return this.rowData.matricule.display;
-            },
-            arrival: function () {
-                return Moment(this.rowData.datetime_arrive).format('HH:mm DD/MM');
-            },
-            departure: function () {
-                if (this.rowData.datetime_sortie) {
-                    return Moment(this.rowData.datetime_sortie).format('HH:mm DD/MM');
-                } else {
-                    return "";
-                }
-            }
+        arrival: function () {
+            return Moment(this.rowData.datetime_arrive).format("HH:mm DD/MM");
         },
-        methods: {
-            deleteEntry: function () {
-                this.$emit('delete');
-            },
-            editEntry: function () {
-                this.$emit('edit');
-            },
-            sortie: function () {
-                this.$emit('sortie');
-            },
-            filterStudent: function () {
-                this.$emit('filterStudent', this.rowData.matricule_id);
+        departure: function () {
+            if (this.rowData.datetime_sortie) {
+                return Moment(this.rowData.datetime_sortie).format("HH:mm DD/MM");
+            } else {
+                return "";
             }
         }
-}
+    },
+    methods: {
+        deleteEntry: function () {
+            this.$emit("delete");
+        },
+        editEntry: function () {
+            this.$emit("edit");
+        },
+        sortie: function () {
+            this.$emit("sortie");
+        },
+        filterStudent: function () {
+            this.$emit("filterStudent", this.rowData.matricule_id);
+        }
+    }
+};
 </script>
 
 <style>
