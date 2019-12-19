@@ -17,65 +17,66 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from 'vue'
+import Vue from "vue";
 
-import Vuex from 'vuex';
+import Vuex from "vuex";
 Vue.use(Vuex);
 
-import axios from 'axios';
+import axios from "axios";
 
 const store = new Vuex.Store({
-  state: {
-    settings: settings,
-    filters: [{
-        filterType: 'activate_ongoing',
-        tag: "Activer",
-        value: true,
-    }],
-    emails: [],
-  },
-  mutations: {
-      addFilter: function (state, filter) {
-          // If filter is a matricule, remove name filter to avoid conflict.
-          if (filter.filterType === 'matricule_id') {
-              this.commit('removeFilter', 'name');
-          }
+    state: {
+        // eslint-disable-next-line no-undef
+        settings: settings,
+        filters: [{
+            filterType: "activate_ongoing",
+            tag: "Activer",
+            value: true,
+        }],
+        emails: [],
+    },
+    mutations: {
+        addFilter: function(state, filter) {
+            // If filter is a matricule, remove name filter to avoid conflict.
+            if (filter.filterType === "matricule_id") {
+                this.commit("removeFilter", "name");
+            }
 
-          // Overwrite same filter type.
-          this.commit('removeFilter', filter.filterType);
+            // Overwrite same filter type.
+            this.commit("removeFilter", filter.filterType);
 
-          state.filters.push(filter);
-      },
-      removeFilter: function (state, key) {
-          for (let f in state.filters) {
-              if (state.filters[f].filterType === key) {
-                  state.filters.splice(f, 1);
-                  break;
-              }
-          }
-      },
-      setEmails: function (state, emails) {
-          state.emails = emails;
-      },
-  },
-  actions: {
-      loadEmails (context) {
-          const token = {xsrfCookieName: 'csrftoken', xsrfHeaderName: 'X-CSRFToken'};
-          axios.get('/core/api/email/', token)
-          .then(response => {
-              context.commit('setEmails', response.data.results);
-          })
-      }
-  }
+            state.filters.push(filter);
+        },
+        removeFilter: function(state, key) {
+            for (let f in state.filters) {
+                if (state.filters[f].filterType === key) {
+                    state.filters.splice(f, 1);
+                    break;
+                }
+            }
+        },
+        setEmails: function(state, emails) {
+            state.emails = emails;
+        },
+    },
+    actions: {
+        loadEmails(context) {
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
+            axios.get("/core/api/email/", token)
+                .then(response => {
+                    context.commit("setEmails", response.data.results);
+                });
+        }
+    }
 });
 
-store.dispatch('loadEmails');
+store.dispatch("loadEmails");
 
-import Appels from '../appels/appels.vue';
+import Appels from "../appels/appels.vue";
 
-var appelsApp = new Vue({
-    el: '#vue-app',
+new Vue({
+    el: "#vue-app",
     store,
-    template: '<appels/>',
+    template: "<appels/>",
     components: { Appels },
-})
+});
