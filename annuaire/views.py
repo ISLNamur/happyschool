@@ -35,7 +35,9 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework.views import APIView, Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser
 
 from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
@@ -606,6 +608,10 @@ class StudentClasseAPI(APIView):
         serializer = StudentSerializer(students, many=True)
         return Response(serializer.data)
 
+class AnnuaireSettingsViewSet(ModelViewSet):
+    queryset = AnnuaireSettingsModel.objects.all()
+    serializer_class = AnnuaireSettingsSerializer
+    permission_classes = (IsAdminUser,)
 
 class StudentInfoViewSet(ReadOnlyModelViewSet):
     queryset = StudentModel.objects.all()

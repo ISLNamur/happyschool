@@ -36,6 +36,9 @@
                         <b-list-group-item to="update">
                             <strong>Mise à jour</strong>
                         </b-list-group-item>
+                        <b-list-group-item to="annuaire">
+                            <strong>Annuaire</strong>
+                        </b-list-group-item>
                     </b-list-group>
                 </b-col>
                 <b-col>
