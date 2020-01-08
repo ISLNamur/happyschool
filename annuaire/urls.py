@@ -53,6 +53,7 @@ urlpatterns = [
 ]
 
 router = DefaultRouter()
+router.register(r'api/settings',views.AnnuaireSettingsViewSet)
 router.register(r'api/student', views.StudentInfoViewSet)
 router.register(r'api/responsible', views.ResponsibleInfoViewSet)
 router.register(r'api/responsible_sensitive', views.ResponsibleSensitiveViewSet)

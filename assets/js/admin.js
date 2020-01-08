@@ -31,45 +31,47 @@ import GeneralSettings from "../core/general_settings.vue";
 import Photos from "../core/photos.vue";
 import Update from "../core/update.vue";
 import Menu from "../common/menu.vue";
+import Annuaire from "../core/annuaire_settings.vue";
 
 const router = new VueRouter({
-    routes: [
-        {
+    routes: [{
+        path: "",
+        component: Admin,
+        children: [{
             path: "",
-            component: Admin,
-            children: [
-                {
-                    path: "",
-                    component: GeneralSettings,
-                },
-                {
-                    path: "general",
-                    component: GeneralSettings,
-                },
-                {
-                    path: "import",
-                    component: Import,
-                },
-                {
-                    path: "photos",
-                    component: Photos,
-                },
-                {
-                    path: "update",
-                    component: Update,
-                },
-            ]
+            component: GeneralSettings,
         },
-    ]
+        {
+            path: "general",
+            component: GeneralSettings,
+        },
+        {
+            path: "import",
+            component: Import,
+        },
+        {
+            path: "photos",
+            component: Photos,
+        },
+        {
+            path: "update",
+            component: Update,
+        },
+        {
+            path: "annuaire",
+            component: Annuaire,
+        },
+        ]
+    }, ]
 });
 
 new Vue({
     el: "#vue-app",
-    data: {menuInfo: {}},
+    data: { menuInfo: {} },
     // store,
     router,
     template: "<div><app-menu :menu-info=\"menuInfo\"></app-menu><router-view></router-view></div>",
-    mounted: function () {
+    mounted: function() {
         // eslint-disable-next-line no-undef
         this.menuInfo = menu;
     },
