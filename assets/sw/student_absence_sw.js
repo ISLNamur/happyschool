@@ -46,10 +46,10 @@ self.addEventListener("activate", function(event) {
 
 self.addEventListener("fetch", function(event) {
     if (event.request.url.includes("/student_absence/api/students_classes/")) {
-        event.respondWith(async function() {
+        event.respondWith(async function () {
             const response = await fetch(event.request)
                 .catch(() => {
-                    return new Response({status: 200});
+                    return new Response({ status: 200 });
                 });
             const data = await response.clone().json();
             dbPromise.then(db => {
@@ -69,7 +69,7 @@ self.addEventListener("fetch", function(event) {
                     if (classe_key in classes) {
                         classes[classe_key].students.push(data[s].matricule);
                     } else {
-                        classes[classe_key] = {students: [data[s].matricule], id: data[s].classe.id};
+                        classes[classe_key] = { students: [data[s].matricule], id: data[s].classe.id };
                     }
                 }
                 for (let classe in classes) {

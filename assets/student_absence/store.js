@@ -39,42 +39,51 @@ const vuexLocal = new VuexPersistence({
     },
 });
 
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
+
 export default new Vuex.Store({
     state: {
         // eslint-disable-next-line no-undef
         settings: settings,
         filters: [],
-        todayAbsences: {},
+        savedAbsences: {},
         changes: [],
         notes: {},
         onLine: true,
         lastUpdate: "",
         updating: false,
         forceAllAccess: false,
+        periods: []
     },
     getters: {
-        change(state) {
-            return change => {
-                for (let c in state.changes) {
-                    if (state.changes[c].matricule == change.matricule && state.changes[c].date_absence == change.date_absence) {
-                        state.changes[c].index = c;
-                        return state.changes[c];
-                    }
-                }
-                return null;
-            };
+        change: (state) => (absence) => {
+            const curChange = state.changes.find(change => {
+                return change.matricule == absence.matricule
+                    && change.date_absence == absence.date_absence
+                    && change.period == absence.period;
+            });
+            if (curChange) return curChange;
+
+            return null;
         },
-        todayAbsences(state) {
-            return todayAbsence => {
-                for (let t in state.todayAbsences) {
-                    if (state.todayAbsences[t].matricule == todayAbsence.matricule && state.todayAbsences[t].date_absence == todayAbsence.date_absence) {
-                        return state.todayAbsences[t];
-                    }
-                }
+        savedAbsence(state) {
+            return absence => {
+                const absenceFound = state.savedAbsences.find(sAbs => {
+                    const isStudent = sAbs.student_id == absence.matricule;
+                    const isCurrentDate = sAbs.date_absence == absence.date_absence;
+                    const isGoodPeriod = sAbs.period == absence.period;
+                    return isStudent && isCurrentDate && isGoodPeriod;
+                });
+                if (absenceFound) return absenceFound;
+
+                return null;
             };
         }
     },
     mutations: {
+        setPeriods: function (state, periods) {
+            state.periods = periods;
+        },
         toggleForceAllAccess: function (state) {
             state.forceAllAccess = !state.forceAllAccess;
             this.commit("updateStudentsClasses");
@@ -86,33 +95,55 @@ export default new Vuex.Store({
         removeFilter: removeFilter,
         removeChange: function (state, change) {
             for (let c in state.changes) {
-                if (state.changes[c].matricule == change.matricule && state.changes[c].date_absence == change.date_absence) {
+                if (state.changes[c].matricule == change.matricule
+                    && state.changes[c].date_absence == change.date_absence
+                    && state.changes[c].period == change.period) {
                     state.changes.splice(c, 1);
                     break;
                 }
             }
         },
         setChange: function (state, change) {
-            let oldChange = this.getters.change(change);
+            let oldChange = null;
+            for (let c in state.changes) {
+                if (state.changes[c].matricule == change.matricule
+                    && state.changes[c].date_absence == change.date_absence
+                    && state.changes[c].period == change.period) {
+                    state.changes[c].index = c;
+                    oldChange = state.changes[c];
+                    break;
+                }
+            }
+
             if (!oldChange) {
                 state.changes.push(change);
             } else {
-                if ("morning" in change) state.changes[oldChange.index].morning = change.morning;
-                if ("afternoon" in change) state.changes[oldChange.index].afternoon = change.afternoon;
+                state.changes[oldChange.index].is_absent = change.is_absent;
                 // Force update.
                 Vue.set(state.changes, oldChange.index, state.changes[oldChange.index]);
             }
         },
-        setTodayAbsences: function (state, absences) {
+        setSavedAbsences: function (state, absences) {
             for (let a in absences) {
                 if ("student" in absences[a]) delete absences[a].student.savedAbsence.student.savedAbsence;
             }
-            state.todayAbsences = absences;
+            state.savedAbsences = absences;
+        },
+        /**
+         * Download and update saved absences from today.
+         * @param {Object} state The state of the store.
+         * @param {String} date The date of the absences to get.
+         */
+        updateSavedAbsences: function (state, date) {
+            return axios.get("/student_absence/api/student_absence/?page_size=1000&date_absence=" + date, token)
+                .then(resp => {
+                    state.savedAbsences = resp.data.results;
+                    return state.savedAbsences;
+                });
         },
         updateStudentsClasses: function (state) {
             state.lastUpdate = Moment().format("YYYY-MM-DD");
             this.commit("updatingStatus", true);
-            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
             const filterForEduc = state.settings.filter_students_for_educ;
             const data = {
                 query: "everybody",

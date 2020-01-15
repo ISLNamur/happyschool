@@ -4,7 +4,7 @@ from .models import StudentAbsenceModel, StudentAbsenceSettingsModel, ClasseNote
 
 
 class StudentAbsenceAdmin(admin.ModelAdmin):
-    list_display = ('student', 'date_absence', 'morning', 'afternoon')
+    list_display = ('student', 'date_absence', 'period', 'is_absent',)
 
 
 admin.site.register(StudentAbsenceSettingsModel)

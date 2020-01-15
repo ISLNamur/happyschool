@@ -57,11 +57,32 @@ class JustificationModel(models.Model):
     half_days = models.PositiveIntegerField("Nombre de demi-jour", default=0)
 
 
+class PeriodModel(models.Model):
+    """Model that describes a period of a day.
+
+    Attributes:
+        start Starting time of the period.
+        end Ending time of the period.
+        name Simple alias of the period.
+    """
+    start = models.TimeField()
+    end = models.TimeField()
+    name = models.CharField(max_length=200)
+
+    @property
+    def display(self):
+        """Describe the period."""
+        return "%s (%s-%s)" % (self.name, str(self.start)[:5], str(self.end)[:5])
+
+    def __str__(self):
+        return self.display
+
+
 class StudentAbsenceModel(models.Model):
     student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)
     date_absence = models.DateField("Date de l'absence")
-    morning = models.BooleanField("Matin", default=False)
-    afternoon = models.BooleanField("Après-midi", default=False)
+    period = models.ForeignKey(PeriodModel, on_delete=models.SET_NULL, null=True)
+    is_absent = models.BooleanField("Étudiant absent", default=False)
     username = models.CharField("Utilisateur qui a créé l'absence", max_length=100)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     datetime_creation = models.DateTimeField("Date et heure de création de l'absence",

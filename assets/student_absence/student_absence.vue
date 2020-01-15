@@ -44,7 +44,7 @@
                         <b-nav-item to="notes">
                             Notes
                         </b-nav-item>
-                        <b-nav-item-dropdown>
+                        <b-nav-item-dropdown right>
                             <b-dropdown-item @click="$store.commit('updateStudentsClasses')">
                                 Mettre à jour des étudiants
                             </b-dropdown-item>

@@ -62,7 +62,7 @@ new Vue({
                     this.$store.commit("changeOnLineStatus", false);
                     setTimeout(() => {
                         this.checkOnlineStatus();
-                    }, 10000);
+                    }, 2000);
                 });
         },
     },
@@ -74,6 +74,10 @@ new Vue({
         this.menuInfo = menu;
         setTimeout(() => {
             this.checkOnlineStatus();
-        }, 5000);
+        }, 3000);
+        axios.get("/student_absence/api/period/")
+            .then(resp => {
+                this.$store.commit("setPeriods", resp.data.results);
+            });
     },
 });

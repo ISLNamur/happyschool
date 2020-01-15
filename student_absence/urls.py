@@ -17,5 +17,6 @@ router = DefaultRouter()
 router.register(r'api/student_absence', views.StudentAbsenceViewSet)
 router.register(r'api/justification', views.JustificationViewSet)
 router.register(r'api/classenote', views.ClasseNoteViewSet)
+router.register(r'api/period', views.PeriodViewSet)
 
 urlpatterns += router.urls

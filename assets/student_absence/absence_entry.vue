@@ -24,7 +24,7 @@
             <a :href="`/annuaire/#/person/student/${absence.student.matricule}/`">
                 {{ absence.student.display }}
             </a>
-            ({{ display_absence }})
+            {{ display_absence }}
         </b-card>
     </div>
 </template>
@@ -49,13 +49,9 @@ export default {
     },
     computed: {
         display_absence: function () {
-            let display = "";
-            if (this.absence.morning) {
-                display += "matin";
-                if (this.absence.afternoon) display += ", ";
-            }
-            if (this.absence.afternoon) display += "après-midi";
-            return display;
+            const absence = (this.absence.is_absent ? "Absent" : "Présent");
+            const period = this.$store.state.periods.find(p => p.id == this.absence.period).name;
+            return absence + " (" + period + ")";
         }
     }
 };

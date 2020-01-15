@@ -89,11 +89,12 @@ export default {
                         return Moment(value).calendar().split(" à ")[0];
                     }
                 },
-                "morning": {
-                    label: "",
-                },
-                "afternoon": {
-                    label: ""
+                "is_absent": {
+                    label: "Absent",
+                    formatter: (value, key, item) => {
+                        const period = this.$store.state.periods.find(p => p.id == item.period).name;
+                        return value ? period : "";
+                    }
                 }
             },
             absenceCount: [],
@@ -119,7 +120,7 @@ export default {
         }
     },
     mounted: function () {
-        let url = "/student_absence/api/student_absence/?ordering=-datetime_creation&page_size=15";
+        let url = "/student_absence/api/student_absence/?ordering=-datetime_creation&page_size=15&is_absent=true";
         if (this.$store.state.forceAllAccess)
             url += "&forceAllAccess=1";
         axios.get(url)

@@ -25,33 +25,21 @@
             </b-col>
             <b-col>
                 <b-row>
-                    <b-col>
-                        <div class="text-right">
-                            <strong>Matin </strong>
-                            <label class="switch">
-                                <input
-                                    type="checkbox"
-                                    class="primary"
-                                    v-model="morning_absence"
-                                    @click="updateAbsence('morning')"
-                                >
-                                <span class="slider round" />
-                            </label>
-                        </div>
-                    </b-col>
-                    <b-col>
-                        <div class="text-right">
-                            <strong>Après-midi </strong>
-                            <label class="switch">
-                                <input
-                                    type="checkbox"
-                                    class="primary"
-                                    v-model="afternoon_absence"
-                                    @click="updateAbsence('afternoon')"
-                                >
-                                <span class="slider round" />
-                            </label>
-                        </div>
+                    <b-col
+                        v-for="(p, index) in period"
+                        :key="p.pk"
+                    >
+                        <b-form-checkbox
+                            v-model="isAbsent[index]"
+                            name="is-absent"
+                            switch
+                            @change="changeAbsence(index)"
+                        >
+                            <span :class="isSaved(index) ? 'font-italic' : ''">{{ p.name }}</span>
+                            <span v-if="$store.state.periods.length > 2">
+                                ({{ p.start.substr(0, 5) }}-{{ p.end.substr(0, 5) }})
+                            </span>
+                        </b-form-checkbox>
                     </b-col>
                 </b-row>
             </b-col>
@@ -62,160 +50,63 @@
 <script>
 export default {
     props: {
-        "date_absence": {
+        dateAbsence: {
+            type: String,
+            default: ""
+        },
+        student: {
             type: Object,
             default: () => {}
         },
-        "student": {
-            type: Object,
-            default: () => {}
+        period: {
+            type: Array,
+            default: () => []
         }
     },
     data: function () {
         return {
-            morning_absence: false,
-            afternoon_absence: false,
-            baseAbsence: {},
+            isAbsent: [],
+            baseAbsences: [],
         };
     },
     methods: {
-        updateAbsence: function (partDay) {
-            this.changeAbsence(!this[partDay + "_absence"], partDay);
+        isSaved: function (index) {
+            return this.baseAbsences[index] && "id" in this.baseAbsences[index];
         },
-        changeAbsence: function (isAbsent, partDay) {
-            let absence = {matricule: this.student.matricule, date_absence: this.date_absence, student: this.student};
-            if (!(partDay in this.baseAbsence)) {
-                if (isAbsent) {
-                    absence[partDay] = isAbsent;
-                    this.$store.commit("setChange", absence);
-                } else {
-                    const otherPartDay = partDay == "morning" ? "afternoon" : "morning";
-                    this.$store.commit("removeChange", absence);
-                    if (otherPartDay in this.baseAbsence) {
-                        if (this[otherPartDay + "_absence"] != this.baseAbsence[otherPartDay]) {
-                            absence[otherPartDay] = this[otherPartDay + "_absence"];
-                            this.$store.commit("setChange", absence);
-                        }
-                    } else if (this[otherPartDay + "_absence"]) {
-                        absence[otherPartDay] = this[otherPartDay + "_absence"];
-                        this.$store.commit("setChange", absence);
-                    }
-                }
+        changeAbsence: function (index) {
+            const checked = !this.isAbsent[index];
+            let absence = {
+                matricule: this.student.matricule,
+                date_absence: this.dateAbsence,
+                student: this.student,
+                period: this.period[index].id,
+                is_absent: checked,
+            };
+
+            if (!this.baseAbsences[index] || checked != this.baseAbsences[index].is_absent) {
+                if (this.baseAbsences[index] && "id" in this.baseAbsences[index]) absence.id = this.baseAbsences[index].id;
+                this.$store.commit("setChange", absence);
             } else {
-                if (this.baseAbsence[partDay] != isAbsent) {
-                    absence[partDay] = isAbsent;
-                    this.$store.commit("setChange", absence);
-                } else {
-                    const otherPartDay = partDay == "morning" ? "afternoon" : "morning";
-                    this.$store.commit("removeChange", absence);
-                    if (otherPartDay in this.baseAbsence) {
-                        if (this[otherPartDay + "_absence"] != this.baseAbsence[otherPartDay]) {
-                            absence[otherPartDay] = this[otherPartDay + "_absence"];
-                            this.$store.commit("setChange", absence);
-                        }
-                    } else if (this[otherPartDay + "_absence"]) {
-                        absence[otherPartDay] = this[otherPartDay + "_absence"];
-                        this.$store.commit("setChange", absence);
-                    }
-                }
+                this.$store.commit("removeChange", absence);
             }
         }
     },
     mounted: function () {
-        const absence = {matricule: this.student.matricule, date_absence: this.date_absence, student: this.student};
-        this.baseAbsence = this.$store.getters.change(absence);
-        if (this.baseAbsence) {
-            if ("morning" in this.baseAbsence && this.baseAbsence.morning) this.morning_absence = true;
-            if ("afternoon" in this.baseAbsence && this.baseAbsence.afternoon) this.afternoon_absence = true;
-        } else {
-            const savedAbsence = this.$store.getters.todayAbsences(absence);
-            if (savedAbsence) {
-                this.baseAbsence = savedAbsence;
-                if ("morning" in this.baseAbsence && this.baseAbsence.morning) this.morning_absence = true;
-                if ("afternoon" in this.baseAbsence && this.baseAbsence.afternoon) this.afternoon_absence = true;
-            } else {
-                this.baseAbsence = {};
+        for (let p in this.period) {
+            const period = this.period[p];
+            const absence = {
+                matricule: this.student.matricule,
+                date_absence: this.dateAbsence,
+                student: this.student,
+                period: period.id
+            };
+            
+            this.baseAbsences[p] = this.$store.getters.change(absence);
+            if (!this.baseAbsences[p]) {
+                this.baseAbsences[p] = this.$store.getters.savedAbsence(absence);
             }
+            this.isAbsent.splice(p, 1, this.baseAbsences[p] ? this.baseAbsences[p].is_absent : undefined);
         }
     }
 };
 </script>
-
-<style>
-
-
-/* The switch - the box around the slider */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-  float: right;
-}
-
-/* Hide default HTML checkbox */
-.switch input {display:none;}
-
-/* The slider */
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
-
-input.default:checked + .slider {
-  background-color: #444;
-}
-input.primary:checked + .slider {
-  background-color: #2196F3;
-}
-input.success:checked + .slider {
-  background-color: #8bc34a;
-}
-input.info:checked + .slider {
-  background-color: #3de0f5;
-}
-input.warning:checked + .slider {
-  background-color: #FFC107;
-}
-input.danger:checked + .slider {
-  background-color: #f44336;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
-}
-
-input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
-}
-
-/* Rounded sliders */
-.slider.round {
-  border-radius: 34px;
-}
-
-.slider.round:before {
-  border-radius: 50%;
-}
-</style>

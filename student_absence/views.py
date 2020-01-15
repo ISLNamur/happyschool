@@ -28,6 +28,7 @@ from django.utils import timezone
 
 from django_filters import rest_framework as filters
 
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
@@ -37,11 +38,12 @@ from rest_framework.filters import OrderingFilter
 from core.utilities import get_menu, get_scholar_year
 from core.people import get_classes
 from core.models import ResponsibleModel, StudentModel
-from core.views import BaseFilters, BaseModelViewSet
+from core.views import BaseFilters, PageNumberSizePagination
 
-from .models import StudentAbsenceModel, StudentAbsenceSettingsModel, JustificationModel, ClasseNoteModel
-from .serializers import StudentAbsenceSettingsSerializer, StudentAbsenceSerializer, JustificationSerializer, \
-    ClasseNoteSerializer
+from .models import StudentAbsenceModel, StudentAbsenceSettingsModel, JustificationModel, ClasseNoteModel,\
+    PeriodModel
+from .serializers import StudentAbsenceSettingsSerializer, StudentAbsenceSerializer, JustificationSerializer,\
+    ClasseNoteSerializer, PeriodSerializer
 
 
 def get_menu_entry(active_app: str, user) -> dict:
@@ -88,12 +90,13 @@ class StudentAbsenceView(LoginRequiredMixin,
 class StudentAbsenceFilter(BaseFilters):
     student__display = filters.CharFilter(method='people_name_by')
     classe = filters.CharFilter(method='classe_by')
+
     class Meta:
-        fields_to_filter = ('student', 'date_absence','student__display','student__matricule',)
+        fields_to_filter = ('student', 'date_absence', 'student__display', 'student__matricule', 'is_absent',)
         model = StudentAbsenceModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
-    
+
     def classe_by(self, queryset, field_name, value):
         if not value[0].isdigit():
             return queryset
@@ -111,6 +114,7 @@ class StudentAbsenceViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filter_class = StudentAbsenceFilter
+    pagination_class = PageNumberSizePagination
     ordering_fields = ('date_absence', 'datetime_update', 'datetime_creation',)
 
     def get_queryset(self):
@@ -120,6 +124,13 @@ class StudentAbsenceViewSet(ModelViewSet):
 
         classes = get_classes(check_access=True, user=self.request.user, educ_by_years=filtering == "year")
         return self.queryset.filter(student__classe__in=classes)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, many=isinstance(request.data, list))
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class AbsenceCountAPI(APIView):
@@ -165,3 +176,8 @@ class ClasseNoteViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ('classe',)
+
+
+class PeriodViewSet(ReadOnlyModelViewSet):
+    queryset = PeriodModel.objects.all()
+    serializer_class = PeriodSerializer

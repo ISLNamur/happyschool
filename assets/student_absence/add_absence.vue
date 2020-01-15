@@ -25,7 +25,7 @@
                     <b-form-input
                         type="date"
                         v-model="date_absence"
-                        :disabled="true"
+                        :disabled="false"
                         @change="loadAbsences"
                     />
                 </b-form-group>
@@ -95,6 +95,15 @@
             <b-col>
                 <b-card v-if="classe">
                     <p>Nombre d'étudiants : {{ students.length }}.</p>
+                    <b-dropdown text="Ajouter les élèves non modifiés comme présents">
+                        <b-dropdown-item
+                            v-for="period in $store.state.periods"
+                            :key="period.id"
+                            @click="addAllStudents(period.id)"
+                        >
+                            {{ period.name }}
+                        </b-dropdown-item>
+                    </b-dropdown>
                     <div
                         v-if="note.length > 0"
                         v-html="note"
@@ -109,7 +118,8 @@
                         v-for="s in students"
                         :key="s.matricule"
                         :student="s"
-                        :date_absence="date_absence"
+                        :date-absence="date_absence"
+                        :period="$store.state.periods"
                     />
                 </b-list-group>
             </b-col>
@@ -122,44 +132,119 @@
             @ok="sendChanges"
         >
             <b-tabs v-model="tabIndex">
-                <b-tab title="Absences du jour">
-                    <b-form-group class="mt-2">
-                        <b-form-checkbox
-                            v-for="change in getTodayAbsences()"
-                            :key="change.matricule"
-                            :value="change"
-                            v-model="selectedChanges"
+                <b-tab :title="'Absences du ' + date_absence">
+                    <div
+                        v-for="cl in getAbsences(true, 'classe')"
+                        :key="cl"
+                        class="border-bottom pb-1 mb-1"
+                    >
+                        <strong>{{ cl.toUpperCase() }}</strong>
+                        (absent(s) :
+                        <b-badge variant="primary">
+                            {{ getAbsences(true, "student", cl, true).length }}
+                        </b-badge>
+                        )
+                        <b-form-group class="mt-2">
+                            <b-form-checkbox
+                                v-for="change in getAbsences(true, 'student', cl, true)"
+                                :key="change.matricule + change.period"
+                                :value="change"
+                                v-model="selectedChanges"
+                            >
+                                {{ change.student.display }} ({{ getPeriod(change.period) }})
+                            </b-form-checkbox>
+                        </b-form-group> 
+                        <b-button
+                            href="#"
+                            v-b-toggle="'present-' + cl"
+                            variant="info"
                         >
-                            {{ change.student.display }} :
-                            <strong v-if="'afternoon' in change">Après-midi ({{ change.afternoon ? "Absent" : "Présent" }})</strong>
-                            <strong v-if="'morning' in change">Matin ({{ change.morning ? "Absent" : "Présent" }})</strong>
-                        </b-form-checkbox>
-                    </b-form-group>
+                            Élèves présents
+                            <b-badge variant="light">
+                                {{ getAbsences(true, "student", cl, false).length }}
+                            </b-badge>
+                        </b-button>
+                        <b-collapse :id="'present-' + cl">
+                            <b-form-group class="mt-2">
+                                <b-form-checkbox
+                                    v-for="change in getAbsences(true, 'student', cl, false)"
+                                    :key="change.matricule + change.period"
+                                    :value="change"
+                                    v-model="selectedChanges"
+                                >
+                                    {{ change.student.display }} ({{ getPeriod(change.period) }})
+                                </b-form-checkbox>
+                            </b-form-group>
+                        </b-collapse>
+                    </div>
+                    
                     <b-btn
                         variant="danger"
-                        :disabled="selectedChanges.length == 0"
+                        v-if="selectedChanges.length != 0"
                         @click="removeChanges()"
+                        class="mt-1"
                     >
                         Supprimer les élements sélectionnés
                     </b-btn>
                 </b-tab>
-                <b-tab title="Anciennes absences non validées">
-                    <b-form-group class="mt-2">
-                        <b-form-checkbox
-                            v-for="change in getOldAbsences()"
-                            :key="change.matricule"
-                            :value="change"
-                            v-model="selectedOldChanges"
+                <b-tab>
+                    <template v-slot:title>
+                        Autres absences non validées
+                        <b-badge variant="primary">
+                            {{ getAbsences(false, "student").length }}
+                        </b-badge>
+                    </template>
+                    <div
+                        v-for="cl in getAbsences(false, 'classe')"
+                        :key="cl"
+                        class="border-bottom"
+                    >
+                        <strong>{{ cl.toUpperCase() }}</strong>
+                        (absent(s) :
+                        <b-badge variant="primary">
+                            {{ getAbsences(false, "student", cl, true).length }}
+                        </b-badge>
+                        )
+                        <b-form-group class="mt-2">
+                            <b-form-checkbox
+                                v-for="change in getAbsences(false, 'student', cl, true)"
+                                :key="change.matricule + change.period"
+                                :value="change"
+                                v-model="selectedOldChanges"
+                            >
+                                {{ change.student.display }}
+                                (<strong>{{ change.date_absence }}</strong> - {{ getPeriod(change.period) }})
+                            </b-form-checkbox>
+                        </b-form-group> 
+                        <b-button
+                            href="#"
+                            v-b-toggle="'present-' + cl"
+                            variant="info"
                         >
-                            <strong>{{ change.date_absence }}</strong> – {{ change.student.display }} :
-                            <strong v-if="'afternoon' in change">Après-midi ({{ change.afternoon ? "Absent" : "Présent" }})</strong>
-                            <strong v-if="'morning' in change">Matin ({{ change.morning ? "Absent" : "Présent" }})</strong>
-                        </b-form-checkbox>
-                    </b-form-group>
+                            Élèves présents
+                            <b-badge variant="light">
+                                {{ getAbsences(false, "student", cl, false).length }}
+                            </b-badge>
+                        </b-button>
+                        <b-collapse :id="'present-' + cl">
+                            <b-form-group class="mt-2">
+                                <b-form-checkbox
+                                    v-for="change in getAbsences(false, 'student', cl, false)"
+                                    :key="change.matricule + change.period"
+                                    :value="change"
+                                    v-model="selectedOldChanges"
+                                >
+                                    {{ change.student.display }}
+                                    (<strong>{{ change.date_absence }}</strong> - {{ getPeriod(change.period) }})
+                                </b-form-checkbox>
+                            </b-form-group>
+                        </b-collapse>
+                    </div>
                     <b-btn
                         variant="danger"
-                        :disabled="selectedOldChanges.length == 0"
+                        v-if="selectedOldChanges.length != 0"
                         @click="removeChanges('old')"
+                        class="mt-1"
                     >
                         Supprimer les élements sélectionnés
                     </b-btn>
@@ -191,6 +276,8 @@ Moment.locale("fr");
 
 import AddAbsenceEntry from "./add_absence_entry.vue";
 
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+
 export default {
     data: function () {
         return {
@@ -219,16 +306,64 @@ export default {
         }
     },
     methods: {
+        getPeriod: function (period) {
+            return this.$store.state.periods.find(p => p.id == period).name;
+        },
+        addAllStudents: function (period) {
+            const savedStudents = this.$store.state.savedAbsences.filter(sA => {
+                return sA.period == period && sA.date_absence == this.date_absence;
+            }).map(sA => sA.student_id);
+            const currentChanges = this.$store.state.changes.filter(c => {
+                return c.period == period && c.date_absence == this.date_absence;
+            }).map(c => c.matricule);
+    
+            this.students.filter(student => {
+                // Check if there is already an saved absence or current changes.
+                return !currentChanges.includes(student.matricule) && !savedStudents.includes(student.matricule);
+            }).forEach(student => {
+                const absence = {
+                    date_absence: this.date_absence,
+                    matricule: student.matricule,
+                    student: student,
+                    period: period,
+                    is_absent: false,
+                };
+                this.$store.commit("setChange", absence);
+            });
+        },
         cleanStudents: function () {
             this.students = [];
             this.classe = null;
             this.currentSearch = null;
         },
-        getTodayAbsences: function () {
-            return this.$store.state.changes.filter(c => c.date_absence == this.date_absence);
-        },
-        getOldAbsences: function () {
-            return this.$store.state.changes.filter(c => c.date_absence != this.date_absence);
+        getAbsences: function (isToday, outputType, classe, isAbsent) {
+            let changes = this.$store.state.changes
+                .filter(c => isToday ? c.date_absence == this.date_absence : c.date_absence != this.date_absence);
+
+            // if (changes.length == 0) return [];
+
+            console.log(changes);
+            if (outputType == "classe") {
+                return [...new Set(changes.map(c => c.student.classe.year + c.student.classe.letter))].sort();
+            } else {
+                if (classe) changes = changes.filter(c => c.student.classe.year + c.student.classe.letter == classe);
+                if (isAbsent != undefined) changes = changes.filter(c => c.is_absent == isAbsent);
+                return changes.sort((c1, c2) => {
+                    if (c1.student.classe.year < c2.student.classe.year) {
+                        return -1;
+                    } else if (c1.student.classe.year == c2.student.classe.year) {
+                        if (c1.student.classe.letter < c2.student.classe.letter) {
+                            return -1;
+                        } else if (c1.student.classe.letter == c2.student.classe.letter) {
+                            return 0;
+                        } else {
+                            return 1;
+                        }
+                    } else {
+                        return 1;
+                    }
+                });
+            }
         },
         removeChanges: function (changeType) {
             const selected = changeType == "old" ? this.selectedOldChanges : this.selectedChanges;
@@ -245,23 +380,13 @@ export default {
         selected: function (option) {
             if (option.type == "classe") {
                 this.classe = option.id;
-                this.students = option.students.map(s => {
-                    if (s.matricule in this.$store.state.todayAbsences) {
-                        s.savedAbsence = this.$store.state.todayAbsences[s.matricule];
-                        s.savedAbsence.student = s;
-                        delete s.savedAbsence.student.savedAbsence;
-                    }
-                    return s;
-                }).sort((a, b) => a.display.localeCompare(b.display));
+                this.students = option.students.sort((a, b) => a.display.localeCompare(b.display));
                 // Get notes if any.
                 if (this.classe in this.$store.state.notes) {
                     this.note = this.$store.state.notes[this.classe].note;
                 }
             } else {
                 this.classe = null;
-                if (option.matricule in this.$store.state.todayAbsences) {
-                    option.savedAbsence = this.$store.state.todayAbsences[option.matricule];
-                }
                 this.students = [option];
             }
         },
@@ -328,47 +453,37 @@ export default {
             evt.preventDefault();
             this.sending = true;
             let app = this;
-            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             const apiUrl = "/student_absence/api/student_absence/";
             // Is it old absences or absences of today?
-            const changesToSend = this.tabIndex == 0 ? this.getTodayAbsences() : this.getOldAbsences();
-            const absenceChecks = changesToSend.map(c => {
-                const request = apiUrl + "?student=" + c.matricule + "&date_absence__gte=" + c.date_absence + "&date_absence__lte=" + c.date_absence;
-                return axios.get(request);
+            const changesToSend = this.tabIndex == 0 ? this.getAbsences(true, "student") : this.getAbsences(false, "student");
+
+            const updateAbsences = changesToSend.filter(change => "id" in change);
+            const newAbsences = changesToSend.filter(change => !("id" in change))
+                .map(change => {
+                    change.student_id = change.matricule;
+                    return change;
+                });
+
+            const absencePromises = updateAbsences.map(change => {
+                return axios.put(apiUrl + change.id + "/", change, token);
             });
-            // First check if each change is new or not.
-            Promise.all(absenceChecks)
+            absencePromises.push(axios.post(apiUrl, newAbsences, token));
+            Promise.all(absencePromises)
                 .then(responses => {
-                // Build a promise for each change.
-                    const changeRequests = responses.map((response, index) => {
-                        const change = changesToSend[index];
-                        if (response.data.results.length > 0) {
-                            let absence = Object.assign({}, response.data.results[0]);
-                            if ("afternoon" in change) absence.afternoon = change.afternoon;
-                            if ("morning" in change) absence.morning = change.morning;
-                            return axios.put(apiUrl + absence.id + "/", absence, token);
-                        } else {
-                            let absence = Object.assign({}, change);
-                            delete Object.assign(absence, {["student_id"]: absence["matricule"] })["matricule"];
-                            return axios.post(apiUrl, absence, token);
+                    for (let r in responses) {
+                        if (responses[r].config.method == "put") {
+                            responses[r].data.matricule = responses[r].data.student_id;
+                            this.$store.commit("removeChange", responses[r].data);
+                        } else if (responses[r].config.method == "post") {
+                            responses[r].data.forEach(absence => {
+                                absence.matricule = absence.student_id;
+                                this.$store.commit("removeChange", absence);
+                            });
                         }
-                    });
-                    // Request changes and hope everything will resolve successfully.
-                    Promise.all(changeRequests)
-                        .then(responses => {
-                            for (let r in responses) {
-                                responses[r].data.matricule = responses[r].data.student_id;
-                                this.$store.commit("removeChange", responses[r].data);
-                            }
-                            app.$bvModal.hide("tovalidate");
-                            app.loadAbsences(this.date_absence);
-                            app.sending = false;
-                        })
-                        .catch(function (error) {
-                            app.sending = false;
-                            app.loadAbsences(this.date_absence);
-                            alert(error);
-                        });
+                    }
+                    app.$bvModal.hide("tovalidate");
+                    app.loadAbsences(app.date_absence);
+                    app.sending = false;
                 })
                 .catch(function (error) {
                     app.sending = false;
@@ -382,29 +497,12 @@ export default {
             // Load absences from date_absence.
             if (this.date_absence.length == 0) return;
 
-            this.savedAbsences = {};
-            axios.get("/student_absence/api/student_absence/?date_absence__gte=" + this.date_absence + "&date_absence__lte=" + this.date_absence)
-                .then(response => {
-                    this.savedAbsences = response.data.results.map(r => {
-                        let abs = {matricule: r.student_id, date_absence: r.date_absence};
-                        if (r.morning) abs.morning = true;
-                        if (r.afternoon) abs.afternoon = true;
-                        return abs;
-                    });
-                    this.savedAbsences = this.savedAbsences.reduce((obj, item) => {
-                        obj[item.matricule] = item;
-                        return obj;
-                    }, {});
-
-                    // Save absence to the store.
-                    if (date == Moment().format("YYYY-MM-DD")) {
-                        this.$store.commit("setTodayAbsences", this.savedAbsences);
-                    }
-                });
+            this.$store.commit("updateSavedAbsences", date);
         }
     },
     mounted: function () {
         const now = Moment();
+
         this.loadAbsences(now.format("YYYY-MM-DD"));
     },
     components: {Multiselect, AddAbsenceEntry},
