@@ -68,20 +68,28 @@
                             required
                         />
                     </b-form-group>
-                    <b-form-group label="Date de début">
+                    <b-form-group
+                        label="Date de début"
+                        :state="inputStates.non_field_errors"
+                    >
                         <b-form-input
                             v-model="form.date_absence_start"
                             type="date"
                             required
                             @change="updateEnd"
                         />
+                        <span slot="invalid-feedback">{{ errorMsg('non_field_errors') }}</span>
                     </b-form-group>
-                    <b-form-group label="Date de fin">
+                    <b-form-group
+                        label="Date de fin"
+                        :state="inputStates.non_field_errors"
+                    >
                         <b-form-input
                             v-model="form.date_absence_end"
                             type="date"
                             required
                         />
+                        <span slot="invalid-feedback">{{ errorMsg('non_field_errors') }}</span>
                     </b-form-group>
                     <b-form-group label="commentaire">
                         <b-textarea v-model="form.comment" />
@@ -124,6 +132,16 @@ export default {
                 this.reset();
             }
         },
+        errors: function (newErrors) {
+            const inputs = Object.keys(this.inputStates);
+            for (let u in inputs) {
+                if (inputs[u] in newErrors) {
+                    this.inputStates[inputs[u]] = newErrors[inputs[u]].length == 0;
+                } else {
+                    this.inputStates[inputs[u]] = null;
+                }
+            }
+        },
     },
     data: function () {
         return {
@@ -141,9 +159,20 @@ export default {
             person: [],
             searchId: -1,
             sending: false,
+            errors: {},
+            inputStates: {
+                non_field_errors: null
+            }
         };
     },
     methods: {
+        errorMsg(err) {
+            if (err in this.errors) {
+                return this.errors[err][0];
+            } else {
+                return "";
+            }
+        },
         updateEnd: function (value) {
             if (!this.form.date_absence_end) this.form.date_absence_end = value;
         },
@@ -198,7 +227,7 @@ export default {
                     });
                 })
                 .catch(err => {
-                    alert("Une erreur est survenue lors de la soumission : " + err);
+                    this.errors = err.response.data;
                     this.sending = false;
                 });
         },
