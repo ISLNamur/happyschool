@@ -127,14 +127,40 @@ class InfoEleve(models.Model):
         return self.info
 
 
+class NotifySanctionModel(models.Model):
+    PARENTS = 'PA'
+    LEGAL_RESPONSIBLE = 'LR'
+    SCHOOL_RESPONSIBLE = 'SR'
+    RECIPIENTS_CHOICES = [
+        (PARENTS, 'Parents'),
+        (LEGAL_RESPONSIBLE, 'Responsable légal'),
+        (SCHOOL_RESPONSIBLE, 'Responsable à l\'école (éduc/coord)'),
+    ]
+    recipient = models.CharField(
+        max_length=2,
+        choices=RECIPIENTS_CHOICES,
+        default=LEGAL_RESPONSIBLE,
+    )
+    frequency = models.PositiveSmallIntegerField(
+        default=5,
+        help_text="""Fréquence à laquelle la notification sera envoyé. Par exemple, une fréqunce de 5
+            enverra une notification tous les multiples de 5 : à la 5ème, 10ème,… sanctions.
+            Une fréquence de 1, enverra une notification à chaque nouvelle sanction."""
+    )
+
+    def __str__(self):
+        recipient = next(x[1] for x in self.RECIPIENTS_CHOICES if x[0] == self.recipient)
+        return "Dest. : %s, fréq. : %i" % (recipient, self.frequency)
+
+
 class SanctionDecisionDisciplinaire(models.Model):
     sanction_decision = models.CharField(max_length=200)
     is_retenue = models.BooleanField(default=False)
     can_ask = models.BooleanField(default=False)
-    send_email_at_creation_to_responsible = models.BooleanField(
-        default=False,
-        help_text="""Si activé, envoi automatiquement un email au responsable de l'élève à la création
-            d'un cas (pas d'une demande)."""
+    notify = models.ManyToManyField(
+        NotifySanctionModel,
+        help_text="""Permet d'envoyer une notification aux parents/responsable légal ou responsable de l'école
+            (éducateurs/coordonateur) à une fréquence particulière (tous les X fois)."""
     )
 
     def __str__(self):

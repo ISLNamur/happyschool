@@ -47,7 +47,7 @@ from core.people import People, get_classes
 
 from .serializers import *
 from .models import *
-from .tasks import task_send_info_email, send_sanction_to_student_resp
+from .tasks import task_send_info_email, notify_sanction
 
 from z3c.rml import rml2pdf
 from io import BytesIO
@@ -223,10 +223,10 @@ class CasEleveViewSet(BaseModelViewSet):
                 countdown=1,
                 kwargs={'instance_id': serializer.save().id}
             )
-        
+
         if cas.sanction_decision:
-            if cas.sanction_decision.send_email_at_creation_to_responsible:
-                send_sanction_to_student_resp.apply_async(
+            if cas.sanction_decision.notify:
+                notify_sanction.apply_async(
                     countdown=1,
                     kwargs={"instance_id": cas.id}
                 )
@@ -335,7 +335,6 @@ class AskSanctionsFilter(BaseFilters):
         return queryset
 
 
-
 class AskSanctionsViewSet(BaseModelViewSet):
     queryset = CasEleve.objects.filter(matricule__isnull=False, sanction_decision__isnull=False, sanction_faite=False)
     serializer_class = CasEleveSerializer
@@ -360,7 +359,14 @@ class AskSanctionsViewSet(BaseModelViewSet):
     def perform_create(self, serializer):
         super().perform_create(serializer)
         serializer.save(sanction_faite=False)
-        serializer.save(visible_by_groups=get_generic_groups().values())
+        cas = serializer.save(visible_by_groups=get_generic_groups().values())
+
+        if cas.sanction_decision:
+            if cas.sanction_decision.notify:
+                notify_sanction.apply_async(
+                    countdown=1,
+                    kwargs={"instance_id": cas.id}
+                )
 
     def perform_update(self, serializer):
         super().perform_update(serializer)

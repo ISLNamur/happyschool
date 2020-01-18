@@ -17,28 +17,60 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import date
+
 from celery import shared_task
 
 from django.conf import settings
 
 from core.email import send_email
 from core.models import ResponsibleModel, EmailModel
+from core.utilities import get_scholar_year
 
 from .models import CasEleve, DossierEleveSettingsModel
 
 
 @shared_task(bind=True)
-def send_sanction_to_student_resp(self, instance_id):
+def notify_sanction(self, instance_id):
     instance = CasEleve.objects.get(id=instance_id)
     student = instance.matricule
     context = {'student': student, 'sanction': instance}
-    recipient = student.additionalstudentinfo.resp_email
-    send_email(
-        to=[recipient],
-        subject="Sanction concernant %s" % student.fullname,
-        email_template="dossier_eleve/email_sanction.html",
-        context=context
-    )
+
+    for notify in instance.sanction_decision.notify.all():
+        recipient = []
+        # Check if we match the frequency.
+        scholar_year_start = date(year=get_scholar_year(), month=9, day=1)
+        scholar_year_end = date(year=get_scholar_year() + 1, month=9, day=1)
+        sanction_count = CasEleve.objects.filter(
+            datetime_encodage__gte=scholar_year_start,
+            datetime_encodage__lt=scholar_year_end,
+            matricule=student,
+            sanction_decision=instance.sanction_decision
+        ).count()
+        if sanction_count % notify.frequency != 0:
+            continue
+
+        if notify.recipient == "PA":
+            if student.additionalstudentinfo.father_email:
+                recipient.append(student.additionalstudentinfo.father_email)
+            if student.additionalstudentinfo.mother_email:
+                recipient.append(student.additionalstudentinfo.mother_email)
+        elif notify.recipient == "LR":
+            if student.additionalstudentinfo.resp_email:
+                recipient.append(student.additionalstudentinfo.resp_email)
+        elif notify.recipient == "SR":
+            emails = EmailModel.objects.filter(
+                teaching=student.teaching,
+                years=student.classe.year
+            )
+            recipient += [e.email for e in emails]
+
+        send_email(
+            to=recipient,
+            subject="Sanction concernant %s" % student.fullname,
+            email_template="dossier_eleve/email_sanction.html",
+            context=context
+        )
 
 
 @shared_task(bind=True)

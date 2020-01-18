@@ -19,14 +19,16 @@
 
 from django.contrib import admin
 
-from .models import *
+from . import models
 
 
 class CasDisciplinaireAdmin(admin.ModelAdmin):
     list_display = ('matricule', 'datetime_encodage', 'info', 'sanction_decision', 'datetime_conseil', 'sanction_faite')
 
-admin.site.register(CasEleve, CasDisciplinaireAdmin)
-admin.site.register(InfoEleve)
-admin.site.register(SanctionDecisionDisciplinaire)
-admin.site.register(DossierEleveSettingsModel)
-admin.site.register(SanctionStatisticsModel)
+
+admin.site.register(models.CasEleve, CasDisciplinaireAdmin)
+admin.site.register(models.InfoEleve)
+admin.site.register(models.SanctionDecisionDisciplinaire)
+admin.site.register(models.DossierEleveSettingsModel)
+admin.site.register(models.SanctionStatisticsModel)
+admin.site.register(models.NotifySanctionModel)
