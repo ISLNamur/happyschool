@@ -148,7 +148,10 @@
                     <b-col cols="2">
                         <strong>Type de sanctions</strong>
                     </b-col>
-                    <b-col cols="2">
+                    <b-col
+                        v-if="$store.state.settings.enable_disciplinary_council"
+                        cols="2"
+                    >
                         <strong>Conseil de discipline</strong>
                     </b-col>
                     <b-col cols="2">

@@ -103,6 +103,7 @@
                         {{ category }}
                     </b-col>
                     <b-col
+                        v-if="$store.state.settings.enable_disciplinary_council"
                         md="2"
                         class="text-center"
                     >

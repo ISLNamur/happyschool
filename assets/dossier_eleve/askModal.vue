@@ -139,6 +139,7 @@
                                 </b-form-group>
                                 <div v-if="$store.state.canSetSanction">
                                     <b-form-group
+                                        v-if="$store.state.settings.enable_disciplinary_council"
                                         label="Date du conseil"
                                         label-for="input-date-conseil"
                                         :state="inputStates.datetime_conseil"

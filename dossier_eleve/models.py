@@ -118,6 +118,11 @@ class DossierEleveSettingsModel(models.Model):
         default=True,
         help_text="Si activé, seuls les titulaires peuvent voir les cas de leurs élèves."
     )
+    enable_disciplinary_council = models.BooleanField(
+        default=True,
+        help_text="""Si activé avec la demande de sanction, permet de prévoir de manière facultative
+        une date pour statuer de la pertinence d'une demande de sanction."""
+    )
 
 
 class InfoEleve(models.Model):
