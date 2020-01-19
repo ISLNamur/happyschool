@@ -1,0 +1,357 @@
+[
+{
+    "model": "auth.group",
+    "pk": 1,
+    "fields": {
+        "name": "professeur",
+        "permissions": []
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 2,
+    "fields": {
+        "name": "sysadmin",
+        "permissions": []
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 3,
+    "fields": {
+        "name": "educateur",
+        "permissions": []
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 4,
+    "fields": {
+        "name": "educ1",
+        "permissions": []
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 5,
+    "fields": {
+        "name": "coord1",
+        "permissions": []
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 6,
+    "fields": {
+        "name": "direction",
+        "permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+        "password": "pbkdf2_sha256$150000$fQntETGESCH0$aQ1dnFSZ292AHDMc6URacDdOrv5/Iqo4TsYcWy5gAeE=",
+        "last_login": "2017-11-06T09:32:59.686Z",
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2017-10-09T10:03:33Z",
+        "groups": [
+            [
+                "sysadmin"
+            ]
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 3,
+    "fields": {
+        "password": "pbkdf2_sha256$36000$kA8C0HEjlyJi$MPeEPifCwHeEzMaQE2bstsv4wimAHVDbxyXgEtsbOp8=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "teacher",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2017-10-09T10:04:43Z",
+        "groups": [
+            [
+                "professeur"
+            ]
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 4,
+    "fields": {
+        "password": "pbkdf2_sha256$36000$2wwNdDCTjb5a$iuz5S2ljL/FEAu6s25cXwQB4nA4Az9uMbw3SlFmakto=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "educator",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2017-10-09T10:06:58Z",
+        "groups": [
+            [
+                "educateur"
+            ],
+            [
+                "educ1"
+            ]
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 5,
+    "fields": {
+        "password": "pbkdf2_sha256$36000$NuqO2gPB1PRi$yVS+clfjmzJLyWL5XmBO2C+i6DMzBVeRHmxcgIBxs3s=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "student",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2017-10-09T10:07:12.113Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 6,
+    "fields": {
+        "password": "pbkdf2_sha256$36000$ZfgDWkS4abOh$lrC7SLQd6IvGz/oKx6ZbJF1E6wbIeLmuleHTiQ3Ph1I=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "coordonator",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2017-10-09T10:07:20Z",
+        "groups": [
+            [
+                "professeur"
+            ],
+            [
+                "coord1"
+            ]
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "pk": 7,
+    "fields": {
+        "password": "pbkdf2_sha256$36000$62JfzYm3J2Vl$AriMrCNSsXC69vywqF2qUVfYhDShIkPg2gHHdsuSa6s=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "director",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2017-10-09T10:07:37Z",
+        "groups": [
+            [
+                "direction"
+            ]
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "core.teachingmodel",
+    "pk": 1,
+    "fields": {
+        "display_name": "Secondaire",
+        "name": "secondaire"
+    }
+},
+{
+    "model": "core.teachingmodel",
+    "pk": 2,
+    "fields": {
+        "display_name": "Primaire",
+        "name": "primaire"
+    }
+},
+{
+    "model": "core.classemodel",
+    "pk": 1,
+    "fields": {
+        "year": 1,
+        "letter": "a",
+        "teaching": 1
+    }
+},
+{
+    "model": "core.classemodel",
+    "pk": 2,
+    "fields": {
+        "year": 1,
+        "letter": "b",
+        "teaching": 1
+    }
+},
+{
+    "model": "core.classemodel",
+    "pk": 3,
+    "fields": {
+        "year": 3,
+        "letter": "B",
+        "teaching": 2
+    }
+},
+{
+    "model": "core.studentmodel",
+    "pk": 1234,
+    "fields": {
+        "first_name": "Toto",
+        "last_name": "Tutu",
+        "teaching": 1,
+        "classe": 1,
+        "user": [
+            "student"
+        ]
+    }
+},
+{
+    "model": "core.studentmodel",
+    "pk": 9876,
+    "fields": {
+        "first_name": "Truc",
+        "last_name": "Machin",
+        "teaching": 2,
+        "classe": 3,
+        "user": [
+            "student"
+        ]
+    }
+},
+{
+    "model": "core.studentmodel",
+    "pk": 2222,
+    "fields": {
+        "first_name": "Jacques",
+        "last_name": "Chirac",
+        "teaching": 2,
+        "classe": 3,
+        "user": null
+    }
+},
+{
+    "model": "core.responsiblemodel",
+    "pk": 1,
+    "fields": {
+        "first_name": "Tea",
+        "last_name": "Cher",
+        "matricule": 123,
+        "email": "tea.cher@happy.org",
+        "email_school": null,
+        "is_teacher": true,
+        "is_educator": false,
+        "user": [
+            "teacher"
+        ],
+        "teaching": [
+            1
+        ],
+        "classe": [
+            1,
+            2
+        ],
+        "tenure": [
+            2
+        ]
+    }
+},
+{
+    "model": "core.responsiblemodel",
+    "pk": 2,
+    "fields": {
+        "first_name": "Coord",
+        "last_name": "onator",
+        "matricule": 321,
+        "email": "coord.onator@happy.org",
+        "email_school": null,
+        "is_teacher": true,
+        "is_educator": false,
+        "user": [
+            "coordonator"
+        ],
+        "teaching": [
+            1
+        ],
+        "classe": [
+            1
+        ],
+        "tenure": [
+            1
+        ]
+    }
+},
+{
+    "model": "core.responsiblemodel",
+    "pk": 3,
+    "fields": {
+        "first_name": "Tedu",
+        "last_name": "Cator",
+        "matricule": 12,
+        "email": "tedu.cator@happy.org",
+        "email_school": null,
+        "is_teacher": false,
+        "is_educator": true,
+        "user": [
+            "educator"
+        ],
+        "teaching": [
+            1
+        ],
+        "classe": [],
+        "tenure": []
+    }
+},
+{
+    "model": "core.responsiblemodel",
+    "pk": 4,
+    "fields": {
+        "first_name": "Trespon",
+        "last_name": "Sible",
+        "matricule": 1,
+        "email": "tres.sible@happy.org",
+        "email_school": null,
+        "is_teacher": false,
+        "is_educator": false,
+        "user": [
+            "director"
+        ],
+        "teaching": [
+            1
+        ],
+        "classe": [],
+        "tenure": []
+    }
+}
+]

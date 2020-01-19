@@ -18,7 +18,7 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <div>
+    <div id="info-student">
         <b-container>
             <b-btn
                 class="mb-2"

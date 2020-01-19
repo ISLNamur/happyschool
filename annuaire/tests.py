@@ -17,4 +17,43 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.test import TestCase
+import time
+
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.common.keys import Keys
+
+
+class SeleniumTests(StaticLiveServerTestCase):
+    fixtures = ['test_functional.json']
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        options = Options()
+        options.headless = True
+        cls.selenium = WebDriver(options=options)
+        cls.selenium.implicitly_wait(10)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.selenium.quit()
+        super().tearDownClass()
+
+    def test_login(self):
+        self.selenium.get('%s%s' % (self.live_server_url, '/auth/'))
+        username_input = self.selenium.find_element_by_id("inputUser")
+        username_input.send_keys('admin')
+        password_input = self.selenium.find_element_by_id("inputPassword")
+        password_input.send_keys('password')
+        self.selenium.find_element_by_xpath('//button[@type="submit"]').click()
+        self.selenium.get('%s%s' % (self.live_server_url, '/annuaire/'))
+
+        search_input = self.selenium.find_element_by_class_name("multiselect__input")
+        search_input.send_keys("tutu")
+        time.sleep(1)
+        search_input.send_keys(Keys.ENTER)
+        self.selenium.find_element_by_id("info-student")
+        self.selenium.find_elements_by_xpath("//*[contains(text(), 'Toto')]")
+        self.selenium.find_elements_by_xpath("//*[contains(text(), '1234')]")
