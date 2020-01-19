@@ -1,10 +1,11 @@
-dist: xenial
+dist: bionic
 language: python
 before_install:
-  - sudo apt-get install -y python-dev libldap2-dev libsasl2-dev libssl-dev python3-pip git python3-dateutil postgresql-client python3-setuptools
+  - sudo apt-get install -y python-dev libldap2-dev libsasl2-dev libssl-dev python3-pip git python3-dateutil postgresql-client python3-setuptools firefox-geckodriver
 addons:
   apt:
     update: true
+  firefox: latest
 services:
   - postgresql
 before_script:
@@ -18,7 +19,8 @@ script:
   - cp happyschool/settings.example.py happyschool/settings.py
   - sed -i 's/DEBUG = False/DEBUG = True/g' happyschool/settings.py
   - python3 manage.py makemigrations && python3 manage.py migrate
-  - coverage run --source='.' manage.py test
-  - coverage report
   - npm install
   - npx eslint --ext .js,.vue assets/
+  - ./node_modules/.bin/webpack --config webpack.prod.js
+  - coverage run --source='.' manage.py test
+  - coverage report

@@ -21,3 +21,4 @@ git+https://github.com/Supermanu/django-bootstrap3-datetimepicker.git@dcb355c287
 weasyprint
 django_weasyprint
 social-auth-app-django
+selenium
