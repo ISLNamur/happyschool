@@ -24,6 +24,12 @@ from .ldap import get_ldap_connection
 
 
 class CoreSettingsModel(models.Model):
+    school_name = models.CharField(max_length=200, help_text="Nom complet de l'école.", default="")
+    school_name_short = models.CharField(
+        max_length=10,
+        help_text="Nom court de l'école (abréviation, sigle,…).",
+        default=""
+    )
     root = models.URLField("Root URL", help_text='URL vers le serveur HappySchool principal',
                                blank=True, null=True, default=None)
     remote = models.URLField("Remote URL", help_text='URL vers un serveur HappySchool distant',
