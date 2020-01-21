@@ -48,7 +48,6 @@ class PeriodSerializer(serializers.ModelSerializer):
         model = models.PeriodModel
         fields = '__all__'
 
-import time
 
 class StudentAbsenceSerializer(serializers.ModelSerializer):
     # In order to write with the id and read the entire object, it uses two fields field + field_id.
@@ -61,34 +60,29 @@ class StudentAbsenceSerializer(serializers.ModelSerializer):
         exclude = ('datetime_creation', 'datetime_update',)
         read_only_fields = ('user', 'username',)
 
-    def create(self, validated_data):
-        if models.StudentAbsenceSettingsModel.objects.first().sync_with_proeco:
-            if not self.sync_proeco(validated_data):
-                raise
-        return super(StudentAbsenceSerializer, self).create(validated_data)
-
     def update(self, instance, validated_data):
         if models.StudentAbsenceSettingsModel.objects.first().sync_with_proeco:
-            self.sync_proeco(validated_data)
+            if not self.sync_proeco(instance, validated_data["is_absent"]):
+                raise
         return super(StudentAbsenceSerializer, self).update(instance, validated_data)
 
     @staticmethod
-    def sync_proeco(data: dict):
+    def sync_proeco(absence: models.StudentAbsenceModel, is_absent):
         from libreschoolfdb import writer
 
         server = [
             s['server'] for s in settings.SYNC_FDB_SERVER
-            if s['teaching_name'] == data.get('student').teaching.name
+            if s['teaching_name'] == absence.student.teaching.name
         ]
         if len(server) != 0:
             periods = models.PeriodModel.objects.all().order_by("start")
-            period = [i for i, p in enumerate(periods) if p.id == data.get("period", None).id][0]
+            period = [i for i, p in enumerate(periods) if p.id == absence.period.id][0]
 
             return writer.set_student_absence(
-                matricule=data.get('student').matricule,
-                day=data.get('date_absence'),
+                matricule=absence.student.matricule,
+                day=absence.date_absence,
                 period=period,
-                is_absent=data.get("is_absent", False),
+                is_absent=is_absent,
                 fdb_server=server[0]
             )
         return False

@@ -467,10 +467,13 @@ export default {
             const absencePromises = updateAbsences.map(change => {
                 return axios.put(apiUrl + change.id + "/", change, token);
             });
-            absencePromises.push(axios.post(apiUrl, newAbsences, token));
+
+            if (newAbsences.length > 0) absencePromises.push(axios.post(apiUrl, newAbsences, token));
+
             Promise.all(absencePromises)
                 .then(responses => {
                     for (let r in responses) {
+                        console.log(responses[r]);
                         if (responses[r].config.method == "put") {
                             responses[r].data.matricule = responses[r].data.student_id;
                             this.$store.commit("removeChange", responses[r].data);

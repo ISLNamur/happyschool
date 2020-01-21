@@ -116,6 +116,7 @@ class StudentAbsenceViewSet(ModelViewSet):
     filter_class = StudentAbsenceFilter
     pagination_class = PageNumberSizePagination
     ordering_fields = ('date_absence', 'datetime_update', 'datetime_creation',)
+    cursor = None
 
     def get_queryset(self):
         filtering = get_settings().filter_students_for_educ
@@ -126,11 +127,52 @@ class StudentAbsenceViewSet(ModelViewSet):
         return self.queryset.filter(student__classe__in=classes)
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data, many=isinstance(request.data, list))
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        if isinstance(request.data, list) and len(request.data) == 0:
+            return Response(status=status.HTTP_201_CREATED)
+
+        if get_settings().sync_with_proeco:
+            from libreschoolfdb import absences
+
+            teaching = request.data[0].get('student')["teaching"]["name"] if isinstance(request.data, list) else request.data.get("student")["teaching"]["name"]
+            server = [
+                s['server'] for s in settings.SYNC_FDB_SERVER
+                if s['teaching_name'] == teaching
+            ]
+            if len(server) == 0:
+                raise
+            self.cursor = absences._get_absence_cursor(fdb_server=server[0])
+
+        # if isinstance(request.data, list) and len(request.data) > 0:
+        absences_done = []
+        for absence in request.data:
+            serializer = self.get_serializer(data=absence)
+            serializer.is_valid(raise_exception=True)
+            if get_settings().sync_with_proeco:
+                if not self.sync_proeco(serializer.validated_data):
+                    print(absence)
+                    continue
+            self.perform_create(serializer)
+            absences_done.append(serializer.data)
+        self.cursor.connection.commit()
+        self.cursor.connection.close()
+        return Response(absences_done, status=status.HTTP_201_CREATED)
+
+    def sync_proeco(self, data: dict):
+        from libreschoolfdb import writer
+
+        if self.cursor:
+            periods = PeriodModel.objects.all().order_by("start")
+            period = [i for i, p in enumerate(periods) if p.id == data.get("period", None).id][0]
+
+            return writer.set_student_absence(
+                matricule=data.get('student').matricule,
+                day=data.get('date_absence'),
+                period=period,
+                is_absent=data.get("is_absent", False),
+                cur=self.cursor,
+                commit=False
+            )
+        return False
 
 
 class AbsenceCountAPI(APIView):
