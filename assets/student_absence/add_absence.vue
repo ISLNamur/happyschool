@@ -25,7 +25,6 @@
                     <b-form-input
                         type="date"
                         v-model="date_absence"
-                        :disabled="false"
                         @change="loadAbsences"
                     />
                 </b-form-group>
@@ -75,7 +74,7 @@
                         :options="searchOptions"
                         @search-change="getSearchOptions"
                         :loading="searchLoading"
-                        placeholder="Rechercher un étudiant, une classe, un professeur, …"
+                        placeholder="Rechercher un étudiant, une classe"
                         select-label=""
                         selected-label="Sélectionné"
                         deselect-label=""
@@ -130,6 +129,7 @@
             title="Changements non validées"
             cancel-title="Retour"
             @ok="sendChanges"
+            :ok-disabled="disableValidation"
         >
             <b-tabs v-model="tabIndex">
                 <b-tab :title="'Absences du ' + date_absence">
@@ -177,7 +177,16 @@
                             </b-form-group>
                         </b-collapse>
                     </div>
-                    
+
+                    <p
+                        v-if="getAbsences(true, 'student').length > 0"
+                        class="text-muted"
+                    >
+                        <small>
+                            Pour supprimer des changements, sélectionnez les changements pour faire
+                            apparaître le boutton de suppression.
+                        </small>
+                    </p>
                     <b-btn
                         variant="danger"
                         v-if="selectedChanges.length != 0"
@@ -240,6 +249,15 @@
                             </b-form-group>
                         </b-collapse>
                     </div>
+                    <p
+                        v-if="getAbsences(false, 'student').length > 0"
+                        class="text-muted"
+                    >
+                        <small>
+                            Pour supprimer des changements, sélectionnez les changements pour faire
+                            apparaître le boutton de suppression.
+                        </small>
+                    </p>
                     <b-btn
                         variant="danger"
                         v-if="selectedOldChanges.length != 0"
@@ -301,9 +319,13 @@ export default {
             return this.$store.state.onLine;
         },
         validateChange: function () {
-            if (this.tabIndex == 0) return "Valider les changements du jour";
-            return "Valider les anciens changements";
+            if (this.tabIndex == 0) return "Valider les changements du " + this.date_absence;
+            return "Valider les autres changements";
+        },
+        disableValidation: function () {
+            return this.getAbsences(this.tabIndex == 0, "students").length == 0;
         }
+
     },
     methods: {
         getPeriod: function (period) {
@@ -336,13 +358,10 @@ export default {
             this.classe = null;
             this.currentSearch = null;
         },
-        getAbsences: function (isToday, outputType, classe, isAbsent) {
+        getAbsences: function (isCurrentDate, outputType, classe, isAbsent) {
             let changes = this.$store.state.changes
-                .filter(c => isToday ? c.date_absence == this.date_absence : c.date_absence != this.date_absence);
+                .filter(c => isCurrentDate ? c.date_absence == this.date_absence : c.date_absence != this.date_absence);
 
-            // if (changes.length == 0) return [];
-
-            console.log(changes);
             if (outputType == "classe") {
                 return [...new Set(changes.map(c => c.student.classe.year + c.student.classe.letter))].sort();
             } else {
@@ -385,9 +404,19 @@ export default {
                 if (this.classe in this.$store.state.notes) {
                     this.note = this.$store.state.notes[this.classe].note;
                 }
+                console.log(option);
             } else {
                 this.classe = null;
-                this.students = [option];
+                axios.get("/annuaire/api/student/" + option.matricule + "/")
+                    .then(response => {
+                        console.log(option);
+                        console.log(response.data);
+                        // option.student = response.data;
+                        this.students = [option];
+                    })
+                    .catch(() => {
+                        alert("Impossible de trouver l'élève sur le serveur.");
+                    });
             }
         },
         getSearchOptions: function (query) {
@@ -406,14 +435,9 @@ export default {
                                 return true;
                         }).slice(0, 50);
                         this.searchOptions = options.map(p => {
-                            return {
-                                display: p.display,
-                                last_name: p.last_name,
-                                first_name: p.first_name,
-                                matricule: p.matricule,
-                                id: p.matricule,
-                                type: "student",
-                            };
+                            p.type = "student";
+                            p.id = p.matricule;
+                            return p;
                         });
                     });
                 });
