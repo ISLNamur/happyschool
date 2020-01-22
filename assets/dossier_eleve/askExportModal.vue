@@ -30,6 +30,7 @@
         >
             <b-tabs v-model="tabIndex">
                 <b-tab
+                    v-if="$store.state.settings.enable_disciplinary_council"
                     title="Conseil de discipline"
                     active
                 >
