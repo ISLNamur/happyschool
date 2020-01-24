@@ -4,10 +4,10 @@ import datetime
 
 from django.db import migrations
 
-from student_absence.models import StudentAbsenceModel, PeriodModel
-
 
 def two_period_to_any(apps, schema_editor):
+    StudentAbsenceModel = apps.get_model('student_absence', 'StudentAbsenceModel')
+    PeriodModel = apps.get_model('student_absence', 'PeriodModel')
     if not StudentAbsenceModel.objects.exists():
         return
 
