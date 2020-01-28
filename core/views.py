@@ -274,6 +274,14 @@ class BirthdayAPI(APIView):
                                                    classe__isnull=False).order_by('teaching')
             students = students.values_list('last_name', 'first_name', 'classe__year', 'classe__letter')
             birthday += [{'name': "%s %s %s%s" % (s[0], s[1], s[2], s[3].upper())} for s in students]
+        elif people == "responsible":
+            responsibles = ResponsibleModel.objects.filter(
+                birth_date__month=today.month,
+                birth_date__day=today.day,
+                inactive_from__isnull=True
+            )
+            responsibles = responsibles.values_list("last_name", "first_name")
+            birthday += [{'name': "%s %s" % (s[0], s[1])} for s in responsibles]
         return Response({'results': birthday})
 
 
