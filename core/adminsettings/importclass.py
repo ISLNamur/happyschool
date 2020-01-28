@@ -117,6 +117,7 @@ class ImportResponsible(ImportBase):
                     user = User.objects.create_user(username)
                 user.last_name = last_name
                 user.first_name = first_name
+
                 if "email" in self.username_attribute:
                     user.email = user.username
                 user.save()
@@ -326,8 +327,8 @@ class ImportResponsibleFDB(ImportResponsible):
         self.search_login_directory = search_login_directory
         self.ldap_unique_attr = ldap_unique_attr
         self.classe_format = classe_format
-        self.username_attribute = username_attribute
-
+        if username_attribute:
+            self.username_attribute = username_attribute
 
     def sync(self) -> None:
         from libreschoolfdb.reader import get_teachers, get_educators
