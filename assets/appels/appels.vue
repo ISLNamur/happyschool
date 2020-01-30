@@ -95,8 +95,7 @@
                 @edit="editEntry(index)"
                 @processing="processEntry(index)"
                 @filterStudent="filterStudent($event)"
-                @showInfo="showInfo(entry)"
-            />
+            /> 
         </b-container>
         <b-modal
             ref="deleteModal"
@@ -110,21 +109,12 @@
         >
             Êtes-vous sûr de vouloir supprimer cet appel ?
         </b-modal>
-        <b-modal
-            :title="currentName"
-            size="lg"
-            ref="infoModal"
-            centered
-            ok-only
-            @hidden="currentEntry = null"
-        >
-            <info
-                v-if="currentEntry"
-                :matricule="currentEntry.matricule_id"
-                type="student"
-                no-news
-            />
-        </b-modal>
+        <info
+            v-if="currentEntry"
+            :matricule="currentEntry.matricule_id"
+            type="student"
+            no-news
+        />
         <component
             :is="currentModal"
             ref="dynamicModal"
@@ -226,10 +216,6 @@ export default {
             }
             this.currentPage = 1;
             this.loadEntries();
-        },
-        showInfo: function (entry) {
-            this.currentEntry = entry;
-            this.$refs.infoModal.show();
         },
         askDelete: function (entry) {
             this.currentEntry = entry;
