@@ -99,6 +99,8 @@ TEMPLATES = [
     },
 ]
 
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
+
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
