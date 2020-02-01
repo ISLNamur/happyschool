@@ -32,23 +32,21 @@
                 class="mb-2"
                 v-if="canAskSanction"
             >
-                <b-tabs>
-                    <template slot="tabs">
-                        <b-nav-item
-                            active
-                            href="/dossier_eleve/"
-                        >
-                            Dossier des élèves
-                        </b-nav-item>
-                        <b-nav-item href="/dossier_eleve/ask_sanctions">
-                            <span class="text-danger">Demandes de sanction</span>
-                            <span v-if="$store.state.canSetSanction">
-                                <b-badge>{{ askSanctionsCount }}</b-badge>
-                                <b-badge variant="warning">{{ askSanctionsNotDoneCount }}</b-badge>
-                            </span>
-                        </b-nav-item>
-                    </template>
-                </b-tabs>
+                <b-nav tabs>
+                    <b-nav-item
+                        active
+                        href="/dossier_eleve/"
+                    >
+                        Dossier des élèves
+                    </b-nav-item>
+                    <b-nav-item href="/dossier_eleve/ask_sanctions">
+                        <span class="text-danger">Demandes de sanction</span>
+                        <span v-if="$store.state.canSetSanction">
+                            <b-badge>{{ askSanctionsCount }}</b-badge>
+                            <b-badge variant="warning">{{ askSanctionsNotDoneCount }}</b-badge>
+                        </span>
+                    </b-nav-item>
+                </b-nav>
             </b-row>
             <b-row>
                 <b-col>

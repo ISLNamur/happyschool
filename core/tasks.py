@@ -68,7 +68,7 @@ def task_test(self, csv_file, teaching, columns, ignore_first_line):
             }
         )
         return
-    column_index = {j: int(i[-1]) for i, j in json.loads(columns).items()}
+    column_index = {i: c for c, i in enumerate(json.loads(columns))}
     import_student_csv = WSImportStudentCSV(teaching_model, self.request.id, column_index)
     import_student_csv.sync(io_text, ignore_first_line=ignore_first_line, has_header=False)
 

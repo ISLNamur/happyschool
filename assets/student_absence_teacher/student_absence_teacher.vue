@@ -30,25 +30,23 @@
         <b-container v-if="loaded">
             <h1>Absence des élèves</h1>
             <b-row class="mb-1">
-                <b-tabs>
-                    <template slot="tabs">
-                        <b-nav-item to="add_absence">
-                            <icon
-                                name="plus"
-                                scale="1"
-                                color="green"
-                                class="align-middle"
-                            />
-                            Ajouter absenses/retards
-                        </b-nav-item>
-                        <b-nav-item
-                            v-if="can_access_list"
-                            to="list"
-                        >
-                            Liste d'absences/retards
-                        </b-nav-item>
-                    </template>
-                </b-tabs>
+                <b-nav tabs>
+                    <b-nav-item to="add_absence">
+                        <icon
+                            name="plus"
+                            scale="1"
+                            color="green"
+                            class="align-middle"
+                        />
+                        Ajouter absenses/retards
+                    </b-nav-item>
+                    <b-nav-item
+                        v-if="can_access_list"
+                        to="list"
+                    >
+                        Liste d'absences/retards
+                    </b-nav-item>
+                </b-nav>
             </b-row>
             <router-view />
         </b-container>

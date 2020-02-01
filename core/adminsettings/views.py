@@ -65,7 +65,7 @@ class TestFileAPIView(APIView):
 
         rows = []
         for row in reader:
-            rows.append({'col%i' % i: x for i, x in enumerate(row)})
+            rows.append({'%i' % i: x for i, x in enumerate(row)})
             if reader.line_num > 10:
                 break
 

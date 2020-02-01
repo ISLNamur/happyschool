@@ -39,7 +39,7 @@
     "@babel/polyfill": "^7.4.3",
     "@ericblade/quagga2": "0.0.7",
     "bootstrap": "^4.3.1",
-    "bootstrap-vue": "^2.0.0-rc.24",
+    "bootstrap-vue": "^2.2.2",
     "idb": "^4.0.1",
     "moment": "^2.24.0",
     "push.js": "^1.0.9",

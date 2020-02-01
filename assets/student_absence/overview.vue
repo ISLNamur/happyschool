@@ -25,39 +25,23 @@
                     striped
                     hover
                     :items="lastAbsences"
-                    :fields="lastAbsencesFields"
+                    :fields="fields"
                 >
-                    <template
-                        slot="student.display"
-                        slot-scope="data"
-                    >
+                    <template v-slot:cell(student)="data">
                         <a
                             href="#/list"
                             @click="filterStudent(data.item.student_id)"
                         >{{ data.value }}</a>
                     </template>
-                    <template
-                        slot="morning"
-                        slot-scope="data"
-                    >
-                        {{ data.value ? 'M' : '' }}
+                    <template v-slot:cell(date_absence)="data">
+                        {{ data.value }}
                     </template>
-                    <template
-                        slot="afternoon"
-                        slot-scope="data"
-                    >
-                        {{ data.value ? 'A' : '' }}
+                    <template v-slot:cell(is_absent)="data">
+                        {{ data.value }}
                     </template>
                 </b-table>
             </b-card>
-            <b-card title="Élèves absents (en ½ jours)">
-                <b-table
-                    striped
-                    hover
-                    :items="absenceCount"
-                    :fields="absenceCountFields"
-                />
-            </b-card>
+            <b-card title="Élèves absents (en ½ jours)" />
         </b-card-group>
     </div>
 </template>
@@ -72,31 +56,34 @@ export default {
     data: function () {
         return {
             lastAbsences: [],
-            lastAbsencesFields: {
-                "student.display": {
+            fields: [
+                {
+                    key: "student",
                     label: "Élèves",
                     formatter: value => {
                         if (this.$store.state.settings.teachings.length == 1) {
-                            return value.split(" – ")[0];
+                            return value.display.split(" – ")[0];
                         } else {
-                            return value;
+                            return value.display;
                         }
                     }
                 },
-                "date_absence": {
+                {
+                    key: "date_absence",
                     label: "Date",
                     formatter: value => {
                         return Moment(value).calendar().split(" à ")[0];
                     }
                 },
-                "is_absent": {
-                    label: "Absent",
+                {
+                    key: "is_absent",
+                    label: "Absence",
                     formatter: (value, key, item) => {
                         const period = this.$store.state.periods.find(p => p.id == item.period).name;
                         return value ? period : "";
                     }
-                }
-            },
+                },
+            ],
             absenceCount: [],
             absenceCountFields: {
                 "student": {

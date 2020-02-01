@@ -24,36 +24,34 @@
                 <h1>Absences Élèves</h1>
             </b-row>
             <b-row>
-                <b-tabs>
-                    <template slot="tabs">
-                        <b-nav-item to="overview">
-                            Vue d'ensemble
-                        </b-nav-item>
-                        <b-nav-item to="add_absence">
-                            <icon
-                                name="plus"
-                                scale="1"
-                                color="green"
-                                class="align-middle"
-                            />
-                            Ajouter absences
-                        </b-nav-item>
-                        <b-nav-item to="list">
-                            Liste d'absences
-                        </b-nav-item>
-                        <b-nav-item to="notes">
-                            Notes
-                        </b-nav-item>
-                        <b-nav-item-dropdown right>
-                            <b-dropdown-item @click="$store.commit('updateStudentsClasses')">
-                                Mettre à jour des étudiants
-                            </b-dropdown-item>
-                            <b-dropdown-item @click="$store.commit('toggleForceAllAccess')">
-                                {{ $store.state.forceAllAccess ? "Activer" : "Désactiver" }} la restriction par classe
-                            </b-dropdown-item>
-                        </b-nav-item-dropdown>
-                    </template>
-                </b-tabs>
+                <b-nav tabs>
+                    <b-nav-item to="overview">
+                        Vue d'ensemble
+                    </b-nav-item>
+                    <b-nav-item to="add_absence">
+                        <icon
+                            name="plus"
+                            scale="1"
+                            color="green"
+                            class="align-middle"
+                        />
+                        Ajouter absences
+                    </b-nav-item>
+                    <b-nav-item to="list">
+                        Liste d'absences
+                    </b-nav-item>
+                    <b-nav-item to="notes">
+                        Notes
+                    </b-nav-item>
+                    <b-nav-item-dropdown right>
+                        <b-dropdown-item @click="$store.commit('updateStudentsClasses')">
+                            Mettre à jour des étudiants
+                        </b-dropdown-item>
+                        <b-dropdown-item @click="$store.commit('toggleForceAllAccess')">
+                            {{ $store.state.forceAllAccess ? "Activer" : "Désactiver" }} la restriction par classe
+                        </b-dropdown-item>
+                    </b-nav-item-dropdown>
+                </b-nav>
             </b-row>
             <router-view />
         </b-container>
