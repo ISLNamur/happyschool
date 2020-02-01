@@ -511,6 +511,8 @@ class ImportStudent(ImportBase):
                 if val:
                     setattr(info, c, val)
                 else:
+                    if c == "birth_date":
+                        continue
                     setattr(info, c, "")
             if self.search_login_directory:
                 self.ldap_connection.search(self.base_dn, "(matricule=%i)" % matricule, attributes='*')
