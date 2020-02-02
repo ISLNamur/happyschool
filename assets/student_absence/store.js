@@ -30,9 +30,13 @@ import {addFilter, removeFilter} from "../common/filters.js";
 
 Vue.use(Vuex);
 
+/**
+ * Store the state locally in order to have offline access.
+ */
 const vuexLocal = new VuexPersistence({
     storage: window.localStorage,
     reducer: (state) => {
+        // Initially set the settings to allow further updates.
         // eslint-disable-next-line no-undef
         state["settings"] = settings;
         return state;
@@ -43,19 +47,55 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default new Vuex.Store({
     state: {
+        /**
+         * The global settings for the student absence app.
+         */
         // eslint-disable-next-line no-undef
         settings: settings,
+        /**
+         * Filters in use for absences list.
+         */
         filters: [],
+        /**
+         * Absences (or attendances) already saved on the server.
+         */
         savedAbsences: {},
+        /**
+         * Local absences (or attendances), not saved on the server.
+         */
         changes: [],
+        /**
+         * Notes about a class.
+         */
         notes: {},
+        /**
+         * State if there is a connection to the server.
+         */
         onLine: true,
+        /**
+         * The last date and time the list of students and classes where updated
+         * from the server.
+         */
         lastUpdate: "",
+        /**
+         * State if the application is currently updating.
+         */
         updating: false,
+        /**
+         * State if the restriction by classes is bypassed.
+         */
         forceAllAccess: false,
+        /**
+         * The list of periods a normal day has.
+         */
         periods: []
     },
     getters: {
+        /**
+         * Get a specific local change from a matricule, a date and a period.
+         * @param {Object} absence An object including the searched `matricule`,
+         * `date_absence` and `period`.
+         */
         change: (state) => (absence) => {
             const curChange = state.changes.find(change => {
                 return change.matricule == absence.matricule
@@ -66,6 +106,12 @@ export default new Vuex.Store({
 
             return null;
         },
+        /**
+         * Get a specific saved change (already on the server) from a matricule,
+         * a date and a period.
+         * @param {Object} absence An object including the searched `matricule`,
+         * `date_absence` and `period`.
+         */
         savedAbsence(state) {
             return absence => {
                 const absenceFound = state.savedAbsences.find(sAbs => {
@@ -81,18 +127,40 @@ export default new Vuex.Store({
         }
     },
     mutations: {
+        /**
+         * Assign periods.
+         * @param {Array} periods A list of period objects.
+         */
         setPeriods: function (state, periods) {
             state.periods = periods;
         },
+        /**
+         * Toggle restriction by class/year for classes.
+         */
         toggleForceAllAccess: function (state) {
             state.forceAllAccess = !state.forceAllAccess;
             this.commit("updateStudentsClasses");
         },
+        /**
+         * Add a note to the store.
+         * @param {Object} note A note object.
+         */
         addNote: function (state, note) {
             state.notes[note.classe] = note;
         },
+        /**
+         * Add a filter to the list of absences.
+         */
         addFilter: addFilter,
+        /**
+         * Remove a filter to the list of absences.
+         */
         removeFilter: removeFilter,
+        /**
+         * Remove a local change.
+         * @param {Object} change The change to be removed. It must contain the `matricule`,
+         * `date_absence` and `period`.
+         */
         removeChange: function (state, change) {
             for (let c in state.changes) {
                 if (state.changes[c].matricule == change.matricule
@@ -103,6 +171,11 @@ export default new Vuex.Store({
                 }
             }
         },
+        /**
+         * Add a local change.
+         * @param {*} change The new change must contain the `matricule`, `date_absence`
+         * and `period`.
+         */
         setChange: function (state, change) {
             let oldChange = null;
             for (let c in state.changes) {
@@ -123,6 +196,10 @@ export default new Vuex.Store({
                 Vue.set(state.changes, oldChange.index, state.changes[oldChange.index]);
             }
         },
+        /**
+         * Assign absences stated as saved on the server to the store.
+         * @param {*} absences A list of absences.
+         */
         setSavedAbsences: function (state, absences) {
             for (let a in absences) {
                 if ("student" in absences[a]) delete absences[a].student.savedAbsence.student.savedAbsence;
@@ -131,7 +208,6 @@ export default new Vuex.Store({
         },
         /**
          * Download and update saved absences from today.
-         * @param {Object} state The state of the store.
          * @param {String} date The date of the absences to get.
          */
         updateSavedAbsences: function (state, date) {
@@ -141,6 +217,9 @@ export default new Vuex.Store({
                     return state.savedAbsences;
                 });
         },
+        /**
+         * Download from the server and update the classes and students on the store.
+         */
         updateStudentsClasses: function (state) {
             state.lastUpdate = Moment().format("YYYY-MM-DD");
             this.commit("updatingStatus", true);
@@ -165,9 +244,17 @@ export default new Vuex.Store({
                     }
                 });
         },
+        /**
+         * Set the updating status. 
+         * @param {Boolean} updating The update status.
+         */
         updatingStatus: function (state, updating) {
             state.updating = updating;
         },
+        /**
+         * Set the online status.
+         * @param {Boolean} onLine The online status.
+         */
         changeOnLineStatus: function (state, onLine) {
             state.onLine = onLine;
         }

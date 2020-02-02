@@ -50,6 +50,10 @@ new Vue({
     router,
     template: "<div><app-menu :menu-info=\"menuInfo\"></app-menu><router-view></router-view></div>",
     methods: {
+        /**
+         * Check the connectivity periodically. Each 5 seconds when connected
+         * and every 2 seconds otherwise.
+         */
         checkOnlineStatus() {
             axios.get("/core/ping/", {timeout: 5000})
                 .then(() => {
