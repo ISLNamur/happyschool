@@ -67,14 +67,38 @@ import "quill/dist/quill.snow.css";
 export default {
     data: function () {
         return {
+            /**
+             * The classe of the note.
+             */
             classe: null,
+            /**
+             * The available options for class selection.
+             */
             classeOptions: [],
+            /**
+             * State if it is searching for classes.
+             */
             classeLoading: false,
             searchId: 0,
+            /**
+             * The current `id` of the note, -1 is for new notes.
+             */
             noteId: -1,
+            /**
+             * Current text in the note.
+             */
             currentNote: "",
+            /**
+             * Last update of the note.
+             */
             datetime_update: null,
+            /**
+             * State if the is currently submitted.
+             */
             sending: false,
+            /**
+             * Options for the rich text editor.
+             */
             editorOptions: {
                 modules: {
                     toolbar: [
@@ -91,12 +115,18 @@ export default {
         };
     },
     computed: {
+        /**
+         * State if the submit button should be disabled.
+         */
         disabledSubmit: function () {
             return this.classe == null || this.sending;
         }
     },
     methods: {
-        getNote(option) {
+        /**
+         * Load a note from the server.
+         */
+        getNote: function (option) {
             const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             axios.get("/student_absence/api/classenote/?classe=" + option.id, token)
                 .then(resp => {
@@ -115,7 +145,10 @@ export default {
                 });
 
         },
-        getClasseOptions(query) {
+        /**
+         * Look for classes from user query.
+         */
+        getClasseOptions: function (query) {
             // Ensure the last search is the first response.
             this.searchId += 1;
             let currentSearch = this.searchId;
@@ -133,7 +166,10 @@ export default {
                     this.classeOptions = resp.data;
                 });
         },
-        sendData() {
+        /**
+         * Submit the note to the server.
+         */
+        sendData: function () {
             this.sending = true;
             const isNew = this.noteId < 0;
             let send = isNew ? axios.post : axios.put;

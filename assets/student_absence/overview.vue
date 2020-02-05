@@ -55,7 +55,13 @@ Moment.locale("fr");
 export default {
     data: function () {
         return {
+            /**
+             * The list of the 25 last absences.
+             */
             lastAbsences: [],
+            /**
+             * The fields of the last absences table.
+             */
             fields: [
                 {
                     key: "student",
@@ -102,6 +108,10 @@ export default {
         };
     },
     methods: {
+        /**
+         * Add a filter for a specific student for the list component.
+         * @param {Number} matricule The matricule of the student.
+         */
         filterStudent(matricule) {
             this.$store.commit("addFilter", {"tag": matricule, "filterType": "student__matricule", "value":matricule});
         }
