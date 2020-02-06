@@ -362,7 +362,6 @@ export default {
                             ], day: this.entries[e].date_change});
                         }
                     }
-                
                     this.loaded = true;
                 });
         },
@@ -372,6 +371,9 @@ export default {
             if (fullscreen) {
                 this.fullscreen = true;
                 this.$store.commit("enableFullscreen");
+                if (window.location.href.includes("show_for_students")) {
+                    this.$store.commit("addFilter", {filterType: "activate_show_for_students", tag: "Activer", value: true});
+                }
             }
         },
     },

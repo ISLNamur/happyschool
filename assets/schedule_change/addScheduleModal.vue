@@ -194,6 +194,13 @@
                     Notifier le remplaçant par courriel
                 </b-form-checkbox>
             </b-form-group>
+            <b-form-group>
+                <b-form-checkbox
+                    v-model="form.hide_for_students"
+                >
+                    Cacher aux étudiants
+                </b-form-checkbox>
+            </b-form-group>
         </b-form>
         <template slot="modal-ok">
             <icon
@@ -242,6 +249,7 @@ export default {
                 comment: "",
                 send_email_general: false,
                 send_email_substitute: false,
+                hide_for_students: false,
             },
             classesOptions: [],
             classesLoading: false,

@@ -49,7 +49,7 @@
                     {{ rowData.place }}
                 </b-col>
                 <b-col
-                    v-if="!fullscreen"
+                    v-if="!hide_comment"
                     class="current-data"
                 >
                     {{ rowData.comment }}
@@ -116,6 +116,12 @@
                     <td align="right">
                         {{ rowData.place }}
                     </td>
+                    <td
+                        align="right"
+                        v-if="!hide_comment"
+                    >
+                        {{ rowData.comment }}
+                    </td>
                 </tr>
             </table>
         </b-card>
@@ -143,6 +149,9 @@ export default {
         category: function () {
             if (this.rowData.category) return this.$store.state.changeCategory.filter(c => c.id == this.rowData.category)[0].category;
             return "";
+        },
+        hide_comment: function () {
+            return this.$store.state.filters.find(f => f.filterType == "activate_show_for_students") != undefined;
         }
     },
     methods: {

@@ -77,6 +77,7 @@ class ScheduleChangeModel(models.Model):
     datetime_modified = models.DateTimeField("Date de modification", auto_now=True)
     user = models.CharField(default="", blank=True, max_length=100)
     created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    hide_for_students = models.BooleanField(default=False)
 
     class Meta:
         permissions = (

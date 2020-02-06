@@ -108,9 +108,10 @@ class ScheduleChangeViewReadOnly(TemplateView):
 class ScheduleChangeFilter(BaseFilters):
     activate_ongoing = filters.BooleanFilter(method="activate_ongoing_by")
     activate_has_classe = filters.BooleanFilter(method="activate_has_classe_by")
+    activate_show_for_students = filters.BooleanFilter(method="activate_show_for_students_by")
 
     class Meta:
-        fields_to_filter = ('date_change', 'activate_ongoing', 'activate_has_classe',)
+        fields_to_filter = ('date_change', 'activate_ongoing', 'activate_has_classe', "activate_show_for_students",)
         model = ScheduleChangeModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
@@ -122,6 +123,9 @@ class ScheduleChangeFilter(BaseFilters):
 
     def activate_has_classe_by(self, queryset, name, value):
         return queryset.exclude(classes__exact="")
+
+    def activate_show_for_students_by(self, queryset, name, value):
+        return queryset.exclude(hide_for_students=True)
 
 
 class ScheduleChangeTypeViewSet(ReadOnlyModelViewSet):
