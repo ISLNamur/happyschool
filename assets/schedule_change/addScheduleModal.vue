@@ -428,6 +428,7 @@ export default {
             data.teachers_substitute_id = data.teachers_substitute.map(t => t.matricule);
             if (data.time_start == "") data.time_start = null;
             if (data.time_end == "") data.time_end = null;
+            if (data.place == null) data.place = "";
             // Send data.
             const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             let path = "/schedule_change/api/schedule_change/";
