@@ -120,7 +120,9 @@ class StudentAbsenceViewSet(ModelViewSet):
 
     def get_queryset(self):
         filtering = get_settings().filter_students_for_educ
-        if filtering == "none" or self.request.query_params.get('forceAllAccess', False):
+        force_all_access = self.request.query_params.get('forceAllAccess', "false")
+        force_all_access = json.loads(force_all_access) if force_all_access else False
+        if filtering == "none" or force_all_access:
             return self.queryset
 
         classes = get_classes(check_access=True, user=self.request.user, educ_by_years=filtering == "year")
@@ -149,12 +151,12 @@ class StudentAbsenceViewSet(ModelViewSet):
             serializer.is_valid(raise_exception=True)
             if get_settings().sync_with_proeco:
                 if not self.sync_proeco(serializer.validated_data):
-                    print(absence)
                     continue
             self.perform_create(serializer)
             absences_done.append(serializer.data)
-        self.cursor.connection.commit()
-        self.cursor.connection.close()
+        if get_settings().sync_with_proeco:
+            self.cursor.connection.commit()
+            self.cursor.connection.close()
         return Response(absences_done, status=status.HTTP_201_CREATED)
 
     def sync_proeco(self, data: dict):
