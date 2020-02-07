@@ -76,6 +76,7 @@ class StudentAbsenceView(LoginRequiredMixin,
         {'value': 'student__matricule', 'text': 'Matricule'},
         {'value': 'classe', 'text': 'Classe'},
         {'value': 'date_absence', 'text': 'Date'},
+        {'value': 'activate_is_absent', 'text': 'Absences uniquement'},
     ]
 
     def get_context_data(self, **kwargs):
@@ -90,9 +91,11 @@ class StudentAbsenceView(LoginRequiredMixin,
 class StudentAbsenceFilter(BaseFilters):
     student__display = filters.CharFilter(method='people_name_by')
     classe = filters.CharFilter(method='classe_by')
+    activate_is_absent = filters.BooleanFilter(method="activate_is_absent_by")
 
     class Meta:
-        fields_to_filter = ('student', 'date_absence', 'student__display', 'student__matricule', 'is_absent',)
+        fields_to_filter = ('student', 'date_absence', 'student__display',
+            'student__matricule', 'is_absent', 'activate_is_absent',)
         model = StudentAbsenceModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
@@ -106,6 +109,9 @@ class StudentAbsenceFilter(BaseFilters):
             if len(value) > 1:
                 queryset = queryset.filter(student__classe__letter__istartswith=value[1:])
         return queryset
+
+    def activate_is_absent_by(self, queryset, name, value):
+        return queryset.filter(is_absent=True)
 
 
 class StudentAbsenceViewSet(ModelViewSet):
