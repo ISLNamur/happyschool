@@ -97,7 +97,6 @@ import Icon from "vue-awesome/components/Icon.vue";
 Vue.component("icon", Icon);
 
 import axios from "axios";
-
 import Menu from "../common/menu.vue";
 
 export default {

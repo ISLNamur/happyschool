@@ -120,7 +120,7 @@
         >
             <info
                 v-if="currentEntry"
-                :matricule="currentEntry.matricule_id.toString()"
+                :matricule="currentEntry.matricule_id"
                 type="student"
                 no-news
             />

@@ -513,8 +513,8 @@ Moment.locale("fr");
 export default {
     props: {
         matricule: {
-            type: String,
-            default: ""
+            type: Number,
+            default: 0
         },
         type: {
             type: String,
@@ -581,7 +581,7 @@ export default {
         },
         loadInfo: function () {
             this.reset();
-
+            console.log(typeof this.matricule);
             if (this.type == "student") {
                 axios.get("/annuaire/api/student/" + this.matricule + "/")
                     .then(response => {
