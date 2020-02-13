@@ -26,21 +26,22 @@ import Annuaire from "../annuaire/annuaire.vue";
 import Info from "../annuaire/info.vue";
 import ClassList from "../annuaire/classe.vue";
 
-export default [
-    {
-        path: "/",
-        component: Annuaire,
-        children: [
-            {
-                path: "/person/:type/:matricule/",
-                component: Info,
-                props: true
-            },
-            {
-                path: "/classe/:classe/",
-                component: ClassList,
-                props: true
-            },
-        ]
+export default [{
+    path: "/",
+    component: Annuaire,
+    children: [{
+        path: "/person/:type/:matricule/",
+        component: Info,
+        props: (route) => {
+            const props = {...route.params };
+            props.matricule = Number(props.matricule);
+            return props;
+        },
     },
-];
+    {
+        path: "/classe/:classe/",
+        component: ClassList,
+        props: true
+    },
+    ]
+}, ];

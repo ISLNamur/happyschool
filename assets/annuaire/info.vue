@@ -513,8 +513,8 @@ Moment.locale("fr");
 export default {
     props: {
         matricule: {
-            type: String,
-            default: ""
+            type: Number,
+            default: 0
         },
         type: {
             type: String,
