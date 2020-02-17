@@ -46,5 +46,5 @@ class Command(BaseCommand):
                                                            ldap_unique_attr=proeco["ldap_unique_attr"]["teacher_ldap_attr"],
                                                            classe_format=classe_format,
                                                            username_attribute=username_attribute)
-            # importation_student.sync()
+            importation_student.sync()
             importation_responsible.sync()
