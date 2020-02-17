@@ -347,6 +347,18 @@ class ImportResponsibleFDB(ImportResponsible):
         self._sync(educators.items())
 
     def get_value(self, entry: dict, column: str) -> Union[int, str, date, None]:
+        if "proeco" in settings.INSTALLED_APPS:
+            from proeco.models import OverwriteDataModel
+            try:
+                overwrite = OverwriteDataModel.objects.get(
+                    people="responsible",
+                    uid=entry[0],
+                    field=column
+                )
+                return overwrite.value
+            except ObjectDoesNotExist:
+                pass
+
         if column == "matricule":
             return entry[0]
         if column == "is_teacher":

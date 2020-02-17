@@ -41,6 +41,7 @@ EXCLUDED_APPS = [
     'crispy_forms',
     'social_django',
     'webpack_loader',
+    'proeco',
 ]
 
 
