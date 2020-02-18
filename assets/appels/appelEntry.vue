@@ -14,7 +14,7 @@
                             <a
                                 v-if="rowData.is_student"
                                 class="clickable"
-                                @click="$emit('showInfo')"
+                                :href="urlToStudentInfo"
                             >{{ title }}</a>
                             <span v-else>{{ title }}</span>
                             <b-btn
@@ -123,6 +123,13 @@ export default {
             default: false}
     },
     computed: {
+        urlToStudentInfo:function(){
+            /**
+            * Gets called when the user clicks on the button to see student details
+            */
+            let url = "/annuaire/#/person/student/" + this.rowData.matricule_id;
+            return url;
+        },
         title: function () {
             if (this.rowData.matricule) {
                 let student = this.rowData.matricule;

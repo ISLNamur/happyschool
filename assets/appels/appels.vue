@@ -94,8 +94,7 @@
                 @edit="editEntry(index)"
                 @processing="processEntry(index)"
                 @filterStudent="filterStudent($event)"
-                @showInfo="showInfo(entry)"
-            />
+            /> 
         </b-container>
         <b-modal
             ref="deleteModal"
@@ -213,10 +212,6 @@ export default {
             }
             this.currentPage = 1;
             this.loadEntries();
-        },
-        showInfo: function (entry) {
-            this.currentEntry = entry;
-            this.$refs.infoModal.show();
         },
         askDelete: function (entry) {
             this.currentEntry = entry;
