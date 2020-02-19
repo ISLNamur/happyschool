@@ -183,6 +183,7 @@ window.axios.defaults.baseURL = window.location.origin; // In order to have http
 import Info from "../annuaire/info.vue";
 
 import Filters from "../common/filters.vue";
+import {getFilters} from "../common/filters.js";
 import Menu from "../common/menu.vue";
 import CasEleveEntry from "./casEleveEntry.vue";
 import AddModal from "./addModal.vue";
@@ -242,18 +243,7 @@ export default {
             this.applyFilter();
         },
         applyFilter: function () {
-            this.filter = "";
-            let storeFilters = this.$store.state.filters;
-            for (let f in storeFilters) {
-                if (storeFilters[f].filterType.startsWith("date")
-                    || storeFilters[f].filterType.startsWith("time")) {
-                    let ranges = storeFilters[f].value.split("_");
-                    this.filter += "&" + storeFilters[f].filterType + "__gt=" + ranges[0];
-                    this.filter += "&" + storeFilters[f].filterType + "__lt=" + ranges[1];
-                } else {
-                    this.filter += "&" + storeFilters[f].filterType + "=" + storeFilters[f].value;
-                }
-            }
+            this.filter = getFilters(this.$store.state.filters);
             this.currentPage = 1;
             this.loadEntries();
         },
