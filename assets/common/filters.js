@@ -17,14 +17,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-function addFilter (state, filter) {
+function addFilter(state, filter) {
     // If filter is a matricule, remove name filter to avoid conflict.
     if (filter.filterType === "matricule_id") {
         this.commit("removeFilter", "name");
     }
 
-    // Overwrite same filter type.
-    this.commit("removeFilter", filter.filterType);
+    // Overwrite same filter type except for specific cases.
+    switch (filter.filterType) {
+    case "classe":
+        break;
+    default:
+        this.commit("removeFilter", filter.filterType);
+    }
 
     state.filters.push(filter);
 }
@@ -38,19 +43,37 @@ function removeFilter (state, key) {
     }
 }
 
+function _groupBy (list, keyGetter) {
+    const map = new Map();
+    list.forEach((item) => {
+        const key = keyGetter(item);
+        const collection = map.get(key);
+        if (!collection) {
+            map.set(key, [item]);
+        } else {
+            collection.push(item);
+        }
+    });
+    return map;
+}
+
 function getFilters (filters) {
     let filter = "";
     let storeFilters = filters;
-    for (let f in storeFilters) {
-        if (storeFilters[f].filterType.startsWith("date")
-            || storeFilters[f].filterType.startsWith("time")) {
-            let ranges = storeFilters[f].value.split("_");
-            filter += "&" + storeFilters[f].filterType + "__gte=" + ranges[0];
-            filter += "&" + storeFilters[f].filterType + "__lte=" + ranges[1];
+    filters = _groupBy(storeFilters, f => f.filterType);
+    filters.forEach((f, fT) => {
+        if (fT.startsWith("date") || fT.startsWith("time")) {
+            // Handle only one range.
+            const range = f[0].value.split("_");
+            const gte = range[0];
+            const lte = range[1];
+            filter += "&" + fT + "__gte=" + gte;
+            filter += "&" + fT + "__lte=" + lte;
         } else {
-            filter += "&" + storeFilters[f].filterType + "=" + storeFilters[f].value;
+            const value = f.map(o => o.value).reduce((a, cV) => a + "," + cV);
+            filter += "&" + fT + "=" + value;
         }
-    }
+    });
     return filter;
 }
 

@@ -66,6 +66,7 @@ def get_core_settings():
 
 class BaseFilters(filters.FilterSet):
     datetime_field = "datetime_encodage"
+    student_field = "student"
 
     unique = filters.CharFilter('unique_by', method='unique_by')
     scholar_year = filters.CharFilter(method='scholar_year_by')
@@ -102,7 +103,24 @@ class BaseFilters(filters.FilterSet):
         start = timezone.datetime(year=start_year, month=8, day=20)
         end = timezone.datetime(year=end_year, month=8, day=19)
         return queryset.filter(**{self.datetime_field + "__gt": start, self.datetime_field + "__lt": end})
-    
+
+    def classe_by(self, queryset, field_name, value):
+        if not value:
+            return queryset
+        if not value[0].isdigit():
+            return queryset
+
+        classe = value.split(",") if "," in value else[value]
+        query_filter = Q()
+        for c in classe:
+            current_filter = Q(**{self.student_field + "__classe__year": c[0]})
+            if len(c) > 1:
+                current_filter = current_filter & Q(
+                    **{self.student_field + "__classe__letter__istartswith": c[1:]}
+                )
+            query_filter = query_filter | current_filter
+        return queryset.filter(query_filter)
+
     def people_name_by(self, queryset, name, value):
         tokens = value.split(" ")
         people = queryset.none()
