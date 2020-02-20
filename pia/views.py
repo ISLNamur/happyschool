@@ -81,8 +81,8 @@ class PIAView(LoginRequiredMixin,
 
 
 class LargePagination(PageNumberPagination):
-    """A default pagination of 100 items."""
-    page_size = 100
+    """A default pagination of 500 items."""
+    page_size = 500
 
 
 class PIAViewSet(BaseModelViewSet):
