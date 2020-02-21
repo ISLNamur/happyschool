@@ -136,10 +136,10 @@ export default {
             evt.preventDefault();
 
             let path = "/dossier_eleve/get_pdf_";
-            if (this.tabIndex == 0) {
+            if (this.tabIndex == 0 && this.$store.state.settings.enable_disciplinary_council) {
                 path += "council/?datetime_conseil__gt=" + this.date_council_from;
                 path += " 00:00&datetime_conseil__lt=" + this.date_council_to + " 23:59";
-            } else if (this.tabIndex == 1) {
+            } else {
                 path += "retenues/?activate_all_retenues=true";
                 path += "&datetime_sanction__gt=" + this.date_retenues_from;
                 path += " 00:00&datetime_sanction__lt=" + this.date_retenues_to + " 23:59";
