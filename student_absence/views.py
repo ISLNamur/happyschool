@@ -84,6 +84,7 @@ class StudentAbsenceView(LoginRequiredMixin,
         context['menu'] = json.dumps(get_menu(self.request.user, "student_absence"))
         context['filters'] = json.dumps(self.filters)
         context['settings'] = json.dumps((StudentAbsenceSettingsSerializer(get_settings()).data))
+        context["proeco"] = json.dumps("proeco" in settings.INSTALLED_APPS)
 
         return context
 
@@ -171,6 +172,17 @@ class StudentAbsenceViewSet(ModelViewSet):
                 commit=False
             )
         return False
+
+
+if "proeco" in settings.INSTALLED_APPS:
+    from proeco.views import ExportStudentSelectionAPI
+
+    class ExportStudentAbsenceAPI(ExportStudentSelectionAPI):
+        """Export in a file the current list view as a proeco selection."""
+        def _get_student_list(self, request):
+            view_set = StudentAbsenceViewSet.as_view({'get': 'list'})
+            absences = [a["student_id"] for a in view_set(request._request).data['results']]
+            return absences
 
 
 class AbsenceCountAPI(APIView):

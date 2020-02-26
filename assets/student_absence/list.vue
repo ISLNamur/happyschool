@@ -32,14 +32,33 @@
             </b-col>
         </b-row>
         <b-row>
-            <b-col>
+            <b-col
+                cols="auto"
+                class="mr-auto p-1"
+            >
                 <b-pagination
-                    class="mt-1"
                     :total-rows="entriesCount"
                     v-model="currentPage"
                     @change="changePage"
                     :per-page="20"
                 />
+            </b-col>
+            <b-col
+                cols="auto"
+                class="p-1"
+                v-if="proecoActivated"
+            >
+                <b-btn
+                    :href="exportSelection"
+                    target="_blank"
+                    variant="outline-secondary"
+                >
+                    <icon
+                        name="file"
+                        class="align-baseline"
+                    />
+                    Exporter la liste courante
+                </b-btn>
             </b-col>
         </b-row>
         <b-row>
@@ -80,7 +99,14 @@ export default {
             filter: "",
             currentPage: 1,
             entriesCount: 0,
+            // eslint-disable-next-line no-undef
+            proecoActivated: proeco,
         };
+    },
+    computed: {
+        exportSelection: function () {
+            return "/student_absence/api/export_selection/?page_size=1000" + this.filter;
+        }
     },
     methods: {
         changePage: function (page) {
