@@ -27,3 +27,4 @@ class OverwriteDataAdmin(admin.ModelAdmin):
 
 
 admin.site.register(models.OverwriteDataModel, OverwriteDataAdmin)
+admin.site.register(models.TemplateSelectionModel)

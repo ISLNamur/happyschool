@@ -27,3 +27,7 @@ class OverwriteDataModel(models.Model):
     uid = models.BigIntegerField(help_text="Identifiant unique (matricule de l'étudiant ou du responsable).")
     field = models.CharField(max_length=100)
     value = models.CharField(max_length=100)
+
+
+class TemplateSelectionModel(models.Model):
+    template = models.TextField()
