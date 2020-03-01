@@ -42,4 +42,4 @@ router.register(r'api/period', views.PeriodViewSet)
 urlpatterns += router.urls
 
 if "proeco" in settings.INSTALLED_APPS:
-    urlpatterns += path('api/export_selection/', views.ExportStudentAbsenceAPI.as_view())
+    urlpatterns.append(path('api/export_selection/', views.ExportStudentAbsenceAPI.as_view()))
