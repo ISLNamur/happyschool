@@ -11,10 +11,16 @@
         </div>
         {% endif %}
         {% if google and model %}
-        <p>Ou par un compte personalisé :</p>
+        <a data-toggle="collapse" href="#customaccount" role="button" aria-expanded="false" aria-controls="collapseExample">
+            Autre compte :
+        </a>
         {% endif %}
         {% if model %}
-        <form class="form-signin panel panel-default" method="post">
+        <form 
+            class="form-signin panel panel-default collapse {% if not google %}show{% endif %}"
+            id="customaccount"
+            method="post"
+        >
             <div class="panel-body">
                 {% csrf_token %}
                 <div class="{% if has_try %} has-error {% endif %} has-feedback">
