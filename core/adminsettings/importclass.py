@@ -125,6 +125,7 @@ class ImportResponsible(ImportBase):
 
             resp.first_name = first_name
             resp.last_name = last_name
+            resp.inactive_from = None
             resp.save()
 
             resp.teaching.add(self.teaching)
