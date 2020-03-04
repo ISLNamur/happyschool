@@ -10,6 +10,7 @@
                         :options="filterTypeOptions"
                         v-model="filterType"
                         @input="cleanDate"
+                        ref="selectType"
                     />
                 </b-col>
                 <b-col
@@ -33,61 +34,50 @@
                         @select="addFilter"
                         @tag="addCustomTag"
                         :custom-label="niceLabel"
-                        :disabled="selectDisabled"
                         @search-change="getOptions"
                         :internal-search="false"
+                        @open="handleSpecificInput"
                     >
                         <span slot="noOptions" />
                     </multiselect>
                 </b-col>
             </b-input-group>
         </b-form-group>
-        <b-form-group v-if="inputType != 'text'">
+        <b-modal
+            id="prompt-period-modal"
+            title="Choisir une période"
+            ok-title="Ajouter"
+            cancel-title="Annuler"
+            ok-variant="success"
+            @ok="addDateTimeTag"
+        >
             <b-form-row>
-                <b-col sm="2">
-                    <p class="text-right">
-                        À partir de
-                    </p>
-                </b-col>
-                <b-col sm="3">
-                    <b-form-input
-                        :type="inputType"
-                        v-model="dateTime1"
-                        :max="dateTime2"
-                    />
-                </b-col>
-                <b-col sm="2">
-                    <p class="text-right">
-                        jusqu'à
-                    </p>
-                </b-col>
-                <b-col sm="3">
-                    <b-form-input
-                        :type="inputType"
-                        v-model="dateTime2"
-                        :min="dateTime1"
-                    />
-                </b-col>
-                <b-col sm="2">
-                    <b-button
-                        variant="success"
-                        style="display:inline"
-                        class="mt-sm-0 mt-1"
-                        @click="addDateTimeTag"
-                        :disabled="dateTime1 === null || dateTime2 === null"
+                <b-col>
+                    <b-form-group
+                        label="À partir de"
                     >
-                        Ajouter
-                    </b-button>
-                    <b-button
-                        variant="danger"
-                        @click="removeFilter('current')"
-                        class="mt-xl-0 mt-1"
-                    >
-                        Retirer
-                    </b-button>
+                        <b-form-input
+                            :type="inputType"
+                            v-model="dateTime1"
+                            :max="dateTime2"
+                        />
+                    </b-form-group>
                 </b-col>
             </b-form-row>
-        </b-form-group>
+            <b-form-row>
+                <b-col>
+                    <b-form-group
+                        label="Jusqu'à"
+                    >
+                        <b-form-input
+                            :type="inputType"
+                            v-model="dateTime2"
+                            :min="dateTime1"
+                        />
+                    </b-form-group>
+                </b-col>
+            </b-form-row>
+        </b-modal>
     </b-form>
 </template>
 
@@ -119,17 +109,6 @@ export default {
         };
     },
     computed: {
-        selectDisabled: function() {
-            // When filter is a date or a time (thus a range), disable the
-            // multiselect input.
-            if (!this.filterType || this.filterType.startsWith("date_")
-                || this.filterType.startsWith("datetime_")
-                || this.filterType.startsWith("time_")) {
-                return true;
-            } else {
-                return false;
-            }
-        },
         inputType: function() {
             if (!this.filterType) return "text";
             if (this.filterType.startsWith("date_month")) return "month";
@@ -152,6 +131,15 @@ export default {
         }
     },
     methods: {
+        /** Prompt a modal if type is date, month or time. */
+        handleSpecificInput: function () {
+            if (this.inputType == "date"
+                || this.inputType == "month"
+                || this.inputType == "time") {
+                this.$refs.selectType.focus();
+                this.$bvModal.show("prompt-period-modal");
+            }
+        },
         getOptions: function(search) {
             // Don't search on empty string.
             if (!search) {
