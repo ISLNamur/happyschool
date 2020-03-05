@@ -87,10 +87,16 @@ import axios from "axios";
 
 export default {
     props: {
+        /**
+         * The name of the application used for API calls.
+         */
         "app": {
             type: String,
             default: ""
         },
+        /**
+         * The name of the model used for API calls.
+         */
         "model": {
             type: String,
             default: ""
@@ -98,17 +104,27 @@ export default {
     },
     data: function () {
         return {
+            /** The type of the filter. */
             filterType: null,
+            /** Available options for filterType. */
             filterTypeOptions: [],
+            /** Current search. */
             filterSearch: [],
+            /** Options available for the current search. */
             filterSearchOptions: [],
+            /** The filters. */
             filters: {},
             searchId: 0,
+            /** First input for date/time/month period filters. */
             dateTime1: null,
+            /** Second input for date/time/month period filters. */
             dateTime2: null,
         };
     },
     computed: {
+        /**
+         * Compute the type of the html input type.
+         */
         inputType: function() {
             if (!this.filterType) return "text";
             if (this.filterType.startsWith("date_month")) return "month";
@@ -118,20 +134,31 @@ export default {
 
             return "text";
         },
+        /**
+         * Return the filters in use.
+         */
         filtersValue: function () {
             return this.$store.state.filters;
         }
     },
     watch: {
+        /**
+         * Update filterType if there is a result (?).
+         */
         filterTypeOptions: function (options) {
             if (options.length > 0) this.filterType = options[0].value;
         },
+        /**
+         * Update the second input for date/time/month input from first input.
+         */
         dateTime1: function (dateTime) {
             if (this.dateTime2 === null) this.dateTime2 = dateTime;
         }
     },
     methods: {
-        /** Prompt a modal if type is date, month or time. */
+        /** 
+         * Prompt a modal if type is date, month or time.
+         */
         handleSpecificInput: function () {
             if (this.inputType == "date"
                 || this.inputType == "month"
@@ -140,6 +167,14 @@ export default {
                 this.$bvModal.show("prompt-period-modal");
             }
         },
+        /** 
+         * Get options by calling the API of the application.
+         * 
+         * A filter type starting with "activate" won't call the API
+         * but will return an only option to activate the filter.
+         * 
+         * @param {String} search The search to filter the options.
+         */
         getOptions: function(search) {
             // Don't search on empty string.
             if (!search) {
@@ -210,10 +245,18 @@ export default {
                 });
 
         },
+        /** 
+         * Clear dates values
+         */
         cleanDate: function() {
             this.dateTime1 = null;
             this.dateTime2 = null;
         },
+        /**
+         * Return a nice formatted string for option results.
+         * 
+         * @param {String} search The search string.
+         */
         niceLabel(search) {
             let displayType = search.filterType;
             for (let opt in this.filterTypeOptions) {
@@ -224,6 +267,11 @@ export default {
             }
             return displayType + " : " + search.tag ;
         },
+        /**
+         * Add a datetime tag to filters.
+         * 
+         * It will automatically includes the complete day.
+         */
         addDateTimeTag() {
             let blankTime1 = this.filterType.startsWith("datetime") ? " 00:00" : "";
             let blankTime2 = this.filterType.startsWith("datetime") ? " 23:59" : "";
@@ -234,6 +282,11 @@ export default {
             };
             this.addFilter(tag);
         },
+        /** 
+         * Add a tag to the filters.
+         * 
+         * @param {String} tag The tag.
+         */
         addCustomTag: function (tag) {
             const newTag = {
                 filterType: this.filterType,
@@ -242,10 +295,20 @@ export default {
             };
             this.addFilter(newTag);
         },
+        /**
+         * Add a filter to the store.
+         * 
+         * @param {object} addedObject An object with the filter type, the tag and the value.
+         */
         addFilter(addedObject) {
             this.$store.commit("addFilter", addedObject);
             this.updateFilters();
         },
+        /**
+         * Remove a filter from the store.
+         * 
+         * @param {object} removedObject The filter to removed.
+         */
         removeFilter(removedObject) {
             if (removedObject == "current") {
                 this.$store.commit("removeFilter", this.filterType);
@@ -254,6 +317,9 @@ export default {
             }
             this.updateFilters();
         },
+        /**
+         * Emit an update event.
+         */
         updateFilters() {
             this.$emit("update");
         }
