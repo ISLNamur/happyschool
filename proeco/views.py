@@ -29,7 +29,7 @@ class ExportStudentSelectionAPI(APIView):
     permission_classes = [IsAuthenticated, ]
 
     def get(self, request, format=None):
-        matricules = self._get_student_list(request)
+        matricules = set(self._get_student_list(request))
         template_model = TemplateSelectionModel.objects.first()
         matricules_text = ["MATRICS%i=%i=" % (i + 1, a) for (i, a) in enumerate(matricules)]
         text = template_model.template.replace("{matricules}", "\n".join(matricules_text))
