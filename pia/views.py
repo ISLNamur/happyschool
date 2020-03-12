@@ -88,6 +88,8 @@ class LargePagination(PageNumberPagination):
 class PIAViewSet(BaseModelViewSet):
     queryset = models.PIAModel.objects.all()
     serializer_class = serializers.PIASerializer
+    ordering_fields = ('student__classe__year', "student__classe__letter",)
+
     username_field = None
 
 
