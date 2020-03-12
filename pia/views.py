@@ -86,14 +86,14 @@ class LargePagination(PageNumberPagination):
 
 
 class PIAViewSet(BaseModelViewSet):
-    queryset = models.PIAModel.objects.filter(student__inactive_from__isnull=True)
+    queryset = models.PIAModel.objects.all()
     serializer_class = serializers.PIASerializer
     username_field = None
 
 
-class GoalViewSet(ModelViewSet):
-    queryset = models.GoalModel.objects.all()
-    serializer_class = serializers.GoalSerializer
+class CrossGoalViewSet(ModelViewSet):
+    queryset = models.CrossGoalModel.objects.all()
+    serializer_class = serializers.CrossGoalSerializer
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filterset_fields = ('pia_model',)
     ordering_fields = ['date_start', 'date_end', 'datetime_creation']
@@ -101,11 +101,11 @@ class GoalViewSet(ModelViewSet):
     pagination_class = LargePagination
 
 
-class SubGoalViewSet(ModelViewSet):
-    queryset = models.SubGoalModel.objects.all()
-    serializer_class = serializers.SubGoalSerializer
+class BranchGoalViewSet(ModelViewSet):
+    queryset = models.BranchGoalModel.objects.all()
+    serializer_class = serializers.BranchGoalSerializer
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
-    filterset_fields = ('goal',)
+    filterset_fields = ('branch',)
     ordering_fields = ['datetime_creation']
     ordering = ['-datetime_creation']
     pagination_class = LargePagination
@@ -147,9 +147,9 @@ class ScheduleAdjustmentViewSet(ReadOnlyModelViewSet):
     pagination_class = LargePagination
 
 
-class CrossGoalViewSet(ReadOnlyModelViewSet):
-    queryset = models.CrossGoalModel.objects.all()
-    serializer_class = serializers.CrossGoalSerializer
+class CrossGoalItemViewSet(ReadOnlyModelViewSet):
+    queryset = models.CrossGoalItemModel.objects.all()
+    serializer_class = serializers.CrossGoalItemSerializer
     pagination_class = LargePagination
 
 
@@ -165,7 +165,7 @@ class BranchViewSet(ReadOnlyModelViewSet):
     pagination_class = LargePagination
 
 
-class BranchGoalViewSet(ReadOnlyModelViewSet):
-    queryset = models.BranchGoalModel.objects.all()
-    serializer_class = serializers.BranchGoalSerializer
+class BranchGoalItemViewSet(ReadOnlyModelViewSet):
+    queryset = models.BranchGoalItemModel.objects.all()
+    serializer_class = serializers.BranchGoalItemSerializer
     pagination_class = LargePagination

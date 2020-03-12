@@ -233,12 +233,12 @@
             </b-col>
         </b-row>
         <b-row class="mt-2">
-            <h4>Objectifs</h4>
+            <h4>Objectifs transversaux</h4>
         </b-row>
         <b-row>
             <b-col>
-                <b-btn @click="goals.unshift({id: -1})">
-                    Ajouter un objectif transversal
+                <b-btn @click="cross_goal.unshift({id: -1})">
+                    Ajouter
                 </b-btn>
             </b-col>
         </b-row>
@@ -246,11 +246,38 @@
             <b-col>
                 <goal
                     class="mt-2"
-                    v-for="(goal, index) in goals"
-                    :key="goal.id"
-                    :goal="goal"
-                    ref="goals"
-                    @remove="removeGoal(index)"
+                    v-for="(goal, index) in cross_goal"
+                    :key="'cg-' + goal.id"
+                    :goal-object="goal"
+                    ref="crossgoals"
+                    @remove="removeGoal('cross_goal', index)"
+                    goal-label="Objectifs transversaux"
+                    item-model="cross_goal_item"
+                />
+            </b-col>
+        </b-row>
+        <b-row class="mt-2">
+            <h4>Objectifs de branche</h4>
+        </b-row>
+        <b-row>
+            <b-col>
+                <b-btn @click="branch_goal.unshift({id: -1})">
+                    Ajouter
+                </b-btn>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
+                <goal
+                    class="mt-2"
+                    v-for="(goal, index) in branch_goal"
+                    :key="'bg-' + goal.id"
+                    :goal-object="goal"
+                    ref="branchgoals"
+                    @remove="removeGoal('branch_goal', index)"
+                    goal-label="Objectifs de branche"
+                    item-model="branch_goal_item"
+                    use-branch
                 />
             </b-col>
         </b-row>
@@ -298,7 +325,8 @@ export default {
                 disorder_response: [],
                 schedule_adjustment: [],
             },
-            goals: [],
+            cross_goal: [],
+            branch_goal: [],
             /** List of class council related to this PIA. */
             classCouncil: [],
             errors: {},
@@ -351,20 +379,26 @@ export default {
                 return "";
             }
         },
-        removeGoal: function (goalIndex) {
+        /**
+         * Remove a goal from the list.
+         * 
+         * @param {String} goalType The type of the goal (cross_goal or branch_goal).
+         * @param {Number} goalIndex The index of the goal in the associated goal list.
+         */
+        removeGoal: function (goalType, goalIndex) {
             let app = this;
-            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer l'objectif transversal ?", {
+            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer l'objectif ?", {
                 okTitle: "Oui",
                 cancelTitle: "Non",
                 centered: true,
             }).then(resp => {
                 if (resp) {
-                    if (app.goals[goalIndex].id >= 0) {
-                        axios.delete("/pia/api/goal/" + app.goals[goalIndex].id + "/", token)
-                            .then(() => app.goals.splice(goalIndex, 1))
+                    if (app[goalType][goalIndex].id >= 0) {
+                        axios.delete(`/pia/api/${goalType}/` + app[goalType][goalIndex].id + "/", token)
+                            .then(() => app[goalType].splice(goalIndex, 1))
                             .catch(err => alert(err));
                     } else {
-                        app.goals.splice(goalIndex, 1);
+                        app[goalType].splice(goalIndex, 1);
                     }
                 }
             });
@@ -464,28 +498,24 @@ export default {
                 .then(resp => {
                     const recordId = resp.data.id;
                     // No goals, no promises.
-                    if (this.goals.length == 0 && this.classCouncil.length == 0) {
+                    if (this.cross_goal.length == 0 && this.branch_goal.length == 0 && this.classCouncil.length == 0) {
                         this.showSuccess(recordId);
                         return;
                     }
 
-                    const goalPromises = this.goals.length != 0 ? this.$refs.goals.map(g => g.submit(recordId)) : [];
+                    const crossGoalPromises = this.cross_goal.length != 0 ? this.$refs.crossgoals.map(g => g.submit(recordId)) : [];
+                    const branchGoalPromises = this.branch_goal.length != 0 ? this.$refs.branchgoals.map(g => g.submit(recordId)) : [];
                     const classCouncilPromises = this.classCouncil.length != 0 ? this.$refs.councils.map(c => c.submit(recordId)) : [];
-                    Promise.all(goalPromises.concat(classCouncilPromises))
+                    Promise.all(crossGoalPromises.concat(branchGoalPromises, classCouncilPromises))
                         .then(resps => {
-                            // Update goals and subgoals component with response.
+                            // Update goals component with response.
                             const subPromises = [];
-                            const goalResponses = resps.filter(r => r.config.url.includes("/pia/api/goal/"));
                             const councilResponses = resps.filter(r => r.config.url.includes("/pia/api/class_council/"));
 
-                            // Get subgoal promises.
-                            goalResponses.forEach((r, i) => {
-                                if (!("id" in app.$refs.goals[i])) {
-                                    app.goals.splice(i, 1, r.data);
-                                    subPromises.concat(app.$refs.goals[i].submitSubGoal(app.goals[i].id));
-                                }
-                            });
-
+                            if (councilResponses.length == 0) {
+                                this.showSuccess(recordId);
+                                return;
+                            }
                             // Get branch statement promises.
                             councilResponses.forEach((r, i) => {
                                 if (!("id" in app.$refs.councils[i])) {
@@ -510,7 +540,8 @@ export default {
 
                 }).catch(function (error) {
                     app.sending = false;
-                    app.errors = error.response.data;
+                    alert(error);
+                    if ("response" in error) app.errors = error.response.data;
                 });
         },
         /**
@@ -557,9 +588,13 @@ export default {
 
             // Load goals and class council.
             if (this.id) {
-                axios.get("/pia/api/goal/?pia_model=" + this.id)
+                axios.get("/pia/api/cross_goal/?pia_model=" + this.id)
                     .then(resp => {
-                        this.goals = resp.data.results;
+                        this.cross_goal = resp.data.results;
+                    });
+                axios.get("/pia/api/branch_goal/?pia_model=" + this.id)
+                    .then(resp => {
+                        this.branch_goal = resp.data.results;
                     });
                 axios.get("/pia/api/class_council/?pia_model=" + this.id)
                     .then(resp => {

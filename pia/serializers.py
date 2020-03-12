@@ -102,15 +102,15 @@ class BranchGoalSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class GoalSerializer(serializers.ModelSerializer):
+class CrossGoalItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.GoalModel
+        model = models.CrossGoalItemModel
         fields = '__all__'
 
 
-class SubGoalSerializer(serializers.ModelSerializer):
+class BranchGoalItemSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.SubGoalModel
+        model = models.BranchGoalItemModel
         fields = '__all__'
 
 

@@ -59,22 +59,55 @@
                 v-model="expanded"
                 :id="Math.random().toString(36).substring(7)"
             >
-                <b-form-row class="mt-2">
+                <b-form-row
+                    v-if="useBranch"
+                    class="mt-2"
+                >
                     <b-col>
                         <b-form-group
-                            label="Objectif transversal"
+                            label="Branche"
+                            label-cols="2"
+                        >
+                            <multiselect
+                                :options="branchOptions"
+                                placeholder="Choisisser une branche"
+                                select-label=""
+                                selected-label="Sélectionné"
+                                deselect-label="Cliquer dessus pour enlever"
+                                v-model="branch"
+                                :show-no-options="false"
+                                @input="updateBranchGoal"
+                                label="branch"
+                                track-by="id"
+                            >
+                                <template
+                                    slot="singleLabel"
+                                    slot-scope="props"
+                                >
+                                    <strong>{{ props.option.branch }}</strong>
+                                </template>
+                                <span slot="noResult">Aucune branche trouvée.</span>
+                                <span slot="noOptions" />
+                            </multiselect>
+                        </b-form-group>
+                    </b-col>
+                </b-form-row>
+                <b-form-row>
+                    <b-col>
+                        <b-form-group
+                            :label="goalLabel"
                             label-cols="3"
                         >
                             <multiselect
-                                :options="crossGoalOptions"
+                                :options="goalOptions"
                                 placeholder="Choisisser un ou des objectifs"
                                 tag-placeholder="Ajouter un nouvel objectif"
                                 select-label=""
                                 selected-label="Sélectionné"
                                 deselect-label="Cliquer dessus pour enlever"
-                                v-model="crossGoal"
+                                v-model="goals"
                                 :show-no-options="false"
-                                @tag="addCrossGoalTag"
+                                @tag="addGoalTag"
                                 label="goal"
                                 track-by="goal"
                                 multiple
@@ -141,28 +174,6 @@
                         </b-form-group>
                     </b-col>
                 </b-form-row>
-                <b-row>
-                    <b-col>
-                        <b-btn
-                            @click="subGoals.unshift({})"
-                            variant="info"
-                        >
-                            Ajouter un objectif de branche
-                        </b-btn>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col>
-                        <subgoal
-                            v-for="(subgoal, index) in subGoals"
-                            :key="subgoal.id"
-                            :subgoal="subgoal"
-                            ref="subgoals"
-                            class="mt-2"
-                            @remove="removeSubGoal(index)"
-                        />
-                    </b-col>
-                </b-row>
             </b-collapse>
         </b-card>
     </div>
@@ -178,13 +189,11 @@ import {quillEditor} from "vue-quill-editor";
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
 
-import Subgoal from "./subgoal.vue";
-
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
     props: {
-        goal: {
+        goalObject: {
             type: Object,
             default: () => {},
         },
@@ -195,14 +204,29 @@ export default {
         showExpanded: {
             type: Boolean,
             default: false,
+        },
+        goalLabel: {
+            type: String,
+            default: "Objectif"
+        },
+        itemModel: {
+            type: String,
+            default: "goal_item"
+        },
+        useBranch: {
+            type: Boolean,
+            default: false
         }
     },
     data: function () {
         return {
             date_start: null,
             date_end: null,
-            crossGoalOptions: [],
-            crossGoal: [],
+            goalOptions: [],
+            goals: [],
+            branchOptions: [],
+            branchGoalAll: [],
+            branch: null,
             givenHelp: "",
             indicatorAction: "",
             selfAssessment: "",
@@ -229,90 +253,80 @@ export default {
         toggleExpand: function () {
             this.expanded = !this.expanded;
         },
-        removeSubGoal: function (subGoalIndex) {
-            let app = this;
-            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer l'objectif de branche ?", {
-                okTitle: "Oui",
-                cancelTitle: "Non",
-                centered: true,
-            }).then(resp => {
-                if (resp) {
-                    if (app.goal.id < 0 || !("id" in app.subGoals[subGoalIndex])) {
-                        app.subGoals.splice(subGoalIndex, 1);
-                    } else {
-                        axios.delete("/pia/api/subgoal/" + app.subGoals[subGoalIndex].id + "/", token)
-                            .then(() => app.subGoals.splice(subGoalIndex, 1))
-                            .catch(err => alert(err));
-                    }
-                    
-                }
-            });
+        updateBranchGoal: function (branch) {
+            this.goalOptions = this.branchGoalAll.filter(bg => bg.branch == branch.id);
         },
         assignGoal: function () {
-            if (this.goal.id >= 0) {
-                this.date_start = this.goal.date_start;
-                this.date_end = this.goal.date_end;
-                this.indicatorAction = this.goal.indicator_action;
-                this.givenHelp = this.goal.given_help;
-                this.selfAssessment = this.goal.self_assessment;
-                this.assessment = this.assessmentOptions.filter(a => a.id == this.goal.assessment)[0];
+            if (this.goalObject.id >= 0) {
+                this.date_start = this.goalObject.date_start;
+                this.date_end = this.goalObject.date_end;
+                this.indicatorAction = this.goalObject.indicator_action;
+                this.givenHelp = this.goalObject.given_help;
+                this.selfAssessment = this.goalObject.self_assessment;
+                this.assessment = this.assessmentOptions.filter(a => a.id == this.goalObject.assessment)[0];
 
-                // Assign crossGoals
-                let goals = this.goal.cross_goals.split(";");
-                this.crossGoal = this.crossGoalOptions.filter(cg => goals.includes(cg.goal));
-                let newGoals = goals.filter(g => !this.crossGoalOptions.map(cg => cg.goal).includes(g));
-                newGoals.forEach(ng => this.addCrossGoalTag(ng));
+                // Assign branch if necessary.
+                if (this.useBranch) {
+                    this.branch = this.branchOptions.find(b => b.id == this.goalObject.branch);
+                }
+
+                // Assign goals
+                let specificGoals = this.useBranch ? this.goalObject.branch_goals : this.goalObject.cross_goals;
+                let goals = specificGoals.split(";");
+                this.goals = this.goalOptions.filter(cg => goals.includes(cg.goal));
+                let newGoals = goals.filter(g => !this.goalOptions.map(cg => cg.goal).includes(g));
+                newGoals.forEach(ng => this.addGoalTag(ng));
             }
         },
-        addCrossGoalTag: function (tag) {
-            this.crossGoal.push({id: -1, goal: tag});
+        addGoalTag: function (tag) {
+            this.goals.push({id: -1, goal: tag});
         },
         submit: function (piaId) {
-            if (this.goal) {
-                const crossGoals = this.crossGoal.reduce((acc, cg) => acc + ";" + cg.goal, "");
-                const data = {
+            if (this.goals) {
+                const goals = this.goals.reduce((acc, cg) => acc + ";" + cg.goal, "");
+                const goalPath = this.useBranch ? "branch_goal" : "cross_goal";
+                const goalField = goalPath + "s";
+                let data = {
                     pia_model: piaId,
                     date_start: this.date_start,
                     date_end: this.date_end,
                     indicator_action: this.indicatorAction,
                     given_help: this.givenHelp,
                     self_assessment: this.selfAssessment,
-                    assessment: this.assessment.id,
-                    cross_goals: this.crossGoal.length > 0 ? crossGoals.slice(1) : null,
+                    assessment: this.assessment ? this.assessment.id : null,
+                    [goalField]: this.goals.length > 0 ? goals.slice(1) : null,
                 };
 
-                const isNew = this.goal.id < 0;
-                const url =  !isNew ? "/pia/api/goal/" + this.goal.id + "/" : "/pia/api/goal/";
+                if (this.useBranch) data["branch"] = this.branch.id;
+
+                const isNew = this.goalObject.id < 0;
+                const url =  !isNew ? `/pia/api/${goalPath}/` + this.goalObject.id + "/" : `/pia/api/${goalPath}/`;
                 return !isNew ? axios.put(url, data, token) : axios.post(url, data, token);
             }
         },
-        submitSubGoal: function (goalId) {
-            // Check if there is at least one subgoal.
-            if (this.subGoals.length == 0) return [];
-
-            return this.$refs.subgoals.map(sg => sg.submit(goalId));
-        }
     },
     mounted: function () {
-        if (this.goal.id < 0) this.expanded = true;
+        if (this.goalObject.id < 0) this.expanded = true;
 
         const promises = [
-            axios.get("/pia/api/cross_goal/"),
+            axios.get(`/pia/api/${this.itemModel}/`),
             axios.get("/pia/api/assessment/"),
         ];
-        if (this.goal.id >= 0) promises.push(axios.get("/pia/api/subgoal/?goal=" + this.goal.id));
+        if (this.useBranch) promises.push(axios.get("/pia/api/branch/"));
         Promise.all(promises)
             .then(resps => {
-                this.crossGoalOptions = resps[0].data.results;
+                this.goalOptions = resps[0].data.results;
                 this.assessmentOptions = resps[1].data.results;
+                if (this.useBranch) {
+                    this.branchOptions = resps[2].data.results;
+                    this.branchGoalAll = this.goalOptions;
+                }
                 this.assignGoal();
-                if (this.goal.id >= 0) this.subGoals = resps[2].data.results;
             });
     },
     components: {
         Multiselect,
         quillEditor,
-        Subgoal,
     }
 };
 </script>

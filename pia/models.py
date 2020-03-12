@@ -72,7 +72,7 @@ class PIAModel(models.Model):
         return str(self.student)
 
 
-class CrossGoalModel(models.Model):
+class CrossGoalItemModel(models.Model):
     goal = models.CharField(max_length=200)
     teachings = models.ManyToManyField(TeachingModel)
 
@@ -88,7 +88,7 @@ class BranchModel(models.Model):
         return self.branch
 
 
-class BranchGoalModel(models.Model):
+class BranchGoalItemModel(models.Model):
     goal = models.CharField(max_length=200)
     branch = models.ForeignKey(BranchModel, on_delete=models.CASCADE)
 
@@ -114,31 +114,30 @@ class AssessmentModel(models.Model):
         return self.assessment
 
 
-class GoalModel(models.Model):
+class BaseGoal(models.Model):
     pia_model = models.ForeignKey(PIAModel, on_delete=models.CASCADE)
     date_start = models.DateField()
     date_end = models.DateField()
-    cross_goals = models.CharField(max_length=2000)
     indicator_action = models.TextField(blank=True)
     given_help = models.TextField(blank=True)
     responsible = models.ManyToManyField(ResponsibleModel, blank=True)
     self_assessment = models.CharField(max_length=2000, blank=True)
-    assessment = models.ForeignKey(AssessmentModel, on_delete=models.SET_NULL, null=True)
+    assessment = models.ForeignKey(AssessmentModel, on_delete=models.SET_NULL, null=True, blank=True)
     datetime_creation = models.DateTimeField(auto_now_add=True)
     datetime_update = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        abstract = True
 
-class SubGoalModel(models.Model):
-    goal = models.ForeignKey(GoalModel, on_delete=models.CASCADE)
+
+class CrossGoalModel(BaseGoal):
+    cross_goals = models.CharField(max_length=2000)
+
+
+class BranchGoalModel(BaseGoal):
     branch = models.ForeignKey(BranchModel, on_delete=models.SET_NULL, null=True)
     branch_goals = models.CharField(max_length=2000)
-    indicator_action = models.TextField(blank=True)
-    given_help = models.TextField(blank=True)
-    self_assessment = models.CharField(max_length=2000, blank=True)
-    assessment = models.ForeignKey(AssessmentModel, on_delete=models.SET_NULL, null=True)
     parent_commitment = models.TextField(blank=True)
-    datetime_creation = models.DateTimeField(auto_now_add=True)
-    datetime_update = models.DateTimeField(auto_now=True)
 
 
 class ClassCouncilPIAModel(models.Model):
