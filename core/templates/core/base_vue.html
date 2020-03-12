@@ -29,8 +29,10 @@
                 });
             };
             {% load groups %}
+            {% load user_properties %}
             {% autoescape off %}
             const user = "{{ user }}";
+            const user_properties = {% list_user_properties %};
             const user_groups = {% list_user_groups %};
             {% endautoescape %}
         </script>
