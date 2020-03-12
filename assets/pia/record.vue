@@ -430,9 +430,11 @@ export default {
             person = person.split("-")[0];
             this.searchId += 1;
             let currentSearch = this.searchId;
-            // this.searching = true;
 
-            getPeopleByName(searchQuery, this.$store.state.settings.teachings, person)
+            const teachings = this.$store.state.settings.teachings.filter(
+                // eslint-disable-next-line no-undef
+                value => user_properties.teaching.includes(value));
+            getPeopleByName(searchQuery, teachings, person)
                 .then( (resp) => {
                 // Avoid that a previous search overwrites a faster following search results.
                     if (this.searchId !== currentSearch)
