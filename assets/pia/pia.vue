@@ -120,7 +120,7 @@ export default {
         },
         /** Load or reload PIA entries. */
         loadEntries: function () {
-            axios.get("/pia/api/pia/?ordering=student__classe__year,student__classe__letter")
+            axios.get("/pia/api/pia/?ordering=student__classe__year,student__classe__letter&page=" + this.currentPage)
                 .then(resp => {
                     this.entries = resp.data.results;
                     this.entriesCount = resp.data.count;
