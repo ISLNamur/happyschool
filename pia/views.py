@@ -92,6 +92,9 @@ class PIAViewSet(BaseModelViewSet):
 
     username_field = None
 
+    def is_only_tenure(self):
+        return get_settings().filter_teacher_entries_by_tenure
+
 
 class CrossGoalViewSet(ModelViewSet):
     queryset = models.CrossGoalModel.objects.all()

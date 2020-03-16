@@ -24,6 +24,13 @@ from core.models import TeachingModel, StudentModel, ResponsibleModel
 
 class PIASettingsModel(models.Model):
     teachings = models.ManyToManyField(TeachingModel)
+    filter_teacher_entries_by_tenure = models.BooleanField(
+        default=False,
+        help_text="""
+        Si activé, seuls les titulaires peuvent voir les PIA de leurs élèves.
+        Sinon sera limité aux classes associées.
+        """
+    )
 
 
 class DisorderModel(models.Model):
