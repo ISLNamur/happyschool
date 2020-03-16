@@ -17,8 +17,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
-import json
-
 from django import template
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -29,6 +27,8 @@ register = template.Library()
 
 @register.simple_tag(takes_context=True)
 def list_user_properties(context):
+    if context['user'].is_anonymous:
+        return ""
     try:
         responsible = ResponsibleModel.objects.get(user=context['user'])
         return {
