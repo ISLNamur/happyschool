@@ -24,7 +24,7 @@
                 <h2>Plan Individuel d'Apprentissage</h2>
             </b-row>
             <b-row>
-                <b-col>
+                <b-col v-if="canAddPia">
                     <b-btn
                         variant="success"
                         to="/new"

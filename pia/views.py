@@ -76,6 +76,7 @@ class PIAView(LoginRequiredMixin,
         context['menu'] = json.dumps(get_menu(self.request.user, "pia"))
         context['filters'] = json.dumps(self.filters)
         context['settings'] = json.dumps((serializers.PIASettingsSerializer(get_settings()).data))
+        context['can_add_pia'] = json.dumps(self.request.user.has_perm('pia.add_piamodel'))
 
         return context
 
