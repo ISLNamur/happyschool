@@ -155,7 +155,7 @@ class ImportResponsible(ImportBase):
             if is_teacher:
                 # Check if responsible's classes already exists.
                 if resp.matricule not in resp_synced:
-                    resp.classe.clear()
+                    resp.classe.remove(*resp.classe.filter(teaching=self.teaching))
                 classe = self.get_value(entry, "classe")
                 if classe and type(classe) != list:
                     classe = [classe]
