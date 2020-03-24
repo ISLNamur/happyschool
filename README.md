@@ -1,44 +1,40 @@
 Happy School
 ================
 [![Build Status](https://travis-ci.com/ISLNamur/happyschool.svg?branch=master)](https://travis-ci.com/ISLNamur/happyschool)
-Concrètement, Happy school est une application de gestion administrative
-et pédagogique. Ainsi il propose de gérer différents aspects de l'école
-dont :
 
-- Un dossier de l'élève où les informations sur l'élève (disciplinaire ou non)
-sont conservées. Il permet également de notifier les professeurs par email
-d'une information et de gérer la présence lors des retenues.
-- L'infirmerie où les entrées/sorties peuvent être enregistrées avec un envoi
-automatique aux responsables.
-- Les appels téléphoniques concernant élèves et professeurs qui peuvent être
-transmis par courriel (des infos, pas l'appel en lui-même).
-- L'absence des professeurs. Juste une base de donnée de qui est absent et
-remplacé par qui.
-- Un annuaire des élèves et des professeurs.
-- Un système d'envoi de courriel aux professeurs et aux parents avec
-possibilité de réponse par ceux-ci (toujours en développement).
+HappySchool est une application web de gestion administrative et pédagogique
+pour les écoles primaires et secondaires. Fruit d'une expérience de terrain,
+il se veut simple d'utilisation tout en restant configurable afin de s'adapter
+aux particularités des établissements scolaires.
 
-Le tout dispose d'un système de permission et d'accès en fonction des classes
-et de droits spécifiques. Par exemple, un titulaire ne verra que les
-informations de sa classe, un éducateur qui s'occupe d'une année spécifique,
-ne verra que les informations de son année.
+HappySchool est constitué d'une série d'applications indépendantes qui peuvent
+activés/désactivés selon les besoins:
 
-Somme toute, Happy school est très similaire à d'autres solutions payantes.
-Cependant, l'objectif principal est de fournir un outil pour toutes
-les écoles. Ainsi, le seul support proposé est celui fournit par la
-communauté si elle est disponible.
+- Un **annuaire** des élèves et des enseignants (la seule obligatoire). Elle permet de
+  trouver une personne par nom/classe et d'afficher des informations la concernant,
+  de générer un trombinoscope par classe ou encore d'avoir un rapide aperçu par
+  rapport aux autres applications.
+- Un **dossier des élèves** qui permet d'assurer un suivi des élèves que ce soit au niveau
+  des informations personnelles que des sanctions. Il propose également de gérer le suivi
+  des sanctions, les demandes, organiser des conseils disciplinaires ainsi que le
+  vérifier la présence pour les retenues.
+- Une prise des **absences des élèves** qui fonctionne sur tablette et hors-connexion.
+  Deux interfaces ont été développées, une pour les éducateurs et une pour les enseignants.
+- Une gestion des arrivées et sorties de l'**infirmerie** avec une notification automatique
+  par courriel aux différents responsables de l'école.
+- Une gestion des **appels** au travers d'une notification de la raison de l'appel par
+  exemple, en notifiant un éducateur qu'un parent à prévenu que tel élève serait absent
+  pour de cause de maladie.
+- Un suivi des **absences des professeurs** pour la gestion administrative.
+- Un suivi des **changements horaires** inhabituelles des enseignants afin d'avoir une
+  connaissance centralisé d'où se trouve les élèves.
+
+HappySchool s'appuie sur toute une série de projets opensource dont les frameworks
+[Django](https://www.djangoproject.com/) et [Vue.js](https://vuejs.org/).
 
 
-Par où commencer ?
-------------------
+Ressources
+----------
 
-- [Installation](docs/installation.md). Que ce soit pour commencer à développer
-ou pour utiliser en production.
-- [Configuration](docs/configuration.md). Happyschool possède différents
-niveaux de configuration, les applications à utiliser, les droits d'accès
-aux applications, etc.
-- [Utilisation](docs/utilisation.md). Les applications sont nées d'un réel
-besoin et suivent en conséquence une manière de fonctionner propre à ces
-besoins.
-- [Développement](docs/developpement.md). Développez votre propre application
-ou corrigez vous-même un bug.
+- [La documentation](https://github.com/ISLNamur/happyschool/docs)
+- [Site officiel](https://github.com/ISLNamur/happyschool)
