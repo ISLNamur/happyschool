@@ -142,7 +142,7 @@ class CrossGoalModel(BaseGoal):
 
 
 class BranchGoalModel(BaseGoal):
-    branch = models.ForeignKey(BranchModel, on_delete=models.SET_NULL, null=True)
+    branch = models.ForeignKey(BranchModel, on_delete=models.CASCADE)
     branch_goals = models.CharField(max_length=2000)
     parent_commitment = models.TextField(blank=True)
 

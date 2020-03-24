@@ -90,6 +90,7 @@ class PIAViewSet(BaseModelViewSet):
     queryset = models.PIAModel.objects.all()
     serializer_class = serializers.PIASerializer
     ordering_fields = ('student__classe__year', "student__classe__letter",)
+    filterset_fields = ('student__matricule',)
 
     username_field = None
 

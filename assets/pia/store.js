@@ -20,6 +20,8 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
+import axios from "axios";
+
 Vue.use(Vuex);
 
 import {addFilter, removeFilter} from "../common/filters.js";
@@ -27,11 +29,49 @@ import {addFilter, removeFilter} from "../common/filters.js";
 
 export default new Vuex.Store({
     state: {
-        // settings: settings,
+        // eslint-disable-next-line no-undef
+        settings: settings,
         filters: [],
+        branches: [],
+        disorders: [],
+        disorderResponses: [],
+        scheduleAdjustments: [],
+        branchGoalItems: [],
+        crossGoalItems: [],
+        assessments: [],
     },
     mutations: {
         addFilter: addFilter,
         removeFilter: removeFilter,
+    },
+    actions: {
+        loadOptions: function (context) {
+            return new Promise(resolve => {
+                if (context.state.disorders.length == 0) {
+                    const promises = [
+                        axios.get("/pia/api/disorder/"),
+                        axios.get("/pia/api/disorder_response/"),
+                        axios.get("/pia/api/schedule_adjustment/"),
+                        axios.get("/pia/api/branch_goal_item/"),
+                        axios.get("/pia/api/cross_goal_item/"),
+                        axios.get("/pia/api/assessment/"),
+                        axios.get("/pia/api/branch/")
+                    ];
+                    Promise.all(promises)
+                        .then(resps => {
+                            context.state.disorders = resps[0].data.results;
+                            context.state.disorderResponses = resps[1].data.results;
+                            context.state.scheduleAdjustments = resps[2].data.results;
+                            context.state.branchGoalItems = resps[3].data.results;
+                            context.state.crossGoalItems = resps[4].data.results;
+                            context.state.assessments = resps[5].data.results;
+                            context.state.branches = resps[6].data.results;
+                            resolve();
+                        });
+                } else {
+                    resolve();
+                }
+            });
+        }
     }
 });

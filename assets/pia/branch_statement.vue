@@ -165,8 +165,6 @@ export default {
         return {
             /** Branch of the statement. */
             branchStatement: null,
-            /** List of avalaible branches. */
-            branchOptions: [],
             resources: "",
             difficulties: "",
             others: "",
@@ -190,10 +188,9 @@ export default {
     },
     methods: {
         initBranchStatement: function () {
-            axios.get("/pia/api/branch/")
-                .then(resp => {
-                    this.branchOptions = resp.data.results;
-                    this.branchStatement = this.branchOptions.filter(b => b.id == this.branch_statement.branch)[0];
+            this.$store.dispatch("loadOptions")
+                .then(() => {
+                    this.branchStatement = this.$store.state.branches.filter(b => b.id == this.branch_statement.branch)[0];
                 });
             this.resources = this.branch_statement.resources;
             this.difficulties = this.branch_statement.difficulties;

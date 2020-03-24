@@ -22,7 +22,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 Vue.use(Vuex);
 
-import store from "../absence_prof/store.js";
+import store from "../pia/store.js";
 import router from "../pia/router.js";
 import Menu from "../common/menu.vue";
 

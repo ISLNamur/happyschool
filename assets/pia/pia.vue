@@ -36,6 +36,28 @@
                         Ajouter un PIA
                     </b-btn>
                 </b-col>
+                <b-col>
+                    <multiselect
+                        id="search"
+                        :internal-search="false"
+                        :options="studentOptions"
+                        placeholder="Rechercher un étudiant"
+                        @search-change="searchStudent"
+                        @select="filterByStudent"
+                        @remove="removeSearch"
+                        select-label=""
+                        selected-label="Sélectionné"
+                        deselect-label="Cliquer dessus pour enlever"
+                        label="display"
+                        track-by="matricule"
+                        :show-no-options="false"
+                        v-model="currentStudent"
+                        preserve-search
+                        :clear-on-select="false"
+                    >
+                        <span slot="noResult">Aucun responsable trouvé.</span>
+                    </multiselect>
+                </b-col>
             </b-row>
             <b-row>
                 <b-col>
@@ -75,7 +97,11 @@ import Icon from "vue-awesome/components/Icon.vue";
 Vue.use(BootstrapVue);
 Vue.component("icon", Icon);
 
+import Multiselect from "vue-multiselect";
+
 import Entry from "./entry.vue";
+import {getPeopleByName} from "../common/search.js";
+import {getFilters} from "../common/filters.js";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
@@ -88,9 +114,47 @@ export default {
             entries: [],
             currentPage: 1,
             entriesCount: 0,
+            studentOptions: [],
+            canAddPia: false,
+            currentStudent: null,
+            filter: "",
         };
     },
     methods: {
+        /**
+         * Filter list by student.
+         * 
+         * @param {object} student A student object with the matricule.
+         */
+        filterByStudent: function (student) {
+            this.$store.commit("addFilter", {filterType: "student__matricule", tag: student.display, value: student.matricule});
+            this.applyFilter();
+            // this.studentOptions = [student];
+        },
+        removeSearch: function () {
+            this.$store.commit("removeFilter", "student__matricule");
+            this.applyFilter();
+        },
+        applyFilter: function () {
+            this.filter = getFilters(this.$store.state.filters);
+            this.currentPage = 1;
+            this.loadEntries();
+        },
+        /**
+         * Search for a student.
+         * 
+         * @param {String} search The current search.
+         */
+        searchStudent: function (search) {
+            // eslint-disable-next-line no-undef
+            getPeopleByName(search, user_properties.teaching, "student", true)
+                .then(resp => {
+                    this.studentOptions = resp.data;
+                })
+                .catch(err => {
+                    alert(err);
+                });
+        },
         /**
          * Delete a PIA record.
          * 
@@ -120,7 +184,8 @@ export default {
         },
         /** Load or reload PIA entries. */
         loadEntries: function () {
-            axios.get("/pia/api/pia/?ordering=student__classe__year,student__classe__letter&page=" + this.currentPage)
+            const ordering = "ordering=student__classe__year,student__classe__letter";
+            axios.get("/pia/api/pia/?" + ordering + "&page=" + this.currentPage + this.filter)
                 .then(resp => {
                     this.entries = resp.data.results;
                     this.entriesCount = resp.data.count;
@@ -129,9 +194,14 @@ export default {
     },
     mounted: function () {
         this.loadEntries();
+        // eslint-disable-next-line no-undef
+        this.canAddPia = canAddPIA;
+
+        this.$store.dispatch("loadOptions");
     },
     components: {
-        Entry
+        Entry,
+        Multiselect
     }
 };
 </script>

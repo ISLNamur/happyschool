@@ -28,11 +28,13 @@
                                 type="date"
                                 v-model="date_start"
                                 class="mr-sm-2 ml-2"
+                                :state="inputStates.date_start"
                             />
                             au<b-form-input
                                 type="date"
                                 v-model="date_end"
                                 class="ml-2"
+                                :state="inputStates.date_end"
                             />
                         </b-form>
                     </strong>
@@ -67,9 +69,10 @@
                         <b-form-group
                             label="Branche"
                             label-cols="2"
+                            :state="inputStates.branch"
                         >
                             <multiselect
-                                :options="branchOptions"
+                                :options="$store.state.branches"
                                 placeholder="Choisisser une branche"
                                 select-label=""
                                 selected-label="Sélectionné"
@@ -89,6 +92,7 @@
                                 <span slot="noResult">Aucune branche trouvée.</span>
                                 <span slot="noOptions" />
                             </multiselect>
+                            <span slot="invalid-feedback">{{ errorMsg('branch') }}</span>
                         </b-form-group>
                     </b-col>
                 </b-form-row>
@@ -97,6 +101,7 @@
                         <b-form-group
                             :label="goalLabel"
                             label-cols="3"
+                            :state="inputStates.goals"
                         >
                             <multiselect
                                 :options="goalOptions"
@@ -116,6 +121,7 @@
                                 <span slot="noResult">Aucun aménagements trouvé.</span>
                                 <span slot="noOptions" />
                             </multiselect>
+                            <span slot="invalid-feedback">{{ errorMsg('cross_goals') }}{{ errorMsg('branch_goals') }}</span>
                         </b-form-group>
                     </b-col>
                 </b-form-row>
@@ -157,7 +163,7 @@
                     <b-col>
                         <b-form-group label="Évaluation">
                             <multiselect
-                                :options="assessmentOptions"
+                                :options="$store.state.assessments"
                                 placeholder="Choisisser une ou des évaluations"
                                 tag-placeholder="Ajouter l'évaluation"
                                 select-label=""
@@ -224,13 +230,10 @@ export default {
             date_end: null,
             goalOptions: [],
             goals: [],
-            branchOptions: [],
-            branchGoalAll: [],
             branch: null,
             givenHelp: "",
             indicatorAction: "",
             selfAssessment: "",
-            assessmentOptions: [],
             assessment: null,
             editorOptions: {
                 modules: {
@@ -247,14 +250,48 @@ export default {
             },
             subGoals: [],
             expanded: false,
+            errors: {},
+            inputStates: {
+                "date_start": null,
+                "date_end": null,
+                "goals": null,
+                "branch": null,
+            },
         };
     },
+    watch: {
+        errors: function (newErrors) {
+            const goalKey = this.useBranch ? "branch_goals" : "cross_goals";
+            Object.keys(this.inputStates).forEach(key => {
+                if (key.includes("goals") && goalKey in newErrors) {
+                    this.inputStates.goals = newErrors[goalKey].length == 0;
+                } else if (key in newErrors) {
+                    this.inputStates[key] = newErrors[key].length == 0;
+                } else {
+                    this.inputStates[key] = null;
+                }
+            });
+        },
+    },
     methods: {
+        /** 
+         * Assign text error if any.
+         * 
+         * @param {String} err Field name.
+         */
+        errorMsg(err) {
+            console.log(err);
+            if (err in this.errors) {
+                return this.errors[err][0];
+            } else {
+                return "";
+            }
+        },
         toggleExpand: function () {
             this.expanded = !this.expanded;
         },
         updateBranchGoal: function (branch) {
-            this.goalOptions = this.branchGoalAll.filter(bg => bg.branch == branch.id);
+            this.goalOptions = this.$store.state.branchGoalItems.filter(bg => bg.branch == branch.id);
         },
         assignGoal: function () {
             if (this.goalObject.id >= 0) {
@@ -263,17 +300,18 @@ export default {
                 this.indicatorAction = this.goalObject.indicator_action;
                 this.givenHelp = this.goalObject.given_help;
                 this.selfAssessment = this.goalObject.self_assessment;
-                this.assessment = this.assessmentOptions.filter(a => a.id == this.goalObject.assessment)[0];
+                this.assessment = this.$store.state.assessments.filter(a => a.id == this.goalObject.assessment)[0];
 
                 // Assign branch if necessary.
                 if (this.useBranch) {
-                    this.branch = this.branchOptions.find(b => b.id == this.goalObject.branch);
+                    this.branch = this.$store.state.branches.find(b => b.id == this.goalObject.branch);
                 }
 
                 // Assign goals
                 let specificGoals = this.useBranch ? this.goalObject.branch_goals : this.goalObject.cross_goals;
                 let goals = specificGoals.split(";");
-                this.goals = this.goalOptions.filter(cg => goals.includes(cg.goal));
+                const options = this.useBranch ? this.$store.state.branchGoalItems : this.$store.state.crossGoalItems;
+                this.goals = options.filter(cg => goals.includes(cg.goal));
                 let newGoals = goals.filter(g => !this.goalOptions.map(cg => cg.goal).includes(g));
                 newGoals.forEach(ng => this.addGoalTag(ng));
             }
@@ -283,6 +321,9 @@ export default {
         },
         submit: function (piaId) {
             if (this.goals) {
+                // Reset errors.
+                this.errors = {};
+
                 const goals = this.goals.reduce((acc, cg) => acc + ";" + cg.goal, "");
                 const goalPath = this.useBranch ? "branch_goal" : "cross_goal";
                 const goalField = goalPath + "s";
@@ -297,29 +338,28 @@ export default {
                     [goalField]: this.goals.length > 0 ? goals.slice(1) : null,
                 };
 
-                if (this.useBranch) data["branch"] = this.branch.id;
+                if (this.useBranch && this.branch) data["branch"] = this.branch.id;
 
                 const isNew = this.goalObject.id < 0;
                 const url =  !isNew ? `/pia/api/${goalPath}/` + this.goalObject.id + "/" : `/pia/api/${goalPath}/`;
-                return !isNew ? axios.put(url, data, token) : axios.post(url, data, token);
+                const putOrPost = !isNew ? axios.put : axios.post;
+                return putOrPost(url, data, token)
+                    .catch(error => {
+                        this.errors = error.response.data;
+                        throw "Erreur lors de l'envoi des données.";
+                    });
             }
         },
     },
     mounted: function () {
         if (this.goalObject.id < 0) this.expanded = true;
 
-        const promises = [
-            axios.get(`/pia/api/${this.itemModel}/`),
-            axios.get("/pia/api/assessment/"),
-        ];
-        if (this.useBranch) promises.push(axios.get("/pia/api/branch/"));
-        Promise.all(promises)
-            .then(resps => {
-                this.goalOptions = resps[0].data.results;
-                this.assessmentOptions = resps[1].data.results;
+        this.$store.dispatch("loadOptions")
+            .then(() => {
                 if (this.useBranch) {
-                    this.branchOptions = resps[2].data.results;
-                    this.branchGoalAll = this.goalOptions;
+                    this.goalOptions = this.$store.state.branchGoalItems;
+                } else {
+                    this.goalOptions = this.$store.state.crossGoalItems;
                 }
                 this.assignGoal();
             });

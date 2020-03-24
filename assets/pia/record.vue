@@ -139,7 +139,7 @@
                     :state="inputStates.disorder"
                 >
                     <multiselect
-                        :options="disorderOptions"
+                        :options="$store.state.disorders"
                         placeholder="Sélectionner le ou les différents troubles"
                         select-label=""
                         selected-label="Sélectionné"
@@ -192,7 +192,7 @@
                     :state="inputStates.schedule_adjustment"
                 >
                     <multiselect
-                        :options="scheduleAdjustmentOptions"
+                        :options="$store.state.scheduleAdjustments"
                         placeholder="Sélectionner le ou les différents adaptations"
                         select-label=""
                         selected-label="Sélectionné"
@@ -308,12 +308,7 @@ export default {
         return {
             responsibleOptions: [],
             studentOptions: [],
-            disorderOptions: [],
             disorderResponseOptions: [],
-            scheduleOptions: [],
-            disorderResponseAll: [],
-            /** Available options for schedule adjustment select.  */
-            scheduleAdjustmentOptions: [],
             searchId: -1,
             sending: false,
             form: {
@@ -448,7 +443,7 @@ export default {
                 });
         },
         updateDisorderResponse: function (selected) {
-            this.disorderResponseOptions = this.disorderResponseAll.filter(d => {
+            this.disorderResponseOptions = this.$store.state.disorderResponses.filter(d => {
                 return this.form.disorder.map(x => x.id).includes(d.disorder);
             });
 
@@ -456,7 +451,7 @@ export default {
 
             // Append corresponding disorder response.
             const lastDisorder = selected[selected.length -1];
-            const newDisorderResponse = this.disorderResponseAll.filter(d => {
+            const newDisorderResponse = this.$store.state.disorderResponses.filter(d => {
                 const matchDisorder = d.disorder == lastDisorder.id;
                 const alreadySelected = this.form.disorder_response.map(dr => dr.id).includes(d.id);
                 return matchDisorder && !alreadySelected;
@@ -479,6 +474,13 @@ export default {
                     });
                 });
             }
+        },
+        showFailure: function () {
+            this.sending = false;
+            this.$root.$bvToast.toast("Un problème est survenu lors de l'enregistrement. Merci de vérifier que les données requises ont été complétées.", {
+                variant: "danger",
+                noCloseButton: true,
+            });
         },
         submit: function (evt) {
             evt.preventDefault();
@@ -512,7 +514,7 @@ export default {
                         .then(resps => {
                             // Update goals component with response.
                             const subPromises = [];
-                            const councilResponses = resps.filter(r => r.config.url.includes("/pia/api/class_council/"));
+                            const councilResponses = resps.filter(r =>r && r.config.url.includes("/pia/api/class_council/"));
 
                             if (councilResponses.length == 0) {
                                 this.showSuccess(recordId);
@@ -531,18 +533,17 @@ export default {
                                     this.showSuccess(recordId);
                                 })
                                 .catch(err => {
-                                    app.sending = false;
-                                    alert(err);
+                                    console.log(err);
+                                    this.showFailure();
                                 });
                         })
                         .catch(err => {
-                            app.sending = false;
-                            alert(err);
+                            console.log(err);
+                            this.showFailure();
                         });
 
                 }).catch(function (error) {
-                    app.sending = false;
-                    alert(error);
+                    this.showFailure();
                     if ("response" in error) app.errors = error.response.data;
                 });
         },
@@ -563,9 +564,9 @@ export default {
                         axios.get("/annuaire/api/responsible/" + s + "/")
                             .then(resp => this.form.sponsor.push(resp.data));
                     });
-                    this.form.disorder = this.disorderOptions.filter(d => resp.data.disorder.includes(d.id));
-                    this.form.disorder_response = this.disorderResponseAll.filter(dr => resp.data.disorder_response.includes(dr.id));
-                    this.form.schedule_adjustment = this.scheduleAdjustmentOptions.filter(sa => resp.data.schedule_adjustment.includes(sa.id));
+                    this.form.disorder = this.$store.state.disorders.filter(d => resp.data.disorder.includes(d.id));
+                    this.form.disorder_response = this.$store.state.disorderResponses.filter(dr => resp.data.disorder_response.includes(dr.id));
+                    this.form.schedule_adjustment = this.$store.state.scheduleAdjustments.filter(sa => resp.data.schedule_adjustment.includes(sa.id));
                 });
         },
         /**
@@ -575,29 +576,23 @@ export default {
          * the retrieval of the current data record (goals and council included).
          */
         initApp: function () {
-            const promises = [
-                axios.get("/pia/api/disorder/"),
-                axios.get("/pia/api/disorder_response/"),
-                axios.get("/pia/api/schedule_adjustment/")
-            ];
-            Promise.all(promises)
-                .then(resps => {
-                    this.disorderOptions = resps[0].data.results;
-                    this.disorderResponseAll = resps[1].data.results;
-                    this.scheduleAdjustmentOptions = resps[2].data.results;
-                    if (this.id) this.loadPIA(this.id);
+            this.$store.dispatch("loadOptions")
+                .then(() => {
+                    if (this.id) {
+                        this.loadPIA(this.id);
+                        axios.get("/pia/api/cross_goal/?pia_model=" + this.id)
+                            .then(resp => {
+                                this.cross_goal = resp.data.results;
+                            });
+                        axios.get("/pia/api/branch_goal/?pia_model=" + this.id)
+                            .then(resp => {
+                                this.branch_goal = resp.data.results;
+                            });
+                    }
                 });
 
             // Load goals and class council.
             if (this.id) {
-                axios.get("/pia/api/cross_goal/?pia_model=" + this.id)
-                    .then(resp => {
-                        this.cross_goal = resp.data.results;
-                    });
-                axios.get("/pia/api/branch_goal/?pia_model=" + this.id)
-                    .then(resp => {
-                        this.branch_goal = resp.data.results;
-                    });
                 axios.get("/pia/api/class_council/?pia_model=" + this.id)
                     .then(resp => {
                         this.classCouncil = resp.data.results;
