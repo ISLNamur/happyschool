@@ -39,7 +39,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from core.views import BaseFilters, BaseModelViewSet
+from core.views import BaseFilters, BaseModelViewSet, get_model_settings
 from core.utilities import get_menu
 from core.utilities import get_scholar_year, check_student_photo
 from core.models import StudentModel, ResponsibleModel
@@ -64,13 +64,9 @@ def get_menu_entry(active_app, user):
             "active": active_app == "dossier_eleve"
     }
 
-def get_settings():
-    settings_dossier_eleve = DossierEleveSettingsModel.objects.first()
-    if not settings_dossier_eleve:
-        # Create default settings.
-        settings_dossier_eleve = DossierEleveSettingsModel.objects.create().save()
 
-    return settings_dossier_eleve
+def get_settings():
+    return get_model_settings(DossierEleveSettingsModel)
 
 
 def get_generic_groups() -> dict:
