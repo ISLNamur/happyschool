@@ -217,7 +217,7 @@ class EmailModel(models.Model):
     years = models.ManyToManyField(YearModel, blank=True)
 
     def __str__(self):
-        return self.display
+        return "%s <%s>" % (self.display, self.email)
 
 
 class ImportCalendarModel(models.Model):
