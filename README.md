@@ -36,5 +36,5 @@ HappySchool s'appuie sur toute une série de projets opensource dont les framewo
 Ressources
 ----------
 
-- [La documentation](https://github.com/ISLNamur/happyschool/docs)
+- [La documentation](https://happyschool.readthedocs.io/)
 - [Site officiel](https://github.com/ISLNamur/happyschool)

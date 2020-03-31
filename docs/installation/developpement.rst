@@ -1,6 +1,6 @@
 .. _installation_developpement:
 
-Installation de l’environnement de développement
+Développement
 ************************************************
 
 HappySchool propose deux solutions pour installer un environnement de

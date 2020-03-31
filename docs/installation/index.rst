@@ -2,8 +2,6 @@
 Installation
 ############
 
-Prérequis
-=========
 
 Happyschool a été prévu pour fonctionner sur le plus d’environnement
 possible, il peut donc techniquement tourner sur Windows, OSX, linux.

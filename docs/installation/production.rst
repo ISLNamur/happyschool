@@ -1,6 +1,6 @@
 .. _installation_production:
 
-Installation de l’environnement de production
+Production
 *********************************************
 
 La manière la plus rapide et la plus simple est d'utiliser un playbook ansible

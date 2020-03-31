@@ -1,11 +1,6 @@
-############
-Developement
-############
-
-.. figure:: ../img/happyschool_architecture.png
-   :alt: Architecture Happyschool
-
-   Architecture Happyschool
+#############
+Développement
+#############
 
 La volonté derrière l’architecture d’HappySchool est de garder une
 certaine simplicité autour de composants matures et flexibles. De
