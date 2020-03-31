@@ -54,10 +54,10 @@ INSTALLED_APPS = [
     'core',
     'webpack_loader',
     'annuaire',
-    # 'infirmerie',
-    # 'appels',
+    'infirmerie',
+    'appels',
     # 'absence_prof',
-    # 'dossier_eleve',
+    'dossier_eleve',
     # 'mail_notification',
     # 'mail_answer',
     # 'schedule_change',
@@ -99,6 +99,7 @@ TEMPLATES = [
     },
 ]
 
+# Max size for uploaded file.
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 
 
@@ -137,9 +138,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-    #'social_core.backends.open_id.OpenIdAuth',
-    #'social_core.backends.google.GoogleOpenId',
-    #'social_core.backends.google.GoogleOAuth2',
+    # 'django_auth_ldap.backend.LDAPBackend', # For LDAP/ActiveDirectory authentification.
+    # 'social_core.backends.google.GoogleOAuth2', # For google authentification.
 ]
 
 if 'social_django' in INSTALLED_APPS:
@@ -165,9 +165,6 @@ SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
-
-LOCAL_DOMAIN = ''
-REMOTE_DOMAIN = ''
 
 if DEBUG:
     STATICFILES_DIRS = [
