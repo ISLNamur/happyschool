@@ -24,21 +24,65 @@ from .models import StudentModel, TeachingModel, ResponsibleModel, AdditionalStu
 
 class StudentCoreAdmin(admin.ModelAdmin):
     list_display = ('matricule', 'last_name', 'first_name', 'classe',)
-    search_fields = ['last_name', 'matricule']
+    search_fields = ['last_name', "first_name", 'matricule']
+    list_filter = ["classe"]
+    list_select_related = True
+    ordering = ["classe__year", "classe__letter", "last_name", "first_name"]
+
+
+class AdditionalStudentInfoCoreAdmin(admin.ModelAdmin):
+    list_display = ["student", "resp_email", "mother_email", "father_email"]
+    search_fields = ['student__last_name', "student__first_name", 'student__matricule']
+    list_filter = ["student__classe"]
+    ordering = [
+        "student__classe__year", "student__classe__letter",
+        "student__last_name", "student__first_name"
+    ]
+
+
+class InactivesListFilter(admin.SimpleListFilter):
+    title = "Inactivité"
+
+    parameter_name = 'inactives'
+
+    def lookups(self, request, model_admin):
+        return (
+            ("actives", "Actifs"),
+            ("inactives", "Inactifs"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "inactives":
+            return queryset.filter(inactive_from__isnull=False)
+
+        if self.value() == "actives":
+            return queryset.filter(inactive_from__isnull=True)
+
+        return queryset
 
 
 class ResponsibleCoreAdmin(admin.ModelAdmin):
-    list_display = ('matricule', 'last_name', 'first_name', 'is_teacher', 'is_educator', 'is_secretary', 'user',)
-    search_fields = ['last_name', 'matricule']
-    filter_horizontal = ('classe','tenure',)
+    list_display = [
+        'matricule', 'last_name', 'first_name',
+        'is_teacher', 'is_educator', 'is_secretary',
+        'user'
+    ]
+    search_fields = ['last_name', "first_name", 'matricule']
+    filter_horizontal = ('classe', 'tenure',)
+    list_filter = ["is_teacher", "is_educator", "is_secretary", InactivesListFilter, ]
+    autocomplete_fields = ["user"]
 
+
+class ClassCoreAdmin(admin.ModelAdmin):
+    ordering = ['teaching', 'year', 'letter']
+    list_filter = ['year', 'letter', 'teaching']
 
 
 admin.site.register(StudentModel, StudentCoreAdmin)
 admin.site.register(TeachingModel)
 admin.site.register(ResponsibleModel, ResponsibleCoreAdmin)
-admin.site.register(AdditionalStudentInfo)
-admin.site.register(ClasseModel)
+admin.site.register(AdditionalStudentInfo, AdditionalStudentInfoCoreAdmin)
+admin.site.register(ClasseModel, ClassCoreAdmin)
 admin.site.register(EmailModel)
 admin.site.register(YearModel)
 admin.site.register(CoreSettingsModel)
