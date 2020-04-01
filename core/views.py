@@ -55,7 +55,7 @@ from core.serializers import ResponsibleSensitiveSerializer, TeachingSerializer,
 from core.utilities import get_scholar_year, get_menu
 
 
-def get_model_settings(SettingsModel):
+def get_app_settings(SettingsModel):
     settings_model = SettingsModel.objects.first()
     if not settings_model:
         # Create default settings.
@@ -65,7 +65,7 @@ def get_model_settings(SettingsModel):
 
 
 def get_core_settings():
-    return get_model_settings(CoreSettingsModel)
+    return get_app_settings(CoreSettingsModel)
 
 
 class BaseFilters(filters.FilterSet):
