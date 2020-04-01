@@ -7,6 +7,7 @@ settings.py
 Ce fichier python se situe dans le dossier ``happyschool`` et **doit**
 être configuré pour assurer le bon fonctionnement d’Happyschool.
 
+
 -  ``SECRET_KEY`` est utilisé pour la protection des mots de passes. Si
    vous utilisez directement le système d’authentification de django
    (sans passer par un serveur LDAP/ActiveDirectory) vous **devez**
@@ -27,18 +28,19 @@ Ce fichier python se situe dans le dossier ``happyschool`` et **doit**
    (``NAME``), l’utilisateur (``USER``) et le mot de passe
    (``PASSWORD``) pour y accéder.
 -  ``AUTHENTICATION_BACKENDS`` reprend tous les types de système
-   d’authentification. Par défaut, le *backend* LDAP et le *backend*
-   intégré à django sont activés.
--  ``LOCAL_DOMAIN``, ``REMOTE_DOMAIN`` sont utilisées dans le cas où
-   vous disposez d’une instance locale avec des données confidentielles
-   et instance sur internet pour la notification et réponse à l’envoi de
-   courriels.
+   d’authentification. Par défaut, le *backend* intégré à django est activés.
 -  ``EMAIL_ADMIN`` est le courriel de l’administrateur. Il est
    principalement utilisé pour tout ce qui debug et administration.
 -  ``EMAIL_HOST``, ``EMAIL_PORT``, ``EMAIL_HOST_USER``,
    ``EMAIL_HOST_PASSWORD``, ``EMAIL_FROM`` pour la configuration du
    serveur d’envoi du courriel. Il n’est pas utilisé pour l’envoi de
    masse avec l’application ``mail_notification``.
+-  ``LOGIN_REDIRECT_URL`` est l'url de redirection après authentification.
+   Par défault, renvoie vers l'annuaire.
+
+Configuration avancée
+---------------------
+
 -  Les variables ``****_GROUP`` font correspondre le nom des groupes
    utilisés dans Happyschool et ceux dans le serveur
    LDAP/ActiveDirectory.
