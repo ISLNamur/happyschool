@@ -20,7 +20,7 @@ celery = ">=4"
 django-webpack-loader = "*"
 djangorestframework = "*"
 ldap3 = "*"
-requests = "==2.20.1"
+requests = "==2.23.0"
 icalendar = "*"
 django-bootstrap3-datetimepicker = {git = "https://github.com/Supermanu/django-bootstrap3-datetimepicker.git",ref = "dcb355c28755475932a79bf49e15ee6e60552b90"}
 django-weasyprint = "*"
