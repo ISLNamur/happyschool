@@ -30,7 +30,7 @@ from django_filters import rest_framework as filters
 
 from core.models import TeachingModel
 from core.utilities import get_menu
-from core.views import BaseModelViewSet
+from core.views import BaseModelViewSet, get_app_settings
 
 from . import models
 from . import serializers
@@ -48,16 +48,7 @@ def get_menu_entry(active_app: str, user) -> dict:
 
 
 def get_settings():
-    settings_pia = models.PIASettingsModel.objects.first()
-    if not settings_pia:
-        # Create default settings.
-        settings_pia = models.PIASettingsModel.objects.create()
-        # If only one teaching exist, assign it.
-        if TeachingModel.objects.count() == 1:
-            settings_pia.teachings.add(TeachingModel.objects.first())
-        settings_pia.save()
-
-    return settings_pia
+    return get_app_settings(models.PIASettingsModel)
 
 
 class PIAView(LoginRequiredMixin,

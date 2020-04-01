@@ -34,7 +34,7 @@ from rest_framework.status import HTTP_202_ACCEPTED
 
 from django_filters import rest_framework as filters
 
-from core.views import BaseModelViewSet, BaseFilters, get_core_settings
+from core.views import BaseModelViewSet, BaseFilters, get_core_settings, get_app_settings
 from core.utilities import get_menu
 from core.email import send_email
 
@@ -57,14 +57,9 @@ def get_menu_entry(active_app: str, user) -> dict:
 
 
 def get_settings():
-    settings_schedule = ScheduleChangeSettingsModel.objects.first()
     # Ensure core settings is created.
     get_core_settings()
-    if not settings_schedule:
-        # Create default settings.
-        settings_schedule = ScheduleChangeSettingsModel.objects.create().save()
-
-    return settings_schedule
+    return get_app_settings(ScheduleChangeSettingsModel)
 
 
 class ScheduleChangeView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):

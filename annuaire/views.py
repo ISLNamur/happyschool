@@ -51,6 +51,7 @@ from core.models import StudentModel, ClasseModel, TeachingModel, ResponsibleMod
 from core.serializers import StudentSerializer, ResponsibleSerializer, ClasseSerializer,\
     StudentGeneralInfoSerializer, StudentContactInfoSerializer, StudentMedicalInfoSerializer,\
     ResponsibleSensitiveSerializer, YearSerializer
+from core.views import get_app_settings
 
 from .models import AnnuaireSettingsModel
 from .serializers import AnnuaireSettingsSerializer
@@ -401,12 +402,7 @@ def get_class_photo_pdf(request, classe):
 
 
 def get_settings():
-    settings_annuaire = AnnuaireSettingsModel.objects.first()
-    if not settings_annuaire:
-        # Create default settings.
-        AnnuaireSettingsModel.objects.create().save()
-
-    return settings_annuaire
+    return get_app_settings(AnnuaireSettingsModel)
 
 
 class AnnuaireView(LoginRequiredMixin,

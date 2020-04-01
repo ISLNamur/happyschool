@@ -32,7 +32,7 @@ from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.filters import OrderingFilter
 
-from core.views import BaseFilters, PageNumberSizePagination
+from core.views import BaseFilters, PageNumberSizePagination, get_app_settings
 from core.utilities import get_menu
 from core import email
 
@@ -52,12 +52,7 @@ def get_menu_entry(active_app, user):
 
 
 def get_settings():
-    settings_absence_prof = AbsenceProfSettingsModel.objects.first()
-    if not settings_absence_prof:
-        # Create default settings.
-        settings_absence_prof = AbsenceProfSettingsModel.objects.create().save()
-
-    return settings_absence_prof
+    return get_app_settings(AbsenceProfSettingsModel)
 
 
 class AbsenceProfView(LoginRequiredMixin,

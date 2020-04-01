@@ -35,7 +35,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from core import email
 from core.people import People, get_classes
-from core.views import BaseFilters, BaseModelViewSet
+from core.views import BaseFilters, BaseModelViewSet, get_app_settings
 from core.utilities import get_menu, check_student_photo
 
 from .models import Appel, ObjectModel, MotiveModel, AppelsSettingsModel
@@ -52,13 +52,9 @@ def get_menu_entry(active_app, user):
             "active": active_app == "appels"
     }
 
-def get_settings():
-    settings_appels = AppelsSettingsModel.objects.first()
-    if not settings_appels:
-        # Create default settings.
-        settings_appels = AppelsSettingsModel.objects.create().save()
 
-    return settings_appels
+def get_settings():
+    return get_app_settings(AppelsSettingsModel)
 
 
 def send_emails(appel):

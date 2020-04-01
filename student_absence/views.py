@@ -38,7 +38,7 @@ from rest_framework.filters import OrderingFilter
 from core.utilities import get_menu, get_scholar_year
 from core.people import get_classes
 from core.models import ResponsibleModel, StudentModel
-from core.views import BaseFilters, PageNumberSizePagination
+from core.views import BaseFilters, PageNumberSizePagination, get_app_settings
 
 from .models import StudentAbsenceModel, StudentAbsenceSettingsModel, JustificationModel, ClasseNoteModel,\
     PeriodModel
@@ -58,12 +58,7 @@ def get_menu_entry(active_app: str, user) -> dict:
 
 
 def get_settings():
-    settings_student_absence = StudentAbsenceSettingsModel.objects.first()
-    if not settings_student_absence:
-        # Create default settings.
-        settings_student_absence = StudentAbsenceSettingsModel.objects.create().save()
-
-    return settings_student_absence
+    return get_app_settings(StudentAbsenceSettingsModel)
 
 
 class StudentAbsenceView(LoginRequiredMixin,

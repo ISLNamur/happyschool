@@ -33,7 +33,7 @@ from core import email
 from core.utilities import get_menu, check_student_photo
 
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
-from core.views import BaseModelViewSet, BaseFilters
+from core.views import BaseModelViewSet, BaseFilters, get_app_settings
 from .serializers import PassageSerializer, InfirmerieSettingsSerializer
 
 
@@ -49,12 +49,7 @@ def get_menu_entry(active_app, user):
 
 
 def get_settings():
-    settings_infirmerie = InfirmerieSettingsModel.objects.first()
-    if not settings_infirmerie:
-        # Create default settings.
-        settings_infirmerie = InfirmerieSettingsModel.objects.create().save()
-
-    return settings_infirmerie
+    return get_app_settings(InfirmerieSettingsModel)
 
 
 def send_emails(passage, template, subject):
