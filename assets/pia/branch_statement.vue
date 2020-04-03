@@ -82,7 +82,7 @@
                         label-cols="2"
                     >
                         <multiselect
-                            :options="branchOptions"
+                            :options="$store.state.branches"
                             placeholder="Choisisser une branche"
                             select-label=""
                             selected-label="Sélectionné"
