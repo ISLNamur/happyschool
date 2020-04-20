@@ -35,8 +35,3 @@ class Passage(models.Model):
     datetime_sortie = models.DateTimeField("date de sortie", null=True, blank=True)
     motifs_admission = models.CharField(max_length=2000)
     remarques_sortie = models.CharField(max_length=2000, blank=True)
-
-    class Meta:
-        permissions = (
-            ('access_infirmerie', 'Can access to infirmerie data'),
-        )

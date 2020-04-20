@@ -38,7 +38,7 @@ from .serializers import PassageSerializer, InfirmerieSettingsSerializer
 
 
 def get_menu_entry(active_app, user):
-    if not user.has_perm('infirmerie.access_infirmerie'):
+    if not user.has_perm('infirmerie.view_passage'):
         return {}
     return {
             "app": "infirmerie",
@@ -80,7 +80,7 @@ class PassageView(LoginRequiredMixin,
                  PermissionRequiredMixin,
                  TemplateView):
     template_name = "infirmerie/infirmerie.html"
-    permission_required = ('infirmerie.access_infirmerie')
+    permission_required = ('infirmerie.view_passage')
     filters = [{'value': 'name', 'text': 'Nom'},
                {'value': 'activate_ongoing', 'text': 'Malades présents'},
                {'value': 'matricule_id', 'text': 'Matricule'},]
