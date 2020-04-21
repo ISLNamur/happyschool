@@ -1,0 +1,46 @@
+version: '3.1'
+
+services:
+  db:
+    build: ./docker/postgres
+    environment:
+      POSTGRES_PASSWORD: happyschooldb
+      POSTGRES_USER: happyschooldb
+      POSTGRES_DB: happyschooldb
+    volumes:
+      - happyschooldb:/var/lib/postgresql/data
+    networks:
+      - happyschoolnw
+
+  redis:
+    image: redis:latest
+    networks:
+      - happyschoolnw
+
+  django:
+    build:
+      context: .
+      dockerfile: ./docker/django/Dockerfile
+    volumes:
+      - .:/opt/happyschool
+      - /opt/happyschool/node_modules
+    depends_on:
+      - db
+      - redis
+    networks:
+      - happyschoolnw
+    ports:
+      - 8000:8000
+    environment:
+      REDIS_HOST: redis
+      DB_HOST: db
+      DB_USER: happyschooldb
+      DB_PASSWORD: happyschooldb
+      DB_NAME: happyschooldb
+
+volumes:
+  happyschooldb:
+
+networks:
+  happyschoolnw:
+    driver: bridge
