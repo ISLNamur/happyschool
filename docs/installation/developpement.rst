@@ -8,6 +8,75 @@ développement. Soit par une image Docker, soit par une installation manuelle.
 
 Docker
 ======
+`Docker <https://fr.wikipedia.org/wiki/Docker_(logiciel)>`__ est une solution
+de conteneurisation qui permet d'embarquer tous les logiciels nécessaire au
+bon fonctionnement d'HappySchool, il peut être vu comme une solution *légère*
+de virtualisation. Il permet ainsi de lancer HappySchool de manière
+indépendante par rapport au système.
+
+Prérequis
+---------
+
+La première étape est donc d'`installer
+<https://docs.docker.com/engine/install/>`__ Docker et `docker-compose 
+<https://docs.docker.com/compose/install/>`__. Par exemple, sur ubuntu la
+commande suivante devrait installer les deux logiciels.
+
+::
+
+   sudo apt install docker.io docker-compose
+
+HappySchool
+-----------
+
+L'étape suivante est de télécharger le code d'HappySchool avec le logiciel git.
+La commande suivante va télécharger et créer un dossier happyschool avec la
+dernière version d'HappySchool dans le répertoire courant.
+
+::
+
+   git clone https://github.com/ISLNamur/happyschool
+
+Il faut ensuite préparer le fichier de configuration d'HappySchool. Placez-vous
+dans le nouveau dossier ``happyschool`` et créer votre fichier de configuration
+à partir du fichier exemple avec la commande suivante.
+
+::
+
+   cp happyschool/setting.example.py happyschool/setting.py
+
+Construire les images docker
+----------------------------
+
+Tout est maintenant prêt pour créer les conteneurs avec la commande suivante.
+Par défaut dans ubuntu, la commande ``docker`` doit être utilisé avec les
+droits administrateurs d'où l'utilisation de ``sudo`` dans les prochaines
+commandes.
+
+::
+
+   sudo docker-compose build --no-cache --force-rm
+
+Démarrer les images
+-------------------
+
+Pour démarrer les images dockers, il nous reste plus qu'à lancer :
+
+::
+
+   sudo docker-compose up
+
+Vous pouvez maintenant accéder à HappySchool sur http://127.0.0.1:8000 et
+vous connecter avec l'utilisateur admin et le mot de passe admin.
+
+Si vous voulez accéder au conteneur pour créer/appliquer une migration django
+ou bien pour générer le code javascript. La commande suivante vous-y donnera
+accès.
+
+::
+
+   sudo docker exec -ti happyschool_django_1 bash
+
 
 Installation manuelle
 =====================
