@@ -109,9 +109,9 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'happyschool',
-        'USER': 'happyschool',
-        'PASSWORD': 'libreschool',
+        'NAME': os.getenv("DB_NAME", "happyschool"),
+        'USER': os.getenv("DB_USER", "happyschool"),
+        'PASSWORD': os.getenv("DB_PASSWORD", "libreschool"),
         'HOST': os.getenv("DB_HOST", "localhost"),
         'PORT': '',
     }
