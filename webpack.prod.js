@@ -7,7 +7,7 @@ const src= `./*/assets/*`;
 const dist= `./assets/.`;
 
 shell(`mkdir -p ${dist}`);
-shell(`cp -r ${src} ${dist}`);
+shell(`if ls ./*/assets/*  1> /dev/null 2>&1; then; cp -r ${src} ${dist}; fi`);
 
 module.exports = merge(common, {
   mode: 'production',
