@@ -66,7 +66,7 @@
                                 :show-no-options="false"
                                 :disabled="parseInt(id) >= 0"
                             >
-                                <span slot="noResult">Aucun responsable trouvé.</span>
+                                <span slot="noResult">Aucun élève trouvé.</span>
                                 <span slot="noOptions" />
                             </multiselect>
                         </b-form-group>
