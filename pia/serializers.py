@@ -79,6 +79,11 @@ class ScheduleAdjustmentSerializer(serializers.ModelSerializer):
 
 
 class CrossGoalSerializer(serializers.ModelSerializer):
+    responsible = serializers.SlugRelatedField(
+        many=True, slug_field="matricule",
+        queryset=ResponsibleModel.objects.all()
+    )
+
     class Meta:
         model = models.CrossGoalModel
         fields = '__all__'
@@ -97,6 +102,11 @@ class BranchSerializer(serializers.ModelSerializer):
 
 
 class BranchGoalSerializer(serializers.ModelSerializer):
+    responsible = serializers.SlugRelatedField(
+        many=True, slug_field="matricule",
+        queryset=ResponsibleModel.objects.all()
+    )
+
     class Meta:
         model = models.BranchGoalModel
         fields = '__all__'
