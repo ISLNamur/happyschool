@@ -68,7 +68,7 @@
                     <b-col>
                         <b-form-group
                             label="Branche"
-                            label-cols="2"
+                            label-cols="3"
                             :state="inputStates.branch"
                         >
                             <multiselect
@@ -96,7 +96,7 @@
                         </b-form-group>
                     </b-col>
                 </b-form-row>
-                <b-form-row>
+                <b-form-row :class="useBranch ? '' : 'mt-2'">
                     <b-col>
                         <b-form-group
                             :label="goalLabel"
@@ -122,6 +122,35 @@
                                 <span slot="noOptions" />
                             </multiselect>
                             <span slot="invalid-feedback">{{ errorMsg('cross_goals') }}{{ errorMsg('branch_goals') }}</span>
+                        </b-form-group>
+                    </b-col>
+                </b-form-row>
+                <b-form-row>
+                    <b-col>
+                        <b-form-group
+                            label="Intervenant(s)"
+                            label-cols="2"
+                            :state="inputStates.responsible"
+                        >
+                            <multiselect
+                                id="responsible"
+                                :internal-search="false"
+                                :options="responsibleOptions"
+                                @search-change="getPeople"
+                                placeholder="Rechercher un intervenants"
+                                select-label=""
+                                selected-label="Sélectionné"
+                                deselect-label="Cliquer dessus pour enlever"
+                                v-model="responsible"
+                                label="display"
+                                track-by="matricule"
+                                :show-no-options="false"
+                                multiple
+                            >
+                                <span slot="noResult">Aucun intervenant trouvé.</span>
+                                <span slot="noOptions" />
+                            </multiselect>
+                            <span slot="invalid-feedback">{{ errorMsg('responsible') }}</span>
                         </b-form-group>
                     </b-col>
                 </b-form-row>
@@ -195,6 +224,8 @@ import {quillEditor} from "vue-quill-editor";
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
 
+import {getPeopleByName} from "../common/search.js";
+
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
@@ -231,6 +262,8 @@ export default {
             goalOptions: [],
             goals: [],
             branch: null,
+            responsible: [],
+            responsibleOptions: [],
             givenHelp: "",
             indicatorAction: "",
             selfAssessment: "",
@@ -248,14 +281,15 @@ export default {
                 },
                 placeholder: ""
             },
-            subGoals: [],
             expanded: false,
+            searchId: -1,
             errors: {},
             inputStates: {
                 "date_start": null,
                 "date_end": null,
                 "goals": null,
                 "branch": null,
+                "responsible": null
             },
         };
     },
@@ -293,6 +327,27 @@ export default {
         updateBranchGoal: function (branch) {
             this.goalOptions = this.$store.state.branchGoalItems.filter(bg => bg.branch == branch.id);
         },
+        getPeople: function (searchQuery) {
+            const person = "responsible";
+            this.searchId += 1;
+            let currentSearch = this.searchId;
+
+            const teachings = this.$store.state.settings.teachings.filter(
+                // eslint-disable-next-line no-undef
+                value => user_properties.teaching.includes(value));
+            getPeopleByName(searchQuery, teachings, person)
+                .then( (resp) => {
+                // Avoid that a previous search overwrites a faster following search results.
+                    if (this.searchId !== currentSearch)
+                        return;
+                    this.responsibleOptions = resp.data;
+                // this.searching = false;
+                })
+                .catch( (err) => {
+                    alert(err);
+                // this.searching = false;
+                });
+        },
         assignGoal: function () {
             if (this.goalObject.id >= 0) {
                 this.date_start = this.goalObject.date_start;
@@ -301,6 +356,11 @@ export default {
                 this.givenHelp = this.goalObject.given_help;
                 this.selfAssessment = this.goalObject.self_assessment;
                 this.assessment = this.$store.state.assessments.filter(a => a.id == this.goalObject.assessment)[0];
+                const respProm =this.goalObject.responsible.filter(r => r !== null).map(r => axios.get("/annuaire/api/responsible/" + r + "/"));
+                Promise.all(respProm)
+                    .then(resps => {
+                        this.responsible = resps.map(resp => resp.data);
+                    });
 
                 // Assign branch if necessary.
                 if (this.useBranch) {
@@ -336,6 +396,7 @@ export default {
                     self_assessment: this.selfAssessment,
                     assessment: this.assessment ? this.assessment.id : null,
                     [goalField]: this.goals.length > 0 ? goals.slice(1) : null,
+                    responsible: this.responsible.map(r => r.matricule),
                 };
 
                 if (this.useBranch && this.branch) data["branch"] = this.branch.id;
