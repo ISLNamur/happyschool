@@ -106,7 +106,7 @@ export default {
                     this.$emit("delete");
                 });
         } else {
-            axios.get("/dossier_eleve/upload_file/" + this.id + "/")
+            axios.get(this.path + this.id + "/")
                 .then(response => {
                     this.link = response.data.attachment;
                     this.filename = this.link.split("/")[this.link.split("/").length - 1];
