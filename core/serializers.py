@@ -142,7 +142,7 @@ class YearSerializer(serializers.ModelSerializer):
 
 
 class TeachingSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(label='ID', read_only=False)
+    id = serializers.IntegerField(label='ID', read_only=False, required=False)
 
     class Meta:
         model = TeachingModel
