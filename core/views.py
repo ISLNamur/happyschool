@@ -20,18 +20,20 @@
 import json
 import warnings
 import requests
+import os
 
 from datetime import date, timedelta
 
 from icalendar import Calendar
 
+from rest_framework import status
 from rest_framework.filters import OrderingFilter
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK
 from rest_framework.permissions import DjangoModelPermissions, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.parsers import MultiPartParser
 
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
@@ -206,6 +208,40 @@ class MembersView(LoginRequiredMixin,
         return context
 
 
+class BaseUploadFileView(APIView):
+    parser_classes = (MultiPartParser,)
+    permission_classes = (IsAuthenticated,)
+    file_model = None
+    file_serializer = None
+
+    def get(self, request, pk, format=None):
+        try:
+            attachment = self.file_model.objects.get(pk=pk)
+            serializer = self.file_serializer(attachment)
+            return Response(data=serializer.data, status=status.HTTP_202_ACCEPTED)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def put(self, request, format=None):
+        file_obj = request.FILES['file']
+        attachment = self.file_model(attachment=file_obj)
+        attachment.save()
+        serializer = self.file_serializer(attachment)
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, pk, format=None):
+        try:
+            attachment = self.file_model.objects.get(pk=pk)
+            attachment.delete()
+            if os.path.isfile(attachment.attachment.path):
+                os.remove(attachment.attachment.path)
+        except ObjectDoesNotExist:
+            pass
+
+        # As we want the object to be removed, if it's not found, it's ok!
+        return Response(status=status.HTTP_200_OK)
+
+
 class ProfilView(LoginRequiredMixin, TemplateView):
     template_name = 'core/profil.html'
 
@@ -347,4 +383,4 @@ class CalendarAPI(APIView):
 
 class PingAPI(APIView):
     def get(self, format=None):
-        return Response(status=HTTP_200_OK, data={})
+        return Response(status=status.HTTP_200_OK, data={})
