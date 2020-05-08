@@ -215,15 +215,19 @@
         </b-row>
         <b-row>
             <b-col>
-                <b-btn @click="classCouncil.unshift({id: -1})">
-                    Ajouter un conseil de classe
+                <b-btn
+                    @click="class_council.unshift({id: -1})"
+                    variant="outline-secondary"
+                >
+                    <b-icon icon="plus" />
+                    Ajouter
                 </b-btn>
             </b-col>
         </b-row>
         <b-row>
             <b-col>
                 <class-council
-                    v-for="(council, index) in classCouncil"
+                    v-for="(council, index) in class_council"
                     :key="council.id"
                     :class_council="council"
                     ref="councils"
@@ -237,7 +241,11 @@
         </b-row>
         <b-row>
             <b-col>
-                <b-btn @click="cross_goal.unshift({id: -1})">
+                <b-btn
+                    @click="cross_goal.unshift({id: -1})"
+                    variant="outline-secondary"
+                >
+                    <b-icon icon="plus" />
                     Ajouter
                 </b-btn>
             </b-col>
@@ -250,7 +258,7 @@
                     :key="'cg-' + goal.id"
                     :goal-object="goal"
                     ref="crossgoals"
-                    @remove="removeGoal('cross_goal', index)"
+                    @remove="removeObject('cross_goal', index)"
                     goal-label="Objectifs transversaux"
                     item-model="cross_goal_item"
                 />
@@ -261,7 +269,11 @@
         </b-row>
         <b-row>
             <b-col>
-                <b-btn @click="branch_goal.unshift({id: -1})">
+                <b-btn
+                    @click="branch_goal.unshift({id: -1})"
+                    variant="outline-secondary"
+                >
+                    <b-icon icon="plus" />
                     Ajouter
                 </b-btn>
             </b-col>
@@ -274,7 +286,7 @@
                     :key="'bg-' + goal.id"
                     :goal-object="goal"
                     ref="branchgoals"
-                    @remove="removeGoal('branch_goal', index)"
+                    @remove="removeObject('branch_goal', index)"
                     goal-label="Objectifs de branche"
                     item-model="branch_goal_item"
                     use-branch
@@ -282,6 +294,60 @@
             </b-col>
         </b-row>
         <b-row />
+        <b-row>
+            <h4>Projet de l'élève</h4>
+        </b-row>
+        <b-row>
+            <b-col>
+                <b-btn
+                    @click="student_project.unshift({id: -1})"
+                    variant="outline-secondary"
+                >
+                    <b-icon icon="plus" />
+                    Ajouter
+                </b-btn>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
+                <comment
+                    class="mt-2"
+                    v-for="(sP, index) in student_project"
+                    :key="sP.id"
+                    @remove="removeObject('student_project', index)"
+                    comment-type="student_project"
+                    :comment-object="sP"
+                    ref="studentprojects"
+                />
+            </b-col>
+        </b-row>
+        <b-row>
+            <h4>Avis des parents</h4>
+        </b-row>
+        <b-row>
+            <b-col>
+                <b-btn
+                    @click="parents_opinion.unshift({id: -1})"
+                    variant="outline-secondary"
+                >
+                    <b-icon icon="plus" />
+                    Ajouter
+                </b-btn>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
+                <comment
+                    class="mt-2"
+                    v-for="(pO, index) in parents_opinion"
+                    :key="pO.id"
+                    @remove="removeObject('parents_opinion', index)"
+                    comment-type="parents_opinion"
+                    :comment-object="pO"
+                    ref="parentsopinions"
+                />
+            </b-col>
+        </b-row>
     </b-container>
 </template>
 
@@ -294,6 +360,7 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 import {getPeopleByName} from "../common/search.js";
 import Goal from "./goal.vue";
 import ClassCouncil from "./class_council.vue";
+import Comment from "./comment.vue";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
@@ -322,8 +389,10 @@ export default {
             },
             cross_goal: [],
             branch_goal: [],
+            student_project: [],
+            parents_opinion: [],
             /** List of class council related to this PIA. */
-            classCouncil: [],
+            class_council: [],
             errors: {},
             /** List of input error states. */
             inputStates: {
@@ -375,25 +444,25 @@ export default {
             }
         },
         /**
-         * Remove a goal from the list.
+         * Remove a object from the list.
          * 
-         * @param {String} goalType The type of the goal (cross_goal or branch_goal).
-         * @param {Number} goalIndex The index of the goal in the associated goal list.
+         * @param {String} objectType The type of the goal (cross_goal, branch_goal, student_project or parents_opinion).
+         * @param {Number} objectIndex The index of the goal in the associated goal list.
          */
-        removeGoal: function (goalType, goalIndex) {
+        removeObject: function (objectType, objectIndex) {
             let app = this;
-            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer l'objectif ?", {
+            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer l'élément ?", {
                 okTitle: "Oui",
                 cancelTitle: "Non",
                 centered: true,
             }).then(resp => {
                 if (resp) {
-                    if (app[goalType][goalIndex].id >= 0) {
-                        axios.delete(`/pia/api/${goalType}/` + app[goalType][goalIndex].id + "/", token)
-                            .then(() => app[goalType].splice(goalIndex, 1))
+                    if (app[objectType][objectIndex].id >= 0) {
+                        axios.delete(`/pia/api/${objectType}/` + app[objectType][objectIndex].id + "/", token)
+                            .then(() => app[objectType].splice(objectIndex, 1))
                             .catch(err => alert(err));
                     } else {
-                        app[goalType].splice(goalIndex, 1);
+                        app[objectType].splice(objectIndex, 1);
                     }
                 }
             });
@@ -411,12 +480,12 @@ export default {
                 centered: true,
             }).then(resp => {
                 if (resp) {
-                    if (app.classCouncil[councilIndex].id >= 0) {
-                        axios.delete("/pia/api/class_council/" + app.classCouncil[councilIndex].id + "/", token)
-                            .then(() => app.classCouncil.splice(councilIndex, 1))
+                    if (app.class_council[councilIndex].id >= 0) {
+                        axios.delete("/pia/api/class_council/" + app.class_council[councilIndex].id + "/", token)
+                            .then(() => app.class_council.splice(councilIndex, 1))
                             .catch(err => alert(err));
                     } else {
-                        app.classCouncil.splice(councilIndex, 1);
+                        app.class_council.splice(councilIndex, 1);
                     }
                 }
             });
@@ -502,17 +571,28 @@ export default {
                 .then(resp => {
                     const recordId = resp.data.id;
                     // No goals, no promises.
-                    if (this.cross_goal.length == 0 && this.branch_goal.length == 0 && this.classCouncil.length == 0) {
+                    if (this.cross_goal.length == 0 && this.branch_goal.length == 0
+                        && this.class_council.length == 0 && this.student_project.length == 0
+                        && this.parents_opinion.length == 0) {
                         this.showSuccess(recordId);
                         return;
                     }
 
                     const crossGoalPromises = this.cross_goal.length != 0 ? this.$refs.crossgoals.map(g => g.submit(recordId)) : [];
                     const branchGoalPromises = this.branch_goal.length != 0 ? this.$refs.branchgoals.map(g => g.submit(recordId)) : [];
-                    const classCouncilPromises = this.classCouncil.length != 0 ? this.$refs.councils.map(c => c.submit(recordId)) : [];
-                    Promise.all(crossGoalPromises.concat(branchGoalPromises, classCouncilPromises))
+                    const sPPromises = this.student_project.length != 0 ? this.$refs.studentprojects.map(sP => sP.submit(recordId)) : [];
+                    const pOPromises = this.parents_opinion.length != 0 ? this.$refs.parentsopinions.map(pO => pO.submit(recordId)) : [];
+                    const classCouncilPromises = this.class_council.length != 0 ? this.$refs.councils.map(c => c.submit(recordId)) : [];
+                    Promise.all(crossGoalPromises.concat(branchGoalPromises, classCouncilPromises, sPPromises, pOPromises))
                         .then(resps => {
-                            // Update goals component with response.
+                            // Update new component with response.
+                            const components = ["cross_goal", "branch_goal", "student_project", "parents_opinion", "class_council"];
+                            components.forEach(comp => {
+                                const compResps = resps.filter(r =>r && r.config.url.includes(`pia/api/${comp}/`));
+                                this[comp] = compResps.map(r => r.data).sort((a, b) => a.datetime_creation < b.datetime_creation);
+                            });
+
+                            // Save class_council subcomponents.
                             const subPromises = [];
                             const councilResponses = resps.filter(r =>r && r.config.url.includes("/pia/api/class_council/"));
 
@@ -523,8 +603,8 @@ export default {
                             // Get branch statement promises.
                             councilResponses.forEach((r, i) => {
                                 if (!("id" in app.$refs.councils[i])) {
-                                    app.classCouncil.splice(i, 1, r.data);
-                                    subPromises.concat(app.$refs.councils[i].submitBranchStatement(app.classCouncil[i].id));
+                                    app.class_council.splice(i, 1, r.data);
+                                    subPromises.concat(app.$refs.councils[i].submitBranchStatement(app.class_council[i].id));
                                 }
                             });
 
@@ -573,7 +653,7 @@ export default {
          * Initialize the component.
          * 
          * It will request options for the select inputs and if editing, call
-         * the retrieval of the current data record (goals and council included).
+         * the retrieval of the current data record (goals, comments and council included).
          */
         initApp: function () {
             this.$store.dispatch("loadOptions")
@@ -588,6 +668,14 @@ export default {
                             .then(resp => {
                                 this.branch_goal = resp.data.results;
                             });
+                        axios.get("/pia/api/student_project/?pia_model=" + this.id)
+                            .then(resp => {
+                                this.student_project = resp.data.results;
+                            });
+                        axios.get("/pia/api/parents_opinion/?pia_model=" + this.id)
+                            .then(resp => {
+                                this.parents_opinion = resp.data.results;
+                            });
                     }
                 });
 
@@ -595,7 +683,7 @@ export default {
             if (this.id) {
                 axios.get("/pia/api/class_council/?pia_model=" + this.id)
                     .then(resp => {
-                        this.classCouncil = resp.data.results;
+                        this.class_council = resp.data.results;
                     });
             }
         }
@@ -607,6 +695,7 @@ export default {
         Multiselect,
         Goal,
         ClassCouncil,
+        Comment,
     }
 };
 </script>

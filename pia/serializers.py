@@ -101,6 +101,12 @@ class BranchSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class AttachmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.AttachmentModel
+        fields = "__all__"
+
+
 class BranchGoalSerializer(serializers.ModelSerializer):
     responsible = serializers.SlugRelatedField(
         many=True, slug_field="matricule",
@@ -137,10 +143,27 @@ class BranchStatementSerializer(serializers.ModelSerializer):
 
 class ClassCouncilPIASerializer(serializers.ModelSerializer):
     """Serializer of a class council.
-    
     Expose all field of the model.
     """
 
     class Meta:
         model = models.ClassCouncilPIAModel
         fields = '__all__'
+
+
+class StudentProjectSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the student's project.
+    """
+    class Meta:
+        model = models.StudentProjectModel
+        fields = "__all__"
+
+
+class ParentsOpinionSerializer(serializers.ModelSerializer):
+    """
+    Serializer for parents' opinion.
+    """
+    class Meta:
+        model = models.ParentsOpinionModel
+        fields = "__all__"

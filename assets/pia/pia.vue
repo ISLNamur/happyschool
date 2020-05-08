@@ -88,13 +88,14 @@
 import axios from "axios";
 
 import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
+import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
 import "vue-awesome/icons";
 import Icon from "vue-awesome/components/Icon.vue";
 
 Vue.use(BootstrapVue);
+Vue.use(IconsPlugin);
 Vue.component("icon", Icon);
 
 import Multiselect from "vue-multiselect";

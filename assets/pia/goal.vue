@@ -40,8 +40,9 @@
                     </strong>
                 </b-col>
                 <b-col
-                    cols="4"
+                    cols="2"
                     align-self="end"
+                    class="text-right"
                 >
                     <b-btn
                         @click="toggleExpand"
@@ -52,8 +53,11 @@
                     <b-btn
                         @click="$emit('remove')"
                         variant="danger"
+                        size="sm"
+                        v-b-tooltip.hover
+                        title="Supprimer"
                     >
-                        Supprimer
+                        <b-icon icon="trash" />
                     </b-btn>
                 </b-col>
             </b-form-row>
@@ -209,6 +213,39 @@
                         </b-form-group>
                     </b-col>
                 </b-form-row>
+                <b-form-row>
+                    <b-col>
+                        <b-form-group
+                            description="Ajouter un ou des fichiers. Accepte uniquement des fichiers images et pdf."
+                            label="Fichier(s)"
+                        >
+                            <b-form-file
+                                multiple
+                                accept=".pdf, .jpg, .png, jpeg"
+                                v-model="attachments"
+                                ref="attachments"
+                                placeholder="Attacher un ou des fichiers."
+                                choose-label="Attacher un ou des fichiers"
+                                drop-label="Déposer des fichiers ici"
+                                plain
+                                @input="addFiles"
+                            />
+                            <b-list-group
+                                v-for="(item, index) in uploadedFiles"
+                                :key="index"
+                            >
+                                <file-upload
+                                    :id="item.id"
+                                    :file="item.file"
+                                    path="/pia/upload_file/"
+                                    removestr="4"
+                                    @delete="deleteFile(index)"
+                                    @setdata="setFileData(index, $event)"
+                                />
+                            </b-list-group>
+                        </b-form-group> 
+                    </b-col>
+                </b-form-row>
             </b-collapse>
         </b-card>
     </div>
@@ -225,6 +262,7 @@ import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
 
 import {getPeopleByName} from "../common/search.js";
+import FileUpload from "../common/file_upload.vue";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
@@ -268,6 +306,8 @@ export default {
             indicatorAction: "",
             selfAssessment: "",
             assessment: null,
+            attachments: [],
+            uploadedFiles: [],
             editorOptions: {
                 modules: {
                     toolbar: [
@@ -314,7 +354,6 @@ export default {
          * @param {String} err Field name.
          */
         errorMsg(err) {
-            console.log(err);
             if (err in this.errors) {
                 return this.errors[err][0];
             } else {
@@ -326,6 +365,18 @@ export default {
         },
         updateBranchGoal: function (branch) {
             this.goalOptions = this.$store.state.branchGoalItems.filter(bg => bg.branch == branch.id);
+        },
+        addFiles: function() {
+            this.uploadedFiles = this.attachments.map(a => { return {file: a, id: -1};});
+            this.attachments.splice(0, this.attachments.length);
+        },
+        setFileData: function(index, data) {
+            this.uploadedFiles[index].id = data.id;
+            this.uploadedFiles[index].link = data.attachment;
+        },
+        deleteFile: function(index) {
+            this.uploadedFiles.splice(index, 1);
+            this.$refs.attachments.reset();
         },
         getPeople: function (searchQuery) {
             const person = "responsible";
@@ -356,6 +407,13 @@ export default {
                 this.givenHelp = this.goalObject.given_help;
                 this.selfAssessment = this.goalObject.self_assessment;
                 this.assessment = this.$store.state.assessments.filter(a => a.id == this.goalObject.assessment)[0];
+
+                // Attachments
+                this.uploadedFiles = this.goalObject.attachments.map(a => {
+                    return {id: a, file: null};
+                });
+
+                // Responsibles
                 const respProm =this.goalObject.responsible.filter(r => r !== null).map(r => axios.get("/annuaire/api/responsible/" + r + "/"));
                 Promise.all(respProm)
                     .then(resps => {
@@ -397,6 +455,7 @@ export default {
                     assessment: this.assessment ? this.assessment.id : null,
                     [goalField]: this.goals.length > 0 ? goals.slice(1) : null,
                     responsible: this.responsible.map(r => r.matricule),
+                    attachments: Array.from(this.uploadedFiles.map(u => u.id)),
                 };
 
                 if (this.useBranch && this.branch) data["branch"] = this.branch.id;
@@ -428,6 +487,7 @@ export default {
     components: {
         Multiselect,
         quillEditor,
+        FileUpload,
     }
 };
 </script>

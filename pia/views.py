@@ -30,7 +30,7 @@ from django_filters import rest_framework as filters
 
 from core.models import TeachingModel
 from core.utilities import get_menu
-from core.views import BaseModelViewSet, get_app_settings
+from core.views import BaseModelViewSet, get_app_settings, BaseUploadFileView
 
 from . import models
 from . import serializers
@@ -122,6 +122,7 @@ class ClassCouncilPIAViewSet(ModelViewSet):
     serializer_class = serializers.ClassCouncilPIASerializer
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filterset_fields = ('pia_model',)
+    ordering = ['-datetime_creation']
     pagination_class = LargePagination
 
 
@@ -167,3 +168,26 @@ class BranchGoalItemViewSet(ReadOnlyModelViewSet):
     queryset = models.BranchGoalItemModel.objects.all()
     serializer_class = serializers.BranchGoalItemSerializer
     pagination_class = LargePagination
+
+
+class UploadFileView(BaseUploadFileView):
+    file_model = models.AttachmentModel
+    file_serializer = serializers.AttachmentSerializer
+
+
+class StudentProjectViewSet(ModelViewSet):
+    queryset = models.StudentProjectModel.objects.all()
+    serializer_class = serializers.StudentProjectSerializer
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
+    filterset_fields = ('pia_model',)
+    pagination_class = LargePagination
+    ordering = ['-datetime_creation']
+
+
+class ParentsOpinionViewSet(ModelViewSet):
+    queryset = models.ParentsOpinionModel.objects.all()
+    serializer_class = serializers.ParentsOpinionSerializer
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
+    filterset_fields = ('pia_model',)
+    pagination_class = LargePagination
+    ordering = ['-datetime_creation']

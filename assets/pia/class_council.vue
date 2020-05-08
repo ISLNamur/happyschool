@@ -35,8 +35,9 @@
                         </strong>
                     </b-col>
                     <b-col
-                        cols="4"
+                        cols="2"
                         align-self="end"
+                        class="text-right"
                     >
                         <b-btn
                             @click="toggleExpand"
@@ -47,8 +48,11 @@
                         <b-btn
                             @click="$emit('remove')"
                             variant="danger"
+                            size="sm"
+                            v-b-tooltip.hover
+                            title="Supprimer"
                         >
-                            Supprimer
+                            <b-icon icon="trash" />
                         </b-btn>
                     </b-col>
                 </b-form-row>

@@ -17,9 +17,20 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
+import random
+import string
+
+from time import strftime
+
 from django.db import models
 
 from core.models import TeachingModel, StudentModel, ResponsibleModel
+
+
+def unique_file_name(instance, filename):
+    path = strftime('pia/%Y/%m/%d/')
+    file = "".join(random.choice(string.ascii_letters) for x in range(0, 3)) + "_" + filename
+    return path + file
 
 
 class PIASettingsModel(models.Model):
@@ -79,6 +90,22 @@ class PIAModel(models.Model):
         return str(self.student)
 
 
+class StudentProjectModel(models.Model):
+    pia_model = models.ForeignKey(PIAModel, on_delete=models.CASCADE)
+    student_project = models.TextField()
+    date_student_project = models.DateField()
+    datetime_creation = models.DateTimeField(auto_now_add=True)
+    datetime_update = models.DateTimeField(auto_now=True)
+
+
+class ParentsOpinionModel(models.Model):
+    pia_model = models.ForeignKey(PIAModel, on_delete=models.CASCADE)
+    parents_opinion = models.TextField()
+    date_parents_opinion = models.DateField()
+    datetime_creation = models.DateTimeField(auto_now_add=True)
+    datetime_update = models.DateTimeField(auto_now=True)
+
+
 class CrossGoalItemModel(models.Model):
     goal = models.CharField(max_length=200)
     teachings = models.ManyToManyField(TeachingModel)
@@ -121,6 +148,10 @@ class AssessmentModel(models.Model):
         return self.assessment
 
 
+class AttachmentModel(models.Model):
+    attachment = models.FileField(upload_to=unique_file_name)
+
+
 class BaseGoal(models.Model):
     pia_model = models.ForeignKey(PIAModel, on_delete=models.CASCADE)
     date_start = models.DateField()
@@ -130,6 +161,7 @@ class BaseGoal(models.Model):
     responsible = models.ManyToManyField(ResponsibleModel, blank=True)
     self_assessment = models.CharField(max_length=2000, blank=True)
     assessment = models.ForeignKey(AssessmentModel, on_delete=models.SET_NULL, null=True, blank=True)
+    attachments = models.ManyToManyField(AttachmentModel, blank=True)
     datetime_creation = models.DateTimeField(auto_now_add=True)
     datetime_update = models.DateTimeField(auto_now=True)
 
