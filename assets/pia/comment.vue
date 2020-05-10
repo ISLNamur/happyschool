@@ -78,7 +78,7 @@ export default {
         /** The data from an existing comment. */
         commentObject: {
             type: Object,
-            default: () => {id: -1},
+            default: () => {},
         },
         /**
          * The type of the comment (student_project or parents_opinion).
