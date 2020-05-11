@@ -44,6 +44,10 @@ class PIASettingsModel(models.Model):
     )
 
 
+class AttachmentModel(models.Model):
+    attachment = models.FileField(upload_to=unique_file_name)
+
+
 class DisorderModel(models.Model):
     disorder = models.CharField(max_length=1000)
     teachings = models.ManyToManyField(TeachingModel)
@@ -84,6 +88,7 @@ class PIAModel(models.Model):
     disorder = models.ManyToManyField(DisorderModel)
     disorder_response = models.ManyToManyField(DisorderResponseModel)
     schedule_adjustment = models.ManyToManyField(ScheduleAdjustmentModel)
+    attachments = models.ManyToManyField(AttachmentModel, blank=True)
 
     def __str__(self):
         """String representation of the PIAModel, return the student's description."""
@@ -146,10 +151,6 @@ class AssessmentModel(models.Model):
     the assessment."""
     def __str__(self):
         return self.assessment
-
-
-class AttachmentModel(models.Model):
-    attachment = models.FileField(upload_to=unique_file_name)
 
 
 class BaseGoal(models.Model):

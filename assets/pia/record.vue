@@ -231,6 +231,42 @@
                         </b-form-group>
                     </b-col>
                 </b-row>
+                <b-row>
+                    <h4>Attachements</h4>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-form-group
+                            description="Ajouter un ou des fichiers. Accepte uniquement des fichiers images et pdf."
+                            label="Fichier(s)"
+                        >
+                            <b-form-file
+                                multiple
+                                accept=".pdf, .jpg, .png, jpeg"
+                                v-model="form.attachments"
+                                ref="attachments"
+                                placeholder="Attacher un ou des fichiers."
+                                choose-label="Attacher un ou des fichiers"
+                                drop-label="Déposer des fichiers ici"
+                                plain
+                                @input="addFiles"
+                            />
+                            <b-list-group
+                                v-for="(item, index) in uploadedFiles"
+                                :key="index"
+                            >
+                                <file-upload
+                                    :id="item.id"
+                                    :file="item.file"
+                                    path="/pia/upload_file/"
+                                    removestr="4"
+                                    @delete="deleteFile(index)"
+                                    @setdata="setFileData(index, $event)"
+                                />
+                            </b-list-group>
+                        </b-form-group> 
+                    </b-col>
+                </b-row>
             </b-tab>
             <b-tab>
                 <template v-slot:title>
@@ -399,6 +435,8 @@ import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
 import {getPeopleByName} from "../common/search.js";
+import FileUpload from "../common/file_upload.vue";
+
 import Goal from "./goal.vue";
 import ClassCouncil from "./class_council.vue";
 import Comment from "./comment.vue";
@@ -427,7 +465,9 @@ export default {
                 disorder: [],
                 disorder_response: [],
                 schedule_adjustment: [],
+                attachments: [],
             },
+            uploadedFiles: [],
             cross_goal: [],
             branch_goal: [],
             student_project: [],
@@ -472,6 +512,18 @@ export default {
         },
     },
     methods: {
+        addFiles: function() {
+            this.uploadedFiles = this.form.attachments.map(a => { return {file: a, id: -1};});
+            this.form.attachments.splice(0, this.form.attachments.length);
+        },
+        setFileData: function(index, data) {
+            this.uploadedFiles[index].id = data.id;
+            this.uploadedFiles[index].link = data.attachment;
+        },
+        deleteFile: function(index) {
+            this.uploadedFiles.splice(index, 1);
+            this.$refs.attachments.reset();
+        },
         /** 
          * Assign text error if any.
          * 
@@ -604,6 +656,7 @@ export default {
             data.referent = data.referent.map(r => r.matricule);
             data.sponsor = data.sponsor.map(s => s.matricule);
             data.schedule_adjustment = data.schedule_adjustment.map(sa => sa.id);
+            data.attachments = this.uploadedFiles.map(uF => uF.id);
 
             let send = this.id ? axios.put : axios.post;
             let url = "/pia/api/pia/";
@@ -688,6 +741,12 @@ export default {
                     this.form.disorder = this.$store.state.disorders.filter(d => resp.data.disorder.includes(d.id));
                     this.form.disorder_response = this.$store.state.disorderResponses.filter(dr => resp.data.disorder_response.includes(dr.id));
                     this.form.schedule_adjustment = this.$store.state.scheduleAdjustments.filter(sa => resp.data.schedule_adjustment.includes(sa.id));
+
+                    // Attachments
+                    this.form.attachments = resp.data.attachments;
+                    this.uploadedFiles = resp.data.attachments.map(a => {
+                        return {id: a, file: null};
+                    });
                 });
         },
         /**
@@ -737,6 +796,7 @@ export default {
         Goal,
         ClassCouncil,
         Comment,
+        FileUpload,
     }
 };
 </script>
