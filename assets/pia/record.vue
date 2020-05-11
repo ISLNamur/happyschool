@@ -41,313 +41,354 @@
                 </b-btn>
             </b-col>
         </b-row>
-        <b-row>
-            <b-col>
-                <h4>Référents PIA</h4>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-form-row>
-                    <b-col md="4">
-                        <b-form-group label="Élève">
-                            <multiselect
-                                id="student-0"
-                                :internal-search="false"
-                                :options="studentOptions"
-                                @search-change="getPeople"
-                                placeholder="Référent"
-                                select-label=""
-                                selected-label="Sélectionné"
-                                deselect-label="Cliquer dessus pour enlever"
-                                v-model="form.student"
-                                label="display"
-                                track-by="matricule"
-                                :show-no-options="false"
-                                :disabled="parseInt(id) >= 0"
-                            >
-                                <span slot="noResult">Aucun élève trouvé.</span>
-                                <span slot="noOptions" />
-                            </multiselect>
-                        </b-form-group>
+        <b-tabs
+            content-class="mt-3"
+            justified
+            class="mt-2"
+        >
+            <b-tab
+                title="Élève"
+                active
+            >
+                <b-row>
+                    <b-col>
+                        <h4>Référents PIA</h4>
                     </b-col>
-                </b-form-row>
-                <b-form-row>
-                    <b-col md="6">
-                        <b-form-group
-                            label="Référent(s)"
-                            :state="inputStates.referent"
-                        >
-                            <multiselect
-                                id="responsible-0"
-                                :internal-search="false"
-                                :options="responsibleOptions"
-                                @search-change="getPeople"
-                                placeholder="Référent"
-                                select-label=""
-                                selected-label="Sélectionné"
-                                deselect-label="Cliquer dessus pour enlever"
-                                v-model="form.referent"
-                                label="display"
-                                track-by="matricule"
-                                :show-no-options="false"
-                                multiple
-                            >
-                                <span slot="noResult">Aucun responsable trouvé.</span>
-                                <span slot="noOptions" />
-                            </multiselect>
-                            <span slot="invalid-feedback">{{ errorMsg('referent') }}</span>
-                        </b-form-group>
+                </b-row>
+                <b-row>
+                    <b-col
+                        v-if="form.student"
+                        md="3"
+                    >
+                        <b-img
+                            :src="`/static/photos/${form.student.matricule}.jpg`"
+                            alt="Photo de l'élève"
+                            fluid
+                        />
                     </b-col>
                     <b-col>
+                        <b-form-row>
+                            <b-col md="4">
+                                <b-form-group label="Élève">
+                                    <multiselect
+                                        id="student-0"
+                                        :internal-search="false"
+                                        :options="studentOptions"
+                                        @search-change="getPeople"
+                                        placeholder="Référent"
+                                        select-label=""
+                                        selected-label="Sélectionné"
+                                        deselect-label="Cliquer dessus pour enlever"
+                                        v-model="form.student"
+                                        label="display"
+                                        track-by="matricule"
+                                        :show-no-options="false"
+                                        :disabled="parseInt(id) >= 0"
+                                    >
+                                        <span slot="noResult">Aucun élève trouvé.</span>
+                                        <span slot="noOptions" />
+                                    </multiselect>
+                                </b-form-group>
+                            </b-col>
+                        </b-form-row>
+                        <b-form-row>
+                            <b-col>
+                                <b-form-group
+                                    label="Référent(s)"
+                                    :state="inputStates.referent"
+                                >
+                                    <multiselect
+                                        id="responsible-0"
+                                        :internal-search="false"
+                                        :options="responsibleOptions"
+                                        @search-change="getPeople"
+                                        placeholder="Référent"
+                                        select-label=""
+                                        selected-label="Sélectionné"
+                                        deselect-label="Cliquer dessus pour enlever"
+                                        v-model="form.referent"
+                                        label="display"
+                                        track-by="matricule"
+                                        :show-no-options="false"
+                                        multiple
+                                    >
+                                        <span slot="noResult">Aucun responsable trouvé.</span>
+                                        <span slot="noOptions" />
+                                    </multiselect>
+                                    <span slot="invalid-feedback">{{ errorMsg('referent') }}</span>
+                                </b-form-group>
+                            </b-col>
+                        </b-form-row>
+                        <b-form-row>
+                            <b-col>
+                                <b-form-group
+                                    label="Parrain/Marraine"
+                                    :state="inputStates.referent"
+                                >
+                                    <multiselect
+                                        id="responsible-1"
+                                        :internal-search="false"
+                                        :options="responsibleOptions"
+                                        @search-change="getPeople"
+                                        placeholder="Parrain/Marraine"
+                                        select-label=""
+                                        selected-label="Sélectionné"
+                                        deselect-label="Cliquer dessus pour enlever"
+                                        v-model="form.sponsor"
+                                        label="display"
+                                        track-by="matricule"
+                                        :show-no-options="false"
+                                        multiple
+                                    >
+                                        <span slot="noResult">Aucun responsable trouvé.</span>
+                                        <span slot="noOptions" />
+                                    </multiselect>
+                                    <span slot="invalid-feedback">{{ errorMsg('sponsor') }}</span>
+                                </b-form-group>
+                            </b-col>
+                        </b-form-row>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <h4>Aménagements</h4>
+                </b-row>
+                <b-row>
+                    <b-col>
                         <b-form-group
-                            label="Parrain/Marraine"
-                            :state="inputStates.referent"
+                            label="Trouble d'apprentissage"
+                            label-cols="3"
+                            :state="inputStates.disorder"
                         >
                             <multiselect
-                                id="responsible-1"
-                                :internal-search="false"
-                                :options="responsibleOptions"
-                                @search-change="getPeople"
-                                placeholder="Parrain/Marraine"
+                                :options="$store.state.disorders"
+                                placeholder="Sélectionner le ou les différents troubles"
                                 select-label=""
                                 selected-label="Sélectionné"
                                 deselect-label="Cliquer dessus pour enlever"
-                                v-model="form.sponsor"
-                                label="display"
-                                track-by="matricule"
+                                v-model="form.disorder"
+                                :show-no-options="false"
+                                track-by="id"
+                                label="disorder"
+                                @input="updateDisorderResponse"
+                                multiple
+                            >
+                                <span slot="noResult">Aucun trouble trouvé.</span>
+                                <span slot="noOptions" />
+                            </multiselect>
+                            <span slot="invalid-feedback">{{ errorMsg('disorder') }}</span>
+                        </b-form-group>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-form-group
+                            label="Aménagements raisonnables liés au trouble"
+                            label-cols="3"
+                            :state="inputStates.disorder_response"
+                        >
+                            <multiselect
+                                :options="disorderResponseOptions"
+                                placeholder="Sélectionner le ou les différents aménagements"
+                                select-label=""
+                                selected-label="Sélectionné"
+                                deselect-label="Cliquer dessus pour enlever"
+                                v-model="form.disorder_response"
+                                :show-no-options="false"
+                                track-by="id"
+                                label="response"
+                                multiple
+                            >
+                                <span slot="noResult">Aucun aménagements trouvé.</span>
+                                <span slot="noOptions" />
+                            </multiselect>
+                            <span slot="invalid-feedback">{{ errorMsg('disorder_response') }}</span>
+                        </b-form-group>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-form-group
+                            label="Aménagements d'horaire"
+                            label-cols="3"
+                            :state="inputStates.schedule_adjustment"
+                        >
+                            <multiselect
+                                :options="$store.state.scheduleAdjustments"
+                                placeholder="Sélectionner le ou les différents adaptations"
+                                select-label=""
+                                selected-label="Sélectionné"
+                                deselect-label="Cliquer dessus pour enlever"
+                                v-model="form.schedule_adjustment"
+                                track-by="id"
+                                label="schedule_adjustment"
                                 :show-no-options="false"
                                 multiple
                             >
-                                <span slot="noResult">Aucun responsable trouvé.</span>
+                                <span slot="noResult">Aucun aménagements trouvé.</span>
                                 <span slot="noOptions" />
                             </multiselect>
-                            <span slot="invalid-feedback">{{ errorMsg('sponsor') }}</span>
+                            <span slot="invalid-feedback">{{ errorMsg('schedule_adjustment') }}</span>
                         </b-form-group>
                     </b-col>
-                </b-form-row>
-            </b-col>
-        </b-row>
-        <b-row>
-            <h4>Aménagements</h4>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-form-group
-                    label="Trouble d'apprentissage"
-                    label-cols="3"
-                    :state="inputStates.disorder"
-                >
-                    <multiselect
-                        :options="$store.state.disorders"
-                        placeholder="Sélectionner le ou les différents troubles"
-                        select-label=""
-                        selected-label="Sélectionné"
-                        deselect-label="Cliquer dessus pour enlever"
-                        v-model="form.disorder"
-                        :show-no-options="false"
-                        track-by="id"
-                        label="disorder"
-                        @input="updateDisorderResponse"
-                        multiple
-                    >
-                        <span slot="noResult">Aucun trouble trouvé.</span>
-                        <span slot="noOptions" />
-                    </multiselect>
-                    <span slot="invalid-feedback">{{ errorMsg('disorder') }}</span>
-                </b-form-group>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-form-group
-                    label="Aménagements raisonnables liés au trouble"
-                    label-cols="3"
-                    :state="inputStates.disorder_response"
-                >
-                    <multiselect
-                        :options="disorderResponseOptions"
-                        placeholder="Sélectionner le ou les différents aménagements"
-                        select-label=""
-                        selected-label="Sélectionné"
-                        deselect-label="Cliquer dessus pour enlever"
-                        v-model="form.disorder_response"
-                        :show-no-options="false"
-                        track-by="id"
-                        label="response"
-                        multiple
-                    >
-                        <span slot="noResult">Aucun aménagements trouvé.</span>
-                        <span slot="noOptions" />
-                    </multiselect>
-                    <span slot="invalid-feedback">{{ errorMsg('disorder_response') }}</span>
-                </b-form-group>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-form-group
-                    label="Aménagements d'horaire"
-                    label-cols="3"
-                    :state="inputStates.schedule_adjustment"
-                >
-                    <multiselect
-                        :options="$store.state.scheduleAdjustments"
-                        placeholder="Sélectionner le ou les différents adaptations"
-                        select-label=""
-                        selected-label="Sélectionné"
-                        deselect-label="Cliquer dessus pour enlever"
-                        v-model="form.schedule_adjustment"
-                        track-by="id"
-                        label="schedule_adjustment"
-                        :show-no-options="false"
-                        multiple
-                    >
-                        <span slot="noResult">Aucun aménagements trouvé.</span>
-                        <span slot="noOptions" />
-                    </multiselect>
-                    <span slot="invalid-feedback">{{ errorMsg('schedule_adjustment') }}</span>
-                </b-form-group>
-            </b-col>
-        </b-row>
-        <b-row>
-            <h4>Conseil de classe</h4>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-btn
-                    @click="class_council.unshift({id: -1})"
-                    variant="outline-secondary"
-                >
-                    <b-icon icon="plus" />
-                    Ajouter
-                </b-btn>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <class-council
-                    v-for="(council, index) in class_council"
-                    :key="council.id"
-                    :class_council="council"
-                    ref="councils"
-                    class="mt-2"
-                    @remove="removeClassCouncil(index)"
-                />
-            </b-col>
-        </b-row>
-        <b-row class="mt-2">
-            <h4>Objectifs transversaux</h4>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-btn
-                    @click="cross_goal.unshift({id: -1})"
-                    variant="outline-secondary"
-                >
-                    <b-icon icon="plus" />
-                    Ajouter
-                </b-btn>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <goal
-                    class="mt-2"
-                    v-for="(goal, index) in cross_goal"
-                    :key="'cg-' + goal.id"
-                    :goal-object="goal"
-                    ref="crossgoals"
-                    @remove="removeObject('cross_goal', index)"
-                    goal-label="Objectifs transversaux"
-                    item-model="cross_goal_item"
-                />
-            </b-col>
-        </b-row>
-        <b-row class="mt-2">
-            <h4>Objectifs de branche</h4>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-btn
-                    @click="branch_goal.unshift({id: -1})"
-                    variant="outline-secondary"
-                >
-                    <b-icon icon="plus" />
-                    Ajouter
-                </b-btn>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <goal
-                    class="mt-2"
-                    v-for="(goal, index) in branch_goal"
-                    :key="'bg-' + goal.id"
-                    :goal-object="goal"
-                    ref="branchgoals"
-                    @remove="removeObject('branch_goal', index)"
-                    goal-label="Objectifs de branche"
-                    item-model="branch_goal_item"
-                    use-branch
-                />
-            </b-col>
-        </b-row>
-        <b-row />
-        <b-row>
-            <h4>Projet de l'élève</h4>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-btn
-                    @click="student_project.unshift({id: -1})"
-                    variant="outline-secondary"
-                >
-                    <b-icon icon="plus" />
-                    Ajouter
-                </b-btn>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <comment
-                    class="mt-2"
-                    v-for="(sP, index) in student_project"
-                    :key="sP.id"
-                    @remove="removeObject('student_project', index)"
-                    comment-type="student_project"
-                    :comment-object="sP"
-                    ref="studentprojects"
-                />
-            </b-col>
-        </b-row>
-        <b-row>
-            <h4>Avis des parents</h4>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-btn
-                    @click="parents_opinion.unshift({id: -1})"
-                    variant="outline-secondary"
-                >
-                    <b-icon icon="plus" />
-                    Ajouter
-                </b-btn>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <comment
-                    class="mt-2"
-                    v-for="(pO, index) in parents_opinion"
-                    :key="pO.id"
-                    @remove="removeObject('parents_opinion', index)"
-                    comment-type="parents_opinion"
-                    :comment-object="pO"
-                    ref="parentsopinions"
-                />
-            </b-col>
-        </b-row>
+                </b-row>
+            </b-tab>
+            <b-tab>
+                <template v-slot:title>
+                    Conseils de classe
+                    <b-badge>{{ class_council.length }}</b-badge>
+                </template>
+                <b-row>
+                    <h4>Conseil de classe</h4>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-btn
+                            @click="class_council.unshift({id: -1})"
+                            variant="outline-secondary"
+                        >
+                            <b-icon icon="plus" />
+                            Ajouter
+                        </b-btn>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <class-council
+                            v-for="(council, index) in class_council"
+                            :key="council.id"
+                            :class_council="council"
+                            ref="councils"
+                            class="mt-2"
+                            @remove="removeClassCouncil(index)"
+                        />
+                    </b-col>
+                </b-row>
+            </b-tab>
+            <b-tab>
+                <template v-slot:title>
+                    Objectifs
+                    <b-badge>{{ cross_goal.length + branch_goal.length }}</b-badge>
+                </template>
+                <b-row class="mt-2">
+                    <h4>Objectifs transversaux</h4>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-btn
+                            @click="cross_goal.unshift({id: -1})"
+                            variant="outline-secondary"
+                        >
+                            <b-icon icon="plus" />
+                            Ajouter
+                        </b-btn>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <goal
+                            class="mt-2"
+                            v-for="(goal, index) in cross_goal"
+                            :key="'cg-' + goal.id"
+                            :goal-object="goal"
+                            ref="crossgoals"
+                            @remove="removeObject('cross_goal', index)"
+                            goal-label="Objectifs transversaux"
+                            item-model="cross_goal_item"
+                        />
+                    </b-col>
+                </b-row>
+                <b-row class="mt-2">
+                    <h4>Objectifs de branche</h4>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-btn
+                            @click="branch_goal.unshift({id: -1})"
+                            variant="outline-secondary"
+                        >
+                            <b-icon icon="plus" />
+                            Ajouter
+                        </b-btn>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <goal
+                            class="mt-2"
+                            v-for="(goal, index) in branch_goal"
+                            :key="'bg-' + goal.id"
+                            :goal-object="goal"
+                            ref="branchgoals"
+                            @remove="removeObject('branch_goal', index)"
+                            goal-label="Objectifs de branche"
+                            item-model="branch_goal_item"
+                            use-branch
+                        />
+                    </b-col>
+                </b-row>
+                <b-row />
+            </b-tab>
+            <b-tab>
+                <template v-slot:title>
+                    Projet et avis
+                    <b-badge>{{ student_project.length + parents_opinion.length }}</b-badge>
+                </template>
+                <b-row>
+                    <h4>Projet de l'élève</h4>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-btn
+                            @click="student_project.unshift({id: -1})"
+                            variant="outline-secondary"
+                        >
+                            <b-icon icon="plus" />
+                            Ajouter
+                        </b-btn>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <comment
+                            class="mt-2"
+                            v-for="(sP, index) in student_project"
+                            :key="sP.id"
+                            @remove="removeObject('student_project', index)"
+                            comment-type="student_project"
+                            :comment-object="sP"
+                            ref="studentprojects"
+                        />
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <h4>Avis des parents</h4>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-btn
+                            @click="parents_opinion.unshift({id: -1})"
+                            variant="outline-secondary"
+                        >
+                            <b-icon icon="plus" />
+                            Ajouter
+                        </b-btn>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <comment
+                            class="mt-2"
+                            v-for="(pO, index) in parents_opinion"
+                            :key="pO.id"
+                            @remove="removeObject('parents_opinion', index)"
+                            comment-type="parents_opinion"
+                            :comment-object="pO"
+                            ref="parentsopinions"
+                        />
+                    </b-col>
+                </b-row>
+            </b-tab>
+        </b-tabs>
     </b-container>
 </template>
 
