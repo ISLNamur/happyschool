@@ -208,7 +208,6 @@ class CasEleve(models.Model):
 
     class Meta:
         permissions = (
-            ('access_dossier_eleve', 'Can access to dossier_eleve data'),
             ('set_sanction', 'Can set sanction'),
             ('ask_sanction', 'Can ask sanction'),
         )

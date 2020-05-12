@@ -55,7 +55,7 @@ from PyPDF2 import PdfFileMerger
 
 
 def get_menu_entry(active_app, user):
-    if not user.has_perm('dossier_eleve.access_dossier_eleve'):
+    if not user.has_perm('dossier_eleve.view_caseleve'):
         return {}
     return {
             "app": "dossier_eleve",
@@ -88,7 +88,7 @@ def get_generic_groups() -> dict:
 class BaseDossierEleveView(LoginRequiredMixin,
                        PermissionRequiredMixin,
                        TemplateView):
-    permission_required = ('dossier_eleve.access_dossier_eleve')
+    permission_required = ('dossier_eleve.view_caseleve')
     filters = []
 
     def get_context_data(self, **kwargs):
