@@ -69,8 +69,3 @@ class Appel(models.Model):
     emails = models.ManyToManyField(EmailModel, blank=True)
     custom_email = models.EmailField(default=None, blank=True, null=True)
     datetime_encodage = models.DateTimeField("Date d'encodage", default=timezone.now)
-
-    class Meta:
-        permissions = (
-            ('access_appel', 'Can access to appel data'),
-        )
