@@ -41,7 +41,7 @@ from .serializers import AbsenceProfSettingsSerializer, AbsenceProfSerializer, M
 
 
 def get_menu_entry(active_app, user):
-    if not user.has_perm('absence_prof.access_absences'):
+    if not user.has_perm('absence_prof.view_absence'):
         return {}
     return {
             "app": "absence_prof",
@@ -59,7 +59,7 @@ class AbsenceProfView(LoginRequiredMixin,
                       PermissionRequiredMixin,
                       TemplateView):
     template_name = "absence_prof/absence_prof.html"
-    permission_required = ('absence_prof.access_absences')
+    permission_required = ('absence_prof.view_absence')
     filters = [{'value': 'name', 'text': 'Nom'},
                {'value': 'activate_ongoing', 'text': 'Absences courantes'},
                {'value': 'date_range', 'text': 'Absences pendant une période'},

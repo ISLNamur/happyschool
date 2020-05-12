@@ -49,11 +49,6 @@ class Absence(models.Model):
     comment = models.CharField(max_length=10000, blank=True)
     user = models.CharField(max_length=20)
 
-    class Meta:
-        permissions = (
-            ('access_absences', 'Can access to absences data'),
-        )
-
     @property
     def status(self):
         if (self.date_absence_start <= timezone.now().date()
