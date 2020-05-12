@@ -79,11 +79,6 @@ class ScheduleChangeModel(models.Model):
     created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
     hide_for_students = models.BooleanField(default=False)
 
-    class Meta:
-        permissions = (
-            ('access_schedule_change', 'Can access to schedule change data'),
-        )
-
     def __str__(self):
         return "%s (%s-%s): %s" % (self.date_change,
                                    self.time_start.strftime("%H:%M") if self.time_start else "-",

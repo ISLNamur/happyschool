@@ -46,7 +46,7 @@ from .serializers import ScheduleChangeSettingsSerializer, ScheduleChangeSeriali
 
 
 def get_menu_entry(active_app: str, user) -> dict:
-    if not user.has_perm('schedule_change.access_schedule_change'):
+    if not user.has_perm('schedule_change.view_schedulechangemodel'):
         return {}
     return {
             "app": "schedule_change",
@@ -64,7 +64,7 @@ def get_settings():
 
 class ScheduleChangeView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = "schedule_change/schedule_change.html"
-    permission_required = ('schedule_change.access_schedule_change')
+    permission_required = ('schedule_change.view_schedulechangemodel')
     filters = [{'value': 'activate_ongoing', 'text': 'Prochains changements'},
                {'value': 'date_change', 'text': "Date du changement"},
                {'value': 'activate_has_classe', 'text': 'Concerne une classe'},
