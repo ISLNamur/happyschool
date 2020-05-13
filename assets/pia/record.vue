@@ -743,7 +743,6 @@ export default {
                     this.form.schedule_adjustment = this.$store.state.scheduleAdjustments.filter(sa => resp.data.schedule_adjustment.includes(sa.id));
 
                     // Attachments
-                    this.form.attachments = resp.data.attachments;
                     this.uploadedFiles = resp.data.attachments.map(a => {
                         return {id: a, file: null};
                     });
