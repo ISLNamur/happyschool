@@ -388,6 +388,15 @@
                             <em>Aucune donnée concernant l'élève n'est présente.</em>
                         </p>
                     </b-tab>
+                    <template v-slot:tabs-end>
+                        <b-nav-item
+                            role="presentation"
+                            v-if="pia"
+                            :href="`/pia/#/edit/${pia.id}/`"
+                        >
+                            <strong>PIA</strong>
+                        </b-nav-item>
+                    </template>
                 </b-tabs>
             </b-card>
         </b-container>
@@ -446,6 +455,7 @@ export default {
             infirmerie: [],
             infoCount: 0,
             moreInfo: false,
+            pia: null,
         };
     },
     computed: {
@@ -476,6 +486,7 @@ export default {
             this.appels = [];
             this.infirmerie = [];
             this.infoCount = 0;
+            this.pia = null;
         },
         niceDate: function (date) {
             if (!date) return "";
@@ -545,6 +556,14 @@ export default {
                                 this.infoCount += resp.data.count;
                             });
                         });
+
+                    // Add a PIA link.
+                    if (userMenu.apps.find(a => a.app == "pia")) {
+                        axios.get("/pia/api/pia/?student__matricule=" + this.matricule)
+                            .then(resp => {
+                                this.pia = resp.data.count > 0 ? resp.data.results[0] : null;
+                            });
+                    }
                 }
             } else if (this.type == "responsible") {
                 axios.get("/annuaire/api/responsible/" + this.matricule + "/")
