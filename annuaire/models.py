@@ -23,8 +23,21 @@ from django.contrib.auth.models import Group
 
 class AnnuaireSettingsModel(models.Model):
     can_see_responsibles = models.ManyToManyField(Group, default=None, blank=True, related_name="can_see_responsibles")
-    can_see_responsibles_sensitive = models.ManyToManyField(Group, default=None, blank=True, related_name="can_see_responsibles_data",
-                                                            help_text="Permet aux groupes sélectionnés de voir les données sensibles comme le nom d'utilisateur.")
+    can_see_responsibles_sensitive = models.ManyToManyField(
+        Group,
+        default=None,
+        blank=True,
+        related_name="can_see_responsibles_data",
+        help_text="Permet aux groupes sélectionnés de voir les données sensibles comme le nom d'utilisateur."
+    )
+    can_see_student_sensitive = models.ManyToManyField(
+        Group,
+        default=None,
+        blank=True,
+        related_name="can_see_student_sensitive",
+        help_text="""Permet aux groupes sélectionnés de voir les données sensibles de l'étudiant comme son
+            adresse, date de naissance, etc."""
+    )
     can_see_student_contact = models.ManyToManyField(Group, default=None, blank=True, related_name="can_see_student_contact")
     can_see_student_medical = models.ManyToManyField(Group, default=None, blank=True, related_name="can_see_student_medical")
     show_credentials = models.BooleanField(
