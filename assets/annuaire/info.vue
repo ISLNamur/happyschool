@@ -76,25 +76,6 @@
                                     >
                                         {{ matricule }}
                                     </dd>
-                                    <dt class="col-5 text-right">
-                                        Courriel
-                                    </dt>
-                                    <dd class="col-7">
-                                        {{ email }}
-                                    </dd>
-                                    <dt
-                                        class="col-5 text-right"
-                                        v-if="emailSchool"
-                                    >
-                                        Courriel de l'école
-                                    </dt>
-                                    <dd
-                                        class="col-7"
-                                        v-if="emailSchool"
-                                    >
-                                        {{ emailSchool }}
-                                    </dd>
-
                                     <dt
                                         v-if="tenure"
                                         class="col-5 text-right"
@@ -123,7 +104,10 @@
                                     >
                                         {{ t.display_name }}
                                     </dd>
-                                    <dt class="col-5  text-right">
+                                    <dt
+                                        v-if="classe.length > 0"
+                                        class="col-5  text-right"
+                                    >
                                         Classe(s)
                                     </dt>
                                     <dd
@@ -134,57 +118,72 @@
                                         {{ c.year }}{{ c.letter.toUpperCase() }}
                                     </dd>
                                     <dt
-                                        v-if="type === 'student'"
+                                        v-if="student_info.orientation"
                                         class="col-5 text-right"
                                     >
-                                        Date de naissance
+                                        Orientation
                                     </dt>
                                     <dd
-                                        v-if="type === 'student'"
                                         class="col-7"
+                                        v-if="student_info.orientation"
                                     >
-                                        {{ niceDate(student_info.birth_date) }}
+                                        {{ student_info.orientation }}
                                     </dd>
                                     <dt
-                                        v-if="type === 'student'"
+                                        v-if="student_info.previous_classe"
                                         class="col-5 text-right"
                                     >
-                                        Adresse
+                                        Classe précédente
                                     </dt>
                                     <dd
-                                        v-if="type === 'student'"
                                         class="col-7"
+                                        v-if="student_info.previous_classe"
                                     >
-                                        {{ student_info.street }}
+                                        {{ student_info.previous_classe }}
                                     </dd>
-                                    <dd
-                                        v-if="type === 'student'"
-                                        class="col-7 offset-5"
+                                    <dt
+                                        class="col-5 text-right"
+                                        v-if="emailSchool"
                                     >
-                                        {{ student_info.postal_code }} – {{ student_info.locality }}
+                                        Courriel de l'école
+                                    </dt>
+                                    <dd
+                                        class="col-7"
+                                        v-if="emailSchool"
+                                    >
+                                        {{ emailSchool }}
                                     </dd>
                                 </dl>
                                 <dl
                                     class="row"
                                     v-if="$store.state.settings.show_credentials"
                                 >
-                                    <dt class="col-5 text-right">
+                                    <dt
+                                        v-if="username"
+                                        class="col-5 text-right"
+                                    >
                                         Nom d'utilisateur
                                     </dt>
-                                    <dd class="col-7">
+                                    <dd
+                                        v-if="username"
+                                        class="col-7"
+                                    >
                                         {{ username }}
                                     </dd>
-                                    <dt class="col-5 text-right">
+                                    <dt
+                                        v-if="password"
+                                        class="col-5 text-right"
+                                    >
                                         Mot de passe
                                     </dt>
                                     <dd
-                                        v-if="showPassword"
+                                        v-if="password && showPassword"
                                         class="col-7"
                                     >
                                         {{ password }}
                                     </dd>
                                     <dd
-                                        v-else
+                                        v-else-if="password"
                                         class="col-7"
                                     >
                                         <b-btn
@@ -247,122 +246,19 @@
                             </b-col>
                         </b-row>
                     </b-tab>
-                    <b-tab
-                        title="Moyens de contacts"
+                    <sensitive-info
+                        v-if="sensitive"
+                        :info="sensitive"
+                        :type="type"
+                    />
+                    <contact-info
                         v-if="contact"
-                    >
-                        <dl class="row">
-                            <dt class="col-5 text-right">
-                                Nom du responsable
-                            </dt>
-                            <dd class="col-7">
-                                {{ contact.resp_last_name }} {{ contact.resp_first_name }}
-                            </dd>
-                            <dt class="col-5 text-right">
-                                Téléphone responsable
-                            </dt>
-                            <dd class="col-7">
-                                {{ contact.resp_phone }}
-                            </dd>
-                            <dt class="col-5 text-right">
-                                GSM responsable
-                            </dt>
-                            <dd class="col-7">
-                                {{ contact.resp_mobile }}
-                            </dd>
-                            <dt class="col-5 text-right">
-                                Email responsable
-                            </dt>
-                            <dd class="col-7">
-                                <a :href="'mailto:' + contact.resp_email">{{ contact.resp_email }}</a>
-                            </dd>
-                            <dt class="col-5 text-right">
-                                Nom de la mère
-                            </dt>
-                            <dd class="col-7">
-                                {{ contact.mother_last_name }} {{ contact.mother_first_name }}
-                            </dd>
-                            <dt class="col-5 text-right">
-                                Téléphone de la mère
-                            </dt>
-                            <dd class="col-7">
-                                {{ contact.mother_phone }}
-                            </dd>
-                            <dt class="col-5 text-right">
-                                GSM de la mère
-                            </dt>
-                            <dd class="col-7">
-                                {{ contact.mother_mobile }}
-                            </dd>
-                            <dt class="col-5 text-right">
-                                Email de la mère
-                            </dt>
-                            <dd class="col-7">
-                                <a :href="'mailto:' + contact.mother_email">{{ contact.mother_email }}</a>
-                            </dd>
-                            <dt class="col-5 text-right">
-                                Nom du père
-                            </dt>
-                            <dd class="col-7">
-                                {{ contact.father_last_name }} {{ contact.father_first_name }}
-                            </dd>
-                            <dt class="col-5 text-right">
-                                Téléphone du père
-                            </dt>
-                            <dd class="col-7">
-                                {{ contact.father_phone }}
-                            </dd>
-                            <dt class="col-5 text-right">
-                                GSM du père
-                            </dt>
-                            <dd class="col-7">
-                                {{ contact.father_mobile }}
-                            </dd>
-                            <dt class="col-5 text-right">
-                                Email du père
-                            </dt>
-                            <dd class="col-7">
-                                <a :href="'mailto:' + contact.father_email">{{ contact.father_email }}</a>
-                            </dd>
-                        </dl>
-                    </b-tab>
-                    <b-tab
-                        title="Info médicales"
+                        :contact="contact"
+                    />
+                    <medical-info
                         v-if="medical"
-                    >
-                        <dl class="row">
-                            <dt class="col-5 text-right">
-                                Médecin
-                            </dt>
-                            <dd class="col-7">
-                                {{ medical.doctor }}
-                            </dd>
-                            <dt class="col-5 text-right">
-                                Téléphone médecin
-                            </dt>
-                            <dd class="col-7">
-                                {{ medical.doctor_phone }}
-                            </dd>
-                            <dt class="col-5 text-right">
-                                Mutuelle
-                            </dt>
-                            <dd class="col-7">
-                                {{ medical.mutual }}
-                            </dd>
-                            <dt class="col-5 text-right">
-                                Numéro mutuelle
-                            </dt>
-                            <dd class="col-7">
-                                {{ medical.mutual_number }}
-                            </dd>
-                            <dt class="col-5 text-right">
-                                Infos complémentaires
-                            </dt>
-                            <dd class="col-7">
-                                {{ medical.medical_information }}
-                            </dd>
-                        </dl>
-                    </b-tab>
+                        :medical="medical"
+                    />
                     <b-tab
                         v-if="!noNews && this.type != 'responsible'"
                         :key="infoCount"
@@ -510,6 +406,10 @@ import axios from "axios";
 import Moment from "moment";
 Moment.locale("fr");
 
+import ContactInfo from "./contactinfo.vue";
+import MedicalInfo from "./medicalinfo.vue";
+import SensitiveInfo from "./sensitiveinfo.vue";
+
 export default {
     props: {
         matricule: {
@@ -532,12 +432,12 @@ export default {
             showPassword: false,
             username: "",
             password: "",
-            email: "",
             emailSchool: "",
             classe: [],
             tenure: null,
             teachings: [],
             student_info: {},
+            sensitive: null,
             contact: null,
             medical: null,
             important: [],
@@ -545,6 +445,7 @@ export default {
             appels: [],
             infirmerie: [],
             infoCount: 0,
+            moreInfo: false,
         };
     },
     computed: {
@@ -563,9 +464,9 @@ export default {
         reset: function () {
             this.username = "";
             this.password = "";
-            this.email = "";
             this.emailSchool = "";
             this.student_info = {};
+            this.sensitive = null;
             this.contact = null;
             this.medical = null;
             this.showPassword = false;
@@ -577,6 +478,8 @@ export default {
             this.infoCount = 0;
         },
         niceDate: function (date) {
+            if (!date) return "";
+
             return Moment(date).calendar();
         },
         loadInfo: function () {
@@ -591,11 +494,16 @@ export default {
                         this.teachings = [response.data.teaching];
                     });
 
+                axios.get("/annuaire/api/student_sensitive/" + this.matricule + "/")
+                    .then(response => {
+                        this.sensitive = response.data;
+                    });
+
                 axios.get("/annuaire/api/info_general/" + this.matricule + "/")
                     .then(response => {
                         this.student_info = response.data;
                         this.username = this.student_info.username;
-                        this.password = this.student_info.password;
+                        this.password = this.student_info.password.length > 15 ? "Indisponible" : this.student_info.password;
                     });
 
                 axios.get("/annuaire/api/info_contact/" + this.matricule + "/")
@@ -614,24 +522,28 @@ export default {
                     });
 
                 if (!this.noNews) {
-                    // Don't fail promise with 404 error (not found thus no right).
-                    const config = {
-                        validateStatus: function (status) {
-                            return status == 200 || status == 404;
-                        }
-                    };
-                    const promises = [
-                        axios.get("/dossier_eleve/api/cas_eleve/?ordering=-datetime_encodage&matricule_id=" + this.matricule, config),
-                        axios.get("/appels/api/appel/?ordering=-datetime_appel&matricule_id=" + this.matricule, config),
-                        axios.get("/infirmerie/api/passage/?ordering=-datetime_passage&matricule_id=" + this.matricule, config)
-                    ];
-
+                    let promises = [];
+                    let apps = [];
+                    // eslint-disable-next-line no-undef
+                    const userMenu = menu;
+                    if (userMenu.apps.find(a => a.app == "dossier_eleve")) {
+                        promises.push(axios.get("/dossier_eleve/api/cas_eleve/?ordering=-datetime_encodage&matricule_id=" + this.matricule));
+                        apps.push("dossier_eleve");
+                    }
+                    if (userMenu.apps.find(a => a.app == "appels")) {
+                        promises.push(axios.get("/appels/api/appel/?ordering=-datetime_appel&matricule_id=" + this.matricule));
+                        apps.push("appels");
+                    }
+                    if (userMenu.apps.find(a => a.app == "infirmerie")) {
+                        promises.push(axios.get("/infirmerie/api/passage/?ordering=-datetime_passage&matricule_id=" + this.matricule));
+                        apps.push("infirmerie");
+                    }
                     Promise.all(promises)
                         .then((response) => {
-                            if (response[0].data.results) this.dossier_eleve = response[0].data.results.slice(0, 5);
-                            if (response[1].data.results) this.appels = response[1].data.results.slice(0, 5);
-                            if (response[2].data.results) this.infirmerie = response[2].data.results.slice(0, 5);
-                            this.infoCount = this.dossier_eleve.length + this.infirmerie.length + this.appels.length;
+                            response.forEach((resp, index) => {
+                                this[apps[index]] = resp.data.results.slice(0, 5);
+                                this.infoCount += resp.data.count;
+                            });
                         });
                 }
             } else if (this.type == "responsible") {
@@ -648,14 +560,19 @@ export default {
                 axios.get("/annuaire/api/responsible_sensitive/" + this.matricule + "/")
                     .then(response => {
                         this.username = response.data.user.username;
-                        this.password = response.data.password;
-                        this.email = response.data.email;
+                        this.password = response.data.password.length > 15 ? "Indisponible" : response.data.password;
+                        this.sensitive = {email: response.data.email};
                     });
             }
         }
     },
     mounted: function () {
         this.loadInfo();
+    },
+    components: {
+        ContactInfo,
+        MedicalInfo,
+        SensitiveInfo,
     }
 };
 </script>

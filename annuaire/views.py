@@ -49,7 +49,7 @@ from core.people import People, get_classes
 from core.models import StudentModel, ClasseModel, TeachingModel, ResponsibleModel, AdditionalStudentInfo
 from core.serializers import StudentSerializer, ResponsibleSerializer, ClasseSerializer,\
     StudentGeneralInfoSerializer, StudentContactInfoSerializer, StudentMedicalInfoSerializer,\
-    ResponsibleSensitiveSerializer, YearSerializer
+    ResponsibleSensitiveSerializer, YearSerializer, StudentSensitiveInfoSerializer
 from core.views import get_app_settings
 
 from .models import AnnuaireSettingsModel
@@ -280,10 +280,12 @@ class StudentClasseAPI(APIView):
         serializer = StudentSerializer(students, many=True)
         return Response(serializer.data)
 
+
 class AnnuaireSettingsViewSet(ModelViewSet):
     queryset = AnnuaireSettingsModel.objects.all()
     serializer_class = AnnuaireSettingsSerializer
     permission_classes = (IsAdminUser,)
+
 
 class StudentInfoViewSet(ReadOnlyModelViewSet):
     queryset = StudentModel.objects.all()
@@ -316,6 +318,19 @@ class StudentGeneralInfoViewSet(ReadOnlyModelViewSet):
     queryset = AdditionalStudentInfo.objects.all()
     serializer_class = StudentGeneralInfoSerializer
     permission_classes = (IsAuthenticated,)
+
+
+class StudentSensitiveInfoViewSet(ReadOnlyModelViewSet):
+    queryset = AdditionalStudentInfo.objects.all()
+    serializer_class = StudentSensitiveInfoSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        allowed_groups = get_settings().can_see_student_sensitive.all()
+        if not self.request.user.groups.intersection(allowed_groups).exists():
+            return AdditionalStudentInfo.objects.none()
+
+        return super().get_queryset()
 
 
 class StudentContactInfoViewSet(ReadOnlyModelViewSet):

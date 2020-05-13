@@ -62,12 +62,18 @@ class StudentWriteSerializer(serializers.ModelSerializer):
         fields = ('matricule', 'first_name', 'last_name', 'classe', 'teaching', 'inactive_from',)
 
 
+class StudentSensitiveInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AdditionalStudentInfo
+        fields = ("student", "birth_date", "street", "postal_code",
+                  "locality", "father_job", "mother_job")
+
+
 class StudentGeneralInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdditionalStudentInfo
         fields = ('student', 'gender', 'scholar_year', 'previous_classe',
-                  'orientation', 'birth_date', 'street', 'postal_code',
-                  'locality', 'username', 'password')
+                  'orientation', 'username', 'password')
 
 
 class StudentContactInfoSerializer(serializers.ModelSerializer):
