@@ -153,6 +153,10 @@ class PageNumberSizePagination(PageNumberPagination):
     max_page_size = 1000
 
 
+class LargePageSizePagination(PageNumberPagination):
+    page_size = 500
+
+
 class BaseModelViewSet(ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     permission_classes = (DjangoModelPermissions,)
@@ -316,6 +320,7 @@ class GroupViewSet(ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    pagination_class = LargePageSizePagination
 
 
 class BirthdayAPI(APIView):
