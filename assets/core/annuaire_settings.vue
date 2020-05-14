@@ -21,204 +21,75 @@
     <div>
         <h4>Annuaire</h4>
         <br>
-        <!-- groups who can see responsibles -->
-        <b-row>
-            <h5>Groupes pouvants voir les responsables (professeurs, éducateurs,...)</h5>
-        </b-row>
         <b-row>
             <b-col>
-                <b-list-group>
-                    <b-list-group-item
-                        v-for="item in options_responsibles"
-                        :key="item.pk"
-                    >
-                        {{ item }}
-                        <b-btn
-                            variant="light"
-                            class="float-right"
-                            @click="deleteGroup('responsibles',item)" 
-                        >
-                            <icon
-                                name="remove"
-                                scale="1"
-                                color="red"
-                            />
-                        </b-btn>
-                    </b-list-group-item>
-                </b-list-group>
-                <br>
-                <b-form-group label="Sélectionner un groupe dans la liste et cliquer sur 'Ajouter'">
-                    <b-input-group>
-                        <b-form-select
-                            v-model="selected_responsibles.name"
-                            :options="groups_name_responsibles"
-                            value-field="name"
-                            text-field="name"
-                        />
-                        <b-input-group-append>
-                            <b-button
-                                size="sm"
-                                text="Button"
-                                variant="success"
-                                @click="send('responsibles')"
-                            >
-                                Ajouter
-                            </b-button>
-                        </b-input-group-append>
-                    </b-input-group>
-                </b-form-group>
+                <h5>Gestion des accès aux données</h5>
             </b-col>
         </b-row>
-        <br>
-        <!-- groups who can see responsibles sensitive -->
-        <b-row>
-            <h5>Groupes pouvants voir les données sensibles des responsables (professeurs, éducateurs,...)</h5>
-        </b-row>
+        <div
+            v-for="permission in permissions"
+            :key="permission.title"
+        >
+            <b-row>
+                <b-col>
+                    <b-card
+                        no-body
+                        class="mb-2"
+                    >
+                        <b-card-header>
+                            {{ permission.title }}
+                        </b-card-header>
+                        <b-list-group flush>
+                            <b-list-group-item
+                                v-for="group in permission.canSee"
+                                :key="group.id"
+                            >
+                                {{ group.name }}
+                                <b-btn
+                                    variant="light"
+                                    class="float-right"
+                                    size="sm"
+                                    @click="deleteGroup(permission.permissionName, group)" 
+                                >
+                                    <icon
+                                        name="remove"
+                                        scale="1"
+                                        color="red"
+                                    />
+                                </b-btn>
+                            </b-list-group-item>
+                        </b-list-group>
+                        <b-card-body body-bg-variant="light">
+                            <b-form-group label="Sélectionner un groupe dans la liste et cliquer sur 'Ajouter'">
+                                <b-input-group>
+                                    <b-form-select
+                                        v-model="permission.selected"
+                                        :options="permission.availableGroups"
+                                        value-field="id"
+                                        text-field="name"
+                                    />
+                                    <b-input-group-append>
+                                        <b-button
+                                            size="sm"
+                                            text="Button"
+                                            variant="success"
+                                            @click="sendPermission(permission.permissionName)"
+                                        >
+                                            Ajouter
+                                        </b-button>
+                                    </b-input-group-append>
+                                </b-input-group>
+                            </b-form-group>
+                        </b-card-body>
+                    </b-card>
+                </b-col>
+            </b-row>
+        </div>
         <b-row>
             <b-col>
-                <b-list-group>
-                    <b-list-group-item
-                        v-for="item in options_responsibles_sensitive"
-                        :key="item.pk"
-                    >
-                        {{ item }}
-                        <b-btn
-                            variant="light"
-                            class="float-right"
-                            @click="deleteGroup('responsibles_sensitive',item)" 
-                        >
-                            <icon
-                                name="remove"
-                                scale="1"
-                                color="red"
-                            />
-                        </b-btn>
-                    </b-list-group-item>
-                </b-list-group>
-                <br>
-                <b-form-group label="Sélectionner un groupe dans la liste et cliquer sur 'Ajouter'">
-                    <b-input-group>
-                        <b-form-select
-                            v-model="selected_responsibles_sensitive.name"
-                            :options="groups_name_responsibles_sensitive"
-                            value-field="name"
-                            text-field="name"
-                        />
-                        <b-input-group-append>
-                            <b-button
-                                size="sm"
-                                text="Button"
-                                variant="success"
-                                @click="send('responsibles_sensitive')"
-                            >
-                                Ajouter
-                            </b-button>
-                        </b-input-group-append>
-                    </b-input-group>
-                </b-form-group>
+                <h5>Afficher les identifiants</h5>
             </b-col>
         </b-row>
-        <!-- groups who can see student contact -->
-        <b-row>
-            <h5>Groupes pouvants voir les données de contact des élèves</h5>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-list-group>
-                    <b-list-group-item
-                        v-for="item in options_student_contact"
-                        :key="item.pk"
-                    >
-                        {{ item }}
-                        <b-btn
-                            variant="light"
-                            class="float-right"
-                            @click="deleteGroup('student_contact',item)" 
-                        >
-                            <icon
-                                name="remove"
-                                scale="1"
-                                color="red"
-                            />
-                        </b-btn>
-                    </b-list-group-item>
-                </b-list-group>
-                <br>
-                <b-form-group label="Sélectionner un groupe dans la liste et cliquer sur 'Ajouter'">
-                    <b-input-group>
-                        <b-form-select
-                            v-model="selected_student_contact.name"
-                            :options="groups_name_student_contact"
-                            value-field="name"
-                            text-field="name"
-                        />
-                        <b-input-group-append>
-                            <b-button
-                                size="sm"
-                                text="Button"
-                                variant="success"
-                                @click="send('student_contact')"
-                            >
-                                Ajouter
-                            </b-button>
-                        </b-input-group-append>
-                    </b-input-group>
-                </b-form-group>
-            </b-col>
-        </b-row>
-        <!-- groups who can see student medical -->
-        <b-row>
-            <h5>Groupes pouvants voir les données médiacles des élèves</h5>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-list-group>
-                    <b-list-group-item
-                        v-for="item in options_student_medical"
-                        :key="item.pk"
-                    >
-                        {{ item }}
-                        <b-btn
-                            variant="light"
-                            class="float-right"
-                            @click="deleteGroup('student_medical',item)" 
-                        >
-                            <icon
-                                name="remove"
-                                scale="1"
-                                color="red"
-                            />
-                        </b-btn>
-                    </b-list-group-item>
-                </b-list-group>
-                <br>
-                <b-form-group label="Sélectionner un groupe dans la liste et cliquer sur 'Ajouter'">
-                    <b-input-group>
-                        <b-form-select
-                            v-model="selected_student_medical.name"
-                            :options="groups_name_student_medical"
-                            value-field="name"
-                            text-field="name"
-                        />
-                        <b-input-group-append>
-                            <b-button
-                                size="sm"
-                                text="Button"
-                                variant="success"
-                                @click="send('student_medical')"
-                            >
-                                Ajouter
-                            </b-button>
-                        </b-input-group-append>
-                    </b-input-group>
-                </b-form-group>
-            </b-col>
-        </b-row>
-        <br>
-        <b-row>
-            <h5>Afficher les identifiants</h5>
-        </b-row>
-        <br>
         <b-row>
             <b-col>
                 <b-form-group 
@@ -226,7 +97,7 @@
                 >
                     <b-form-checkbox 
                         v-model="credentials"
-                        @change="send_credentials"
+                        @change="sendCredentials"
                     >
                         Afficher les champs utilisateur/mot de passe
                     </b-form-checkbox>
@@ -237,10 +108,6 @@
 </template>
 
 <script>
-import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
-Vue.use(BootstrapVue);
-
 import axios from "axios";
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
@@ -248,41 +115,59 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 export default {
     data: function() {
         return {
+            /** A list of permissions which includes:
+             * - Current groups (canSee),
+             * - Groups that can be added (availableGroups),
+             * - Group selected in the adding form (selected),
+             * - Name of the permission (permissionName),
+             * - A description of the permission (title).
+             * */
+            permissions: [
+                {
+                    title: "Groupes pouvants voir les responsables (professeurs, éducateurs,… )",
+                    permissionName: "responsibles",
+                    canSee: [],
+                    selected: null,
+                    availableGroups: [],
+                },
+                {
+                    title: "Groupes pouvants voir les données sensibles des responsables (professeurs, éducateurs,… )",
+                    permissionName: "responsibles_sensitive",
+                    canSee: [],
+                    selected: null,
+                    availableGroups: [],
+                },
+                {
+                    title: "Groupes pouvants voir les données sensibles des élèves (adresses, professions des parents,… )",
+                    permissionName: "student_sensitive",
+                    canSee: [],
+                    selected: null,
+                    availableGroups: [],
+                },
+                {
+                    title: "Groupes pouvants voir les données de contact des élèves",
+                    permissionName: "student_contact",
+                    canSee: [],
+                    selected: null,
+                    availableGroups: [],
+                },
+                {
+                    title: "Groupes pouvants voir les données médiacles des élèves",
+                    permissionName: "student_medical",
+                    canSee: [],
+                    selected: null,
+                    availableGroups: [],
+                },
+            ],
+            /** State of the credentials setting. */
             credentials: null,
-            selected_responsibles: { id: null, name: null },
-            selected_responsibles_sensitive: { id: null, name: null },
-            selected_student_contact: { id: null, name: null },
-            selected_student_medical: { id: null, name: null },
-            options_responsibles: [],
-            options_responsibles_sensitive: [],
-            options_student_contact: [],
-            options_student_medical: [],
-            groupOptions: [],
-            responsibles: [],
-            groups_name_responsibles: [],
-            groups_name_responsibles_sensitive: [],
-            groups_name_student_contact: [],
-            groups_name_student_medical: [],
+            /** List of all groups avalaible. */
             groups: [],
-            inputStates: { display_name: null, name: null },
-            errors: {},
-            logo: null
         };
     },
-    watch: {
-        errors: function(newErrors) {
-            const inputs = Object.keys(this.inputStates);
-            for (let u in inputs) {
-                if (inputs[u] in newErrors) {
-                    this.inputStates[inputs[u]] = newErrors[inputs[u]].length == 0;
-                } else {
-                    this.inputStates[inputs[u]] = null;
-                }
-            }
-        }
-    },
     methods: {
-        send_credentials:function(){
+        /** Update credential setting. */
+        sendCredentials: function() {
             this.credentials = !this.credentials;
             axios.put("/annuaire/api/settings/1/",{ show_credentials: this.credentials },token)
                 .then(() => {
@@ -292,34 +177,23 @@ export default {
                     });
                 });
         },
-        send: function(grp) {
-            const selected = this["selected_" + grp];
-            const groups_name = this["groups_name_" + grp];
-            const options = this["options_" + grp];
-            const groupOptions = this["groupOptions_" + grp];
-            for (let i in this.groups) {
-                if (this.groups[i].name == selected.name) {
-                    selected.id = this.groups[i].id;
-                    break;
-                }
-            }
-            for (let i in this.groups_name_responsibles) {
-                if (groups_name[i] == selected.name) {
-                    groups_name.splice(i, 1);
-                    break;
-                }
-            }
-            options.push(selected.name);
-            groupOptions.push(selected.id);
-            axios
-                .put(
-                    "/annuaire/api/settings/1/",
-                    { ["can_see_" + grp]: groupOptions },
-                    token
-                ) //  /core/api/group/
+        /** Add a group in a permission.
+         * 
+         * @param {String} permName The name of the permission.
+         */
+        sendPermission: function(permName) {
+            let permission = this.permissions.find(p => p.permissionName == permName);
+            // Create a new list so we can ensure that canSee is updated after sending it.
+            const canSeeData = permission.canSee.map(g => g.id).concat([permission.selected]);
+            axios.put(
+                "/annuaire/api/settings/1/",
+                {["can_see_" + permName]: canSeeData},
+                token
+            )
                 .then(() => {
-                    selected.name = null;
-                    selected.id = null;
+                    permission.canSee = canSeeData.map(id => this.groups.find(g => g.id == id));
+                    permission.availableGroups = permission.availableGroups.filter(aG => aG.id != permission.selected);
+                    permission.selected = null;
                     this.$bvToast.toast("Sauvegardé.", {
                         variant: "success",
                         noCloseButton: true
@@ -329,39 +203,34 @@ export default {
                     alert(err);
                 });
         },
-        deleteGroup: function(grp,item) {
-            var currentGroup = { id: null, name: null };
-            const groupOptions = this["groupOptions_" + grp];
-            const options = this["options_" + grp];
-            const grp_name = this["groups_name_" + grp];
-            this.$bvModal.msgBoxOk("Êtes-vous sûr de vouloir supprimer " + item +" ?")
+        /** Remove group from a permission.
+         * 
+         * @param {String} permName The name of the permission.
+         * @param {Object} group The group that has to be removed.
+         */
+        deleteGroup: function(permName, group) {
+            this.$bvModal.msgBoxOk("Êtes-vous sûr de vouloir supprimer " + group.name +" ?")
                 .then(() => {
-                    for (let i in this.groups) {
-                        if (this.groups[i].name == item) {
-                            currentGroup.id = this.groups[i].id;
-                            break;
-                        }
-                    }
-                    for (let i in groupOptions) {
-                        if (currentGroup.id == groupOptions[i]) {
-                            groupOptions.splice(i, 1);
-                            options.splice(i, 1);
-                            break;
-                        }
-                    }
-                    grp_name.push(item);
-                    this["options_" + grp]=options;
-                    this["group_name" + grp]=grp_name;
+                    let permission = this.permissions.find(p => p.permissionName == permName);
+                    // Create a new list so we can ensure that canSee is updated after sending it.
+                    const canSeeData = permission.canSee.map(g => g.id).filter(id => id != group.id);
                     axios.put(
                         "/annuaire/api/settings/1/",
-                        { ["can_see_" + grp]: this["groupOptions_" +grp]},
+                        { ["can_see_" + permName]: canSeeData},
                         token
-                    );
+                    )
+                        .then(() => {
+                            permission.canSee = canSeeData.map(id => this.groups.find(g => g.id == id));
+                            permission.availableGroups = permission.availableGroups.concat([group]);
+                        })
+                        .catch(err => {
+                            alert(err);
+                        });
                 }); 
         },
-        resetGroups: function() {
-            axios
-                .get("/core/api/group/") //all can be selected
+        /* Get the list of groups that can be chosen. **/
+        getGroups: function() {
+            axios.get("/core/api/group/")
                 .then(response => {
                     this.groups = response.data.results.filter(text => {
                         if (isNaN(text.name[text.name.length - 1])) {
@@ -370,57 +239,23 @@ export default {
                     });
                 });
         },
-        errorMsg(err) {
-            if (err in this.errors) {
-                return this.errors[err][0];
-            } else {
-                return "";
-            }
-        }
     },
     mounted: function() {
-        var names_groups = ["responsibles","responsibles_sensitive","student_contact","student_medical"];
-        this.resetGroups();
+        this.getGroups();
         axios
             .get("/annuaire/api/settings/1/") //allready selected
             .then(response => {
                 this.credentials = response.data.show_credentials;
-                this.groupOptions_responsibles = response.data.can_see_responsibles;
-                this.groupOptions_responsibles_sensitive = response.data.can_see_responsibles_sensitive;
-                this.groupOptions_student_contact = response.data.can_see_student_contact;
-                this.groupOptions_student_medical = response.data.can_see_student_medical;
-                for (let i in names_groups){
-                    var groupOptions = this["groupOptions_" + names_groups[i]];
-                    var options = this["options_" + names_groups[i]];
-                    var groups_names = this["groups_name_" + names_groups[i]];
-                    for (let item in groupOptions) {
-                        for (let temp in this.groups) {
-                            if (groupOptions[item] == this.groups[temp].id) {
-                                options.push(this.groups[temp].name);
-                            }
-                        }
-                    }
-                    for (let temp in this.groups) {
-                        if (!options.includes(this.groups[temp].name)) {
-                            groups_names.push(this.groups[temp].name);
-                        }
-                    }
-                    options = options.filter(text => {
-                        if (isNaN(text[text.length - 1])) {
-                            return true;
-                        }
+                this.permissions.forEach(perm => {
+                    perm.canSee = response.data["can_see_" + perm.permissionName].map(groupId => this.groups.find(g => g.id == groupId));
+                    perm.availableGroups = this.groups.filter(g => {
+                        return !perm.canSee.find(usedGroup => usedGroup.name == g.name);
                     });
-                    this["groupOptions" + names_groups[i]] = groupOptions;
-                    this["options" + names_groups[i]] = options;
-                    this["groups_names" + names_groups[i]] = groups_names;
-                }
+                });
             })
             .catch(function(error) {
                 alert(error);
             });
     },
-    components: {}
 };
 </script>
-
-    
