@@ -23,14 +23,12 @@ from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMix
 from django.views.generic import TemplateView
 
 from rest_framework.filters import OrderingFilter
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 
 from django_filters import rest_framework as filters
 
-from core.models import TeachingModel
 from core.utilities import get_menu
-from core.views import BaseModelViewSet, get_app_settings, BaseUploadFileView
+from core.views import BaseModelViewSet, get_app_settings, BaseUploadFileView, LargePageSizePagination
 
 from . import models
 from . import serializers
@@ -72,11 +70,6 @@ class PIAView(LoginRequiredMixin,
         return context
 
 
-class LargePagination(PageNumberPagination):
-    """A default pagination of 500 items."""
-    page_size = 500
-
-
 class PIAViewSet(BaseModelViewSet):
     queryset = models.PIAModel.objects.all()
     serializer_class = serializers.PIASerializer
@@ -96,7 +89,7 @@ class CrossGoalViewSet(ModelViewSet):
     filterset_fields = ('pia_model',)
     ordering_fields = ['date_start', 'date_end', 'datetime_creation']
     ordering = ['-date_start']
-    pagination_class = LargePagination
+    pagination_class = LargePageSizePagination
 
 
 class BranchGoalViewSet(ModelViewSet):
@@ -106,7 +99,7 @@ class BranchGoalViewSet(ModelViewSet):
     filterset_fields = ('branch',)
     ordering_fields = ['datetime_creation']
     ordering = ['-datetime_creation']
-    pagination_class = LargePagination
+    pagination_class = LargePageSizePagination
 
 
 class BranchStatementViewSet(ModelViewSet):
@@ -114,7 +107,7 @@ class BranchStatementViewSet(ModelViewSet):
     serializer_class = serializers.BranchStatementSerializer
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filterset_fields = ('class_council',)
-    pagination_class = LargePagination
+    pagination_class = LargePageSizePagination
 
 
 class ClassCouncilPIAViewSet(ModelViewSet):
@@ -123,19 +116,19 @@ class ClassCouncilPIAViewSet(ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filterset_fields = ('pia_model',)
     ordering = ['-datetime_creation']
-    pagination_class = LargePagination
+    pagination_class = LargePageSizePagination
 
 
 class DisorderViewSet(ReadOnlyModelViewSet):
     queryset = models.DisorderModel.objects.all()
     serializer_class = serializers.DisorderSerializer
-    pagination_class = LargePagination
+    pagination_class = LargePageSizePagination
 
 
 class DisorderResponseViewSet(ReadOnlyModelViewSet):
     queryset = models.DisorderResponseModel.objects.all()
     serializer_class = serializers.DisorderResponseSerializer
-    pagination_class = LargePagination
+    pagination_class = LargePageSizePagination
 
 
 class ScheduleAdjustmentViewSet(ReadOnlyModelViewSet):
@@ -143,31 +136,31 @@ class ScheduleAdjustmentViewSet(ReadOnlyModelViewSet):
 
     queryset = models.ScheduleAdjustmentModel.objects.all()
     serializer_class = serializers.ScheduleAdjustmentSerializer
-    pagination_class = LargePagination
+    pagination_class = LargePageSizePagination
 
 
 class CrossGoalItemViewSet(ReadOnlyModelViewSet):
     queryset = models.CrossGoalItemModel.objects.all()
     serializer_class = serializers.CrossGoalItemSerializer
-    pagination_class = LargePagination
+    pagination_class = LargePageSizePagination
 
 
 class AssessmentViewSet(ReadOnlyModelViewSet):
     queryset = models.AssessmentModel.objects.all()
     serializer_class = serializers.AssessmentSerializer
-    pagination_class = LargePagination
+    pagination_class = LargePageSizePagination
 
 
 class BranchViewSet(ReadOnlyModelViewSet):
     queryset = models.BranchModel.objects.all()
     serializer_class = serializers.BranchSerializer
-    pagination_class = LargePagination
+    pagination_class = LargePageSizePagination
 
 
 class BranchGoalItemViewSet(ReadOnlyModelViewSet):
     queryset = models.BranchGoalItemModel.objects.all()
     serializer_class = serializers.BranchGoalItemSerializer
-    pagination_class = LargePagination
+    pagination_class = LargePageSizePagination
 
 
 class UploadFileView(BaseUploadFileView):
@@ -180,7 +173,7 @@ class StudentProjectViewSet(ModelViewSet):
     serializer_class = serializers.StudentProjectSerializer
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filterset_fields = ('pia_model',)
-    pagination_class = LargePagination
+    pagination_class = LargePageSizePagination
     ordering = ['-datetime_creation']
 
 
@@ -189,5 +182,5 @@ class ParentsOpinionViewSet(ModelViewSet):
     serializer_class = serializers.ParentsOpinionSerializer
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filterset_fields = ('pia_model',)
-    pagination_class = LargePagination
+    pagination_class = LargePageSizePagination
     ordering = ['-datetime_creation']
