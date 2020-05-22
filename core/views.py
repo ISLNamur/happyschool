@@ -149,11 +149,18 @@ class BaseFilters(filters.FilterSet):
 
 
 class PageNumberSizePagination(PageNumberPagination):
+    """
+    Offer a query parameter (page_size) to fix page size for pagination.
+    Default is still 20 items.
+    """
     page_size_query_param = "page_size"
     max_page_size = 1000
 
 
 class LargePageSizePagination(PageNumberPagination):
+    """
+    Pagination with a default page size of 500 items and a query parameter (page_size).
+    """
     page_size = 500
 
 
