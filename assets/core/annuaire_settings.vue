@@ -209,8 +209,10 @@ export default {
          * @param {Object} group The group that has to be removed.
          */
         deleteGroup: function(permName, group) {
-            this.$bvModal.msgBoxOk("Êtes-vous sûr de vouloir supprimer " + group.name +" ?")
-                .then(() => {
+            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer " + group.name +" ?")
+                .then(remove => {
+                    if (!remove) return;
+
                     let permission = this.permissions.find(p => p.permissionName == permName);
                     // Create a new list so we can ensure that canSee is updated after sending it.
                     const canSeeData = permission.canSee.map(g => g.id).filter(id => id != group.id);
