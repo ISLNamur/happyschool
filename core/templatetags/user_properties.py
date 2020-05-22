@@ -32,6 +32,7 @@ def list_user_properties(context):
     try:
         responsible = ResponsibleModel.objects.get(user=context['user'])
         return {
+            "matricule": responsible.matricule,
             "teaching": [t.id for t in responsible.teaching.all()],
             "classes": [c.id for c in responsible.classe.all()]
         }
