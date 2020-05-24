@@ -318,18 +318,27 @@ class People:
             return StudentModel.objects.none()
 
         if len(classe) > 1:
-            return students.filter(classe__letter=classe[1:].lower())
+            return students.filter(classe__letter__istartswith=classe[1:])
 
         return students
 
 
-def get_classes(teaching: list=('all',), check_access: bool=False, user: User=None,
-                tenure_class_only: bool=True, educ_by_years: bool=True) -> QuerySet:
-    """
-    Get the list of classes.
-    :param teaching: A list of students' teachings.
-    :check_access: Return only classes with access.
-    :return: A set of classes.
+def get_classes(teaching: list = ('all',), check_access: bool = False, user: User = None,
+                tenure_class_only: bool = True, educ_by_years: bool = True) -> QuerySet:
+    """Get the list of classes.
+
+    :param teaching: A list of students' teachings, defaults to ('all',)
+    :type teaching: list, optional
+    :param check_access: Return only classes with access, defaults to False
+    :type check_access: bool, optional
+    :param user: The user trying to get the classes (only usefull with check_access=True), defaults to None
+    :type user: User, optional
+    :param tenure_class_only: If a teacher, get classes only by tenure, defaults to True
+    :type tenure_class_only: bool, optional
+    :param educ_by_years: If educator, get classes by year access. Otherwise get it by classes, defaults to True
+    :type educ_by_years: bool, optional
+    :return: A QuerySet of classes.
+    :rtype: QuerySet
     """
     # First, get teaching models.
     if "all" not in teaching:
@@ -369,18 +378,32 @@ def get_classes(teaching: list=('all',), check_access: bool=False, user: User=No
         if tenure_class_only:
             return responsible.tenure.all().filter(teaching__in=teaching_models)
         else:
-            return responsible.classe.all().filter(teaching__in=teaching_models)
+            return responsible.classe.all().filter(teaching__in=teaching_models).union(
+                responsible.tenure.all().filter(teaching__in=teaching_models)
+            )
     else:
         return ClasseModel.objects.filter(teaching__in=teaching_models)
 
 
-def get_years(teaching: list=("all",), check_access: bool=False, user: User=None) -> set:
+def get_years(
+    teaching: list = ("all",),
+    check_access: bool = False,
+    user: User = None,
+    tenure_class_only: bool = True,
+    educ_by_years: bool = True
+) -> set:
     """
-        Get the list of years.
-        :param teaching: A list of students' teachings.
-        :return: A set of years.
+    Get the list of years.
+    :param teaching: A list of students' teachings.
+    :param check_access: Return only classes with access, defaults to False
+    :type check_access: bool, optional
+    :param tenure_class_only: If a teacher, get classes only by tenure, defaults to True
+    :type tenure_class_only: bool, optional
+    :param educ_by_years: If educator, get classes by year access. Otherwise get it by classes, defaults to True
+    :type educ_by_years: bool, optional
+    :return: A set of years.
     """
-    classes = get_classes(teaching, check_access, user)
+    classes = get_classes(teaching, check_access, user, tenure_class_only, educ_by_years)
     return set(map(lambda s: s.year, classes))
 
 
