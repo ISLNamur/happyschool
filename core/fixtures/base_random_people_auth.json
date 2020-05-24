@@ -1,0 +1,302 @@
+[
+{
+  "model": "auth.group",
+  "pk": 1,
+  "fields": {
+    "name": "sysadmin",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 2,
+  "fields": {
+    "name": "direction",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 3,
+  "fields": {
+    "name": "professeur",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 4,
+  "fields": {
+    "name": "educateur",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 5,
+  "fields": {
+    "name": "coordonateur",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 6,
+  "fields": {
+    "name": "secretaire",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 7,
+  "fields": {
+    "name": "pms",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 8,
+  "fields": {
+    "name": "accueil",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 9,
+  "fields": {
+    "name": "coord1",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 10,
+  "fields": {
+    "name": "educ1",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 11,
+  "fields": {
+    "name": "coord2",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 12,
+  "fields": {
+    "name": "educ2",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 13,
+  "fields": {
+    "name": "coord3",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 14,
+  "fields": {
+    "name": "educ3",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 15,
+  "fields": {
+    "name": "coord4",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 16,
+  "fields": {
+    "name": "educ4",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 17,
+  "fields": {
+    "name": "coord5",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 18,
+  "fields": {
+    "name": "educ5",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 19,
+  "fields": {
+    "name": "coord6",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 20,
+  "fields": {
+    "name": "educ6",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 21,
+  "fields": {
+    "name": "coord7",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "pk": 22,
+  "fields": {
+    "name": "educ7",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$150000$tzLq5LivJ6FF$ikx0XKNCuGakKpdyDDMh78fnVxbA6ZuiTBD6cXw8dlU=",
+    "last_login": "2020-05-14T09:51:33Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "Jean",
+    "last_name": "Dupont",
+    "email": "admin@ecole.org",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2019-08-24T08:48:27Z",
+    "groups": [
+      1
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 137,
+  "fields": {
+    "password": "pbkdf2_sha256$150000$AJu5Au8H6uqt$BVaSfnE/PIMvBc4Y8ZEEW3tN0JdlB2fWhhYSaiRQaEA=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "director",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2020-05-24T15:02:27Z",
+    "groups": [
+      2
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 138,
+  "fields": {
+    "password": "pbkdf2_sha256$150000$bzphR7VQ0GKF$UTeFtxyykNQI1prTP6yL3yC9OQyO+82DUeBQF20wx4E=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "coordonator",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2020-05-24T15:02:42Z",
+    "groups": [
+      5,
+      9,
+      11,
+      13
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 139,
+  "fields": {
+    "password": "pbkdf2_sha256$150000$jMDz0KMsDieh$kTMhHrTodmXpy6a6CKBNO8i1ySsfBqd9fwWceikRZ9Q=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "educator",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2020-05-24T15:02:54Z",
+    "groups": [
+      4,
+      18,
+      20,
+      22
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 140,
+  "fields": {
+    "password": "pbkdf2_sha256$150000$SkGhrfzlkrbM$Zuy5GEiNTNr4LwVHWWHs64aZUkLdF3B4qU8hiRdgFFw=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "teacher",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2020-05-24T15:03:07Z",
+    "groups": [
+      3
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 141,
+  "fields": {
+    "password": "pbkdf2_sha256$150000$ZTySiGkrt2b5$IRX31JAC1ynkQEmqTJU3fg64GnCdnYWFZld9DuS41U8=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "student",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2020-05-24T15:32:08Z",
+    "groups": [],
+    "user_permissions": []
+  }
+}
+]
