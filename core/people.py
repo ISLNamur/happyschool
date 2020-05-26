@@ -399,7 +399,8 @@ def get_years(
     :type check_access: bool, optional
     :param tenure_class_only: If a teacher, get classes only by tenure, defaults to True
     :type tenure_class_only: bool, optional
-    :param educ_by_years: If educator, get classes by year access. Otherwise get it by classes, defaults to True
+    :param educ_by_years: If educator, get classes by year access. Otherwise get it by classes,
+        defaults to True
     :type educ_by_years: bool, optional
     :return: A set of years.
     """
@@ -410,3 +411,55 @@ def get_years(
 def _get_years_by_group(user: User) -> set:
     groups = user.groups.values_list("name", flat=True)
     return set(map(lambda g: int(g[-1]), filter(lambda g: g[-1].isdigit(), groups)))
+
+
+def check_access_to_student(
+    student: StudentModel,
+    user: User,
+    tenure_class_only: bool = True,
+    educ_by_years: bool = True
+) -> bool:
+    """Check if user can see a specific student.
+
+    :param student: The student the user try to access.
+    :type student: StudentModel
+    :param user: The user who tries to access the student.
+    :type user: User
+    :param tenure_class_only: If a teacher, get classes only by tenure, defaults to True
+    :type tenure_class_only: bool, optional
+    :param educ_by_years: If educator, get classes by year access. Otherwise get it by classes,
+        defaults to True
+    :type educ_by_years: bool, optional
+    :return: Wether the user can access or not to the student.
+    """
+
+    if not user or user.is_anonymous:
+        return False
+
+    # Sysadmins, direction members, pms have all access.
+    if user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP,
+                                    settings.PMS_GROUP]).exists():
+        return True
+
+    try:
+        responsible = ResponsibleModel.objects.get(user=user)
+    except ObjectDoesNotExist:
+        return False
+
+    # Coordinators have by years access.
+    if user.groups.filter(name__istartswith=settings.COORD_GROUP).exists():
+        return student.classe.year in _get_years_by_group(user)
+
+    # Educators have by years or by classes access.
+    if user.groups.filter(name__istartswith=settings.EDUC_GROUP).exists():
+        if educ_by_years:
+            return student.classe.year in _get_years_by_group(user)
+        else:
+            return responsible.classe.filter(id=student.classe.id).exists()
+
+    # Teachers have by tenure or by classes access.
+    if tenure_class_only:
+        return responsible.tenure.filter(id=student.classe.id).exists()
+    else:
+        classes = responsible.classe.union(responsible.tenure.all())
+        return student.classe.id in [c.id for c in classes]

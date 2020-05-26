@@ -20,7 +20,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from .people import People, STUDENT, get_years, get_classes, \
-    get_all_teachings
+    get_all_teachings, check_access_to_student
 
 from .models import TeachingModel, StudentModel, ClasseModel, ResponsibleModel
 
@@ -369,3 +369,99 @@ class GetYearsTest(TestCase):
     def test_coordonator_access(self):
         years = get_years(check_access=True, user=self.coordonator_user)
         self.assertSetEqual(years, {1, 2, 3})
+
+
+class CheckAccessToStudentTest(TestCase):
+    fixtures = ["base_random_people_auth.json", "base_random_people_core"]
+
+    def setUp(self):
+        # Get a direction user.
+        self.dir_user = User.objects.get(username='director')
+        # Get a student user.
+        self.student_user = User.objects.get(username='student')
+        # Get a teacher user.
+        # Classes (secondaire): [1C, 5D, 5G, 6C]
+        # Tenure (secondaire): [1D]
+        self.teacher_user = User.objects.get(username='teacher')
+        # Get an educator user.
+        # Classes (secondaire): [2D, 3B, 6C, 6F]
+        # Years: [5, 6, 7]
+        self.educator_user = User.objects.get(username='educator')
+        # Get a coordonator user.
+        self.coordinator_user = User.objects.get(username='coordonator')
+        # Years: [1, 2, 3]
+
+        # Get students to test on.
+        self.student_one_a_secondaire = StudentModel.objects.get(matricule=1010)
+        self.student_one_c_secondaire = StudentModel.objects.get(matricule=1034)
+        self.student_one_d_secondaire = StudentModel.objects.get(matricule=1047)
+        self.student_two_d_secondaire = StudentModel.objects.get(matricule=1152)
+        self.student_five_a_secondaire = StudentModel.objects.get(matricule=1433)
+        self.student_six_a_secondaire = StudentModel.objects.get(matricule=1538)
+
+    def test_student_access(self):
+        has_access = check_access_to_student(self.student_one_d_secondaire, self.student_user)
+        self.assertFalse(has_access)
+
+    def test_teacher_access(self):
+        # Teacher should have access as it is the tenure.
+        has_access = check_access_to_student(self.student_one_d_secondaire, self.teacher_user)
+        self.assertTrue(has_access)
+        # Student from another classe.
+        has_access = check_access_to_student(self.student_one_a_secondaire, self.teacher_user)
+        self.assertFalse(has_access)
+        # With all classes.
+        has_access = check_access_to_student(
+            self.student_one_c_secondaire,
+            self.teacher_user,
+            tenure_class_only=False,
+        )
+        self.assertTrue(has_access)
+        # With all classes.
+        has_access = check_access_to_student(
+            self.student_five_a_secondaire,
+            self.teacher_user,
+            tenure_class_only=False,
+        )
+        self.assertFalse(has_access)
+
+    def test_educator_access(self):
+        # Educator should have access to its years.
+        has_access = check_access_to_student(self.student_six_a_secondaire, self.educator_user)
+        self.assertTrue(has_access)
+        has_access = check_access_to_student(self.student_one_a_secondaire, self.educator_user)
+        self.assertFalse(has_access)
+
+        # Check access by classes.
+        has_access = check_access_to_student(
+            self.student_two_d_secondaire,
+            self.educator_user,
+            educ_by_years=False
+        )
+        self.assertTrue(has_access)
+        has_access = check_access_to_student(
+            self.student_six_a_secondaire,
+            self.educator_user,
+            educ_by_years=False
+        )
+        self.assertFalse(has_access)
+
+    def test_coordinator_access(self):
+        # Coordinator should have access to its years.
+        has_access = check_access_to_student(self.student_one_a_secondaire, self.coordinator_user)
+        self.assertTrue(has_access)
+        has_access = check_access_to_student(self.student_six_a_secondaire, self.coordinator_user)
+        self.assertFalse(has_access)
+
+    def test_director_access(self):
+        # Director should have access to all students.
+        students = [
+            self.student_one_a_secondaire,
+            self.student_one_c_secondaire,
+            self.student_one_d_secondaire,
+            self.student_two_d_secondaire,
+            self.student_five_a_secondaire,
+            self.student_six_a_secondaire,
+        ]
+        has_access = [check_access_to_student(s, self.dir_user) for s in students]
+        self.assertListEqual(has_access, [True, True, True, True, True, True])
