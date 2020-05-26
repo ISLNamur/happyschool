@@ -63,7 +63,7 @@ class CasEleveSerializer(serializers.ModelSerializer):
         # If submit sanction is not enable, ignore validation.
         if not views.get_settings().enable_submit_sanctions:
             return value
-        if not self.context['request'].user.has_perm('dossier_eleve.ask_sanction'):
+        if value and not self.context['request'].user.has_perm('dossier_eleve.ask_sanction'):
             raise serializers.ValidationError("Vous n'avez pas les droits nécessaire pour ajouter/modifier une sanction")
         return value
 
