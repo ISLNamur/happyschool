@@ -1,0 +1,113 @@
+[
+{
+    "model": "dossier_eleve.caseleve",
+    "pk": 58,
+    "fields": {
+        "matricule": 1001,
+        "name": "Hardy Agn\u00e8s 1A",
+        "datetime_encodage": "2020-05-26T07:47:00.496Z",
+        "datetime_modified": "2020-05-26T07:47:00.513Z",
+        "info": 1,
+        "demandeur": "Dupont Jean",
+        "sanction_decision": null,
+        "explication_commentaire": "<p>\u00c0 des probl\u00e8mes avec son arri\u00e8re grand-m\u00e8re.</p>",
+        "datetime_sanction": null,
+        "datetime_conseil": null,
+        "sanction_faite": null,
+        "important": false,
+        "user": "admin",
+        "visible_by_educ": true,
+        "visible_by_tenure": false,
+        "created_by": 1,
+        "attachments": [],
+        "visible_by_groups": [
+            2,
+            3,
+            7,
+            5,
+            4
+        ]
+    }
+},
+{
+    "model": "dossier_eleve.caseleve",
+    "pk": 59,
+    "fields": {
+        "matricule": 1047,
+        "name": "Le Roux Anastasie 1D",
+        "datetime_encodage": "2020-05-26T07:50:08.546Z",
+        "datetime_modified": "2020-05-26T07:50:08.557Z",
+        "info": 3,
+        "demandeur": "Dupont Jean",
+        "sanction_decision": null,
+        "explication_commentaire": "<p>Anastasie veut plus s'impliquer dans son \u00e9chec scolaire.</p>",
+        "datetime_sanction": null,
+        "datetime_conseil": null,
+        "sanction_faite": null,
+        "important": true,
+        "user": "admin",
+        "visible_by_educ": true,
+        "visible_by_tenure": false,
+        "created_by": 1,
+        "attachments": [],
+        "visible_by_groups": [
+            2,
+            3,
+            7,
+            5,
+            4
+        ]
+    }
+},
+{
+    "model": "dossier_eleve.caseleve",
+    "pk": 60,
+    "fields": {
+        "matricule": 1047,
+        "name": "Le Roux Anastasie 1D",
+        "datetime_encodage": "2020-05-26T08:39:58.257Z",
+        "datetime_modified": "2020-05-26T08:39:58.269Z",
+        "info": 2,
+        "demandeur": "Dupont Jean",
+        "sanction_decision": null,
+        "explication_commentaire": "<p>Anastasie grandit beaucoup trop vite !</p><p><br></p>",
+        "datetime_sanction": null,
+        "datetime_conseil": null,
+        "sanction_faite": null,
+        "important": false,
+        "user": "admin",
+        "visible_by_educ": true,
+        "visible_by_tenure": false,
+        "created_by": 1,
+        "attachments": [],
+        "visible_by_groups": [
+            2,
+            5
+        ]
+    }
+},
+{
+    "model": "dossier_eleve.caseleve",
+    "pk": 61,
+    "fields": {
+        "matricule": 1045,
+        "name": "Dufour Luce 1D",
+        "datetime_encodage": "2020-05-26T08:57:15.719Z",
+        "datetime_modified": "2020-05-26T08:57:15.734Z",
+        "info": 4,
+        "demandeur": "Teixeira Yves",
+        "sanction_decision": null,
+        "explication_commentaire": "<p>Les parents sont d'accord pour aider Luce dans son travail journalier.</p>",
+        "datetime_sanction": null,
+        "datetime_conseil": null,
+        "sanction_faite": null,
+        "important": false,
+        "user": "director",
+        "visible_by_educ": true,
+        "visible_by_tenure": false,
+        "created_by": 137,
+        "attachments": [],
+        "visible_by_groups": []
+    }
+}
+]

@@ -1,0 +1,45 @@
+[
+{
+    "model": "dossier_eleve.dossierelevesettingsmodel",
+    "pk": 12,
+    "fields": {
+        "enable_submit_sanctions": true,
+        "use_school_email": false,
+        "filter_teacher_entries_by_tenure": true,
+        "enable_disciplinary_council": true,
+        "teachings": [
+            1
+        ],
+        "all_access": [],
+        "dir_allow_visibility_to": [
+            2,
+            3,
+            4,
+            5
+        ],
+        "dir_force_visibility_to": [],
+        "coord_allow_visibility_to": [
+            2,
+            3,
+            4,
+            7
+        ],
+        "coord_force_visibility_to": [
+            2
+        ],
+        "educ_allow_visibility_to": [
+            3,
+            4
+        ],
+        "educ_force_visibility_to": [
+            2,
+            4,
+            5
+        ],
+        "teacher_allow_visibility_to": [],
+        "teacher_force_visibility_to": [],
+        "pms_allow_visibility_to": [],
+        "pms_force_visibility_to": []
+    }
+}
+]
