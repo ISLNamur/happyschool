@@ -20,6 +20,8 @@
 from rest_framework import serializers
 
 from core.serializers import StudentSerializer
+from core.people import check_access_to_student
+
 from .models import *
 from . import views
 
@@ -75,6 +77,15 @@ class CasEleveSerializer(serializers.ModelSerializer):
     def validate_sanction_faite(self, value):
         if not self.context['request'].user.has_perm('dossier_eleve.set_sanction') and value:
             raise serializers.ValidationError("Vous n'avez pas les droits nécessaire pour mettre une sanction comme faite")
+        return value
+
+    def validate_matricule_id(self, value):
+        if not check_access_to_student(
+            value,
+            self.context['request'].user,
+            tenure_class_only=views.get_settings().filter_teacher_entries_by_tenure
+        ):
+            raise serializers.ValidationError("Vous n'avez pas les droits nécessaire pour ajouter cet élève")
         return value
 
     class Meta:
