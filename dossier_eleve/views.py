@@ -170,7 +170,7 @@ class VisibilityPermissions(BasePermission):
 
 
 class CasEleveViewSet(BaseModelViewSet):
-    queryset = CasEleve.objects.filter(matricule__isnull=False)
+    queryset = CasEleve.objects.filter(matricule__isnull=False).order_by("-datetime_encodage")
 
     serializer_class = CasEleveSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
@@ -194,9 +194,10 @@ class CasEleveViewSet(BaseModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        send_to_teachers = serializer.validated_data['send_to_teachers']
+        send_to_teachers = serializer.validated_data.get("send_to_teachers", False)
         # Remove from serializer as model doesn't need it.
-        serializer.validated_data.pop('send_to_teachers')
+        if "send_to_teachers" in serializer.validated_data:
+            serializer.validated_data.pop('send_to_teachers')
 
         super().perform_create(serializer)
         cas = serializer.save(created_by=self.request.user)
@@ -234,32 +235,62 @@ class CasEleveViewSet(BaseModelViewSet):
 
     def force_visibility(self, serializer):
         user_groups = self.request.user.groups.all()
-        groups = get_generic_groups()
-        forced_visibility = set(groups.values())
-        dossier_settings = get_settings()
-        if user_groups.filter(id=groups["sysadmin"].id).exists():
-            forced_visibility = set()
-        if user_groups.filter(id=groups["direction"].id).exists():
-            forced_visibility = forced_visibility.intersection(
-                set(dossier_settings.dir_force_visibility_to.all()))
-        if user_groups.filter(id=groups["coordonator"].id).exists():
-            forced_visibility = forced_visibility.intersection(
-                set(dossier_settings.coord_force_visibility_to.all()))
-        if user_groups.filter(id=groups["educator"].id).exists():
-            forced_visibility = forced_visibility.intersection(
-                set(dossier_settings.educ_force_visibility_to.all()))
-        if user_groups.filter(id=groups["teacher"].id).exists():
-            forced_visibility = forced_visibility.intersection(
-                set(dossier_settings.teacher_force_visibility_to.all()))
-        if user_groups.filter(id=groups["pms"].id).exists():
-            forced_visibility = forced_visibility.intersection(
-                set(dossier_settings.pms_force_visibility_to.all()))
+
+        if user_groups.filter(name=settings.SYSADMIN_GROUP):
+            # Don't force for sysadmin.
+            forced_visibility = []
+        else:
+            groups = get_generic_groups()
+            dossier_settings = get_settings()
+            # Match between groups and settings name.
+            group_settings_match = {
+                settings.DIRECTION_GROUP: "dir",
+                settings.EDUCATOR_GROUP: "educ",
+                settings.TEACHER_GROUP: "teacher",
+                settings.PMS_GROUP: "pms",
+                settings.COORDONATOR_GROUP: "coord",
+            }
+
+            considered_groups = [u_g for u_g in user_groups if u_g in groups.values()]
+            concerned_settings = [
+                {
+                    "group": g,
+                    "is_allowed": getattr(
+                        dossier_settings, group_settings_match[g.name] + "_allow_visibility_to"
+                    ).all(),
+                    "is_forced": getattr(
+                        dossier_settings, group_settings_match[g.name] + "_force_visibility_to"
+                    ).all(),
+                }
+                for g in considered_groups
+                ]
+
+            # Concatenate all allowed groups.
+            forced_groups = [g for group in concerned_settings for g in group["is_forced"]]
+
+            could_be_forced_perm = []
+            for c_s in concerned_settings:
+                # It should be in allowed and forced simultaneously or only in forced.
+                could_be_forced_perm += \
+                    list(c_s["is_allowed"].intersection(c_s["is_forced"])) \
+                    + list(c_s["is_forced"].difference(c_s["is_allowed"]))
+
+            only_allowed_perm = []
+            for c_s in concerned_settings:
+                only_allowed_perm += list(c_s["is_allowed"].difference(c_s["is_forced"]))
+
+            forced_visibility = [
+                f_g
+                for f_g in forced_groups
+                if f_g not in only_allowed_perm and f_g in could_be_forced_perm
+            ]
 
         visible_by = serializer.validated_data["visible_by_groups"] + list(forced_visibility)
         serializer.save(visible_by_groups=visible_by)
 
     def is_only_tenure(self):
         return get_settings().filter_teacher_entries_by_tenure
+
 
 class AskSanctionsView(BaseDossierEleveView):
     template_name = "dossier_eleve/ask_sanctions.html"

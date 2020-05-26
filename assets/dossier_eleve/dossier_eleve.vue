@@ -23,7 +23,6 @@
             class="loading"
             v-if="!loaded"
         />
-        <app-menu :menu-info="menuInfo" />
         <b-container v-if="loaded">
             <b-row>
                 <h2>Dossier des élèves</h2>
@@ -54,7 +53,7 @@
                         <div>
                             <b-btn
                                 variant="primary"
-                                @click="openDynamicModal('add-modal')"
+                                to="/new/"
                             >
                                 <icon
                                     name="plus"
@@ -112,26 +111,13 @@
                 :per-page="20"
             />
             <cas-eleve-entry
-                v-for="(entry, index) in entries"
+                v-for="entry in entries"
                 :key="entry.id"
                 :row-data="entry"
                 @delete="askDelete(entry)"
-                @edit="editEntry(index)"
                 @filterStudent="filterStudent($event)"
                 @showInfo="showInfo(entry)"
             />
-            <b-modal
-                ref="deleteModal"
-                cancel-title="Annuler"
-                hide-header
-                centered
-                @ok="deleteEntry"
-                @cancel="currentEntry = null"
-                :no-close-on-backdrop="true"
-                :no-close-on-esc="true"
-            >
-                Êtes-vous sûr de vouloir supprimer définitivement cette entrée ?
-            </b-modal>
             <b-modal
                 :title="currentName"
                 size="lg"
@@ -184,10 +170,10 @@ import Info from "../annuaire/info.vue";
 
 import Filters from "../common/filters.vue";
 import {getFilters} from "../common/filters.js";
-import Menu from "../common/menu.vue";
 import CasEleveEntry from "./casEleveEntry.vue";
-import AddModal from "./addModal.vue";
 import ExportModal from "./exportModal.vue";
+
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
     data: function () {
@@ -248,19 +234,24 @@ export default {
             this.loadEntries();
         },
         askDelete: function (entry) {
-            this.currentEntry = entry;
-            this.$refs.deleteModal.show();
-        },
-        editEntry: function(index) {
-            this.currentEntry = this.entries[index];
-            this.openDynamicModal("add-modal");
+            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer l'entrée ?",{
+                centered: true,
+                buttonSize: "sm",
+                okVariant: "danger",
+                okTitle: "Oui",
+                cancelTitle: "Annuler",
+            })
+                .then(remove => {
+                    if (!remove) return;
+
+                    axios.delete(`/dossier_eleve/api/cas_eleve/${entry.id}/`, token)
+                        .then(() => {
+                            this.loadEntries();
+                        });
+                });
         },
         deleteEntry: function () {
-            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
-            axios.delete("/dossier_eleve/api/cas_eleve/" + this.currentEntry.id + "/", token)
-                .then(() => {
-                    this.loadEntries();
-                });
+            
 
             this.currentEntry = null;
         },
@@ -282,9 +273,6 @@ export default {
         }
     },
     mounted: function () {
-        // eslint-disable-next-line no-undef
-        this.menuInfo = menu;
-
         this.checkMatriculeFilter();
         this.applyFilter();
         this.loadEntries();
@@ -301,10 +289,8 @@ export default {
     components: {
         "filters": Filters,
         "cas-eleve-entry": CasEleveEntry,
-        "add-modal": AddModal,
         "export-modal": ExportModal,
         "info": Info,
-        "app-menu": Menu,
     }
 };
 </script>

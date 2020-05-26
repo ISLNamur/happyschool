@@ -52,7 +52,7 @@
                             <b-btn
                                 variant="light"
                                 size="sm"
-                                @click="editEntry"
+                                :to="`/edit/${rowData.id}/`"
                                 class="card-link"
                             >
                                 <icon
@@ -80,11 +80,11 @@
                 </b-row>
                 <b-row class="entry-subtitle">
                     <em>{{ subtitle }}</em>
-                    <a @click="editEntry"><icon
+                    <icon
                         name="paperclip"
                         color="blue"
                         v-if="rowData.attachments.length > 0"
-                    /></a>
+                    />
                 </b-row>
                 <b-row class="text-center">
                     <b-col
@@ -196,9 +196,6 @@ export default {
     methods: {
         deleteEntry: function () {
             this.$emit("delete");
-        },
-        editEntry: function () {
-            this.$emit("edit");
         },
         filterStudent: function () {
             this.$emit("filterStudent", this.rowData.matricule_id);

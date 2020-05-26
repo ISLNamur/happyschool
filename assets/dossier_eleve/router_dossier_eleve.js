@@ -18,39 +18,27 @@
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
 import Vue from "vue";
+import VueRouter from "vue-router";
 
-import store from "../dossier_eleve/store.js";
-import router from "../dossier_eleve/router_dossier_eleve.js";
+Vue.use(VueRouter);
 
-import Menu from "../common/menu.vue";
+import DossierEleve from "../dossier_eleve/dossier_eleve.vue";
+import Cas from "../dossier_eleve/cas.vue";
 
-new Vue({
-    el: "#vue-app",
-    data: {
-        transitionName: "slide-left",
-        menuInfo: {},
+export default new VueRouter({
+    routes: [{
+        path: "/",
+        component: DossierEleve,
     },
-    store,
-    router,
-    template: `
-    <div>
-    <app-menu :menu-info="menuInfo"></app-menu>
-      <transition :name="transitionName" mode="out-in">
-        <router-view></router-view>
-      </transition>
-    </div>`,
-    mounted: function() {
-        // eslint-disable-next-line no-undef
-        this.menuInfo = menu;
+    {
+        path: "/edit/:id/",
+        component: Cas,
+        props: true
     },
-    components: {
-        "app-menu": Menu,
+    {
+        path: "/new/",
+        component: Cas,
+        props: true
     },
-    watch: {
-        "$route" (to, from) {
-            const toDepth = to.path.split("/").length;
-            const fromDepth = from.path.split("/").length;
-            this.transitionName = toDepth < fromDepth ? "slide-right" : "slide-left";
-        }
-    }
+    ]
 });
