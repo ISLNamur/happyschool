@@ -55,31 +55,21 @@
                                 variant="primary"
                                 to="/new/"
                             >
-                                <icon
-                                    name="plus"
-                                    scale="1"
-                                    class="align-middle"
-                                />
+                                <b-icon icon="plus" />
                                 Nouveau cas
                             </b-btn>
                             <b-btn
                                 variant="secondary"
                                 @click="openDynamicModal('export-modal')"
                             >
-                                <icon
-                                    name="file"
-                                    scale="1"
-                                />
+                                <b-icon icon="file-earmark-text" />
                                 Export
                             </b-btn>
                             <b-btn
                                 variant="outline-secondary"
                                 v-b-toggle.filters
                             >
-                                <icon
-                                    name="search"
-                                    scale="1"
-                                />
+                                <b-icon icon="search" />
                                 Ajouter des filtres
                             </b-btn>
                         </div>
@@ -154,9 +144,10 @@
 
 <script>
 import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
+import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
 
 import "vue-awesome/icons";
 import Icon from "vue-awesome/components/Icon.vue";

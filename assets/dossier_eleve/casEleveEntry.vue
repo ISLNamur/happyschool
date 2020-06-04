@@ -39,11 +39,7 @@
                                 size="sm"
                                 @click="filterStudent"
                             >
-                                <icon
-                                    name="eye"
-                                    scale="1.2"
-                                    class="align-text-middle"
-                                />
+                                <b-icon icon="funnel" />
                             </b-btn>
                         </h5>
                     </b-col>
@@ -55,11 +51,9 @@
                                 :to="`/edit/${rowData.id}/`"
                                 class="card-link"
                             >
-                                <icon
-                                    scale="1.3"
-                                    name="edit"
-                                    color="green"
-                                    class="align-text-bottom"
+                                <b-icon
+                                    icon="pencil-square"
+                                    variant="success"
                                 />
                             </b-btn>
                             <b-btn
@@ -68,11 +62,9 @@
                                 @click="deleteEntry"
                                 class="card-link"
                             >
-                                <icon
-                                    scale="1.3"
-                                    name="trash"
-                                    color="red"
-                                    class="align-text-bottom"
+                                <b-icon
+                                    icon="trash-fill"
+                                    variant="danger"
                                 />
                             </b-btn>
                         </div>
@@ -91,19 +83,15 @@
                         md="2"
                         class="category"
                     >
-                        <icon
-                            name="info"
-                            scale="1.2"
+                        <b-icon
+                            icon="info-circle-fill"
                             v-if="isInfo"
-                            color="blue"
-                            class="align-text-bottom"
+                            variant="primary"
                         />
-                        <icon
-                            name="bell"
-                            scale="1.2"
+                        <b-icon
+                            icon="bell-fill"
                             v-else
-                            color="red"
-                            class="align-text-bottom"
+                            variant="danger"
                         />
                         {{ category }}
                     </b-col>
