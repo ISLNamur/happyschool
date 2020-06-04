@@ -120,9 +120,13 @@
                     </b-form-row>
                     <b-form-row class="mb-2">
                         <b-col>
-                            <b-form-checkbox v-model="form.important">
-                                Marquer comme important.
-                            </b-form-checkbox>
+                            <b-form-group
+                                description="Mettre en évidence les informations importantes sur le long terme (décès d'un parent, dyslexie, anorexie, idées noires...)."
+                            >
+                                <b-form-checkbox v-model="form.important">
+                                    Marquer comme important.
+                                </b-form-checkbox>
+                            </b-form-group>
                         </b-col>
                     </b-form-row>
                     <b-form-row>
