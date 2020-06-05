@@ -33,7 +33,7 @@
             >
                 <b-tabs card>
                     <b-tab
-                        title="Fiche de l'élève"
+                        :title="tabTitle"
                         active
                     >
                         <b-row>
@@ -464,6 +464,10 @@ export default {
             if (this.type == "responsible") path += "_prof";
             return path + "/" + this.matricule + ".jpg";
         },
+        tabTitle: function () {
+            const start = "Fiche ";
+            return this.type === "student" ? start + "de l'élève" : start + "du responsable";
+        }
     },
     watch: {
         matricule: function () {
