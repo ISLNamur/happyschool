@@ -98,7 +98,7 @@ class PassageFilter(BaseFilters):
     activate_ongoing = filters.BooleanFilter(method="activate_ongoing_by")
 
     class Meta:
-        fields_to_filter = ('matricule_id', 'activate_ongoing',)
+        fields_to_filter = ["matricule_id"]
         model = Passage
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides

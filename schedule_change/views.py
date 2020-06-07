@@ -106,7 +106,7 @@ class ScheduleChangeFilter(BaseFilters):
     activate_show_for_students = filters.BooleanFilter(method="activate_show_for_students_by")
 
     class Meta:
-        fields_to_filter = ('date_change', 'activate_ongoing', 'activate_has_classe', "activate_show_for_students",)
+        fields_to_filter = ["date_change"]
         model = ScheduleChangeModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides

@@ -90,8 +90,8 @@ class StudentAbsenceFilter(BaseFilters):
     activate_is_absent = filters.BooleanFilter(method="activate_is_absent_by")
 
     class Meta:
-        fields_to_filter = ('student', 'date_absence', 'student__display',
-            'student__matricule', 'is_absent', 'activate_is_absent',)
+        fields_to_filter = ('student', 'date_absence',
+            'student__matricule', 'is_absent',)
         model = StudentAbsenceModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides

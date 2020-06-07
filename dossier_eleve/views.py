@@ -142,7 +142,7 @@ class CasEleveFilter(BaseFilters):
 
     class Meta:
         fields_to_filter = ('name', 'matricule_id', 'info__info', 'sanction_decision__sanction_decision',
-                            'datetime_encodage', 'scholar_year')
+                            'datetime_encodage',)
         model = CasEleve
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides

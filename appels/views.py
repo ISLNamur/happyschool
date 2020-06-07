@@ -110,7 +110,7 @@ class AppelFilter(BaseFilters):
         fields_to_filter = ('name', 'matricule_id', 'object', 'motive',
                             'datetime_motif_start', 'datetime_motif_end',
                             'datetime_appel', 'datetime_traitement',
-                            'is_traiter', 'activate_ongoing')
+                            'is_traiter',)
         model = Appel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides

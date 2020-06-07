@@ -84,7 +84,7 @@ class AbsenceProfFilter(BaseFilters):
     date_range__lte = filters.CharFilter(method="date_range__lte_by")
 
     class Meta:
-        fields_to_filter = ('activate_ongoing', 'date_month__gte', 'date_month__lte', 'name', 'date_range__gte', 'date_range__lte',)
+        fields_to_filter = ('name',)
         model = Absence
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides

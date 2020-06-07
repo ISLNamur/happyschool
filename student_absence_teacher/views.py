@@ -82,8 +82,9 @@ class StudentAbsenceTeacherView(LoginRequiredMixin,
 class StudentAbsenceTeacherFilter(BaseFilters):
     student__display = filters.CharFilter(method='people_name_by')
     classe = filters.CharFilter(method='classe_by')
+
     class Meta:
-        fields_to_filter = ('student', 'date_absence','student__display','student__matricule','student__classe',)
+        fields_to_filter = ('student', 'date_absence', 'student__matricule', 'student__classe',)
         model = StudentAbsenceTeacherModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
@@ -114,8 +115,9 @@ class StudentAbsenceTeacherViewSet(ModelViewSet):
 class StudentLatenessTeacherFilter(BaseFilters):
     student__display = filters.CharFilter(method='people_name_by')
     classe = filters.CharFilter(method='classe_by')
+
     class Meta:
-        fields_to_filter = ('student', 'date_lateness','student__display','student__matricule', 'period', 'lesson',)
+        fields_to_filter = ('student', 'date_lateness', 'student__matricule', 'period', 'lesson',)
         model = StudentLatenessTeacherModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
