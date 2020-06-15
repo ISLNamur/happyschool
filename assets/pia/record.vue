@@ -624,13 +624,13 @@ export default {
             let app = this;
             app.sending = false;
             if (app.id) {
-                app.$root.$bvToast.toast("Les données ont bien été sauvegardée", {
+                app.$root.$bvToast.toast("Les données ont bien été sauvegardées", {
                     variant: "success",
                     noCloseButton: true,
                 });
             } else {
                 app.$router.push("/edit/" + recordId + "/",() => {
-                    app.$root.$bvToast.toast("Les données ont bien été sauvegardée", {
+                    app.$root.$bvToast.toast("Les données ont bien été sauvegardées", {
                         variant: "success",
                         noCloseButton: true,
                     });
