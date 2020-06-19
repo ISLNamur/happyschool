@@ -57,6 +57,7 @@ from rest_framework.permissions import IsAuthenticated
 from annuaire.views import create_classes_list
 from core.permissions import IsInGroupPermission
 from core.utilities import get_menu
+from core.views import LargePageSizePagination
 from mail_answer.models import MailTemplateModel
 from mail_answer.models import MailAnswerSettingsModel as AnswersSettings
 
@@ -275,9 +276,11 @@ class OtherEmailViewSet(ModelViewSet):
     queryset = OtherEmailModel.objects.all()
     serializer_class = OtherEmailSerializer
     permission_classes = (IsAuthenticated, HasPermissions)
+    pagination_class = LargePageSizePagination
 
 
 class OtherEmailGroupViewSet(ModelViewSet):
     queryset = OtherEmailGroupModel.objects.all()
     serializer_class = OtherEmailGroupSerializer
     permission_classes = (IsAuthenticated, HasPermissions)
+    pagination_class = LargePageSizePagination
