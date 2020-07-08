@@ -18,8 +18,9 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.contrib import admin
-from .models import StudentModel, TeachingModel, ResponsibleModel, AdditionalStudentInfo,\
-    ClasseModel, EmailModel, YearModel, CoreSettingsModel, ImportCalendarModel
+from .models import StudentModel, TeachingModel, ResponsibleModel, AdditionalStudentInfo, \
+    ClasseModel, EmailModel, YearModel, CoreSettingsModel, ImportCalendarModel, \
+    CourseModel, GivenCourseModel
 
 
 class StudentCoreAdmin(admin.ModelAdmin):
@@ -83,6 +84,8 @@ admin.site.register(TeachingModel)
 admin.site.register(ResponsibleModel, ResponsibleCoreAdmin)
 admin.site.register(AdditionalStudentInfo, AdditionalStudentInfoCoreAdmin)
 admin.site.register(ClasseModel, ClassCoreAdmin)
+admin.site.register(CourseModel)
+admin.site.register(GivenCourseModel)
 admin.site.register(EmailModel)
 admin.site.register(YearModel)
 admin.site.register(CoreSettingsModel)

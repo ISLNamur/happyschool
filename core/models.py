@@ -59,6 +59,22 @@ class ClasseModel(models.Model):
         return str(self.year) + self.letter.upper()
 
 
+class CourseModel(models.Model):
+    name = models.CharField(max_length=120)
+    teaching = models.ForeignKey(TeachingModel, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return "%s (%s)" % (self.name, self.teaching)
+
+
+class GivenCourseModel(models.Model):
+    course = models.ForeignKey(CourseModel, on_delete=models.CASCADE)
+    group = models.CharField(max_length=20, default="", blank=True)
+
+    def __str__(self):
+        return "%s (%s)" % (self.course.name, self.group)
+
+
 class StudentModel(models.Model):
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
@@ -66,6 +82,7 @@ class StudentModel(models.Model):
     teaching = models.ForeignKey(TeachingModel, on_delete=models.CASCADE)
     classe = models.ForeignKey(ClasseModel, on_delete=models.SET_NULL,
                                null=True, blank=True)
+    courses = models.ManyToManyField(GivenCourseModel, default=None, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.SET_NULL,
                              null=True, blank=True)
@@ -145,7 +162,9 @@ class ResponsibleModel(models.Model):
     teaching = models.ManyToManyField(TeachingModel, blank=True)
     email = models.EmailField(blank=True, null=True)
     email_school = models.EmailField(blank=True, null=True)
+    phone = models.CharField(max_length=200, blank=True)
     classe = models.ManyToManyField(ClasseModel, default=None, blank=True)
+    courses = models.ManyToManyField(GivenCourseModel, default=None, blank=True)
     tenure = models.ManyToManyField(ClasseModel,
                                blank=True,
                                default=None,

@@ -27,7 +27,7 @@ from django.conf import settings
 from django.contrib.auth.models import User, Group
 
 from core.models import StudentModel, TeachingModel, ClasseModel, AdditionalStudentInfo,\
-    ResponsibleModel
+    ResponsibleModel, CourseModel, GivenCourseModel
 from core.ldap import get_ldap_connection, get_django_dict_from_ldap
 from core.utilities import get_scholar_year
 
@@ -151,11 +151,12 @@ class ImportResponsible(ImportBase):
                 if resp.user:
                     teach_group.user_set.add(resp.user)
 
-            # Update classes only for teachers
+            # Update classes and course only for teachers
             if is_teacher:
                 # Check if responsible's classes already exists.
                 if resp.matricule not in resp_synced:
                     resp.classe.remove(*resp.classe.filter(teaching=self.teaching))
+                    resp.courses.remove(*resp.courses.filter(course__teaching=self.teaching))
                 classe = self.get_value(entry, "classe")
                 if classe and type(classe) != list:
                     classe = [classe]
@@ -171,6 +172,25 @@ class ImportResponsible(ImportBase):
                                                     teaching=self.teaching)
                             classe_model.save()
                         resp.classe.add(classe_model)
+
+                courses = self.get_value(entry, "courses")
+                if courses and type(courses) != list:
+                    courses = [courses]
+                if courses:
+                    for c in courses:
+                        if not c["classes"]:
+                            continue
+                        try:
+                            course_model = CourseModel.objects.get(id=c["id"])
+                        except ObjectDoesNotExist:
+                            course_model = CourseModel(id=c["id"], name=c["name"], teaching=self.teaching)
+                            course_model.save()
+                        try:
+                            given_course = GivenCourseModel.objects.get(course=course_model, group=c["group"])
+                        except ObjectDoesNotExist:
+                            given_course = GivenCourseModel(course=course_model, group=c["group"])
+                            given_course.save()
+                        resp.courses.add(given_course)
 
                 # Check if responsible's tenures already exists.
                 if resp.matricule not in resp_synced:
@@ -219,6 +239,7 @@ class ImportResponsible(ImportBase):
                         r.inactive_from = timezone.make_aware(timezone.datetime.now())
                         r.classe.clear()
                         r.tenure.clear()
+                        r.courses.clear()
                         r.save()
                     else:
                         r.delete()
@@ -506,6 +527,23 @@ class ImportStudent(ImportBase):
                 classe.save()
 
             student.classe = classe
+
+            courses = self.get_value(entry, "courses")
+            if courses and type(courses) != list:
+                courses = [courses]
+            if courses:
+                for c in courses:
+                    try:
+                        course_model = CourseModel.objects.get(id=c["id"])
+                    except ObjectDoesNotExist:
+                        course_model = CourseModel(id=c["id"], name=c["name"], teaching=self.teaching)
+                        course_model.save()
+                    try:
+                        given_course = GivenCourseModel.objects.get(course=course_model, group=c["group"])
+                    except ObjectDoesNotExist:
+                        given_course = GivenCourseModel(course=course_model, group=c["group"])
+                        given_course.save()
+                    student.courses.add(given_course)
             student.save()
 
             student_synced.add(student.matricule)
@@ -543,6 +581,7 @@ class ImportStudent(ImportBase):
             if s.matricule not in student_synced:
                 s.inactive_from = timezone.make_aware(timezone.datetime.now())
                 s.classe = None
+                s.courses.clear()
                 s.save()
 
         self.print_log("Import done.")
