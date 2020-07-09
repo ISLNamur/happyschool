@@ -118,6 +118,22 @@
                                         {{ c.year }}{{ c.letter.toUpperCase() }}
                                     </dd>
                                     <dt
+                                        v-if="courses.length > 0"
+                                        class="col-5  text-right"
+                                    >
+                                        Cours
+                                    </dt>
+                                    <dd
+                                        v-for="(c, index) in courses"
+                                        :key="c.id"
+                                        :class="{'col-7': index == 0, 'col-7 offset-5': index > 0}"
+                                    >
+                                        {{ c.course.name }}
+                                        <span v-if="c.group !== ''">
+                                            ({{ c.group.toUpperCase() }})
+                                        </span>
+                                    </dd>
+                                    <dt
                                         v-if="student_info.orientation"
                                         class="col-5 text-right"
                                     >
@@ -443,6 +459,7 @@ export default {
             password: "",
             emailSchool: "",
             classe: [],
+            courses: [],
             tenure: null,
             teachings: [],
             student_info: {},
@@ -491,6 +508,8 @@ export default {
             this.infirmerie = [];
             this.infoCount = 0;
             this.pia = null;
+            this.classe = [];
+            this.courses = [];
         },
         niceDate: function (date) {
             if (!date) return "";
@@ -507,6 +526,7 @@ export default {
                         this.firstName = response.data.first_name;
                         this.classe = [response.data.classe];
                         this.teachings = [response.data.teaching];
+                        this.courses = response.data.courses.sort((a, b) => a.course.name >= b.course.name);
                     });
 
                 axios.get("/annuaire/api/student_sensitive/" + this.matricule + "/")
@@ -574,7 +594,8 @@ export default {
                     .then(response => {
                         this.lastName = response.data.last_name;
                         this.firstName = response.data.first_name;
-                        this.classe = response.data.classe;
+                        this.classe = response.data.classe.sort((a, b) => a.year + a.letter >= b.year + b.letter);
+                        this.courses = response.data.courses.sort((a, b) => a.course.name >= b.course.name);
                         this.teachings = response.data.teaching;
                         this.tenure = response.data.tenure;
                         this.emailSchool = response.data.email_school;

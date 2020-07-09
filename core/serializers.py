@@ -24,6 +24,19 @@ from django.contrib.auth.models import User, Group
 from core.models import *
 
 
+class CourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseModel
+        fields = "__all__"
+
+
+class GivenCourseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GivenCourseModel
+        fields = "__all__"
+        depth = 1
+
+
 class ResponsibleSensitiveSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResponsibleModel
@@ -35,8 +48,8 @@ class ResponsibleSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResponsibleModel
         fields = ('pk', 'matricule', 'last_name', 'first_name', 'is_secretary', 'email_school',
-                  'teaching', 'classe', 'tenure', 'display')
-        depth = 1
+                  'teaching', 'classe', 'tenure', 'display', 'courses')
+        depth = 2
 
 
 class ResponsibleRemoteSerializer(serializers.ModelSerializer):
@@ -46,20 +59,21 @@ class ResponsibleRemoteSerializer(serializers.ModelSerializer):
         model = ResponsibleModel
         fields = ('id', 'matricule', 'last_name', 'first_name',
                   'is_teacher', 'is_educator', 'is_secretary',
-                  'teaching', 'classe', 'tenure', 'email_school',)
+                  'teaching', 'classe', 'tenure', 'email_school',
+                  'courses')
 
 
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentModel
-        fields = ('matricule', 'first_name', 'last_name', 'display', 'classe', 'teaching', 'user',)
-        depth = 1
+        fields = ('matricule', 'first_name', 'last_name', 'display', 'classe', 'teaching', 'user', 'courses')
+        depth = 2
 
 
 class StudentWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentModel
-        fields = ('matricule', 'first_name', 'last_name', 'classe', 'teaching', 'inactive_from',)
+        fields = ('matricule', 'first_name', 'last_name', 'classe', 'teaching', 'inactive_from', 'courses')
 
 
 class StudentSensitiveInfoSerializer(serializers.ModelSerializer):
