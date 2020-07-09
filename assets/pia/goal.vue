@@ -364,7 +364,11 @@ export default {
             this.expanded = !this.expanded;
         },
         updateBranchGoal: function (branch) {
-            this.goalOptions = this.$store.state.branchGoalItems.filter(bg => bg.branch == branch.id);
+            this.goalOptions = this.$store.state.branchGoalItems.sort((a, b) => {
+                if (a.branch == branch.id && b.branch != a.branch) return -1;
+                if (b.branch == branch.id && b.branch != a.branch) return 1;
+                return 1;
+            });
         },
         addFiles: function() {
             this.uploadedFiles = this.attachments.map(a => { return {file: a, id: -1};});
