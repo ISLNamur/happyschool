@@ -46,7 +46,7 @@ EXCLUDED_APPS = [
 
 
 def get_scholar_year() -> int:
-    """Get current scholar year. The scholar year starts the 8th of August."""
+    """Get current scholar year. The scholar year starts the 20th of August."""
     current_date = timezone.now()
     year = current_date.year
     month = current_date.month
