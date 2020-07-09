@@ -109,7 +109,7 @@ de modules python. Pour les installer :
 
 ::
 
-   sudo pip3 install --user pipenv
+   pip3 install --user pipenv
    cd happyschool
    pipenv install
 
