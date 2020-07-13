@@ -185,36 +185,31 @@ créer) :
 
 ::
 
-    [unix_http_server] file=/tmp/supervisor.sock ; the path
-    to the socket file
+    [unix_http_server]
+    file=/tmp/supervisor.sock
 
-    [supervisord] logfile=/var/log/supervisord.log ; main log file; default
-    $CWD/supervisord.log logfile_maxbytes=20MB ; max main logfile bytes b4
-    rotation; default 50MB logfile_backups=10 ; # of main logfile backups; 0
-    means none, default 10 loglevel=info ; log level; default info; others:
-    debug,warn,trace pidfile=/tmp/supervisord.pid ; supervisord pidfile;
-    default supervisord.pid #nodaemon=false ; start in foreground if true;
-    default false minfds=1024 ; min. avail startup file descriptors; default
-    1024 minprocs=200 ; min. avail process descriptors;default 200
+    [supervisord]
+    logfile=/var/log/supervisord.log ; main log file
+    logfile_maxbytes=20MB
+    pidfile=/tmp/supervisord.pid
 
-    [rpcinterface:supervisor] supervisor.rpcinterface_factory =
-    supervisor.rpcinterface:make_main_rpcinterface
+    [rpcinterface:supervisor]
+    supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
 
-    [supervisorctl] serverurl=unix:///tmp/supervisor.sock ; use a unix://
-    URL for a unix socket
+    [supervisorctl]
+    serverurl=unix:///tmp/supervisor.sock ; use a unix:// URL for a unix socket
 
-    [program:daphne] command=/usr/local/bin/daphne -b 0.0.0.0 -p 8080
-    happyschool.asgi:application –access-log /var/log/daphne.log
-    directory=/home/path/to/happyschool ; directory to cwd to before exec
-    (def no cwd) autostart=true ; start at supervisord start (default: true)
-    autorestart=true ; when to restart if exited after running (def:
-    unexpected) environment=HOME=“/home/user”,USER=“user” ; directory to
-    home folder and user name.
+    [program:daphne]
+    command=/home/user/.local/bin/pipenv run daphne -b 0.0.0.0 -p 8080 happyschool.asgi:application
+    directory=/home/path/to/happyschool
+    autorestart=true
+    environment=HOME=“/home/user”,USER=“user” ; directory to
 
-    [program:celery] command=celery -A happyschool worker -l info -f
-    /var/log/celery.log directory=/home/path/to/happyschool autostart=true
-    autorestart=true environment=HOME=“/home/user”,USER=“user” ; directory
-    to home folder and user name.
+    [program:celery]
+    command=/home/user/.local/bin/pipenv run celery -A happyschool worker -l info
+    directory=/home/path/to/happyschool autostart=true
+    autorestart=true
+    environment=HOME="/home/user",USER="user"
 
 Vérifiez que les chemins d’accès à
 Happyschool ainsi que le nom d’utilisateur sont correctement configurés.
