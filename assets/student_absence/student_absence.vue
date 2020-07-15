@@ -60,10 +60,11 @@
 
 <script>
 import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
+import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
 Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
 
 import "vue-awesome/icons";
 import Icon from "vue-awesome/components/Icon.vue";

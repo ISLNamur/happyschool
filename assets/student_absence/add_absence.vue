@@ -33,9 +33,18 @@
                 <b-btn
                     v-b-modal.tovalidate
                     :disabled="$store.state.changes.length == 0"
+                    class="m-1"
                 >
+                    <b-icon icon="card-list" />
                     Absences non validées
                 </b-btn>
+                <b-button
+                    v-b-toggle.moreactions
+                    class="mr-1"
+                >
+                    <b-icon icon="caret-right" />
+                    Plus d'actions
+                </b-button>
                 <p v-if="onLine">
                     <icon
                         name="signal"
@@ -94,15 +103,6 @@
             <b-col>
                 <b-card v-if="classe">
                     <p>Nombre d'étudiants : {{ students.length }}.</p>
-                    <b-dropdown text="Ajouter les élèves non modifiés comme présents">
-                        <b-dropdown-item
-                            v-for="period in $store.state.periods"
-                            :key="period.id"
-                            @click="addAllStudents(period.id)"
-                        >
-                            {{ period.name }}
-                        </b-dropdown-item>
-                    </b-dropdown>
                     <div
                         v-if="note.length > 0"
                         v-html="note"
@@ -118,7 +118,7 @@
                         :key="s.matricule"
                         :student="s"
                         :date-absence="date_absence"
-                        :period="$store.state.periods"
+                        :period-id="currentPeriod"
                     />
                 </b-list-group>
             </b-col>
@@ -279,6 +279,42 @@
                 {{ validateChange }}
             </template>
         </b-modal>
+        <b-sidebar
+            id="moreactions"
+            title="Actions"
+            right
+            shadow
+        >
+            <div class="px-3 py-2 text-right">
+                <b-form-group
+                    label="Choisir une période"
+                    label-class="font-weight-bold"
+                >
+                    <b-form-radio
+                        v-model="currentPeriod"
+                        v-for="p in $store.state.periods"
+                        :key="p.id"
+                        :value="p.id"
+                    >
+                        {{ p.name }}
+                    </b-form-radio>
+                </b-form-group>
+                <b-form-group
+                    label="Présences"
+                    label-class="font-weight-bold"
+                >
+                    <b-btn
+                        v-if="classe"
+                        @click="addAllStudents(currentPeriod)"
+                    >
+                        Ajouter toute la classe ({{ currentSearch.display }})
+                    </b-btn>
+                    <p v-else>
+                        <em>Aucune classe sélectionnée</em>
+                    </p>
+                </b-form-group>
+            </div>
+        </b-sidebar>
     </div>
 </template>
 
@@ -311,6 +347,7 @@ export default {
             tabIndex: 0,
             sending: false,
             classe: null,
+            currentPeriod: this.$store.state.periods.length > 0 ? this.$store.state.periods[0].id : null,
             note: "",
         };
     },
@@ -404,13 +441,10 @@ export default {
                 if (this.classe in this.$store.state.notes) {
                     this.note = this.$store.state.notes[this.classe].note;
                 }
-                console.log(option);
             } else {
                 this.classe = null;
                 axios.get("/annuaire/api/student/" + option.matricule + "/")
-                    .then(response => {
-                        console.log(option);
-                        console.log(response.data);
+                    .then(() => {
                         // option.student = response.data;
                         this.students = [option];
                     })
@@ -497,7 +531,6 @@ export default {
             Promise.all(absencePromises)
                 .then(responses => {
                     for (let r in responses) {
-                        console.log(responses[r]);
                         if (responses[r].config.method == "put") {
                             responses[r].data.matricule = responses[r].data.student_id;
                             this.$store.commit("removeChange", responses[r].data);
