@@ -122,6 +122,15 @@
                                 multiple
                                 taggable
                             >
+                                <template
+                                    slot="option"
+                                    slot-scope="props"
+                                >
+                                    {{ props.option.goal }}
+                                    <span v-if="props.option.branch">
+                                        ({{ $store.state.branches.find(b => b.id === props.option.branch).branch }})
+                                    </span>
+                                </template>
                                 <span slot="noResult">Aucun aménagements trouvé.</span>
                                 <span slot="noOptions" />
                             </multiselect>
@@ -364,7 +373,7 @@ export default {
             this.expanded = !this.expanded;
         },
         updateBranchGoal: function (branch) {
-            this.goalOptions = this.$store.state.branchGoalItems.sort((a, b) => {
+            this.goalOptions = this.goalOptions.sort((a, b) => {
                 if (a.branch == branch.id && b.branch != a.branch) return -1;
                 if (b.branch == branch.id && b.branch != a.branch) return 1;
                 return 1;
