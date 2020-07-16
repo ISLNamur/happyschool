@@ -96,7 +96,7 @@ class BranchGoalViewSet(ModelViewSet):
     queryset = models.BranchGoalModel.objects.all()
     serializer_class = serializers.BranchGoalSerializer
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
-    filterset_fields = ('branch',)
+    filterset_fields = ('branch', "pia_model")
     ordering_fields = ['datetime_creation']
     ordering = ['-datetime_creation']
     pagination_class = LargePageSizePagination
