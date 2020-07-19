@@ -34,7 +34,8 @@ urlpatterns = [
         template_name='core/auth.html',
         extra_context={
             'google': 'social_core.backends.google.GoogleOAuth2' in settings.AUTHENTICATION_BACKENDS,
-            'model': 'django.contrib.auth.backends.ModelBackend' in settings.AUTHENTICATION_BACKENDS
+            'microsoft': 'social_core.backends.microsoft.MicrosoftOAuth2' in settings.AUTHENTICATION_BACKENDS,
+            'model': 'django.contrib.auth.backends.ModelBackend' in settings.AUTHENTICATION_BACKENDS,
             },
         ), name='auth',),
     url(r'^logout', LogoutView.as_view(next_page='auth'), name='logout'),

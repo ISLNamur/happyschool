@@ -140,6 +140,7 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     # 'django_auth_ldap.backend.LDAPBackend', # For LDAP/ActiveDirectory authentification.
     # 'social_core.backends.google.GoogleOAuth2', # For google authentification.
+    # 'social_core.backends.microsoft.MicrosoftOAuth2', # For microsoft authentification.
 ]
 
 if 'social_django' in INSTALLED_APPS:
@@ -160,6 +161,14 @@ if 'social_django' in INSTALLED_APPS:
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'key'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'secret'
+
+# An key/secret must be created in
+# https://portal.azure.com/ > Azure Active Directory > Application registration
+# and a redirect url must be added, https is mandatory.
+SOCIAL_AUTH_MICROSOFT_GRAPH_KEY = "keyyy-keyyyy-keyyyy"
+SOCIAL_AUTH_MICROSOFT_GRAPH_SECRET = "the_secret"
+SOCIAL_AUTH_MICROSOFT_GRAPH_REDIRECT_URL = "https://MYBASEURL/complete/microsoft-graph"
+
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
 
 STATIC_URL = '/static/'

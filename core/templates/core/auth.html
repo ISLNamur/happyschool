@@ -5,19 +5,24 @@
     {% if not user.is_authenticated %}
     <div style="max-width: 330px;margin: 0 auto; text-align:center">
         <h2 class="form-signin-heading">Connexion</h2>
+        {% if microsoft %}
+        <div class="panel panel-default" style="margin-bottom:20px;">
+            <strong class="panel-body"><a href="{% url "social:begin" "microsoft-graph" %}">Se connecter avec un compte Microsoft</a></strong>
+        </div>
+        {% endif %}
         {% if google %}
         <div class="panel panel-default" style="margin-bottom:20px;">
             <strong class="panel-body"><a href="{% url "social:begin" "google-oauth2" %}">Se connecter avec un compte Google</a></strong>
         </div>
         {% endif %}
-        {% if google and model %}
+        {% if google and model or microsoft and model %}
         <a data-toggle="collapse" href="#customaccount" role="button" aria-expanded="false" aria-controls="collapseExample">
             Autre compte :
         </a>
         {% endif %}
         {% if model %}
         <form 
-            class="form-signin panel panel-default collapse {% if not google %}show{% endif %}"
+            class="form-signin panel panel-default collapse {% if not google and not microsoft %}show{% endif %}"
             id="customaccount"
             method="post"
         >
