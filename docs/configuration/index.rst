@@ -19,3 +19,4 @@ Happyschool disposent de trois différents niveaux de configuration :
 
    settingspy
    djangoadmin
+   dossiereleve
