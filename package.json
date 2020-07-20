@@ -43,7 +43,7 @@
     "moment": "^2.24.0",
     "push.js": "^1.0.12",
     "reconnecting-websocket": "^3.2.2",
-    "vue-awesome": "^2.3.8",
+    "vue-awesome": "^4.1.0",
     "vue-hot-reload-api": "^2.3.4",
     "vue-multiselect": "^2.1.6",
     "vue-quill-editor": "^3.0.6",
