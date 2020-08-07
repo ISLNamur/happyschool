@@ -23,7 +23,7 @@
     "axios": "^0.19.2",
     "babel-loader": "^8.1.0",
     "copy-webpack-plugin": "^5.1.1",
-    "css-loader": "^3.4.2",
+    "css-loader": "^4.2.1",
     "eslint": "^6.8.0",
     "eslint-plugin-vue": "^6.2.2",
     "style-loader": "^1.1.3",
