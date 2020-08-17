@@ -14,18 +14,22 @@ Ansible
 `Ansible <https://www.ansible.com/>`__ est un outil puissant qui permet
 d'automatiser l'installation et la configuration d'un ou plusieurs serveurs.
 En règle générale, il s'utilise à distance à travers une session *ssh* vers
-le ou les serveurs mais peut très bien s'utiliser en local. Un *playbook*
+le ou les serveurs mais peut très bien s'utiliser en local. Un *role*
 pour installer HappySchool est disponible pour n'importe quelle utilisation.
 Un script *shell* est également fourni pour faciliter l'installation en local.
-Pour télécharger le playbook clonez le dépôt correspondant:
+Pour télécharger le role et l'inclure dans votre propre playbook clonez le dépôt
+correspondant:
 
 ::
 
    git clone https://github.com/ISLNamur/happyschool-ansible
 
-Le fichier de configuration (superutilisateur, applications actives, etc) se
-trouve dans ``vars/custom.yml``, modifiez-le à votre convenance. Ensuite, à
-la racine du dépôt exécutez le script suivant:
+
+La configuration de votre instance (superutilisateur, applications actives, etc) se
+fait dans un *playbook* que vous pouvez créer à partir du fichier ``happyschool.example.yml``.
+Les possibilités de configuration se trouve dans ``roles/common/defaults/main.yml``.
+Ensuite, à la racine du dépôt exécutez le script suivant qui utilisera un *playbook*
+``happyschool.yml`` :
 
 ::
 
