@@ -24,11 +24,25 @@ from .ldap import get_ldap_connection
 
 
 class CoreSettingsModel(models.Model):
+    BY_CLASSES = "CL"
+    BY_COURSES = "CR"
+    BY_CLASSES_COURSES = "BO"
+    RELATIONSHIP_CHOICES = [
+        (BY_CLASSES, "by classes"),
+        (BY_COURSES, "by courses"),
+        (BY_CLASSES_COURSES, "by courses and by classes")
+    ]
     school_name = models.CharField(max_length=200, help_text="Nom complet de l'école.", default="")
     school_name_short = models.CharField(
         max_length=10,
         help_text="Nom court de l'école (abréviation, sigle,…).",
         default=""
+    )
+    student_teacher_relationship = models.CharField(
+        max_length=2,
+        choices=RELATIONSHIP_CHOICES,
+        default=BY_CLASSES,
+        help_text="Comment la relation entre les professeurs et les élèves est établie."
     )
     root = models.URLField("Root URL", help_text='URL vers le serveur HappySchool principal',
                                blank=True, null=True, default=None)
