@@ -7,6 +7,7 @@ verify_ssl = true
 ipython = "*"
 flake8 = "*"
 selenium = "*"
+sphinx = "*"
 
 [packages]
 django-filter = "==2.3"
@@ -17,7 +18,7 @@ django-crispy-forms = ">=1.7"
 django-auth-ldap = ">=1.7"
 coverage = "*"
 psycopg2-binary = "*"
-celery = ">=4"
+celery = "4.4.7"
 django-webpack-loader = "*"
 djangorestframework = "*"
 ldap3 = "*"
