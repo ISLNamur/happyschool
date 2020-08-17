@@ -19,6 +19,7 @@
 
 import itertools
 from unidecode import unidecode
+from typing import Union
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -26,7 +27,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db.models import Q, QuerySet, Model
 from django.db.utils import OperationalError, ProgrammingError
 
-from .models import ResponsibleModel, StudentModel, TeachingModel, ClasseModel
+from .models import ResponsibleModel, StudentModel, TeachingModel, ClasseModel, CoreSettingsModel
 
 # Person type:
 STUDENT = 'student'
@@ -38,6 +39,15 @@ ALL = 'all'
 
 def get_all_teachings():
     return list(map(lambda t: t[0], TeachingModel.objects.all().values_list("name")))
+
+
+def get_core_settings():
+    settings_model = CoreSettingsModel.objects.first()
+    if not settings_model:
+        # Create default settings.
+        settings_model = CoreSettingsModel()
+        settings_model.save()
+    return settings_model
 
 
 class People:
@@ -436,9 +446,10 @@ def check_access_to_student(
     if not user or user.is_anonymous:
         return False
 
+    privileged_group = get_privileged_group(user)
+
     # Sysadmins, direction members, pms have all access.
-    if user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP,
-                                    settings.PMS_GROUP]).exists():
+    if privileged_group in [settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP, settings.PMS_GROUP]:
         return True
 
     try:
@@ -447,19 +458,107 @@ def check_access_to_student(
         return False
 
     # Coordinators have by years access.
-    if user.groups.filter(name__istartswith=settings.COORD_GROUP).exists():
-        return student.classe.year in _get_years_by_group(user)
+    if privileged_group == settings.COORDONATOR_GROUP:
+        if user.groups.filter(name__istartswith=settings.COORD_GROUP).exists():
+            return student.classe.year in _get_years_by_group(user)
 
     # Educators have by years or by classes access.
-    if user.groups.filter(name__istartswith=settings.EDUC_GROUP).exists():
-        if educ_by_years:
-            return student.classe.year in _get_years_by_group(user)
-        else:
-            return responsible.classe.filter(id=student.classe.id).exists()
+    if privileged_group == settings.EDUCATOR_GROUP:
+        if user.groups.filter(name__istartswith=settings.EDUC_GROUP).exists():
+            if educ_by_years:
+                return student.classe.year in _get_years_by_group(user)
+            else:
+                return responsible.classe.filter(id=student.classe.id).exists()
 
     # Teachers have by tenure or by classes access.
-    if tenure_class_only:
-        return responsible.tenure.filter(id=student.classe.id).exists()
-    else:
-        classes = responsible.classe.union(responsible.tenure.all())
-        return student.classe.id in [c.id for c in classes]
+    if privileged_group == settings.TEACHER_GROUP:
+        if tenure_class_only:
+            return responsible.tenure.filter(id=student.classe.id).exists()
+        else:
+            teachers = get_teachers_from_student(student)
+            return responsible in teachers
+
+    return False
+
+
+def get_teachers_from_student(stud: StudentModel) -> QuerySet:
+    """Get the student's teachers (tenure included).
+
+    :param stud: The student we are looking at.
+    :type stud: StudentModel
+    :return: A queryset of teachers.
+    :rtype: QuerySet
+    """
+
+    stud_teach_rel = get_core_settings().student_teacher_relationship
+
+    if stud_teach_rel == CoreSettingsModel.BY_CLASSES:
+        return ResponsibleModel.objects.filter(
+            Q(classe=stud.classe) | Q(tenure=stud.classe)
+        )
+    elif stud_teach_rel == CoreSettingsModel.BY_COURSES:
+        courses = stud.courses.values_list("id")
+        return ResponsibleModel.objects.filter(courses__id__in=courses)
+    elif stud_teach_rel == CoreSettingsModel.BY_CLASSES_COURSES:
+        courses = stud.courses.values_list("id")
+        return ResponsibleModel.objects.filter(
+            Q(classe=stud.classe) | Q(courses__id__in=courses) | Q(tenure=stud.classe)
+        )
+
+    return ResponsibleModel.objects.none()
+
+
+def get_students_from_teacher(resp: ResponsibleModel) -> QuerySet:
+    """Get the teacher's students (from classes and tenure).
+
+    :param resp: The responsible (must be a teacher).
+    :type resp: ResponsibleModel.
+    :return: A Queryset of students.
+    :rtype: QuerySet
+    """
+
+    if not resp.is_teacher:
+        return StudentModel.objects.none()
+
+    stud_teach_rel = get_core_settings().student_teacher_relationship
+
+    if stud_teach_rel == CoreSettingsModel.BY_CLASSES:
+        classes = resp.classe.values_list("id").union(resp.tenure.values_list("id"))
+        return StudentModel.objects.filter(Q(classe__id__in=classes))
+    elif stud_teach_rel == CoreSettingsModel.BY_COURSES:
+        courses = resp.courses.values_list("id")
+        return StudentModel.objects.filter(courses__id__in=courses)
+    elif stud_teach_rel == CoreSettingsModel.BY_CLASSES_COURSES:
+        classes = resp.classe.values_list("id").union(resp.tenure.values_list("id"))
+        courses = resp.courses.values_list("id")
+        return StudentModel.objects.filter(
+            Q(classe__id__in=classes) | Q(courses__id__in=courses)
+        ).distinct()
+
+    return StudentModel.objects.none()
+
+
+def get_privileged_group(user: User) -> Union[str, None]:
+    """Get the highest privileged group for teaching responsibles.
+
+    sysadmin, direction, pms > coordinator > educator > teacher.
+
+    :param user: The user we are looking at.
+    :type user: User
+    :return: Either the name of the group from settings or None if there is no group
+    """
+    if not user or user.is_anonymous:
+        return None
+
+    ordered_groups = [
+        settings.SYSADMIN_GROUP,
+        settings.DIRECTION_GROUP,
+        settings.PMS_GROUP,
+        settings.COORDONATOR_GROUP,
+        settings.EDUCATOR_GROUP,
+        settings.TEACHER_GROUP,
+    ]
+
+    for group in ordered_groups:
+        if user.groups.filter(name=group).exists():
+            return group

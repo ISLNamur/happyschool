@@ -20,9 +20,10 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from .people import People, STUDENT, get_years, get_classes, \
-    get_all_teachings, check_access_to_student
+    get_all_teachings, check_access_to_student, get_students_from_teacher
 
-from .models import TeachingModel, StudentModel, ClasseModel, ResponsibleModel
+from .models import TeachingModel, StudentModel, ClasseModel, ResponsibleModel, \
+    CoreSettingsModel
 
 
 class GetAllTeachingTest(TestCase):
@@ -465,3 +466,26 @@ class CheckAccessToStudentTest(TestCase):
         ]
         has_access = [check_access_to_student(s, self.dir_user) for s in students]
         self.assertListEqual(has_access, [True, True, True, True, True, True])
+
+
+class CheckStudentTeacherRelationship(TestCase):
+    fixtures = ["base_random_people_auth.json", "base_random_people_core"]
+
+    def test_get_students_from_teacher(self):
+        # Get Noel Etienne who has english (abc) (thus 1A, 1B, 1C) course
+        # and 1E tenure and 2B, 4B and 4D classes.
+        teacher = ResponsibleModel.objects.get(pk=6)
+        # Default settings is BY_CLASSES thus 45 + 15 students.
+        students = get_students_from_teacher(teacher)
+        self.assertEqual(students.count(), 60)
+        # Use BY_COURSES setting.
+        settings = CoreSettingsModel.objects.first()
+        settings.student_teacher_relationship = CoreSettingsModel.BY_COURSES
+        settings.save()
+        students = get_students_from_teacher(teacher)
+        self.assertEqual(students.count(), 45)
+        # Use BY_CLASSES_COURSES
+        settings.student_teacher_relationship = CoreSettingsModel.BY_CLASSES_COURSES
+        settings.save()
+        students = get_students_from_teacher(teacher)
+        self.assertEqual(students.count(), 105)
