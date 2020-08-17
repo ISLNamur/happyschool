@@ -176,18 +176,43 @@ class BaseModelViewSet(ModelViewSet):
         if self.request.user.groups.intersection(self.get_group_all_access()).exists():
             return self.queryset
         else:
+            stud_teach_rel = get_core_settings().student_teacher_relationship
             try:
-                teachings = ResponsibleModel.objects.get(user=self.request.user).teaching.all()
-                classes = get_classes(list(map(lambda t: t.name, teachings)), True, self.request.user,
-                                      tenure_class_only=self.is_only_tenure())
-                try:
-                    queryset = self.queryset.filter(student__classe__in=classes)
-                except FieldError:
-                    queryset = self.queryset.filter(matricule__classe__in=classes)
-                    warnings.warn("Use *student* as field name instead of matricule", DeprecationWarning)
-                return queryset
+                responsible = ResponsibleModel.objects.get(user=self.request.user)
+
+                if stud_teach_rel == CoreSettingsModel.BY_CLASSES or self.is_only_tenure():
+                    teachings = responsible.teaching.all()
+                    classes = get_classes(
+                        list(map(lambda t: t.name, teachings)),
+                        True,
+                        self.request.user,
+                        tenure_class_only=self.is_only_tenure()
+                    ).values_list("id")
+                    try:
+                        queryset = self.queryset.filter(student__classe__id__in=classes)
+                    except FieldError:
+                        queryset = self.queryset.filter(matricule__classe__id__in=classes)
+                        warnings.warn("Use *student* as field name instead of matricule", DeprecationWarning)
+                elif stud_teach_rel == CoreSettingsModel.BY_COURSES:
+                    try:
+                        queryset = self.queryset.filter(student__courses__in=responsible.courses.all())
+                    except FieldError:
+                        queryset = self.queryset.filter(matricule__courses__in=responsible.courses.all())
+                        warnings.warn("Use *student* as field name instead of matricule", DeprecationWarning)
+                elif stud_teach_rel == CoreSettingsModel.BY_CLASSES_COURSES:
+                    teachings = responsible.teaching.all()
+                    classes = get_classes(
+                        list(map(lambda t: t.name, teachings)),
+                        True,
+                        self.request.user,
+                        tenure_class_only=self.is_only_tenure()
+                    ).values_list("id")
+                    queryset = self.queryset.filter(
+                        Q(matricule__classe__id__in=classes) | Q(matricule__courses__in=responsible.courses.all())
+                    )
             except ObjectDoesNotExist:
                 return self.queryset.none()
+            return queryset
 
     def perform_create(self, serializer):
         serializer.save()
