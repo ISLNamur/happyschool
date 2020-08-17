@@ -26,6 +26,7 @@ from django.conf import settings
 from core.email import send_email
 from core.models import ResponsibleModel, EmailModel
 from core.utilities import get_scholar_year
+from core.people import get_teachers_from_student
 
 from .models import CasEleve, DossierEleveSettingsModel
 
@@ -77,24 +78,11 @@ def notify_sanction(self, instance_id):
 def task_send_info_email(self, instance_id):
     instance = CasEleve.objects.get(id=instance_id)
     student = instance.matricule
-    teachers_obj = ResponsibleModel.objects.filter(classe=student.classe)
+    teachers_obj = get_teachers_from_student(student)
     dossier_eleve_settings = DossierEleveSettingsModel.objects.first()
 
-    teachers = []
+    teachers = [t.email_school if dossier_eleve_settings.use_school_email else t.email for t in teachers_obj]
     context = {'student': student, 'info': instance, 'info_type': instance.info.info}
-    for t in teachers_obj:
-        if not t.email_school:
-            send_email(to=[settings.EMAIL_ADMIN],
-                       subject='ISLN : À propos de ' + student.fullname + " non envoyé à %s" % t.fullname,
-                       email_template="dossier_eleve/email_info.html",
-                       context=context,
-                       attachments=instance.attachments.all(),
-                       )
-        else:
-            if dossier_eleve_settings.use_school_email:
-                teachers.append(t.email_school)
-            else:
-                teachers.append(t.email)
 
     # Add coord and educs to email list
     teachers += map(lambda e: e.email, EmailModel.objects.filter(teaching=student.teaching,
