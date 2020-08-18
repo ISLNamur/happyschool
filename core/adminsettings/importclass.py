@@ -527,6 +527,7 @@ class ImportStudent(ImportBase):
                 classe.save()
 
             student.classe = classe
+            student.save()
 
             courses = self.get_value(entry, "courses")
             if courses and type(courses) != list:
