@@ -49,7 +49,8 @@ from core.people import People, get_classes
 from core.models import StudentModel, ClasseModel, TeachingModel, ResponsibleModel, AdditionalStudentInfo
 from core.serializers import StudentSerializer, ResponsibleSerializer, ClasseSerializer,\
     StudentGeneralInfoSerializer, StudentContactInfoSerializer, StudentMedicalInfoSerializer,\
-    ResponsibleSensitiveSerializer, YearSerializer, StudentSensitiveInfoSerializer
+    ResponsibleSensitiveSerializer, YearSerializer, StudentSensitiveInfoSerializer, \
+    GivenCourseModel
 from core.views import get_app_settings
 
 from .models import AnnuaireSettingsModel
@@ -279,6 +280,19 @@ class StudentClasseAPI(APIView):
         students = StudentModel.objects.filter(classe__id=classe_id).order_by('last_name', 'first_name')
         serializer = StudentSerializer(students, many=True)
         return Response(serializer.data)
+
+
+class StudentGivenCourseAPI(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, given_course_id, format=None):
+        try:
+            given_course = GivenCourseModel.objects.get(id=given_course_id)
+            students = StudentModel.objects.filter(courses=given_course).order_by('last_name', 'first_name')
+            serializer = StudentSerializer(students, many=True)
+            return Response(serializer.data)
+        except ObjectDoesNotExist:
+            return Response([])
 
 
 class AnnuaireSettingsViewSet(ModelViewSet):

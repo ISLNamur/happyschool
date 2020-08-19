@@ -32,6 +32,7 @@ urlpatterns = [
     path('api/classes/', views.SearchClassesAPI.as_view()),
     path('api/people_or_classes/', views.SearchClassesOrPeopleAPI.as_view()),
     path('api/studentclasse/', views.StudentClasseAPI.as_view()),
+    path('api/student_given_course/<int:given_course_id>/', views.StudentGivenCourseAPI.as_view()),
 ]
 
 router = DefaultRouter()
