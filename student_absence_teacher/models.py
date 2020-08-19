@@ -20,7 +20,8 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
 
-from core.models import StudentModel, TeachingModel, ResponsibleModel, ClasseModel
+from core.models import StudentModel, TeachingModel, ClasseModel, GivenCourseModel
+
 
 class StudentAbsenceTeacherSettingsModel(models.Model):
     teachings = models.ManyToManyField(TeachingModel, default=None)
@@ -45,7 +46,7 @@ class PeriodModel(models.Model):
 class StudentAbsenceTeacherModel(models.Model):
     student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)
     date_absence = models.DateField(auto_now=True)
-    lesson = models.ForeignKey(LessonModel, on_delete=models.SET_NULL, null=True)
+    given_course = models.ForeignKey(GivenCourseModel, on_delete=models.SET_NULL, null=True)
     period = models.ForeignKey(PeriodModel, on_delete=models.SET_NULL, null=True)
     comment = models.TextField(blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -53,12 +54,12 @@ class StudentAbsenceTeacherModel(models.Model):
                                              auto_now_add=True)
     datetime_update = models.DateTimeField("Date et heure de mise à jour de l'absence",
                                            auto_now=True)
-                                
+
 
 class StudentLatenessTeacherModel(models.Model):
     student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)
     date_lateness = models.DateField(auto_now=True)
-    lesson = models.ForeignKey(LessonModel, on_delete=models.SET_NULL, null=True)
+    given_course = models.ForeignKey(GivenCourseModel, on_delete=models.SET_NULL, null=True)
     period = models.ForeignKey(PeriodModel, on_delete=models.SET_NULL, null=True)
     comment = models.TextField(blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

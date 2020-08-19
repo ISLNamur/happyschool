@@ -31,7 +31,6 @@ urlpatterns = [
 
 router = DefaultRouter()
 router.register(r'api/period', views.PeriodViewSet)
-router.register(r'api/lesson', views.LessonViewSet)
 router.register(r'api/absence', views.StudentAbsenceTeacherViewSet)
 router.register(r'api/lateness', views.StudentLatenessTeacherViewSet)
 

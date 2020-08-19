@@ -34,7 +34,7 @@ from core.utilities import get_menu
 from core.views import BaseFilters, PageNumberSizePagination
 
 from .models import StudentAbsenceTeacherSettingsModel, StudentAbsenceTeacherModel, StudentLatenessTeacherModel, PeriodModel, LessonModel
-from .serializers import StudentAbsenceTeacherSettingsSerializer, PeriodSerializer, LessonSerializer, StudentAbsenceTeacherSerializer, StudentLatenessTeacherSerializer
+from .serializers import StudentAbsenceTeacherSettingsSerializer, PeriodSerializer, StudentAbsenceTeacherSerializer, StudentLatenessTeacherSerializer
 
 
 def get_menu_entry(active_app: str, user) -> dict:
@@ -84,7 +84,7 @@ class StudentAbsenceTeacherFilter(BaseFilters):
     classe = filters.CharFilter(method='classe_by')
 
     class Meta:
-        fields_to_filter = ('student', 'date_absence', 'student__matricule', 'student__classe',)
+        fields_to_filter = ['student', 'date_absence', 'student__matricule', 'student__classe', "period"]
         model = StudentAbsenceTeacherModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
@@ -106,7 +106,7 @@ class StudentAbsenceTeacherViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filter_class = StudentAbsenceTeacherFilter
-    ordering_fields = ('date_absence', 'datetime_update', 'datetime_creation', 'period', 'lesson',)
+    ordering_fields = ['date_absence', 'datetime_update', 'datetime_creation', 'period']
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -117,7 +117,7 @@ class StudentLatenessTeacherFilter(BaseFilters):
     classe = filters.CharFilter(method='classe_by')
 
     class Meta:
-        fields_to_filter = ('student', 'date_lateness', 'student__matricule', 'period', 'lesson',)
+        fields_to_filter = ['student', 'date_lateness', 'student__matricule', 'period']
         model = StudentLatenessTeacherModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
@@ -148,9 +148,3 @@ class StudentLatenessTeacherViewSet(ModelViewSet):
 class PeriodViewSet(ReadOnlyModelViewSet):
     queryset = PeriodModel.objects.all()
     serializer_class = PeriodSerializer
-
-
-class LessonViewSet(ReadOnlyModelViewSet):
-    queryset = LessonModel.objects.all()
-    serializer_class = LessonSerializer
-    pagination_class = PageNumberSizePagination

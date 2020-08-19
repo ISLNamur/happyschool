@@ -24,7 +24,7 @@
             <a :href="`/annuaire/#/person/student/${lateness.student.matricule}/`">
                 {{ lateness.student.display }}
             </a>
-            ({{ lateness.lesson.lesson }} : {{ lateness.period.name }})
+            ({{ lateness.given_course.display }} : {{ lateness.period.name }})
             <p>{{ lateness.comment }}</p>
         </b-card>
     </div>

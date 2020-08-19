@@ -24,7 +24,7 @@
             <a :href="`/annuaire/#/person/student/${absence.student.matricule}/`">
                 {{ absence.student.display }}
             </a>
-            ({{ absence.lesson.lesson }} : {{ absence.period.name }})
+            ({{ absence.given_course.display }} : {{ absence.period.name }})
             <p>{{ absence.comment }}</p>
         </b-card>
     </div>

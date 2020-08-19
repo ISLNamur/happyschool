@@ -20,6 +20,11 @@
 <template>
     <div>
         <b-row>
+            <b-col cols="2">
+                <p class="pt-1">
+                    <strong>{{ currentDate }}</strong>
+                </p>
+            </b-col>
             <b-col>
                 <multiselect
                     :options="periodOptions"
@@ -38,14 +43,14 @@
             </b-col>
             <b-col>
                 <multiselect
-                    :options="lessonOptions"
+                    :options="givenCourseOptions"
                     placeholder="Séléctionner votre cours"
                     select-label=""
                     selected-label="Sélectionné"
                     deselect-label=""
-                    label="lesson"
+                    label="display"
                     track-by="id"
-                    v-model="lesson"
+                    v-model="givenCourse"
                     :show-no-options="false"
                     @input="getStudents"
                 >
@@ -101,11 +106,12 @@ export default {
     data: function () {
         return {
             periodOptions: [],
-            lessonOptions: [],
+            givenCourseOptions: [],
             period: null,
-            lesson: null,
+            givenCourse: null,
             students: [],
             showAlert: false,
+            currentDate: Moment().format("YYYY-MM-DD")
         };
     },
     methods: {
@@ -113,12 +119,18 @@ export default {
             this.showAlert = Object.keys(this.$store.state.changes).length > 0;
         },
         promiseSavedData: function (model) {
-            const data = {params: {period: this.period.id, lesson: this.lesson.id, [`date_${model}`]: Moment().format("YYYY-MM-DD")}};
+            const data = {
+                params: {
+                    period: this.period.id,
+                    given_course: this.givenCourse.id,
+                    [`date_${model}`]: this.currentDate,
+                }
+            };
             return axios.get(`/student_absence_teacher/api/${model}/`, data, token);
         },
         getAbsenceLateness: function (students) {
-            // We need both the lesson and the period.
-            if (!this.period || !this.lesson) return;
+            // We need both the given course and the period.
+            if (!this.period || !this.givenCourse) return;
 
             const models = ["absence", "lateness"];
             Promise.all([this.promiseSavedData(models[0]), this.promiseSavedData(models[1])])
@@ -141,13 +153,12 @@ export default {
                     alert(err);
                 });
         },
-        getStudents: function (input) {
+        getStudents: function () {
             this.students = [];
-            if (!input) return;
-            if (!this.lesson || !this.period) return;
+            if (!this.givenCourse || !this.period) return;
 
-            const classe = this.lesson.classe;
-            axios.get("/annuaire/api/studentclasse/?classe=" + classe)
+            this.currentDate = Moment().format("YYYY-MM-DD");
+            axios.get(`/annuaire/api/student_given_course/${this.givenCourse.id}/`)
                 .then(resp => {
                     this.$store.commit("resetChanges");
                     this.showAlert = 0;
@@ -171,7 +182,7 @@ export default {
                     if (!change.is_new) url += change.id + "/";
                     const data = {
                         student_id: matricule,
-                        lesson_id: this.lesson.id,
+                        given_course_id: this.givenCourse.id,
                         period_id: this.period.id,
                         comment: change.comment,
                     };
@@ -187,7 +198,7 @@ export default {
                         variant: "success",
                         noCloseButton: true,
                     });
-                    this.getStudents(this.lesson);
+                    this.getStudents();
                     this.computeAlert();
                 })
                 .catch(err => {
@@ -200,10 +211,8 @@ export default {
             .then(resp => {
                 this.periodOptions = resp.data.results;
             });
-        axios.get("/student_absence_teacher/api/lesson/?page_size=200")
-            .then(resp => {
-                this.lessonOptions = resp.data.results;
-            });
+        // eslint-disable-next-line no-undef
+        this.givenCourseOptions = user_properties.given_courses;
     },
     components: {Multiselect, AddAbsenceEntry,},
 

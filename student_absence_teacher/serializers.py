@@ -21,8 +21,8 @@ from django.conf import settings
 
 from rest_framework import serializers
 
-from core.serializers import StudentSerializer
-from core.models import StudentModel
+from core.serializers import StudentSerializer, GivenCourseSerializer
+from core.models import StudentModel, GivenCourseModel
 
 from .models import StudentAbsenceTeacherSettingsModel, StudentAbsenceTeacherModel, StudentLatenessTeacherModel, PeriodModel, LessonModel
 
@@ -38,20 +38,17 @@ class PeriodSerializer(serializers.ModelSerializer):
         model = PeriodModel
         fields = ('id', 'name', 'start', 'end', 'display',)
 
-class LessonSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = LessonModel
-        fields = '__all__'
-
 
 class StudentAbsenceTeacherSerializer(serializers.ModelSerializer):
     # In order to write with the id and read the entire object, it uses two fields: field + field_id.
     student = StudentSerializer(read_only=True)
     student_id = serializers.PrimaryKeyRelatedField(queryset=StudentModel.objects.all(),
                                                     source='student', required=False, allow_null=True)
-    lesson = LessonSerializer(read_only=True)
-    lesson_id = serializers.PrimaryKeyRelatedField(queryset=LessonModel.objects.all(),
-                                                   source='lesson', required=False, allow_null=True)
+
+    given_course = GivenCourseSerializer(read_only=True)
+    given_course_id = serializers.PrimaryKeyRelatedField(
+        queryset=GivenCourseModel.objects.all(), source='given_course', required=False, allow_null=True
+    )
 
     period = PeriodSerializer(read_only=True)
     period_id = serializers.PrimaryKeyRelatedField(queryset=PeriodModel.objects.all(),
@@ -69,9 +66,10 @@ class StudentLatenessTeacherSerializer(serializers.ModelSerializer):
     student_id = serializers.PrimaryKeyRelatedField(queryset=StudentModel.objects.all(),
                                                     source='student', required=False, allow_null=True)
 
-    lesson = LessonSerializer(read_only=True)
-    lesson_id = serializers.PrimaryKeyRelatedField(queryset=LessonModel.objects.all(),
-                                                   source='lesson', required=False, allow_null=True)
+    given_course = GivenCourseSerializer(read_only=True)
+    given_course_id = serializers.PrimaryKeyRelatedField(
+        queryset=GivenCourseModel.objects.all(), source='given_course', required=False, allow_null=True
+    )
 
     period = PeriodSerializer(read_only=True)
     period_id = serializers.PrimaryKeyRelatedField(queryset=PeriodModel.objects.all(),
