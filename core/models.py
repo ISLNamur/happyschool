@@ -88,6 +88,10 @@ class GivenCourseModel(models.Model):
     def __str__(self):
         return "%s (%s)" % (self.course.name, self.group)
 
+    @property
+    def display(self):
+        return self.__str__()
+
 
 class StudentModel(models.Model):
     first_name = models.CharField(max_length=200)

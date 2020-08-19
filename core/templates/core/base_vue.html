@@ -32,7 +32,9 @@
             {% load user_properties %}
             {% autoescape off %}
             const user = "{{ user }}";
-            const user_properties = {% list_user_properties %};
+            let user_properties_raw = {% list_user_properties %};
+            user_properties_raw.given_courses = JSON.parse(user_properties_raw.given_courses);
+            const user_properties = user_properties_raw;
             const user_groups = {% list_user_groups %};
             {% endautoescape %}
         </script>

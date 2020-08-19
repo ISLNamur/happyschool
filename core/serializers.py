@@ -33,7 +33,7 @@ class CourseSerializer(serializers.ModelSerializer):
 class GivenCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = GivenCourseModel
-        fields = "__all__"
+        fields = ["id", "course", "group", "display"]
         depth = 1
 
 
