@@ -38,6 +38,11 @@ class CoreSettingsModel(models.Model):
         help_text="Nom court de l'école (abréviation, sigle,…).",
         default=""
     )
+    school_street = models.CharField(max_length=200, default="", blank=True)
+    school_postal_code = models.CharField(max_length=20, default="", blank=True)
+    school_city = models.CharField(max_length=100, default="", blank=True)
+    school_phone = models.CharField(max_length=50, default="", blank=True)
+    school_fax = models.CharField(max_length=50, default="", blank=True)
     student_teacher_relationship = models.CharField(
         max_length=2,
         choices=RELATIONSHIP_CHOICES,
