@@ -1,0 +1,109 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>{{ sanction.sanction_decision }}</title>
+    </head>
+    <body>
+        <style>
+        @charset "UTF-8";
+        @page {
+            margin: 1cm;
+            counter-increment: page;
+            @bottom-right {
+                content: "Page " counter(page) "/" counter(pages);
+                border-top: .25pt solid #666;
+                width: 50%;
+            }
+        }
+
+        html {
+            font-size: 0.9em;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        html aside {
+            display: flex;
+            margin: 1em 0 4em;
+        }
+        html aside address {
+            font-style: normal;
+            white-space: pre-line;
+        }
+        html aside address#from {
+            color: #a9a;
+            flex: 1;
+        }
+        html aside address#to {
+            margin-top: 5em;
+            padding: 1em;
+            text-align: right;
+        }
+        #date {
+            text-align: right;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+        html dl dt, html dl dd {
+            display: inline;
+            margin: 0;
+        }
+        html dl dt::before {
+            content: '';
+            display: block;
+        }
+        html dl dt::after {
+            content: ' :';
+        }
+        html dl dd {
+            font-weight: bold;
+        }
+        html #motive {
+            border: 1px solid black;
+            padding: 1em;
+        }
+        </style>
+        <p id="date">{{ core_settings.school_city }}, le {% now "j F Y" %}</p>
+        <aside>
+            <address id="from">
+                <img src="/static/img/logo_school.png">
+                <strong>{{ core_settings.school_name }}</strong>
+                {{ core_settings.school_street }}
+                {{ core_settings.school_postal_code }} {{ core_settings.school_city }}
+                {% if core_settings.school_phone %}Tél : {{ core_settings.school_phone }}{% endif %}
+                {% if core_settings.school_fax %}Fax : {{ core_settings.school_fax }}{% endif %}
+            </address>
+
+            <address id="to">
+            Au(x) responsable(s) des études de l'élève concerné.
+            </address>
+        </aside>
+        <h2>{{ sanction.sanction_decision }}</h2>
+        <dl id="informations">
+            <dt>Concerne</dt>
+            <dd>{{ sanction.matricule.last_name }} {{ santion.matricule.first_name }}</dd>
+            {% if sanction.matricule.additionalstudentinfo.birth_date %}
+            <dt>Né(e) le</dt>
+            <dd>{{ sanction.matricule.additionalstudentinfo.birth_date }}</dd>
+            {% endif %}
+            <dt>Classe</dt>
+            <dd>{{ sanction.matricule.classe.compact_str }}</dd>
+            <dt>Objet</dt>
+            <dd>Mesure disciplinaire</dd>
+        </dl>
+        <p>Chers parents,</p>
+        <p>Nous sommes contrains d'infliger à votre fils une sanction qui aura lieu le <strong>{{ sanction.datetime_sanction|date:"j F Y à H\hi" }}</strong>.</p>
+        <div id="motive">
+            <p>Le motif, expliqué par le demandeur de la sanction ({{ sanction.demandeur }}) est le suivant :</p>
+            {% autoescape off %}
+            {{ sanction.explication_commentaire }}
+            {% endautoescape %}
+        </div>
+        {% autoescape off %}
+        {{ sanction.sanction_decision.letter_comment }}
+        {% endautoescape %}
+    </body>
+</html>

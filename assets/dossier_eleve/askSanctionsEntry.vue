@@ -67,6 +67,19 @@
                             </span>
                             <span v-if="canEditSanction">
                                 <b-btn
+                                    v-if="rowData.datetime_sanction"
+                                    variant="light"
+                                    size="sm"
+                                    class="card-link"
+                                    :href="`/dossier_eleve/get_pdf_retenue/${rowData.id}/`"
+                                ><icon
+                                    scale="1.3"
+                                    name="file"
+                                    color="grey"
+                                    class="align-text-bottom"
+                                />
+                                </b-btn>
+                                <b-btn
                                     variant="light"
                                     size="sm"
                                     @click="editEntry"

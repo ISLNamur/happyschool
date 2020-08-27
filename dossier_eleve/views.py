@@ -19,6 +19,8 @@
 
 import json
 
+from django_weasyprint import WeasyTemplateView
+
 from django.shortcuts import render
 from django.utils import timezone
 from django.http import HttpResponse
@@ -39,7 +41,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from core.views import BaseFilters, BaseModelViewSet, get_app_settings, BaseUploadFileView
+from core.views import BaseFilters, BaseModelViewSet, get_app_settings, BaseUploadFileView, get_core_settings
 from core.utilities import get_menu
 from core.utilities import get_scholar_year, check_student_photo
 from core.models import StudentModel, ResponsibleModel
@@ -592,3 +594,18 @@ class AskSanctionRetenuesPDFGenAPI(AskSanctionsPDFGenAPI):
             r['datetime_sanction'] = timezone.datetime.strptime(r['datetime_sanction'][:19],
                                                                 "%Y-%m-%dT%H:%M:%S")
         return results
+
+
+class RetenuePDF(
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    WeasyTemplateView
+):
+    permission_required = ['dossier_eleve.ask_sanction', 'dossier_eleve.view_cas']
+    template_name = "dossier_eleve/retenue_pdf.html"
+
+    def get_context_data(self, sanction, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        context["sanction"] = CasEleve.objects.get(id=sanction)
+        context["core_settings"] = get_core_settings()
+        return context

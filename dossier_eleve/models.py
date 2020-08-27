@@ -164,8 +164,14 @@ class SanctionDecisionDisciplinaire(models.Model):
     can_ask = models.BooleanField(default=False)
     notify = models.ManyToManyField(
         NotifySanctionModel,
+        blank=True,
         help_text="""Permet d'envoyer une notification aux parents/responsable légal ou responsable de l'école
             (éducateurs/coordonateur) à une fréquence particulière (tous les X fois)."""
+    )
+    letter_comment = models.TextField(
+        help_text="Texte qui sera mis en fin de lettre de sanction (balise html pris en charge).",
+        default="",
+        blank=True
     )
 
     def __str__(self):
