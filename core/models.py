@@ -79,7 +79,8 @@ class ClasseModel(models.Model):
 
 
 class CourseModel(models.Model):
-    name = models.CharField(max_length=120)
+    short_name = models.CharField(max_length=20, blank=True)
+    long_name = models.CharField(max_length=240, default="", blank=True)
     teaching = models.ForeignKey(TeachingModel, on_delete=models.CASCADE)
 
     def __str__(self):

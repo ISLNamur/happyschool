@@ -183,7 +183,12 @@ class ImportResponsible(ImportBase):
                         try:
                             course_model = CourseModel.objects.get(id=c["id"])
                         except ObjectDoesNotExist:
-                            course_model = CourseModel(id=c["id"], name=c["name"], teaching=self.teaching)
+                            course_model = CourseModel(
+                                id=c["id"],
+                                short_name=c["short_name"],
+                                long_name=c["long_name"],
+                                teaching=self.teaching
+                            )
                             course_model.save()
                         try:
                             given_course = GivenCourseModel.objects.get(course=course_model, group=c["group"])
@@ -537,7 +542,12 @@ class ImportStudent(ImportBase):
                     try:
                         course_model = CourseModel.objects.get(id=c["id"])
                     except ObjectDoesNotExist:
-                        course_model = CourseModel(id=c["id"], name=c["name"], teaching=self.teaching)
+                        course_model = CourseModel(
+                            id=c["id"],
+                            short_name=c["short_name"],
+                            long_name=c["long_name"],
+                            teaching=self.teaching
+                        )
                         course_model.save()
                     try:
                         given_course = GivenCourseModel.objects.get(course=course_model, group=c["group"])
