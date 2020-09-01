@@ -182,6 +182,8 @@ class ImportResponsible(ImportBase):
                             continue
                         try:
                             course_model = CourseModel.objects.get(id=c["id"])
+                            course_model.short_name = c["short_name"]
+                            course_model.long_name = c["long_name"]
                         except ObjectDoesNotExist:
                             course_model = CourseModel(
                                 id=c["id"],

@@ -84,7 +84,7 @@ class CourseModel(models.Model):
     teaching = models.ForeignKey(TeachingModel, on_delete=models.CASCADE)
 
     def __str__(self):
-        return "%s (%s)" % (self.name, self.teaching)
+        return "%s (%s)" % (self.long_name, self.teaching)
 
 
 class GivenCourseModel(models.Model):
@@ -92,7 +92,7 @@ class GivenCourseModel(models.Model):
     group = models.CharField(max_length=20, default="", blank=True)
 
     def __str__(self):
-        return "%s (%s)" % (self.course.name, self.group)
+        return "%s (%s)" % (self.course.long_name, self.group)
 
     @property
     def display(self):
