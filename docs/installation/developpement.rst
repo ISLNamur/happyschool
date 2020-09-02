@@ -67,7 +67,7 @@ Pour démarrer les images dockers, il nous reste plus qu'à lancer :
    sudo docker-compose up
 
 Vous pouvez maintenant accéder à HappySchool sur http://127.0.0.1:8000 et
-vous connecter avec l'utilisateur admin et le mot de passe admin.
+vous connecter avec l'utilisateur `admin` et le mot de passe `admin`.
 
 Si vous voulez accéder au conteneur pour créer/appliquer une migration django
 ou bien pour générer le code javascript. La commande suivante vous-y donnera
@@ -113,6 +113,7 @@ de passe et nom de la base de donnée :
 
    CREATE USER newuser WITH PASSWORD 'yourpassword';
    CREATE DATABASE mydb WITH OWNER newuser;
+   ALTER USER username CREATEDB;
    \quit
 
 Paquets système
@@ -127,7 +128,9 @@ Pour les installer :
 
 ::
 
-   sudo apt install python3.7 python3.7-dev libldap2-dev libsasl2-dev libssl1.0-dev python3-pip git python3-dateutil ttf-bitstream-vera redis-server npm
+   curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+   sudo apt install libldap2-dev libsasl2-dev python3-pip git python3-dateutil ttf-bitstream-vera redis-server build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl nodejs
+   
 
 HappySchool
 -----------
@@ -144,13 +147,18 @@ puis récupérer le code avec git :
 
 HappySchool s’appuie sur le framework
 `Django <https://www.djangoproject.com/>`__ ainsi que toutes une série
-de modules python. Pour les installer :
+de modules python. Afin des les gérer ainsi que leur versions, *pipenv* et *pyenv*
+sont utilisés. Pour les installer avec un shell bash:
 
 ::
 
    pip3 install --user pipenv
+   curl https://pyenv.run | bash
+   echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> /.bashrc
+   echo 'eval "$(pyenv init -)"' >> /.bashrc
+   echo 'eval "$(pyenv virtualenv-init -)"' >> /bashrc
    cd happyschool
-   pipenv install
+   PYENV_YES=1 pipenv install
 
 
 Il existe plusieurs niveaux de configurations pour Happyschool, le plus
@@ -161,8 +169,8 @@ racine d’Happyschool). Un fichier exemple est disponible et peut être copié 
 
    cp happyschool/settings.example.py happyschool/settings.py
 
-Dans celui-ci vous retrouverez la possibilité d’activer/désactiver une
-application, configurer l’accès à la base de donnée (pensez à mettre le
+Dans celui-ci vous retrouverez la possibilité d’activer/désactiver les
+applications, configurer l’accès à la base de donnée (pensez à mettre le
 nom de la db, l’utilisateur et le mot de passe définit plus haut),
 configurer le serveur d’envoi d’email, configurer l'authentification à
 un serveur LDAP/ActiveDirectory, etc. Plus de détails sont disponibles

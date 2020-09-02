@@ -3,10 +3,17 @@
 Production
 *********************************************
 
-La manière la plus rapide et la plus simple est d'utiliser un playbook ansible
-pour automatiser l'installation et la configuration d'HappySchool. Cependant
-celle-ci se limite à ubuntu 18.04. Pour une installation sur un autre système
-ou plus poussé, une installation manuelle est décrite ci-dessous.
+HappySchool est construit sur un certain nombre de brique logiciel, ses dépendances.
+Par souci de simplicité, il est conseillé d'installer sur une machine réservée
+à l'emploi d'HappySchool même si, au vu de la plupart des logiciels utilisés,
+il est tout à fait possible d'utiliser une machine existante. Une machine
+virtuelle (ou une instance docker) sera donc tout à fait appropriée et
+recommandé pour l'installation.
+La manière la plus rapide et la plus simple pour l'installation est d'utiliser
+un playbook ansible pour automatiser l'installation et la configuration d'HappySchool.
+Cependant celle-ci se limite pour le moment à ubuntu 18.04. Pour une installation
+sur un autre système ou plus poussé, une installation manuelle est décrite
+ci-dessous. A vous à l'adapter selon les spécificités de votre machine.
 
 Ansible
 =======
@@ -90,7 +97,9 @@ Pour les installer :
 
 ::
 
-   sudo apt install python3.7 python3.7-dev libldap2-dev libsasl2-dev libssl1.0-dev python3-pip git python3-dateutil ttf-bitstream-vera redis-server npm nginx
+   curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -                                                         
+   sudo apt install libldap2-dev libsasl2-dev python3-pip git python3-dateutil ttf-bitstream-vera redis-server build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl nodejs
+
 
 .. _happyschool-1:
 
@@ -109,13 +118,18 @@ puis récupérer le code avec git :
 
 HappySchool s’appuie sur le framework
 `Django <https://www.djangoproject.com/>`__ ainsi que toutes une série
-de modules python. Pour les installer :
+de modules python. Afin des les gérer ainsi que leur versions, *pipenv* et *pyenv*                                           
+sont utilisés. Pour les installer avec un shell bash :
 
 ::
 
    pip3 install --user pipenv
+   curl https://pyenv.run | bash                                                                                            
+   echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> /.bashrc                                                                  
+   echo 'eval "$(pyenv init -)"' >> /.bashrc                                                                                
+   echo 'eval "$(pyenv virtualenv-init -)"' >> /bashrc
    cd happyschool
-   pipenv install
+   PYENV_YES=1 pipenv install
 
 
 Il existe plusieurs niveaux de configurations pour Happyschool, le plus
@@ -169,7 +183,7 @@ votre fichier ``happyschool/settings.py`` et lancez la commande suivante
 
 ::
 
-   python3 manage.py collectstatic
+   pipen run ./manage.py collectstatic
 
 
 Supervisord
