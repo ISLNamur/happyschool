@@ -11,3 +11,6 @@ static/bundles/
 .coverage
 static/photos/*jpg
 !static/photos/unknown.jpg
+Pipfile.lock
+docs/_build/
+package-lock.json
