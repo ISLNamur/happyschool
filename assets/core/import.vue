@@ -33,6 +33,7 @@
                     mais sera affichée en majustcule dans HappySchool.
                 </li>
                 <li><strong>Date de naissance :</strong> La date de naissance doit être sous la forme yyyymmdd. Par exemple, 20020322 donnera le 22 mars 2002.</li>
+                <li><strong>Cours :</strong> Seul le nom du cours court est nécessaire. Pour prendre entre compte plusieurs cours, il suffit que la ligne de l'étudiant soit répétée (seul le matricule est nécessaire).</li>
             </ul>
             <b-alert
                 show
@@ -139,6 +140,9 @@ const column_names = [
     {value: "first_name", text: "Prénom"},
     {value: "year", text: "Année"},
     {value: "classe_letter", text: "Classe"},
+    {value: "course_name_short", text: "Cours (court)"},
+    {value: "course_name_long", text: "Cours (long)"},
+    {value: "group", text: "Groupe"},
     {value: "gender", text: "Genre"},
     {value: "scholar_year", text: "Année scolaire"},
     {value: "previous_class", text: "Classe précédente"},

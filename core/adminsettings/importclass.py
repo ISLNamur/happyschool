@@ -537,6 +537,9 @@ class ImportStudent(ImportBase):
             student.classe = classe
             student.save()
 
+            # Check if student's courses already exists.
+            if student.matricule not in student_synced:
+                student.courses.remove(*student.courses.filter(course__teaching=self.teaching))
             courses = self.get_value(entry, "courses")
             if courses and type(courses) != list:
                 courses = [courses]
@@ -544,11 +547,14 @@ class ImportStudent(ImportBase):
                 for c in courses:
                     try:
                         course_model = CourseModel.objects.get(id=c["id"])
+                        course_model.short_name = c["short_name"]
+                        course_model.long_name = c["long_name"] if "long_name" in c else ""
+                        course_model.save()
                     except ObjectDoesNotExist:
                         course_model = CourseModel(
                             id=c["id"],
                             short_name=c["short_name"],
-                            long_name=c["long_name"],
+                            long_name=c["long_name"] if "long_name" in c else "",
                             teaching=self.teaching
                         )
                         course_model.save()
@@ -636,6 +642,23 @@ class ImportStudentCSV(ImportStudent):
         super()._sync(reader)
 
     def get_value(self, entry: list, column: str) -> Union[int, str, date, None]:
+        if column == "courses":
+            print(entry)
+            course = {
+                "short_name": entry[self.column_to_index["course_name_short"]],
+            }
+            if "course_name_long" in self.column_to_index:
+                course["long_name"] = entry[self.column_to_index["course_name_long"]]
+            if "group" in self.column_to_index:
+                course["group"] = entry[self.column_to_index["group"]]
+            else:
+                course["group"] = ""
+            try:
+                course["id"] = CourseModel.objects.get(short_name=course["short_name"]).id
+                print(course)
+            except ObjectDoesNotExist:
+                course["id"] = CourseModel.objects.latest("id").id + 1
+            return course
         try:
             return self.format_value(entry[self.column_to_index[column]], column)
         except KeyError:
