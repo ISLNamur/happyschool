@@ -53,5 +53,7 @@ router.register(r'api/responsible', views.ResponsibleViewSet)
 router.register(r'api/student', views.StudentViewSet)
 router.register(r'api/user', views.UserViewSet)
 router.register(r'api/group', views.GroupViewSet)
+router.register(r'api/course', views.CourseViewSet)
+router.register(r'api/given_course', views.GivenCourseViewSet)
 
 urlpatterns += router.urls

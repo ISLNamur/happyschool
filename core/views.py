@@ -48,12 +48,12 @@ from django.views.generic import TemplateView
 from django.contrib.auth.models import Group, User
 
 from core.models import ResponsibleModel, TeachingModel, EmailModel, CoreSettingsModel, StudentModel,\
-    ImportCalendarModel, ClasseModel
+    ImportCalendarModel, ClasseModel, CourseModel, GivenCourseModel
 from core.people import get_classes
 from core.permissions import IsSecretaryPermission
 from core.serializers import ResponsibleSensitiveSerializer, TeachingSerializer,\
     EmailSerializer, ClasseSerializer, ResponsibleRemoteSerializer, StudentWriteSerializer, UserSerializer,\
-    GroupSerializer
+    GroupSerializer, CourseSerializer, GivenCourseFlatSerializer
 from core.utilities import get_scholar_year, get_menu
 
 
@@ -322,6 +322,18 @@ class TeachingViewSet(ModelViewSet):
 class ClasseViewSet(ModelViewSet):
     queryset = ClasseModel.objects.all()
     serializer_class = ClasseSerializer
+    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+
+
+class CourseViewSet(ModelViewSet):
+    queryset = CourseModel.objects.all()
+    serializer_class = CourseSerializer
+    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+
+
+class GivenCourseViewSet(ModelViewSet):
+    queryset = GivenCourseModel.objects.all()
+    serializer_class = GivenCourseFlatSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
 
 

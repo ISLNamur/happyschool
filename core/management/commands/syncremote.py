@@ -21,7 +21,7 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User, Group
 
 from core.views import get_core_settings
-from core.models import TeachingModel, ClasseModel, ResponsibleModel, StudentModel
+from core.models import TeachingModel, ClasseModel, ResponsibleModel, StudentModel, CourseModel, GivenCourseModel
 from core.serializers import TeachingSerializer, ClasseSerializer, ResponsibleRemoteSerializer, StudentWriteSerializer,\
     GroupSerializer, UserSerializer
 
@@ -50,6 +50,9 @@ class Command(BaseCommand):
         self.create_or_update_remote(Group, 'core/api/group', GroupSerializer)
         print("Users…")
         self.create_or_update_remote(User, 'core/api/user', UserSerializer)
+        print("Courses…")
+        self.create_or_update_remote(CourseModel, "core/api/course")
+        self.create_or_update_remote(GivenCourseModel, "core/api/given_course")
         print("Responsibles…")
         self.create_or_update_remote(ResponsibleModel, 'core/api/responsible', ResponsibleRemoteSerializer)
         print("Students…")
@@ -60,6 +63,7 @@ class Command(BaseCommand):
         for obj in model.objects.all():
             url = self.remote_url + '%s/%i/' % (base_url, obj.pk,)
             result = requests.get(url, headers=self.header)
+            print(result.status.code)
             serializer = serializer_class(obj)
             if result.status_code == 200:
                 # Update data.

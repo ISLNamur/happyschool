@@ -25,6 +25,8 @@ from core.models import *
 
 
 class CourseSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(label='ID', read_only=False)
+
     class Meta:
         model = CourseModel
         fields = "__all__"
@@ -35,6 +37,14 @@ class GivenCourseSerializer(serializers.ModelSerializer):
         model = GivenCourseModel
         fields = ["id", "course", "group", "display"]
         depth = 1
+
+
+class GivenCourseFlatSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(label='ID', read_only=False)
+
+    class Meta:
+        model = GivenCourseModel
+        fields = "__all__"
 
 
 class ResponsibleSensitiveSerializer(serializers.ModelSerializer):
