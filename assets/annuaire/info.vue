@@ -128,7 +128,12 @@
                                         :key="c.id"
                                         :class="{'col-7': index == 0, 'col-7 offset-5': index > 0}"
                                     >
-                                        {{ c.course.name }}
+                                        <span v-if="c.course.long_name">
+                                            {{ c.course.long_name }}
+                                        </span>
+                                        <span v-else>
+                                            {{ c.course.short_name }}
+                                        </span>
                                         <span v-if="c.group !== ''">
                                             ({{ c.group.toUpperCase() }})
                                         </span>
