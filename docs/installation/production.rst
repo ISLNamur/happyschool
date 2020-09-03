@@ -129,7 +129,7 @@ sont utilisés. Pour les installer avec un shell bash :
    echo 'eval "$(pyenv init -)"' >> /.bashrc                                                                                
    echo 'eval "$(pyenv virtualenv-init -)"' >> /bashrc
    cd happyschool
-   PYENV_YES=1 pipenv install
+   PIPENV_YES=1 pipenv install
 
 
 Il existe plusieurs niveaux de configurations pour Happyschool, le plus
