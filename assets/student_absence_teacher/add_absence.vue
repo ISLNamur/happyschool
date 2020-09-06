@@ -213,13 +213,15 @@ export default {
             });
         // eslint-disable-next-line no-undef
         this.givenCourseOptions = user_properties.given_courses;
+        if (this.givenCourseOptions[0].display.includes("["))
+            return;
+
         const classesPromises = this.givenCourseOptions.map(givenCourse => {
-            return axios.get(`/annuaire/api/course_to_classes/${givenCourse.id}/`)
+            return axios.get(`/annuaire/api/course_to_classes/${givenCourse.id}/`);
         });
         Promise.all(classesPromises)
             .then((resps) => {
                 resps.forEach((resp, idx) => {
-                    console.log(resp.data);
                     let givenCourse = this.givenCourseOptions[idx];
                     givenCourse.display = `[${resp.data.join(", ").toUpperCase()}] ${givenCourse.display}`;
                 });
