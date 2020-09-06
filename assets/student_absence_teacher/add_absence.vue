@@ -221,7 +221,7 @@ export default {
                 resps.forEach((resp, idx) => {
                     console.log(resp.data);
                     let givenCourse = this.givenCourseOptions[idx];
-                    givenCourse.display = `[${resp.data.join(", ")}] ${givenCourse.display}`;
+                    givenCourse.display = `[${resp.data.join(", ").toUpperCase()}] ${givenCourse.display}`;
                 });
             });
     },
