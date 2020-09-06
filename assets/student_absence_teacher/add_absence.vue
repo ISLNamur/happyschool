@@ -213,6 +213,17 @@ export default {
             });
         // eslint-disable-next-line no-undef
         this.givenCourseOptions = user_properties.given_courses;
+        const classesPromises = this.givenCourseOptions.map(givenCourse => {
+            return axios.get(`/annuaire/api/course_to_classes/${givenCourse.id}/`)
+        });
+        Promise.all(classesPromises)
+            .then((resps) => {
+                resps.forEach((resp, idx) => {
+                    console.log(resp.data);
+                    let givenCourse = this.givenCourseOptions[idx];
+                    givenCourse.display = `[${resp.data.join(", ")}] ${givenCourse.display}`;
+                });
+            });
     },
     components: {Multiselect, AddAbsenceEntry,},
 
