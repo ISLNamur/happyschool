@@ -295,6 +295,18 @@ class StudentGivenCourseAPI(APIView):
             return Response([])
 
 
+class CourseToClassesAPI(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, given_course_id, format=None):
+        try:
+            course = GivenCourseModel.objects.get(id=given_course_id)
+            classes = course.studentmodel_set.distinct("classe").values_list("classe__year", "classe__letter")
+            return Response([f"{classe_year}{classe_letter}" for (classe_year, classe_letter) in classes])
+        except ObjectDoesNotExist:
+            return Response([])
+
+
 class AnnuaireSettingsViewSet(ModelViewSet):
     queryset = AnnuaireSettingsModel.objects.all()
     serializer_class = AnnuaireSettingsSerializer
