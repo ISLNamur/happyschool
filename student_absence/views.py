@@ -71,7 +71,9 @@ class StudentAbsenceView(LoginRequiredMixin,
         {'value': 'student__matricule', 'text': 'Matricule'},
         {'value': 'classe', 'text': 'Classe'},
         {'value': 'date_absence', 'text': 'Date'},
+        {'value': 'period__name', 'text': "Période"},
         {'value': 'activate_is_absent', 'text': 'Absences uniquement'},
+        {'value': 'activate_last_absence', 'text': 'Mes absences du jour'},
     ]
 
     def get_context_data(self, **kwargs):
@@ -88,16 +90,24 @@ class StudentAbsenceFilter(BaseFilters):
     student__display = filters.CharFilter(method='people_name_by')
     classe = filters.CharFilter(method='classe_by')
     activate_is_absent = filters.BooleanFilter(method="activate_is_absent_by")
+    activate_last_absence = filters.BooleanFilter(method="activate_last_absence_by")
 
     class Meta:
-        fields_to_filter = ('student', 'date_absence',
-            'student__matricule', 'is_absent',)
+        fields_to_filter = [
+            'student', 'date_absence',
+            'student__matricule', 'is_absent',
+            "period__name",
+        ]
         model = StudentAbsenceModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
 
     def activate_is_absent_by(self, queryset, name, value):
         return queryset.filter(is_absent=True)
+
+    def activate_last_absence_by(self, queryset, name, value):
+        current_date = timezone.now().date()
+        return queryset.filter(user=self.request.user, date_absence=current_date, is_absent=True)
 
 
 class StudentAbsenceViewSet(ModelViewSet):
@@ -144,7 +154,13 @@ class StudentAbsenceViewSet(ModelViewSet):
             if get_settings().sync_with_proeco:
                 if not self.sync_proeco(serializer.validated_data):
                     continue
-            self.perform_create(serializer)
+
+            # Save object and add user/username.
+            abs_object = serializer.save()
+            abs_object.user = request.user
+            abs_object.username = request.user.username
+            abs_object.save()
+
             absences_done.append(serializer.data)
         if get_settings().sync_with_proeco:
             self.cursor.connection.commit()
