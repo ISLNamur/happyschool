@@ -69,6 +69,8 @@ function getFilters (filters) {
             const lte = range[1];
             filter += "&" + fT + "__gte=" + gte;
             filter += "&" + fT + "__lte=" + lte;
+        } else if (fT.startsWith("activate_")) {
+            filter += `&${fT}=true`;
         } else {
             const value = f.map(o => o.value).reduce((a, cV) => a + "," + cV);
             filter += "&" + fT + "=" + value;

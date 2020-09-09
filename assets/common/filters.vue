@@ -240,7 +240,7 @@ export default {
                 this.filterSearchOptions = [{
                     "tag": "Activer",
                     "filterType": this.filterType,
-                    "value": true,
+                    "value": "true_" + this.filterType,
                 }];
                 return;
             }
