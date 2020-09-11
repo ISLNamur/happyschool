@@ -84,6 +84,17 @@
                             </b-form-row>
                         </b-col>
                     </b-row>
+                    <b-row>
+                        <b-col>
+                            <b-form-group>
+                                <b-checkbox
+                                    v-model="sanction_not_done"
+                                >
+                                    Sanctions non faites uniquement
+                                </b-checkbox>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
                 </b-tab>
             </b-tabs>
         </b-modal>
@@ -108,6 +119,7 @@ export default {
             date_council_to: null,
             date_retenues_from: null,
             date_retenues_to: null,
+            sanction_not_done: false,
         };
     },
     watch: {
@@ -143,6 +155,9 @@ export default {
                 path += "retenues/?activate_all_retenues=true";
                 path += "&datetime_sanction__gt=" + this.date_retenues_from;
                 path += " 00:00&datetime_sanction__lt=" + this.date_retenues_to + " 23:59";
+                if (this.sanction_not_done) {
+                    path += "&activate_not_done=true";
+                }
             }
             path += "&ordering=matricule__classe__year,matricule__classe__letter,matricule__last_name&page_size=500";
             window.open(path);
