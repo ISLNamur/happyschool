@@ -601,7 +601,7 @@ class RetenuePDF(
     PermissionRequiredMixin,
     WeasyTemplateView
 ):
-    permission_required = ['dossier_eleve.ask_sanction', 'dossier_eleve.view_cas']
+    permission_required = ['dossier_eleve.ask_sanction', 'dossier_eleve.view_caseleve']
     template_name = "dossier_eleve/retenue_pdf.html"
 
     def get_context_data(self, sanction, **kwargs) -> dict:
