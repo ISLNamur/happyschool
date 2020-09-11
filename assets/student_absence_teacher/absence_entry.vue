@@ -24,18 +24,21 @@
             <a :href="`/annuaire/#/person/student/${absence.student.matricule}/`">
                 {{ absence.student.display }}
             </a>
-            ({{ absence.given_course.display }} : {{ absence.period.name }})
+            <b-btn
+                variant="link"
+                size="sm"
+                @click="filterStudent"
+            >
+                <b-icon icon="funnel" />
+            </b-btn>
+            <br>
+            {{ absence.given_course.display }} : {{ absence.period.name }}
             <p>{{ absence.comment }}</p>
         </b-card>
     </div>
 </template>
 
 <script>
-import Vue from "vue";
-
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
-Vue.component("icon", Icon);
 
 export default {
     props: {
@@ -47,6 +50,11 @@ export default {
     data: function () {
         return {
         };
+    },
+    methods: {
+        filterStudent: function () {
+            this.$emit("filterStudent", this.absence.student_id);
+        }
     },
     computed: {
     }

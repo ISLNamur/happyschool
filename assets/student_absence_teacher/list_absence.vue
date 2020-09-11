@@ -49,6 +49,7 @@
                     v-for="absence in absences"
                     :key="absence.id"
                     :absence="absence"
+                    @filterStudent="filterStudent($event)"
                 />
             </b-col>
             <b-col>
@@ -57,6 +58,7 @@
                     v-for="lateness in latenesses"
                     :key="lateness.id"
                     :lateness="lateness"
+                    @filterStudent="filterStudent($event)"
                 />
             </b-col>
         </b-row>
@@ -94,6 +96,13 @@ export default {
         };
     },
     methods: {
+        filterStudent: function (matricule) {
+            this.showFilters = true;
+            this.$store.commit("addFilter",
+                {filterType: "student__matricule", tag: matricule, value: matricule}
+            );
+            this.applyFilter();
+        },
         changePage: function (page) {
             this.currentPage = page;
             this.loadEntries();
