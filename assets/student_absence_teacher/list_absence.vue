@@ -44,20 +44,10 @@
         </b-row>
         <b-row>
             <b-col>
-                <h3>Absences</h3>
                 <absence-entry
                     v-for="absence in absences"
                     :key="absence.id"
                     :absence="absence"
-                    @filterStudent="filterStudent($event)"
-                />
-            </b-col>
-            <b-col>
-                <h3>Retards</h3>
-                <lateness-entry
-                    v-for="lateness in latenesses"
-                    :key="lateness.id"
-                    :lateness="lateness"
                     @filterStudent="filterStudent($event)"
                 />
             </b-col>
@@ -80,7 +70,6 @@
 import axios from "axios";
 
 import AbsenceEntry from "./absence_entry.vue";
-import LatenessEntry from "./lateness_entry.vue";
 import Filters from "../common/filters.vue";
 import {getFilters} from "../common/filters.js";
 
@@ -115,14 +104,10 @@ export default {
             this.loadEntries();
         },
         loadEntries: function () {
-            const getAbsences = axios.get("/student_absence_teacher/api/absence/?ordering=-date" + this.filter + "&page=" + this.currentPage);
-            const getLatenesses = axios.get("/student_absence_teacher/api/lateness/?ordering=-date" + this.filter + "&page=" + this.currentPage);
-
-            Promise.all([getAbsences, getLatenesses])
-                .then(responses => {
-                    this.absences = responses[0].data.results;
-                    this.latenesses = responses[1].data.results;
-                    this.entriesCount = Math.max(responses[0].data.count, responses[1].data.count);
+            axios.get("/student_absence_teacher/api/absence/?ordering=-date" + this.filter + "&page=" + this.currentPage)
+                .then(resp => {
+                    this.absences = resp.data.results;
+                    this.entriesCount = resp.data.count;
                 });
         }
     },
@@ -131,7 +116,6 @@ export default {
     },
     components: {
         AbsenceEntry,
-        LatenessEntry,
         Filters,
     }
 };

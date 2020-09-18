@@ -22,7 +22,7 @@
         <b-card>
             <strong>{{ absence.date_absence }}</strong>:
             <a :href="`/annuaire/#/person/student/${absence.student.matricule}/`">
-                {{ absence.student.display }}
+                {{ displayStudent(absence.student) }}
             </a>
             <b-btn
                 variant="link"
@@ -32,13 +32,18 @@
                 <b-icon icon="funnel" />
             </b-btn>
             <br>
-            {{ absence.given_course.display }} : {{ absence.period.name }}
+            <strong>{{ status }}</strong>
+            {{ absence.period.name }}
+            {{ useCourse ? `(${absence.given_course.display})` : "" }}
             <p>{{ absence.comment }}</p>
         </b-card>
     </div>
 </template>
 
 <script>
+import {displayStudent} from "../common/utilities.js";
+
+const absenceLabel = {"presence": "Présence", "absence": "Absence", "lateness": "Retard"};
 
 export default {
     props: {
@@ -51,12 +56,19 @@ export default {
         return {
         };
     },
+    computed: {
+        useCourse: function () {
+            return this.$store.state.settings.select_student_by === "GC";
+        },
+        status: function () {
+            return absenceLabel[this.absence.status];
+        }
+    },
     methods: {
         filterStudent: function () {
             this.$emit("filterStudent", this.absence.student_id);
-        }
+        },
+        displayStudent
     },
-    computed: {
-    }
 };
 </script>
