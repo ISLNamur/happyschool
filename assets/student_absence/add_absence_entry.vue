@@ -21,7 +21,7 @@
     <b-list-group-item>
         <b-row>
             <b-col cols="3">
-                {{ student.last_name }} {{ student.first_name }}
+                {{ displayStudent(student) }}
             </b-col>
             <b-col>
                 <b-row>
@@ -48,6 +48,8 @@
 </template>
 
 <script>
+import {displayStudent} from "../common/utilities.js";
+
 export default {
     props: {
         dateAbsence: {
@@ -88,6 +90,7 @@ export default {
         },
     },
     methods: {
+        displayStudent,
         isSaved: function () {
             return this.baseAbsence && "id" in this.baseAbsence;
         },

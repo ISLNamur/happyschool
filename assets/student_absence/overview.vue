@@ -52,6 +52,8 @@ import axios from "axios";
 import Moment from "moment";
 Moment.locale("fr");
 
+import {displayStudent} from "../common/utilities.js";
+
 export default {
     data: function () {
         return {
@@ -67,11 +69,7 @@ export default {
                     key: "student",
                     label: "Élèves",
                     formatter: value => {
-                        if (this.$store.state.settings.teachings.length == 1) {
-                            return value.display.split(" – ")[0];
-                        } else {
-                            return value.display;
-                        }
+                        return this.displayStudent(value);
                     }
                 },
                 {
@@ -108,6 +106,7 @@ export default {
         };
     },
     methods: {
+        displayStudent,
         /**
          * Add a filter for a specific student for the list component.
          * @param {Number} matricule The matricule of the student.
