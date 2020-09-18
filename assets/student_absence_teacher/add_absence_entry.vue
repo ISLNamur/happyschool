@@ -30,14 +30,14 @@
                 <b-row>
                     <b-col cols="4">
                         <b-select
-                            @change="selectedChoice"
+                            @change="selectedStatus"
                             :options="options"
-                            v-model="choice"
+                            v-model="status"
                         />
                     </b-col>
                     <b-col>
                         <b-form-input
-                            v-if="choice != 'presence'"
+                            v-if="status != 'presence'"
                             maxlength="200"
                             @update="updateComment"
                             v-model="comment"
@@ -66,39 +66,34 @@ export default {
                 {value: "absence", text: "Absence"},
                 // {value: "other", text: "Autre remarque"}
             ],
-            choice: "presence",
+            status: "presence",
             comment: ""
         };
     },
     computed: {
         isBold: function () {
-            return this.choice != "presence" ? "font-weight-bold" : "";
+            return this.status != "presence" ? "font-weight-bold" : "";
         }
     },
     methods: {
-        selectedChoice: function (choice) {
+        selectedStatus: function (status) {
             // Check if there is some changes.
             if ("saved" in this.student) {
-                if (this.student.saved.choice == choice && this.comment == this.student.saved.comment) {
+                if (this.student.saved.status == status && this.comment == this.student.saved.comment) {
                     this.$store.commit("removeChange", this.student.matricule);
                 } else {
                     const change = {
-                        matricule: this.student.matricule, "choice": choice, old_choice: this.student.saved.choice,
-                        comment: this.comment, is_new: this.student.saved.choice != choice, id: this.student.saved.id
+                        matricule: this.student.matricule, "status": status, old_status: this.student.saved.status,
+                        comment: this.comment, id: this.student.saved.id
                     };
                     this.$store.commit("setChange", change);
                 }
             } else {
-                if (choice == "presence") {
-                    this.$store.commit("removeChange", this.student.matricule);
-                    this.comment = "";
-                } else {
-                    const change = {
-                        matricule: this.student.matricule, "choice": choice,
-                        comment: this.comment, is_new: true
-                    };
-                    this.$store.commit("setChange", change);
-                }
+                const change = {
+                    matricule: this.student.matricule, "status": status,
+                    comment: this.comment, is_new: true
+                };
+                this.$store.commit("setChange", change);
             }
             this.$emit("update");
         },
@@ -109,11 +104,11 @@ export default {
                 this.$store.commit("setChange", change);
             } else {
                 const change = {
-                    matricule: this.student.matricule, "choice": this.choice,
+                    matricule: this.student.matricule, "status": this.status,
                     comment: this.comment, is_new: false, id: this.student.saved.id
                 };
                 if ("saved" in this.student) {
-                    change.old_choice = this.student.saved.choice;
+                    change.old_status = this.student.saved.status;
                 }
                 this.$store.commit("setChange", change);
                 this.$emit("update");
@@ -122,8 +117,15 @@ export default {
     },
     mounted: function () {
         if ("saved" in this.student) {
-            this.choice = this.student.saved.choice;
+            this.status = this.student.saved.status;
             this.comment = this.student.saved.comment;
+        } else {
+            const change = {
+                matricule: this.student.matricule, "status": this.status,
+                comment: this.comment, is_new: true
+            };
+            this.$store.commit("setChange", change);
+            this.$emit("update");
         }
     }
 };

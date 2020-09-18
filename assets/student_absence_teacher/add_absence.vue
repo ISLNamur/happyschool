@@ -94,14 +94,16 @@
         </b-row>
         <b-row class="mt-2">
             <b-col>
-                <b-list-group>
-                    <add-absence-entry
-                        v-for="s in students"
-                        :key="s.matricule"
-                        :student="s"
-                        @update="computeAlert"
-                    />
-                </b-list-group>
+                <b-overlay :show="loadingStudent">
+                    <b-list-group>
+                        <add-absence-entry
+                            v-for="s in students"
+                            :key="s.matricule"
+                            :student="s"
+                            @update="computeAlert"
+                        />
+                    </b-list-group>
+                </b-overlay>
             </b-col>
         </b-row>
     </div>
@@ -129,43 +131,32 @@ export default {
             classe: null,
             students: [],
             showAlert: false,
-            currentDate: Moment().format("YYYY-MM-DD")
+            currentDate: Moment().format("YYYY-MM-DD"),
+            loadingStudent: false,
         };
     },
     methods: {
         computeAlert: function () {
             this.showAlert = Object.keys(this.$store.state.changes).length > 0;
         },
-        promiseSavedData: function (model) {
+        getAbsence: function (students) {
             const data = {
                 params: {
                     period: this.period.id,
-                    [`date_${model}`]: this.currentDate,
+                    date_absence: this.currentDate,
                 }
             };
             if (this.$store.state.settings.select_student_by === "GC") data.params.given_course = this.givenCourse.id;
-            return axios.get(`/student_absence_teacher/api/${model}/`, data, token);
-        },
-        getAbsenceLateness: function (students) {
-            // We need both the given course and the period.
-            //if (!this.period || !this.givenCourse) return;
+            axios.get("/student_absence_teacher/api/absence/", data, token)
+                .then(resp => {
+                    this.students = students.map(s => {
+                        const savedAbsence = resp.data.results.find(r => r.student_id === s.matricule);
+                        if (!savedAbsence) return s;
 
-            const models = ["absence", "lateness"];
-            Promise.all([this.promiseSavedData(models[0]), this.promiseSavedData(models[1])])
-                .then(resps => {
-                    for (let resp in resps) {
-                        for (let r in resps[resp].data.results) {
-                            const object = resps[resp].data.results[r];
-                            object.choice = models[resp];
-                            for (let s in students) {
-                                if (students[s].matricule == object.student_id) {
-                                    students[s]["saved"] = object;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    this.students = students;
+                        s.saved = savedAbsence;
+                        return s;
+                    });
+                    this.loadingStudent = false;
                 })
                 .catch(err => {
                     alert(err);
@@ -176,23 +167,25 @@ export default {
             if (this.$store.state.settings.select_student_by === "GC") {
                 if (!this.givenCourse || !this.period) return;
 
+                this.loadingStudent = true;
                 this.currentDate = Moment().format("YYYY-MM-DD");
                 axios.get(`/annuaire/api/student_given_course/${this.givenCourse.id}/`)
                     .then(resp => {
                         this.$store.commit("resetChanges");
                         this.showAlert = 0;
-                        this.getAbsenceLateness(resp.data);
+                        this.getAbsence(resp.data);
                     });
             } else if (this.$store.state.settings.select_student_by === "CL") {
                 if (!this.classe || !this.period) return;
 
+                this.loadingStudent = true;
                 this.currentDate = Moment().format("YYYY-MM-DD");
                 const data = {params: {classe: this.classe.id}};
                 axios.get("/annuaire/api/studentclasse", data)
                     .then(resp => {
                         this.$store.commit("resetChanges");
                         this.showAlert = 0;
-                        this.getAbsenceLateness(resp.data);
+                        this.getAbsence(resp.data);
                     });
             }
         },
@@ -201,24 +194,18 @@ export default {
             const promises = [];
             for (let matricule in changes) {
                 const change = changes[matricule];
-                if (("old_choice" in change && change.old_choice != change.choice)
-                    || change.choice == "presence") {
-                    promises.push(axios.delete(`/student_absence_teacher/api/${change.old_choice}/${change.id}/`, token));
-                }
-
-                if (change.choice != "presence") {
-                    const send = change.is_new ? axios.post : axios.put;
-                    let url = "/student_absence_teacher/api/" + change.choice + "/";
-                    if (!change.is_new) url += change.id + "/";
-                    
-                    const data = {
-                        student_id: matricule,
-                        period_id: this.period.id,
-                        comment: change.comment,
-                    };
-                    if (this.$store.state.settings.select_student_by === "GC") data.given_course_id = this.givenCourse.id;
-                    promises.push(send(url, data, token));
-                }
+                const send = change.is_new ? axios.post : axios.put;
+                let url = "/student_absence_teacher/api/absence/";
+                if (!change.is_new) url += change.id + "/";
+                
+                const data = {
+                    student_id: matricule,
+                    period_id: this.period.id,
+                    comment: change.comment,
+                    status: change.status
+                };
+                if (this.$store.state.settings.select_student_by === "GC") data.given_course_id = this.givenCourse.id;
+                promises.push(send(url, data, token));
             }
             Promise.all(promises)
                 .then(resps => {

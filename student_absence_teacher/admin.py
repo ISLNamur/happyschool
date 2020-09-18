@@ -19,11 +19,10 @@
 
 from django.contrib import admin
 
-from .models import StudentAbsenceTeacherModel, StudentLatenessTeacherModel, StudentAbsenceTeacherSettingsModel, PeriodModel, LessonModel
+from .models import StudentAbsenceTeacherModel, StudentAbsenceTeacherSettingsModel, PeriodModel, LessonModel
 
 
 admin.site.register(StudentAbsenceTeacherSettingsModel)
 admin.site.register(PeriodModel)
 admin.site.register(LessonModel)
 admin.site.register(StudentAbsenceTeacherModel)
-admin.site.register(StudentLatenessTeacherModel)
