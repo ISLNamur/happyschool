@@ -43,6 +43,7 @@
             </b-col>
             <b-col>
                 <multiselect
+                    v-if="$store.state.settings.select_student_by === 'GC'"
                     :options="givenCourseOptions"
                     placeholder="Séléctionner votre cours"
                     select-label=""
@@ -51,6 +52,21 @@
                     label="display"
                     track-by="id"
                     v-model="givenCourse"
+                    :show-no-options="false"
+                    @input="getStudents"
+                >
+                    <span slot="noResult">Aucun cours ne correspond à votre recherche.</span>
+                </multiselect>
+                <multiselect
+                    v-else-if="$store.state.settings.select_student_by === 'CL'"
+                    :options="classesOptions"
+                    placeholder="Séléctionner votre classe"
+                    select-label=""
+                    selected-label="Sélectionné"
+                    deselect-label=""
+                    label="display"
+                    track-by="id"
+                    v-model="classe"
                     :show-no-options="false"
                     @input="getStudents"
                 >
@@ -107,8 +123,10 @@ export default {
         return {
             periodOptions: [],
             givenCourseOptions: [],
+            classesOptions: [],
             period: null,
             givenCourse: null,
+            classe: null,
             students: [],
             showAlert: false,
             currentDate: Moment().format("YYYY-MM-DD")
@@ -122,15 +140,15 @@ export default {
             const data = {
                 params: {
                     period: this.period.id,
-                    given_course: this.givenCourse.id,
                     [`date_${model}`]: this.currentDate,
                 }
             };
+            if (this.$store.state.settings.select_student_by === "GC") data.params.given_course = this.givenCourse.id;
             return axios.get(`/student_absence_teacher/api/${model}/`, data, token);
         },
         getAbsenceLateness: function (students) {
             // We need both the given course and the period.
-            if (!this.period || !this.givenCourse) return;
+            //if (!this.period || !this.givenCourse) return;
 
             const models = ["absence", "lateness"];
             Promise.all([this.promiseSavedData(models[0]), this.promiseSavedData(models[1])])
@@ -155,16 +173,28 @@ export default {
         },
         getStudents: function () {
             this.students = [];
-            if (!this.givenCourse || !this.period) return;
+            if (this.$store.state.settings.select_student_by === "GC") {
+                if (!this.givenCourse || !this.period) return;
 
-            this.currentDate = Moment().format("YYYY-MM-DD");
-            axios.get(`/annuaire/api/student_given_course/${this.givenCourse.id}/`)
-                .then(resp => {
-                    this.$store.commit("resetChanges");
-                    this.showAlert = 0;
-                    this.getAbsenceLateness(resp.data);
-                });
+                this.currentDate = Moment().format("YYYY-MM-DD");
+                axios.get(`/annuaire/api/student_given_course/${this.givenCourse.id}/`)
+                    .then(resp => {
+                        this.$store.commit("resetChanges");
+                        this.showAlert = 0;
+                        this.getAbsenceLateness(resp.data);
+                    });
+            } else if (this.$store.state.settings.select_student_by === "CL") {
+                if (!this.classe || !this.period) return;
 
+                this.currentDate = Moment().format("YYYY-MM-DD");
+                const data = {params: {classe: this.classe.id}};
+                axios.get("/annuaire/api/studentclasse", data)
+                    .then(resp => {
+                        this.$store.commit("resetChanges");
+                        this.showAlert = 0;
+                        this.getAbsenceLateness(resp.data);
+                    });
+            }
         },
         sendChanges: function () {
             const changes = this.$store.state.changes;
@@ -180,12 +210,13 @@ export default {
                     const send = change.is_new ? axios.post : axios.put;
                     let url = "/student_absence_teacher/api/" + change.choice + "/";
                     if (!change.is_new) url += change.id + "/";
+                    
                     const data = {
                         student_id: matricule,
-                        given_course_id: this.givenCourse.id,
                         period_id: this.period.id,
                         comment: change.comment,
                     };
+                    if (this.$store.state.settings.select_student_by === "GC") data.given_course_id = this.givenCourse.id;
                     promises.push(send(url, data, token));
                 }
             }
@@ -210,6 +241,15 @@ export default {
         axios.get("/student_absence_teacher/api/period/")
             .then(resp => {
                 this.periodOptions = resp.data.results;
+            });
+
+        // eslint-disable-next-line no-undef
+        axios.get("/annuaire/api/responsible/" + user_properties.matricule + "/")
+            .then(resp => {
+                this.classesOptions = resp.data.classe.map(c => {
+                    c.display = c.year + c.letter.toUpperCase();
+                    return c;
+                }).sort((a, b) => a.display >= b.display);
             });
         // eslint-disable-next-line no-undef
         this.givenCourseOptions = user_properties.given_courses;

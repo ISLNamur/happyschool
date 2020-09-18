@@ -24,8 +24,15 @@ from core.models import StudentModel, TeachingModel, ClasseModel, GivenCourseMod
 
 
 class StudentAbsenceTeacherSettingsModel(models.Model):
+    CLASS = "CL"
+    GIVEN_COURSE = "GC"
+    SELECT_STUDENT = [
+        (CLASS, "Par classe"),
+        (GIVEN_COURSE, "Par cours"),
+    ]
     teachings = models.ManyToManyField(TeachingModel, default=None)
     can_see_list = models.ManyToManyField(Group, default=None, blank=True, related_name="can_see_list")
+    select_student_by = models.CharField(choices=SELECT_STUDENT, max_length=3, default=CLASS)
 
 
 class LessonModel(models.Model):
@@ -44,9 +51,19 @@ class PeriodModel(models.Model):
 
 
 class StudentAbsenceTeacherModel(models.Model):
+    PRESENCE = "presence"
+    LATENESS = "lateness"
+    ABSENCE = "absence"
+    STATUS_CHOICES = [
+        (PRESENCE, "Présence"),
+        (LATENESS, "Retard"),
+        (ABSENCE, "Absence"),
+    ]
+
     student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)
     date_absence = models.DateField(auto_now=True)
-    given_course = models.ForeignKey(GivenCourseModel, on_delete=models.SET_NULL, null=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PRESENCE)
+    given_course = models.ForeignKey(GivenCourseModel, on_delete=models.SET_NULL, null=True, blank=True)
     period = models.ForeignKey(PeriodModel, on_delete=models.SET_NULL, null=True)
     comment = models.TextField(blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
