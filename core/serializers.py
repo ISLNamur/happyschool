@@ -79,6 +79,14 @@ class StudentSerializer(serializers.ModelSerializer):
         fields = ('matricule', 'first_name', 'last_name', 'display', 'classe', 'teaching', 'user', 'courses')
         depth = 2
 
+    def __init__(self, *args, **kwargs):
+        no_course = kwargs.pop('no_course', False)
+
+        super(StudentSerializer, self).__init__(*args, **kwargs)
+
+        if no_course:
+            self.fields.pop("courses")
+
 
 class StudentWriteSerializer(serializers.ModelSerializer):
     class Meta:
