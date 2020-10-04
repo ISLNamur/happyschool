@@ -156,6 +156,8 @@ Moment.locale("fr");
 
 import axios from "axios";
 
+import {displayStudent} from "../common/utilities.js";
+
 export default {
     props: {
         rowData : {
@@ -170,12 +172,7 @@ export default {
     },
     computed: {
         title: function () {
-            let student = this.rowData.matricule;
-            let title = student.last_name;
-            title += " " + student.first_name;
-            title += " " + student.classe.year + student.classe.letter.toUpperCase();
-            title += " (" + student.teaching.display_name + ")";
-            return title;
+            return this.displayStudent(this.rowData.matricule);
         },
         subtitle: function () {
             return "Demandé par " + this.rowData.demandeur + " (" + Moment(this.rowData.datetime_encodage).calendar() + ")";
@@ -249,8 +246,8 @@ export default {
                 .catch(function (error) {
                     alert(error);
                 });
-
-        }
+        },
+        displayStudent
     }
 };
 </script>

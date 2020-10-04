@@ -121,6 +121,8 @@
 import Moment from "moment";
 Moment.locale("fr");
 
+import {displayStudent} from "../common/utilities.js";
+
 export default {
     props: {
         rowData : {
@@ -135,12 +137,7 @@ export default {
     },
     computed: {
         title: function () {
-            let student = this.rowData.matricule;
-            let title = student.last_name;
-            title += " " + student.first_name;
-            title += " " + student.classe.year + student.classe.letter.toUpperCase();
-            title += " (" + student.teaching.display_name + ")";
-            return title;
+            return this.displayStudent(this.rowData.matricule);
         },
         subtitle: function () {
             let subtitle = "";
@@ -187,7 +184,8 @@ export default {
         },
         filterStudent: function () {
             this.$emit("filterStudent", this.rowData.matricule_id);
-        }
+        },
+        displayStudent,
     }
 };
 </script>

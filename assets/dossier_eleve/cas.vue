@@ -409,7 +409,7 @@ export default {
             // Update form data.
             if (this.name.matricule) {
                 // First update form name data.
-                this.form.name = this.name.display;
+                this.form.name = `${this.name.last_name} ${this.name.first_name}`;
                 this.form.matricule_id = this.name.matricule;
                 // Get statistics.
                 axios.get("dossier_eleve/api/statistics/" + this.name.matricule + "/")
