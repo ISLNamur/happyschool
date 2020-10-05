@@ -153,11 +153,11 @@ def search_people(query, people_type, teachings, check_access, user,
         result = People().get_people_by_name(query, teachings, classes=classe_years, active=active)
         # Check quality.
         if result['student'][1] > result['responsible'][1]:
-            people = StudentSerializer(result['student'][0][:truncate_limit], many=True, no_course=True).data
+            people = StudentSerializer(result['student'][0][:truncate_limit], many=True).data
         elif result['responsible'][1] > result['student'][1]:
             people = ResponsibleSerializer(result['responsible'][0][:truncate_limit], many=True).data
         else:
-            people = StudentSerializer(result['student'][0][:truncate_limit/2], many=True, no_course=True).data + ResponsibleSerializer(result['responsible'][0][:truncate_limit/2], many=True).data
+            people = StudentSerializer(result['student'][0][:truncate_limit/2], many=True).data + ResponsibleSerializer(result['responsible'][0][:truncate_limit/2], many=True).data
 
     if people_type == 'student':
         classe_years = get_classes(teachings, check_access=True,
@@ -178,7 +178,7 @@ def search_people(query, people_type, teachings, check_access, user,
         else:
             students = People().get_students_by_name(query, teachings, classes=classe_years, active=active)[:truncate_limit]
 
-        people = StudentSerializer(students, many=True, no_course=True).data
+        people = StudentSerializer(students, many=True).data
 
     if people_type == 'responsible':
         people = ResponsibleSerializer(
@@ -278,7 +278,7 @@ class StudentClasseAPI(APIView):
             return Response([])
 
         students = StudentModel.objects.filter(classe__id=classe_id).order_by('last_name', 'first_name')
-        serializer = StudentSerializer(students, many=True, no_course=True)
+        serializer = StudentSerializer(students, many=True)
         return Response(serializer.data)
 
 
@@ -317,6 +317,12 @@ class StudentInfoViewSet(ReadOnlyModelViewSet):
     queryset = StudentModel.objects.all()
     serializer_class = StudentSerializer
     permission_classes = (IsAuthenticated,)
+
+    def get_serializer(self, *args, **kwargs):
+        serializer_class = self.get_serializer_class()
+        kwargs["context"] = self.get_serializer_context()
+        kwargs["no_course"] = False
+        return serializer_class(*args, **kwargs)
 
 
 class ResponsibleInfoViewSet(ReadOnlyModelViewSet):

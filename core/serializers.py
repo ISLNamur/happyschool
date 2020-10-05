@@ -80,7 +80,7 @@ class StudentSerializer(serializers.ModelSerializer):
         depth = 2
 
     def __init__(self, *args, **kwargs):
-        no_course = kwargs.pop('no_course', False)
+        no_course = kwargs.pop('no_course', True)
 
         super(StudentSerializer, self).__init__(*args, **kwargs)
 
