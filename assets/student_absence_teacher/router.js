@@ -25,6 +25,7 @@ Vue.use(VueRouter);
 import StudentAbsenceTeacher from "./student_absence_teacher.vue";
 import AddAbsence from "./add_absence.vue";
 import ListAbsence from "./list_absence.vue";
+import Overview from "./overview.vue";
 
 export default new VueRouter({
     routes: [
@@ -43,7 +44,11 @@ export default new VueRouter({
                 {
                     path: "list",
                     component: ListAbsence,
-                }
+                },
+                {
+                    path: "overview",
+                    component: Overview,
+                },
             ],
         }
     ]

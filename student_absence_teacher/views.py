@@ -18,7 +18,10 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 import json
+import datetime
+from itertools import groupby
 
+from django.db.models import Count
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
@@ -30,6 +33,7 @@ from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.filters import OrderingFilter
 
+from core.models import ClasseModel
 from core.utilities import get_menu
 from core.views import BaseFilters, PageNumberSizePagination
 
@@ -113,5 +117,38 @@ class StudentAbsenceTeacherViewSet(ModelViewSet):
 
 
 class PeriodViewSet(ReadOnlyModelViewSet):
-    queryset = PeriodModel.objects.all()
+    queryset = PeriodModel.objects.all().order_by("start")
     serializer_class = PeriodSerializer
+
+
+class OverviewAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def _merge_count(self, classe_id, row, periods):
+        counts = {
+            "classe": ClasseModel.objects.get(id=classe_id).compact_str,
+            "classe__id": classe_id
+        }
+        for period in periods:
+            counts["period-" + str(period)] = next(
+                (x["id__count"] for x in row \
+                    if x["period"] == period and x["status"] == StudentAbsenceTeacherModel.ABSENCE),
+                next((0 for y in row if y["period"] == period), -1)
+            )
+        return counts
+
+    def get(self, request, date, format=None):
+        date = datetime.date.fromisoformat(date)
+        periods = PeriodModel.objects.values_list("id", flat=True)
+        raw_count = StudentAbsenceTeacherModel.objects \
+            .exclude(status=StudentAbsenceTeacherModel.LATENESS) \
+            .filter(date_absence=date) \
+            .order_by("student__classe__id") \
+            .values("student__classe__id", "period", "status").annotate(Count("id"))
+
+        count_by_classe_by_period = [
+            self._merge_count(k, list(row), periods)
+            for k, row in groupby(raw_count, key=lambda c: c["student__classe__id"])
+        ]
+
+        return Response(json.dumps(count_by_classe_by_period))
