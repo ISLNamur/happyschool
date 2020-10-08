@@ -42,7 +42,7 @@
                     :filter="filter"
                     :filter-included-fields="'classe'"
                 >
-                    <template v-slot:head(classe)="data">
+                    <template v-slot:head(classe)="">
                         <b-form-group
                             label-for="filterInput"
                         >
