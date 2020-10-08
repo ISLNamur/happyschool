@@ -46,28 +46,31 @@
                     Plus d'actions
                 </b-button>
                 <p v-if="onLine">
-                    <icon
-                        name="signal"
-                        scale="1.2"
+                    <b-icon
+                        icon="wifi"
                         color="green"
-                        class="align-baseline"
                     />Connecté
+                    <b-btn
+                        variant="outline-primary"
+                        @click="$store.commit('updateStudentsClasses')"
+                        :disabled="$store.state.updating"
+                    >
+                        <b-icon
+                            icon="download"
+                            :animation="$store.state.updating ? 'fade' : null"
+                        />
+                        Mettre à jour
+                        <b-icon
+                            icon="people-fill"
+                            :animation="$store.state.updating ? 'fade' : null"
+                        />
+                    </b-btn>
                 </p>
                 <p v-else>
-                    <icon
-                        name="ban"
-                        scale="1.2"
+                    <b-icon
+                        icon="wifi-off"
                         color="red"
-                        class="align-baseline"
                     />Déconnecté
-                </p>
-                <p v-if="$store.state.updating">
-                    <icon
-                        name="spinner"
-                        color="green"
-                        spin
-                        class="align-baseline"
-                    />Mise à jour des élèves
                 </p>
             </b-col>
         </b-row>
