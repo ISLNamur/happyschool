@@ -111,6 +111,7 @@ class StudentAbsenceTeacherViewSet(ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filter_class = StudentAbsenceTeacherFilter
     ordering_fields = ['date_absence', 'datetime_update', 'datetime_creation', 'period']
+    pagination_class = PageNumberSizePagination
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

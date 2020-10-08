@@ -144,11 +144,13 @@ export default {
                 params: {
                     period: this.period.id,
                     date_absence: this.currentDate,
+                    page_size: 1000,
                 }
             };
             if (this.$store.state.settings.select_student_by === "GC") data.params.given_course = this.givenCourse.id;
             axios.get("/student_absence_teacher/api/absence/", data, token)
                 .then(resp => {
+                    console.log(resp.data.results);
                     this.students = students.map(s => {
                         const savedAbsence = resp.data.results.find(r => r.student_id === s.matricule);
                         if (!savedAbsence) return s;
@@ -240,7 +242,7 @@ export default {
             });
         // eslint-disable-next-line no-undef
         this.givenCourseOptions = user_properties.given_courses;
-        if (this.givenCourseOptions[0].display.includes("["))
+        if (this.givenCourseOptions.length > 0 && this.givenCourseOptions[0].display.includes("["))
             return;
 
         const classesPromises = this.givenCourseOptions.map(givenCourse => {
