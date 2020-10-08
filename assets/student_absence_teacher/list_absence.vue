@@ -23,8 +23,8 @@
             <b-col>
                 <b-card>
                     <filters
-                        app="student_absence"
-                        model="student_absence"
+                        app="student_absence_teacher"
+                        model="absence"
                         ref="filters"
                         @update="applyFilter"
                     />

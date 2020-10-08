@@ -22,7 +22,7 @@
         <b-row>
             <b-col>
                 <b-form-group
-                    label="Date du jour"
+                    label="Date"
                 >
                     <b-input
                         type="date"
@@ -39,7 +39,35 @@
                     bordered
                     :items="absence_count"
                     :fields="fields"
-                />
+                    :filter="filter"
+                    :filter-included-fields="'classe'"
+                >
+                    <template v-slot:head(classe)="data">
+                        <b-form-group
+                            label-for="filterInput"
+                        >
+                            <b-form-input
+                                v-model="filter"
+                                type="search"
+                                id="filterInput"
+                                placeholder="Filtrer par classe"
+                            />
+                        </b-form-group>
+                    </template>
+                    <template v-slot:cell(classe)="data">
+                        {{ data.value }}
+                    </template>
+                    <template v-slot:cell()="data">
+                        <span
+                            v-if="data.value >= 0"
+                            class="btn-link btn"
+                            @click="toList(data)"
+                        >
+                            {{ data.value }}
+                        </span>
+                        <span v-else>-</span>
+                    </template>
+                </b-table>
             </b-col>
         </b-row>
     </div>
@@ -58,7 +86,8 @@ export default {
             absence_count: [],
             fields: [
                 {key: "classe", }
-            ]
+            ],
+            filter: "",
         };
     },
     methods: {
@@ -75,10 +104,16 @@ export default {
                     });
                 });
         },
-        cellFormatting: function (value) {
-            if (value >= 0) return value;
+        toList: function (data) {
+            this.$store.commit("removeFilter", "period__name");
+            this.$store.commit("addFilter", {"tag": data.field.name, "filterType":"period__name", "value": data.field.name});
 
-            return "-";
+            this.$store.commit("removeFilter", "classe");
+            this.$store.commit("addFilter", {"tag": data.item.classe, "filterType": "classe", "value": data.item.classe});
+
+            this.$store.commit("addFilter", {"tag": "Activer", "filterType": "activate_absent", "value": "true_activate_absent"});
+
+            this.$router.push("list");
         }
     },
     mounted: function () {
@@ -89,7 +124,7 @@ export default {
                         return {
                             key: `period-${p.id}`,
                             label: `${p.start.slice(0, 5)} ${p.end.slice(0, 5)}`,
-                            formatter: this.cellFormatting
+                            name: p.name
                         };
                     })
                 );

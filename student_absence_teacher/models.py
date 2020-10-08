@@ -71,3 +71,6 @@ class StudentAbsenceTeacherModel(models.Model):
                                              auto_now_add=True)
     datetime_update = models.DateTimeField("Date et heure de mise à jour de l'absence",
                                            auto_now=True)
+
+    def __str__(self):
+        return f"{self.date_absence} ({self.period.name}): {self.student} ({self.status})"

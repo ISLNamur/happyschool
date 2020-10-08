@@ -70,8 +70,9 @@ class StudentAbsenceTeacherView(LoginRequiredMixin,
         {'value': 'student__display', 'text': 'Nom'},
         {'value': 'student__matricule', 'text': 'Matricule'},
         {'value': 'classe', 'text': 'Classe'},
-        {'value': 'date_absence', 'text': 'Date absence'},
-        {'value': 'date_lateness', 'text': 'Date retard'},
+        {'value': 'period__name', 'text': 'Période'},
+        {'value': 'activate_absent', 'text': 'Absents'},
+        {'value': 'date_absence', 'text': 'Date'},
     ]
 
     def get_context_data(self, **kwargs):
@@ -86,9 +87,12 @@ class StudentAbsenceTeacherView(LoginRequiredMixin,
 class StudentAbsenceTeacherFilter(BaseFilters):
     student__display = filters.CharFilter(method='people_name_by')
     classe = filters.CharFilter(method='classe_by')
+    activate_absent = filters.BooleanFilter(method="activate_absent_by")
 
     class Meta:
-        fields_to_filter = ['student', 'date_absence', 'student__matricule', 'student__classe', "period"]
+        fields_to_filter = [
+            'student', 'date_absence', 'student__matricule', 'student__classe', "period", "period__name",
+        ]
         model = StudentAbsenceTeacherModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
@@ -102,6 +106,9 @@ class StudentAbsenceTeacherFilter(BaseFilters):
             if len(value) > 1:
                 queryset = queryset.filter(student__classe__letter__istartswith=value[1:])
         return queryset
+
+    def activate_absent_by(self, queryset, field_name, value):
+        return queryset.filter(status=StudentAbsenceTeacherModel.ABSENCE)
 
 
 class StudentAbsenceTeacherViewSet(ModelViewSet):
@@ -125,31 +132,33 @@ class PeriodViewSet(ReadOnlyModelViewSet):
 class OverviewAPI(APIView):
     permission_classes = [IsAuthenticated]
 
-    def _merge_count(self, classe_id, row, periods):
+    def _extract_count(self, classe, absences, periods):
         counts = {
-            "classe": ClasseModel.objects.get(id=classe_id).compact_str,
-            "classe__id": classe_id
+            "classe": classe.compact_str,
+            "classe__id": classe.id
         }
         for period in periods:
             counts["period-" + str(period)] = next(
-                (x["id__count"] for x in row \
+                (x["id__count"] for x in absences \
                     if x["period"] == period and x["status"] == StudentAbsenceTeacherModel.ABSENCE),
-                next((0 for y in row if y["period"] == period), -1)
+                next((0 for y in absences if y["period"] == period), -1)
             )
         return counts
 
     def get(self, request, date, format=None):
         date = datetime.date.fromisoformat(date)
-        periods = PeriodModel.objects.values_list("id", flat=True)
-        raw_count = StudentAbsenceTeacherModel.objects \
-            .exclude(status=StudentAbsenceTeacherModel.LATENESS) \
-            .filter(date_absence=date) \
-            .order_by("student__classe__id") \
-            .values("student__classe__id", "period", "status").annotate(Count("id"))
-
+        periods = PeriodModel.objects.order_by("start").values_list("id", flat=True)
+        classes = ClasseModel.objects.order_by("year", "letter").filter(teaching__in=get_settings().teachings.all())
         count_by_classe_by_period = [
-            self._merge_count(k, list(row), periods)
-            for k, row in groupby(raw_count, key=lambda c: c["student__classe__id"])
+            self._extract_count(
+                c,
+                StudentAbsenceTeacherModel.objects \
+                    .exclude(status=StudentAbsenceTeacherModel.LATENESS) \
+                    .filter(date_absence=date, student__classe=c) \
+                    .values("period", "status").annotate(Count("id")),
+                periods
+            )
+            for c in classes
         ]
 
         return Response(json.dumps(count_by_classe_by_period))
