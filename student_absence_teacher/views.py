@@ -132,22 +132,30 @@ class PeriodViewSet(ReadOnlyModelViewSet):
 class OverviewAPI(APIView):
     permission_classes = [IsAuthenticated]
 
-    def _extract_count(self, classe, absences, periods):
+    def _extract_count(self, classe, absences, periods, date):
         counts = {
             "classe": classe.compact_str,
             "classe__id": classe.id
         }
+
+        from student_absence.models import StudentAbsenceModel
+
+        not_teacher_abs = StudentAbsenceModel.objects.filter(student__classe=classe, date_absence=date, is_absent=True)
+
         for period in periods:
-            counts["period-" + str(period)] = next(
+            not_teacher_count = not_teacher_abs.filter(period__start__lte=period.end, period__end__gte=period.start).count()
+            counts[f"period-{period.id}"] = {"not_teacher_count": not_teacher_count}
+            counts[f"period-{period.id}"]["teacher_count"] = next(
                 (x["id__count"] for x in absences \
-                    if x["period"] == period and x["status"] == StudentAbsenceTeacherModel.ABSENCE),
-                next((0 for y in absences if y["period"] == period), -1)
+                    if x["period"] == period.id and x["status"] == StudentAbsenceTeacherModel.ABSENCE),
+                next((0 for y in absences if y["period"] == period.id), -1)
             )
+
         return counts
 
     def get(self, request, date, format=None):
         date = datetime.date.fromisoformat(date)
-        periods = PeriodModel.objects.order_by("start").values_list("id", flat=True)
+        periods = PeriodModel.objects.order_by("start")
         classes = ClasseModel.objects.order_by("year", "letter").filter(teaching__in=get_settings().teachings.all())
         count_by_classe_by_period = [
             self._extract_count(
@@ -156,7 +164,8 @@ class OverviewAPI(APIView):
                     .exclude(status=StudentAbsenceTeacherModel.LATENESS) \
                     .filter(date_absence=date, student__classe=c) \
                     .values("period", "status").annotate(Count("id")),
-                periods
+                periods,
+                date
             )
             for c in classes
         ]

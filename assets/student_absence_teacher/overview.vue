@@ -59,13 +59,14 @@
                     </template>
                     <template v-slot:cell()="data">
                         <span
-                            v-if="data.value >= 0"
+                            v-if="data.value.teacher_count >= 0"
                             class="btn-link btn"
                             @click="toList(data)"
                         >
-                            {{ data.value }}
+                            {{ data.value.teacher_count }}
                         </span>
                         <span v-else>-</span>
+                        / {{ data.value.not_teacher_count }}
                     </template>
                 </b-table>
             </b-col>
@@ -95,7 +96,7 @@ export default {
             axios.get(`/student_absence_teacher/api/count_absence/${this.date}/`)
                 .then(resp => {
                     this.absence_count = JSON.parse(resp.data).map(row => {
-                        const emptyPeriods = Object.entries(row).filter(c => c[0].startsWith("period") && c[1] < 0);
+                        const emptyPeriods = Object.entries(row).filter(c => c[0].startsWith("period") && c[1]["teacher_count"] < 0);
                         row._cellVariants = emptyPeriods.reduce((acc, v) => {
                             acc[v[0]] = "warning";
                             return acc;
