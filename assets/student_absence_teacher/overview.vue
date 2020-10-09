@@ -24,11 +24,16 @@
                 <b-form-group
                     label="Date"
                 >
-                    <b-input
-                        type="date"
-                        v-model="date"
-                        @input="get_absence_count"
-                    />
+                    <b-overlay
+                        :show="loading"
+                        rounded="sm"
+                    >
+                        <b-input
+                            type="date"
+                            v-model="date"
+                            @input="get_absence_count"
+                        />
+                    </b-overlay>
                 </b-form-group>
             </b-col>
         </b-row>
@@ -95,10 +100,12 @@ export default {
                 {key: "classe", }
             ],
             filter: "",
+            loading: true,
         };
     },
     methods: {
         get_absence_count: function () {
+            this.loading = true;
             axios.get(`/student_absence_teacher/api/count_absence/${this.date}/`)
                 .then(resp => {
                     this.absence_count = JSON.parse(resp.data).map(row => {
@@ -124,6 +131,7 @@ export default {
                         }
                         return row;
                     });
+                    this.loading = false;
                 });
         },
         toList: function (data) {
