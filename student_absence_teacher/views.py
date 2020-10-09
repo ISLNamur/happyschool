@@ -22,6 +22,7 @@ import datetime
 from itertools import groupby
 
 from django.db.models import Count
+from django.conf import settings
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
@@ -138,13 +139,21 @@ class OverviewAPI(APIView):
             "classe__id": classe.id
         }
 
-        from student_absence.models import StudentAbsenceModel
-
-        not_teacher_abs = StudentAbsenceModel.objects.filter(student__classe=classe, date_absence=date, is_absent=True)
+        use_student_absence = "student_absence" in settings.INSTALLED_APPS
+        if use_student_absence:
+            from student_absence.models import StudentAbsenceModel
+        not_teacher_abs = StudentAbsenceModel.objects.filter(student__classe=classe, date_absence=date)
 
         for period in periods:
-            not_teacher_count = not_teacher_abs.filter(period__start__lte=period.end, period__end__gte=period.start).count()
-            counts[f"period-{period.id}"] = {"not_teacher_count": not_teacher_count}
+            if use_student_absence:
+                not_teacher_period = not_teacher_abs.filter(
+                    period__start__lte=period.end, period__end__gte=period.start
+                )
+                if not_teacher_period.count() > 0:
+                    not_teacher_count = not_teacher_period.filter(is_absent=True).count()
+                else:
+                    not_teacher_count = -1
+                counts[f"period-{period.id}"] = {"not_teacher_count": not_teacher_count}
             counts[f"period-{period.id}"]["teacher_count"] = next(
                 (x["id__count"] for x in absences \
                     if x["period"] == period.id and x["status"] == StudentAbsenceTeacherModel.ABSENCE),

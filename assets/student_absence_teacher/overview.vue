@@ -40,7 +40,7 @@
                     :items="absence_count"
                     :fields="fields"
                     :filter="filter"
-                    :filter-included-fields="'classe'"
+                    :filter-included-fields="['classe']"
                 >
                     <template v-slot:head(classe)="">
                         <b-form-group
@@ -66,7 +66,13 @@
                             {{ data.value.teacher_count }}
                         </span>
                         <span v-else>-</span>
-                        / {{ data.value.not_teacher_count }}
+                        <span v-if="'not_teacher_count' in data.value">
+                            /
+                            <span v-if="data.value.not_teacher_count >= 0">
+                                {{ data.value.not_teacher_count }}
+                            </span>
+                            <span v-else>-</span>
+                        </span>
                     </template>
                 </b-table>
             </b-col>
@@ -96,11 +102,26 @@ export default {
             axios.get(`/student_absence_teacher/api/count_absence/${this.date}/`)
                 .then(resp => {
                     this.absence_count = JSON.parse(resp.data).map(row => {
-                        const emptyPeriods = Object.entries(row).filter(c => c[0].startsWith("period") && c[1]["teacher_count"] < 0);
+                        const periods = Object.entries(row).filter(c => c[0].startsWith("period"));
+                        const emptyPeriods = periods.filter(p => p[1]["teacher_count"] < 0);
                         row._cellVariants = emptyPeriods.reduce((acc, v) => {
                             acc[v[0]] = "warning";
                             return acc;
                         }, {});
+                        if (periods.length > 0 && "not_teacher_count" in periods[0][1]) {
+                            const mismatchPeriods = periods.filter(p => {
+                                if (p[1]["not_teacher_count"] < 0 || p[1]["teacher_count"] < 0) {
+                                    return false;
+                                }
+                                if (p[1]["not_teacher_count"] != p[1]["teacher_count"]) {
+                                    return true;
+                                }
+                                return false;
+                            });
+                            mismatchPeriods.forEach(p => {
+                                row._cellVariants[p[0]] = "danger";
+                            });
+                        }
                         return row;
                     });
                 });
