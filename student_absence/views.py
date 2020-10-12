@@ -91,6 +91,7 @@ class StudentAbsenceFilter(BaseFilters):
     classe = filters.CharFilter(method='classe_by')
     activate_is_absent = filters.BooleanFilter(method="activate_is_absent_by")
     activate_last_absence = filters.BooleanFilter(method="activate_last_absence_by")
+    activate_today_absence = filters.BooleanFilter(method="activate_today_absence_by")
 
     class Meta:
         fields_to_filter = [
@@ -109,6 +110,11 @@ class StudentAbsenceFilter(BaseFilters):
         current_date = timezone.now().date()
         return queryset.filter(user=self.request.user, date_absence=current_date, is_absent=True)
 
+    def activate_today_absence_by(self, queryset, name, value):
+        current_date = timezone.now().date()
+        return queryset.filter(date_absence=current_date, is_absent=True) \
+            .order_by("student__classe__year", "student__last_name", "student__first_name")
+
 
 class StudentAbsenceViewSet(ModelViewSet):
     queryset = StudentAbsenceModel.objects.filter(student__isnull=False)
@@ -117,7 +123,10 @@ class StudentAbsenceViewSet(ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filter_class = StudentAbsenceFilter
     pagination_class = PageNumberSizePagination
-    ordering_fields = ('date_absence', 'datetime_update', 'datetime_creation',)
+    ordering_fields = [
+        'date_absence', 'datetime_update', 'datetime_creation',
+        "student__classe__year", "student__classe__letter", "student__last_name", "student__first_name"
+    ]
     cursor = None
 
     def get_queryset(self):
