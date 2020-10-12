@@ -51,6 +51,7 @@
                         color="green"
                     />Connecté
                     <b-btn
+                        class="m-1"
                         variant="outline-primary"
                         @click="$store.commit('updateStudentsClasses')"
                         :disabled="$store.state.updating"
@@ -303,14 +304,14 @@
                     </b-form-radio>
                 </b-form-group>
                 <b-form-group
-                    label="Présences"
+                    label="Classe"
                     label-class="font-weight-bold"
                 >
                     <b-btn
                         v-if="classe"
                         @click="addAllStudents(currentPeriod)"
                     >
-                        Ajouter toute la classe ({{ currentSearch.display }})
+                        Ajouter le reste de la classe ({{ currentSearch.display }})
                     </b-btn>
                     <p v-else>
                         <em>Aucune classe sélectionnée</em>
