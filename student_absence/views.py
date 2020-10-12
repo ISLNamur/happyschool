@@ -112,8 +112,7 @@ class StudentAbsenceFilter(BaseFilters):
 
     def activate_today_absence_by(self, queryset, name, value):
         current_date = timezone.now().date()
-        return queryset.filter(date_absence=current_date, is_absent=True) \
-            .order_by("student__classe__year", "student__last_name", "student__first_name")
+        return queryset.filter(date_absence=current_date, is_absent=True).distinct("student")
 
 
 class StudentAbsenceViewSet(ModelViewSet):
