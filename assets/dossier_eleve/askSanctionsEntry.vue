@@ -67,6 +67,15 @@
                             </span>
                             <span v-if="canEditSanction">
                                 <b-btn
+                                    v-if="outdated"
+                                    variant="light"
+                                    size="sm"
+                                    class="card-link"
+                                    v-b-modal.move-sanction-date
+                                >
+                                    <b-icon icon="arrow-right-square" />
+                                </b-btn>
+                                <b-btn
                                     v-if="rowData.datetime_sanction"
                                     variant="light"
                                     size="sm"
@@ -146,13 +155,25 @@
                         </b-btn>
                     </b-col>
                 </b-row>
+                <b-modal
+                    id="move-sanction-date"
+                    size="sm"
+                    centered
+                    title="Date de la sanction"
+                    cancel-title="Annuler"
+                    @ok="$emit('update-sanction', nextDate)"
+                >
+                    <b-form-input
+                        type="date"
+                        v-model="nextDate"
+                    />
+                </b-modal>
             </b-card>
         </transition>
     </div>
 </template>
 <script>
 import Moment from "moment";
-Moment.locale("fr");
 
 import axios from "axios";
 
@@ -168,9 +189,13 @@ export default {
     data: function () {
         return {
             expand: false,
+            nextDate: this.nextWeek(),
         };
     },
     computed: {
+        outdated: function () {
+            return Moment(this.rowData.datetime_sanction) < Moment();
+        },
         title: function () {
             return this.displayStudent(this.rowData.matricule);
         },
@@ -226,6 +251,11 @@ export default {
         }
     },
     methods: {
+        nextWeek: function () {
+            const sanctionDay = Moment(this.rowData.datetime_sanction).day();
+            const nextDay = Moment().day() >= sanctionDay ? sanctionDay + 7 : sanctionDay;
+            return Moment().day(nextDay).format("YYYY-MM-DD");
+        },
         deleteEntry: function () {
             this.$emit("delete");
         },

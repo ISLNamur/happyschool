@@ -169,6 +169,7 @@
                 @filterStudent="filterStudent($event)"
                 @showInfo="showInfo(entry)"
                 @done="loadEntries"
+                @update-sanction="updateSanction(entry, $event)"
             />
             <b-modal
                 ref="deleteModal"
@@ -184,7 +185,7 @@
             </b-modal>
             <b-modal
                 :title="currentName"
-                size="lg"
+                size="xl"
                 ref="infoModal"
                 centered
                 ok-only
@@ -209,9 +210,10 @@
 
 <script>
 import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
+import {BootstrapVue, BootstrapVueIcons} from "bootstrap-vue";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
 
 import "vue-awesome/icons";
 import Icon from "vue-awesome/components/Icon.vue";
@@ -221,6 +223,8 @@ import axios from "axios";
 window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
+import Moment from "moment";
+
 import Info from "../annuaire/info.vue";
 
 import AskSanctionsEntry from "./askSanctionsEntry.vue";
@@ -228,6 +232,8 @@ import AskModal from "./askModal.vue";
 import AskExportModal from "./askExportModal.vue";
 import Filters from "../common/filters.vue";
 import Menu from "../common/menu.vue";
+
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
     data: function () {
@@ -266,6 +272,10 @@ export default {
         }
     },
     methods: {
+        updateSanction: function (entry, newDate) {
+            entry.datetime_sanction = newDate + Moment(entry.datetime_sanction).format(" HH:MM");
+            axios.put(`/dossier_eleve/api/ask_sanctions/${entry.id}/`, entry, token);
+        },
         changePage: function (page) {
             this.currentPage = page;
             this.loadEntries();
@@ -311,7 +321,6 @@ export default {
             this.openDynamicModal("ask-modal");
         },
         deleteEntry: function () {
-            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             axios.delete("/dossier_eleve/api/ask_sanctions/" + this.currentEntry.id + "/", token)
                 .then(() => {
                     this.loadEntries();
