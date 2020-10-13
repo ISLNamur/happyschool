@@ -25,19 +25,20 @@
             </b-col>
             <b-col>
                 <b-row>
-                    <b-col class="text-center">
+                    <b-col
+                        v-for="(p, idx) in periodIds"
+                        :key="p"
+                        class="text-center"
+                    >
                         <b-form-checkbox
-                            v-model="isAbsent"
+                            v-model="isAbsent[idx]"
                             name="is-absent"
                             switch
-                            @change="changeAbsence()"
-                            v-if="period"
+                            @change="changeAbsence(idx)"
+                            v-if="period(p)"
                         >
                             <span :class="isSaved() ? 'font-italic' : ''">
-                                {{ period.name }}
-                            </span>
-                            <span>
-                                ({{ period.start.substr(0, 5) }}-{{ period.end.substr(0, 5) }})
+                                {{ period(p).name }}
                             </span>
                         </b-form-checkbox>
                     </b-col>
@@ -60,57 +61,67 @@ export default {
             type: Object,
             default: () => {}
         },
-        periodId: {
-            type: Number,
-            default: -1
+        periodIds: {
+            type: Array,
+            default: () => []
         }
     },
     data: function () {
         return {
+            isAbsent: []
         };
     },
-    computed: {
-        period: function () {
-            return this.$store.state.periods.find(p => p.id === this.periodId);
-        },
-        baseAbsence: function () {
+    watch: {
+        periodIds: function () {
+            this.initAbsence();
+        }
+    },
+    methods: {
+        displayStudent,
+        baseAbsence: function (index) {
             const absence = {
                 matricule: this.student.matricule,
                 date_absence: this.dateAbsence,
                 student: this.student,
-                period: this.periodId
+                period: this.periodIds[index]
             };
             const absInStore = this.$store.getters.change(absence);
             if (absInStore) return absInStore;
 
             return this.$store.getters.savedAbsence(absence);
         },
-        isAbsent: function () {
-            return this.baseAbsence ? this.baseAbsence.is_absent : undefined;
+        checkData: function (index) {
+            return this.baseAbsence(index) ? this.baseAbsence(index).is_absent : undefined;
         },
-    },
-    methods: {
-        displayStudent,
+        period: function (periodId) {
+            return this.$store.state.periods.find(p => p.id === periodId);
+        },
         isSaved: function () {
             return this.baseAbsence && "id" in this.baseAbsence;
         },
-        changeAbsence: function () {
-            const checked = !this.isAbsent;
+        changeAbsence: function (index) {
+            const checked = !this.checkData(index);
             let absence = {
                 matricule: this.student.matricule,
                 date_absence: this.dateAbsence,
                 student: this.student,
-                period: this.periodId,
+                period: this.periodIds[index],
                 is_absent: checked,
             };
 
-            if (!this.baseAbsence || checked != this.baseAbsence.is_absent) {
-                if (this.baseAbsence && "id" in this.baseAbsence) absence.id = this.baseAbsence.id;
+            if (!this.baseAbsence(index) || checked != this.baseAbsence(index).is_absent) {
+                if (this.baseAbsence(index) && "id" in this.baseAbsence(index)) absence.id = this.baseAbsence(index).id;
                 this.$store.commit("setChange", absence);
             } else {
                 this.$store.commit("removeChange", absence);
             }
+        },
+        initAbsence: function () {
+            this.isAbsent = this.periodIds.map((p, i) => this.baseAbsence(i) ? this.baseAbsence(i).is_absent : undefined);
         }
     },
+    mounted: function () {
+        this.initAbsence();
+    }
 };
 </script>

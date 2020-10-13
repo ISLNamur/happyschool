@@ -122,7 +122,7 @@
                         :key="s.matricule"
                         :student="s"
                         :date-absence="date_absence"
-                        :period-id="currentPeriod"
+                        :period-ids="currentPeriods"
                     />
                 </b-list-group>
             </b-col>
@@ -294,14 +294,15 @@
                     label="Choisir une période"
                     label-class="font-weight-bold"
                 >
-                    <b-form-radio
-                        v-model="currentPeriod"
+                    <b-form-checkbox
+                        v-model="currentPeriods"
                         v-for="p in $store.state.periods"
                         :key="p.id"
                         :value="p.id"
                     >
                         {{ p.name }}
-                    </b-form-radio>
+                        ({{ p.start.substr(0, 5) }}-{{ p.end.substr(0, 5) }})
+                    </b-form-checkbox>
                 </b-form-group>
                 <b-form-group
                     label="Classe"
@@ -309,7 +310,7 @@
                 >
                     <b-btn
                         v-if="classe"
-                        @click="addAllStudents(currentPeriod)"
+                        @click="addAllStudents(currentPeriods)"
                     >
                         Ajouter le reste de la classe ({{ currentSearch.display }})
                     </b-btn>
@@ -351,7 +352,7 @@ export default {
             tabIndex: 0,
             sending: false,
             classe: null,
-            currentPeriod: this.$store.state.periods.length > 0 ? this.$store.state.periods[0].id : null,
+            currentPeriods: [],
             note: "",
         };
     },
@@ -370,29 +371,31 @@ export default {
     },
     methods: {
         getPeriod: function (period) {
-            return this.$store.state.periods.find(p => p.id == period).name;
+            return this.$store.state.periods.find(p => p.id === period).name;
         },
-        addAllStudents: function (period) {
-            const savedStudents = this.$store.state.savedAbsences.filter(sA => {
-                return sA.period == period && sA.date_absence == this.date_absence;
-            }).map(sA => sA.student_id);
-            const currentChanges = this.$store.state.changes.filter(c => {
-                return c.period == period && c.date_absence == this.date_absence;
-            }).map(c => c.matricule);
-    
-            this.students.filter(student => {
-                // Check if there is already an saved absence or current changes.
-                return !currentChanges.includes(student.matricule) && !savedStudents.includes(student.matricule);
-            }).forEach(student => {
-                const absence = {
-                    date_absence: this.date_absence,
-                    matricule: student.matricule,
-                    student: student,
-                    period: period,
-                    is_absent: false,
-                };
-                this.$store.commit("setChange", absence);
-            });
+        addAllStudents: function (periods) {
+            for (let period in periods) {
+                const savedStudents = this.$store.state.savedAbsences.filter(sA => {
+                    return sA.period == period && sA.date_absence == this.date_absence;
+                }).map(sA => sA.student_id);
+                const currentChanges = this.$store.state.changes.filter(c => {
+                    return c.period == period && c.date_absence == this.date_absence;
+                }).map(c => c.matricule);
+        
+                this.students.filter(student => {
+                    // Check if there is already an saved absence or current changes.
+                    return !currentChanges.includes(student.matricule) && !savedStudents.includes(student.matricule);
+                }).forEach(student => {
+                    const absence = {
+                        date_absence: this.date_absence,
+                        matricule: student.matricule,
+                        student: student,
+                        period: period,
+                        is_absent: false,
+                    };
+                    this.$store.commit("setChange", absence);
+                });
+            }
         },
         cleanStudents: function () {
             this.students = [];
@@ -566,6 +569,12 @@ export default {
     },
     mounted: function () {
         const now = Moment();
+
+        if (this.$store.state.periods.length < 3) {
+            this.currentPeriods = this.$store.state.periods.map(p => p.id);
+        } else {
+            this.currentPeriods = [this.$store.state.periods[0].id];
+        }
 
         this.loadAbsences(now.format("YYYY-MM-DD"));
     },
