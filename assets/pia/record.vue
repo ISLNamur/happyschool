@@ -232,6 +232,18 @@
                     </b-col>
                 </b-row>
                 <b-row>
+                    <b-col>
+                        <b-form-group
+                            label="Autres aménagements"
+                        >
+                            <quill-editor
+                                v-model="form.other_adjustments"
+                                :options="editorOptions"
+                            />
+                        </b-form-group>
+                    </b-col>
+                </b-row>
+                <b-row>
                     <h4>Attachements</h4>
                 </b-row>
                 <b-row>
@@ -431,6 +443,10 @@
 <script>
 import axios from "axios";
 
+import {quillEditor} from "vue-quill-editor";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
@@ -466,6 +482,7 @@ export default {
                 disorder_response: [],
                 schedule_adjustment: [],
                 attachments: [],
+                other_adjustments: ""
             },
             uploadedFiles: [],
             cross_goal: [],
@@ -483,6 +500,20 @@ export default {
                 "disorder": null,
                 "disorder_response": null,
                 "schedule_adjustment": null
+            },
+            /** Options for the text editor. */
+            editorOptions: {
+                modules: {
+                    toolbar: [
+                        ["bold", "italic", "underline", "strike"],
+                        ["blockquote"],
+                        [{ "list": "ordered"}, { "list": "bullet" }],
+                        [{ "indent": "-1"}, { "indent": "+1" }],
+                        [{ "align": [] }],
+                        ["clean"]
+                    ]
+                },
+                placeholder: ""
             },
         };
     },
@@ -741,6 +772,7 @@ export default {
                     this.form.disorder = this.$store.state.disorders.filter(d => resp.data.disorder.includes(d.id));
                     this.form.disorder_response = this.$store.state.disorderResponses.filter(dr => resp.data.disorder_response.includes(dr.id));
                     this.form.schedule_adjustment = this.$store.state.scheduleAdjustments.filter(sa => resp.data.schedule_adjustment.includes(sa.id));
+                    this.form.other_adjustments = resp.data.other_adjustments;
 
                     // Attachments
                     this.uploadedFiles = resp.data.attachments.map(a => {
@@ -796,6 +828,7 @@ export default {
         ClassCouncil,
         Comment,
         FileUpload,
+        quillEditor,
     }
 };
 </script>
