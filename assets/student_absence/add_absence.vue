@@ -376,10 +376,10 @@ export default {
         addAllStudents: function (periods) {
             for (let period in periods) {
                 const savedStudents = this.$store.state.savedAbsences.filter(sA => {
-                    return sA.period == period && sA.date_absence == this.date_absence;
+                    return sA.period == periods[period] && sA.date_absence == this.date_absence;
                 }).map(sA => sA.student_id);
                 const currentChanges = this.$store.state.changes.filter(c => {
-                    return c.period == period && c.date_absence == this.date_absence;
+                    return c.period == periods[period] && c.date_absence == this.date_absence;
                 }).map(c => c.matricule);
         
                 this.students.filter(student => {
@@ -390,7 +390,7 @@ export default {
                         date_absence: this.date_absence,
                         matricule: student.matricule,
                         student: student,
-                        period: period,
+                        period: periods[period],
                         is_absent: false,
                     };
                     this.$store.commit("setChange", absence);
