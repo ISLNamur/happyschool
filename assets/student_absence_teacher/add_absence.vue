@@ -144,7 +144,7 @@ export default {
                 params: {
                     period: this.period.id,
                     date_absence: this.currentDate,
-                    page_size: 1000,
+                    page_size: 5000,
                 }
             };
             if (this.$store.state.settings.select_student_by === "GC") data.params.given_course = this.givenCourse.id;

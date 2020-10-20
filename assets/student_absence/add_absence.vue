@@ -77,30 +77,35 @@
         </b-row>
         <b-row>
             <b-col>
-                <b-form-group
-                    v-if="date_absence.length > 0"
-                    label="Recherche :"
+                <b-overlay
+                    :show="$store.state.updating"
+                    rounded="sm"
                 >
-                    <multiselect
-                        id="input-name"
-                        :internal-search="false"
-                        :options="searchOptions"
-                        @search-change="getSearchOptions"
-                        :loading="searchLoading"
-                        placeholder="Rechercher un étudiant, une classe"
-                        select-label=""
-                        selected-label="Sélectionné"
-                        deselect-label=""
-                        label="display"
-                        track-by="id"
-                        v-model="currentSearch"
-                        @select="selected"
-                        :disabled="$store.state.updating"
+                    <b-form-group
+                        v-if="date_absence.length > 0"
+                        label="Recherche :"
                     >
-                        <span slot="noResult">Aucune personne trouvée.</span>
-                        <span slot="noOptions" />
-                    </multiselect>
-                </b-form-group>
+                        <multiselect
+                            id="input-name"
+                            :internal-search="false"
+                            :options="searchOptions"
+                            @search-change="getSearchOptions"
+                            :loading="searchLoading"
+                            placeholder="Rechercher un étudiant, une classe"
+                            select-label=""
+                            selected-label="Sélectionné"
+                            deselect-label=""
+                            label="display"
+                            track-by="id"
+                            v-model="currentSearch"
+                            @select="selected"
+                            :disabled="$store.state.updating"
+                        >
+                            <span slot="noResult">Aucune personne trouvée.</span>
+                            <span slot="noOptions" />
+                        </multiselect>
+                    </b-form-group>
+                </b-overlay>
             </b-col>
         </b-row>
         <b-row>

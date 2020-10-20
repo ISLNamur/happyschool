@@ -211,12 +211,14 @@ export default new Vuex.Store({
          * @param {String} date The date of the absences to get.
          */
         updateSavedAbsences: function (state, date) {
-            let url = "/student_absence/api/student_absence/?page_size=1000&";
+            let url = "/student_absence/api/student_absence/?page_size=5000&";
             url += "forceAllAccess=" + state.forceAllAccess + "&";
             url += "date_absence=" + date;
+            state.updating = true;
             return axios.get(url, token)
                 .then(resp => {
                     state.savedAbsences = resp.data.results;
+                    state.updating = false;
                     return state.savedAbsences;
                 });
         },
