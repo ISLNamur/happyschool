@@ -155,7 +155,7 @@ class PageNumberSizePagination(PageNumberPagination):
     Default is still 20 items.
     """
     page_size_query_param = "page_size"
-    max_page_size = 1000
+    max_page_size = 5000
 
 
 class LargePageSizePagination(PageNumberPagination):
