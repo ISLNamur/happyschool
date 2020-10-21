@@ -130,6 +130,24 @@
             <b-tab title="Enseignants">
                 <b-row>
                     <b-col>
+                        <h5>Format des champs</h5>
+                        <ul>
+                            <li>
+                                <strong>Classe : </strong> Le premier caractères définit l'année de la classe tandis que le reste la ou les lettres de la classe.
+                            </li>
+                            <li><strong>Cours :</strong> Seul le nom du cours court est nécessaire. Pour prendre entre compte plusieurs cours, il suffit que la ligne de l'étudiant soit répétée (seul le matricule est nécessaire).</li>
+                        </ul>
+                        <b-alert
+                            show
+                            variant="warning"
+                        >
+                            Le fichier csv soumit doit contenir l'entièreté des enseignants de l'établissement. Ceux qui ne sont pas présent (identifié
+                            par le matricule) seront considérés comme inactifs (anciens) et pourront donc par la suite être réintégrés, par exemple dans un autre établissement.
+                        </b-alert>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
                         <b-form>
                             <b-form-row>
                                 <!-- eslint-disable-next-line no-irregular-whitespace -->
