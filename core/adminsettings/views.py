@@ -33,7 +33,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from core.utilities import get_menu
-from core.tasks import task_test, task_update
+from core.tasks import task_import_people, task_update
 from io import StringIO
 
 
@@ -72,23 +72,36 @@ class TestFileAPIView(APIView):
         return Response(data=json.dumps(rows), status=status.HTTP_200_OK)
 
 
-class ImportStudentAPIView(APIView):
+class ImportPeopleAPIView(APIView):
     parser_classes = (MultiPartParser,)
     permission_classes = (IsAdminUser,)
+    people = None
 
     def post(self, request, format=None):
+        if not self.people:
+            return Response(status=status.HTTP_400_BAD_REQUEST, data="No people type has been set.")
+
         csv_text = request.FILES['file'].read().decode("utf-8-sig")
         teaching = request.POST.get('teaching', None)
         columns = request.POST.get('columns', '{}')
         ignore_first_line = json.loads(request.POST.get('ignore_first_line'))
-        print(teaching)
-        print(columns)
         if not teaching:
             return Response(status=status.HTTP_400_BAD_REQUEST, data="Teaching needed.")
 
-        task = task_test.delay(csv_text, teaching, columns, ignore_first_line)
-        print(task)
+        task = task_import_people.delay(csv_text, teaching, columns, ignore_first_line, self.people)
         return Response(data=json.dumps(str(task)), status=status.HTTP_200_OK)
+
+
+class ImportStudentAPIView(ImportPeopleAPIView):
+    parser_classes = (MultiPartParser,)
+    permission_classes = (IsAdminUser,)
+    people = "student"
+
+
+class ImportTeacherAPIView(ImportPeopleAPIView):
+    parser_classes = (MultiPartParser,)
+    permission_classes = (IsAdminUser,)
+    people = "teacher"
 
 
 class UpdateAPIView(APIView):

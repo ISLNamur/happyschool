@@ -20,105 +20,196 @@
 <template>
     <!-- eslint-disable vue/no-unused-vars -->
     <div>
-        <h4>Importer des étudiants</h4>
-        <b-row>
-            <h5>Format des champs</h5>
-            <ul>
-                <li>
-                    <strong>Année : </strong> L'année d'étude doit être un chiffre, seuls les deux premiers caractères sont considérés.
-                    Par exemple, 2C ou P2 seront considérés comme la deuxième année.
-                </li>
-                <li>
-                    <strong>Classe : </strong> La classe peut être un ou plusieurs caractères. La classe sera automatiquement mis en minuscule dans la base de donnée,
-                    mais sera affichée en majustcule dans HappySchool.
-                </li>
-                <li><strong>Date de naissance :</strong> La date de naissance doit être sous la forme yyyymmdd. Par exemple, 20020322 donnera le 22 mars 2002.</li>
-                <li><strong>Cours :</strong> Seul le nom du cours court est nécessaire. Pour prendre entre compte plusieurs cours, il suffit que la ligne de l'étudiant soit répétée (seul le matricule est nécessaire).</li>
-            </ul>
-            <b-alert
-                show
-                variant="warning"
-            >
-                Le fichier csv soumit doit contenir l'entièreté des étudiants de l'établissement. Ceux qui ne sont pas présent (identifié
-                par le matricule) seront considérés comme inactifs (anciens) et pourront donc par la suite être réintégrés, par exemple dans un autre établissement.
-            </b-alert>
-        </b-row>
-        <b-row>
-            <b-form>
-                <b-form-row>
-                    <!-- eslint-disable-next-line no-irregular-whitespace -->
-                    <b-form-group label="Établissement où importer les étudiants :">
-                        <b-select
-                            v-model="teaching"
-                            :options="teachingOptions"
-                            value-field="id"
-                            text-field="display_name"
-                        />
-                    </b-form-group>
-                </b-form-row>
-                <b-form-row>
-                    <b-form-checkbox v-model="ignoreFirstLine">
-                        Ignorer la première ligne
-                    </b-form-checkbox>
-                </b-form-row>
-                <b-form-row>
-                    <b-form-group description="Le fichier doit être encodé en UTF-8.">
-                        <b-form-file
-                            v-model="file"
-                            accept=".csv"
-                            @input="testFile"
-                            placeholder="Importer un fichier csv..."
-                        />
-                    </b-form-group>
-                </b-form-row>
-            </b-form>
-        </b-row>
-        <b-row>
-            <b-table
-                :items="content"
-                :fields="columnRawNames.slice(0, fields_number)"
-            >
-                <template
-                    v-for="(c, i) in columnHeads.slice(0, fields_number)"
-                    v-slot:[c]="data"
-                    :keys="i"
-                >
-                    <b-select
-                        v-model="columns[i]"
-                        :options="column_names"
-                        :key="i"
-                    >
-                        <template slot="first">
-                            <option
-                                :value="null"
-                                disabled
+        <b-tabs content-class="mt-3">
+            <b-tab title="Étudiants">
+                <b-row>
+                    <b-col>
+                        <h5>Format des champs</h5>
+                        <ul>
+                            <li>
+                                <strong>Année : </strong> L'année d'étude doit être un chiffre, seuls les deux premiers caractères sont considérés.
+                                Par exemple, 2C ou P2 seront considérés comme la deuxième année.
+                            </li>
+                            <li>
+                                <strong>Classe : </strong> La classe peut être un ou plusieurs caractères. La classe sera automatiquement mis en minuscule dans la base de donnée,
+                                mais sera affichée en majustcule dans HappySchool.
+                            </li>
+                            <li><strong>Date de naissance :</strong> La date de naissance doit être sous la forme yyyymmdd. Par exemple, 20020322 donnera le 22 mars 2002.</li>
+                            <li><strong>Cours :</strong> Seul le nom du cours court est nécessaire. Pour prendre entre compte plusieurs cours, il suffit que la ligne de l'étudiant soit répétée (seul le matricule est nécessaire).</li>
+                        </ul>
+                        <b-alert
+                            show
+                            variant="warning"
+                        >
+                            Le fichier csv soumit doit contenir l'entièreté des étudiants de l'établissement. Ceux qui ne sont pas présent (identifié
+                            par le matricule) seront considérés comme inactifs (anciens) et pourront donc par la suite être réintégrés, par exemple dans un autre établissement.
+                        </b-alert>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-form>
+                            <b-form-row>
+                                <!-- eslint-disable-next-line no-irregular-whitespace -->
+                                <b-form-group label="Établissement où importer les étudiants :">
+                                    <b-select
+                                        v-model="teaching"
+                                        :options="teachingOptions"
+                                        value-field="id"
+                                        text-field="display_name"
+                                    />
+                                </b-form-group>
+                            </b-form-row>
+                            <b-form-row>
+                                <b-form-checkbox v-model="ignoreFirstLine">
+                                    Ignorer la première ligne
+                                </b-form-checkbox>
+                            </b-form-row>
+                            <b-form-row>
+                                <b-form-group description="Le fichier doit être encodé en UTF-8.">
+                                    <b-form-file
+                                        v-model="file"
+                                        accept=".csv"
+                                        @input="testFile"
+                                        placeholder="Importer un fichier csv..."
+                                    />
+                                </b-form-group>
+                            </b-form-row>
+                        </b-form>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-table
+                            :items="content"
+                            :fields="studentColumnRawNames.slice(0, fields_number)"
+                        >
+                            <template
+                                v-for="(c, i) in studentColumnHeads.slice(0, fields_number)"
+                                v-slot:[c]="data"
+                                :keys="i"
                             >
-                                Choississez le type de colonne
-                            </option>
-                        </template>
-                    </b-select>
-                </template>
-            </b-table>
-        </b-row>
-        <div v-if="file">
-            <b-row>
-                <b-btn @click="importStudents">
-                    Importer
-                </b-btn>
-            </b-row>
-            <b-row class="mt-2">
-                <b-col>
-                    <b-card
-                        bg-variant="dark"
-                        text-variant="white"
-                    >
-                        <p class="card-text console">
-                            {{ importState }}
-                        </p>
-                    </b-card>
-                </b-col>
-            </b-row>
-        </div>
+                                <b-select
+                                    v-model="student_columns[i]"
+                                    :options="student_column_names"
+                                    :key="i"
+                                >
+                                    <template slot="first">
+                                        <option
+                                            :value="null"
+                                            disabled
+                                        >
+                                            Choississez le type de colonne
+                                        </option>
+                                    </template>
+                                </b-select>
+                            </template>
+                        </b-table>
+                    </b-col>
+                </b-row>
+                <div v-if="file">
+                    <b-row>
+                        <b-btn @click="importStudents">
+                            Importer
+                        </b-btn>
+                    </b-row>
+                    <b-row class="mt-2">
+                        <b-col>
+                            <b-card
+                                bg-variant="dark"
+                                text-variant="white"
+                            >
+                                <p class="card-text console">
+                                    {{ importState }}
+                                </p>
+                            </b-card>
+                        </b-col>
+                    </b-row>
+                </div>
+            </b-tab>
+            <b-tab title="Enseignants">
+                <b-row>
+                    <b-col>
+                        <b-form>
+                            <b-form-row>
+                                <!-- eslint-disable-next-line no-irregular-whitespace -->
+                                <b-form-group label="Établissement où importer les étudiants :">
+                                    <b-select
+                                        v-model="teaching"
+                                        :options="teachingOptions"
+                                        value-field="id"
+                                        text-field="display_name"
+                                    />
+                                </b-form-group>
+                            </b-form-row>
+                            <b-form-row>
+                                <b-form-checkbox v-model="ignoreFirstLine">
+                                    Ignorer la première ligne
+                                </b-form-checkbox>
+                            </b-form-row>
+                            <b-form-row>
+                                <b-form-group description="Le fichier doit être encodé en UTF-8.">
+                                    <b-form-file
+                                        v-model="file"
+                                        accept=".csv"
+                                        @input="testFile"
+                                        placeholder="Importer un fichier csv..."
+                                    />
+                                </b-form-group>
+                            </b-form-row>
+                        </b-form>
+                    </b-col>
+                </b-row>
+                <b-row>
+                    <b-col>
+                        <b-table
+                            :items="content"
+                            :fields="teacherColumnRawNames.slice(0, fields_number)"
+                        >
+                            <template
+                                v-for="(c, i) in teacherColumnHeads.slice(0, fields_number)"
+                                v-slot:[c]="data"
+                                :keys="i"
+                            >
+                                <b-select
+                                    v-model="teacher_columns[i]"
+                                    :options="teacher_column_names"
+                                    :key="i"
+                                >
+                                    <template slot="first">
+                                        <option
+                                            :value="null"
+                                            disabled
+                                        >
+                                            Choississez le type de colonne
+                                        </option>
+                                    </template>
+                                </b-select>
+                            </template>
+                        </b-table>
+                    </b-col>
+                </b-row>
+                <div v-if="file">
+                    <b-row>
+                        <b-btn @click="importTeachers">
+                            Importer
+                        </b-btn>
+                    </b-row>
+                    <b-row class="mt-2">
+                        <b-col>
+                            <b-card
+                                bg-variant="dark"
+                                text-variant="white"
+                            >
+                                <p class="card-text console">
+                                    {{ importState }}
+                                </p>
+                            </b-card>
+                        </b-col>
+                    </b-row>
+                </div>
+            </b-tab>
+        </b-tabs>
     </div>
 </template>
 
@@ -134,7 +225,7 @@ import Icon from "vue-awesome/components/Icon.vue";
 
 Vue.component("icon", Icon);
 
-const column_names = [
+const student_column_names = [
     {value: "matricule", text: "Matricule"},
     {value: "last_name", text: "Nom"},
     {value: "first_name", text: "Prénom"},
@@ -180,6 +271,20 @@ const column_names = [
     {value: "password", text: "Mot de passe"}
 ];
 
+const teacher_column_names = [
+    {value: "matricule", text: "Matricule"},
+    {value: "last_name", text: "Nom"},
+    {value: "first_name", text: "Prénom"},
+    {value: "email", text: "Courriel"},
+    {value: "email_school", text: "Courriel de l'école"},
+    {value: "tenure", text: "Titulariat"},
+    {value: "classe", text: "Classe"},
+    {value: "birth_date", text: "Date de naissance"},
+    {value: "course_name_short", text: "Cours (court)"},
+    {value: "course_name_long", text: "Cours (long)"},
+    {value: "group", text: "Groupe"},
+];
+
 export default {
     data: function () {
         return {
@@ -189,10 +294,14 @@ export default {
             file: null,
             fields_number: 0,
             content: [],
-            "columns": new Array(column_names.length),
-            "column_names": column_names,
-            columnRawNames: column_names.map((o, i) => i.toString()),
-            columnHeads: column_names.map((o, i) => "head(" + i + ")"),
+            "student_columns": new Array(student_column_names.length),
+            "student_column_names": student_column_names,
+            "teacher_columns": new Array(teacher_column_names.length),
+            "teacher_column_names": teacher_column_names,
+            studentColumnRawNames: student_column_names.map((o, i) => i.toString()),
+            studentColumnHeads: student_column_names.map((o, i) => "head(" + i + ")"),
+            teacherColumnRawNames: teacher_column_names.map((o, i) => i.toString()),
+            teacherColumnHeads: teacher_column_names.map((o, i) => "head(" + i + ")"),
             progressSocket: null,
             importState: "",
         };
@@ -229,7 +338,7 @@ export default {
             data.append("file", this.file);
             data.append("ignore_first_line", JSON.stringify(this.ignoreFirstLine));
             data.append("teaching", this.teaching);
-            data.append("columns", JSON.stringify(this.columns.slice(0, this.fields_number)));
+            data.append("columns", JSON.stringify(this.student_columns.slice(0, this.fields_number)));
             axios.post("/core/api/import_students/", data,
                 {
                     xsrfCookieName: "csrftoken",
@@ -239,7 +348,29 @@ export default {
                 .then(response => {
                     app.importState = "Connecting to server…\n";
                     const protocol = window.location.protocol === "http:" ? "ws" : "wss";
-                    app.progressSocket = new WebSocket(protocol + "://" + window.location.host + "/ws/core/import_student_state/" + JSON.parse(response.data) + "/");
+                    app.progressSocket = new WebSocket(`${protocol}://${window.location.host}/ws/core/import_state/student/${JSON.parse(response.data)}/`);
+                    app.progressSocket.onmessage = function (event) {
+                        app.importState += JSON.parse(event.data)["status"] + "\n";
+                    };
+                });
+        },
+        importTeachers: function () {
+            let data = new FormData();
+            let app = this;
+            data.append("file", this.file);
+            data.append("ignore_first_line", JSON.stringify(this.ignoreFirstLine));
+            data.append("teaching", this.teaching);
+            data.append("columns", JSON.stringify(this.teacher_columns.slice(0, this.fields_number)));
+            axios.post("/core/api/import_teachers/", data,
+                {
+                    xsrfCookieName: "csrftoken",
+                    xsrfHeaderName: "X-CSRFToken",
+                    headers: {"Content-Disposition": "form-data; name=\"file\"; filename=\"" + this.file.name.normalize() + "\""},
+                })
+                .then(response => {
+                    app.importState = "Connecting to server…\n";
+                    const protocol = window.location.protocol === "http:" ? "ws" : "wss";
+                    app.progressSocket = new WebSocket(`${protocol}://${window.location.host}/ws/core/import_state/teacher/${JSON.parse(response.data)}/`);
                     app.progressSocket.onmessage = function (event) {
                         app.importState += JSON.parse(event.data)["status"] + "\n";
                     };

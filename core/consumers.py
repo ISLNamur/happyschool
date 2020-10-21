@@ -21,11 +21,12 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer
 
 
-class ImportStudentStateConsumer(JsonWebsocketConsumer):
+class ImportPeopleStateConsumer(JsonWebsocketConsumer):
 
     def connect(self):
         celery_id = self.scope['url_route']['kwargs']['celery_id']
-        self.group_name = 'core_import_student_state_%s' % celery_id
+        people = self.scope['url_route']['kwargs']['people']
+        self.group_name = 'core_import_%s_state_%s' % (people, celery_id)
 
         async_to_sync(self.channel_layer.group_add)(
             self.group_name,

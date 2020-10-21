@@ -178,8 +178,6 @@ class ImportResponsible(ImportBase):
                     courses = [courses]
                 if courses:
                     for c in courses:
-                        if not c["classes"]:
-                            continue
                         try:
                             course_model = CourseModel.objects.get(id=c["id"])
                             course_model.short_name = c["short_name"]
@@ -331,6 +329,21 @@ class ImportResponsibleCSV(ImportResponsible):
         super()._sync(reader)
 
     def get_value(self, entry: list, column: str) -> Union[int, str, date, None]:
+        if column == "courses":
+            course = {
+                "short_name": entry[self.column_to_index["course_name_short"]],
+            }
+            if "course_name_long" in self.column_to_index:
+                course["long_name"] = entry[self.column_to_index["course_name_long"]]
+            if "group" in self.column_to_index:
+                course["group"] = entry[self.column_to_index["group"]]
+            else:
+                course["group"] = ""
+            try:
+                course["id"] = CourseModel.objects.get(short_name=course["short_name"]).id
+            except ObjectDoesNotExist:
+                course["id"] = CourseModel.objects.latest("id").id + 1
+            return course
         if column == "is_teacher":
             return self.is_teacher
         if column == "is_educator":
@@ -389,6 +402,8 @@ class ImportResponsibleFDB(ImportResponsible):
             except ObjectDoesNotExist:
                 pass
 
+        if column == "courses":
+            return [c for c in entry[1][column] if "classes" in c and len(c["classes"]) > 0]
         if column == "matricule":
             return entry[0]
         if column == "is_teacher":
@@ -643,7 +658,6 @@ class ImportStudentCSV(ImportStudent):
 
     def get_value(self, entry: list, column: str) -> Union[int, str, date, None]:
         if column == "courses":
-            print(entry)
             course = {
                 "short_name": entry[self.column_to_index["course_name_short"]],
             }
@@ -655,7 +669,6 @@ class ImportStudentCSV(ImportStudent):
                 course["group"] = ""
             try:
                 course["id"] = CourseModel.objects.get(short_name=course["short_name"]).id
-                print(course)
             except ObjectDoesNotExist:
                 course["id"] = CourseModel.objects.latest("id").id + 1
             return course
