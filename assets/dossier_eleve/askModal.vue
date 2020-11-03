@@ -426,6 +426,8 @@ export default {
             if (data.datetime_sanction) {
                 let time = this.timeSanction ? " " + this.timeSanction : " 12:00";
                 data.datetime_sanction += time;
+            } else {
+                data.datetime_sanction = null;
             }
             if (data.datetime_conseil) {
                 data.datetime_conseil += " 12:00";
