@@ -63,7 +63,7 @@ def send_email(to, subject, email_template, cc=None, images=None, context=None, 
             elif isinstance(a.attachment, FieldFile):
                 email.attach_file(a.attachment.path)
 
-    if settings.DEBUG:
+    if settings.DEBUG or not settings.EMAIL_HOST or settings.EMAIL_HOST == "smtp.server.com":
         if settings.EMAIL_ADMIN:
             email.to = [settings.EMAIL_ADMIN]
             email.bcc = [settings.EMAIL_ADMIN]
