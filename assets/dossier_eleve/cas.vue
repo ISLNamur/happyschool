@@ -466,7 +466,7 @@ export default {
             if (this.casObject) {
                 // The name will update form.name and form.matricule_id
                 this.name = {
-                    display: this.casObject.name,
+                    display: this.casObject.matricule.display,
                     matricule: this.casObject.matricule_id,
                 };
                 this.demandeur = {
