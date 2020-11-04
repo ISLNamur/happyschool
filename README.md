@@ -37,4 +37,5 @@ Ressources
 ----------
 
 - [La documentation](https://happyschool.readthedocs.io/)
+- [Serveur de test (libre accès)](https://test.happyschool.be/) (utilisateur/mot de passe : directeur/happyschool)
 - [Site officiel](https://github.com/ISLNamur/happyschool)
