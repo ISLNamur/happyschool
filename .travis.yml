@@ -1,7 +1,7 @@
 dist: bionic
 language: python
 before_install:
-  - sudo apt-get install -y python-dev libldap2-dev libsasl2-dev libssl-dev python3-pip git python3-dateutil postgresql-client python3-setuptools firefox-geckodriver
+  - sudo apt-get install -y libldap2-dev libsasl2-dev zlib1g-dev make build-essential libssl-dev libbz2-dev libreadline-dev libsqlite3-dev wget llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev liblzma-dev libffi-dev git python3-dateutil ttf-bitstream-vera redis-server nodejs python3-pip libpangocairo-1.0-0 firefox-geckodriver
 addons:
   apt:
     update: true
@@ -14,13 +14,15 @@ before_script:
   - psql -c "CREATE USER happyschool WITH PASSWORD 'libreschool';" -U postgres
   - psql -c "ALTER USER happyschool CREATEDB;" -U postgres
 install:
-  - pip3 install -r requirements.txt
+  - pip3 install pipenv
+  - pipenv install
+  - pipenv install selenium
 script:
   - cp happyschool/settings.example.py happyschool/settings.py
   - sed -i 's/DEBUG = False/DEBUG = True/g' happyschool/settings.py
-  - python3 manage.py makemigrations && python3 manage.py migrate
+  - pipenv run ./manage.py makemigrations && pipenv run ./manage.py migrate
   - npm install
   - npx eslint --ext .js,.vue assets/
   - ./node_modules/.bin/webpack --config webpack.prod.js
-  - coverage run --source='.' manage.py test
-  - coverage report
+  - pipenv run coverage run --source='.' manage.py test
+  - pipenv run coverage report
