@@ -214,18 +214,20 @@ RECEPTION_GROUP = "accueil"
 COORD_GROUP = "coord"
 EDUC_GROUP = "educ"
 
-USE_LDAP_INFO = True
+USE_LDAP_INFO = False
 
 LDAP_HOST = os.getenv("LDAP_HOST", "localhost")
 LDAP_DOMAIN = os.getenv("LDAP_DOMAIN", "dc=example,dc=org")
 
 # Use LDAP to authenticate
-AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = True
-AUTH_LDAP_BIND_DN = os.getenv("LDAP_USER", "cn=admin,dc=example,dc=org")
-AUTH_LDAP_BIND_PASSWORD = os.getenv("LDAP_PWD", "ldap_password")
-AUTH_LDAP_SERVER_URI = "ldap://" + LDAP_HOST
-if AUTH_LDAP_BIND_AS_AUTHENTICATING_USER:
-    AUTHENTICATION_BACKENDS.append('django_auth_ldap.backend.LDAPBackend')
+USE_LDAP_AUTH = False
+if USE_LDAP_AUTH:
+    AUTH_LDAP_BIND_AS_AUTHENTICATING_USER = True
+    AUTH_LDAP_BIND_DN = os.getenv("LDAP_USER", "cn=admin,dc=example,dc=org")
+    AUTH_LDAP_BIND_PASSWORD = os.getenv("LDAP_PWD", "ldap_password")
+    AUTH_LDAP_SERVER_URI = "ldap://" + LDAP_HOST
+    if AUTH_LDAP_BIND_AS_AUTHENTICATING_USER:
+        AUTHENTICATION_BACKENDS.append('django_auth_ldap.backend.LDAPBackend')
 
 if USE_LDAP_INFO:
     import ldap
