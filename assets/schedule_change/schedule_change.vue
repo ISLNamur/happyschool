@@ -155,16 +155,21 @@
                 >
                     <hr class="smallhr"><strong>{{ time(subGroup) }}</strong>
                     <hr class="smallhr">
-                    <schedule-change-entry
-                        v-for="entry in subGroup.sameHourEntries"
-                        :key="entry.id"
-                        :row-data="entry"
-                        @delete="askDelete(entry)"
-                        @edit="editEntry(entry, false)"
-                        @copy="editEntry(entry, true)"
-                        @showInfo="showInfo(entry)"
-                        :fullscreen="fullscreen"
-                    />
+                    <b-overlay
+                        v-if="$store.state.ready"
+                        rounded="sm"
+                    >
+                        <schedule-change-entry
+                            v-for="entry in subGroup.sameHourEntries"
+                            :key="entry.id"
+                            :row-data="entry"
+                            @delete="askDelete(entry)"
+                            @edit="editEntry(entry, false)"
+                            @copy="editEntry(entry, true)"
+                            @showInfo="showInfo(entry)"
+                            :fullscreen="fullscreen"
+                        />
+                    </b-overlay>
                 </div>
             </div>
         </b-container>

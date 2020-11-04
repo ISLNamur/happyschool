@@ -24,6 +24,8 @@ Vue.use(Vuex);
 
 import axios from "axios";
 
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
+
 const store = new Vuex.Store({
     state: {
         // eslint-disable-next-line no-undef
@@ -37,17 +39,16 @@ const store = new Vuex.Store({
         changeCategory: [],
         // eslint-disable-next-line no-undef
         canAdd: can_add,
+        ready: false,
     },
     actions: {
         getChangeType (context) {
-            const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             axios.get("/schedule_change/api/schedule_change_type/", token)
                 .then(resp => {
                     context.commit("setChangeType", resp.data.results);
                 });
         },
         getChangeCategory (context) {
-            const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             axios.get("/schedule_change/api/schedule_change_category/", token)
                 .then(resp => {
                     context.commit("setChangeCategory", resp.data.results);
@@ -64,6 +65,7 @@ const store = new Vuex.Store({
         },
         setChangeCategory: function (state, categories) {
             state.changeCategory = categories;
+            state.ready = true;
 
             // Add style.
             var sheet = document.createElement("style");

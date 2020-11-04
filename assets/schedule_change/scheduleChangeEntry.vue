@@ -143,15 +143,15 @@ export default {
     },
     computed: {
         icon: function () {
-            if (this.rowData.category) return this.$store.state.changeCategory.filter(c => c.id == this.rowData.category)[0].icon;
+            if (this.rowData.category) return this.$store.state.changeCategory.filter(c => c.id === this.rowData.category)[0].icon;
             return "";
         },
         category: function () {
-            if (this.rowData.category) return this.$store.state.changeCategory.filter(c => c.id == this.rowData.category)[0].category;
+            if (this.rowData.category) return this.$store.state.changeCategory.filter(c => c.id === this.rowData.category)[0].category;
             return "";
         },
         hide_comment: function () {
-            return this.$store.state.filters.find(f => f.filterType == "activate_show_for_students") != undefined;
+            return this.$store.state.filters.find(f => f.filterType == "activate_show_for_students") !== undefined;
         }
     },
     methods: {
