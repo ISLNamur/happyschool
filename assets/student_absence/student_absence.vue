@@ -66,6 +66,9 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 
+import Moment from "moment";
+Moment.locale("fr");
+
 import "vue-awesome/icons";
 import Icon from "vue-awesome/components/Icon.vue";
 Vue.component("icon", Icon);
@@ -74,6 +77,40 @@ export default {
     data: function () {
         return {
         };
+    },
+    mounted: function () {
+        // Check if students and classes need to be updated.
+        setTimeout(() => {
+            if (this.$store.state.onLine) {
+                let modalText = "";
+                if (this.$store.state.lastUpdate === "") {
+                    modalText = "Afin de pouvoir prendre les présences, il est nécessaire de copier la liste des étudiants et des classes dans le navigateur. Ceci permet à HappySchool de fonctionner sans connexion.";
+                } else if (Moment(this.$store.state.lastUpdate).add(1, "months").isBefore(Moment())) {
+                    modalText = "Il semblerait que la liste des étudiants et des classes ne soit plus récente. Il est conseillé de mettre à jour celle-ci.";
+                }
+                if (modalText !== "") {
+                    this.$bvModal.msgBoxConfirm(modalText, {
+                        title: "Mise à jour des étudiants et des classes",
+                        headerBgVariant: "info",
+                        headerTextVariant: "light",
+                        okTitle: "Mettre à jour",
+                        cancelTitle: "Annuler",
+                        hideHeaderClose: false,
+                        centered: true
+                    })
+                        .then(value => {
+                            if (value) {
+                                this.$router.push("add_absence");
+                                this.$store.commit("updateStudentsClasses");
+                            }
+                        })
+                        .catch(err => {
+                            // An error occurred
+                            console.log(err);
+                        });
+                }
+            }
+        }, 4000);
     }
 };
 </script>
