@@ -241,7 +241,7 @@ export default new Vuex.Store({
                 .then(() => {
                     this.commit("updatingStatus", false);
                     setTimeout(() => {
-                        document.location.reload(true);
+                        document.location.reload();
                     }, 500);
                 });
             axios.get("/student_absence/api/classenote/", token)
