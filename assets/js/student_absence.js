@@ -60,7 +60,7 @@ new Vue({
                     this.$store.commit("changeOnLineStatus", true);
                     setTimeout(() => {
                         this.checkOnlineStatus();
-                    }, 10000);
+                    }, 5000);
                 })
                 .catch(() => {
                     this.$store.commit("changeOnLineStatus", false);
