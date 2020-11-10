@@ -88,7 +88,7 @@ class PIAModel(models.Model):
     disorder = models.ManyToManyField(DisorderModel)
     disorder_response = models.ManyToManyField(DisorderResponseModel)
     schedule_adjustment = models.ManyToManyField(ScheduleAdjustmentModel)
-    other_adjustments = models.TextField()
+    other_adjustments = models.TextField(blank=True)
     attachments = models.ManyToManyField(AttachmentModel, blank=True)
 
     def __str__(self):
