@@ -198,36 +198,57 @@ Il s’installe avec ``pip`` :
 
    sudo pip3 install supervisor
 
-*Supervisor* se configure avec le fichier ``/etc/supervisord.conf`` (à
-créer) :
+*Supervisor* se configure avec le fichier ``/etc/supervisor/supervisord.conf`` (à
+créer) pour la configuration générale :
 
 ::
 
     [unix_http_server]
-    file=/tmp/supervisor.sock
+    file=/var/run/supervisor.sock   ; the path to the socket file
+    chown = root
 
     [supervisord]
-    logfile=/var/log/supervisord.log ; main log file
-    logfile_maxbytes=20MB
-    pidfile=/tmp/supervisord.pid
+    nodaemon = False
+    childlogdir = /var/log/happyschool
+    user = root
+    pidfile = /var/run/supervisord.pid
 
     [rpcinterface:supervisor]
     supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
 
     [supervisorctl]
-    serverurl=unix:///tmp/supervisor.sock ; use a unix:// URL for a unix socket
+    serverurl = unix:///var/run/supervisor.sock ; use a unix:// URL  for a unix socket
+
+    [include]
+    files = /etc/supervisor/conf.d/*.conf
+
+Ainsi qu'un fichier pour chacun des processus que supervisor doit gérer.
+``/etc/supervisor/conf.d/daphne.conf`` :
+
+::
 
     [program:daphne]
-    command=/home/user/.local/bin/pipenv run daphne -b 0.0.0.0 -p 8080 happyschool.asgi:application
-    directory=/home/path/to/happyschool
+    command=/home/myuser/.local/bin/pipenv run daphne -b 0.0.0.0 -p 8080 happyschool.asgi:application ; Remplacer 'myuser' par l'utilisateur courant !
+    directory=/home/myuser/happyschool            ; Remplacer 'myuser' par l'utilisateur courant !
+    autostart=true
     autorestart=true
-    environment=HOME=“/home/user”,USER=“user” ; directory to
+    environment=HOME="/home/myuser",USER="myuser"   ; Remplacer 'myuser' par l'utilisateur courant !
+    user=myuser                                   ; Remplacer 'myuser' par l'utilisateur courant !
+    stdout_logfile_maxbytes=10MB
+
+et ``/etc/supervisor/conf.d/celery.conf`` :
+
+::
 
     [program:celery]
-    command=/home/user/.local/bin/pipenv run celery -A happyschool worker -l info
-    directory=/home/path/to/happyschool autostart=true
+    command=/home/myuser/.local/bin/pipenv run celery -A happyschool worker -l info ; Remplacer 'myuser' par l'utilisateur courant !
+    directory=/home/myuser/happyschool            ; Remplacer 'myuser' par l'utilisateur courant !
+    autostart=true
     autorestart=true
-    environment=HOME="/home/user",USER="user"
+    environment=HOME="/home/myuser",USER="myuser"   ; Remplacer 'myuser' par l'utilisateur courant !
+    user=myuser                                   ; Remplacer 'myuser' par l'utilisateur courant !
+    stdout_logfile_maxbytes=10MB
+
 
 Vérifiez que les chemins d’accès à
 Happyschool ainsi que le nom d’utilisateur sont correctement configurés.
@@ -244,7 +265,7 @@ vous pouvez créer un service dans
    After=network.target
 
    [Service]
-   ExecStart=/usr/local/bin/supervisord -n -c /etc/supervisord.conf
+   ExecStart=/usr/local/bin/supervisord -n -c /etc/supervisor/supervisord.conf
    ExecStop=/usr/local/bin/supervisorctl shutdown
    ExecReload=/usr/local/bin/supervisorctl reload
    KillMode=process
