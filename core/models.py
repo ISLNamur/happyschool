@@ -126,12 +126,14 @@ class StudentModel(models.Model):
 
     @property
     def fullname_classe(self):
-        return '%s %s %s' % (self.last_name, self.first_name, self.classe.compact_str)
+        return '%s %s %s' % (
+            self.last_name, self.first_name,
+            self.classe.compact_str if self.classe else "Ancien"
+        )
 
     @property
     def display(self):
         return self.__str__()
-
 
 
 class AdditionalStudentInfo(models.Model):
