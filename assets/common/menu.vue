@@ -55,7 +55,10 @@
                         text="Options"
                         right
                     >
-                        <b-dropdown-item href="/core/profil/">
+                        <b-dropdown-item
+                            v-if="userMatricule"
+                            :href="`/annuaire/#/person/responsible/${userMatricule}/`"
+                        >
                             Profil
                         </b-dropdown-item>
                         <b-dropdown-item
@@ -85,8 +88,13 @@ export default {
     },
     data: function () {
         return {
+            userMatricule: null,
         };
     },
+    mounted: function () {
+        // eslint-disable-next-line no-undef
+        if (user_properties && user_properties.matricule) this.userMatricule = user_properties.matricule;
+    }
 };
 </script>
 
