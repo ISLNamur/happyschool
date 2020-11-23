@@ -146,8 +146,12 @@ class ScheduleChangePlaceViewSet(ReadOnlyModelViewSet):
 
 
 class ScheduleChangeViewSet(BaseModelViewSet):
-    queryset = ScheduleChangeModel.objects.all().order_by('date_change', F('time_start').asc(nulls_first=True),
-                                                          'time_end')
+    queryset = ScheduleChangeModel.objects.all().order_by(
+        'date_change',
+        F('time_start').asc(nulls_first=True),
+        'time_end',
+        "place",
+    )
     serializer_class = ScheduleChangeSerializer
     permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
     filter_class = ScheduleChangeFilter
