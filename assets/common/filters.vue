@@ -243,6 +243,8 @@ export default {
                     "value": "true_" + this.filterType,
                 }];
                 return;
+            } else if (this.filterType.startsWith("count_")) {
+                return;
             }
 
             axios.get("/" + this.app + "/api/" + this.model + "/", {params: param})
