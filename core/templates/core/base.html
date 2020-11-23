@@ -26,30 +26,6 @@
               <ul class="nav navbar-nav navbar-left">
                                 {% if user.is_authenticated %}
                                 <li><a href="{% url 'annuaire' %}">Annuaire</a></li>
-                                {% if app_infirmerie and perms.infirmerie.access_infirmerie %}
-                                <li><a href="{% url 'infirmerie' %}">Infirmerie</a></li>
-                                {% endif %}
-                                {% if app_appels and perms.appels.view_appel %}
-                                <li><a href="{% url 'appels' %}">Appels</a></li>
-                                {% endif %}
-                                {% if app_absences and perms.absence_prof.access_absences %}
-                                <li><a href="{% url 'absence_prof:index' %}">Absences Prof</a></li>
-                                {% endif %}
-                                {% if app_infoeleve %}
-                                {% if perms.infoeleve.access_infoeleve %}
-                                <li><a href="{% url 'infoeleves' %}">Infos élève</a> </li>
-                                {% endif %}
-                                {% endif %}
-                                {% if app_dossier_eleve and perms.dossier_eleve.access_dossier_eleve %}
-                                <li><a href="{% url 'dossier_eleve' %}">Dossier Élèves
-                                    {% if new_rows.dossier_eleve > 0 %}<span class="badge">{{ new_rows.dossier_eleve }}</span>{% endif %}</a> </li>
-                                {% endif %}
-                                {% if app_mail_notification and perms.mail_notification.access_mail_notification %}
-                                <li><a href="{% url 'mail_notification:mail_notification' %}">Email</a> </li>
-                                {% endif %}
-                                {% if app_schedule_change and perms.schedule_change.access_schedule_change %}
-                                <li><a href="{% url 'schedule_change:schedule_change' %}">Changement Horaire</a> </li>
-                                {% endif %}
                                 {% endif %}
                             </ul>
 
@@ -58,14 +34,6 @@
                                 <li><a href="{% url 'auth' %}">Se connecter</a></li>
                                 {% else %}
                                 <li class="navbar-text" >Connecté en tant que <strong>{{ user.first_name }} {{ user.last_name }}</strong></li>
-                                <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Options <span class="caret"></span></a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="{% url 'core:profil' %}">Mon profil</a></li>
-                                        <li role="separator" class="divider"></li>
-                                        <li><a href="{% url 'logout' %}">Se déconnecter</a></li>
-                                    </ul>
-                                </li>
                                 {% endif %}
                             </ul>
             </div>

@@ -44,7 +44,12 @@
         {% endif %}
     </div>
     {% else %}
-    <h3> Vous êtes déjà connecté</h3>
+    <h3> Vous êtes déjà connecté.</h3>
+    <script type="text/javascript">
+        setTimeout(function () {
+            document.location.href = "/";
+        }, 1000)
+    </script>
     {% endif %}
 </div>
 {% endblock %}
