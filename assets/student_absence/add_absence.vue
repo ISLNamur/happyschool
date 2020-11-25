@@ -535,10 +535,10 @@ export default {
                 });
 
             const absencePromises = updateAbsences.map(change => {
-                return axios.put(apiUrl + change.id + "/", change, token);
+                return axios.put(`${apiUrl}${change.id}/?forceAllAccess=true`, change, token);
             });
 
-            if (newAbsences.length > 0) absencePromises.push(axios.post(apiUrl, newAbsences, token));
+            if (newAbsences.length > 0) absencePromises.push(axios.post(`${apiUrl}?forceAllAccess=true`, newAbsences, token));
 
             Promise.all(absencePromises)
                 .then(responses => {
