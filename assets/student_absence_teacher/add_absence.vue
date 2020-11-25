@@ -60,7 +60,7 @@
                 <multiselect
                     v-else-if="$store.state.settings.select_student_by === 'CL'"
                     :options="classesOptions"
-                    placeholder="Séléctionner votre classe"
+                    placeholder="Cherchez votre classe"
                     select-label=""
                     selected-label="Sélectionné"
                     deselect-label=""
@@ -69,6 +69,7 @@
                     v-model="classe"
                     :show-no-options="false"
                     @input="getStudents"
+                    @search-change="searchClasses"
                 >
                     <span slot="noResult">Aucune classe ne correspond à votre recherche.</span>
                 </multiselect>
@@ -138,6 +139,17 @@ export default {
     methods: {
         computeAlert: function () {
             this.showAlert = Object.keys(this.$store.state.changes).length > 0;
+        },
+        searchClasses: function (query) {
+            const data = {
+                query: query,
+                check_access: 0,
+                teachings: this.$store.state.settings.teachings
+            };
+            axios.post("/annuaire/api/classes/", data, token)
+                .then(resp => {
+                    this.classesOptions = resp.data;
+                });
         },
         getAbsence: function (students) {
             const data = {
@@ -232,14 +244,6 @@ export default {
                 this.periodOptions = resp.data.results;
             });
 
-        // eslint-disable-next-line no-undef
-        axios.get("/annuaire/api/responsible/" + user_properties.matricule + "/")
-            .then(resp => {
-                this.classesOptions = resp.data.classe.map(c => {
-                    c.display = c.year + c.letter.toUpperCase();
-                    return c;
-                }).sort((a, b) => a.display >= b.display);
-            });
         // eslint-disable-next-line no-undef
         this.givenCourseOptions = user_properties.given_courses;
         if (this.givenCourseOptions.length > 0 && this.givenCourseOptions[0].display.includes("["))
