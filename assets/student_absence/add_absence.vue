@@ -143,7 +143,7 @@
             <b-tabs v-model="tabIndex">
                 <b-tab :title="'Absences du ' + date_absence">
                     <div
-                        v-for="cl in getAbsences(true, 'classe')"
+                        v-for="(cl, clIdx) in getAbsences(true, 'classe')"
                         :key="cl"
                         class="border-bottom pb-1 mb-1"
                     >
@@ -173,7 +173,7 @@
                                 {{ getAbsences(true, "student", cl, false).length }}
                             </b-badge>
                         </b-button>
-                        <b-collapse :id="'present-' + cl">
+                        <b-collapse :id="'present-' + clIdx">
                             <b-form-group class="mt-2">
                                 <b-form-checkbox
                                     v-for="change in getAbsences(true, 'student', cl, false)"
@@ -213,7 +213,7 @@
                         </b-badge>
                     </template>
                     <div
-                        v-for="cl in getAbsences(false, 'classe')"
+                        v-for="(cl, clIdx) in getAbsences(false, 'classe')"
                         :key="cl"
                         class="border-bottom"
                     >
@@ -236,7 +236,7 @@
                         </b-form-group> 
                         <b-button
                             href="#"
-                            v-b-toggle="'present-' + cl"
+                            v-b-toggle="'present-' + clIdx"
                             variant="info"
                         >
                             Élèves présents
@@ -244,7 +244,7 @@
                                 {{ getAbsences(false, "student", cl, false).length }}
                             </b-badge>
                         </b-button>
-                        <b-collapse :id="'present-' + cl">
+                        <b-collapse :id="'present-' + clIdx">
                             <b-form-group class="mt-2">
                                 <b-form-checkbox
                                     v-for="change in getAbsences(false, 'student', cl, false)"
