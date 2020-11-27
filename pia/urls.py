@@ -27,6 +27,7 @@ app_name = 'pia'
 
 urlpatterns = [
     path('', views.PIAView.as_view(), name="pia"),
+    path('report/<int:pia>/', views.ReportPDFView.as_view()),
     path('upload_file/', views.UploadFileView.as_view()),
     path('upload_file/<int:pk>/', views.UploadFileView.as_view()),
 ]

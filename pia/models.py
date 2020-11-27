@@ -76,6 +76,9 @@ class ScheduleAdjustmentModel(models.Model):
         help_text="Description de l'aménagement horaire"
     )
 
+    def __str__(self):
+        return self.schedule_adjustment
+
 
 class PIAModel(models.Model):
     """Main model for a PIA.

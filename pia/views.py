@@ -19,8 +19,11 @@
 
 import json
 
+from django_weasyprint import WeasyTemplateView
+
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.views.generic import TemplateView
+from django.db.models import ObjectDoesNotExist
 
 from rest_framework.filters import OrderingFilter
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
@@ -184,3 +187,21 @@ class ParentsOpinionViewSet(ModelViewSet):
     filterset_fields = ('pia_model',)
     pagination_class = LargePageSizePagination
     ordering = ['-datetime_creation']
+
+
+class ReportPDFView(
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    WeasyTemplateView
+):
+    permission_required = ('pia.view_piamodel')
+
+    template_name = "pia/report.html"
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
+        try:
+            context["pia"] = models.PIAModel.objects.get(id=int(kwargs["pia"]))
+        except ObjectDoesNotExist:
+            pass
+        return context

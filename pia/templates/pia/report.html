@@ -1,0 +1,238 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>PIA: {{ pia.student }}</title>
+    </head>
+    <body>
+        <style>
+            @charset "UTF-8";
+            @page {
+                margin: 1cm;
+                counter-increment: page;
+                @bottom-right {
+                    content: "Page " counter(page) "/" counter(pages);
+                    border-top: .25pt solid #666;
+                    width: 50%;
+                }
+            }
+
+            html {
+                font-size: 0.9em;
+            }
+
+            p {
+                text-align: justify;
+            }
+
+            img {
+                width: 100px;
+            }
+
+            .nexttoimg {
+                margin-left: 5%;
+                flex-grow: 2;
+            }
+
+            .row {
+                display: flex;
+            }
+
+            .column {
+                display: flex;
+                flex-direction: column;
+                flex-wrap: wrap;
+            }
+        </style>
+        <h1>PIA : {{ pia.student.fullname_classe }}</h1>
+        <h2>Élève</h2>
+        <div class="row">
+            <div>
+                <img src="/static/photos/{{ pia.student.matricule }}.jpg" />
+            </div>
+            <div class="nexttoimg">
+                <dl>
+                    <dt>Référent(s)</dt>
+                    <dd>
+                        <ul>
+                            {% for r in pia.referent.all %}
+                            <li>{{ r }}</li>
+                            {% endfor %}
+                        </ul>
+                    </dd>
+                </dl>
+                <dl>
+                    <dt>Parrain/Marraine</dt>
+                    <dd>
+                        <ul>
+                            {% for s in pia.sponsor.all %}
+                            <li>{{ s }}</li>
+                            {% endfor %}
+                        </ul>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+        <h3>Aménagements</h3>
+        <div class="row">
+            <dl>
+                <dt>Trouble d'apprentissage</dt>
+                <dd>
+                    <ul>
+                        {% for d in pia.disorder.all %}
+                        <li>{{ d }}</li>
+                        {% endfor %}
+                    </ul>
+                </dd>
+            </dl>
+        </div>
+        <div class="row">
+            <dl>
+                <dt>Aménagements raisonnables liés au trouble</dt>
+                <dd>
+                    <ul>
+                        {% for d_r in pia.disorder_response.all %}
+                        <li>{{ d_r }}</li>
+                        {% endfor %}
+                    </ul>
+                </dd>
+            </dl>
+        </div>
+        <div class="row">
+            <dl>
+                <dt>Aménagements d'horaire</dt>
+                <dd>
+                    <ul>
+                        {% for s_a in pia.schedule_adjustment.all %}
+                        <li>{{ s_a }}</li>
+                        {% endfor %}
+                    </ul>
+                </dd>
+            </dl>
+        </div>
+        <div class="row">
+            <dl>
+                <dt>Aménagements d'horaire</dt>
+                <dd>
+                    {{ pia.other_adjustments|safe }}
+                </dd>
+            </dl>
+        </div>
+
+        <h2>Conseils de classe</h2>
+        {% for council in pia.classcouncilpiamodel_set.all %}
+        <div>
+            <div>
+                <h3>{{ council.date_council }}</h3>
+                {% for branch in council.branchstatementmodel_set.all %}
+                    <div class="nexttoimg">
+                        <strong>{{ branch.branch }}</strong>
+                        <dl>
+                            <dt><em>Ressources</em></dt>
+                            <dd>
+                                {{ branch.resources|safe }}
+                            </dd>
+                            <dt><em>Difficultés</em></dt>
+                            <dd>
+                                {{ branch.difficulties|safe }}
+                            </dd>
+                            <dt><em>Autres</em></dt>
+                            <dd>
+                                {{ branch.others|safe }}
+                            </dd>
+                        </dl>
+                    </div>    
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+        
+        <h2>Objectifs</h2>
+        <h3>Objectifs transversaux</h3>
+        {% for obj in pia.crossgoalmodel_set.all %}
+            <div class="nexttoimg">
+                <strong>Du {{ obj.date_start }} au {{ obj.date_end }} :</strong>
+                <dl>
+                    <dt>Objectifs transversaux</dt>
+                    <dd>
+                        {{ obj.cross_goals }}
+                    </dd>
+                    <dt>Intervenant(s)</dt>
+                    <dd>
+                        <ul>
+                            {% for r in obj.responsible.all %}
+                            <li>{{ r }}</li>
+                            {% endfor %}
+                        </ul>
+                    </dd>
+                    <dt>Indicateur(s)/Action(s)</dt>
+                    <dd>
+                        {{ obj.indicator_action|safe }}
+                    </dd>
+                    <dt>Aide(s)</dt>
+                    <dd>
+                        {{ obj.given_help|safe }}
+                    </dd>
+                    <dt>Auto-évaluation</dt>
+                    <dd>
+                        {{ obj.self_assessment|safe }}
+                    </dd>
+                    <dt>Évaluation</dt>
+                    <dd>
+                        {{ obj.assessment }}
+                    </dd>
+                </dl>
+            </div>
+        {% endfor %}
+        <h3>Objectifs de branche</h3>
+        {% for obj in pia.branchgoalmodel_set.all %}
+            <div class="nexttoimg">
+                <strong>{{ obj.branch }}, du {{ obj.date_start }} au {{ obj.date_end }} :</strong>
+                <dl>
+                    <dt>Objectifs de branche</dt>
+                    <dd>
+                        {{ obj.branch_goals }}
+                    </dd>
+                    <dt>Intervenant(s)</dt>
+                    <dd>
+                        <ul>
+                            {% for r in obj.responsible.all %}
+                            <li>{{ r }}</li>
+                            {% endfor %}
+                        </ul>
+                    </dd>
+                    <dt>Indicateur(s)/Action(s)</dt>
+                    <dd>
+                        {{ obj.indicator_action|safe }}
+                    </dd>
+                    <dt>Aide(s)</dt>
+                    <dd>
+                        {{ obj.given_help|safe }}
+                    </dd>
+                    <dt>Auto-évaluation</dt>
+                    <dd>
+                        {{ obj.self_assessment|safe }}
+                    </dd>
+                    <dt>Évaluation</dt>
+                    <dd>
+                        {{ obj.assessment }}
+                    </dd>
+                </dl>
+            </div>
+        {% endfor %}
+        <h2>Projet et avis</h2>
+        <h3>Projet de l'élève</h3>
+        {% for p in pia.studentprojectmodel_set.all %}
+        <div class="nexttoimg">
+            <strong>{{ p.date_student_project }}</strong>
+            {{ p.student_project|safe }}
+        </div>
+        {% endfor %}
+        <h3>Avis des parents</h3>
+        {% for p in pia.parentsopinionmodel_set.all %}
+        <div class="nexttoimg">
+            <strong>{{ p.date_parents_opinion }}</strong>
+            {{ p.parents_opinion|safe }}
+        </div>
+        {% endfor %}
+    </body>
+</html>

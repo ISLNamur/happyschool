@@ -33,6 +33,11 @@
                 align-self="end"
             >
                 <b-btn
+                    :href="`/pia/report/${id}/`"
+                >
+                    PDF
+                </b-btn>
+                <b-btn
                     @click="submit"
                     variant="primary"
                     :disabled="!form.student"
