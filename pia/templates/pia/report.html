@@ -111,13 +111,14 @@
         </div>
         <div class="row">
             <dl>
-                <dt>Aménagements d'horaire</dt>
+                <dt>Autres aménagements</dt>
                 <dd>
                     {{ pia.other_adjustments|safe }}
                 </dd>
             </dl>
         </div>
 
+        {% if pia.classcouncilpiamodel_set.all %}
         <h2>Conseils de classe</h2>
         {% for council in pia.classcouncilpiamodel_set.all %}
         <div>
@@ -145,7 +146,9 @@
             </div>
         </div>
         {% endfor %}
+        {% endif %}
         
+        {% if pia.crossgoalmodel_set.all or pia.branchgoalmodel_set.all %}
         <h2>Objectifs</h2>
         <h3>Objectifs transversaux</h3>
         {% for obj in pia.crossgoalmodel_set.all %}
@@ -219,6 +222,8 @@
                 </dl>
             </div>
         {% endfor %}
+        {% endif %}
+        {% if pia.parentsopinionmodel_set.all or pia.studentprojectmodel_set.all %}
         <h2>Projet et avis</h2>
         <h3>Projet de l'élève</h3>
         {% for p in pia.studentprojectmodel_set.all %}
@@ -234,5 +239,6 @@
             {{ p.parents_opinion|safe }}
         </div>
         {% endfor %}
+        {% endif %}
     </body>
 </html>
