@@ -18,124 +18,128 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-card class="mt-1">
-        <b-row>
-            <b-col>
-                <strong>{{ branchStatement ? branchStatement.branch : "" }}</strong>
-            </b-col>
-            <b-col
-                cols="2"
-                class="text-right"
-            >
-                <b-btn
-                    variant="light"
-                    size="sm"
-                    @click="editing = true"
-                    class="card-link mb-1"
-                >
-                    <icon
-                        scale="1.3"
-                        name="edit"
-                        color="green"
-                        class="align-text-bottom"
-                    />
-                </b-btn>
-                <b-btn
-                    variant="light"
-                    size="sm"
-                    @click="$emit('remove')"
-                    class="card-link"
-                >
-                    <icon
-                        scale="1.3"
-                        name="trash"
-                        color="red"
-                        class="align-text-bottom"
-                    />
-                </b-btn>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <span class="text-muted">Ressources</span>
-                <div v-html="resources" />
-            </b-col>
-            <b-col>
-                <span class="text-muted">Difficultés</span>
-                <div v-html="difficulties" />
-            </b-col>
-            <b-col>
-                <span class="text-muted">Autres</span>
-                <div v-html="others" />
-            </b-col>
-        </b-row>
-        <b-modal
-            v-model="editing"
-            size="xl"
-            title="Éditer"
-            ok-only
-        >
-            <b-form-row>
+    <b-overlay
+        :show="loading"
+    >
+        <b-card class="mt-1">
+            <b-row>
                 <b-col>
-                    <b-form-group
-                        label="Branche"
-                        label-cols="2"
+                    <strong>{{ branchStatement ? branchStatement.branch : "" }}</strong>
+                </b-col>
+                <b-col
+                    cols="2"
+                    class="text-right"
+                >
+                    <b-btn
+                        variant="light"
+                        size="sm"
+                        @click="editing = true"
+                        class="card-link mb-1"
                     >
-                        <multiselect
-                            :options="$store.state.branches"
-                            placeholder="Choisisser une branche"
-                            select-label=""
-                            selected-label="Sélectionné"
-                            deselect-label="Cliquer dessus pour enlever"
-                            v-model="branchStatement"
-                            :show-no-options="false"
-                            label="branch"
-                            track-by="id"
+                        <icon
+                            scale="1.3"
+                            name="edit"
+                            color="green"
+                            class="align-text-bottom"
+                        />
+                    </b-btn>
+                    <b-btn
+                        variant="light"
+                        size="sm"
+                        @click="$emit('remove')"
+                        class="card-link"
+                    >
+                        <icon
+                            scale="1.3"
+                            name="trash"
+                            color="red"
+                            class="align-text-bottom"
+                        />
+                    </b-btn>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <span class="text-muted">Ressources</span>
+                    <div v-html="resources" />
+                </b-col>
+                <b-col>
+                    <span class="text-muted">Difficultés</span>
+                    <div v-html="difficulties" />
+                </b-col>
+                <b-col>
+                    <span class="text-muted">Autres</span>
+                    <div v-html="others" />
+                </b-col>
+            </b-row>
+            <b-modal
+                v-model="editing"
+                size="xl"
+                title="Éditer"
+                ok-only
+            >
+                <b-form-row>
+                    <b-col>
+                        <b-form-group
+                            label="Branche"
+                            label-cols="2"
                         >
-                            <template
-                                slot="singleLabel"
-                                slot-scope="props"
+                            <multiselect
+                                :options="$store.state.branches"
+                                placeholder="Choisisser une branche"
+                                select-label=""
+                                selected-label="Sélectionné"
+                                deselect-label="Cliquer dessus pour enlever"
+                                v-model="branchStatement"
+                                :show-no-options="false"
+                                label="branch"
+                                track-by="id"
                             >
-                                <strong>{{ props.option.branch }}</strong>
-                            </template>
-                            <span slot="noResult">Aucune branche trouvée.</span>
-                            <span slot="noOptions" />
-                        </multiselect>
-                    </b-form-group>
-                </b-col>
-            </b-form-row>
-            <b-form-row>
-                <b-col>
-                    <b-form-group label="Ressources">
-                        <quill-editor
-                            v-model="resources"
-                            :options="editorOptions"
-                        />
-                    </b-form-group>
-                </b-col>
-            </b-form-row>
-            <b-form-row>
-                <b-col>
-                    <b-form-group label="Difficultés">
-                        <quill-editor
-                            v-model="difficulties"
-                            :options="editorOptions"
-                        />
-                    </b-form-group>
-                </b-col>
-            </b-form-row>
-            <b-form-row>
-                <b-col>
-                    <b-form-group label="Autres">
-                        <quill-editor
-                            v-model="others"
-                            :options="editorOptions"
-                        />
-                    </b-form-group>
-                </b-col>
-            </b-form-row>
-        </b-modal>
-    </b-card>
+                                <template
+                                    slot="singleLabel"
+                                    slot-scope="props"
+                                >
+                                    <strong>{{ props.option.branch }}</strong>
+                                </template>
+                                <span slot="noResult">Aucune branche trouvée.</span>
+                                <span slot="noOptions" />
+                            </multiselect>
+                        </b-form-group>
+                    </b-col>
+                </b-form-row>
+                <b-form-row>
+                    <b-col>
+                        <b-form-group label="Ressources">
+                            <quill-editor
+                                v-model="resources"
+                                :options="editorOptions"
+                            />
+                        </b-form-group>
+                    </b-col>
+                </b-form-row>
+                <b-form-row>
+                    <b-col>
+                        <b-form-group label="Difficultés">
+                            <quill-editor
+                                v-model="difficulties"
+                                :options="editorOptions"
+                            />
+                        </b-form-group>
+                    </b-col>
+                </b-form-row>
+                <b-form-row>
+                    <b-col>
+                        <b-form-group label="Autres">
+                            <quill-editor
+                                v-model="others"
+                                :options="editorOptions"
+                            />
+                        </b-form-group>
+                    </b-col>
+                </b-form-row>
+            </b-modal>
+        </b-card>
+    </b-overlay>
 </template>
 
 <script>
@@ -169,6 +173,7 @@ export default {
             difficulties: "",
             others: "",
             /** State if the editing modal is open. */
+            loading: true,
             editing: false,
             /** Configuration of the quill editor. */
             editorOptions: {
@@ -191,6 +196,7 @@ export default {
             this.$store.dispatch("loadOptions")
                 .then(() => {
                     this.branchStatement = this.$store.state.branches.filter(b => b.id == this.branch_statement.branch)[0];
+                    this.loading = false;
                 });
             this.resources = this.branch_statement.resources;
             this.difficulties = this.branch_statement.difficulties;
