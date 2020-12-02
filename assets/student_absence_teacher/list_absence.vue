@@ -49,6 +49,7 @@
                     :key="absence.id"
                     :absence="absence"
                     @filterStudent="filterStudent($event)"
+                    @update="loadEntries()"
                 />
             </b-col>
         </b-row>

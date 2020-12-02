@@ -147,7 +147,7 @@ class OverviewAPI(APIView):
         for period in periods:
             if use_student_absence:
                 not_teacher_period = not_teacher_abs.filter(
-                    period__start__lte=period.end, period__end__gte=period.start
+                    period__start__lt=period.end, period__end__gt=period.start
                 )
                 if not_teacher_period.count() > 0:
                     not_teacher_count = not_teacher_period.filter(is_absent=True).count()
