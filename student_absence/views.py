@@ -101,6 +101,8 @@ class StudentAbsenceFilter(BaseFilters):
         ]
         model = StudentAbsenceModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
+        fields["period__start"] = ['lt', 'gt', 'lte', 'gte', 'exact']
+        fields["period__end"] = ['lt', 'gt', 'lte', 'gte', 'exact']
         filter_overrides = BaseFilters.Meta.filter_overrides
 
     def activate_is_absent_by(self, queryset, name, value):
@@ -124,7 +126,7 @@ class StudentAbsenceViewSet(ModelViewSet):
     pagination_class = PageNumberSizePagination
     ordering_fields = [
         'date_absence', 'datetime_update', 'datetime_creation',
-        "student__classe__year", "student__classe__letter", "student__last_name", "student__first_name"
+        "student__classe__year", "student__classe__letter", "student__last_name", "student__first_name",
     ]
     cursor = None
 
@@ -249,6 +251,18 @@ class ClasseNoteViewSet(ModelViewSet):
     filterset_fields = ('classe',)
 
 
+class PeriodFilter(BaseFilters):
+    class Meta:
+        model = PeriodModel
+        fields = {
+            "start": ['lt', 'gt', 'lte', 'gte', 'exact'],
+            "end": ['lt', 'gt', 'lte', 'gte', 'exact'],
+        }
+        filter_overrides = BaseFilters.Meta.filter_overrides
+
+
 class PeriodViewSet(ReadOnlyModelViewSet):
     queryset = PeriodModel.objects.all()
     serializer_class = PeriodSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filter_class = PeriodFilter
