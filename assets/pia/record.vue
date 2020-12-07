@@ -90,7 +90,7 @@
                                             :internal-search="false"
                                             :options="studentOptions"
                                             @search-change="getPeople"
-                                            placeholder="Référent"
+                                            placeholder="Rechercher un élève"
                                             select-label=""
                                             selected-label="Sélectionné"
                                             deselect-label="Cliquer dessus pour enlever"
