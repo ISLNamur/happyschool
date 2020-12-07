@@ -23,6 +23,7 @@ import string
 from time import strftime
 
 from django.db import models
+from django.contrib.auth.models import Group
 
 from core.models import TeachingModel, StudentModel, ResponsibleModel
 
@@ -35,6 +36,7 @@ def unique_file_name(instance, filename):
 
 class PIASettingsModel(models.Model):
     teachings = models.ManyToManyField(TeachingModel)
+    all_access = models.ManyToManyField(Group, default=None, blank=True)
     filter_teacher_entries_by_tenure = models.BooleanField(
         default=False,
         help_text="""

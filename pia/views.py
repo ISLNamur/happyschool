@@ -96,6 +96,9 @@ class PIAViewSet(BaseModelViewSet):
     def is_only_tenure(self):
         return get_settings().filter_teacher_entries_by_tenure
 
+    def get_group_all_access(self):
+        return get_settings().all_access.all()
+
 
 class CrossGoalViewSet(ModelViewSet):
     queryset = models.CrossGoalModel.objects.all()
