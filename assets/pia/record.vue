@@ -731,7 +731,7 @@ export default {
                             const components = ["cross_goal", "branch_goal", "student_project", "parents_opinion", "class_council"];
                             components.forEach(comp => {
                                 const compResps = resps.filter(r =>r && r.config.url.includes(`pia/api/${comp}/`));
-                                this[comp] = compResps.map(r => r.data).sort((a, b) => a.datetime_creation < b.datetime_creation);
+                                app[comp] = compResps.map(r => r.data).sort((a, b) => a.datetime_creation < b.datetime_creation);
                             });
 
                             // Save class_council subcomponents.
@@ -739,7 +739,7 @@ export default {
                             const councilResponses = resps.filter(r =>r && r.config.url.includes("/pia/api/class_council/"));
 
                             if (councilResponses.length == 0) {
-                                this.showSuccess(recordId);
+                                app.showSuccess(recordId);
                                 return;
                             }
                             // Get branch statement promises.
@@ -752,20 +752,20 @@ export default {
 
                             Promise.all(subPromises)
                                 .then(() => {
-                                    this.showSuccess(recordId);
+                                    app.showSuccess(recordId);
                                 })
                                 .catch(err => {
                                     console.log(err);
-                                    this.showFailure();
+                                    app.showFailure();
                                 });
                         })
                         .catch(err => {
                             console.log(err);
-                            this.showFailure();
+                            app.showFailure();
                         });
 
                 }).catch(function (error) {
-                    this.showFailure();
+                    app.showFailure();
                     if ("response" in error) app.errors = error.response.data;
                 });
         },
