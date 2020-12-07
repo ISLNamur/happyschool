@@ -24,6 +24,7 @@ from django_weasyprint import WeasyTemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.db.models import ObjectDoesNotExist
+from django.contrib.auth.models import Group
 
 from rest_framework.filters import OrderingFilter
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
@@ -31,7 +32,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from django_filters import rest_framework as filters
 
 from core.utilities import get_menu
-from core.views import BaseModelViewSet, get_app_settings, BaseUploadFileView, LargePageSizePagination
+from core.views import BaseModelViewSet, get_app_settings, BaseUploadFileView, LargePageSizePagination, BaseFilters
 
 from . import models
 from . import serializers
@@ -73,11 +74,22 @@ class PIAView(LoginRequiredMixin,
         return context
 
 
+class PIAFilterSet(BaseFilters):
+    class Meta:
+        fields_to_filter = [
+            "student__matricule",
+            "student__last_name"
+        ]
+        model = models.PIAModel
+        fields = BaseFilters.Meta.generate_filters(fields_to_filter)
+        filter_overrides = BaseFilters.Meta.filter_overrides
+
+
 class PIAViewSet(BaseModelViewSet):
     queryset = models.PIAModel.objects.all()
     serializer_class = serializers.PIASerializer
     ordering_fields = ('student__classe__year', "student__classe__letter",)
-    filterset_fields = ('student__matricule',)
+    filter_class = PIAFilterSet
 
     username_field = None
 

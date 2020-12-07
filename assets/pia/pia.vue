@@ -43,8 +43,7 @@
                         :options="studentOptions"
                         placeholder="Rechercher un étudiant"
                         @search-change="searchStudent"
-                        @select="filterByStudent"
-                        @remove="removeSearch"
+                        @select="goToRecord"
                         select-label=""
                         selected-label="Sélectionné"
                         deselect-label="Cliquer dessus pour enlever"
@@ -101,8 +100,6 @@ Vue.component("icon", Icon);
 import Multiselect from "vue-multiselect";
 
 import Entry from "./entry.vue";
-import {getPeopleByName} from "../common/search.js";
-import {getFilters} from "../common/filters.js";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
@@ -118,28 +115,17 @@ export default {
             studentOptions: [],
             canAddPia: false,
             currentStudent: null,
-            filter: "",
+            searchId: -1,
         };
     },
     methods: {
         /**
-         * Filter list by student.
+         * Move to the PIA record page.
          * 
          * @param {object} student A student object with the matricule.
          */
-        filterByStudent: function (student) {
-            this.$store.commit("addFilter", {filterType: "student__matricule", tag: student.display, value: student.matricule});
-            this.applyFilter();
-            // this.studentOptions = [student];
-        },
-        removeSearch: function () {
-            this.$store.commit("removeFilter", "student__matricule");
-            this.applyFilter();
-        },
-        applyFilter: function () {
-            this.filter = getFilters(this.$store.state.filters);
-            this.currentPage = 1;
-            this.loadEntries();
+        goToRecord: function (student) {
+            this.$router.push(`/edit/${student.pia}/`);
         },
         /**
          * Search for a student.
@@ -147,13 +133,18 @@ export default {
          * @param {String} search The current search.
          */
         searchStudent: function (search) {
-            // eslint-disable-next-line no-undef
-            getPeopleByName(search, user_properties.teaching, "student", true)
+            this.searchId += 1;
+            const currentSearch = this.searchId;
+            axios.get(`/pia/api/pia/?student__last_name=${search}`)
                 .then(resp => {
-                    this.studentOptions = resp.data;
-                })
-                .catch(err => {
-                    alert(err);
+                    if (currentSearch < this.searchId) return;
+                    this.studentOptions = resp.data.results.map(p => {
+                        return {
+                            "display": p.student.display,
+                            "matricule": p.student.matricule,
+                            "pia": p.id,
+                        };
+                    });
                 });
         },
         /**
@@ -186,7 +177,7 @@ export default {
         /** Load or reload PIA entries. */
         loadEntries: function () {
             const ordering = "ordering=student__classe__year,student__classe__letter";
-            axios.get("/pia/api/pia/?" + ordering + "&page=" + this.currentPage + this.filter)
+            axios.get("/pia/api/pia/?" + ordering + "&page=" + this.currentPage)
                 .then(resp => {
                     this.entries = resp.data.results;
                     this.entriesCount = resp.data.count;
