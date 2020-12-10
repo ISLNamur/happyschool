@@ -372,7 +372,7 @@ export default {
                     this.form.datetime_sanction = datetime.format("YYYY-MM-DD");
                     this.timeSanction = datetime.format("HH:MM");
                 }
-                this.form.time_sanction_end = entry.time_sanction_end.slice(0, 5);
+                this.form.time_sanction_end = entry.time_sanction_end ? entry.time_sanction_end.slice(0, 5) : null;
 
                 if (entry.datetime_conseil) {
                     this.form.datetime_conseil = Moment(entry.datetime_conseil).format("YYYY-MM-DD");
@@ -446,6 +446,9 @@ export default {
                 data.datetime_sanction += time;
             } else {
                 data.datetime_sanction = null;
+            }
+            if (!data.time_sanction_end) {
+                data.time_sanction_end = null;
             }
             if (data.datetime_conseil) {
                 data.datetime_conseil += " 12:00";
