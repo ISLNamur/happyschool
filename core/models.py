@@ -89,7 +89,7 @@ class CourseModel(models.Model):
 
 class GivenCourseModel(models.Model):
     course = models.ForeignKey(CourseModel, on_delete=models.CASCADE)
-    group = models.CharField(max_length=20, default="", blank=True)
+    group = models.CharField(max_length=100, default="", blank=True)
 
     def __str__(self):
         name = self.course.long_name if self.course.long_name else self.course.short_name
