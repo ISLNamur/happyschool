@@ -742,3 +742,131 @@ class ImportStudentFDB(ImportStudent):
             return entry[1][self.column_map[column]]
         else:
             return self.format_value(entry[1][column], column)
+
+
+class SyncCourses(ImportBase):
+    ignore_first_iteration = True
+
+    def is_student_in_group(self, student: StudentModel, group: "str") -> bool:
+        pass
+
+    def _sync(self, iterable):
+        teachers_synced = set()
+        students_synced = set()
+
+        for entry in iterable:
+            if self.ignore_first_iteration:
+                self.ignore_first_iteration = False
+                continue
+
+            if entry[13] == "Non placé":
+                continue
+
+            course = self.get_value(entry, "course")
+            teachers = self.get_value(entry, "teachers")
+            classes = self.get_value(entry, "classes")
+
+            if not course or not teachers or not classes:
+                if course.givencoursemodel_set.all().count() == 0:
+                    course.delete()
+                continue
+
+            # print(f"course: {course}")
+            # print(f"teachers: {teachers}")
+            # print(f"classes: {classes}")
+
+            # Build a string like 'classe1.compact_str GRX/classe2.compact_str GRY/...'
+            group = "/".join([" ".join((c[0].compact_str, f"GR{c[1]}" if c[1] else "")) for c in classes])
+            given_course = GivenCourseModel.objects.get_or_create(course=course, group=group)[0]
+
+            # Add courses and classes to teachers.
+            for t in teachers:
+                if t.id not in teachers_synced:
+                    t.classe.remove(*t.classe.filter(teaching=self.teaching))
+                    t.courses.remove(*t.courses.filter(course__teaching=self.teaching))
+                    teachers_synced.add(t.id)
+                t.courses.add(given_course)
+                for c in classes:
+                    t.classe.add(c[0])
+
+            # Add courses for students
+            for c in classes:
+                students = c[0].studentmodel_set.all()
+                if c[1]:
+                    students = [s for s in students if self.is_student_in_group(s, c[1])]
+                for s in students:
+                    if s.matricule not in students_synced:
+                        s.courses.remove(*s.courses.filter(course__teaching=self.teaching))
+                        students_synced.add(s.matricule)
+                    s.courses.add(given_course)
+
+
+class EDTTextSyncCourses(SyncCourses):
+    def __init__(self, teaching: TeachingModel, path_to_group_file: str = None):
+        self.teaching = teaching
+        with open(path_to_group_file, "r") as csvfile:
+            self.student_group_relation = {int(r[0]): r[1] for r in list(csv.reader(csvfile))}
+
+    def sync(self, iterable) -> None:
+        self._sync(iterable)
+
+    def is_student_in_group(self, student: StudentModel, group: int) -> bool:
+        if student.matricule not in self.student_group_relation:
+            return False
+        return self.student_group_relation[student.matricule] == str(group)
+
+    def get_value(self, entry: object, column: str) -> Union[int, str, date, None]:
+        if column == "course":
+            long_name = entry[5]
+            short_name = entry[4]
+            return CourseModel.objects.get_or_create(
+                long_name=long_name, short_name=short_name, teaching=self.teaching
+            )[0]
+
+        if column == "classes":
+            if not entry[6]:
+                return None
+            classes_text = [c for c in entry[6].split(";") if c and (c[0].isnumeric() or c[1].isnumeric())]
+            classes = []
+            for c in classes_text:
+                year_index = next((i for i, e in enumerate(c) if e.isnumeric()))
+                year = c[year_index]
+                full_classe = c[year_index:].split(" ")
+                has_group = full_classe[-1].upper()[:2] == "GR" and full_classe[-1][-1].isnumeric()
+                if has_group:
+                    letter = " ".join(full_classe[1:-1]).upper()
+                    group = int(full_classe[-1][-1])
+                else:
+                    letter = " ".join(full_classe[1:]).upper()
+                    group = None
+                try:
+                    classe = ClasseModel.objects.get(
+                        teaching=self.teaching,
+                        year=year,
+                        letter__unaccent__iexact=letter
+                    )
+                    classes.append((classe, group))
+                except ObjectDoesNotExist:
+                    print(f"Classe {c} not found")
+                    pass
+
+            return classes
+
+        if column == "teachers":
+            if not entry[3]:
+                return None
+
+            teachers = []
+            for teacher_text in entry[3].split(";"):
+                first_name_start = teacher_text.split(" ")[-1][:-1] if teacher_text[-1] == "." else None
+                last_name = " ".join(teacher_text.split(" ")[:-1]) if first_name_start else teacher_text
+                teacher = ResponsibleModel.objects.filter(last_name__unaccent__iexact=last_name)
+                if first_name_start:
+                    teacher = teacher.filter(first_name__unaccent__istartswith=first_name_start)
+
+                if teacher.count() != 1:
+                    print(f"Error while searching teacher, teacher found is {teacher.count()} ({last_name})")
+                    return None
+
+                teachers.append(teacher.first())
+            return teachers
