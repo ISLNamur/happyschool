@@ -128,6 +128,7 @@ class DossierEleveView(BaseDossierEleveView):
         {'value': 'info__info', 'text': 'Info'},
         {'value': 'sanction_decision__sanction_decision', 'text': 'Sanction/décision'},
         {'value': 'datetime_encodage', 'text': 'Date encodage'},
+        {'value': 'datetime_sanction', 'text': 'Date sanction'},
         {'value': 'activate_important', 'text': 'Important'},
         {'value': 'matricule_id', 'text': 'Matricule'},
         {'value': 'scholar_year', 'text': 'Année scolaire'},
@@ -144,7 +145,7 @@ class CasEleveFilter(BaseFilters):
 
     class Meta:
         fields_to_filter = ('name', 'matricule_id', 'info__info', 'sanction_decision__sanction_decision',
-                            'datetime_encodage',)
+                            'datetime_encodage', "datetime_sanction")
         model = CasEleve
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
