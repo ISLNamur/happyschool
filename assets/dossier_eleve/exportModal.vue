@@ -74,7 +74,6 @@
                 </b-tab>
                 <b-tab
                     title="Filtre courant"
-                    disabled
                 >
                     <p>
                         Vous pouvez exporter l'affichage courant (toutes pages confondues).
@@ -106,6 +105,8 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 
 import Moment from "moment";
 Moment.locale("fr");
+
+import {getFilters} from "../common/filters.js";
 
 import axios from "axios";
 
@@ -182,18 +183,23 @@ export default {
         getPdf: function (evt) {
             evt.preventDefault();
 
-            let path = "/dossier_eleve/get_pdf/?page_size=500&";
+            if (this.tabIndex == 0) {
+                let path = "/dossier_eleve/get_pdf/?page_size=500&";
 
-            path += "letter" in this.nameClasse ? "classe=" : "matricule_id=";
-            path += this.nameClasse.id;
+                path += "letter" in this.nameClasse ? "classe=" : "matricule_id=";
+                path += this.nameClasse.id;
 
-            path += this.info ? "" : "&no_infos=true";
-            path += this.sanction ? "" : "&no_sanctions=true";
-            // eslint-disable-next-line no-undef
-            path += this.allYears ? "" : "&scholar_year=" + currentYear ;
-            path += "&ordering=matricule__last_name";
+                path += this.info ? "" : "&no_infos=true";
+                path += this.sanction ? "" : "&no_sanctions=true";
+                // eslint-disable-next-line no-undef
+                path += this.allYears ? "" : "&scholar_year=" + currentYear ;
+                path += "&ordering=matricule__last_name";
 
-            window.open(path);
+                window.open(path);
+            } else if (this.tabIndex == 1) {
+                const path = `/dossier_eleve/get_pdf_list/?page_size=2000${getFilters(this.$store.state.filters)}`;
+                window.open(path);
+            }
         },
     },
     mounted: function () {

@@ -36,6 +36,7 @@ urlpatterns = [
     path('upload_file/', views.UploadFileView.as_view(), name='upload_file'),
     path('upload_file/<int:pk>/', views.UploadFileView.as_view(), name='remove_file'),
     path('get_pdf/', views.CasElevePDFGenAPI.as_view()),
+    path('get_pdf_list/', views.CasEleveListPDFGen.as_view()),
     path('get_pdf_council/', views.AskSanctionCouncilPDFGenAPI.as_view()),
     path('get_pdf_retenues/', views.AskSanctionRetenuesPDFGenAPI.as_view()),
     path('get_pdf_retenue/<int:sanction>/', views.RetenuePDF.as_view()),

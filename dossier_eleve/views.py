@@ -455,6 +455,25 @@ class UploadFileView(BaseUploadFileView):
     file_serializer = CasAttachmentSerializer
 
 
+class CasEleveListPDFGen(
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    WeasyTemplateView
+):
+    permission_required = ["dossier_eleve.view_caseleve"]
+    template_name = "dossier_eleve/cas_list_pdf.html"
+
+    def get_context_data(self, **kwargs) -> dict:
+        view_set = CasEleveViewSet.as_view({'get': 'list'})
+        results = [c["id"] for c in view_set(self.request).data['results']]
+        results = CasEleve.objects.filter(id__in=results)
+        context = {'list': results}
+        return context
+
+    def modify_entries(self, results):
+        return results
+
+
 class CasElevePDFGenAPI(APIView):
     permission_classes = (IsAuthenticated,)
 
