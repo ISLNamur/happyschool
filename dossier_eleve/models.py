@@ -203,6 +203,7 @@ class CasEleve(models.Model):
     explication_commentaire = models.CharField(max_length=5000)
     attachments = models.ManyToManyField(CasAttachment, blank=True)
     datetime_sanction = models.DateTimeField("date de la sanction", null=True, blank=True)
+    time_sanction_end = models.TimeField("Heure de fin de la sanction", null=True, blank=True)
     datetime_conseil = models.DateTimeField("date du conseil disciplinaire", null=True, blank=True)
     sanction_faite = models.NullBooleanField(default=None, null=True, blank=True)
     important = models.BooleanField(default=False)

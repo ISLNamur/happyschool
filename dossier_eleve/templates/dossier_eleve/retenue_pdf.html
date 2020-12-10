@@ -95,7 +95,12 @@
             <dd>Mesure disciplinaire</dd>
         </dl>
         <p>Chers parents,</p>
-        <p>Nous sommes contrains d'infliger à votre fils une sanction qui aura lieu le <strong>{{ sanction.datetime_sanction|date:"j F Y à H\hi" }}</strong>.</p>
+        <p>
+            Nous sommes contrains d'infliger à votre fils une sanction qui aura lieu
+            le <strong>{{ sanction.datetime_sanction|date:"j F Y à H\hi" }}
+                {% if sanction.time_sanction_end %}
+                jusqu'à {{ sanction.time_sanction_end }}{% endif %}</strong>.
+        </p>
         <div id="motive">
             <p>Le motif, expliqué par le demandeur de la sanction ({{ sanction.demandeur }}) est le suivant :</p>
             {% autoescape off %}

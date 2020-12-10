@@ -38,7 +38,7 @@
         </keepInFrame>
 
         <setNextTemplate name="otherPages"/>
-        <blockTable colWidths="100 100 140 360 70" style="cas">
+        <blockTable colWidths="100 100 140 330 100" style="cas">
             <tr>
                 <td><para><strong>Élève</strong></para></td>
                 <td><para><strong>Demandeur</strong></para></td>
@@ -68,7 +68,7 @@
                         {{ c.explication_commentaire|striptags }}
                     </para>
                 </td>
-                <td>{{ c.datetime_sanction|date:'d/m/y' }}</td>
+                <td>{{ c.datetime_sanction|date:'d/m/y H:i' }}-{{ c.time_sanction_end }}</td>
             </tr>
             {% endfor %}
         </blockTable>

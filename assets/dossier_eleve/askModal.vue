@@ -164,7 +164,7 @@
                                         <span slot="invalid-feedback">{{ errorMsg('datetime_sanction') }}</span>
                                     </b-form-group>
                                     <b-form-group
-                                        label="Heure de la sanction"
+                                        label="Heure de début de la sanction"
                                         label-for="input-time-sanction"
                                     >
                                         <b-form-input
@@ -172,6 +172,18 @@
                                             type="time"
                                             v-model="timeSanction"
                                         />
+                                    </b-form-group>
+                                    <b-form-group
+                                        label="Heure de fin de la sanction"
+                                        label-for="input-time-sanction-end"
+                                        :state="inputStates.time_sanction_end"
+                                    >
+                                        <b-form-input
+                                            id="input-time-sanction-end"
+                                            type="time"
+                                            v-model="form.time_sanction_end"
+                                        />
+                                        <span slot="invalid-feedback">{{ errorMsg('time_sanction_end') }}</span>
                                     </b-form-group>
                                 </div>
                             </b-col>
@@ -273,6 +285,7 @@ export default {
                 important: false,
                 demandeur: "",
                 datetime_sanction: null,
+                time_sanction_end: null,
                 datetime_conseil: null,
                 visible_by_educ: true,
                 visible_by_tenure: true,
@@ -295,6 +308,7 @@ export default {
                 sanction_decision_id: null,
                 demandeur: null,
                 explication_commentaire: null,
+                time_sanction_end: null,
             },
             editorOptions: {
                 modules: {
@@ -330,7 +344,7 @@ export default {
         },
         errors: function (newErrors) {
             let inputs = ["name", "sanction_decision_id", "demandeur", "explication_commentaire",
-                "datetime_conseil", "datetime_sanctionl"];
+                "datetime_conseil", "datetime_sanctionl", "time_sanction_end"];
             for (let u in inputs) {
                 if (inputs[u] in newErrors) {
                     this.inputStates[inputs[u]] = newErrors[inputs[u]].length == 0;
@@ -358,6 +372,8 @@ export default {
                     this.form.datetime_sanction = datetime.format("YYYY-MM-DD");
                     this.timeSanction = datetime.format("HH:MM");
                 }
+                this.form.time_sanction_end = entry.time_sanction_end.slice(0, 5);
+
                 if (entry.datetime_conseil) {
                     this.form.datetime_conseil = Moment(entry.datetime_conseil).format("YYYY-MM-DD");
                 }
@@ -395,6 +411,8 @@ export default {
             this.form.demandeur = "";
             this.form.datetime_sanction = null;
             this.form.datetime_conseil = null;
+            this.timeSanction = null;
+            this.form.time_sanction_end = null;
         },
         errorMsg(err) {
             if (err in this.errors) {
