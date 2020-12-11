@@ -141,8 +141,6 @@ export default {
             this.$store.commit("removeFilter", "classe");
             this.$store.commit("addFilter", {"tag": data.item.classe, "filterType": "classe", "value": data.item.classe});
 
-            this.$store.commit("addFilter", {"tag": "Activer", "filterType": "activate_absent", "value": "true_activate_absent"});
-
             this.$router.push("list");
         }
     },
