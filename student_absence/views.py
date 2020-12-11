@@ -147,10 +147,12 @@ class StudentAbsenceViewSet(ModelViewSet):
         if get_settings().sync_with_proeco:
             from libreschoolfdb import absences
 
-            teaching = request.data[0].get('student')["teaching"]["name"] if isinstance(request.data, list) else request.data.get("student")["teaching"]["name"]
+            first_absence = request.data[0] if isinstance(request.data, list) else request.data
+            teaching_name = StudentModel.objects.get(matricule=first_absence.get("student_id")).teaching.name
+
             server = [
                 s['server'] for s in settings.SYNC_FDB_SERVER
-                if s['teaching_name'] == teaching
+                if s['teaching_name'] == teaching_name
             ]
             if len(server) == 0:
                 raise
