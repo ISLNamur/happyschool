@@ -613,7 +613,8 @@ class AskSanctionRetenuesPDFGenAPI(AskSanctionsPDFGenAPI):
         for r in results:
             r['datetime_sanction'] = timezone.datetime.strptime(r['datetime_sanction'][:19],
                                                                 "%Y-%m-%dT%H:%M:%S")
-            r["time_sanction_end"] = r["time_sanction_end"][:5]
+            if r["time_sanction_end"]:
+                r["time_sanction_end"] = r["time_sanction_end"][:5]
         return results
 
 
