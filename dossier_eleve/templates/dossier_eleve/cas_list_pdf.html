@@ -1,0 +1,62 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Liste du dossier des élèves</title>
+    </head>
+    <body>
+        <style>
+        @charset "UTF-8";
+        @page {
+            margin: 1cm;
+            counter-increment: page;
+            @bottom-right {
+                content: "Page " counter(page) "/" counter(pages);
+                border-top: .25pt solid #666;
+                width: 50%;
+            }
+        }
+
+        html {
+            font-size: 0.9em;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        .comment {
+            border-left:#666 2px solid;
+            margin-left: 1em;
+            padding-left: 0.5em;
+        }
+        h1 {
+            font-size: large;
+        }
+        h2 {
+            font-size: medium;
+        }
+        em {
+            color: darkslategrey;
+        }
+        </style>
+        <h1>Liste du dossier des élèves</h1>
+        <div><em>Créée le {% now "j F Y à H\hi" %}</em></div>
+        {% for el in list %}
+        <div class="cas">
+            <h2>{{ el.matricule.fullname_classe }}</h2>
+            {% if el.info %}
+            <div><u>Info</u>: <strong>{{ el.info.info }}</strong> <em>({{ el.demandeur }} le {{ el.datetime_encodage|date:"d/m/Y H:i" }})</em></div>
+            <div class="comment">
+                {{ el.explication_commentaire|safe }}
+            </div>
+            {% elif el.sanction_decision %}
+            <div><u>Sanction/décision</u>: <strong>{{ el.sanction_decision }}</strong> <em>({{ el.demandeur }} le {{ el.datetime_encodage|date:"d/m/Y H:i" }})</em></div>
+            <div>Date de la sanction : {{ el.datetime_sanction|date:"d/m/Y" }}</div>
+            <div class="comment">
+                {{ el.explication_commentaire|safe }}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </body>
+</html>
