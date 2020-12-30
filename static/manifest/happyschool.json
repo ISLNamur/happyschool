@@ -1,8 +1,8 @@
 {
-    "name": "HappySchool Absences élèves",
-    "short_name": "Absences élèves",
-    "start_url": "/student_absence/",
-    "scope": "/student_absence/",
+    "name": "HappySchool",
+    "short_name": "HS",
+    "start_url": "/",
+    "scope": "/",
     "display": "standalone",
     "icons": [{
         "src": "/static/img/logo.png",
