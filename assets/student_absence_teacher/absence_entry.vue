@@ -133,7 +133,7 @@ export default {
         },
         displayStudent,
         checkStudentAbsence: function () {
-            axios.get(`/student_absence/api/student_absence/?student__matricule=${this.absence.student.matricule}&date_absence=${this.absence.date_absence}&period__start__lt=${this.absence.period.end}&period__end__gt=${this.absence.period.start}`)
+            axios.get(`/student_absence/api/student_absence/?forceAllAccess=true&student__matricule=${this.absence.student.matricule}&date_absence=${this.absence.date_absence}&period__start__lt=${this.absence.period.end}&period__end__gt=${this.absence.period.start}`)
                 .then(resp => {
                     if (resp.data.results.length > 0) {
                         this.studentAbsenceState = resp.data.results.filter(sA => sA.is_absent).length > 0 ? "absence" : "presence";
