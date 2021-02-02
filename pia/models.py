@@ -168,6 +168,7 @@ class BaseGoal(models.Model):
     responsible = models.ManyToManyField(ResponsibleModel, blank=True)
     self_assessment = models.CharField(max_length=2000, blank=True)
     assessment = models.ForeignKey(AssessmentModel, on_delete=models.SET_NULL, null=True, blank=True)
+    validated = models.BooleanField(default=False)
     attachments = models.ManyToManyField(AttachmentModel, blank=True)
     datetime_creation = models.DateTimeField(auto_now_add=True)
     datetime_update = models.DateTimeField(auto_now=True)
@@ -178,6 +179,7 @@ class BaseGoal(models.Model):
 
 class CrossGoalModel(BaseGoal):
     cross_goals = models.CharField(max_length=2000)
+    branches = models.ManyToManyField(BranchModel, blank=True)
 
 
 class BranchGoalModel(BaseGoal):

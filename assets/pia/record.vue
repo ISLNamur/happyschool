@@ -355,6 +355,7 @@
                                 :goal-object="goal"
                                 ref="crossgoals"
                                 @remove="removeObject('cross_goal', index)"
+                                @clone="cloneObject('cross_goal', index)"
                                 goal-label="Objectifs transversaux"
                                 item-model="cross_goal_item"
                             />
@@ -383,6 +384,7 @@
                                 :goal-object="goal"
                                 ref="branchgoals"
                                 @remove="removeObject('branch_goal', index)"
+                                @clone="cloneObject('branch_goal', index)"
                                 goal-label="Objectifs de branche"
                                 item-model="branch_goal_item"
                                 use-branch
@@ -583,6 +585,31 @@ export default {
             } else {
                 return "";
             }
+        },
+        /**
+         * Clone an object from the list.
+         * 
+         * @param {String} objectType The type of the goal (cross_goal, branch_goal).
+         * @param {Number} objectIndex The index of the goal in the associated goal list.
+         */
+        cloneObject: function (objectType, objectIndex) {
+            let app = this;
+            this.$bvModal.msgBoxConfirm("Cloner cet élément ?", {
+                okTitle: "Oui",
+                cancelTitle: "Non",
+                centered: true,
+            }).then(resp => {
+                if (resp) {
+                    let clonedObject = Object.assign({}, app[objectType][objectIndex]);
+                    if (app[objectType][objectIndex].id >= 0) {
+                        // Remove the id from the object.
+                        delete clonedObject.id;
+                    }
+                    axios.post(`/pia/api/${objectType}/`, clonedObject,token)
+                        .then(resp => app[objectType].splice(objectIndex + 1, 0, resp.data))
+                        .catch(err => alert(err));
+                }
+            });
         },
         /**
          * Remove a object from the list.

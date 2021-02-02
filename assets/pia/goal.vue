@@ -19,7 +19,7 @@
 
 <template>
     <div>
-        <b-card>
+        <b-card :class="isOld ? 'old-goal' : ''">
             <b-form-row>
                 <b-col>
                     <strong>
@@ -40,15 +40,39 @@
                     </strong>
                 </b-col>
                 <b-col
-                    cols="2"
+                    v-if="branch"
+                    class="text-right form-inline"
+                >
+                    <strong>{{ branch.branch }}</strong>
+                </b-col>
+                <b-col
+                    cols="3"
                     align-self="end"
                     class="text-right"
                 >
+                    <b-icon
+                        v-if="validated"
+                        icon="check-circle-fill"
+                        variant="success"
+                    />
+                    <b-icon
+                        v-if="!validated && isOld"
+                        icon="x-circle-fill"
+                        variant="error"
+                    />
                     <b-btn
                         @click="toggleExpand"
                         variant="light"
                     >
                         {{ expanded ? "Cacher" : "Voir" }}
+                    </b-btn>
+                    <b-btn
+                        @click="$emit('clone')"
+                        size="sm"
+                        v-b-tooltip.hover
+                        title="Cloner"
+                    >
+                        <b-icon icon="files" />
                     </b-btn>
                     <b-btn
                         @click="$emit('remove')"
@@ -138,6 +162,38 @@
                         </b-form-group>
                     </b-col>
                 </b-form-row>
+                <b-form-row v-if="!useBranch">
+                    <b-col>
+                        <b-form-group
+                            label="Branches concernées"
+                            label-cols="3"
+                            :state="inputStates.branches"
+                        >
+                            <multiselect
+                                :options="$store.state.branches"
+                                placeholder="Choisisser les branches concernées"
+                                select-label=""
+                                selected-label="Sélectionné"
+                                deselect-label="Cliquer dessus pour enlever"
+                                v-model="branches"
+                                :show-no-options="false"
+                                label="branch"
+                                track-by="id"
+                                multiple
+                            >
+                                <template
+                                    slot="singleLabel"
+                                    slot-scope="props"
+                                >
+                                    <strong>{{ props.option.branch }}</strong>
+                                </template>
+                                <span slot="noResult">Aucune branche trouvée.</span>
+                                <span slot="noOptions" />
+                            </multiselect>
+                            <span slot="invalid-feedback">{{ errorMsg('branches') }}</span>
+                        </b-form-group>
+                    </b-col>
+                </b-form-row>
                 <b-form-row>
                     <b-col>
                         <b-form-group
@@ -219,6 +275,18 @@
                                 <span slot="noResult">Aucune évaluation trouvée.</span>
                                 <span slot="noOptions" />
                             </multiselect>
+                        </b-form-group>
+                    </b-col>
+                </b-form-row>
+                <b-form-row>
+                    <b-col>
+                        <b-form-group label="Validation">
+                            <b-form-checkbox
+                                v-model="validated"
+                                switch
+                            >
+                                Mettre l'objectif comme atteint
+                            </b-form-checkbox>
                         </b-form-group>
                     </b-col>
                 </b-form-row>
@@ -309,12 +377,14 @@ export default {
             goalOptions: [],
             goals: [],
             branch: null,
+            branches: [],
             responsible: [],
             responsibleOptions: [],
             givenHelp: "",
             indicatorAction: "",
             selfAssessment: "",
             assessment: null,
+            validated: false,
             attachments: [],
             uploadedFiles: [],
             editorOptions: {
@@ -338,9 +408,17 @@ export default {
                 "date_end": null,
                 "goals": null,
                 "branch": null,
+                "branches": null,
                 "responsible": null
             },
         };
+    },
+    computed: {
+        isOld: function () {
+            if (this.date_end && this.date_end < (new Date()).toISOString()) return true;
+
+            return false;
+        }
     },
     watch: {
         errors: function (newErrors) {
@@ -420,6 +498,7 @@ export default {
                 this.givenHelp = this.goalObject.given_help;
                 this.selfAssessment = this.goalObject.self_assessment;
                 this.assessment = this.$store.state.assessments.filter(a => a.id == this.goalObject.assessment)[0];
+                this.validated = this.goalObject.validated;
 
                 // Attachments
                 this.uploadedFiles = this.goalObject.attachments.map(a => {
@@ -436,6 +515,9 @@ export default {
                 // Assign branch if necessary.
                 if (this.useBranch) {
                     this.branch = this.$store.state.branches.find(b => b.id == this.goalObject.branch);
+                } else {
+                    // For crossgoals
+                    this.branches = this.$store.state.branches.filter(b => this.goalObject.branches.includes(b.id));
                 }
 
                 // Assign goals
@@ -462,6 +544,7 @@ export default {
                     pia_model: piaId,
                     date_start: this.date_start,
                     date_end: this.date_end,
+                    branches: this.branches.map(b => b.id),
                     indicator_action: this.indicatorAction,
                     given_help: this.givenHelp,
                     self_assessment: this.selfAssessment,
@@ -469,6 +552,7 @@ export default {
                     [goalField]: this.goals.length > 0 ? goals.slice(1) : null,
                     responsible: this.responsible.map(r => r.matricule),
                     attachments: Array.from(this.uploadedFiles.map(u => u.id)),
+                    validated: this.validated,
                 };
 
                 if (this.useBranch && this.branch) data["branch"] = this.branch.id;
@@ -504,3 +588,9 @@ export default {
     }
 };
 </script>
+
+<style>
+.old-goal {
+    opacity: 0.6;
+}
+</style>
