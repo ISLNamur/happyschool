@@ -175,6 +175,7 @@ class BaseGoal(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ["-date_end", "-date_start",]
 
 
 class CrossGoalModel(BaseGoal):

@@ -106,7 +106,7 @@ class CrossGoalViewSet(ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filterset_fields = ('pia_model',)
     ordering_fields = ['date_start', 'date_end', 'datetime_creation']
-    ordering = ['-date_start', "-date_end"]
+    ordering = ["-date_end", "-date_start",]
     pagination_class = LargePageSizePagination
 
 
@@ -116,7 +116,7 @@ class BranchGoalViewSet(ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filterset_fields = ('branch', "pia_model")
     ordering_fields = ['datetime_creation']
-    ordering = ['-date_start', "-date_end"]
+    ordering = ["-date_end", "-date_start",]
     pagination_class = LargePageSizePagination
 
 
