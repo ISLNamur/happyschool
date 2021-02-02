@@ -28,7 +28,8 @@ function countCurrentTeaching(app) {
 
 export function displayStudent(student) {
     if (countCurrentTeaching(this) === 1) {
-        return `${student.last_name} ${student.first_name} ${student.classe.year}${student.classe.letter.toUpperCase()}`;
+        const classeStr = student.classe ? `${student.classe.year}${student.classe.letter.toUpperCase()}` : "(Ancien)";
+        return `${student.last_name} ${student.first_name} ${classeStr}`;
     } else {
         return student.display;
     }
