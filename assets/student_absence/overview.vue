@@ -134,12 +134,16 @@ export default {
             axios.get(this.absenceNextPage)
                 .then(resp => {
                     this.lastAbsences = this.lastAbsences.concat(resp.data.results);
-                    this.absenceNextPage = resp.data.next;
+                    this.absenceNextPage = this.cleanUrlStr(resp.data.next);
                     this.loading = false;
                 })
                 .catch(() => {
                     this.loading = false;
                 });
+        },
+        /** Remove protocol and domain for url string. */
+        cleanUrlStr(urlStr) {
+            return urlStr.substr(urlStr.indexOf("/", 8));
         }
     },
     mounted: function () {
@@ -149,7 +153,7 @@ export default {
         axios.get(url)
             .then(response => {
                 this.lastAbsences = response.data.results;
-                this.absenceNextPage = response.data.next;
+                this.absenceNextPage = this.cleanUrlStr(response.data.next);
             });
     }
 };
