@@ -27,7 +27,7 @@ icalendar = "*"
 django-bootstrap3-datetimepicker = {git = "https://github.com/Supermanu/django-bootstrap3-datetimepicker.git",ref = "dcb355c28755475932a79bf49e15ee6e60552b90"}
 django-weasyprint = "*"
 social-auth-app-django = "*"
-Django = "==2.2.13"
+Django = "==3.1.6"
 Unidecode = "*"
 "z3c.rml" = "*"
 PyPDF2 = "*"
