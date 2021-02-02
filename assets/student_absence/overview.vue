@@ -40,8 +40,14 @@
                         {{ data.value }}
                     </template>
                 </b-table>
+                <b-overlay v-show="!loading">
+                    <b-btn @click="getMoreAbsences">
+                        <b-icon icon="chevron-double-down" />
+                        Afficher plus
+                    </b-btn>
+                </b-overlay>
             </b-card>
-            <b-card title="Élèves absents (en ½ jours)" />
+            <!-- <b-card title="Élèves absents (en ½ jours)" /> -->
         </b-card-group>
     </div>
 </template>
@@ -102,7 +108,11 @@ export default {
                 "half_day_miss": {
                     label: "Total",
                 }
-            }
+            },
+            /** The next page url for absences. */
+            absenceNextPage: null,
+            /** Is the page loading? */
+            loading: false,
         };
     },
     methods: {
@@ -113,6 +123,23 @@ export default {
          */
         filterStudent(matricule) {
             this.$store.commit("addFilter", {"tag": matricule, "filterType": "student__matricule", "value":matricule});
+        },
+        /**
+         * Get more absences.
+         */
+        getMoreAbsences() {
+            if (!this.absenceNextPage) return;
+
+            this.loading = true;
+            axios.get(this.absenceNextPage)
+                .then(resp => {
+                    this.lastAbsences = this.lastAbsences.concat(resp.data.results);
+                    this.absenceNextPage = resp.data.next;
+                    this.loading = false;
+                })
+                .catch(() => {
+                    this.loading = false;
+                });
         }
     },
     mounted: function () {
@@ -122,13 +149,8 @@ export default {
         axios.get(url)
             .then(response => {
                 this.lastAbsences = response.data.results;
+                this.absenceNextPage = response.data.next;
             });
-
-        // axios.get('/student_absence/api/absence_count/')
-        // .then(response => {
-        //     this.absenceCount = response.data;
-        // });
-
     }
 };
 </script>
