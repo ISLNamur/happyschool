@@ -116,7 +116,7 @@ class BranchGoalViewSet(ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filterset_fields = ('branch', "pia_model")
     ordering_fields = ['datetime_creation']
-    ordering = ['-datetime_creation']
+    ordering = ['-date_start', "-date_end"]
     pagination_class = LargePageSizePagination
 
 
