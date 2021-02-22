@@ -62,7 +62,7 @@
                 class="mt-2"
             >
                 <b-tab
-                    title="Élève"
+                    title="Élève et aménagements"
                     active
                 >
                     <b-row>
