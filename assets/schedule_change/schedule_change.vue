@@ -35,13 +35,17 @@
                 <h2>Changement d'horaire</h2>
             </b-row>
             <b-row v-if="!fullscreen">
-                <b-col>
+                <b-col
+                    cols="12"
+                    lg="3"
+                >
                     <b-form-group>
                         <div>
-                            <b-button
+                            <b-btn
                                 v-if="$store.state.canAdd"
                                 variant="outline-success"
                                 @click="openModal('add-schedule-modal')"
+                                class="w-100"
                             >
                                 <icon
                                     name="plus"
@@ -49,10 +53,11 @@
                                     color="green"
                                 />
                                 Ajouter un changement
-                            </b-button>
+                            </b-btn>
                             <b-btn
                                 variant="secondary"
                                 @click="openModal('export-schedule-modal')"
+                                class="w-100 mt-1"
                             >
                                 <icon
                                     name="file"
@@ -60,42 +65,18 @@
                                 />
                                 Sommaire
                             </b-btn>
-                            <b-button
-                                variant="outline-secondary"
-                                v-b-toggle.filters
-                            >
-                                <icon
-                                    name="search"
-                                    scale="1"
-                                />
-                                Ajouter des filtres
-                            </b-button>
-                            <b-button
-                                :pressed.sync="active"
-                                variant="primary"
-                            >
-                                <span v-if="active">Afficher tous les changements</span>
-                                <span v-else>Afficher les changements en cours</span>
-                            </b-button>
                         </div>
                     </b-form-group>
                 </b-col>
-            </b-row>
-            <b-row v-if="!fullscreen">
                 <b-col>
-                    <b-collapse
-                        id="filters"
-                        v-model="showFilters"
-                    >
-                        <b-card>
-                            <filters
-                                app="schedule_change"
-                                model="schedule_change"
-                                ref="filters"
-                                @update="applyFilter"
-                            />
-                        </b-card>
-                    </b-collapse>
+                    <filters
+                        app="schedule_change"
+                        model="schedule_change"
+                        ref="filters"
+                        @update="applyFilter"
+                        :show-search="showFilters"
+                        @toggleSearch="showFilters = !showFilters"
+                    />
                 </b-col>
             </b-row>
             <b-pagination
@@ -237,18 +218,6 @@ export default {
             },
             fullscreen: false,
         };
-    },
-    watch: {
-        active: function (isActive) {
-            if (isActive) {
-                this.$store.commit("addFilter",
-                    {filterType: "activate_ongoing", tag: "Activer", value: true}
-                );
-            } else {
-                this.$store.commit("removeFilter", "activate_ongoing");
-            }
-            this.applyFilter();
-        }
     },
     methods: {
         calendar: function(date) {

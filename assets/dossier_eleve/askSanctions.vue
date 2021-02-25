@@ -31,7 +31,7 @@
             <b-row>
                 <h2>Demandes de sanction</h2>
             </b-row>
-            <b-row class="mb-2">
+            <b-row>
                 <b-tabs>
                     <template slot="tabs">
                         <b-nav-item href="/dossier_eleve/">
@@ -47,12 +47,16 @@
                 </b-tabs>
             </b-row>
             <b-row>
-                <b-col>
+                <b-col
+                    cols="12"
+                    lg="3"
+                >
                     <b-form-group>
                         <div>
                             <b-btn
                                 variant="primary"
                                 @click="openDynamicModal('ask-modal')"
+                                class="w-100"
                             >
                                 <icon
                                     name="plus"
@@ -64,6 +68,7 @@
                             <b-btn
                                 variant="secondary"
                                 @click="openDynamicModal('ask-export-modal')"
+                                class="w-100 mt-1"
                             >
                                 <icon
                                     name="file"
@@ -71,42 +76,22 @@
                                 />
                                 Export
                             </b-btn>
-                            <b-btn
-                                variant="outline-secondary"
-                                v-b-toggle.filters
-                            >
-                                <icon
-                                    name="search"
-                                    scale="1"
-                                />
-                                Ajouter des filtres
-                            </b-btn>
-                            <b-btn
-                                variant="outline-secondary"
-                                :pressed="retenues_mode"
-                                @click="retenues_mode = !retenues_mode"
-                            >
-                                <span v-if="retenues_mode">Cacher</span><span v-else>Afficher</span> toutes les retenues
-                            </b-btn>
                         </div>
                     </b-form-group>
                 </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <b-collapse
-                        id="filters"
-                        v-model="showFilters"
-                    >
-                        <b-card>
-                            <filters
-                                app="dossier_eleve"
-                                model="ask_sanctions"
-                                ref="filters"
-                                @update="applyFilter"
-                            />
-                        </b-card>
-                    </b-collapse>
+                <b-col
+                    cols="12"
+                    lg="9"
+                >
+                    <filters
+                        app="dossier_eleve"
+                        model="ask_sanctions"
+                        ref="filters"
+                        @update="applyFilter"
+                        :show-search="showFilters"
+                        @toggleSearch="showFilters = !showFilters"
+                        class="mb-1"
+                    />
                 </b-col>
             </b-row>
             <b-row v-if="$store.state.canSetSanction">

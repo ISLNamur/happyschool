@@ -92,7 +92,7 @@ class AppelsView(LoginRequiredMixin,
     filters = [{'value': 'name', 'text': 'Nom'},
                {'value': 'datetime_appel', 'text': "Date d'appel"},
                {'value': 'matricule_id', 'text': 'Matricule'},
-               {'value': 'activate_ongoing', 'text': 'Non traiter'},]
+               {'value': 'activate_ongoing', 'text': 'Appels non traités'},]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()

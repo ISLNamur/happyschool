@@ -21,14 +21,14 @@
     <div>
         <b-row>
             <b-col>
-                <b-card>
-                    <filters
-                        app="student_absence_teacher"
-                        model="absence"
-                        ref="filters"
-                        @update="applyFilter"
-                    />
-                </b-card>
+                <filters
+                    app="student_absence_teacher"
+                    model="absence"
+                    ref="filters"
+                    @update="applyFilter"
+                    :show-search="showFilters"
+                    @toggleSearch="showFilters = !showFilters"
+                />
             </b-col>
         </b-row>
         <b-row>

@@ -48,12 +48,16 @@
                 </b-nav>
             </b-row>
             <b-row>
-                <b-col>
+                <b-col
+                    cols="12"
+                    lg="3"
+                >
                     <b-form-group>
                         <div>
                             <b-btn
                                 variant="primary"
                                 to="/new/"
+                                class="w-100"
                             >
                                 <b-icon icon="plus" />
                                 Nouveau cas
@@ -61,36 +65,23 @@
                             <b-btn
                                 variant="secondary"
                                 @click="openDynamicModal('export-modal')"
+                                class="w-100 mt-1"
                             >
                                 <b-icon icon="file-earmark-text" />
                                 Export
                             </b-btn>
-                            <b-btn
-                                variant="outline-secondary"
-                                v-b-toggle.filters
-                            >
-                                <b-icon icon="search" />
-                                Ajouter des filtres
-                            </b-btn>
                         </div>
                     </b-form-group>
                 </b-col>
-            </b-row>
-            <b-row>
                 <b-col>
-                    <b-collapse
-                        id="filters"
-                        v-model="showFilters"
-                    >
-                        <b-card>
-                            <filters
-                                app="dossier_eleve"
-                                model="cas_eleve"
-                                ref="filters"
-                                @update="applyFilter"
-                            />
-                        </b-card>
-                    </b-collapse>
+                    <filters
+                        app="dossier_eleve"
+                        model="cas_eleve"
+                        ref="filters"
+                        @update="applyFilter"
+                        :show-search="showFilters"
+                        @toggleSearch="showFilters = !showFilters"
+                    />
                 </b-col>
             </b-row>
             <b-pagination

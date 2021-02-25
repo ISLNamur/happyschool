@@ -21,14 +21,14 @@
     <div>
         <b-row>
             <b-col>
-                <b-card>
-                    <filters
-                        app="student_absence"
-                        model="student_absence"
-                        ref="filters"
-                        @update="applyFilter"
-                    />
-                </b-card>
+                <filters
+                    app="student_absence"
+                    model="student_absence"
+                    ref="filters"
+                    @update="applyFilter"
+                    :show-search="showFilters"
+                    @toggleSearch="showFilters = !showFilters"
+                />
             </b-col>
         </b-row>
         <b-row align-h="between">
@@ -52,7 +52,7 @@
                 <b-row align-h="end">
                     <b-col
                         cols="12"
-                        md="4"
+                        md="5"
                         v-if="proecoActivated"
                     >
                         <b-btn
@@ -65,22 +65,6 @@
                                 icon="file-earmark"
                             />
                             Export ProEco
-                        </b-btn>
-                    </b-col>
-                    <b-col
-                        cols="12"
-                        md="5"
-                    >
-                        <b-btn
-                            variant="primary"
-                            :pressed.sync="active"
-                            class="w-100 mt-1"
-                        >
-                            <b-icon
-                                icon="clipboard"
-                            />
-                            <span v-if="!active">Mes absences</span>
-                            <span v-else>Toutes les absences</span>
                         </b-btn>
                     </b-col>
                 </b-row>

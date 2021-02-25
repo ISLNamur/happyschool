@@ -18,50 +18,78 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-form>
-        <b-form-group label="Ajouter un filtre">
-            <b-input-group>
-                <b-col
-                    sm="12"
-                    md="4"
-                >
-                    <b-form-select
-                        :options="filterTypeOptions"
-                        v-model="filterType"
-                        @input="cleanDate"
-                        ref="selectType"
-                    />
-                </b-col>
-                <b-col
-                    sm="12"
-                    md="8"
-                >
-                    <multiselect
-                        tag-placeholder="Ajouter cette recherche"
-                        ref="filters"
-                        :show-no-options="false"
-                        select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
-                        selected-label="Sélectionné"
-                        deselect-label="Cliquer dessus pour enlever"
-                        placeholder="Filtrer par…"
-                        :value="filtersValue"
-                        :options="filterSearchOptions"
-                        track-by="value"
-                        :multiple="true"
-                        :taggable="true"
-                        @remove="removeFilter"
-                        @select="addFilter"
-                        @tag="addCustomTag"
-                        :custom-label="niceLabel"
-                        @search-change="getOptions"
-                        :internal-search="false"
-                        @open="handleSpecificInput"
-                    >
-                        <span slot="noOptions" />
-                    </multiselect>
-                </b-col>
-            </b-input-group>
-        </b-form-group>
+    <div>
+        <b-form inline>
+            <b-btn
+                class="mb-1 mr-1 "
+                variant="primary"
+                @click="$emit('toggleSearch')"
+            >
+                <b-icon icon="search" />
+                Rechercher
+            </b-btn>
+            <b-form-group>
+                <b-form-checkbox-group
+                    v-model="activated"
+                    :options="activateFilters"
+                    switches
+                    @change="updateActivateFilters"
+                />
+            </b-form-group>
+        </b-form>
+        <b-collapse
+            id="filters-card"
+            v-model="showSearch"
+        >
+            <b-card
+                no-body
+                class="pl-1"
+            >
+                <b-form-group label="Choisir un filtre">
+                    <b-input-group>
+                        <b-col
+                            sm="12"
+                            md="4"
+                        >
+                            <b-form-select
+                                :options="filterTypeOptions"
+                                v-model="filterType"
+                                @input="cleanDate"
+                                ref="selectType"
+                            />
+                        </b-col>
+                        <b-col
+                            sm="12"
+                            md="8"
+                        >
+                            <multiselect
+                                tag-placeholder="Ajouter cette recherche"
+                                ref="filters"
+                                :show-no-options="false"
+                                select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
+                                selected-label="Sélectionné"
+                                deselect-label="Cliquer dessus pour enlever"
+                                placeholder="Faire une recherche"
+                                :value="filtersValue"
+                                :options="filterSearchOptions"
+                                track-by="value"
+                                :multiple="true"
+                                :taggable="true"
+                                @remove="removeFilter"
+                                @select="addFilter"
+                                @tag="addCustomTag"
+                                :custom-label="niceLabel"
+                                @search-change="getOptions"
+                                :internal-search="false"
+                                @open="handleSpecificInput"
+                            >
+                                <span slot="noOptions" />
+                            </multiselect>
+                        </b-col>
+                    </b-input-group>
+                </b-form-group>
+            </b-card>
+        </b-collapse>
         <b-modal
             id="prompt-period-modal"
             title="Choisir une période"
@@ -97,7 +125,7 @@
                 </b-col>
             </b-form-row>
         </b-modal>
-    </b-form>
+    </div>
 </template>
 
 <script>
@@ -119,6 +147,13 @@ export default {
         "model": {
             type: String,
             default: ""
+        },
+        /**
+         * State if the search card is shown.
+         */
+        "showSearch": {
+            type: Boolean,
+            default: false,
         }
     },
     data: function () {
@@ -133,11 +168,13 @@ export default {
             filterSearchOptions: [],
             /** The filters. */
             filters: {},
+            activateFilters: [],
             searchId: 0,
             /** First input for date/time/month period filters. */
             dateTime1: null,
             /** Second input for date/time/month period filters. */
             dateTime2: null,
+            activated: []
         };
     },
     computed: {
@@ -157,7 +194,7 @@ export default {
          * Return the filters in use.
          */
         filtersValue: function () {
-            return this.$store.state.filters;
+            return this.$store.state.filters.filter(f => !f.filterType.startsWith("activate_"));
         }
     },
     watch: {
@@ -317,6 +354,24 @@ export default {
             this.addFilter(newTag);
         },
         /**
+         * Update the store to based on activate filters triggered.
+         *
+         * @param {Array} checkedFilters The activate filters that are triggered.
+         */
+        updateActivateFilters: function (checkedFilters) {
+            this.activateFilters.forEach(filter => {
+                this.$store.commit("removeFilter", filter.value);
+            });
+            checkedFilters.forEach(filter => {
+                this.$store.commit("addFilter", {
+                    "tag": "Activer",
+                    "filterType": filter,
+                    "value": true,
+                });
+            });
+            this.updateFilters();
+        },
+        /**
          * Add a filter to the store.
          * 
          * @param {object} addedObject An object with the filter type, the tag and the value.
@@ -348,7 +403,10 @@ export default {
     components: {Multiselect},
     mounted: function() {
         // eslint-disable-next-line no-undef
-        this.filterTypeOptions = filters;
+        this.filterTypeOptions = filters.filter(f => !f.value.startsWith("activate_"));
+        // eslint-disable-next-line no-undef
+        this.activateFilters = filters.filter(f => f.value.startsWith("activate_"));
+        this.activated = this.$store.state.filters.filter(f => f.filterType.startsWith("activate_")).map(f => f.filterType);
         setTimeout(() => {
             // Check if filters is loaded.
             let refInput = this.$refs.filters;
@@ -362,4 +420,9 @@ export default {
 </script>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style>
+.custom-switch {
+    background-color: rgb(204, 229, 255);
+    border-radius: 0.25rem;
+    padding-right: 0.3rem;
+}
 </style>

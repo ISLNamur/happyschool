@@ -9,53 +9,37 @@
                 <h2>Appels</h2>
             </b-row>
             <b-row>
-                <b-col>
-                    <b-form-group>
-                        <div>
-                            <b-button
-                                variant="outline-success"
-                                to="/add/"
-                            >
-                                <icon
-                                    name="plus"
-                                    scale="1"
-                                    color="green"
-                                />
-                                Ajouter un appel
-                            </b-button>
-                            <b-button
-                                variant="outline-secondary"
-                                v-b-toggle.filters
-                            >
-                                <icon
-                                    name="search"
-                                    scale="1"
-                                />
-                                Ajouter des filtres
-                            </b-button>
-                            <b-button
-                                :pressed.sync="active"
-                                variant="primary"
-                            >
-                                <span v-if="active">Afficher tous les appels</span>
-                                <span v-else>Afficher les appels courant</span>
-                            </b-button>
-                        </div>
-                    </b-form-group>
+                <b-col
+                    cols="12"
+                    md="4"
+                    lg="3"
+                >
+                    <b-button
+                        variant="outline-success"
+                        to="/add/"
+                        class="w-100"
+                    >
+                        <icon
+                            name="plus"
+                            scale="1"
+                            color="green"
+                        />
+                        Ajouter un appel
+                    </b-button>
                 </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <b-collapse id="filters">
-                        <b-card>
-                            <filters
-                                app="appels"
-                                model="appel"
-                                ref="filters"
-                                @update="applyFilter"
-                            />
-                        </b-card>
-                    </b-collapse>
+                <b-col
+                    cols="12"
+                    lg="9"
+                >
+                    <filters
+                        app="appels"
+                        model="appel"
+                        ref="filters"
+                        @update="applyFilter"
+                        :show-search="showFilters"
+                        @toggleSearch="showFilters = !showFilters"
+                        class="mt-1 mt-lg-0"
+                    />
                 </b-col>
             </b-row>
             <b-pagination
@@ -129,7 +113,7 @@
 
 <script>
 import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
+import {BootstrapVue, BootstrapVueIcons} from "bootstrap-vue";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
 import Info from "../annuaire/info.vue";
@@ -148,10 +132,11 @@ Vue.component("icon", Icon);
 Vue.component("appel-entry", AppelEntry);
 
 Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
+
 export default {
     data: function () {
         return {
-            active: true,
             entriesCount: 20,
             currentPage: 1,
             entries: [],
@@ -161,6 +146,7 @@ export default {
             menuInfo: {},
             loaded: false,
             processing: false,
+            showFilters: false,
         };
     },
     computed: {
@@ -169,18 +155,6 @@ export default {
                 return this.currentEntry.name;
             }
             return "";
-        },
-    },
-    watch: {
-        active: function (isActive) {
-            if (isActive) {
-                this.$store.commit("addFilter",
-                    {filterType: "activate_ongoing", tag: "Activer", value: true}
-                );
-            } else {
-                this.$store.commit("removeFilter", "activate_ongoing");
-            }
-            this.applyFilter();
         },
     },
     methods: {

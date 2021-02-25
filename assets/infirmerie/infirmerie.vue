@@ -28,56 +28,37 @@
                 <h2>Infirmerie</h2>
             </b-row>
             <b-row>
-                <b-col>
-                    <b-form-group>
-                        <div>
-                            <b-button
-                                variant="outline-success"
-                                to="/new/"
-                            >
-                                <icon
-                                    name="plus"
-                                    scale="1"
-                                    color="green"
-                                />
-                                Ajouter un malade
-                            </b-button>
-                            <b-button
-                                variant="outline-secondary"
-                                v-b-toggle.filters
-                            >
-                                <icon
-                                    name="search"
-                                    scale="1"
-                                />
-                                Ajouter des filtres
-                            </b-button>
-                            <b-button
-                                :pressed.sync="active"
-                                variant="primary"
-                            >
-                                <span v-if="active">Afficher tous les malades</span>
-                                <span v-else>Afficher les malades présents</span>
-                            </b-button>
-                        </div>
-                    </b-form-group>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <b-collapse
-                        id="filters"
-                        v-model="showFilters"
+                <b-col
+                    cols="12"
+                    md="4"
+                    lg="3"
+                >
+                    <b-button
+                        variant="outline-success"
+                        to="/new/"
+                        class="w-100"
                     >
-                        <b-card>
-                            <filters
-                                app="infirmerie"
-                                model="infirmerie"
-                                ref="filters"
-                                @update="applyFilter"
-                            />
-                        </b-card>
-                    </b-collapse>
+                        <icon
+                            name="plus"
+                            scale="1"
+                            color="green"
+                        />
+                        Ajouter un malade
+                    </b-button>
+                </b-col>
+                <b-col
+                    cols="12"
+                    lg="9"
+                >
+                    <filters
+                        app="infirmerie"
+                        model="passage"
+                        ref="filters"
+                        :show-search="showSearch"
+                        @toggleSearch="showSearch = !showSearch"
+                        @update="applyFilter"
+                        class="mt-1 mt-lg-0"
+                    />
                 </b-col>
             </b-row>
             <b-pagination
@@ -130,7 +111,7 @@
 
 <script>
 import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
+import {BootstrapVue, BootstrapVueIcons} from "bootstrap-vue";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
 import Info from "../annuaire/info.vue";
@@ -149,14 +130,14 @@ Vue.component("icon", Icon);
 Vue.component("infirmerie-entry", InfirmerieEntry);
 
 Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
+
 export default {
     data: function () {
         return {
             menu: {},
             loaded: false,
-            active: true,
             currentPage: 1,
-            showFilters: false,
             filter: "",
             ordering: "&ordering=-datetime_arrive",
             currentEntry: null,
@@ -164,24 +145,13 @@ export default {
             entriesCount: 0,
             inputStates: {
                 "name": null,
-            }
+            },
+            showSearch: false,
         };
     },
     computed: {
         currentName: function () {
             return "";
-        }
-    },
-    watch: {
-        active: function (isActive) {
-            if (isActive) {
-                this.$store.commit("addFilter",
-                    {filterType: "activate_ongoing", tag: "Activer", value: true}
-                );
-            } else {
-                this.$store.commit("removeFilter", "activate_ongoing");
-            }
-            this.applyFilter();
         }
     },
     methods: {
@@ -197,7 +167,7 @@ export default {
             this.$refs.infoModal.show();
         },
         filterStudent: function (matricule) {
-            this.showFilters = true;
+            this.showSearch = true;
             this.$store.commit("addFilter",
                 {filterType: "matricule_id", tag: matricule, value: matricule}
             );

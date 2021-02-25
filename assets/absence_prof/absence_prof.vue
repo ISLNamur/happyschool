@@ -28,12 +28,16 @@
                 <h2>Absence Prof</h2>
             </b-row>
             <b-row>
-                <b-col>
+                <b-col
+                    cols="12"
+                    lg="3"
+                >
                     <b-form-group>
                         <div>
                             <b-button
                                 variant="outline-success"
                                 to="/new/"
+                                class="w-100"
                             >
                                 <icon
                                     name="plus"
@@ -42,48 +46,25 @@
                                 />
                                 Ajouter une absence
                             </b-button>
-                            <b-button
-                                variant="outline-secondary"
-                                v-b-toggle.filters
-                            >
-                                <icon
-                                    name="search"
-                                    scale="1"
-                                />
-                                Ajouter des filtres
-                            </b-button>
                             <b-btn
                                 :href="'/absence_prof/list/?ordering=name&page_size=200' + filter"
                                 target="_blank"
+                                class="w-100 mt-1"
                             >
                                 Exporter en PDF
                             </b-btn>
-                            <b-button
-                                :pressed.sync="active"
-                                variant="primary"
-                            >
-                                <span v-if="active">Afficher toutes les absences</span>
-                                <span v-else>Afficher absences courantes</span>
-                            </b-button>
                         </div>
                     </b-form-group>
                 </b-col>
-            </b-row>
-            <b-row>
                 <b-col>
-                    <b-collapse
-                        id="filters"
-                        v-model="showFilters"
-                    >
-                        <b-card>
-                            <filters
-                                app="absence_prof"
-                                model="absence"
-                                ref="filters"
-                                @update="applyFilter"
-                            />
-                        </b-card>
-                    </b-collapse>
+                    <filters
+                        app="absence_prof"
+                        model="absence"
+                        ref="filters"
+                        @update="applyFilter"
+                        :show-search="showFilters"
+                        @toggleSearch="showFilters = !showFilters"
+                    />
                 </b-col>
             </b-row>
             <b-pagination
@@ -118,7 +99,7 @@
 
 <script>
 import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
+import {BootstrapVue, BootstrapVueIcons} from "bootstrap-vue";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
 import Moment from "moment";
@@ -137,6 +118,7 @@ import AbsenceProfEntry from "./absenceProfEntry.vue";
 
 Vue.component("icon", Icon);
 Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
@@ -154,18 +136,6 @@ export default {
             ordering: "&ordering=date_absence_start",
             entries: [],
         };
-    },
-    watch: {
-        active: function (isActive) {
-            if (isActive) {
-                this.$store.commit("addFilter",
-                    {filterType: "activate_ongoing", tag: "Activer", value: true}
-                );
-            } else {
-                this.$store.commit("removeFilter", "activate_ongoing");
-            }
-            this.applyFilter();
-        }
     },
     computed: {
         name: function () {
