@@ -409,7 +409,7 @@ export default {
             // Update form data.
             if (this.name.matricule) {
                 // First update form name data.
-                this.form.name = `${this.name.last_name} ${this.name.first_name}`;
+                this.form.name = `${this.name.fullname}`;
                 this.form.matricule_id = this.name.matricule;
                 // Get statistics.
                 axios.get("dossier_eleve/api/statistics/" + this.name.matricule + "/")
@@ -467,6 +467,7 @@ export default {
                 // The name will update form.name and form.matricule_id
                 this.name = {
                     display: this.casObject.matricule.display,
+                    fullname: `${this.casObject.matricule.last_name} ${this.casObject.matricule.first_name}`,
                     matricule: this.casObject.matricule_id,
                 };
                 this.demandeur = {
@@ -578,6 +579,7 @@ export default {
                             }
                         } else {
                         // It's a student.
+                            entry.fullname = entry.display;
                             entry.display += " " + p.classe.year + p.classe.letter.toUpperCase();
                             if (this.$store.state.settings.teachings.length > 1) entry.display += " – " + p.teaching.display_name;
                         }
