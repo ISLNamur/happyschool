@@ -70,7 +70,7 @@ class ResponsibleRemoteSerializer(serializers.ModelSerializer):
         fields = ('id', 'matricule', 'last_name', 'first_name',
                   'is_teacher', 'is_educator', 'is_secretary',
                   'teaching', 'classe', 'tenure', 'email_school',
-                  'courses')
+                  'courses', 'user')
 
 
 class StudentSerializer(serializers.ModelSerializer):
