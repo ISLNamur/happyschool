@@ -26,8 +26,6 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from django.contrib.auth.views import LoginView, LogoutView, TemplateView
 
-import django_cas_ng.views
-
 from core.utilities import EXCLUDED_APPS
 
 urlpatterns = [
@@ -40,6 +38,8 @@ urlpatterns = [
 
 # Handle SSO with CAS
 if "django_cas_ng" in settings.INSTALLED_APPS:
+    import django_cas_ng.views
+
     urlpatterns.append(path("auth", django_cas_ng.views.LoginView.as_view(), name='cas_ng_login'))
     urlpatterns.append(path("logout/", django_cas_ng.views.LogoutView.as_view(), name='cas_ng_logout'))
     urlpatterns.append(path("login", LoginView.as_view(
