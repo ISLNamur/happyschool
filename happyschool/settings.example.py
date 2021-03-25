@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django_filters',
     'channels',
     #'social_django',
+    # "django_cas_ng",
     'crispy_forms',
     'core',
     'webpack_loader',
@@ -72,6 +73,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # "django_cas_ng.middleware.CASMiddleware",
 ]
 
 if DEBUG:
@@ -141,6 +143,7 @@ AUTHENTICATION_BACKENDS = [
     # 'django_auth_ldap.backend.LDAPBackend', # For LDAP/ActiveDirectory authentification.
     # 'social_core.backends.google.GoogleOAuth2', # For google authentification.
     # 'social_core.backends.microsoft.MicrosoftOAuth2', # For microsoft authentification.
+    # "django_cas_ng.backends.CASBackend", # For SSO with a CAS server.
 ]
 
 if 'social_django' in INSTALLED_APPS:
@@ -170,6 +173,9 @@ SOCIAL_AUTH_MICROSOFT_GRAPH_SECRET = "the_secret"
 SOCIAL_AUTH_MICROSOFT_GRAPH_REDIRECT_URL = "https://MYBASEURL/complete/microsoft-graph"
 
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = False
+
+CAS_SERVER_URL = "https://example.com/cas/"
+CAS_CREATE_USER = False
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'

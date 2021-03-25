@@ -18,6 +18,7 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.conf.urls import url, include
+from django.urls import path
 from django.contrib import admin
 from django.conf import settings
 from django.views.generic import RedirectView
@@ -25,24 +26,40 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 from django.contrib.auth.views import LoginView, LogoutView, TemplateView
 
+import django_cas_ng.views
+
 from core.utilities import EXCLUDED_APPS
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^core/', include('core.urls')),
-    url(r'^auth', LoginView.as_view(
+    url(r'^annuaire/', include('annuaire.urls'), name='annuaire'),
+    url(r'^no_access/', TemplateView.as_view(template_name='core/no_access.html'), name='no_access'),
+    url(r'^$', RedirectView.as_view(url='annuaire/', permanent=False)),
+]
+
+# Handle SSO with CAS
+if "django_cas_ng" in settings.INSTALLED_APPS:
+    urlpatterns.append(path("auth", django_cas_ng.views.LoginView.as_view(), name='cas_ng_login'))
+    urlpatterns.append(path("logout/", django_cas_ng.views.LogoutView.as_view(), name='cas_ng_logout'))
+    urlpatterns.append(path("login", LoginView.as_view(
         template_name='core/auth.html',
         extra_context={
             'google': 'social_core.backends.google.GoogleOAuth2' in settings.AUTHENTICATION_BACKENDS,
             'microsoft': 'social_core.backends.microsoft.MicrosoftOAuth2' in settings.AUTHENTICATION_BACKENDS,
             'model': 'django.contrib.auth.backends.ModelBackend' in settings.AUTHENTICATION_BACKENDS,
             },
-        ), name='auth',),
-    url(r'^logout', LogoutView.as_view(next_page='auth'), name='logout'),
-    url(r'^annuaire/', include('annuaire.urls'), name='annuaire'),
-    url(r'^no_access/', TemplateView.as_view(template_name='core/no_access.html'), name='no_access'),
-    url(r'^$', RedirectView.as_view(url='annuaire/', permanent=False)),
-]
+        ), name='auth',))
+else:
+    urlpatterns.append(url(r'^auth', LoginView.as_view(
+        template_name='core/auth.html',
+        extra_context={
+            'google': 'social_core.backends.google.GoogleOAuth2' in settings.AUTHENTICATION_BACKENDS,
+            'microsoft': 'social_core.backends.microsoft.MicrosoftOAuth2' in settings.AUTHENTICATION_BACKENDS,
+            'model': 'django.contrib.auth.backends.ModelBackend' in settings.AUTHENTICATION_BACKENDS,
+            },
+        ), name='auth',))
+    urlpatterns.append(url(r'^logout', LogoutView.as_view(next_page='auth'), name='logout'))
 
 for app in settings.INSTALLED_APPS:
     if app in EXCLUDED_APPS:

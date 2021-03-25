@@ -36,6 +36,7 @@ WeasyPrint = "*"
 python-escpos = "*"
 xlwt = "*"
 python-dateutil = "*"
+django-cas-ng = "*"
 
 [requires]
 python_version = "3.7"
