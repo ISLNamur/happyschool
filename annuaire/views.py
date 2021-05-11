@@ -57,7 +57,7 @@ from .models import AnnuaireSettingsModel
 from .serializers import AnnuaireSettingsSerializer
 
 
-def get_menu_entry(active_app, user):
+def get_menu_entry(active_app, request):
     return {
         "app": "annuaire",
         "display": "Annuaire",
@@ -90,7 +90,7 @@ class AnnuaireView(LoginRequiredMixin,
         # Add to the current context.
         context = super().get_context_data(**kwargs)
         context['settings'] = JSONRenderer().render(AnnuaireSettingsSerializer(get_settings()).data).decode()
-        context['menu'] = json.dumps(get_menu(self.request.user, "annuaire"))
+        context['menu'] = json.dumps(get_menu(self.request, "annuaire"))
         return context
 
 

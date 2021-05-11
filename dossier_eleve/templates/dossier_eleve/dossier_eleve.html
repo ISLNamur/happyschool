@@ -8,6 +8,7 @@
     const current_app = "dossier_eleve";
     var settings = JSON.parse('{{ settings|safe }}');
     const menu = {{ menu|safe }};
+    const dossierEleveLastAccess = "{{ dossier_eleve_last_access }}";
     var filters = JSON.parse('{{ filters|safe }}');
     var currentYear = JSON.parse('{{ current_year|safe }}');
     var canSetSanction = JSON.parse('{{ can_set_sanction|safe }}');

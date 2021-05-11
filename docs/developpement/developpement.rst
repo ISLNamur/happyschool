@@ -405,7 +405,7 @@ contexte de notre application *i.e.* ses paramètres. Pour cela, ajoutons
        def get_context_data(self, **kwargs):
            # Add to the current context.
            context = super().get_context_data(**kwargs)
-           context['menu'] = json.dumps(get_menu(self.request.user, "student_absence"))
+           context['menu'] = json.dumps(get_menu(self.request, "student_absence"))
            context['filters'] = json.dumps(self.filters)
            context['settings'] = json.dumps((StudentAbsenceSettingsSerializer(get_settings()).data))
            return context

@@ -47,6 +47,12 @@
                         :href="app.url"
                     >
                         {{ app.display }}
+                        <b-badge
+                            v-if="app.new_items > 0"
+                            variant="primary"
+                        >
+                            {{ app.new_items }}
+                        </b-badge>
                     </b-nav-item>
                 </b-navbar-nav>
                 <b-navbar-nav class="ml-auto">

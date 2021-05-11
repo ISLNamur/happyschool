@@ -71,8 +71,8 @@ CYCLES = ['Cycle inférieur', 'Cycle supérieur']
 DEGREES = ["1er degré", "2ème degré", "3ème degré"]
 YEARS = ["1ère année", "2ème année", "3ème année", "4ème année", "5ème année", "6ème année"]
 
-def get_menu_entry(active_app, user):
-    if not user.has_perm('mail_notification.access_mail_notification'):
+def get_menu_entry(active_app, request):
+    if not request.user.has_perm('mail_notification.access_mail_notification'):
         return {}
     return {
             "app": "mail_notification",
@@ -89,7 +89,7 @@ for i in range(1,7):
 @login_required
 @user_passes_test(lambda u: u.groups.filter(name__in=groups_with_access), login_url='no_access')
 def index(request):
-    context = {'menu': json.dumps(get_menu(request.user, "mail_notification"))}
+    context = {'menu': json.dumps(get_menu(request, "mail_notification"))}
     return render(request, 'mail_notification/index.html', context)
 
 
@@ -99,7 +99,7 @@ def get_list(request):
     emails = EmailNotification.objects.all().order_by("-datetime_created")[:20]
     return render(request, 'mail_notification/list.html',
                   context={'emails': emails,
-                           'menu': json.dumps(get_menu(request.user, "mail_notification"))})
+                           'menu': json.dumps(get_menu(request, "mail_notification"))})
 
 
 def get_settings():

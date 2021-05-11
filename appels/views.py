@@ -42,8 +42,8 @@ from .models import Appel, ObjectModel, MotiveModel, AppelsSettingsModel
 from .serializers import AppelSerializer, ObjectSerializer, MotiveSerializer, AppelsSettingsSerializer
 
 
-def get_menu_entry(active_app, user):
-    if not user.has_perm('appels.view_appel'):
+def get_menu_entry(active_app, request):
+    if not request.user.has_perm('appels.view_appel'):
         return {}
     return {
             "app": "appels",
@@ -96,7 +96,7 @@ class AppelsView(LoginRequiredMixin,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['menu'] = json.dumps(get_menu(self.request.user, "appels"))
+        context['menu'] = json.dumps(get_menu(self.request, "appels"))
         context['filters'] = json.dumps(self.filters)
         context['settings'] = json.dumps((AppelsSettingsSerializer(get_settings()).data))
 

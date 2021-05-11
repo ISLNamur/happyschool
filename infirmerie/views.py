@@ -37,8 +37,8 @@ from core.views import BaseModelViewSet, BaseFilters, get_app_settings
 from .serializers import PassageSerializer, InfirmerieSettingsSerializer
 
 
-def get_menu_entry(active_app, user):
-    if not user.has_perm('infirmerie.view_passage'):
+def get_menu_entry(active_app, request):
+    if not request.user.has_perm('infirmerie.view_passage'):
         return {}
     return {
             "app": "infirmerie",
@@ -87,7 +87,7 @@ class PassageView(LoginRequiredMixin,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['menu'] = json.dumps(get_menu(self.request.user, "infirmerie"))
+        context['menu'] = json.dumps(get_menu(self.request, "infirmerie"))
         context['filters'] = json.dumps(self.filters)
         context['settings'] = json.dumps((InfirmerieSettingsSerializer(get_settings()).data))
 

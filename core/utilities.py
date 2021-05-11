@@ -23,7 +23,7 @@ import importlib
 
 from django.utils import timezone
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.http import HttpRequest
 
 
 EXCLUDED_APPS = [
@@ -75,7 +75,7 @@ def in_scholar_year(date) -> bool:
     return False
 
 
-def get_menu(user: User, active_app: str=None) -> dict:
+def get_menu(request: HttpRequest, active_app: str = "") -> dict:
     apps = []
     for app in settings.INSTALLED_APPS:
         if app in EXCLUDED_APPS:
@@ -85,14 +85,14 @@ def get_menu(user: User, active_app: str=None) -> dict:
         try:
             module = importlib.import_module("%s.views" % app)
             get_menu_entry = getattr(module, 'get_menu_entry')
-            menu_entry = get_menu_entry(active_app, user)
+            menu_entry = get_menu_entry(active_app, request)
             if menu_entry:
                 apps.append(menu_entry)
         except:
             pass
 
-    menu = {"full_name": user.get_full_name(), "apps": apps}
-    menu['admin_settings'] = user.has_perm('core.add_coresettingsmodel')
+    menu = {"full_name": request.user.get_full_name(), "apps": apps}
+    menu['admin_settings'] = request.user.has_perm('core.add_coresettingsmodel')
 
     return menu
 

@@ -167,7 +167,7 @@ export default {
             currentEntry: null,
             currentModal: null,
             filter: "",
-            ordering: "&ordering=-datetime_encodage",
+            ordering: "&ordering=",
             showFilters: false,
             loaded: false,
             askSanctionsCount: 0,

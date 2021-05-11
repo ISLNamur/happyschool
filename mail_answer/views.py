@@ -101,7 +101,7 @@ class MailAnswerView(LoginRequiredMixin,
         # Add to the current context.
         context = super().get_context_data(**kwargs)
         context['settings'] = JSONRenderer().render(SettingsSerializer(settings).data).decode()
-        context['menu'] = json.dumps(get_menu(self.request.user, "mail_answer"))
+        context['menu'] = json.dumps(get_menu(self.request, "mail_answer"))
         return context
 
 

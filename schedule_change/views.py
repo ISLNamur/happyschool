@@ -45,8 +45,8 @@ from .serializers import ScheduleChangeSettingsSerializer, ScheduleChangeSeriali
     ScheduleChangePlaceSerializer, ScheduleChangeCategorySerializer
 
 
-def get_menu_entry(active_app: str, user) -> dict:
-    if not user.has_perm('schedule_change.view_schedulechangemodel'):
+def get_menu_entry(active_app: str, request) -> dict:
+    if not request.user.has_perm('schedule_change.view_schedulechangemodel'):
         return {}
     return {
             "app": "schedule_change",
@@ -72,7 +72,7 @@ class ScheduleChangeView(LoginRequiredMixin, PermissionRequiredMixin, TemplateVi
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['menu'] = json.dumps(get_menu(self.request.user, "schedule_change"))
+        context['menu'] = json.dumps(get_menu(self.request, "schedule_change"))
         context['filters'] = json.dumps(self.filters)
         context['settings'] = json.dumps((ScheduleChangeSettingsSerializer(get_settings()).data))
         context['can_add'] = json.dumps(self.request.user.has_perm('schedule_change.add_schedulechangemodel'))

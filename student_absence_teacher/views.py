@@ -42,8 +42,8 @@ from .models import StudentAbsenceTeacherSettingsModel, StudentAbsenceTeacherMod
 from .serializers import StudentAbsenceTeacherSettingsSerializer, PeriodSerializer, StudentAbsenceTeacherSerializer
 
 
-def get_menu_entry(active_app: str, user) -> dict:
-    if not user.has_perm('student_absence_teacher.view_studentabsenceteachermodel'):
+def get_menu_entry(active_app: str, request) -> dict:
+    if not request.user.has_perm('student_absence_teacher.view_studentabsenceteachermodel'):
         return {}
     return {
             "app": "student_absence_teacher",
@@ -78,7 +78,7 @@ class StudentAbsenceTeacherView(LoginRequiredMixin,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['menu'] = json.dumps(get_menu(self.request.user, "student_absence_absence"))
+        context['menu'] = json.dumps(get_menu(self.request, "student_absence_absence"))
         context['filters'] = json.dumps(self.filters)
         context['settings'] = json.dumps((StudentAbsenceTeacherSettingsSerializer(get_settings()).data))
 

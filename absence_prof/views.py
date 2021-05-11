@@ -40,8 +40,8 @@ from .models import Absence, AbsenceProfSettingsModel, MotifAbsence
 from .serializers import AbsenceProfSettingsSerializer, AbsenceProfSerializer, MotifAbsenceSerializer
 
 
-def get_menu_entry(active_app, user):
-    if not user.has_perm('absence_prof.view_absence'):
+def get_menu_entry(active_app, request):
+    if not request.user.has_perm('absence_prof.view_absence'):
         return {}
     return {
             "app": "absence_prof",
@@ -69,7 +69,7 @@ class AbsenceProfView(LoginRequiredMixin,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['menu'] = json.dumps(get_menu(self.request.user, "absence_prof"))
+        context['menu'] = json.dumps(get_menu(self.request, "absence_prof"))
         context['filters'] = json.dumps(self.filters)
         context['settings'] = json.dumps((AbsenceProfSettingsSerializer(get_settings()).data))
 

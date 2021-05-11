@@ -56,15 +56,22 @@ from io import BytesIO
 from PyPDF2 import PdfFileMerger
 
 
-def get_menu_entry(active_app, user):
-    if not user.has_perm('dossier_eleve.view_caseleve'):
+def get_menu_entry(active_app, request):
+    if not request.user.has_perm('dossier_eleve.view_caseleve'):
         return {}
-    return {
-            "app": "dossier_eleve",
-            "display": "Dossier élèves",
-            "url": "/dossier_eleve/",
-            "active": active_app == "dossier_eleve"
+
+    menu_entry = {
+        "app": "dossier_eleve",
+        "display": "Dossier élèves",
+        "url": "/dossier_eleve/",
+        "active": active_app == "dossier_eleve",
     }
+    last_access = request.session.get("dossier_eleve_last_access", None)
+    if last_access:
+        view_set = CasEleveViewSet.as_view({'get': 'list'})
+        results = [c["id"] for c in view_set(request).data['results']]
+        menu_entry["new_items"] = CasEleve.objects.filter(id__in=results, datetime_modified__gt=last_access).count()
+    return menu_entry
 
 
 def get_settings():
@@ -100,7 +107,7 @@ class BaseDossierEleveView(LoginRequiredMixin,
         # Add to the current context.
         context = super().get_context_data(**kwargs)
         context['settings'] = JSONRenderer().render(DossierEleveSettingsSerializer(settings_dossier_eleve).data).decode()
-        context['menu'] = json.dumps(get_menu(self.request.user, "dossier_eleve"))
+        context['menu'] = json.dumps(get_menu(self.request, "dossier_eleve"))
         context['filters'] = json.dumps(self.filters)
         scholar_year = get_scholar_year()
         context['current_year'] = json.dumps('%i-%i' % (scholar_year, scholar_year + 1))
@@ -114,6 +121,10 @@ class BaseDossierEleveView(LoginRequiredMixin,
         groups["teacher"] = {"id": groups["teacher"].id, "text": "Professeurs"}
         groups["pms"] = {"id": groups["pms"].id, "text": "PMS"}
         context['groups'] = groups
+
+        context["dossier_eleve_last_access"] = self.request.session.get("dossier_eleve_last_access", "")
+        # Set last access
+        self.request.session["dossier_eleve_last_access"] = timezone.now().isoformat()
         return context
 
 
@@ -170,12 +181,12 @@ class VisibilityPermissions(BasePermission):
 
 
 class CasEleveViewSet(BaseModelViewSet):
-    queryset = CasEleve.objects.filter(matricule__isnull=False).order_by("-datetime_encodage")
+    queryset = CasEleve.objects.filter(matricule__isnull=False).order_by("-datetime_modified")
 
     serializer_class = CasEleveSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     filter_class = CasEleveFilter
-    ordering_fields = ('datetime_encodage', "matricule__last_name")
+    ordering_fields = ('datetime_encodage', "matricule__last_name", "datetime_modified")
     user_field = 'created_by'
 
     def get_group_all_access(self):

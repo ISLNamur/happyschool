@@ -136,6 +136,10 @@ export default {
         };
     },
     computed: {
+        new: function () {
+            // eslint-disable-next-line no-undef
+            return Moment(this.rowData.datetime_modified) > Moment(dossierEleveLastAccess);
+        },
         title: function () {
             return this.displayStudent(this.rowData.matricule);
         },
@@ -158,8 +162,9 @@ export default {
         },
         cardClass: function () {
             const info_sanction = this.isInfo ? "info" : "sanction_decision";
-            const important = this.rowData.important ? "important " : "";
-            return important + info_sanction;
+            const important = this.rowData.important ? "important" : "";
+            const newCas = this.new ? "new" : "";
+            return `${important} ${info_sanction} ${newCas}`;
         },
         isInfo: function () {
             return this.rowData.info ? true : false;
@@ -239,5 +244,10 @@ export default {
 
     .move-up {
         margin-top: -25px;
+    }
+
+    .new {
+        box-shadow: 0px 0px 5px #0069d9;
+        border-color: #0069d9;
     }
 </style>

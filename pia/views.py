@@ -38,8 +38,8 @@ from . import models
 from . import serializers
 
 
-def get_menu_entry(active_app: str, user) -> dict:
-    if not user.has_perm('pia.view_piamodel'):
+def get_menu_entry(active_app: str, request) -> dict:
+    if not request.user.has_perm('pia.view_piamodel'):
         return {}
     return {
             "app": "pia",
@@ -66,7 +66,7 @@ class PIAView(LoginRequiredMixin,
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['menu'] = json.dumps(get_menu(self.request.user, "pia"))
+        context['menu'] = json.dumps(get_menu(self.request, "pia"))
         context['filters'] = json.dumps(self.filters)
         context['settings'] = json.dumps((serializers.PIASettingsSerializer(get_settings()).data))
         context['can_add_pia'] = json.dumps(self.request.user.has_perm('pia.add_piamodel'))
