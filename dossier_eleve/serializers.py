@@ -83,7 +83,7 @@ class CasEleveSerializer(serializers.ModelSerializer):
         if not check_access_to_student(
             value,
             self.context['request'].user,
-            tenure_class_only=views.get_settings().filter_teacher_entries_by_tenure
+            tenure_class_only=False
         ):
             raise serializers.ValidationError("Vous n'avez pas les droits nécessaire pour ajouter cet élève")
         return value
