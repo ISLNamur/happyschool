@@ -488,6 +488,9 @@ export default {
                 if (this.casObject.info_id) {
                     const forcedGroups = this.visibilityOptions.filter(o => o.disabled).map(o => o.id);
                     this.form.visible_by_groups = this.casObject.visible_by_groups.concat(forcedGroups);
+                    if (this.casObject.visible_by_tenure) {
+                        this.form.visible_by_groups.push(-1);
+                    }
                 }
 
                 this.setSanctionDecisionOptions();
@@ -509,6 +512,13 @@ export default {
                 // Set visibility to all.
                 // eslint-disable-next-line no-undef
                 data.visible_by_groups = Object.keys(groups).map(x => groups[x].id);
+            } else {
+                // Tenure is not a group, remove from groups and add proper setting.
+                const tenureGroupIndex = data.visible_by_groups.findIndex(g => g === -1);
+                if (tenureGroupIndex >= 0) {
+                    data.visible_by_groups.splice(tenureGroupIndex, 1);
+                    data.visible_by_tenure = true;
+                }
             }
             // Add times if any.
             if (data.datetime_sanction) {
@@ -632,6 +642,7 @@ export default {
             // eslint-disable-next-line no-undef
             if (user_groups.find(g => g.id == groupSet.sysadmin.id)) {
                 this.visibilityOptions = Object.values(groupSet).filter(g => g.id !== groupSet.sysadmin.id);
+                this.visibilityOptions.push({ id: -1, text: "Titulaire(s)" });
                 return;
             }
             // Match between groups and settings name.
@@ -674,6 +685,11 @@ export default {
                 }
                 return group;
             });
+            // Should we add tenure?
+            if (settings.tenure_allow_visibility_to.filter((a_g => userGroups.map(u_g => u_g.id).includes(a_g))).length > 0) {
+                const isForced = settings.tenure_force_visibility_to.filter((a_g => userGroups.map(u_g => u_g.id).includes(a_g))).length > 0;
+                this.visibilityOptions.push({id: -1, text: "Titulaire(s)", disabled: isForced});
+            }
         },
     },
     components: {Multiselect, quillEditor, FileUpload},

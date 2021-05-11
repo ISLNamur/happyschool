@@ -112,6 +112,20 @@ class DossierEleveSettingsModel(models.Model):
         du pms. Ne concerne que les groupes 'direction', 'coordonateur',
         'educateur', 'professeur' et 'pms'."""
     )
+    tenure_allow_visibility_to = models.ManyToManyField(
+        Group, default=None, blank=True,
+        related_name="tenure_allow_visibility_to",
+        help_text="""Les groupes selectionés auront forcément la visibilité sur les cas venant
+        des titulaires. Ne concerne que les groupes 'direction', 'coordonateur',
+        'educateur', 'professeur' et 'pms'."""
+    )
+    tenure_force_visibility_to = models.ManyToManyField(
+        Group, default=None, blank=True,
+        related_name="tenure_force_visibility_to",
+        help_text="""Les groupes selectionés auront forcément la visibilité sur les cas venant
+        des titulaires. Ne concerne que les groupes 'direction', 'coordonateur',
+        'educateur', 'professeur' et 'pms'."""
+    )
     enable_submit_sanctions = models.BooleanField(default=True)
     use_school_email = models.BooleanField(default=False)
     filter_teacher_entries_by_tenure = models.BooleanField(
@@ -209,7 +223,7 @@ class CasEleve(models.Model):
     important = models.BooleanField(default=False)
     user = models.CharField(max_length=100, default="")
     visible_by_educ = models.BooleanField(default=True) # Deprecated
-    visible_by_tenure = models.BooleanField(default=False) # Deprecated
+    visible_by_tenure = models.BooleanField(default=False)
     visible_by_groups = models.ManyToManyField(Group, blank=True)
     created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
 

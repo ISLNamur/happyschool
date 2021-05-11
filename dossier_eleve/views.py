@@ -111,10 +111,7 @@ class BaseDossierEleveView(LoginRequiredMixin,
         groups["direction"] = {"id": groups["direction"].id, "text": "Direction"}
         groups["coordonator"] = {"id": groups["coordonator"].id, "text": "Coordonateur"}
         groups["educator"] = {"id": groups["educator"].id, "text": "Educateur"}
-        groups["teacher"] = {
-            "id": groups["teacher"].id,
-            "text": "Titulaire(s)" if settings_dossier_eleve.filter_teacher_entries_by_tenure else "Professeurs"
-        }
+        groups["teacher"] = {"id": groups["teacher"].id, "text": "Professeurs"}
         groups["pms"] = {"id": groups["pms"].id, "text": "PMS"}
         context['groups'] = groups
         return context
@@ -193,6 +190,13 @@ class CasEleveViewSet(BaseModelViewSet):
         for g in self.request.user.groups.all():
             filter_by_groups |= Q(visible_by_groups=g)
         filter_by_groups |= Q(created_by=self.request.user)
+        # Give access to tenures
+        try:
+            resp = ResponsibleModel.objects.get(user=self.request.user)
+            filter_by_groups |= Q(matricule__classe__in=resp.tenure.all(), visible_by_tenure=True)
+        except ObjectDoesNotExist:
+            pass
+
         queryset = queryset.filter(filter_by_groups).distinct()
         return queryset
 
@@ -238,13 +242,13 @@ class CasEleveViewSet(BaseModelViewSet):
 
     def force_visibility(self, serializer):
         user_groups = self.request.user.groups.all()
+        dossier_settings = get_settings()
 
         if user_groups.filter(name=settings.SYSADMIN_GROUP):
             # Don't force for sysadmin.
             forced_visibility = []
         else:
             groups = get_generic_groups()
-            dossier_settings = get_settings()
             # Match between groups and settings name.
             group_settings_match = {
                 settings.DIRECTION_GROUP: "dir",
@@ -268,7 +272,7 @@ class CasEleveViewSet(BaseModelViewSet):
                 for g in considered_groups
                 ]
 
-            # Concatenate all allowed groups.
+            # Concatenate all forced groups.
             forced_groups = [g for group in concerned_settings for g in group["is_forced"]]
 
             could_be_forced_perm = []
@@ -289,10 +293,15 @@ class CasEleveViewSet(BaseModelViewSet):
             ]
 
         visible_by = serializer.validated_data["visible_by_groups"] + list(forced_visibility)
+
         serializer.save(visible_by_groups=visible_by)
 
+        # Check for tenure.
+        if user_groups.intersection(dossier_settings.tenure_force_visibility_to.all()):
+            serializer.save(visible_by_tenure=True)
+
     def is_only_tenure(self):
-        return get_settings().filter_teacher_entries_by_tenure
+        return False
 
 
 class AskSanctionsView(BaseDossierEleveView):
