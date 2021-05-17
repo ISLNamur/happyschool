@@ -40,6 +40,7 @@
         <b-collapse
             id="filters-card"
             v-model="showSearch"
+            @shown="setFocus"
         >
             <b-card
                 no-body
@@ -212,6 +213,9 @@ export default {
         }
     },
     methods: {
+        setFocus: function () {
+            this.$refs.filters.$refs.search.focus();
+        },
         /** 
          * Prompt a modal if type is date, month or time.
          */
@@ -407,13 +411,15 @@ export default {
         // eslint-disable-next-line no-undef
         this.activateFilters = filters.filter(f => f.value.startsWith("activate_"));
         this.activated = this.$store.state.filters.filter(f => f.filterType.startsWith("activate_")).map(f => f.filterType);
-        setTimeout(() => {
-            // Check if filters is loaded.
-            let refInput = this.$refs.filters;
-            if (refInput) {
-                refInput.$refs.search.focus();
-            }
-        }, 500);
+        if (this.showSearch) {
+            setTimeout(() => {
+                // Check if filters is loaded.
+                let refInput = this.$refs.filters;
+                if (refInput) {
+                    refInput.$refs.search.focus();
+                }
+            }, 500);
+        }
     }
 };
 
