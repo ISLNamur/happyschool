@@ -267,6 +267,10 @@
                             </b-col>
                         </b-row>
                     </b-tab>
+                    <schedule-info
+                        v-if="$store.state.settings.show_schedule"
+                        :courses="courses"
+                    />
                     <sensitive-info
                         v-if="sensitive"
                         :info="sensitive"
@@ -439,6 +443,7 @@ Moment.locale("fr");
 import ContactInfo from "./contactinfo.vue";
 import MedicalInfo from "./medicalinfo.vue";
 import SensitiveInfo from "./sensitiveinfo.vue";
+import ScheduleInfo from "./schedule.vue";
 
 export default {
     props: {
@@ -537,6 +542,9 @@ export default {
                 axios.get("/annuaire/api/student_sensitive/" + this.matricule + "/")
                     .then(response => {
                         this.sensitive = response.data;
+                    })
+                    .catch(err => {
+                        console.log(err);
                     });
 
                 axios.get("/annuaire/api/info_general/" + this.matricule + "/")
@@ -622,6 +630,7 @@ export default {
         ContactInfo,
         MedicalInfo,
         SensitiveInfo,
+        ScheduleInfo,
     }
 };
 </script>

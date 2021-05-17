@@ -20,7 +20,7 @@
 from django.contrib import admin
 from .models import StudentModel, TeachingModel, ResponsibleModel, AdditionalStudentInfo, \
     ClasseModel, EmailModel, YearModel, CoreSettingsModel, ImportCalendarModel, \
-    CourseModel, GivenCourseModel
+    CourseModel, GivenCourseModel, PeriodCoreModel, CourseScheduleModel
 
 
 class StudentCoreAdmin(admin.ModelAdmin):
@@ -90,3 +90,5 @@ admin.site.register(EmailModel)
 admin.site.register(YearModel)
 admin.site.register(CoreSettingsModel)
 admin.site.register(ImportCalendarModel)
+admin.site.register(PeriodCoreModel)
+admin.site.register(CourseScheduleModel)

@@ -45,3 +45,7 @@ class AnnuaireSettingsModel(models.Model):
         help_text="""Permet d'afficher/cacher les champs utilisateur/mot de passe dans la fiche info
             et ainsi que la liste des mots de passe des élèves par classe"""
     )
+    show_schedule = models.BooleanField(
+        default=True,
+        help_text="Affiche l'horaire des cours."
+    )

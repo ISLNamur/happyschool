@@ -53,7 +53,8 @@ from core.people import get_classes
 from core.permissions import IsSecretaryPermission
 from core.serializers import ResponsibleSensitiveSerializer, TeachingSerializer,\
     EmailSerializer, ClasseSerializer, ResponsibleRemoteSerializer, StudentWriteSerializer, UserSerializer,\
-    GroupSerializer, CourseSerializer, GivenCourseFlatSerializer
+    GroupSerializer, CourseSerializer, GivenCourseFlatSerializer, CourseScheduleModel, PeriodCoreModel, \
+    PeriodCoreSerializer, CourseScheduleSerializer
 from core.utilities import get_scholar_year, get_menu
 
 
@@ -365,6 +366,22 @@ class GroupViewSet(ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    pagination_class = LargePageSizePagination
+
+
+class CourseScheduleViewSet(ModelViewSet):
+    queryset = CourseScheduleModel.objects.all()
+    serializer_class = CourseScheduleSerializer
+    permission_classes = (IsAuthenticated,)
+    pagination_class = LargePageSizePagination
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
+    filterset_fields = ["given_course"]
+
+
+class PeriodCoreViewSet(ModelViewSet):
+    queryset = PeriodCoreModel.objects.all()
+    serializer_class = PeriodCoreSerializer
+    permission_classes = (IsAuthenticated,)
     pagination_class = LargePageSizePagination
 
 

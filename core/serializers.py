@@ -207,3 +207,16 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'username', 'last_name', 'first_name', 'email', 'groups',)
+
+
+class CourseScheduleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseScheduleModel
+        fields = ("id", "given_course", "period", "day_of_week", "related_classes", "related_responsibles")
+        read_only_fields = ("related_classes", "related_responsibles",)
+
+
+class PeriodCoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PeriodCoreModel
+        fields = "__all__"

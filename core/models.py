@@ -100,6 +100,43 @@ class GivenCourseModel(models.Model):
         return self.__str__()
 
 
+class PeriodCoreModel(models.Model):
+    """Model that describes a period of a day.
+
+    Attributes:
+        start Starting time of the period.
+        end Ending time of the period.
+        name Simple alias of the period.
+    """
+    start = models.TimeField()
+    end = models.TimeField()
+    name = models.CharField(max_length=200)
+    teaching = models.ForeignKey(TeachingModel, on_delete=models.CASCADE)
+
+    @property
+    def display(self):
+        """Describe the period."""
+        return "%s (%s-%s)" % (self.name, str(self.start)[:5], str(self.end)[:5])
+
+    def __str__(self):
+        return self.display
+
+
+class CourseScheduleModel(models.Model):
+    period = models.ForeignKey(PeriodCoreModel, on_delete=models.CASCADE)
+    day_of_week = models.PositiveSmallIntegerField()
+    given_course = models.ForeignKey(GivenCourseModel, on_delete=models.CASCADE)
+
+    @property
+    def related_classes(self):
+        classes = [s.classe.compact_str for s in self.given_course.studentmodel_set.all().distinct("classe")]
+        return ", ".join(classes)
+
+    @property
+    def related_responsibles(self):
+        return ", ".join([t.fullname for t in self.given_course.responsiblemodel_set.all()])
+
+
 class StudentModel(models.Model):
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
