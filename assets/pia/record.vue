@@ -453,6 +453,51 @@
                         </b-col>
                     </b-row>
                 </b-tab>
+                <b-tab v-if="hasDossierApp">
+                    <template v-slot:title>
+                        Autre infos
+                        <b-badge>{{ dossier.length }}</b-badge>
+                    </template>
+                    <b-row>
+                        <b-col>
+                            <h4>Autre infos (<a href="/dossier_eleve/">Dossier de l'élève</a>)</h4>
+                        </b-col>
+                    </b-row>
+                    <b-row class="mb-1">
+                        <b-col>
+                            <b-btn :href="`/dossier_eleve/?matricule=${this.form.student.matricule}`">
+                                <b-icon icon="arrow-right" />
+                                Vers le dossier de l'élève
+                            </b-btn>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col>
+                            <b-card
+                                v-for="cas in dossier"
+                                :key="cas.id"
+                                no-body
+                                class="mb-1"
+                            >
+                                <b-card-sub-title class="mt-1 pl-1">
+                                    {{ cas.datetime_modified.slice(0, 10) }}
+                                </b-card-sub-title>
+                                <b-card-body>
+                                    <span v-html="cas.explication_commentaire" />
+                                </b-card-body>
+                                <b-card-footer class="text-right">
+                                    <b-btn
+                                        variant="warning"
+                                        :href="`/dossier_eleve/#/edit/${cas.id}/`"
+                                    >
+                                        <b-icon icon="pencil-square" />
+                                        Modifier
+                                    </b-btn>
+                                </b-card-footer>
+                            </b-card>
+                        </b-col>
+                    </b-row>
+                </b-tab>
             </b-tabs>
         </b-overlay>
     </b-container>
@@ -508,6 +553,7 @@ export default {
             branch_goal: [],
             student_project: [],
             parents_opinion: [],
+            dossier: [],
             /** List of class council related to this PIA. */
             class_council: [],
             errors: {},
@@ -535,6 +581,15 @@ export default {
                 placeholder: ""
             },
         };
+    },
+    computed: {
+        /**
+         * State if HappySchool use the dossier_eleve app.
+         */
+        hasDossierApp: function () {
+            // eslint-disable-next-line no-undef
+            return menu.apps.some(a => a.app === "dossier_eleve");
+        }
     },
     watch: {
         id: function (newVal) {
@@ -817,6 +872,11 @@ export default {
                     this.form.disorder_response = this.$store.state.disorderResponses.filter(dr => resp.data.disorder_response.includes(dr.id));
                     this.form.schedule_adjustment = this.$store.state.scheduleAdjustments.filter(sa => resp.data.schedule_adjustment.includes(sa.id));
                     this.form.other_adjustments = resp.data.other_adjustments;
+
+                    axios.get(`/dossier_eleve/api/cas_eleve/?page_size=100&info__info=PIA&matricule=${this.form.student.matricule}`)
+                        .then(resp => {
+                            this.dossier = resp.data.results;
+                        });
 
                     // Attachments
                     this.uploadedFiles = resp.data.attachments.map(a => {
