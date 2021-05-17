@@ -465,7 +465,10 @@
                     </b-row>
                     <b-row class="mb-1">
                         <b-col>
-                            <b-btn :href="`/dossier_eleve/?matricule=${this.form.student.matricule}`">
+                            <b-btn
+                                v-if="this.form.student"
+                                :href="`/dossier_eleve/?matricule=${this.form.student.matricule}`"
+                            >
                                 <b-icon icon="arrow-right" />
                                 Vers le dossier de l'élève
                             </b-btn>
@@ -873,7 +876,7 @@ export default {
                     this.form.schedule_adjustment = this.$store.state.scheduleAdjustments.filter(sa => resp.data.schedule_adjustment.includes(sa.id));
                     this.form.other_adjustments = resp.data.other_adjustments;
 
-                    axios.get(`/dossier_eleve/api/cas_eleve/?page_size=100&info__info=PIA&matricule=${this.form.student.matricule}`)
+                    axios.get(`/dossier_eleve/api/cas_eleve/?page_size=100&info__info=PIA&matricule_id=${resp.data.student.matricule}`)
                         .then(resp => {
                             this.dossier = resp.data.results;
                         });
