@@ -309,3 +309,15 @@ class ImportCalendarModel(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class MenuEntryModel(models.Model):
+    display = models.CharField(max_length=20, help_text="Nom qui sera affiché dans le menu.")
+    link = models.URLField()
+    forced_order = models.PositiveSmallIntegerField(
+        null=True, default=None, blank=True,
+        help_text="Forcer une position dans le menu."
+    )
+
+    def __str__(self) -> str:
+        return f"{self.display} ({self.link})"

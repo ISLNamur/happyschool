@@ -25,6 +25,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.http import HttpRequest
 
+from core.models import MenuEntryModel
 
 EXCLUDED_APPS = [
     'django.contrib.admin',
@@ -82,14 +83,30 @@ def get_menu(request: HttpRequest, active_app: str = "") -> dict:
             continue
         if app == "core":
             continue
+        module = importlib.import_module("%s.views" % app)
         try:
-            module = importlib.import_module("%s.views" % app)
             get_menu_entry = getattr(module, 'get_menu_entry')
             menu_entry = get_menu_entry(active_app, request)
             if menu_entry:
                 apps.append(menu_entry)
-        except:
+        except AttributeError:
             pass
+
+    for entry in MenuEntryModel.objects.filter(forced_order=None):
+        apps.append({
+            "app": entry.id,
+            "display": entry.display,
+            "url": entry.link,
+            "active": False
+        })
+
+    for entry in MenuEntryModel.objects.filter(forced_order__isnull=False):
+        apps.insert(entry.forced_order, {
+            "app": entry.id,
+            "display": entry.display,
+            "url": entry.link,
+            "active": False
+        })
 
     menu = {"full_name": request.user.get_full_name(), "apps": apps}
     menu['admin_settings'] = request.user.has_perm('core.add_coresettingsmodel')
