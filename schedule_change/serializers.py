@@ -51,7 +51,7 @@ class ScheduleChangePlaceSerializer(serializers.ModelSerializer):
 
 
 class ScheduleChangeSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(label='ID', read_only=False)
+    id = serializers.IntegerField(label='ID', read_only=False, required=False)
     send_email_general = serializers.BooleanField(write_only=True, required=False)
     send_email_substitute = serializers.BooleanField(write_only=True, required=False)
     classes = FlatArrayField()
