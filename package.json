@@ -26,7 +26,7 @@
     "css-loader": "^3.4.2",
     "eslint": "^6.8.0",
     "eslint-plugin-vue": "^6.2.2",
-    "style-loader": "^1.1.3",
+    "style-loader": "^2.0.0",
     "sw-cache-plugin": "^1.1.0",
     "vue": "^2.6.11",
     "vue-loader": "^15.9.7",
