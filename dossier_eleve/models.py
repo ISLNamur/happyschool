@@ -52,7 +52,7 @@ class DossierEleveSettingsModel(models.Model):
     dir_force_visibility_to = models.ManyToManyField(
         Group, default=None, blank=True,
         related_name="dir_force_visibility_to",
-        help_text="""Les groupes selectionés auront forcément la visibilité sur les cas venant
+        help_text="""Les groupes selectionnés auront forcément la visibilité sur les cas venant
         de la direction. Ne concerne que les groupes 'direction', 'coordonateur',
         'educateur', 'professeur' et 'pms'."""
     )
@@ -66,7 +66,7 @@ class DossierEleveSettingsModel(models.Model):
     coord_force_visibility_to = models.ManyToManyField(
         Group, default=None, blank=True,
         related_name="coord_force_visibility_to",
-        help_text="""Les groupes selectionés auront forcément la visibilité sur les cas venant
+        help_text="""Les groupes selectionnés auront forcément la visibilité sur les cas venant
         d'un coordonateur. Ne concerne que les groupes 'direction', 'coordonateur',
         'educateur', 'professeur' et 'pms'."""
     )
@@ -80,7 +80,7 @@ class DossierEleveSettingsModel(models.Model):
     educ_force_visibility_to = models.ManyToManyField(
         Group, default=None, blank=True,
         related_name="educ_force_visibility_to",
-        help_text="""Les groupes selectionés auront forcément la visibilité sur les cas venant
+        help_text="""Les groupes selectionnés auront forcément la visibilité sur les cas venant
         d'un éducateur. Ne concerne que les groupes 'direction', 'coordonateur',
         'educateur', 'professeur' et 'pms'."""
     )
@@ -94,7 +94,7 @@ class DossierEleveSettingsModel(models.Model):
     teacher_force_visibility_to = models.ManyToManyField(
         Group, default=None, blank=True,
         related_name="teacher_force_visibility_to",
-        help_text="""Les groupes selectionés auront forcément la visibilité sur les cas venant
+        help_text="""Les groupes selectionnés auront forcément la visibilité sur les cas venant
         d'un professeur. Ne concerne que les groupes 'direction', 'coordonateur',
         'educateur', 'professeur' et 'pms'."""
     )
@@ -108,29 +108,43 @@ class DossierEleveSettingsModel(models.Model):
     pms_force_visibility_to = models.ManyToManyField(
         Group, default=None, blank=True,
         related_name="pms_force_visibility_to",
-        help_text="""Les groupes selectionés auront forcément la visibilité sur les cas venant
+        help_text="""Les groupes selectionnés auront forcément la visibilité sur les cas venant
         du pms. Ne concerne que les groupes 'direction', 'coordonateur',
         'educateur', 'professeur' et 'pms'."""
     )
     tenure_allow_visibility_to = models.ManyToManyField(
         Group, default=None, blank=True,
         related_name="tenure_allow_visibility_to",
-        help_text="""Les groupes selectionés auront forcément la visibilité sur les cas venant
-        des titulaires. Ne concerne que les groupes 'direction', 'coordonateur',
+        help_text="""Les groupes selectionnés pourront donner la visibilité aux titulaires.
+        Ne concerne que les groupes 'direction', 'coordonateur',
         'educateur', 'professeur' et 'pms'."""
     )
     tenure_force_visibility_to = models.ManyToManyField(
         Group, default=None, blank=True,
         related_name="tenure_force_visibility_to",
-        help_text="""Les groupes selectionés auront forcément la visibilité sur les cas venant
-        des titulaires. Ne concerne que les groupes 'direction', 'coordonateur',
+        help_text="""Les groupes selectionnés donneront forcément la visibilité aux titulaires.
+        Ne concerne que les groupes 'direction', 'coordonateur',
+        'educateur', 'professeur' et 'pms'."""
+    )
+    tenure_allow_visibility_from = models.ManyToManyField(
+        Group, default=None, blank=True,
+        related_name="tenure_allow_visibility_from",
+        help_text="""Les groupes selectionnés auront le titulaire comme choix pour la visibilité.
+        Ne concerne que les groupes 'direction', 'coordonateur',
+        'educateur', 'professeur' et 'pms'."""
+    )
+    tenure_force_visibility_from = models.ManyToManyField(
+        Group, default=None, blank=True,
+        related_name="tenure_force_visibility_from",
+        help_text="""Les groupes selectionnés seront forcément visibles par les titulaires.
+        Ne concerne que les groupes 'direction', 'coordonateur',
         'educateur', 'professeur' et 'pms'."""
     )
     enable_submit_sanctions = models.BooleanField(default=True)
     use_school_email = models.BooleanField(default=False)
     filter_teacher_entries_by_tenure = models.BooleanField(
         default=True,
-        help_text="Si activé, seuls les titulaires peuvent voir les cas de leurs élèves."
+        help_text="Déprécié."
     )
     enable_disciplinary_council = models.BooleanField(
         default=True,

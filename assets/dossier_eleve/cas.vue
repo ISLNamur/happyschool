@@ -419,6 +419,8 @@ export default {
                     .catch(function (error) {
                         alert(error);
                     });
+                // Set policies.
+                this.setVisibilityGroups();
             }
         },
         infoOrSanction: function (newChoice) {
@@ -469,6 +471,7 @@ export default {
                     display: this.casObject.matricule.display,
                     fullname: `${this.casObject.matricule.last_name} ${this.casObject.matricule.first_name}`,
                     matricule: this.casObject.matricule_id,
+                    classe: this.casObject.matricule.classe.id,
                 };
                 this.demandeur = {
                     display: this.casObject.demandeur,
@@ -486,8 +489,8 @@ export default {
 
                 this.infoOrSanction = this.casObject.info_id ? "info" : "sanction-decision";
                 if (this.casObject.info_id) {
-                    const forcedGroups = this.visibilityOptions.filter(o => o.disabled).map(o => o.id);
-                    this.form.visible_by_groups = this.casObject.visible_by_groups.concat(forcedGroups);
+                    // Set policies.
+                    this.form.visible_by_groups = this.casObject.visible_by_groups;
                     if (this.casObject.visible_by_tenure) {
                         this.form.visible_by_groups.push(-1);
                     }
@@ -518,6 +521,8 @@ export default {
                 if (tenureGroupIndex >= 0) {
                     data.visible_by_groups.splice(tenureGroupIndex, 1);
                     data.visible_by_tenure = true;
+                } else {
+                    data.visible_by_tenure = false;
                 }
             }
             // Add times if any.
@@ -591,6 +596,7 @@ export default {
                         // It's a student.
                             entry.fullname = entry.display;
                             entry.display += " " + p.classe.year + p.classe.letter.toUpperCase();
+                            entry.classe = p.classe.id;
                             if (this.$store.state.settings.teachings.length > 1) entry.display += " – " + p.teaching.display_name;
                         }
                         return entry;
@@ -638,11 +644,13 @@ export default {
         setVisibilityGroups: function () {
             let settings = this.$store.state.settings;
             // eslint-disable-next-line no-undef
-            const groupSet = groups;
+            const groupSet = Object.assign({}, groups);
+            groupSet.tenure = {
+                id: -1, text: "Titulaire(s)" 
+            };
             // eslint-disable-next-line no-undef
             if (user_groups.find(g => g.id == groupSet.sysadmin.id)) {
                 this.visibilityOptions = Object.values(groupSet).filter(g => g.id !== groupSet.sysadmin.id);
-                this.visibilityOptions.push({ id: -1, text: "Titulaire(s)" });
                 return;
             }
             // Match between groups and settings name.
@@ -659,25 +667,44 @@ export default {
             const concernedSettings = userGroups.map(g => {
                 const allowedGroupSetting = groupSettingsMatch[g.name] + "_allow_visibility_to";
                 const forcedGroupSetting = groupSettingsMatch[g.name] + "_force_visibility_to";
-                return {
-                    group: g,
-                    isAllowed: settings[allowedGroupSetting],
-                    isForced: settings[forcedGroupSetting],
+                let groupSetting = {
+                    group: g.id,
+                    isAllowed: new Set(settings[allowedGroupSetting]),
+                    isForced: new Set(settings[forcedGroupSetting]),
                 };
+                // Add tenure "group".
+                if (settings.tenure_force_visibility_from.includes(g.id)) {
+                    groupSetting.isForced.add(-1);
+                }
+                if (settings.tenure_allow_visibility_from.includes(g.id)) {
+                    groupSetting.isAllowed.add(-1);
+                }
+                return groupSetting;
             });
 
+            // eslint-disable-next-line no-undef
+            if (user_properties.tenure.includes(this.name.classe)) {
+                concernedSettings.push({
+                    group: -1,
+                    isAllowed: new Set(settings.tenure_allow_visibility_to),
+                    isForced: new Set(settings.tenure_force_visibility_to),
+                });
+            }
+
             const allowedGroups = [...new Set(concernedSettings.map(s => s.isAllowed).reduce((acc, curValue) => {
-                return curValue.concat(acc);
-            }, []))];
+                return new Set([...curValue, ...acc]);
+            }, new Set()))];
+
             this.visibilityOptions = allowedGroups.map(aG => {
                 let group = Object.values(groupSet).find(g => g.id === aG);
                 // Is the group forced?
                 // First check if a group allows it but is not forced. In this case, this group permission prevails
                 // and it is not forced.
-                if (concernedSettings.find(uG => uG.isAllowed.includes(aG) && !uG.isForced.includes(aG))) {
+                if (concernedSettings.find(uG => [...uG.isAllowed].includes(aG) && ![...uG.isForced].includes(aG))) {
+                    group.disabled = false;
                     return group;
                 // Check if the group is simultaneously forced and allowed in the remaining settings.
-                } else if (concernedSettings.find(uG => uG.isAllowed.includes(aG) && uG.isForced.includes(aG))) {
+                } else if (concernedSettings.find(uG => [...uG.isAllowed].includes(aG) && [...uG.isForced].includes(aG))) {
                     // Append the group to pre-selectioned options.
                     this.form.visible_by_groups.push(aG);
                     group.disabled = true;
@@ -685,18 +712,10 @@ export default {
                 }
                 return group;
             });
-            // Should we add tenure?
-            if (settings.tenure_allow_visibility_to.filter((a_g => userGroups.map(u_g => u_g.id).includes(a_g))).length > 0) {
-                const isForced = settings.tenure_force_visibility_to.filter((a_g => userGroups.map(u_g => u_g.id).includes(a_g))).length > 0;
-                this.visibilityOptions.push({id: -1, text: "Titulaire(s)", disabled: isForced});
-            }
         },
     },
     components: {Multiselect, quillEditor, FileUpload},
     mounted: function () {
-        // Set policies.
-        this.setVisibilityGroups();
-
         if (this.id >= 0) {
             axios.get(`/dossier_eleve/api/cas_eleve/${this.id}`)
                 .then(resp => {

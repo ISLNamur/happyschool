@@ -39,7 +39,8 @@ def list_user_properties(context):
             "matricule": responsible.matricule,
             "teaching": [t.id for t in responsible.teaching.all()],
             "classes": [c.id for c in responsible.classe.all()],
-            "given_courses": json.dumps(given_courses_serialized.data)
+            "given_courses": json.dumps(given_courses_serialized.data),
+            "tenure": [t.id for t in responsible.tenure.all()],
         }
     except ObjectDoesNotExist:
         return ""

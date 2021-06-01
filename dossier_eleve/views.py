@@ -30,6 +30,7 @@ from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.contrib.auth.models import Group
 
 from django_filters import rest_framework as filters
 
@@ -272,30 +273,67 @@ class CasEleveViewSet(BaseModelViewSet):
             considered_groups = [u_g for u_g in user_groups if u_g in groups.values()]
             concerned_settings = [
                 {
-                    "group": g,
-                    "is_allowed": getattr(
+                    "group": g.id,
+                    "is_allowed": set(getattr(
                         dossier_settings, group_settings_match[g.name] + "_allow_visibility_to"
-                    ).all(),
-                    "is_forced": getattr(
+                    ).all().values_list("id", flat=True)),
+                    "is_forced": set(getattr(
                         dossier_settings, group_settings_match[g.name] + "_force_visibility_to"
-                    ).all(),
+                    ).all().values_list("id", flat=True)),
                 }
                 for g in considered_groups
                 ]
 
-            # Concatenate all forced groups.
-            forced_groups = [g for group in concerned_settings for g in group["is_forced"]]
+            # Complete group.
+            for g in dossier_settings.tenure_force_visibility_from.all():
+                group_index = next(
+                    (i for i, group in enumerate(concerned_settings) if group["group"] == g.id),
+                    None
+                )
+                if group_index is None:
+                    continue
+                concerned_settings[group_index]["is_forced"].add(-1)
+            for g in dossier_settings.tenure_allow_visibility_from.all():
+                group_index = next(
+                    (i for i, group in enumerate(concerned_settings) if group["group"] == g.id),
+                    None
+                )
+                if group_index is None:
+                    continue
+                concerned_settings[group_index]["is_allowed"].add(-1)
 
-            could_be_forced_perm = []
+            try:
+                responsible = ResponsibleModel.objects.get(user=self.request.user)
+                if responsible.tenure.filter(id=serializer.instance.matricule.classe.id).exists():
+                    concerned_settings.append(
+                        {
+                            "group": -1,
+                            "is_allowed": set(
+                                dossier_settings.tenure_allow_visibility_to.all().values_list("id", flat=True)
+                            ),
+                            "is_forced": set(
+                                dossier_settings.tenure_force_visibility_to.all().values_list("id", flat=True)
+                            )
+                        }
+                    )
+            except ObjectDoesNotExist:
+                pass
+
+            # Concatenate all forced groups.
+            forced_groups = {g for group in concerned_settings for g in group["is_forced"]}
+
+            could_be_forced_perm = set()
             for c_s in concerned_settings:
                 # It should be in allowed and forced simultaneously or only in forced.
-                could_be_forced_perm += \
-                    list(c_s["is_allowed"].intersection(c_s["is_forced"])) \
-                    + list(c_s["is_forced"].difference(c_s["is_allowed"]))
+                could_be_forced_perm = could_be_forced_perm.union(
+                    c_s["is_allowed"].intersection(c_s["is_forced"]).union(
+                        c_s["is_forced"].difference(c_s["is_allowed"])
+                    )
+                )
 
-            only_allowed_perm = []
+            only_allowed_perm = set()
             for c_s in concerned_settings:
-                only_allowed_perm += list(c_s["is_allowed"].difference(c_s["is_forced"]))
+                only_allowed_perm = only_allowed_perm.union(c_s["is_allowed"].difference(c_s["is_forced"]))
 
             forced_visibility = [
                 f_g
@@ -303,13 +341,15 @@ class CasEleveViewSet(BaseModelViewSet):
                 if f_g not in only_allowed_perm and f_g in could_be_forced_perm
             ]
 
+            has_tenure = -1 in forced_visibility
+            if has_tenure:
+                forced_visibility.remove(-1)
+                serializer.save(visible_by_tenure=True)
+            forced_visibility = Group.objects.filter(id__in=forced_visibility)
+
         visible_by = serializer.validated_data["visible_by_groups"] + list(forced_visibility)
 
         serializer.save(visible_by_groups=visible_by)
-
-        # Check for tenure.
-        if user_groups.intersection(dossier_settings.tenure_force_visibility_to.all()):
-            serializer.save(visible_by_tenure=True)
 
     def is_only_tenure(self):
         return False
