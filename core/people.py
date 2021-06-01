@@ -241,7 +241,7 @@ class People:
                                                      teaching=teaching,
                                                      active=active)[0]
         if type(classes) == QuerySet:
-            students = students.filter(classe__in=classes)
+            students = students.filter(classe__id__in=classes.values_list("id"))
 
         return students
 
