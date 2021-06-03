@@ -65,8 +65,26 @@ class TeachingModel(models.Model):
         return "%s (%s)" % (self.display_name, self.name)
 
 
+class LevelModel(models.Model):
+    short_name = models.CharField(max_length=10)
+    name = models.CharField(max_length=20)
+    teaching = models.ForeignKey(TeachingModel, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f"{self.name} ({self.teaching.display_name})"
+
+
+class GroupLevelModel(models.Model):
+    name = models.CharField(max_length=20)
+    levels = models.ManyToManyField(LevelModel)
+
+    def __str__(self) -> str:
+        return f"{self.name} ({', '.join([str(l) for l in self.levels.all()])})"
+
+
 class ClasseModel(models.Model):
     year = models.IntegerField()
+    level = models.ForeignKey(LevelModel, null=True, default=None, on_delete=models.CASCADE)
     letter = models.CharField(max_length=20)
     teaching = models.ForeignKey(TeachingModel, on_delete=models.CASCADE)
 
@@ -227,6 +245,7 @@ class ResponsibleModel(models.Model):
     email = models.EmailField(blank=True, null=True)
     email_school = models.EmailField(blank=True, null=True)
     phone = models.CharField(max_length=200, blank=True)
+    level = models.ManyToManyField(LevelModel, default=None, blank=True)
     classe = models.ManyToManyField(ClasseModel, default=None, blank=True)
     courses = models.ManyToManyField(GivenCourseModel, default=None, blank=True)
     tenure = models.ManyToManyField(ClasseModel,

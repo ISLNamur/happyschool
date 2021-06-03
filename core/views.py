@@ -390,6 +390,12 @@ class BirthdayAPI(APIView):
 
     def get(self, format=None):
         people = self.request.GET.get('people', 'student')
+        teaching = self.request.GET.get('teaching', None)
+        if teaching:
+            try:
+                teaching = TeachingModel.objects.get(id=teaching) if teaching.isdigit else TeachingModel.objects.get(name=teaching)
+            except ObjectDoesNotExist:
+                teaching = None
 
         birthday = []
         today = timezone.now()
@@ -397,6 +403,8 @@ class BirthdayAPI(APIView):
             students = StudentModel.objects.filter(additionalstudentinfo__birth_date__month=today.month,
                                                    additionalstudentinfo__birth_date__day=today.day,
                                                    classe__isnull=False).order_by('teaching')
+            if teaching:
+                students = students.filter(teaching=teaching)
             students = students.values_list('last_name', 'first_name', 'classe__year', 'classe__letter')
             birthday += [{'name': "%s %s %s%s" % (s[0], s[1], s[2], s[3].upper())} for s in students]
         elif people == "responsible":
@@ -405,6 +413,8 @@ class BirthdayAPI(APIView):
                 birth_date__day=today.day,
                 inactive_from__isnull=True
             )
+            if teaching:
+                responsibles = responsibles.filter(teaching=teaching)
             responsibles = responsibles.values_list("last_name", "first_name")
             birthday += [{'name': "%s %s" % (s[0], s[1])} for s in responsibles]
         return Response({'results': birthday})

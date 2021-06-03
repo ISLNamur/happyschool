@@ -27,7 +27,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db.models import Q, QuerySet, Model
 from django.db.utils import OperationalError, ProgrammingError
 
-from .models import ResponsibleModel, StudentModel, TeachingModel, ClasseModel, CoreSettingsModel
+from .models import LevelModel, ResponsibleModel, StudentModel, TeachingModel, ClasseModel, CoreSettingsModel
 
 # Person type:
 STUDENT = 'student'
@@ -334,7 +334,7 @@ class People:
 
 
 def get_classes(teaching: list = ('all',), check_access: bool = False, user: User = None,
-                tenure_class_only: bool = True, educ_by_years: bool = True) -> QuerySet:
+                tenure_class_only: bool = True) -> QuerySet:
     """Get the list of classes.
 
     :param teaching: A list of students' teachings, defaults to ('all',)
@@ -346,7 +346,6 @@ def get_classes(teaching: list = ('all',), check_access: bool = False, user: Use
     :param tenure_class_only: If a teacher, get classes only by tenure, defaults to True
     :type tenure_class_only: bool, optional
     :param educ_by_years: If educator, get classes by year access. Otherwise get it by classes, defaults to True
-    :type educ_by_years: bool, optional
     :return: A QuerySet of classes.
     :rtype: QuerySet
     """
@@ -371,51 +370,63 @@ def get_classes(teaching: list = ('all',), check_access: bool = False, user: Use
                                         settings.PMS_GROUP]).exists():
             return get_classes(teaching_models)
 
-        # Coordonators have by years access.
-        if user.groups.filter(name__istartswith=settings.COORD_GROUP).exists():
-            years = _get_years_by_group(user)
-            return get_classes(teaching_models).filter(year__in=years)
+        classes_from_level = ClasseModel.objects.none()
+        for level in responsible.level.all():
+            classes_from_level |= level.classemodel_set.all()
 
-        # Educators have by years or by classes access.
-        if user.groups.filter(name__istartswith=settings.EDUC_GROUP).exists():
-            if educ_by_years:
-                years = _get_years_by_group(user)
-                return get_classes(teaching_models).filter(year__in=years)
-            else:
-                return responsible.classe.all().filter(teaching__in=teaching_models)
-
-        # It should be a teacher.
-        if tenure_class_only:
-            return responsible.tenure.all().filter(teaching__in=teaching_models)
-        else:
-            return responsible.classe.all().filter(teaching__in=teaching_models).union(
-                responsible.tenure.all().filter(teaching__in=teaching_models)
+        if user.groups.filter(
+            name__in=[settings.EDUCATOR_GROUP, settings.COORDONATOR_GROUP]
+        ).exists() or not tenure_class_only:
+            other_classes = responsible.classe.all().union(
+                responsible.tenure.all()
             )
+        else:
+            other_classes = responsible.tenure.all()
+
+        return (classes_from_level | other_classes).filter(teaching__in=teaching_models)
     else:
         return ClasseModel.objects.filter(teaching__in=teaching_models)
 
 
-def get_years(
+def get_levels(
     teaching: list = ("all",),
     check_access: bool = False,
     user: User = None,
-    tenure_class_only: bool = True,
-    educ_by_years: bool = True
-) -> set:
+) -> QuerySet:
     """
-    Get the list of years.
+    Get the list of levels.
     :param teaching: A list of students' teachings.
-    :param check_access: Return only classes with access, defaults to False
+    :param check_access: Return only levels with complete access, defaults to False
     :type check_access: bool, optional
-    :param tenure_class_only: If a teacher, get classes only by tenure, defaults to True
-    :type tenure_class_only: bool, optional
-    :param educ_by_years: If educator, get classes by year access. Otherwise get it by classes,
-        defaults to True
-    :type educ_by_years: bool, optional
-    :return: A set of years.
+    :return: A QuerySet of LevelModel.
     """
-    classes = get_classes(teaching, check_access, user, tenure_class_only, educ_by_years)
-    return set(map(lambda s: s.year, classes))
+    if "all" not in teaching:
+        if len(teaching) > 0 and type(teaching[0]) == TeachingModel:
+            teaching_models = teaching
+        else:
+            teaching_models = TeachingModel.objects.filter(name__in=teaching)
+    else:
+        teaching_models = TeachingModel.objects.all()
+
+    if check_access and user:
+        try:
+            responsible = ResponsibleModel.objects.get(user=user)
+            teaching_models = list(teaching_models.intersection(responsible.teaching.all()))
+        except ObjectDoesNotExist:
+            # Responsible not found return no classes.
+            return ClasseModel.objects.none()
+        # Sysadmins, direction members, pms have all access.
+        if user.groups.filter(name__in=[settings.SYSADMIN_GROUP, settings.DIRECTION_GROUP,
+                                        settings.PMS_GROUP]).exists():
+            return get_levels(teaching_models)
+
+        level_from_classes = (responsible.classe.all() | responsible.tenure.all())
+        # Educators and coordonators have levels and classes access.
+        if user.groups.filter(name__in=[settings.EDUCATOR_GROUP, settings.COORDONATOR_GROUP]).exists():
+            return responsible.level.all().filter(teaching__in=teaching_models)
+
+    else:
+        return LevelModel.objects.filter(teaching__in=teaching_models).order_by("teaching", "name")
 
 
 def _get_years_by_group(user: User) -> set:
