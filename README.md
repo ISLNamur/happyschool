@@ -1,7 +1,8 @@
 Happy School
 ================
-[![Build Status](https://travis-ci.com/ISLNamur/happyschool.svg?branch=master)](https://travis-ci.com/ISLNamur/happyschool)
+![Build Status](https://github.com/ISLNamur/happyschool/actions/workflows/django.yml/badge.svg)
 
+.github/workflows/
 HappySchool est une application web de gestion administrative et pédagogique
 pour les écoles primaires et secondaires. Fruit d'une expérience de terrain,
 il se veut simple d'utilisation tout en restant configurable afin de s'adapter
