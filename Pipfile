@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 ipython = "*"
 flake8 = "*"
-selenium = "*"
+seleniumbase = "*"
 sphinx = "*"
 
 [packages]
