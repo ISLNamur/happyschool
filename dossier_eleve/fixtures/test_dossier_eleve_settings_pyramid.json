@@ -1,0 +1,103 @@
+[
+{
+    "model": "dossier_eleve.dossierelevesettingsmodel",
+    "pk": 1,
+    "fields": {
+        "enable_submit_sanctions": true,
+        "use_school_email": false,
+        "filter_teacher_entries_by_tenure": false,
+        "enable_disciplinary_council": true,
+        "teachings": [
+            1
+        ],
+        "all_access": [
+            1
+        ],
+        "dir_allow_visibility_to": [
+            2,
+            5,
+            4,
+            3,
+            7
+        ],
+        "dir_force_visibility_to": [
+            2,
+            1
+        ],
+        "coord_allow_visibility_to": [
+            2,
+            5,
+            4,
+            3,
+            7
+        ],
+        "coord_force_visibility_to": [
+            2,
+            5,
+            1
+        ],
+        "educ_allow_visibility_to": [
+            2,
+            5,
+            4,
+            3,
+            7
+        ],
+        "educ_force_visibility_to": [
+            2,
+            5,
+            4,
+            1
+        ],
+        "teacher_allow_visibility_to": [
+            2,
+            5,
+            4,
+            3,
+            7
+        ],
+        "teacher_force_visibility_to": [
+            2,
+            5,
+            4,
+            3,
+            1
+        ],
+        "pms_allow_visibility_to": [
+            2,
+            5,
+            4,
+            3,
+            7
+        ],
+        "pms_force_visibility_to": [
+            2,
+            1
+        ],
+        "tenure_allow_visibility_to": [
+            2,
+            5,
+            4,
+            3,
+            7
+        ],
+        "tenure_force_visibility_to": [
+            2,
+            5,
+            4,
+            3,
+            1
+        ],
+        "tenure_allow_visibility_from": [
+            2,
+            5,
+            4,
+            3,
+            7
+        ],
+        "tenure_force_visibility_from": [
+            3
+        ]
+    }
+}
+]
