@@ -122,8 +122,8 @@ class DossierEleveSettingsModel(models.Model):
     tenure_force_visibility_to = models.ManyToManyField(
         Group, default=None, blank=True,
         related_name="tenure_force_visibility_to",
-        help_text="""Les groupes selectionnés donneront forcément la visibilité aux titulaires.
-        Ne concerne que les groupes 'direction', 'coordonateur',
+        help_text="""Les groupes selectionnés auront forcément la visibilité sur les cas venant
+        du titulaire. Ne concerne que les groupes 'direction', 'coordonateur',
         'educateur', 'professeur' et 'pms'."""
     )
     tenure_allow_visibility_from = models.ManyToManyField(
@@ -143,7 +143,7 @@ class DossierEleveSettingsModel(models.Model):
     enable_submit_sanctions = models.BooleanField(default=True)
     use_school_email = models.BooleanField(default=False)
     filter_teacher_entries_by_tenure = models.BooleanField(
-        default=True,
+        default=False,
         help_text="Déprécié."
     )
     enable_disciplinary_council = models.BooleanField(

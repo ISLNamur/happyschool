@@ -256,6 +256,7 @@ class CasEleveViewSet(BaseModelViewSet):
         user_groups = self.request.user.groups.all()
         dossier_settings = get_settings()
 
+        visible_by_tenure = serializer.validated_data["visible_by_tenure"]
         if user_groups.filter(name=settings.SYSADMIN_GROUP):
             # Don't force for sysadmin.
             forced_visibility = []
@@ -344,12 +345,12 @@ class CasEleveViewSet(BaseModelViewSet):
             has_tenure = -1 in forced_visibility
             if has_tenure:
                 forced_visibility.remove(-1)
-                serializer.save(visible_by_tenure=True)
+                visible_by_tenure = True
             forced_visibility = Group.objects.filter(id__in=forced_visibility)
 
         visible_by = serializer.validated_data["visible_by_groups"] + list(forced_visibility)
 
-        serializer.save(visible_by_groups=visible_by)
+        serializer.save(visible_by_groups=visible_by, visible_by_tenure=visible_by_tenure)
 
     def is_only_tenure(self):
         return False
