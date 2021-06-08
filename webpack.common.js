@@ -30,21 +30,23 @@ module.exports = {
     output: {
         publicPath: "/static/bundles/",
         path: path.resolve("./static/bundles/"),
-        filename: "[name]-[hash].js"
+        filename: "[name]-[fullhash].js"
     },
 
     plugins: [
-        new CopyPlugin([
-            {
-                from: "**", to: "", context: "assets/sw/"
-            },
-            {
-                from: "with-async-ittr-min.js", to: "idb.js", context: "node_modules/idb/build/iife/"
-            },
-            {
-                from: "bootstrap.min.css", to: "", context: "node_modules/bootstrap/dist/css/"
-            }
-        ], { logLevel: "info" }),
+        new CopyPlugin({
+            patterns: [
+                {
+                    from: "**", to: "", context: "assets/sw/"
+                },
+                {
+                    from: "with-async-ittr-min.js", to: "idb.js", context: "node_modules/idb/build/iife/"
+                },
+                {
+                    from: "bootstrap.min.css", to: "", context: "node_modules/bootstrap/dist/css/"
+                }
+            ]
+        }),
         new VueLoaderPlugin(),
         new BundleTracker({filename: "./webpack-stats.json"}),
         new swCachePlugin(
@@ -55,13 +57,13 @@ module.exports = {
         )
     ],
     optimization: {
-        namedModules: true, // NamedModulesPlugin()
+        moduleIds: "named", // NamedModulesPlugin()
         splitChunks: { // CommonsChunkPlugin()
             name: "commons",
             chunks: "all",
             minChunks: 2
         },
-        noEmitOnErrors: true, // NoEmitOnErrorsPlugin
+        emitOnErrors: false, // NoEmitOnErrorsPlugin
         concatenateModules: true //ModuleConcatenationPlugin
     },
 
@@ -93,7 +95,18 @@ module.exports = {
             {
                 test: /\.js$/,
                 loader: "babel-loader",
-            }
+            },
+            {
+                test: /\.(png|jpg|gif|svg)$/i,
+                use: [
+                    {
+                        loader: "url-loader",
+                        options: {
+                            limit: 8192,
+                        },
+                    },
+                ],
+            },
         ]
     }
 };

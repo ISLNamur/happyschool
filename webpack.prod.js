@@ -6,17 +6,17 @@ const dist= `./assets/.`;
 shell(`mkdir -p ${dist}`);
 shell(`if ls ./*/assets/* 1> /dev/null 2>&1; then cp -r ${src} ${dist}; fi`, { shell: '/bin/bash' });
 
-const merge = require('webpack-merge');
+const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 var webpack = require('webpack');
 
 module.exports = merge(common, {
-  mode: 'production',
-  plugins: [
-      new webpack.DefinePlugin({
-        'process.env': {
-          NODE_ENV: '"production"'
-        }
-      })
-  ]
+    mode: "production",
+    plugins: [
+        new webpack.DefinePlugin({
+            "process.env": {
+                NODE_ENV: "\"production\""
+            }
+        })
+    ]
 });
