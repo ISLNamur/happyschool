@@ -39,7 +39,7 @@
         </b-form>
         <b-collapse
             id="filters-card"
-            v-model="showSearch"
+            :visible="showSearch"
             @shown="setFocus"
         >
             <b-card
