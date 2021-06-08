@@ -130,7 +130,7 @@ Vue.use(BootstrapVue);
 
 import "vue-awesome/icons";
 import Icon from "vue-awesome/components/Icon.vue";
-Vue.component("icon", Icon);
+Vue.component("Icon", Icon);
 
 import axios from "axios";
 

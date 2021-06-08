@@ -39,7 +39,7 @@ Vue.use(BootstrapVue);
 
 import "vue-awesome/icons";
 import Icon from "vue-awesome/components/Icon.vue";
-Vue.component("icon", Icon);
+Vue.component("Icon", Icon);
 
 import MailTemplateList from "./mail_template_list.vue";
 import MailTemplate from "./mail_template.vue";

@@ -123,7 +123,7 @@ export default {
                 axios.post("/mail_answer/api/options/", data, token)
                     .then(response => {
                         data.id = response.data.id;
-                        this.options.push(data);
+                        // this.options.push(data);
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -135,7 +135,7 @@ export default {
                 data.input = this.checkInclude;
                 axios.put("/mail_answer/api/options/" + this.options[this.itemIndex].id + "/", data, token)
                     .then(() => {
-                        this.options[this.itemIndex] = data;
+                        // this.options[this.itemIndex] = data;
                     })
                     .catch(function (error) {
                         console.log(error);
@@ -151,7 +151,7 @@ export default {
             let token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             axios.delete("/mail_answer/api/options/" + this.options[index].id + "/", token)
                 .then(() => {
-                    this.options.splice(index, 1);
+                    // this.options.splice(index, 1);
                 })
                 .catch(function (error) {
                     console.log(error);

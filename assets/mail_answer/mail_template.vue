@@ -161,7 +161,7 @@ import Vue from "vue";
 
 import "vue-awesome/icons";
 import Icon from "vue-awesome/components/Icon.vue";
-Vue.component("icon", Icon);
+Vue.component("Icon", Icon);
 
 import axios from "axios";
 
@@ -211,8 +211,8 @@ export default {
             if (this.id) url += this.id.toString() + "/";
             let send = this.id ? axios.put(url, data, token) : axios.post(url, data, token);
 
-            send.then(response => {
-                if (!this.id) this.id = response.data.id;
+            send.then(() => {
+                // if (!this.id) this.id = response.data.id;
                 this.saving = false;
             })
                 .catch(function (error) {
