@@ -72,6 +72,8 @@ def get_menu_entry(active_app, request):
         view_set = CasEleveViewSet.as_view({'get': 'list'})
         results = [c["id"] for c in view_set(request).data['results']]
         menu_entry["new_items"] = CasEleve.objects.filter(id__in=results, datetime_modified__gt=last_access).count()
+        if menu_entry["new_items"] == 20:
+            menu_entry["new_items"] = "20+"
     return menu_entry
 
 
