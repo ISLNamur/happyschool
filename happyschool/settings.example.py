@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     # 'mail_answer',
     # 'schedule_change',
     # 'student_absence',
+    # "lateness",
 ]
 
 MIDDLEWARE = [

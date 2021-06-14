@@ -1,0 +1,23 @@
+<html>
+	<head>
+	   <meta charset="UTF-8">
+	</head>
+
+	<body>
+	    <div>
+		    <div>
+                <h2>Retard</h2>
+                <p>Bonjour,</p>
+                <p>
+                    Pour information, {{ lateness.student.last_name }} {{ lateness.student.first_name }} est arrivé(e) en retard le {{ lateness.datetime_creation }}.
+                    Le nombre de retard pour cette période est de <strong>{{ lateness_count }}</strong>.
+                </p>
+                {% if lateness.has_sanction and not lateness.sanction_id %}
+                <p><strong>Avec ce nombre de retards, une sanction devrait être demandée.</strong></p>
+                {% endif %}
+                <p>Bonne journée,</p>
+                <p>L'équipe éducative.</p>
+            </div>
+        </div>
+    </body>
+</html>
