@@ -35,8 +35,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
+from core.people import get_classes
 import os
 import json
+from django.db.models.query import QuerySet
 
 from unidecode import unidecode
 
@@ -51,13 +53,16 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.views import APIView, Response
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+
+from django_filters import rest_framework as filters
 
 from annuaire.views import create_classes_list
 from core.permissions import IsInGroupPermission
 from core.utilities import get_menu
 from core.views import LargePageSizePagination
+from core.models import ResponsibleModel, TeachingModel, ClasseModel
 from mail_answer.models import MailTemplateModel
 from mail_answer.models import MailAnswerSettingsModel as AnswersSettings
 
@@ -133,6 +138,88 @@ class EmailsList(APIView):
         emails = EmailNotification.objects.all().order_by("-datetime_created")
         serializer = EmailNotificationSerializer(emails, many=True)
         return Response(serializer.data)
+
+
+class EmailNotificationViewSet(ReadOnlyModelViewSet):
+    queryset = EmailNotification.objects.all()
+    serializer_class = EmailNotificationSerializer
+    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+
+    def get_queryset(self):
+        try:
+            responsible = ResponsibleModel.objects.get(user=self.request.user)
+        except ObjectDoesNotExist:
+            return EmailNotification.objects.none()
+
+        raw_notif = EmailNotification.objects.filter(
+            to_type="teachers",
+            teaching__in=responsible.teaching.values_list("name", flat=True)
+        ).order_by("-datetime_created")[:50]
+        filtered_notif = [
+            notif.id for notif in raw_notif if self.is_responsible_in_recipients(responsible, notif.email_to)
+        ]
+
+        return EmailNotification.objects.filter(id__in=filtered_notif).order_by("-datetime_created")
+
+    def is_responsible_in_recipients(self, responsible: ResponsibleModel, email_to: str) -> QuerySet:
+        recipients = email_to.split(',')
+        for recipient in recipients:
+            # Check if it is the staff.
+            if recipient == 'Personnels':
+                if not responsible.is_teacher and not responsible.is_educator and not responsible.is_secretary:
+                    return True
+                else:
+                    continue
+
+            # Check if it is a custom group.
+            if OtherEmailGroupModel.objects.filter(name=recipient).exists():
+                continue
+
+            # So it is directly related to classes.
+            years = []
+            # If it starts with a digit, it could be a class, a year or a degree.
+            if recipient[0].isdigit():
+                # Class length is only two.
+                if len(recipient) == 2:
+                    classes = ClasseModel.objects.filter(
+                        year=int(recipient[0]),
+                        letter=recipient[1].lower(),
+                        teaching__in=responsible.teaching.all()
+                    )
+                    years.append(int(recipient[0]))
+                elif 'année' in recipient:
+                    classes = ClasseModel.objects.filter(
+                        year=int(recipient[0]),
+                        teaching__id__in=responsible.teaching.all().values_list("id", flat=True)
+                    )
+                    years.append(int(recipient[0]))
+                else:
+                    # It is a degrée.
+                    classes = ClasseModel.objects.filter(
+                        year__in=[int(recipient[0]) * 2, int(recipient[0]) * 2 - 1],
+                        teaching__id__in=responsible.teaching.all().values_list("id", flat=True)
+                    )
+                    degree = int(recipient[0])
+                    years += [degree * 2, degree * 2 - 1]
+            else:
+                # It is a cycle.
+                if "supérieur" in recipient:
+                    years += [4, 5, 6]
+                elif "inférieur" in recipient:
+                    years += [1, 2, 3]
+                elif "Toutes les classes" in recipient:
+                    years += [1, 2, 3, 4, 5, 6]
+                # elif "Tout le personnel" in recip:
+                #
+                else:
+                    years = []
+                classes = ClasseModel.objects.filter(year__in=years, teaching__in=responsible.teaching.all())
+
+            if get_classes(check_access=True, user=responsible.user).intersection(classes).exists():
+                return True
+            else:
+                continue
+        return False
 
 
 class UploadFile(APIView):

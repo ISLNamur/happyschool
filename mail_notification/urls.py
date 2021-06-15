@@ -40,5 +40,6 @@ urlpatterns = [
 router = DefaultRouter()
 router.register(r'api/other_email', views.OtherEmailViewSet)
 router.register(r'api/other_email_group', views.OtherEmailGroupViewSet)
+router.register(r'api/notif', views.EmailNotificationViewSet)
 
 urlpatterns += router.urls
