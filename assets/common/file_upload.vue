@@ -65,6 +65,11 @@ export default {
         "removestr": {
             type: String,
             default: "",
+        },
+        /** If true, replace /media from the path with another string. */
+        removeMedia: {
+            type: Boolean,
+            default: false,
         }
     },
     data: function () {
@@ -109,6 +114,9 @@ export default {
             axios.get(this.path + this.id + "/")
                 .then(response => {
                     this.link = response.data.attachment;
+                    if (this.removeMedia && this.link.startsWith("/media")) {
+                        this.link = this.link.slice(6, this.link.length);
+                    }
                     this.filename = this.link.split("/")[this.link.split("/").length - 1];
                     this.loading = false;
                 });
