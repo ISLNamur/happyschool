@@ -41,6 +41,7 @@ from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions, 
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser
 
 from core.views import BaseFilters, BaseModelViewSet, get_app_settings, BaseUploadFileView, get_core_settings
 from core.utilities import get_menu
@@ -516,6 +517,31 @@ class StatisticAPI(APIView):
 class UploadFileView(BaseUploadFileView):
     file_model = CasAttachment
     file_serializer = CasAttachmentSerializer
+
+
+class AttachmentView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, year, month, day, file, format=None):
+        try:
+            attachment = CasAttachment.objects.get(attachment__exact=f"dossier_eleve/{year}/{str(month).zfill(2)}/{str(day).zfill(2)}/{file}")
+            queryset = CasEleve.objects.filter(attachments=attachment)
+            filter_by_groups = Q()
+            for g in request.user.groups.all():
+                filter_by_groups |= Q(visible_by_groups=g)
+            filter_by_groups |= Q(created_by=request.user)
+            resp = ResponsibleModel.objects.get(user=request.user)
+            filter_by_groups |= Q(matricule__classe__in=resp.tenure.all(), visible_by_tenure=True)
+            queryset = queryset.filter(filter_by_groups).distinct()
+            if not queryset.exists():
+                return HttpResponse(status=404)
+        except ObjectDoesNotExist:
+            return HttpResponse(status=404)
+
+        response = HttpResponse(attachment.attachment)
+        response["Content-Disposition"] = f'attachment; filename="{file}"'
+
+        return response
 
 
 class CasEleveListPDFGen(
