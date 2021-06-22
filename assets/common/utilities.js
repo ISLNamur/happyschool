@@ -42,3 +42,13 @@ export function displayClasse(classe) {
         return `${classe.year}${classe.letter.toUpperCase()} – ${classe.teaching.display_name}`;
     }
 }
+
+export function getCurrentScholarYear() {
+    const currentMonth = new Date().getMonth() + 1;
+    const currentYear = new Date().getFullYear();
+    if (currentMonth >= 9) {
+        return currentYear;
+    } else {
+        return currentYear - 1;
+    }
+}
