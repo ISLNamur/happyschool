@@ -277,6 +277,7 @@
                                         :removestr="5"
                                         @delete="deleteFile(index)"
                                         @setdata="setFileData(index, $event)"
+                                        remove-media
                                     />
                                 </b-list-group>
                             </b-form-group>
