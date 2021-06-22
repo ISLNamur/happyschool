@@ -297,7 +297,7 @@
                         <b-card
                             header="Derniers messages du dossier des élèves"
                             class="mt-2"
-                            v-if="dossier_eleve.length > 0"
+                            v-if="dossier_eleve && dossier_eleve.count > 0"
                         >
                             <b-row>
                                 <b-col cols="2">
@@ -309,7 +309,7 @@
                                 <b-col><strong>Message</strong></b-col>
                             </b-row>
                             <b-row
-                                v-for="cas in dossier_eleve"
+                                v-for="cas in dossier_eleve.results.slice(0, 5)"
                                 :key="cas.id"
                                 class="mb-2"
                             >
@@ -342,9 +342,42 @@
                             </b-row>
                         </b-card>
                         <b-card
+                            header="Retards"
+                            v-if="lateness && lateness.count > 0"
+                            class="mt-2"
+                        >
+                            <b-row>
+                                <b-col>
+                                    Nombre de retards cette année : {{ lateness.count }}
+                                </b-col>
+                            </b-row>
+                            <b-row>
+                                <b-col>
+                                    Derniers retards:
+                                    <b-list-group-item
+                                        v-for="l in lateness.results.slice(0, 5)"
+                                        :key="l.id"
+                                    >
+                                        {{ niceDate(l.datetime_creation) }} à {{ niceTime(l.datetime_creation) }}
+                                    </b-list-group-item>
+                                </b-col>
+                            </b-row>
+                            <b-row class="mt-2">
+                                <b-col>
+                                    <b-btn :href="`/lateness/?student__matricule=${this.matricule}`">
+                                        <icon
+                                            name="eye"
+                                            scale="1"
+                                        />
+                                        Voir tous les retards
+                                    </b-btn>
+                                </b-col>
+                            </b-row>
+                        </b-card>
+                        <b-card
                             header="Derniers passages à l'infirmerie"
                             class="mt-2"
-                            v-if="infirmerie.length > 0"
+                            v-if="infirmerie && infirmerie.count > 0"
                         >
                             <b-row>
                                 <b-col cols="2">
@@ -359,7 +392,7 @@
                                 <b-col><strong>Remarques de sortie</strong></b-col>
                             </b-row>
                             <b-row
-                                v-for="passage in infirmerie"
+                                v-for="passage in infirmerie.results.slice(0, 5)"
                                 :key="passage.id"
                                 class="mb-2"
                             >
@@ -378,7 +411,7 @@
                         <b-card
                             header="Derniers appels"
                             class="mt-2"
-                            v-if="appels.length > 0"
+                            v-if="appels && appels.results.count > 0"
                         >
                             <b-row>
                                 <b-col cols="2">
@@ -393,7 +426,7 @@
                                 <b-col><strong>Message</strong></b-col>
                             </b-row>
                             <b-row
-                                v-for="appel in appels"
+                                v-for="appel in appels.results.slice(0, 5)"
                                 :key="appel.id"
                                 class="mb-2"
                             >
@@ -409,7 +442,7 @@
                                 <b-col>{{ appel.commentaire }}</b-col>
                             </b-row>
                         </b-card>
-                        <p v-if="appels.length + dossier_eleve.length + infirmerie.length == 0">
+                        <p v-if="appels && dossier_eleve && infirmerie">
                             <em>Aucune donnée concernant l'élève n'est présente.</em>
                         </p>
                     </b-tab>
@@ -445,6 +478,8 @@ import MedicalInfo from "./medicalinfo.vue";
 import SensitiveInfo from "./sensitiveinfo.vue";
 import ScheduleInfo from "./schedule.vue";
 
+import {getCurrentScholarYear} from "../common/utilities.js";
+
 export default {
     props: {
         matricule: {
@@ -477,9 +512,10 @@ export default {
             contact: null,
             medical: null,
             important: [],
-            dossier_eleve: [],
-            appels: [],
-            infirmerie: [],
+            dossier_eleve: null,
+            appels: null,
+            infirmerie: null,
+            lateness: null,
             infoCount: 0,
             moreInfo: false,
             pia: null,
@@ -513,18 +549,24 @@ export default {
             this.showPassword = false;
             this.tenure = null;
             this.important = [];
-            this.dossier_eleve = [];
-            this.appels = [];
-            this.infirmerie = [];
+            this.dossier_eleve = null;
+            this.appels = null;
+            this.infirmerie = null;
             this.infoCount = 0;
             this.pia = null;
             this.classe = [];
             this.courses = [];
+            this.lateness = null;
         },
         niceDate: function (date) {
             if (!date) return "";
 
             return Moment(date).calendar();
+        },
+        niceTime: function (date) {
+            if (!date) return "";
+
+            return Moment(date).format("HH:mm");
         },
         loadInfo: function () {
             this.reset();
@@ -568,7 +610,7 @@ export default {
                     .then(response => {
                         this.important = response.data.results;
                     });
-
+                
                 if (!this.noNews) {
                     let promises = [];
                     let apps = [];
@@ -586,10 +628,14 @@ export default {
                         promises.push(axios.get("/infirmerie/api/passage/?ordering=-datetime_passage&matricule_id=" + this.matricule));
                         apps.push("infirmerie");
                     }
+                    if (userMenu.apps.find(a => a.app == "lateness")) {
+                        promises.push(axios.get(`/lateness/api/lateness/?student__matricule=${this.matricule}&scholar_year=${getCurrentScholarYear()}`));
+                        apps.push("lateness");
+                    }
                     Promise.all(promises)
                         .then((response) => {
                             response.forEach((resp, index) => {
-                                this[apps[index]] = resp.data.results.slice(0, 5);
+                                this[apps[index]] = resp.data;
                                 this.infoCount += resp.data.count;
                             });
                         });
