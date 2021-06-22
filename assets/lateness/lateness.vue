@@ -410,7 +410,7 @@ export default {
     mounted: function () {
         // eslint-disable-next-line no-undef
         this.menuInfo = menu;
-        this.loadEntries();
+        this.applyFilter();
         this.overloadInput();        
     },
     components: {

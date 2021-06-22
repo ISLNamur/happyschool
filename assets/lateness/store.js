@@ -28,7 +28,13 @@ export default new Vuex.Store({
     state: {
         // eslint-disable-next-line no-undef
         settings: settings,
-        filters: [],
+        filters: [
+            {
+                filterType: "activate_after_count",
+                tag: "Activer",
+                value: true,
+            }
+        ],
     },
     mutations: {
         addFilter: addFilter,

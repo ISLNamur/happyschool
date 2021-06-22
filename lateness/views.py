@@ -68,6 +68,7 @@ class LatenessView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
         {"value": "student__display", "text": "Nom"},
         {"value": "student__matricule", "text": "Matricule"},
         {"value": "count_lateness", "text": "Nombre de retard"},
+        {"value": "activate_after_count", "text": "À partir du comptage"},
     ]
 
     def get_context_data(self, **kwargs):
@@ -80,8 +81,11 @@ class LatenessView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
 
 
 class LatenessFilter(BaseFilters):
+    datetime_field = "datetime_creation"
+
     student__display = filters.CharFilter(method="people_name_by")
     count_lateness = filters.NumberFilter(method="count_lateness_by")
+    activate_after_count = filters.BooleanFilter(method="activate_after_count_by")
 
     class Meta:
         fields_to_filter = [
@@ -102,6 +106,9 @@ class LatenessFilter(BaseFilters):
         )
         return LatenessModel.objects.filter(student__in=counting, justified=False)
 
+    def activate_after_count_by(self, queryset, field_name, value):
+        return queryset.filter(datetime_creation__gte=get_settings().date_count_start)
+
 
 class LatenessViewSet(BaseModelViewSet):
     queryset = LatenessModel.objects.all()
@@ -117,9 +124,6 @@ class LatenessViewSet(BaseModelViewSet):
     filter_class = LatenessFilter
     username_field = None
 
-    def get_queryset(self):
-        return self.queryset.filter(datetime_creation__gte=get_settings().date_count_start)
-
     def perform_create(self, serializer):
         lateness = serializer.save()
         printing = self.request.query_params.get("print", None)
@@ -129,6 +133,7 @@ class LatenessViewSet(BaseModelViewSet):
         lateness_count = (
             self.get_queryset()
             .filter(
+                datetime_creation__gte=get_settings().date_count_start,
                 student=lateness.student,
                 justified=False,
             )
