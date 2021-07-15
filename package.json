@@ -33,7 +33,7 @@
     "vue-loader": "^15.9.7",
     "vue-template-compiler": "^2.6.14",
     "webpack": "^5.38.1",
-    "webpack-bundle-tracker": "^0.4.3"
+    "webpack-bundle-tracker": "^1.2.0"
   },
   "dependencies": {
     "@babel/polyfill": "^7.8.7",
