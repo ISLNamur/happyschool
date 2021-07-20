@@ -319,6 +319,13 @@ class TeachingViewSet(ModelViewSet):
     serializer_class = TeachingSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions)
 
+    def get_permissions(self):
+        if self.action == "list":
+            permission_classes = []
+        else:
+            permission_classes = [IsAuthenticated, DjangoModelPermissions]
+        return [permission() for permission in permission_classes]
+
 
 class ClasseViewSet(ModelViewSet):
     queryset = ClasseModel.objects.all()
