@@ -31,7 +31,7 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def list_user_properties(context):
     if context['user'].is_anonymous:
-        return ""
+        return "null"
     try:
         responsible = ResponsibleModel.objects.get(user=context['user'])
         given_courses_serialized = GivenCourseSerializer(responsible.courses.all(), many=True)

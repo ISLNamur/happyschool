@@ -33,7 +33,9 @@
             {% autoescape off %}
             const user = "{{ user }}";
             let user_properties_raw = {% list_user_properties %};
-            user_properties_raw.given_courses = JSON.parse(user_properties_raw.given_courses);
+            if (user_properties_raw) {
+                user_properties_raw.given_courses = JSON.parse(user_properties_raw.given_courses);
+            }
             const user_properties = user_properties_raw;
             const user_groups = {% list_user_groups %};
             {% endautoescape %}

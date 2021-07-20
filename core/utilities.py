@@ -108,7 +108,8 @@ def get_menu(request: HttpRequest, active_app: str = "") -> dict:
             "active": False
         })
 
-    menu = {"full_name": request.user.get_full_name(), "apps": apps}
+    full_name = request.user.get_full_name() if not request.user.is_anonymous else "anonymous"
+    menu = {"full_name": full_name, "apps": apps}
     menu['admin_settings'] = request.user.has_perm('core.add_coresettingsmodel')
 
     return menu
