@@ -36,14 +36,14 @@
                     track-by="id"
                     v-model="period"
                     :show-no-options="false"
-                    @input="getStudents"
+                    @input="getStudents('UND')"
                 >
                     <span slot="noResult">Aucune période ne correspond à votre recherche.</span>
                 </multiselect>
             </b-col>
             <b-col>
                 <multiselect
-                    v-if="$store.state.settings.select_student_by === 'GC'"
+                    v-if="$store.state.settings.select_student_by === 'GC' || $store.state.settings.select_student_by === 'CLGC'"
                     :options="givenCourseOptions"
                     placeholder="Séléctionner votre cours"
                     select-label=""
@@ -53,12 +53,15 @@
                     track-by="id"
                     v-model="givenCourse"
                     :show-no-options="false"
-                    @input="getStudents"
+                    @input="getStudents('GC')"
                 >
                     <span slot="noResult">Aucun cours ne correspond à votre recherche.</span>
                 </multiselect>
+            </b-col>
+            <span v-if="$store.state.settings.select_student_by === 'CLGC'">ou</span>
+            <b-col>
                 <multiselect
-                    v-else-if="$store.state.settings.select_student_by === 'CL'"
+                    v-if="$store.state.settings.select_student_by === 'CL' || $store.state.settings.select_student_by === 'CLGC'"
                     :options="classesOptions"
                     placeholder="Cherchez votre classe"
                     select-label=""
@@ -68,7 +71,7 @@
                     track-by="id"
                     v-model="classe"
                     :show-no-options="false"
-                    @input="getStudents"
+                    @input="getStudents('CL')"
                     @search-change="searchClasses"
                 >
                     <span slot="noResult">Aucune classe ne correspond à votre recherche.</span>
@@ -151,7 +154,7 @@ export default {
                     this.classesOptions = resp.data;
                 });
         },
-        getAbsence: function (students) {
+        getAbsence: function (students, selectBy) {
             const data = {
                 params: {
                     period: this.period.id,
@@ -159,7 +162,7 @@ export default {
                     page_size: 5000,
                 }
             };
-            if (this.$store.state.settings.select_student_by === "GC") data.params.given_course = this.givenCourse.id;
+            if (selectBy === "GC") data.params.given_course = this.givenCourse.id;
             axios.get("/student_absence_teacher/api/absence/", data, token)
                 .then(resp => {
                     console.log(resp.data.results);
@@ -176,9 +179,14 @@ export default {
                     alert(err);
                 });
         },
-        getStudents: function () {
+        getStudents: function (selectBy) {
             this.students = [];
-            if (this.$store.state.settings.select_student_by === "GC") {
+            if (selectBy === "UND") {
+                // If undefined, try givenCourse and then classe.
+                selectBy = this.givenCourse ? "GC" : "CL";
+            }
+            if (selectBy === "GC") {
+                this.classe = null;
                 if (!this.givenCourse || !this.period) return;
 
                 this.loadingStudent = true;
@@ -187,9 +195,10 @@ export default {
                     .then(resp => {
                         this.$store.commit("resetChanges");
                         this.showAlert = 0;
-                        this.getAbsence(resp.data);
+                        this.getAbsence(resp.data, selectBy);
                     });
-            } else if (this.$store.state.settings.select_student_by === "CL") {
+            } else if (selectBy === "CL") {
+                this.givenCourse = null;
                 if (!this.classe || !this.period) return;
 
                 this.loadingStudent = true;
@@ -199,7 +208,7 @@ export default {
                     .then(resp => {
                         this.$store.commit("resetChanges");
                         this.showAlert = 0;
-                        this.getAbsence(resp.data);
+                        this.getAbsence(resp.data, selectBy);
                     });
             }
         },

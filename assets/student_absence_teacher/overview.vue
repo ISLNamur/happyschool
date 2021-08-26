@@ -21,20 +21,41 @@
     <div>
         <b-row>
             <b-col>
-                <b-form-group
-                    label="Date"
+                <b-form
+                    inline
+                    class="mb-1"
                 >
-                    <b-overlay
-                        :show="loading"
-                        rounded="sm"
+                    <b-form-group
+                        label="Date"
                     >
-                        <b-input
-                            type="date"
-                            v-model="date"
-                            @input="get_absence_count"
+                        <b-overlay
+                            :show="loading"
+                            rounded="sm"
+                        >
+                            <b-input
+                                type="date"
+                                v-model="date"
+                                @input="get_absence_count"
+                            />
+                        </b-overlay>
+                    </b-form-group>
+                    <b-form-group
+                        label="Vue pour les périodes"
+                        v-slot="{ ariaDescribedby }"
+                        class="ml-1"
+                    >
+                        <b-form-radio-group
+                            id="point-of-view-radio"
+                            v-model="pointOfView"
+                            :options="optionsPointOfView"
+                            :aria-describedby="ariaDescribedby"
+                            button-variant="outline-primary"
+                            name="point-of-view-radio"
+                            @change="get_absence_count()"
+                            buttons
                         />
-                    </b-overlay>
-                </b-form-group>
+                    </b-form-group>
+                </b-form>
             </b-col>
         </b-row>
         <b-row>
@@ -95,9 +116,13 @@ export default {
     data: function () {
         return {
             date: Moment().format("YYYY-MM-DD"),
+            pointOfView: "educator",
+            optionsPointOfView: [
+                { text: "Professeur", value: "teacher"},
+                { text: "Éducateur", value: "educator"},
+            ],
             absence_count: [],
             fields: [
-                {key: "classe", }
             ],
             filter: "",
             loading: true,
@@ -106,7 +131,8 @@ export default {
     methods: {
         get_absence_count: function () {
             this.loading = true;
-            axios.get(`/student_absence_teacher/api/count_absence/${this.date}/`)
+            this.getPeriods();
+            axios.get(`/student_absence_teacher/api/count_absence/${this.date}/${this.pointOfView}/`)
                 .then(resp => {
                     this.absence_count = JSON.parse(resp.data).map(row => {
                         const periods = Object.entries(row).filter(c => c[0].startsWith("period"));
@@ -141,22 +167,45 @@ export default {
             this.$store.commit("removeFilter", "classe");
             this.$store.commit("addFilter", {"tag": data.item.classe, "filterType": "classe", "value": data.item.classe});
 
+            this.$store.commit("removeFilter", "date_absence");
+            this.$store.commit("addFilter",{
+                "tag": `${this.date} ${this.date}`, "filterType": "date_absence", "value": `${this.date}_${this.date}`
+            });
+
             this.$router.push("list");
+        },
+        getPeriods: function () {
+            this.fields = [{key: "classe", }];
+            if (this.pointOfView === "teacher") {
+                axios.get("/student_absence_teacher/api/period/")
+                    .then(resp => {
+                        this.fields = this.fields.concat(
+                            resp.data.results.map(p => {
+                                return {
+                                    key: `period-${p.id}`,
+                                    label: `${p.start.slice(0, 5)} ${p.end.slice(0, 5)}`,
+                                    name: p.name
+                                };
+                            })
+                        );
+                    });
+            } else if (this.pointOfView === "educator") {
+                axios.get("/student_absence/api/period/")
+                    .then(resp => {
+                        this.fields = this.fields.concat(
+                            resp.data.results.map(p => {
+                                return {
+                                    key: `period-${p.id}`,
+                                    label: `${p.start.slice(0, 5)} ${p.end.slice(0, 5)}`,
+                                    name: p.name
+                                };
+                            })
+                        );
+                    });
+            }
         }
     },
     mounted: function () {
-        axios.get("/student_absence_teacher/api/period/")
-            .then(resp => {
-                this.fields = this.fields.concat(
-                    resp.data.results.map(p => {
-                        return {
-                            key: `period-${p.id}`,
-                            label: `${p.start.slice(0, 5)} ${p.end.slice(0, 5)}`,
-                            name: p.name
-                        };
-                    })
-                );
-            });
         this.get_absence_count();
     }
 };

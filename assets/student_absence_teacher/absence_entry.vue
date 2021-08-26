@@ -51,10 +51,10 @@
                     class="text-right"
                 >
                     <p v-if="studentAbsenceComparison === 'mismatch'">
-                        La présence dans l'autre application est <strong>différente</strong>.
+                        La présence chez les éducateurs est <strong>différente</strong>.
                     </p>
                     <p v-if="studentAbsenceComparison === 'notset'">
-                        Aucune présence dans l'autre application.
+                        Aucune présence chez les éducateurs.
                     </p>
                     <b-overlay :show="updating">
                         <b-btn
@@ -85,7 +85,13 @@ import axios from "axios";
 
 import {displayStudent} from "../common/utilities.js";
 
-const absenceLabel = {"presence": "Présence", "absence": "Absence", "lateness": "Retard"};
+const absenceLabel = {
+    "presence": "Présence",
+    "absence": "Absence",
+    "lateness": "Retard",
+    "excluded": "Exclus",
+    "internship": "Stage",
+};
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {

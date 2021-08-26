@@ -27,7 +27,7 @@ app_name = 'student_absence_teacher'
 
 urlpatterns = [
     path('', views.StudentAbsenceTeacherView.as_view(), name="student_absence_teacher"),
-    path("api/count_absence/<date>/", views.OverviewAPI.as_view()),
+    path("api/count_absence/<date>/<point_of_view>/", views.OverviewAPI.as_view()),
 ]
 
 router = DefaultRouter()

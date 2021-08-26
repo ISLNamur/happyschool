@@ -26,13 +26,15 @@ from core.models import StudentModel, TeachingModel, ClasseModel, GivenCourseMod
 class StudentAbsenceTeacherSettingsModel(models.Model):
     CLASS = "CL"
     GIVEN_COURSE = "GC"
+    CLASS_AND_GIVEN_COURSE = "CLGC"
     SELECT_STUDENT = [
         (CLASS, "Par classe"),
         (GIVEN_COURSE, "Par cours"),
+        (CLASS_AND_GIVEN_COURSE, "Par classe et par cours"),
     ]
     teachings = models.ManyToManyField(TeachingModel, default=None)
     can_see_list = models.ManyToManyField(Group, default=None, blank=True, related_name="can_see_list")
-    select_student_by = models.CharField(choices=SELECT_STUDENT, max_length=3, default=CLASS)
+    select_student_by = models.CharField(choices=SELECT_STUDENT, max_length=4, default=CLASS)
 
 
 class LessonModel(models.Model):
@@ -54,10 +56,14 @@ class StudentAbsenceTeacherModel(models.Model):
     PRESENCE = "presence"
     LATENESS = "lateness"
     ABSENCE = "absence"
+    EXCLUDED = "excluded"
+    INTERNSHIP = "internship"
     STATUS_CHOICES = [
         (PRESENCE, "Présence"),
         (LATENESS, "Retard"),
         (ABSENCE, "Absence"),
+        (EXCLUDED, "Exclus"),
+        (INTERNSHIP, "Stage"),
     ]
 
     student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)

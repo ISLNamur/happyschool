@@ -133,7 +133,37 @@ class PeriodViewSet(ReadOnlyModelViewSet):
 class OverviewAPI(APIView):
     permission_classes = [IsAuthenticated]
 
-    def _extract_count(self, classe, absences, periods, date):
+    def _extract_count_from_educator(self, classe, absences, periods, date):
+        counts = {
+            "classe": classe.compact_str,
+            "classe__id": classe.id
+        }
+
+        teacher_abs = StudentAbsenceTeacherModel.objects.filter(
+            student__classe=classe,
+            date_absence=date,
+        )
+        for period in periods:
+            teacher_abs_period = teacher_abs.filter(
+                period__start__lt=period.end, period__end__gt=period.start
+            )
+            # If teacher count is -1, it means that the teacher didn't take attendences.
+            if teacher_abs_period.count() > 0:
+                teacher_count = teacher_abs_period.filter(
+                    status=StudentAbsenceTeacherModel.ABSENCE
+                ).count()
+            else:
+                teacher_count = -1
+            counts[f"period-{period.id}"] = {"teacher_count": teacher_count}
+            # Hu?
+            counts[f"period-{period.id}"]["not_teacher_count"] = next(
+                (x["id__count"] for x in absences \
+                    if x["period"] == period.id and x["is_absent"]),
+                next((0 for y in absences if y["period"] == period.id), -1)
+            )
+        return counts
+
+    def _extract_count_from_teacher(self, classe, absences, periods, date):
         counts = {
             "classe": classe.compact_str,
             "classe__id": classe.id
@@ -162,21 +192,46 @@ class OverviewAPI(APIView):
 
         return counts
 
-    def get(self, request, date, format=None):
+    def get(self, request, date, point_of_view, format=None):
         date = datetime.date.fromisoformat(date)
-        periods = PeriodModel.objects.order_by("start")
-        classes = ClasseModel.objects.order_by("year", "letter").filter(teaching__in=get_settings().teachings.all())
-        count_by_classe_by_period = [
-            self._extract_count(
-                c,
-                StudentAbsenceTeacherModel.objects \
-                    .exclude(status=StudentAbsenceTeacherModel.LATENESS) \
-                    .filter(date_absence=date, student__classe=c) \
-                    .values("period", "status").annotate(Count("id")),
-                periods,
-                date
-            )
-            for c in classes
-        ]
+        if point_of_view == "teacher":
+            periods = PeriodModel.objects.order_by("start")
+            classes = ClasseModel.objects.order_by("year", "letter").filter(teaching__in=get_settings().teachings.all())
+            count_by_classe_by_period = [
+                self._extract_count_from_teacher(
+                    c,
+                    StudentAbsenceTeacherModel.objects \
+                        ## Exclude only LATENESS ????
+                        .exclude(status=StudentAbsenceTeacherModel.LATENESS) \
+                        .filter(date_absence=date, student__classe=c) \
+                        .values("period", "status").annotate(Count("id")),
+                    periods,
+                    date
+                )
+                for c in classes
+            ]
 
-        return Response(json.dumps(count_by_classe_by_period))
+            return Response(json.dumps(count_by_classe_by_period))
+        elif point_of_view == "educator":
+            if "student_absence" not in settings.INSTALLED_APPS:
+                return Response(json.dumps({}))
+
+            from student_absence.models import StudentAbsenceModel, PeriodModel as PeriodModelEducator
+
+            periods = PeriodModelEducator.objects.order_by("start")
+            classes = ClasseModel.objects.order_by("year", "letter").filter(
+                teaching__in=get_settings().teachings.all()
+            )
+            count_by_classe_by_period = [
+                self._extract_count_from_educator(
+                    c,
+                    StudentAbsenceModel.objects
+                    .filter(date_absence=date, student__classe=c)
+                    .values("period", "is_absent").annotate(Count("id")),
+                    periods,
+                    date,
+                )
+                for c in classes
+            ]
+
+            return Response(json.dumps(count_by_classe_by_period))

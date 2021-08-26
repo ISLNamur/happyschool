@@ -64,6 +64,8 @@ export default {
                 {value: "presence", text: "Présent"},
                 {value: "lateness", text: "Retard"},
                 {value: "absence", text: "Absence"},
+                {value: "excluded", text: "Exclus"},
+                {value: "internship", text: "Stage"},
                 // {value: "other", text: "Autre remarque"}
             ],
             status: "presence",
