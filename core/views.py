@@ -108,8 +108,8 @@ class BaseFilters(filters.FilterSet):
     def scholar_year_by(self, queryset, field_name, value):
         start_year = int(value[:4])
         end_year = start_year + 1
-        start = timezone.datetime(year=start_year, month=8, day=20)
-        end = timezone.datetime(year=end_year, month=8, day=19)
+        start = timezone.datetime(year=start_year, month=9, day=1)
+        end = timezone.datetime(year=end_year, month=8, day=31)
         return queryset.filter(**{self.datetime_field + "__gt": start, self.datetime_field + "__lt": end})
 
     def classe_by(self, queryset, field_name, value):
