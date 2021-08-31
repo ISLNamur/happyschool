@@ -43,4 +43,4 @@ def list_user_properties(context):
             "tenure": [t.id for t in responsible.tenure.all()],
         }
     except ObjectDoesNotExist:
-        return ""
+        return "null"
