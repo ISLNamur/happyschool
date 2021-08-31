@@ -130,7 +130,7 @@ def get_django_dict_from_ldap(ldap_entry: dict) -> dict:
 
 
 def get_ldap_connection() -> ldap3.Connection:
-    server = ldap3.Server(settings.LDAP_HOST, get_info='GET_ALL_INFO')
+    server = ldap3.Server(settings.AUTH_LDAP_SERVER_URI, get_info='GET_ALL_INFO')
     conn = ldap3.Connection(server,
                      settings.AUTH_LDAP_BIND_DN,
                      settings.AUTH_LDAP_BIND_PASSWORD,
