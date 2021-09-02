@@ -215,7 +215,7 @@ class EmailNotificationViewSet(ReadOnlyModelViewSet):
                     years = []
                 classes = ClasseModel.objects.filter(year__in=years, teaching__in=responsible.teaching.all())
 
-            if get_classes(check_access=True, user=responsible.user).intersection(classes).exists():
+            if get_classes(check_access=True, user=responsible.user, tenure_class_only=False).intersection(classes).exists():
                 return True
             else:
                 continue
