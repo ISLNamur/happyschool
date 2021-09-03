@@ -27,6 +27,7 @@
         <b-row>
             <b-col>
                 <b-table
+                    id="classoverview"
                     :items="students"
                     :fields="fields"
                     class="text-center"
@@ -137,7 +138,7 @@ export default {
 </script>
 
 <style>
-    table.b-table > thead > tr > :nth-child(2) {
+    #classoverview table.b-table > thead > tr > :nth-child(2) {
         width: 75%;
     }
 </style>
