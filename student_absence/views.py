@@ -97,6 +97,7 @@ class StudentAbsenceFilter(BaseFilters):
         fields_to_filter = [
             'student', 'date_absence',
             'student__matricule', 'is_absent',
+            "student__classe",
             "period__name",
         ]
         model = StudentAbsenceModel
