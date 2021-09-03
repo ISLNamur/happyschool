@@ -24,7 +24,9 @@
             :key="index"
         >
             <span v-if="a === null">-</span>
-            <span v-else>{{ status(a) }}</span>
+            <span v-else>
+                <span :class="status(a) !== 'P' ? 'font-weight-bold' : ''">{{ status(a) }}</span>
+            </span>
         </b-col>
     </b-row>
 </template>
