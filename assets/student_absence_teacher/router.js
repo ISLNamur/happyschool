@@ -26,6 +26,7 @@ import StudentAbsenceTeacher from "./student_absence_teacher.vue";
 import AddAbsence from "./add_absence.vue";
 import ListAbsence from "./list_absence.vue";
 import Overview from "./overview.vue";
+import ClassView from "./class_view.vue";
 
 export default new VueRouter({
     routes: [
@@ -48,6 +49,11 @@ export default new VueRouter({
                 {
                     path: "overview",
                     component: Overview,
+                },
+                {
+                    path: "/class_view/:classId/:date/",
+                    component: ClassView,
+                    props: true,
                 },
             ],
         }

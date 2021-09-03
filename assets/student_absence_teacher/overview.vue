@@ -81,7 +81,9 @@
                         </b-form-group>
                     </template>
                     <template v-slot:cell(classe)="data">
-                        {{ data.value }}
+                        <b-link :to="`/class_view/${data.item.classe__id}/${date}/`">
+                            {{ data.value }}
+                        </b-link>
                     </template>
                     <template v-slot:cell()="data">
                         <span
