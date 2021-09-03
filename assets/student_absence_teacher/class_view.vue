@@ -32,7 +32,7 @@
                     :fields="fields"
                     class="text-center"
                 >
-                    <template #head(absence)="data">
+                    <template #head(absence)="">
                         <b-row>
                             <b-col
                                 v-for="p in teachersPeriod"
@@ -51,7 +51,7 @@
                             </b-col>
                         </b-row>
                     </template>
-                    <template v-slot:cell(absence)="data">
+                    <template #cell(absence)="data">
                         <overview-teacher-entry :absences="data.item.absence_teachers" />
                         <overview-educator-entry :absences="data.item.absence_educators" />
                     </template>

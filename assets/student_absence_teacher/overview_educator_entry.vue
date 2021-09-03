@@ -29,7 +29,7 @@
                     v-model="is_absent[index]"
                     @change="updateRecord(index, $event)"
                 >
-                    <template v-slot="first">
+                    <template #default="">
                         <b-iconstack>
                             <b-icon
                                 stacked
