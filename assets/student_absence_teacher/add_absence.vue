@@ -245,9 +245,12 @@ export default {
                 .catch(err => {
                     alert(err);
                 });
-        }
+        },
     },
     mounted: function () {
+        setInterval(() => {
+            this.currentDate = Moment().format("YYYY-MM-DD");
+        }, 30000);
         axios.get("/student_absence_teacher/api/period/")
             .then(resp => {
                 this.periodOptions = resp.data.results;
