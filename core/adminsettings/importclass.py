@@ -18,6 +18,7 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 import csv
+import re
 from typing import Union, TextIO
 from datetime import date
 
@@ -34,6 +35,8 @@ from core.utilities import get_scholar_year
 
 class ImportBase:
     """Base class to import students and responsible"""
+
+    sync_course = True
 
     def __init__(self, teaching: TeachingModel) -> None:
         self.teaching = teaching
@@ -173,7 +176,7 @@ class ImportResponsible(ImportBase):
                             classe_model.save()
                         resp.classe.add(classe_model)
 
-                courses = self.get_value(entry, "courses")
+                courses = self.get_value(entry, "courses") if self.sync_course else None
                 if courses and type(courses) != list:
                     courses = [courses]
                 if courses:
@@ -363,13 +366,14 @@ class ImportResponsibleFDB(ImportResponsible):
 
     def __init__(self, teaching: TeachingModel, fdb_server, search_login_directory: bool,
                  teaching_type: str, ldap_unique_attr="matricule", classe_format="%C",
-                 username_attribute=None) -> None:
+                 username_attribute=None, sync_course=True) -> None:
         super().__init__(teaching)
         self.server = fdb_server
         self.teaching_type = teaching_type
         self.search_login_directory = search_login_directory
         self.ldap_unique_attr = ldap_unique_attr
         self.classe_format = classe_format
+        self.sync_course = sync_course
         if username_attribute:
             self.username_attribute = username_attribute
 
@@ -555,7 +559,7 @@ class ImportStudent(ImportBase):
             # Check if student's courses already exists.
             if student.matricule not in student_synced:
                 student.courses.remove(*student.courses.filter(course__teaching=self.teaching))
-            courses = self.get_value(entry, "courses")
+            courses = self.get_value(entry, "courses") if self.sync_course else None
             if courses and type(courses) != list:
                 courses = [courses]
             if courses:
@@ -711,11 +715,20 @@ class ImportStudentFDB(ImportStudent):
     }
     scholar_year = get_scholar_year()
 
-    def __init__(self, teaching: TeachingModel, fdb_server, search_login_directory, teaching_type, classe_format="%C") -> None:
+    def __init__(
+        self,
+        teaching: TeachingModel,
+        fdb_server,
+        search_login_directory,
+        teaching_type,
+        classe_format="%C",
+        sync_course=True
+    ) -> None:
         super().__init__(teaching, search_login_directory)
         self.server = fdb_server
         self.teaching_type = teaching_type
         self.classe_format = classe_format
+        self.sync_course = sync_course
 
     def sync(self):
         from libreschoolfdb.reader import get_students
@@ -759,7 +772,7 @@ class SyncCourses(ImportBase):
                 self.ignore_first_iteration = False
                 continue
 
-            if entry[13] == "Non placé":
+            if entry[-1] == "0":
                 continue
 
             course = self.get_value(entry, "course")
@@ -817,22 +830,25 @@ class EDTTextSyncCourses(SyncCourses):
 
     def get_value(self, entry: object, column: str) -> Union[int, str, date, None]:
         if column == "course":
-            long_name = entry[5]
-            short_name = entry[4]
+            long_name = entry[4]
+            short_name = entry[3]
             return CourseModel.objects.get_or_create(
                 long_name=long_name, short_name=short_name, teaching=self.teaching
             )[0]
 
         if column == "classes":
-            if not entry[6]:
+            if not entry[7]:
                 return None
-            classes_text = [c for c in entry[6].split(";") if c and (c[0].isnumeric() or c[1].isnumeric())]
+            # Check if it has group.
+            has_group = "<" in entry[7]
+            classes_text = [c for c in entry[7].split(",") if c and (c[0].isnumeric() or c[1].isnumeric())]
             classes = []
             for c in classes_text:
+                c = re.sub(r"(?<=\<).*(?=\>)", "", c).replace("<>", "")
                 year_index = next((i for i, e in enumerate(c) if e.isnumeric()))
                 year = c[year_index]
                 full_classe = c[year_index:].split(" ")
-                has_group = full_classe[-1].upper()[:2] == "GR" and full_classe[-1][-1].isnumeric()
+                # has_group = full_classe[-1].upper()[:2] == "GR" and full_classe[-1][-1].isnumeric()
                 if has_group:
                     letter = " ".join(full_classe[1:-1]).upper()
                     group = int(full_classe[-1][-1])
@@ -843,7 +859,7 @@ class EDTTextSyncCourses(SyncCourses):
                     classe = ClasseModel.objects.get(
                         teaching=self.teaching,
                         year=year,
-                        letter__unaccent__iexact=letter
+                        letter__unaccent__icontains=letter
                     )
                     classes.append((classe, group))
                 except ObjectDoesNotExist:
@@ -853,11 +869,11 @@ class EDTTextSyncCourses(SyncCourses):
             return classes
 
         if column == "teachers":
-            if not entry[3]:
+            if not entry[5]:
                 return None
 
             teachers = []
-            for teacher_text in entry[3].split(";"):
+            for teacher_text in entry[5].split(";"):
                 first_name_start = teacher_text.split(" ")[-1][:-1] if teacher_text[-1] == "." else None
                 last_name = " ".join(teacher_text.split(" ")[:-1]) if first_name_start else teacher_text
                 teacher = ResponsibleModel.objects.filter(last_name__unaccent__iexact=last_name)

@@ -40,6 +40,6 @@ class Command(BaseCommand):
         teaching = TeachingModel.objects.get(name=options["teaching"])
         edt_sync = EDTTextSyncCourses(teaching, options["group_relation"])
 
-        with open(options["export"], "r", encoding="ISO-8859-15") as csvfile:
-            reader = csv.reader(csvfile, delimiter="\t")
+        with open(options["export"], "r", encoding="UTF-8") as csvfile:
+            reader = csv.reader(csvfile, delimiter=";")
             edt_sync.sync(reader)
