@@ -61,7 +61,7 @@ from django_filters import rest_framework as filters
 from annuaire.views import create_classes_list
 from core.permissions import IsInGroupPermission
 from core.utilities import get_menu
-from core.views import LargePageSizePagination
+from core.views import LargePageSizePagination, PageNumberSizePagination
 from core.models import ResponsibleModel, TeachingModel, ClasseModel
 from mail_answer.models import MailTemplateModel
 from mail_answer.models import MailAnswerSettingsModel as AnswersSettings
@@ -144,6 +144,7 @@ class EmailNotificationViewSet(ReadOnlyModelViewSet):
     queryset = EmailNotification.objects.all()
     serializer_class = EmailNotificationSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    pagination_class = PageNumberSizePagination
 
     def get_queryset(self):
         try:
