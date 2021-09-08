@@ -43,6 +43,7 @@ class SanctionTriggerModel(models.Model):
         (4, "Jeudi"),
         (5, "Vendredi"),
         (6, "Samedi"),
+        (7, "Même jour"),
     ]
     teaching = models.ForeignKey(TeachingModel, on_delete=models.CASCADE)
     sanction_id = models.PositiveIntegerField(null=True, blank=True)
@@ -61,11 +62,21 @@ class SanctionTriggerModel(models.Model):
         null=True,
         blank=True,
     )
+    time_lateness_start = models.TimeField(
+        null=True,
+        blank=True,
+        help_text="Début de l'interval du retard (facultatif)."
+    )
+    time_lateness_stop = models.TimeField(
+        null=True,
+        blank=True,
+        help_text="Fin de l'interval du retard (facultatif si le début de l'interval n'est pas précisé)."
+    )
     sanction_time = models.TimeField(null=True, blank=True)
 
     def __str__(self):
         return (
-            f"{self.WEEK_DAY_CHOICES[self.next_week_day][1]} tous les {self.lateness_count_trigger} retards"
+            f"{self.WEEK_DAY_CHOICES[self.next_week_day][1]} tous les {self.lateness_count_trigger} retards ({self.id})"
         )
 
 

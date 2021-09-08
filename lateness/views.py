@@ -26,7 +26,7 @@ from unidecode import unidecode
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.contrib.auth.models import Group
-from django.db.models import ObjectDoesNotExist, Count
+from django.db.models import ObjectDoesNotExist, Count, Q
 from django.utils import timezone
 from django.conf import settings
 
@@ -170,8 +170,21 @@ class LatenessViewSet(BaseModelViewSet):
             except OSError:
                 pass
 
+        now = timezone.localtime()
+        print(now)
         for trigger in SanctionTriggerModel.objects.filter(
             teaching=lateness.student.teaching, year__year=lateness.student.classe.year
+        ).filter(
+            Q(
+                time_lateness_start__isnull=False,
+                time_lateness_stop__isnull=False,
+                time_lateness_start__lte=now,
+                time_lateness_stop__gt=now
+            )
+            | Q(
+                time_lateness_start__isnull=True,
+                time_lateness_stop__isnull=True,
+            )
         ):
             count_first = trigger.lateness_count_trigger_first
             count_trigger = trigger.lateness_count_trigger
@@ -188,9 +201,14 @@ class LatenessViewSet(BaseModelViewSet):
 
             sanction = SanctionDecisionDisciplinaire.objects.get(id=trigger.sanction_id)
             today = datetime.datetime.today()
-            day_shift = 6 + trigger.next_week_day
-            day = today + datetime.timedelta(days=(day_shift - today.isoweekday()) % (6 + trigger.delay) + 1)
-            day.replace(hour=trigger.sanction_time.hour, minute=trigger.sanction_time.minute)
+            # next_week_day == 7 is the same day
+            if trigger.next_week_day < 7:
+                day_shift = 6 + trigger.next_week_day
+                day = today + datetime.timedelta(days=(day_shift - today.isoweekday()) % (6 + trigger.delay) + 1)
+            else:
+                day = today
+            day = day.replace(hour=trigger.sanction_time.hour, minute=trigger.sanction_time.minute)
+            print(day)
             cas = CasEleve.objects.create(
                 matricule=lateness.student,
                 name=lateness.student.display,
