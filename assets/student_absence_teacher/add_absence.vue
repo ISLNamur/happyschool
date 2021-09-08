@@ -110,6 +110,27 @@
                 </b-overlay>
             </b-col>
         </b-row>
+        <b-row
+            v-if="students.length > 5"
+            class="mt-2"
+        >
+            <b-col cols="3">
+                <b-btn
+                    @click="sendChanges"
+                    :disabled="!showAlert"
+                >
+                    Valider les changements
+                </b-btn>
+            </b-col>
+            <b-col>
+                <b-alert
+                    :show="showAlert"
+                    variant="warning"
+                >
+                    Il y a des changements non-validés !
+                </b-alert>
+            </b-col>
+        </b-row>
     </div>
 </template>
 
