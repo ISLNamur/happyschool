@@ -373,6 +373,7 @@ class AskSanctionsView(BaseDossierEleveView):
         {'value': 'activate_all_retenues', 'text': 'Toutes les retenues'},
         {'value': 'activate_not_done', 'text': 'Sanctions non faites'},
         {'value': 'activate_waiting', 'text': 'En attentes de validation'},
+        {'value': 'activate_today', 'text': 'Sanction du jour'},
     ]
 
 
@@ -380,6 +381,7 @@ class AskSanctionsFilter(BaseFilters):
     classe = filters.CharFilter(method='classe_by')
     activate_not_done = filters.CharFilter(method='activate_not_done_by')
     activate_waiting = filters.CharFilter(method='activate_waiting_by')
+    activate_today = filters.CharFilter(method="activate_today_by")
 
     class Meta:
         fields_to_filter = ('name', 'matricule_id', 'sanction_decision__sanction_decision', 'datetime_sanction',
@@ -412,6 +414,16 @@ class AskSanctionsFilter(BaseFilters):
     def activate_waiting_by(self, queryset, name, value):
         if value == 'true':
             return queryset.filter(datetime_conseil__isnull=True, datetime_sanction__isnull=True)
+        return queryset
+
+    def activate_today_by(self, queryset, name, value):
+        today = timezone.now()
+        if value == "true":
+            return queryset.filter(
+                datetime_sanction__day=today.day,
+                datetime_sanction__month=today.month,
+                datetime_sanction__year=today.year
+            )
         return queryset
 
 
