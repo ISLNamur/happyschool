@@ -226,7 +226,7 @@ export default {
             menuInfo: {},
             showFilters: false,
             filter: "",
-            ordering: "&ordering=datetime_sanction",
+            ordering: "&ordering=datetime_sanction,matricule__last_name",
             entriesCount: 0,
             currentPage: 1,
             entries: [],
@@ -244,7 +244,7 @@ export default {
                 return this.currentEntry.matricule.display;
             }
             return "";
-        }
+        },
     },
     watch: {
         retenues_mode: function (mode) {
