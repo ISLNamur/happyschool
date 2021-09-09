@@ -23,39 +23,52 @@
             <b-col>
                 Date : {{ date }}
             </b-col>
+            <b-col class="text-right mb-1">
+                <b-btn
+                    variant="primary"
+                    @click="validateEducatorAbsences"
+                >
+                    Valider la classe
+                </b-btn>
+            </b-col>
         </b-row>
         <b-row>
             <b-col>
-                <b-table
-                    id="classoverview"
-                    :items="students"
-                    :fields="fields"
-                    class="text-center"
-                >
-                    <template #head(absence)="">
-                        <b-row>
-                            <b-col
-                                v-for="p in teachersPeriod"
-                                :key="p.id"
-                                class="pr-1 pl-1"
-                            >
-                                {{ p.start.slice(0,5) }}
-                            </b-col>
-                        </b-row>
-                        <b-row>
-                            <b-col
-                                v-for="p in educatorsPeriod"
-                                :key="p.id"
-                            >
-                                {{ p.name }}
-                            </b-col>
-                        </b-row>
-                    </template>
-                    <template #cell(absence)="data">
-                        <overview-teacher-entry :absences="data.item.absence_teachers" />
-                        <overview-educator-entry :absences="data.item.absence_educators" />
-                    </template>
-                </b-table>
+                <b-overlay :show="loading">
+                    <b-table
+                        id="classoverview"
+                        :items="students"
+                        :fields="fields"
+                        class="text-center"
+                    >
+                        <template #head(absence)="">
+                            <b-row>
+                                <b-col
+                                    v-for="p in teachersPeriod"
+                                    :key="p.id"
+                                    class="pr-1 pl-1"
+                                >
+                                    {{ p.start.slice(0,5) }}
+                                </b-col>
+                            </b-row>
+                            <b-row>
+                                <b-col
+                                    v-for="p in educatorsPeriod"
+                                    :key="p.id"
+                                >
+                                    {{ p.name }}
+                                </b-col>
+                            </b-row>
+                        </template>
+                        <template #cell(absence)="data">
+                            <overview-teacher-entry :absences="data.item.absence_teachers" />
+                            <overview-educator-entry
+                                :absences="data.item.absence_educators"
+                                @change="updateEducatorAbsence($event, data.index)"
+                            />
+                        </template>
+                    </b-table>
+                </b-overlay>
             </b-col>
         </b-row>
     </div>
@@ -68,6 +81,7 @@ import {displayStudent} from "../common/utilities.js";
 import OverviewTeacherEntry from "./overview_teacher_entry.vue";
 import OverviewEducatorEntry from "./overview_educator_entry.vue";
 
+const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 export default {
     props: {
         classId: {
@@ -81,6 +95,7 @@ export default {
     },
     data: function () {
         return {
+            loading: false,
             fields: [
                 {
                     key: "studentName",
@@ -97,6 +112,33 @@ export default {
         };
     },
     methods: {
+        validateEducatorAbsences: function () {
+            this.loading = true;
+            const absencesProm = this.educatorsPeriod.map((period, idx) => {
+                const absences = this.students
+                    .map(s => s.absence_educators[idx])
+                    .filter(a => a.is_absent === null)
+                    .map(a => {
+                        a.is_absent = false;
+                        return a;
+                    });
+                return axios.post("/student_absence/api/student_absence/", absences, token);
+            });
+            
+            Promise.all(absencesProm)
+                .then(() => {
+                    document.location.reload();
+                })
+                .catch(err => {
+                    console.log(err);
+                    this.loading = false;
+                });
+        },
+        updateEducatorAbsence: function (payload, studentIndex) {
+            const data = payload[0];
+            const periodIndex = payload[1];
+            this.students[studentIndex].absence_educators[periodIndex] = data;
+        },
         getStudentsAbsences: function () {
             const promises = [
                 axios.get(`/annuaire/api/studentclasse/?classe=${this.classId}`),
@@ -108,7 +150,6 @@ export default {
             Promise.all(promises).then(resp => {
                 const teachersAbsences = resp[3].data.results;
                 const educatorsAbsences = resp[4].data.results;
-                console.log(educatorsAbsences);
                 this.students = resp[0].data.map(s => {
                     s.studentName = this.displayStudent(s);
                     this.teachersPeriod = resp[1].data.results;

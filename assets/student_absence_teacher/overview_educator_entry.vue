@@ -82,7 +82,7 @@ export default {
             const url = `/student_absence/api/student_absence/${ !isNew ? this.absences[index].id + "/" : ""}`;
             const method = isNew ? axios.post(url, [data], token) : axios.put(url, data, token);
             method.then(resp => {
-                this.$emit("change", resp.data);
+                this.$emit("change", [isNew ? resp.data[0] : resp.data, index]);
                 this.updating = false;
             })
                 .catch(() => {
