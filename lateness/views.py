@@ -208,7 +208,7 @@ class LatenessViewSet(BaseModelViewSet):
             else:
                 day = today
             day = day.replace(hour=trigger.sanction_time.hour, minute=trigger.sanction_time.minute)
-            print(day)
+
             cas = CasEleve.objects.create(
                 matricule=lateness.student,
                 name=lateness.student.display,
