@@ -118,7 +118,7 @@ export default {
     data: function () {
         return {
             date: Moment().format("YYYY-MM-DD"),
-            pointOfView: "educator",
+            pointOfView: "teacher",
             optionsPointOfView: [
                 { text: "Professeur", value: "teacher"},
                 { text: "Éducateur", value: "educator"},
