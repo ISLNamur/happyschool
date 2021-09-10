@@ -34,7 +34,7 @@ from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.filters import OrderingFilter
 
-from core.models import ClasseModel
+from core.models import ClasseModel, StudentModel
 from core.utilities import get_menu
 from core.views import BaseFilters, PageNumberSizePagination
 
@@ -151,7 +151,7 @@ class OverviewAPI(APIView):
             if teacher_abs_period.count() > 0:
                 teacher_count = teacher_abs_period.filter(
                     status=StudentAbsenceTeacherModel.ABSENCE
-                ).count()
+                ).distinct("student").count()
             else:
                 teacher_count = -1
             counts[f"period-{period.id}"] = {"teacher_count": teacher_count}
