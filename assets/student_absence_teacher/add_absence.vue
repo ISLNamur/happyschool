@@ -21,9 +21,13 @@
     <div>
         <b-row>
             <b-col cols="2">
-                <p class="pt-1">
-                    <strong>{{ currentDate }}</strong>
-                </p>
+                <b-form-group>
+                    <b-input
+                        v-model="currentDate"
+                        type="date"
+                        @change="getStudents('UND')"
+                    />
+                </b-form-group>
             </b-col>
             <b-col>
                 <multiselect
@@ -208,10 +212,9 @@ export default {
             }
             if (selectBy === "GC") {
                 this.classe = null;
-                if (!this.givenCourse || !this.period) return;
+                if (!this.givenCourse || !this.period || !this.currentDate) return;
 
                 this.loadingStudent = true;
-                this.currentDate = Moment().format("YYYY-MM-DD");
                 axios.get(`/annuaire/api/student_given_course/${this.givenCourse.id}/`)
                     .then(resp => {
                         this.$store.commit("resetChanges");
@@ -220,10 +223,9 @@ export default {
                     });
             } else if (selectBy === "CL") {
                 this.givenCourse = null;
-                if (!this.classe || !this.period) return;
+                if (!this.classe || !this.period || !this.currentDate) return;
 
                 this.loadingStudent = true;
-                this.currentDate = Moment().format("YYYY-MM-DD");
                 const data = {params: {classe: this.classe.id}};
                 axios.get("/annuaire/api/studentclasse", data)
                     .then(resp => {
@@ -269,9 +271,6 @@ export default {
         },
     },
     mounted: function () {
-        setInterval(() => {
-            this.currentDate = Moment().format("YYYY-MM-DD");
-        }, 30000);
         axios.get("/student_absence_teacher/api/period/")
             .then(resp => {
                 this.periodOptions = resp.data.results;
