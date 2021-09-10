@@ -20,8 +20,12 @@
 <template>
     <div>
         <b-row>
-            <b-col>
-                Date : {{ date }}
+            <b-col md="4">
+                <b-input
+                    :value="date"
+                    type="date"
+                    @change="moveToDate"
+                />
             </b-col>
             <b-col class="text-right mb-1">
                 <b-btn
@@ -112,6 +116,11 @@ export default {
         };
     },
     methods: {
+        moveToDate: function(newDate) {
+            this.$router.push(`/class_view/${this.classId}/${newDate}/`, () => {
+                document.location.reload();
+            });
+        },
         validateEducatorAbsences: function () {
             this.loading = true;
             const absencesProm = this.educatorsPeriod.map((period, idx) => {
