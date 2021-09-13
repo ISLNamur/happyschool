@@ -90,7 +90,7 @@
                             :key="a.id"
                             :href="`/dossier_eleve/attachment/${a.id}/`"
                         >
-                            {{ a.attachment.substring(37, 60) }}
+                            {{ a.filename }}
                         </b-dropdown-item>
                     </b-dropdown>
                 </b-row>
@@ -219,6 +219,10 @@ export default {
         Promise.all(prom)
             .then(resp => {
                 this.attachments = resp.map(r => r.data);
+                this.attachments.forEach(a => {
+                    const path = a.attachment.split("/");
+                    a.filename = path[path.length - 1].substring(5, 60);
+                });
             });
 
     }
