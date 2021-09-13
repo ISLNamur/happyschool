@@ -58,6 +58,7 @@
                                 variant="primary"
                                 to="/new/"
                                 class="w-100"
+                                v-if="$store.state.canAddCas"
                             >
                                 <b-icon icon="plus" />
                                 Nouveau cas

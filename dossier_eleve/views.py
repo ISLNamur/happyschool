@@ -117,6 +117,7 @@ class BaseDossierEleveView(LoginRequiredMixin,
         context['current_year'] = json.dumps('%i-%i' % (scholar_year, scholar_year + 1))
         context['can_set_sanction'] = json.dumps(self.request.user.has_perm('dossier_eleve.set_sanction'))
         context['can_ask_sanction'] = json.dumps(self.request.user.has_perm('dossier_eleve.ask_sanction'))
+        context['can_add_cas'] = json.dumps(self.request.user.has_perm('dossier_eleve.add_caseleve'))
         groups = get_generic_groups()
         groups["sysadmin"] = {"id": groups["sysadmin"].id, "text": "Admin"}
         groups["direction"] = {"id": groups["direction"].id, "text": "Direction"}

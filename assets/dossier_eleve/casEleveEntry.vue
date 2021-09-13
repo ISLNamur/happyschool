@@ -43,7 +43,10 @@
                             </b-btn>
                         </h5>
                     </b-col>
-                    <b-col sm="2">
+                    <b-col
+                        v-if="$store.state.canAddCas"
+                        sm="2"
+                    >
                         <div class="text-right">
                             <b-btn
                                 variant="light"

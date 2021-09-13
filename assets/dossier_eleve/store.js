@@ -34,6 +34,7 @@ export default new Vuex.Store({
             tag: currentYear,
             value: currentYear,
         }],
+        canAddCas: canAddCas,
         canSetSanction: canSetSanction,
         canAskSanction: canAskSanction,
     },

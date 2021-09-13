@@ -11,6 +11,7 @@
     const dossierEleveLastAccess = "{{ dossier_eleve_last_access }}";
     var filters = JSON.parse('{{ filters|safe }}');
     var currentYear = JSON.parse('{{ current_year|safe }}');
+    var canAddCas = JSON.parse('{{ can_add_cas|safe }}');
     var canSetSanction = JSON.parse('{{ can_set_sanction|safe }}');
     var canAskSanction = JSON.parse('{{ can_ask_sanction|safe }}');
     var groups = {{ groups|safe }};
