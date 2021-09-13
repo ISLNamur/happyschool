@@ -534,9 +534,12 @@ class UploadFileView(BaseUploadFileView):
 class AttachmentView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request, year, month, day, file, format=None):
+    def get(self, request, year=None, month=None, day=None, file=None, pk=None, format=None):
         try:
-            attachment = CasAttachment.objects.get(attachment__exact=f"dossier_eleve/{year}/{str(month).zfill(2)}/{str(day).zfill(2)}/{file}")
+            if pk:
+                attachment = CasAttachment.objects.get(pk=pk)
+            else:
+                attachment = CasAttachment.objects.get(attachment__exact=f"dossier_eleve/{year}/{str(month).zfill(2)}/{str(day).zfill(2)}/{file}")
             queryset = CasEleve.objects.filter(attachments=attachment)
             filter_by_groups = Q()
             for g in request.user.groups.all():
@@ -551,7 +554,7 @@ class AttachmentView(APIView):
             return HttpResponse(status=404)
 
         response = HttpResponse(attachment.attachment)
-        response["Content-Disposition"] = f'attachment; filename="{file}"'
+        response["Content-Disposition"] = f'attachment; filename="{file if file else attachment.attachment.name}"'
 
         return response
 

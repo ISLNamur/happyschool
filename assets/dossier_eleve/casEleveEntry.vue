@@ -72,11 +72,27 @@
                 </b-row>
                 <b-row class="entry-subtitle">
                     <em>{{ subtitle }}</em>
-                    <icon
-                        name="paperclip"
-                        color="blue"
-                        v-if="rowData.attachments.length > 0"
-                    />
+                    <b-dropdown
+                        size="sm"
+                        variant="link"
+                        toggle-class="text-decoration-none"
+                        no-caret
+                    >
+                        <template #button-content>
+                            <icon
+                                name="paperclip"
+                                color="blue"
+                                v-if="rowData.attachments.length > 0"
+                            />
+                        </template>
+                        <b-dropdown-item
+                            v-for="a in attachments"
+                            :key="a.id"
+                            :href="`/dossier_eleve/attachment/${a.id}/`"
+                        >
+                            {{ a.attachment.substring(37, 60) }}
+                        </b-dropdown-item>
+                    </b-dropdown>
                 </b-row>
                 <b-row class="text-center">
                     <b-col
@@ -121,6 +137,8 @@
 import Moment from "moment";
 Moment.locale("fr");
 
+import axios from "axios";
+
 import {displayStudent} from "../common/utilities.js";
 
 export default {
@@ -133,6 +151,7 @@ export default {
     data: function () {
         return {
             expand: false,
+            attachments: [],
         };
     },
     computed: {
@@ -191,6 +210,17 @@ export default {
             this.$emit("filterStudent", this.rowData.matricule_id);
         },
         displayStudent,
+    },
+    mounted: function () {
+        const prom = this.rowData.attachments.map(a => {
+            return axios.get(`/dossier_eleve/upload_file/${a}/`);
+        });
+
+        Promise.all(prom)
+            .then(resp => {
+                this.attachments = resp.map(r => r.data);
+            });
+
     }
 };
 </script>
