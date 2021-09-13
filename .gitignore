@@ -16,3 +16,4 @@ package-lock.json
 static/bundles/home-*
 static/bundles/lateness-*
 static/bundles/grandset-*
+static/bundles/*
