@@ -55,6 +55,7 @@ from rest_framework.views import APIView, Response
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+from rest_framework.filters import SearchFilter
 
 from django_filters import rest_framework as filters
 
@@ -145,6 +146,8 @@ class EmailNotificationViewSet(ReadOnlyModelViewSet):
     serializer_class = EmailNotificationSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     pagination_class = PageNumberSizePagination
+    filter_backends = [SearchFilter]
+    search_fields = ["subject"]
 
     def get_queryset(self):
         try:
