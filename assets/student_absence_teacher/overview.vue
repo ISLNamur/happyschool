@@ -55,6 +55,22 @@
                             buttons
                         />
                     </b-form-group>
+                    <b-form-group
+                        label="Liste des classes"
+                        v-slot="{ ariaDescribedby }"
+                        class="ml-1"
+                    >
+                        <b-form-radio-group
+                            id="class-list-type-radio"
+                            v-model="classListType"
+                            :options="optionsClassListType"
+                            :aria-describedby="ariaDescribedby"
+                            button-variant="outline-primary"
+                            name="class-list-type-radio"
+                            @change="get_absence_count()"
+                            buttons
+                        />
+                    </b-form-group>
                 </b-form>
             </b-col>
         </b-row>
@@ -121,6 +137,11 @@ export default {
                 { text: "Professeur", value: "teacher"},
                 { text: "Éducateur", value: "educator"},
             ],
+            classListType: "ownclass",
+            optionsClassListType: [
+                { text: "Ses classes", value: "ownclass"},
+                { text: "Toutes les classes", value: "allclass"},
+            ],
             absence_count: [],
             fields: [
             ],
@@ -132,7 +153,7 @@ export default {
         get_absence_count: function () {
             this.loading = true;
             this.getPeriods();
-            axios.get(`/student_absence_teacher/api/count_absence/${this.date}/${this.pointOfView}/`)
+            axios.get(`/student_absence_teacher/api/count_absence/${this.date}/${this.pointOfView}/${this.classListType}/`)
                 .then(resp => {
                     this.absence_count = JSON.parse(resp.data).map(row => {
                         const periods = Object.entries(row).filter(c => c[0].startsWith("period"));

@@ -21,7 +21,7 @@ import json
 import datetime
 from itertools import groupby
 
-from django.db.models import Count
+from django.db.models import Count, ObjectDoesNotExist
 from django.conf import settings
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
@@ -34,7 +34,7 @@ from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.filters import OrderingFilter
 
-from core.models import ClasseModel, StudentModel
+from core.models import ClasseModel, StudentModel, ResponsibleModel
 from core.utilities import get_menu
 from core.views import BaseFilters, PageNumberSizePagination
 
@@ -192,11 +192,20 @@ class OverviewAPI(APIView):
 
         return counts
 
-    def get(self, request, date, point_of_view, format=None):
+    def get(self, request, date, point_of_view, class_list="allclass", format=None):
         date = datetime.date.fromisoformat(date)
+        classes = ClasseModel.objects.order_by("year", "letter").filter(
+            teaching__in=get_settings().teachings.all()
+        )
+        if class_list == "ownclass":
+            try:
+                resp = ResponsibleModel.objects.get(user=request.user)
+                classes = resp.classe.all()
+            except ObjectDoesNotExist:
+                pass
+
         if point_of_view == "teacher":
             periods = PeriodModel.objects.order_by("start")
-            classes = ClasseModel.objects.order_by("year", "letter").filter(teaching__in=get_settings().teachings.all())
             count_by_classe_by_period = [
                 self._extract_count_from_teacher(
                     c,
@@ -219,9 +228,6 @@ class OverviewAPI(APIView):
             from student_absence.models import StudentAbsenceModel, PeriodModel as PeriodModelEducator
 
             periods = PeriodModelEducator.objects.order_by("start")
-            classes = ClasseModel.objects.order_by("year", "letter").filter(
-                teaching__in=get_settings().teachings.all()
-            )
             count_by_classe_by_period = [
                 self._extract_count_from_educator(
                     c,
