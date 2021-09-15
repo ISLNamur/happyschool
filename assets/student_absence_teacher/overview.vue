@@ -88,8 +88,6 @@
                     <template v-slot:cell()="data">
                         <span
                             v-if="data.value.teacher_count >= 0"
-                            class="btn-link btn"
-                            @click="toList(data)"
                         >
                             {{ data.value.teacher_count }}
                         </span>
@@ -161,20 +159,6 @@ export default {
                     });
                     this.loading = false;
                 });
-        },
-        toList: function (data) {
-            this.$store.commit("removeFilter", "period__name");
-            this.$store.commit("addFilter", {"tag": data.field.name, "filterType":"period__name", "value": data.field.name});
-
-            this.$store.commit("removeFilter", "classe");
-            this.$store.commit("addFilter", {"tag": data.item.classe, "filterType": "classe", "value": data.item.classe});
-
-            this.$store.commit("removeFilter", "date_absence");
-            this.$store.commit("addFilter",{
-                "tag": `${this.date} ${this.date}`, "filterType": "date_absence", "value": `${this.date}_${this.date}`
-            });
-
-            this.$router.push("list");
         },
         getPeriods: function () {
             this.fields = [{key: "classe", }];
