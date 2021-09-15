@@ -82,7 +82,7 @@
                 <multiselect
                     v-if="$store.state.settings.select_student_by === 'CL' || $store.state.settings.select_student_by === 'CLGC'"
                     :options="classesOptions"
-                    placeholder="Cherchez votre classe"
+                    placeholder="Chercher une classe"
                     select-label=""
                     selected-label="Sélectionné"
                     deselect-label=""
