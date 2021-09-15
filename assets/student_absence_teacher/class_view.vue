@@ -165,7 +165,7 @@ export default {
                     this.educatorsPeriod = resp[2].data.results;
                     s.absence_teachers = this.teachersPeriod.map(p => {
                         const absence = teachersAbsences.find(a => a.period.id === p.id && a.student_id === s.matricule);
-                        return absence ? absence.status : null;
+                        return absence ? absence : null;
                     });
                     s.absence_educators = this.educatorsPeriod.map(p => {
                         const absence = educatorsAbsences.find(a => a.period === p.id && a.student_id === s.matricule);

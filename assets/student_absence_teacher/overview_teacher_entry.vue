@@ -25,7 +25,18 @@
         >
             <span v-if="a === null">-</span>
             <span v-else>
-                <span :class="status(a) !== 'P' ? 'font-weight-bold' : ''">{{ status(a) }}</span>
+                <span :class="status(a.status) !== 'P' ? 'font-weight-bold' : ''">{{ status(a.status) }}</span>
+                <b-icon
+                    v-if="a.comment"
+                    :id="`comment-${a.id}`"
+                    icon="chat-text"
+                />
+                <b-tooltip
+                    :target="`comment-${a.id}`"
+                    triggers="hover"
+                >
+                    {{ a.comment }}
+                </b-tooltip>
             </span>
         </b-col>
     </b-row>
