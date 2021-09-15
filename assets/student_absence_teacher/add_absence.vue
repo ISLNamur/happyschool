@@ -280,7 +280,8 @@ export default {
                         student_id: matricule,
                         period_id: this.period[period].id,
                         comment: change.comment,
-                        status: change.status
+                        status: change.status,
+                        date_absence: this.currentDate
                     };
                     if (this.$store.state.settings.select_student_by === "GC") data.given_course_id = this.givenCourse.id;
                     promises.push(send(url, data, token));
