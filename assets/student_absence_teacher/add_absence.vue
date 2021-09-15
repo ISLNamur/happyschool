@@ -20,7 +20,11 @@
 <template>
     <div>
         <b-row>
-            <b-col cols="2">
+            <b-col
+                cols="12"
+                md="4"
+                lg="3"
+            >
                 <b-form-group>
                     <b-input
                         v-model="currentDate"
@@ -29,23 +33,33 @@
                     />
                 </b-form-group>
             </b-col>
-            <b-col>
+            <b-col
+                cols="12"
+                md="6"
+                lg="3"
+            >
                 <multiselect
                     :options="periodOptions"
                     placeholder="Séléctionner une période de cours"
                     select-label=""
                     selected-label="Sélectionné"
-                    deselect-label=""
+                    deselect-label="Déselectionner"
                     label="display"
                     track-by="id"
                     v-model="period"
                     :show-no-options="false"
-                    @input="getStudents('UND')"
+                    :multiple="true"
+                    @input="getStudents('UND', true)"
+                    class="mb-1"
                 >
                     <span slot="noResult">Aucune période ne correspond à votre recherche.</span>
                 </multiselect>
             </b-col>
-            <b-col>
+            <b-col
+                cols="12"
+                md="6"
+                lg="3"
+            >
                 <multiselect
                     v-if="$store.state.settings.select_student_by === 'GC' || $store.state.settings.select_student_by === 'CLGC'"
                     :options="givenCourseOptions"
@@ -58,6 +72,7 @@
                     v-model="givenCourse"
                     :show-no-options="false"
                     @input="getStudents('GC')"
+                    class="mb-1"
                 >
                     <span slot="noResult">Aucun cours ne correspond à votre recherche.</span>
                 </multiselect>
@@ -77,6 +92,7 @@
                     :show-no-options="false"
                     @input="getStudents('CL')"
                     @search-change="searchClasses"
+                    class="mb-1"
                 >
                     <span slot="noResult">Aucune classe ne correspond à votre recherche.</span>
                 </multiselect>
@@ -155,7 +171,7 @@ export default {
             periodOptions: [],
             givenCourseOptions: [],
             classesOptions: [],
-            period: null,
+            period: [],
             givenCourse: null,
             classe: null,
             students: [],
@@ -180,9 +196,11 @@ export default {
                 });
         },
         getAbsence: function (students, selectBy) {
+            // if (this.period.length > 1 || this.period.length == 0) return;
+
             const data = {
                 params: {
-                    period: this.period.id,
+                    period: this.period[0].id,
                     date_absence: this.currentDate,
                     page_size: 5000,
                 }
@@ -190,7 +208,6 @@ export default {
             if (selectBy === "GC") data.params.given_course = this.givenCourse.id;
             axios.get("/student_absence_teacher/api/absence/", data, token)
                 .then(resp => {
-                    console.log(resp.data.results);
                     this.students = students.map(s => {
                         const savedAbsence = resp.data.results.find(r => r.student_id === s.matricule);
                         if (!savedAbsence) return s;
@@ -204,33 +221,47 @@ export default {
                     alert(err);
                 });
         },
-        getStudents: function (selectBy) {
-            this.students = [];
+        getStudents: function (selectBy, periodChange=false) {
             if (selectBy === "UND") {
                 // If undefined, try givenCourse and then classe.
                 selectBy = this.givenCourse ? "GC" : "CL";
             }
             if (selectBy === "GC") {
                 this.classe = null;
-                if (!this.givenCourse || !this.period || !this.currentDate) return;
+                if (!this.givenCourse || this.period.length === 0 || !this.currentDate) {
+                    this.students = [];
+                    this.showAlert = false;
+                    this.$store.commit("resetChanges");
+                    return;
+                }
 
+                if (periodChange) return;
                 this.loadingStudent = true;
+                this.students = [];
                 axios.get(`/annuaire/api/student_given_course/${this.givenCourse.id}/`)
                     .then(resp => {
+                        this.showAlert = false;
                         this.$store.commit("resetChanges");
-                        this.showAlert = 0;
                         this.getAbsence(resp.data, selectBy);
                     });
             } else if (selectBy === "CL") {
                 this.givenCourse = null;
-                if (!this.classe || !this.period || !this.currentDate) return;
+                if (!this.classe || this.period.length === 0 || !this.currentDate) {
+                    this.students = [];
+                    this.showAlert = false;
+                    this.$store.commit("resetChanges");
+                    return;
+                }
 
+                console.log(periodChange);
+                if (periodChange && this.period.length > 1) return;
                 this.loadingStudent = true;
+                this.students = [];
                 const data = {params: {classe: this.classe.id}};
                 axios.get("/annuaire/api/studentclasse", data)
                     .then(resp => {
                         this.$store.commit("resetChanges");
-                        this.showAlert = 0;
+                        this.showAlert = false;
                         this.getAbsence(resp.data, selectBy);
                     });
             }
@@ -238,20 +269,22 @@ export default {
         sendChanges: function () {
             const changes = this.$store.state.changes;
             const promises = [];
-            for (let matricule in changes) {
-                const change = changes[matricule];
-                const send = change.is_new ? axios.post : axios.put;
-                let url = "/student_absence_teacher/api/absence/";
-                if (!change.is_new) url += change.id + "/";
-                
-                const data = {
-                    student_id: matricule,
-                    period_id: this.period.id,
-                    comment: change.comment,
-                    status: change.status
-                };
-                if (this.$store.state.settings.select_student_by === "GC") data.given_course_id = this.givenCourse.id;
-                promises.push(send(url, data, token));
+            for (let period in this.period) {
+                for (let matricule in changes) {
+                    const change = changes[matricule];
+                    const send = change.is_new ? axios.post : axios.put;
+                    let url = "/student_absence_teacher/api/absence/";
+                    if (!change.is_new) url += change.id + "/";
+                    
+                    const data = {
+                        student_id: matricule,
+                        period_id: this.period[period].id,
+                        comment: change.comment,
+                        status: change.status
+                    };
+                    if (this.$store.state.settings.select_student_by === "GC") data.given_course_id = this.givenCourse.id;
+                    promises.push(send(url, data, token));
+                }
             }
             Promise.all(promises)
                 .then(resps => {
@@ -262,7 +295,13 @@ export default {
                         variant: "success",
                         noCloseButton: true,
                     });
-                    this.getStudents();
+                    if (this.period.length === 1) {
+                        this.getStudents();
+                    } else {
+                        this.students = [];
+                        this.period = [];
+                    }
+                    
                     this.computeAlert();
                 })
                 .catch(err => {
