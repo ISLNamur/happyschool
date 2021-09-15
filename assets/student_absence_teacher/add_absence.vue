@@ -40,7 +40,7 @@
             >
                 <multiselect
                     :options="periodOptions"
-                    placeholder="Séléctionner une période de cours"
+                    placeholder="Séléctionner une période"
                     select-label=""
                     selected-label="Sélectionné"
                     deselect-label="Déselectionner"
