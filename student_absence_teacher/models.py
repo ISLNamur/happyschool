@@ -67,7 +67,7 @@ class StudentAbsenceTeacherModel(models.Model):
     ]
 
     student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)
-    date_absence = models.DateField(auto_now=True)
+    date_absence = models.DateField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PRESENCE)
     given_course = models.ForeignKey(GivenCourseModel, on_delete=models.SET_NULL, null=True, blank=True)
     period = models.ForeignKey(PeriodModel, on_delete=models.SET_NULL, null=True)
