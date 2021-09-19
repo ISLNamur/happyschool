@@ -67,6 +67,7 @@ class LatenessView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     filters = [
         {"value": "student__display", "text": "Nom"},
         {"value": "student__matricule", "text": "Matricule"},
+        {"value": "date_lateness", "text": "Date"},
         {"value": "count_lateness", "text": "Nombre de retard"},
         {"value": "activate_after_count", "text": "À partir du comptage"},
     ]
@@ -84,6 +85,8 @@ class LatenessFilter(BaseFilters):
     datetime_field = "datetime_creation"
 
     student__display = filters.CharFilter(method="people_name_by")
+    date_lateness__gte = filters.DateFilter(method="date_lateness_by")
+    date_lateness__lte = filters.DateFilter(method="date_lateness_by")
     count_lateness = filters.NumberFilter(method="count_lateness_by")
     activate_after_count = filters.BooleanFilter(method="activate_after_count_by")
 
@@ -105,6 +108,17 @@ class LatenessFilter(BaseFilters):
             .values_list("student", flat=True)
         )
         return LatenessModel.objects.filter(student__in=counting, justified=False)
+
+    def date_lateness_by(self, queryset, field_name, value):
+        if ("gte" in field_name):
+            return queryset.filter(
+                datetime_creation__gte=value
+            )
+        else:
+            midnight = datetime.datetime.combine(value, datetime.datetime.max.time())
+            return queryset.filter(
+                datetime_creation__lte=midnight
+            )
 
     def activate_after_count_by(self, queryset, field_name, value):
         return queryset.filter(datetime_creation__gte=get_settings().date_count_start)
