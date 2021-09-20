@@ -54,9 +54,10 @@
                     <b-form-group>
                         <div>
                             <b-btn
+                                v-if="$store.state.canAskSanction"
                                 variant="primary"
                                 @click="openDynamicModal('ask-modal')"
-                                class="w-100"
+                                class="w-100 mb-1"
                             >
                                 <icon
                                     name="plus"
@@ -68,7 +69,7 @@
                             <b-btn
                                 variant="secondary"
                                 @click="openDynamicModal('ask-export-modal')"
-                                class="w-100 mt-1"
+                                class="w-100"
                             >
                                 <icon
                                     name="file"
