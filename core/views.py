@@ -135,18 +135,26 @@ class BaseFilters(filters.FilterSet):
 
         if len(tokens) > 1:
             # First check compound last name.
-            people = queryset.filter(Q(student__last_name__unaccent__istartswith=" ".join(tokens[:2]))
-                                     | Q(student__last_name__unaccent__istartswith=" ".join(tokens[-2:])))
+            people = queryset.filter(
+                Q(**{f"{self.student_field}__last_name__unaccent__istartswith": " ".join(tokens[:2])})
+                | Q(**{f"{self.student_field}__last_name__unaccent__istartswith": " ".join(tokens[-2:])}))
             if len(people) == 0:
-                people = queryset.filter(Q(student__first_name__unaccent__iexact=tokens[0],
-                                           student__last_name__unaccent__istartswith=tokens[1])
-                                         | Q(student__first_name__unaccent__istartswith=tokens[1],
-                                             student__last_name__unaccent__iexact=tokens[0]))
+                people = queryset.filter(
+                    Q(**{
+                        f"{self.student_field}__first_name__unaccent__iexact": tokens[0],
+                        f"{self.student_field}__last_name__unaccent__istartswith": tokens[1]
+                    }) | Q(**{
+                        f"{self.student_field}__first_name__unaccent__istartswith": tokens[1],
+                        f"{self.student_field}__last_name__unaccent__iexact": tokens[0]
+                    })
+                )
 
         if len(people) == 0:
             for name_part in tokens:
-                people |= queryset.filter(Q(student__first_name__unaccent__istartswith=name_part)
-                                                    | Q(student__last_name__unaccent__istartswith=name_part))
+                people |= queryset.filter(
+                    Q(**{f"{self.student_field}__first_name__unaccent__istartswith": name_part})
+                    | Q(**{f"{self.student_field}__last_name__unaccent__istartswith": name_part})
+                )
         return people
 
 
