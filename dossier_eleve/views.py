@@ -59,13 +59,19 @@ from PyPDF2 import PdfFileMerger
 
 
 def get_menu_entry(active_app, request):
-    if not request.user.has_perm('dossier_eleve.view_caseleve'):
+    if (
+        not request.user.has_perm("dossier_eleve.view_caseleve")
+        and not request.user.has_perm("dossier_eleve.ask_sanction")
+        and not request.user.has_perm("dossier_eleve.set_sanction")
+    ):
         return {}
 
+    has_only_ask = not request.user.has_perm("dossier_eleve.view_caseleve") \
+        and request.user.has_perm("dossier_eleve.ask_sanction")
     menu_entry = {
         "app": "dossier_eleve",
         "display": "Dossier élèves",
-        "url": "/dossier_eleve/",
+        "url": "/dossier_eleve/ask_sanctions" if has_only_ask else "/dossier_eleve/",
         "active": active_app == "dossier_eleve",
     }
     last_access = request.session.get("dossier_eleve_last_access", None)
@@ -101,7 +107,6 @@ def get_generic_groups() -> dict:
 class BaseDossierEleveView(LoginRequiredMixin,
                        PermissionRequiredMixin,
                        TemplateView):
-    permission_required = ('dossier_eleve.view_caseleve')
     filters = []
 
     def get_context_data(self, **kwargs):
@@ -135,6 +140,7 @@ class BaseDossierEleveView(LoginRequiredMixin,
 
 class DossierEleveView(BaseDossierEleveView):
     template_name = "dossier_eleve/dossier_eleve.html"
+    permission_required = ["dossier_eleve.view_caseleve"]
     filters = [
         {'value': 'name', 'text': 'Nom'},
         {'value': 'classe', 'text': 'Classe'},
@@ -362,6 +368,7 @@ class CasEleveViewSet(BaseModelViewSet):
 
 class AskSanctionsView(BaseDossierEleveView):
     template_name = "dossier_eleve/ask_sanctions.html"
+    permission_required = ["dossier_eleve.ask_sanction", "dossier_eleve.set_sanction"]
     filters = [
         {'value': 'name', 'text': 'Nom'},
         {'value': 'classe', 'text': 'Classe'},
@@ -373,9 +380,16 @@ class AskSanctionsView(BaseDossierEleveView):
         {'value': 'scholar_year', 'text': 'Année scolaire'},
         {'value': 'activate_all_retenues', 'text': 'Toutes les retenues'},
         {'value': 'activate_not_done', 'text': 'Sanctions non faites'},
-        {'value': 'activate_waiting', 'text': 'En attentes de validation'},
+        {'value': 'activate_waiting', 'text': 'En attente de validation'},
         {'value': 'activate_today', 'text': 'Sanction du jour'},
     ]
+
+    def has_permission(self) -> bool:
+        permissions = self.get_permission_required()
+        for p in permissions:
+            if self.request.user.has_perm(p):
+                return True
+        return False
 
 
 class AskSanctionsFilter(BaseFilters):
