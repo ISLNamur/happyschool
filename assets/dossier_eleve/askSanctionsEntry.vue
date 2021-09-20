@@ -47,7 +47,10 @@
                             </b-btn>
                         </h5>
                     </b-col>
-                    <b-col sm="4">
+                    <b-col
+                        sm="12"
+                        md="4"
+                    >
                         <div class="text-right">
                             <span v-if="$store.state.canSetSanction">
                                 <icon
@@ -65,13 +68,22 @@
                                     Sanction faite ?
                                 </b-form-checkbox>
                             </span>
+                        </div>
+                    </b-col>
+                    <b-col
+                        sm="12"
+                        md="5"
+                    >
+                        <div class="text-right">
                             <span v-if="canEditSanction">
                                 <b-btn
                                     v-if="outdated"
                                     variant="light"
                                     size="sm"
                                     class="card-link"
-                                    v-b-modal.move-sanction-date
+                                    v-b-modal="`move-sanction-date-${rowData.id}`"
+                                    v-b-tooltip.hover
+                                    title="Déplacer la date de la sanction"
                                 >
                                     <b-icon icon="arrow-right-square" />
                                 </b-btn>
@@ -156,7 +168,7 @@
                     </b-col>
                 </b-row>
                 <b-modal
-                    id="move-sanction-date"
+                    :id="`move-sanction-date-${rowData.id}`"
                     size="sm"
                     centered
                     title="Date de la sanction"
