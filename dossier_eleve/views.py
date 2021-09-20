@@ -142,7 +142,7 @@ class DossierEleveView(BaseDossierEleveView):
     template_name = "dossier_eleve/dossier_eleve.html"
     permission_required = ["dossier_eleve.view_caseleve"]
     filters = [
-        {'value': 'name', 'text': 'Nom'},
+        {'value': 'matricule__display', 'text': 'Nom'},
         {'value': 'classe', 'text': 'Classe'},
         {'value': 'info__info', 'text': 'Info'},
         {'value': 'sanction_decision__sanction_decision', 'text': 'Sanction/décision'},
@@ -161,9 +161,10 @@ class CasEleveFilter(BaseFilters):
     activate_important = filters.BooleanFilter(field_name="important")
     no_sanctions = filters.BooleanFilter(method="no_sanctions_by")
     no_infos = filters.BooleanFilter(method="no_infos_by")
+    matricule__display = filters.CharFilter(method="people_name_by")
 
     class Meta:
-        fields_to_filter = ('name', 'matricule_id', 'info__info', 'sanction_decision__sanction_decision',
+        fields_to_filter = ('matricule_id', 'info__info', 'sanction_decision__sanction_decision',
                             'datetime_encodage', "datetime_sanction")
         model = CasEleve
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
@@ -370,7 +371,7 @@ class AskSanctionsView(BaseDossierEleveView):
     template_name = "dossier_eleve/ask_sanctions.html"
     permission_required = ["dossier_eleve.ask_sanction", "dossier_eleve.set_sanction"]
     filters = [
-        {'value': 'name', 'text': 'Nom'},
+        {'value': 'matricule__display', 'text': 'Nom'},
         {'value': 'classe', 'text': 'Classe'},
         {'value': 'sanction_decision__sanction_decision', 'text': 'Sanction/décision'},
         {'value': 'datetime_sanction', 'text': 'Date sanction'},
@@ -393,13 +394,16 @@ class AskSanctionsView(BaseDossierEleveView):
 
 
 class AskSanctionsFilter(BaseFilters):
+    student_field = "matricule"
+
     classe = filters.CharFilter(method='classe_by')
     activate_not_done = filters.CharFilter(method='activate_not_done_by')
     activate_waiting = filters.CharFilter(method='activate_waiting_by')
     activate_today = filters.CharFilter(method="activate_today_by")
+    matricule__display = filters.CharFilter(method="people_name_by")
 
     class Meta:
-        fields_to_filter = ('name', 'matricule_id', 'sanction_decision__sanction_decision', 'datetime_sanction',
+        fields_to_filter = ('matricule_id', 'sanction_decision__sanction_decision', 'datetime_sanction',
                             'datetime_conseil', 'datetime_encodage', 'sanction_decision__is_retenue')
         model = CasEleve
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
