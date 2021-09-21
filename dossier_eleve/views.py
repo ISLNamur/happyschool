@@ -67,7 +67,8 @@ def get_menu_entry(active_app, request):
         return {}
 
     has_only_ask = not request.user.has_perm("dossier_eleve.view_caseleve") \
-        and request.user.has_perm("dossier_eleve.ask_sanction")
+        and (request.user.has_perm("dossier_eleve.ask_sanction") or request.user.has_perm("dossier_eleve.set_sanction"))
+
     menu_entry = {
         "app": "dossier_eleve",
         "display": "Dossier élèves",
@@ -380,12 +381,13 @@ class AskSanctionsView(BaseDossierEleveView):
         {'value': 'matricule_id', 'text': 'Matricule'},
         {'value': 'scholar_year', 'text': 'Année scolaire'},
         {'value': 'activate_all_retenues', 'text': 'Toutes les retenues'},
+        {'value': 'activate_today', 'text': 'Sanction du jour'},
         {'value': 'activate_not_done', 'text': 'Sanctions non faites'},
         {'value': 'activate_waiting', 'text': 'En attente de validation'},
-        {'value': 'activate_today', 'text': 'Sanction du jour'},
     ]
 
     def has_permission(self) -> bool:
+        print('coucou')
         permissions = self.get_permission_required()
         for p in permissions:
             if self.request.user.has_perm(p):
