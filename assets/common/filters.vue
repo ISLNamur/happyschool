@@ -214,6 +214,9 @@ export default {
     },
     methods: {
         setFocus: function () {
+            if (this.filterType.startsWith("date")) {
+                return;
+            }
             this.$refs.filters.$refs.search.focus();
         },
         /** 
