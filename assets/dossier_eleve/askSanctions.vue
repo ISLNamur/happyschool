@@ -227,7 +227,6 @@ export default {
             menuInfo: {},
             showFilters: false,
             filter: "",
-            ordering: "&ordering=datetime_sanction,matricule__last_name",
             entriesCount: 0,
             currentPage: 1,
             entries: [],
@@ -246,6 +245,13 @@ export default {
             }
             return "";
         },
+        ordering: function () {
+            if (this.$store.state.filters.find(f => f.filterType === "activate_today")) {
+                return "&ordering=matricule__last_name";
+            } else {
+                return "&ordering=datetime_sanction,matricule__last_name";
+            }
+        }
     },
     watch: {
         retenues_mode: function (mode) {
