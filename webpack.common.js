@@ -20,7 +20,6 @@ function getEntries () {
             memo[file.name] = [file.path];
             return memo;
         }, {});
-    apps["polyfill"] = "@babel/polyfill";
     return apps;
 }
 
@@ -73,6 +72,7 @@ module.exports = {
             assets: path.resolve(__dirname, "assets/")
         }
     },
+    target: ["web", "es5"],
 
     module: {
         rules: [
@@ -95,6 +95,7 @@ module.exports = {
             {
                 test: /\.js$/,
                 loader: "babel-loader",
+                exclude: [/node_modules\/(core-js)/],
             },
             {
                 test: /\.(png|jpg|gif|svg)$/i,

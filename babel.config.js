@@ -1,10 +1,12 @@
 module.exports = function (api) {
     api.cache(true);
-    
-    const presets = ["@babel/preset-env"];
+
     return {
-        presets,
-        // plugins,
+        "presets": [
+            [
+                "@babel/preset-env",
+            ]
+        ],
+        "plugins": ["@babel/plugin-transform-arrow-functions"]
     };
-}
- 
+};

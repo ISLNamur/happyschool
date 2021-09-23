@@ -17,6 +17,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
+import "core-js/stable";
+import "regenerator-runtime/runtime";
+
 function addFilter(state, filter) {
     // If filter is a matricule, remove name filter to avoid conflict.
     if (filter.filterType === "matricule_id") {
