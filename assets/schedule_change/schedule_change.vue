@@ -178,8 +178,10 @@
 
 <script>
 import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
+import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import "bootstrap-vue/dist/bootstrap-vue.css";
+Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
 
 import Moment from "moment";
 Moment.locale("fr");
@@ -199,7 +201,6 @@ import "vue-awesome/icons";
 import Icon from "vue-awesome/components/Icon.vue";
 
 Vue.component("icon", Icon);
-Vue.use(BootstrapVue);
 export default {
     data: function () {
         return {
@@ -207,6 +208,7 @@ export default {
             loaded: false,
             active: true,
             currentPage: 1,
+            entriesPerPage: 30,
             showFilters: false,
             filter: "",
             ordering: "",
@@ -295,7 +297,9 @@ export default {
             this.openModal("add-schedule-modal");
         },
         loadEntries: function () {
-            axios.get("/schedule_change/api/schedule_change/?page_size=30&page=" + this.currentPage + this.filter + this.ordering)
+            axios.get(
+                `/schedule_change/api/schedule_change/?page_size=${this.entriesPerPage}&page=${this.currentPage}${this.filter}${this.ordering}`
+            )
                 .then(response => {
                     this.entries = response.data.results;
                     // Set the first group of changes (group by dates).
@@ -348,6 +352,11 @@ export default {
                 if (window.location.href.includes("show_for_students")) {
                     this.$store.commit("addFilter", {filterType: "activate_show_for_students", tag: "Activer", value: true});
                 }
+                this.entriesPerPage = 15;
+                setInterval(() => {
+                    this.currentPage = this.currentPage === 1 ? 2 : 1;
+                    this.loadEntries();
+                }, 15000);
             }
         },
     },
