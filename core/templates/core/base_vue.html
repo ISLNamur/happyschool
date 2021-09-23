@@ -32,7 +32,7 @@
             {% load user_properties %}
             {% autoescape off %}
             const user = "{{ user }}";
-            let user_properties_raw = {% list_user_properties %};
+            var user_properties_raw = {% list_user_properties %};
             if (user_properties_raw) {
                 user_properties_raw.given_courses = JSON.parse(user_properties_raw.given_courses);
             }
@@ -40,7 +40,6 @@
             const user_groups = {% list_user_groups %};
             {% endautoescape %}
         </script>
-        {% render_bundle 'polyfill' %}
         {% render_bundle 'commons' %}
         <header></header>
         <main class="flex-shrink-0 mb-2">
