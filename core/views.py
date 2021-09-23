@@ -369,6 +369,7 @@ class EmailViewSet(ReadOnlyModelViewSet):
     queryset = EmailModel.objects.all().order_by("display")
     serializer_class = EmailSerializer
     permission_classes = (IsAuthenticated,)
+    pagination_class = LargePageSizePagination
 
 
 class UserViewSet(ModelViewSet):
