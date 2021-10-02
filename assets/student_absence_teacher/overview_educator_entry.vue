@@ -30,6 +30,9 @@
                     @change="updateRecord(index, $event)"
                 >
                     <template #default="">
+                        <span>
+                            {{ is_absent[index] ? "A" : "P" }}
+                        </span>
                         <b-iconstack>
                             <b-icon
                                 stacked
@@ -42,7 +45,7 @@
                                 icon="check"
                                 variant="success"
                             />
-                        </b-iconstack> 
+                        </b-iconstack>
                     </template>
                 </b-checkbox>
             </b-overlay>

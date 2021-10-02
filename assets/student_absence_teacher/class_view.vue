@@ -32,7 +32,7 @@
                     variant="primary"
                     @click="validateEducatorAbsences"
                 >
-                    Valider la classe
+                    Valider toutes les présences
                 </b-btn>
             </b-col>
         </b-row>
