@@ -33,11 +33,14 @@ from django.conf import settings
 from django_filters import rest_framework as filters
 
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+from rest_framework.viewsets import GenericViewSet
+from rest_framework.mixins import UpdateModelMixin
 
 from core.models import TeachingModel
 from core.utilities import get_menu
 from core.views import BaseModelViewSet, BaseFilters
 from core.email import get_resp_emails, send_email
+from core.permissions import IsDirectionPermission, IsEducatorPermission
 
 from .models import LatenessSettingsModel, LatenessModel, SanctionTriggerModel
 from .serializers import LatenessSettingsSerializer, LatenessSerializer
@@ -77,8 +80,17 @@ class LatenessView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
         context["menu"] = json.dumps(get_menu(self.request, "lateness"))
         context["filters"] = json.dumps(self.filters)
         context["settings"] = json.dumps((LatenessSettingsSerializer(get_settings()).data))
+        context["hasSettingsPerm"] = json.dumps(
+            self.request.user.has_perm("lateness.view_latenesssettingsmodel")
+        )
 
         return context
+
+
+class LatenessSettingsViewSet(GenericViewSet, UpdateModelMixin):
+    queryset = LatenessSettingsModel.objects.all()
+    serializer_class = LatenessSettingsSerializer
+    permission_classes = [DjangoModelPermissions]
 
 
 class LatenessFilter(BaseFilters):
@@ -274,3 +286,30 @@ class LatenessViewSet(BaseModelViewSet):
 
     def get_group_all_access(self):
         return get_settings().all_access.all()
+
+
+if "proeco" in settings.INSTALLED_APPS:
+    from proeco.views import ExportStudentSelectionAPI
+
+    class ExportStudentToProEco(ExportStudentSelectionAPI):
+        def _get_student_list(self, request, kwargs):
+            part_of_day = kwargs["part_of_day"]
+            today = timezone.now()
+            today_lateness = LatenessModel.objects.filter(
+                datetime_creation__year=today.year,
+                datetime_creation__month=today.month,
+                datetime_creation__day=today.day,
+                justified=False,
+            )
+            noon = timezone.make_aware(datetime.datetime(today.year, today.month, today.day, hour=12))
+            if part_of_day == "AM":
+                today_lateness = today_lateness.filter(datetime_creation__lte=noon)
+                print('coucou')
+            elif part_of_day == "PM":
+                today_lateness = today_lateness.filter(datetime_creation__gt=noon)
+                print("hello")
+
+            return today_lateness.values_list("student", flat=True)
+
+        def _format_file_name(self, request, **kwargs):
+            return f"Pref_CRITS_{timezone.now().strftime('%y-%m-%d')}_retards.TXT"

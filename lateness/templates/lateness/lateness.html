@@ -14,7 +14,8 @@
 
 <script>
     const current_app = "lateness";
-    const settings = JSON.parse('{{ settings|safe }}');;
+    const settings = JSON.parse('{{ settings|safe }}');
+    const hasSettingsPerm = {{ hasSettingsPerm|safe }};
     const menu = {{ menu|safe }};
     const filters = {{ filters|safe }};
 </script>

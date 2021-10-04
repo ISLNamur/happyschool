@@ -35,6 +35,8 @@ export default new Vuex.Store({
                 value: true,
             }
         ],
+        // eslint-disable-next-line no-undef
+        hasSettingsPerm: hasSettingsPerm,
     },
     mutations: {
         addFilter: addFilter,

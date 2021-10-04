@@ -18,6 +18,7 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.urls import path
+from django.conf import settings
 
 from rest_framework.routers import DefaultRouter
 
@@ -29,4 +30,8 @@ urlpatterns = [
 
 router = DefaultRouter()
 router.register(r"api/lateness", views.LatenessViewSet)
+router.register(r"api/settings", views.LatenessSettingsViewSet)
 urlpatterns += router.urls
+
+if "proeco" in settings.INSTALLED_APPS:
+    urlpatterns.append(path("proeco_list/<part_of_day>/", views.ExportStudentToProEco.as_view()))

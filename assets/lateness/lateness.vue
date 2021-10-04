@@ -124,6 +124,33 @@
                         @toggleSearch="showFilters = !showFilters"
                     />
                 </b-col>
+                <b-col
+                    v-if="$store.state.hasSettingsPerm"
+                    cols="12"
+                    md="4"
+                    class="text-right"
+                >
+                    <b-dropdown
+                        text="Export ProEco"
+                        variant="outline-secondary"
+                    >
+                        <b-dropdown-item href="/lateness/proeco_list/AM/">
+                            Matin
+                        </b-dropdown-item>
+                        <b-dropdown-item href="/lateness/proeco_list/PM/">
+                            Après-midi
+                        </b-dropdown-item>
+                        <b-dropdown-item href="/lateness/proeco_list/DAY/">
+                            Journée
+                        </b-dropdown-item>
+                    </b-dropdown>
+                    <b-btn
+                        variant="outline-warning"
+                        @click="promptChangeCount"
+                    >
+                        Début du comptage
+                    </b-btn>
+                </b-col>
             </b-row>
             <b-row>
                 <b-col>
@@ -174,6 +201,22 @@
                     class="viewport"
                 />
             </b-modal>
+            <b-modal
+                ref="changeCountModal"
+                title="Changer la date du début de comptage"
+                hide-header-close
+                centered
+                cancel-title="Annuler"
+                :no-close-on-backdrop="true"
+                :no-close-on-esc="true"
+                @ok="changeCountDate"
+                @cancel="countDate = $store.state.settings.date_count_start"
+            >
+                <b-input
+                    type="date"
+                    v-model="countDate"
+                />
+            </b-modal>
         </b-container>
     </div>
 </template>
@@ -222,9 +265,22 @@ export default {
             addingStudent: false,
             printing: true,
             justified: false,
+            countDate: this.$store.state.settings.date_count_start,
         };
     },
     methods: {
+        promptChangeCount: function () {
+            this.$refs["changeCountModal"].show();
+        },
+        changeCountDate: function () {
+            axios.patch(
+                `/lateness/api/settings/${this.$store.state.settings.id}/`,
+                { date_count_start: this.countDate },
+                token,
+            ).then(() => {
+                document.location.reload();
+            });
+        },
         filterStudent: function (matricule) {
             this.showFilters = true;
             this.$store.commit("addFilter",
