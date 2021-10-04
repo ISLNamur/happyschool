@@ -28,15 +28,18 @@ from .models import TemplateSelectionModel
 class ExportStudentSelectionAPI(APIView):
     permission_classes = [IsAuthenticated, ]
 
-    def get(self, request, format=None):
-        matricules = set(self._get_student_list(request))
+    def get(self, request, format=None, **kwargs):
+        matricules = set(self._get_student_list(request, kwargs))
         template_model = TemplateSelectionModel.objects.first()
         matricules_text = ["MATRICS%i=%i=" % (i + 1, a) for (i, a) in enumerate(matricules)]
         text = template_model.template.replace("{matricules}", "\n".join(matricules_text))
         response = HttpResponse(text, content_type='text/plain')
-        response['Content-Disposition'] = 'attachment; filename="selection.txt"'
+        response['Content-Disposition'] = f'attachment; filename="{self._format_file_name(request, **kwargs)}"'
         return response
 
-    def _get_student_list(self, request):
+    def _get_student_list(self, request, **kwargs):
         """Get a list of student by their matricules."""
         pass
+
+    def _format_file_name(self, request, **kwargs):
+        return "Pref_CRITS_.TXT"
