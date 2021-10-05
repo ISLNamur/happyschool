@@ -26,6 +26,7 @@ from . import views
 
 urlpatterns = [
     path("", views.LatenessView.as_view(), name="lateness"),
+    path("api/top_lateness", views.TopLatenessAPI.as_view()),
 ]
 
 router = DefaultRouter()

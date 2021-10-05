@@ -35,12 +35,14 @@ from django_filters import rest_framework as filters
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.mixins import UpdateModelMixin
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
-from core.models import TeachingModel
+from core.models import TeachingModel, StudentModel
 from core.utilities import get_menu
 from core.views import BaseModelViewSet, BaseFilters
 from core.email import get_resp_emails, send_email
-from core.permissions import IsDirectionPermission, IsEducatorPermission
+from core.serializers import StudentSerializer
 
 from .models import LatenessSettingsModel, LatenessModel, SanctionTriggerModel
 from .serializers import LatenessSettingsSerializer, LatenessSerializer
@@ -313,3 +315,28 @@ if "proeco" in settings.INSTALLED_APPS:
 
         def _format_file_name(self, request, **kwargs):
             return f"Pref_CRITS_{timezone.now().strftime('%y-%m-%d')}_retards.TXT"
+
+
+class TopLatenessAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        if not request.user.has_perm("lateness.view_latenessmodel"):
+            return Response([])
+
+        date_from = get_settings().date_count_start
+        top_list = LatenessModel.objects.filter(justified=False, datetime_creation__gte=date_from) \
+            .values("student") \
+            .annotate(count_lateness=Count("student")) \
+            .order_by("-count_lateness") \
+            .values_list("student", "count_lateness")[:50]
+
+        top_list = [
+            {
+                "student": StudentSerializer(StudentModel.objects.get(matricule=s[0])).data,
+                "count": s[1]
+            }
+            for s in top_list
+        ]
+
+        return Response(top_list)

@@ -127,11 +127,11 @@
                 <b-col
                     v-if="$store.state.hasSettingsPerm"
                     cols="12"
-                    md="4"
+                    md="8"
                     class="text-right"
                 >
                     <b-dropdown
-                        text="Export ProEco"
+                        text="Export"
                         variant="outline-secondary"
                     >
                         <b-dropdown-item href="/lateness/proeco_list/AM/">
@@ -145,9 +145,17 @@
                         </b-dropdown-item>
                     </b-dropdown>
                     <b-btn
+                        @click="$refs['topLateness'].show();getTopList()"
+                        variant="outline-secondary"
+                    >
+                        <b-icon icon="list-ol" />
+                        Top retards
+                    </b-btn>
+                    <b-btn
                         variant="outline-warning"
                         @click="promptChangeCount"
                     >
+                        <b-icon icon="gear" />
                         Début du comptage
                     </b-btn>
                 </b-col>
@@ -217,6 +225,23 @@
                     v-model="countDate"
                 />
             </b-modal>
+            <b-modal
+                ref="topLateness"
+                ok-only
+            >
+                <b-list-group>
+                    <b-list-group-item
+                        v-for="item in topLateness"
+                        :key="item.student.matricule"
+                        class="d-flex justify-content-between align-items-center"
+                    >
+                        {{ item.student.display }}
+                        <b-badge variant="primary">
+                            {{ item.count }}
+                        </b-badge>
+                    </b-list-group-item>
+                </b-list-group>
+            </b-modal>
         </b-container>
     </div>
 </template>
@@ -266,6 +291,7 @@ export default {
             printing: true,
             justified: false,
             countDate: this.$store.state.settings.date_count_start,
+            topLateness: [],
         };
     },
     methods: {
@@ -461,6 +487,12 @@ export default {
                     vueApp.selectStudent(code);
                 });
             }, 300);
+        },
+        getTopList: function () {
+            axios.get("/lateness/api/top_lateness")
+                .then(resp => {
+                    this.topLateness = resp.data;
+                });
         }
     },
     mounted: function () {
@@ -468,6 +500,7 @@ export default {
         this.menuInfo = menu;
         this.applyFilter();
         this.overloadInput();        
+        this.getTopList();
     },
     components: {
         "multiselect": Multiselect,
