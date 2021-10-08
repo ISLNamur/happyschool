@@ -203,10 +203,13 @@ if "proeco" in settings.INSTALLED_APPS:
 
     class ExportStudentAbsenceAPI(ExportStudentSelectionAPI):
         """Export in a file the current list view as a proeco selection."""
-        def _get_student_list(self, request):
+        def _get_student_list(self, request, kwargs):
             view_set = StudentAbsenceViewSet.as_view({'get': 'list'})
             absences = [a["student_id"] for a in view_set(request._request).data['results']]
             return absences
+
+        def _format_file_name(self, request, **kwargs):
+            return "Pref_CRITS_absences.TXT"
 
 
 class AbsenceCountAPI(APIView):
