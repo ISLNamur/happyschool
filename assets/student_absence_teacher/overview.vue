@@ -71,6 +71,24 @@
                             buttons
                         />
                     </b-form-group>
+                    <b-form-group
+                        v-if="isProecoActivated"
+                        label="Export vers ProEco"
+                        class="ml-1"
+                    >
+                        <b-dropdown
+                            text="Export"
+                            variant="outline-secondary"
+                        >
+                            <b-dropdown-item
+                                v-for="p in educatorPeriods"
+                                :key="p.id"
+                                :href="`/student_absence/api/export_selection/?page_size=1000&date_absence=${date}&period__name=${p.name}&is_absent=true`"
+                            >
+                                {{ p.name }}
+                            </b-dropdown-item>
+                        </b-dropdown>
+                    </b-form-group>
                 </b-form>
             </b-col>
         </b-row>
@@ -134,20 +152,27 @@ export default {
             date: Moment().format("YYYY-MM-DD"),
             pointOfView: "teacher",
             optionsPointOfView: [
-                { text: "Professeur", value: "teacher"},
-                { text: "Éducateur", value: "educator"},
+                { text: "Prof.", value: "teacher"},
+                { text: "Éduc.", value: "educator"},
             ],
             classListType: "ownclass",
             optionsClassListType: [
                 { text: "Ses classes", value: "ownclass"},
-                { text: "Toutes les classes", value: "allclass"},
+                { text: "Toutes", value: "allclass"},
             ],
             absence_count: [],
             fields: [
             ],
+            educatorPeriods: [],
             filter: "",
             loading: true,
         };
+    },
+    computed: {
+        isProecoActivated: function () {
+            // eslint-disable-next-line no-undef
+            return proeco;
+        }
     },
     methods: {
         get_absence_count: function () {
@@ -196,9 +221,11 @@ export default {
                             })
                         );
                     });
-            } else if (this.pointOfView === "educator") {
-                axios.get("/student_absence/api/period/")
-                    .then(resp => {
+            }
+            axios.get("/student_absence/api/period/")
+                .then(resp => {
+                    this.educatorPeriods = resp.data.results;
+                    if (this.pointOfView === "educator") {
                         this.fields = this.fields.concat(
                             resp.data.results.map(p => {
                                 return {
@@ -208,8 +235,8 @@ export default {
                                 };
                             })
                         );
-                    });
-            }
+                    }
+                });
         }
     },
     mounted: function () {

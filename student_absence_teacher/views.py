@@ -81,6 +81,7 @@ class StudentAbsenceTeacherView(LoginRequiredMixin,
         context['menu'] = json.dumps(get_menu(self.request, "student_absence_absence"))
         context['filters'] = json.dumps(self.filters)
         context['settings'] = json.dumps((StudentAbsenceTeacherSettingsSerializer(get_settings()).data))
+        context["proeco"] = json.dumps("proeco" in settings.INSTALLED_APPS)
 
         return context
 
