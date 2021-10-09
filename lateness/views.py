@@ -306,10 +306,8 @@ if "proeco" in settings.INSTALLED_APPS:
             noon = timezone.make_aware(datetime.datetime(today.year, today.month, today.day, hour=12))
             if part_of_day == "AM":
                 today_lateness = today_lateness.filter(datetime_creation__lte=noon)
-                print('coucou')
             elif part_of_day == "PM":
                 today_lateness = today_lateness.filter(datetime_creation__gt=noon)
-                print("hello")
 
             return today_lateness.values_list("student", flat=True)
 
