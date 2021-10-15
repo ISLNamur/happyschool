@@ -19,7 +19,7 @@
 
 import json
 
-from django.db.models import IntegerField, Sum, Case, When, Q, Subquery, F, OuterRef
+from django.db.models import IntegerField, Sum, Case, When, Q, Subquery, F, OuterRef, ObjectDoesNotExist
 from django.db.models.functions import Coalesce
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
@@ -92,6 +92,7 @@ class StudentAbsenceFilter(BaseFilters):
     activate_is_absent = filters.BooleanFilter(method="activate_is_absent_by")
     activate_last_absence = filters.BooleanFilter(method="activate_last_absence_by")
     activate_today_absence = filters.BooleanFilter(method="activate_today_absence_by")
+    activate_own_classes = filters.BooleanFilter(method="activate_own_classes_by")
 
     class Meta:
         fields_to_filter = [
@@ -116,6 +117,13 @@ class StudentAbsenceFilter(BaseFilters):
     def activate_today_absence_by(self, queryset, name, value):
         current_date = timezone.now().date()
         return queryset.filter(date_absence=current_date, is_absent=True).distinct("student")
+
+    def activate_own_classes_by(self, queryset, name, value):
+        try:
+            resp = ResponsibleModel.objects.get(user=self.request.user)
+            return queryset.filter(student__classe__in=resp.classe.all())
+        except ObjectDoesNotExist:
+            return queryset.none()
 
 
 class StudentAbsenceViewSet(ModelViewSet):
