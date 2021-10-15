@@ -83,7 +83,7 @@
                             <b-dropdown-item
                                 v-for="p in educatorPeriods"
                                 :key="p.id"
-                                :href="`/student_absence/api/export_selection/?page_size=1000&date_absence=${date}&period__name=${p.name}&is_absent=true`"
+                                :href="`/student_absence/api/export_selection/?page_size=1000&date_absence=${date}&period__name=${p.name}&is_absent=true${exportOwnClasses}`"
                             >
                                 {{ p.name }}
                             </b-dropdown-item>
@@ -172,6 +172,9 @@ export default {
         isProecoActivated: function () {
             // eslint-disable-next-line no-undef
             return proeco;
+        },
+        exportOwnClasses: function () {
+            return this.classListType === "ownclass" ? "&activate_own_classes=true" : "";
         }
     },
     methods: {
