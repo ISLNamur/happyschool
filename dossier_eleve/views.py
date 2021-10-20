@@ -411,22 +411,6 @@ class AskSanctionsFilter(BaseFilters):
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
 
-    def classe_by(self, queryset, name, value):
-        if not value[0].isdigit():
-            return queryset
-
-        all_access = get_settings().all_access.all()
-        if not self.request.user.groups.intersection(all_access).exists():
-            teachings = ResponsibleModel.objects.get(user=self.request.user).teaching.all()
-            classes = get_classes(list(map(lambda t: t.name, teachings)), True, self.request.user)
-            queryset = queryset.filter(matricule__classe__in=classes)
-
-        if len(value) > 0:
-            queryset = queryset.filter(matricule__classe__year=value[0])
-            if len(value) > 1:
-                queryset = queryset.filter(matricule__classe__letter=value[1].lower())
-        return queryset
-
     def activate_not_done_by(self, queryset, name, value):
         if value == 'true':
             return queryset.filter(datetime_sanction__lt=timezone.now())
