@@ -150,6 +150,7 @@
                 v-for="(entry, index) in entries"
                 :key="entry.id"
                 :row-data="entry"
+                :light-display="lightDisplay"
                 @delete="askDelete(entry)"
                 @edit="editEntry(index)"
                 @filterStudent="filterStudent($event)"
@@ -250,6 +251,13 @@ export default {
                 return "&ordering=matricule__last_name";
             } else {
                 return "&ordering=datetime_sanction,matricule__last_name";
+            }
+        },
+        lightDisplay: function () {
+            if (this.$store.state.filters.find(f => f.filterType === "activate_all_retenues")) {
+                return true;
+            } else {
+                return false;
             }
         }
     },

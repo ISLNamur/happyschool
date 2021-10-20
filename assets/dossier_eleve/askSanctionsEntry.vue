@@ -27,9 +27,9 @@
                 :class="'px-4 mt-2 current-card '"
                 no-body
             >
-                <b-row class="entry-title">
+                <b-row :class="lightDisplay ? '' : 'entry-title'">
                     <b-col>
-                        <h5>
+                        <span :class="lightDisplay ? '' : 'h5'">
                             <a
                                 class="clickable"
                                 @click="$emit('showInfo')"
@@ -41,11 +41,11 @@
                             >
                                 <icon
                                     name="eye"
-                                    scale="1.2"
-                                    class="align-text-middle"
+                                    scale="1"
+                                    class="align-text-top"
                                 />
                             </b-btn>
-                        </h5>
+                        </span>
                     </b-col>
                     <b-col
                         sm="12"
@@ -126,18 +126,21 @@
                         </div>
                     </b-col>
                 </b-row>
-                <b-row class="entry-subtitle">
+                <b-row
+                    v-if="!lightDisplay"
+                    class="entry-subtitle"
+                >
                     <em>{{ subtitle }}</em>
                 </b-row>
                 <b-row>
                     <b-col
-                        md="2"
+                        :md="lightDisplay ? '6' : '2'"
                         class="category"
                     >
                         {{ category }}
                     </b-col>
                     <b-col
-                        v-if="$store.state.settings.enable_disciplinary_council"
+                        v-if="$store.state.settings.enable_disciplinary_council && !lightDisplay"
                         md="2"
                         class="text-center"
                     >
@@ -149,7 +152,10 @@
                     >
                         {{ date_sanction }}
                     </b-col>
-                    <b-col class="current-data mb-1 mr-1">
+                    <b-col
+                        v-if="!lightDisplay"
+                        class="current-data mb-1 mr-1"
+                    >
                         <span v-html="comment" />
                         <b-btn
                             class="move-up"
@@ -197,6 +203,10 @@ export default {
             type: Object,
             default: () => {},
         },
+        lightDisplay: {
+            type: Boolean,
+            default: false,
+        }
     },
     data: function () {
         return {
