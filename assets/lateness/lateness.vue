@@ -127,12 +127,13 @@
                 <b-col
                     v-if="$store.state.hasSettingsPerm"
                     cols="12"
-                    md="8"
+                    md="5"
                     class="text-right"
                 >
                     <b-dropdown
                         text="Export"
                         variant="outline-secondary"
+                        class="mt-1"
                     >
                         <b-dropdown-item href="/lateness/proeco_list/AM/">
                             Matin
@@ -147,6 +148,7 @@
                     <b-btn
                         @click="$refs['topLateness'].show();getTopList()"
                         variant="outline-secondary"
+                        class="mt-1"
                     >
                         <b-icon icon="list-ol" />
                         Top retards
@@ -154,6 +156,7 @@
                     <b-btn
                         variant="outline-warning"
                         @click="promptChangeCount"
+                        class="mt-1"
                     >
                         <b-icon icon="gear" />
                         Début du comptage
