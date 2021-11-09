@@ -26,7 +26,7 @@
         </b-row>
         <b-row class="mb-1">
             <b-col>
-                <b-btn>
+                <b-btn to="/">
                     Retour
                 </b-btn>
                 <b-btn
