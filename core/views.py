@@ -31,6 +31,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.renderers import BaseRenderer
 from rest_framework.permissions import DjangoModelPermissions, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import MultiPartParser
@@ -467,3 +468,13 @@ class CalendarAPI(APIView):
 class PingAPI(APIView):
     def get(self, format=None):
         return Response(status=status.HTTP_200_OK, data={})
+
+
+class BinaryFileRenderer(BaseRenderer):
+    media_type = 'application/octet-stream'
+    format = None
+    charset = None
+    render_style = 'binary'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        return data
