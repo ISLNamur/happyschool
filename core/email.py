@@ -31,7 +31,7 @@ from email.mime.image import MIMEImage
 from .models import EmailModel
 
 
-def send_email(to, subject, email_template, cc=None, images=None, context=None, attachments=None, use_bcc=False):
+def send_email(to, subject, email_template, cc=None, images=None, context=None, attachments=None, use_bcc=False, reply_to=None):
     to = list(to)
     if not to:
         return
@@ -40,7 +40,7 @@ def send_email(to, subject, email_template, cc=None, images=None, context=None, 
     html_content = render_to_string(email_template, context)
     text_content = strip_tags(html_content)
 
-    email = EmailMultiAlternatives(subject, text_content, settings.EMAIL_FROM, to, cc, connection)
+    email = EmailMultiAlternatives(subject, text_content, settings.EMAIL_FROM, to, cc, connection, reply_to=reply_to)
     if use_bcc:
         email.to = []
         email.bcc = to
