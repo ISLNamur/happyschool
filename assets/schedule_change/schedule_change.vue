@@ -153,6 +153,14 @@
                     </b-overlay>
                 </div>
             </div>
+            <b-pagination
+                v-if="!fullscreen"
+                class="mt-1"
+                :total-rows="entriesCount"
+                v-model="currentPage"
+                @change="changePage"
+                :per-page="30"
+            />
         </b-container>
         <b-modal
             ref="deleteModal"
