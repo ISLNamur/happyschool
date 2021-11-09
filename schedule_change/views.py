@@ -20,11 +20,14 @@
 import json
 import requests
 
+from z3c.rml import rml2pdf
+
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.http import HttpResponse
 from django.utils import timezone
-from django.db.models import F, Q
+from django.db.models import F, Q, QuerySet
+from django.template.loader import get_template
 
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions, DjangoModelPermissionsOrAnonReadOnly, IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
@@ -37,6 +40,7 @@ from django_filters import rest_framework as filters
 from core.views import BaseModelViewSet, BaseFilters, get_core_settings, get_app_settings
 from core.utilities import get_menu
 from core.email import send_email
+from core.models import ClasseModel, ResponsibleModel, TeachingModel
 
 from .models import ScheduleChangeSettingsModel, ScheduleChangeModel, ScheduleChangeTypeModel, ScheduleChangePlaceModel,\
     ScheduleChangeCategoryModel
@@ -221,12 +225,90 @@ class SummaryPDFAPI(APIView):
         view_set = ScheduleChangeViewSet.as_view({'get': 'list'})
         results = view_set(request._request).data['results']
         changes = [c['id'] for c in results]
+        changes = [ScheduleChangeModel.objects.get(id=c) for c in changes]
 
         date_from = request.GET.get('date_change__gte')
         date_to = request.GET.get('date_change__lte')
         send_to_teachers = json.loads(request.GET.get('send_to_teachers', 'false'))
         message = request.GET.get('message', "")
 
-        task = task_export.delay(changes, date_from, date_to, send_to_teachers, message)
+        pdf_file = self.export(changes, date_from, date_to)
+        pdf_name = 'changement_horaire_' + date_from + '_' + date_to + '.pdf'
+        if send_to_teachers:
+            self.send_to_teachers(changes, date_from, date_to, pdf_file, message)
 
-        return Response(status=HTTP_202_ACCEPTED, data=json.dumps(str(task)))
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'filename; filename="' + pdf_name + '"'
+        response.write(pdf_file.read())
+        return response
+
+    def export(self, changes, date_from, date_to):
+        categories = ScheduleChangeCategoryModel.objects.all()
+        context = {
+            'date_from': date_from, 'date_to': date_to,
+            'list': changes, 'phone': get_settings().responsible_phone,
+            'responsible': get_settings().responsible_name,
+            'categories': categories
+        }
+        t = get_template('schedule_change/summary.rml')
+        rml_str = t.render(context)
+
+        return rml2pdf.parseString(rml_str)
+
+    def send_to_teachers(self, changes, date_from, date_to, pdf_file, message) -> None:
+        pdf_name = 'changement_horaire_' + date_from + '_' + date_to + '.pdf'
+        classes = ClasseModel.objects.none()
+        for c in changes:
+            if c.classes:
+                classes |= self.get_classes_from_display(c.classes)
+
+        teachers_involved = ResponsibleModel.objects.filter(
+            Q(classe__in=classes) | Q(tenure__in=classes)
+        )
+        attachments = [{'filename': pdf_name, 'file': pdf_file.read()}]
+        settings = get_settings()
+        core_settings = get_core_settings()
+        teachers_email = [t.email_school for t in teachers_involved] if settings.email_school else \
+            [t.email for t in teachers_involved]
+        substitutes = []
+        for c in changes:
+            subs = c.teachers_substitute.filter(is_teacher=True)
+            if not subs:
+                continue
+            substitutes += [t.email_school for t in subs] if settings.email_school \
+                else [t.email for t in subs]
+
+        teachers_email += substitutes
+
+        url = core_settings.remote if settings.copy_to_remote else core_settings.root
+        context = {
+            'date_from': date_from, 'date_to': date_to,
+            'url': url, 'message': message
+        }
+        send_email(
+            set(teachers_email),
+            'Changement horaire',
+            'schedule_change/email_summary.html',
+            context=context,
+            attachments=attachments,
+            use_bcc=True
+        )
+
+    def get_classes_from_display(self, flat_classes: str) -> QuerySet:
+        classes_str = flat_classes.split(";")
+        use_teaching_display = " — " in classes_str[0]
+        classes_ids = []
+        for cl in classes_str:
+            classe = cl.split(" — ")[0] if use_teaching_display else cl
+            year = classe[0]
+            teaching = TeachingModel.objects.get(display_name=cl.split(" — ")[1])\
+                if use_teaching_display else get_settings().teachings.all()[0]
+            if "année" in classe:
+                classes_ids += [cm.id for cm in ClasseModel.objects.filter(year=int(year), teaching=teaching)]
+            else:
+                classe_letter = classe[1:].lower()
+                classes_ids.append(
+                    ClasseModel.objects.get(year=int(year), letter__iexact=classe_letter, teaching=teaching).id
+                )
+
+        return ClasseModel.objects.filter(pk__in=classes_ids)
