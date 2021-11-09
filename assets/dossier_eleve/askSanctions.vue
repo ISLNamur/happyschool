@@ -23,10 +23,6 @@
             class="loading"
             v-if="!loaded"
         />
-        <app-menu
-            v-if="loaded"
-            :menu-info="menuInfo"
-        />
         <b-container v-if="loaded">
             <b-row>
                 <h2>Demandes de sanction</h2>
@@ -215,7 +211,7 @@ import Moment from "moment";
 import Info from "../annuaire/info.vue";
 
 import AskSanctionsEntry from "./askSanctionsEntry.vue";
-import AskModal from "./askModal.vue";
+import AskModal from "./ask.vue";
 import AskExportModal from "./askExportModal.vue";
 import Filters from "../common/filters.vue";
 import Menu from "../common/menu.vue";

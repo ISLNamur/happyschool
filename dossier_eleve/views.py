@@ -20,11 +20,13 @@
 import json
 
 from django_weasyprint import WeasyTemplateView
+from weasyprint import HTML
 
 from django.shortcuts import render
 from django.utils import timezone
 from django.http import HttpResponse
 from django.template.loader import get_template
+from django.template import Template, Context
 from django.conf import settings
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
@@ -43,11 +45,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
 
-from core.views import BaseFilters, BaseModelViewSet, get_app_settings, BaseUploadFileView, get_core_settings
+from core.views import BaseFilters, BaseModelViewSet, get_app_settings, BaseUploadFileView, \
+    get_core_settings, BinaryFileRenderer
 from core.utilities import get_menu
 from core.utilities import get_scholar_year, check_student_photo
 from core.models import StudentModel, ResponsibleModel
 from core.people import People, get_classes
+from core.email import send_email, get_resp_emails
 
 from .serializers import *
 from .models import *
@@ -727,16 +731,83 @@ class AskSanctionRetenuesPDFGenAPI(AskSanctionsPDFGenAPI):
         return results
 
 
-class RetenuePDF(
-    LoginRequiredMixin,
-    PermissionRequiredMixin,
-    WeasyTemplateView
-):
+class SanctionPDF(APIView):
     permission_required = ['dossier_eleve.ask_sanction', 'dossier_eleve.view_caseleve']
-    template_name = "dossier_eleve/retenue_pdf.html"
+    renderer_classes = [BinaryFileRenderer]
 
-    def get_context_data(self, sanction, **kwargs) -> dict:
-        context = super().get_context_data(**kwargs)
-        context["sanction"] = CasEleve.objects.get(id=sanction)
-        context["core_settings"] = get_core_settings()
-        return context
+    def post(self, request, format=None):
+        template = get_template("dossier_eleve/sanction_pdf.html")
+        context = {
+            "sanction": CasEleve.objects.get(id=request.data.get("sanction")),
+            "text": request.data.get("text"),
+            "core_settings": get_core_settings()
+        }
+        html_render = template.render(context)
+        pdf_file = HTML(string=html_render).write_pdf()
+        return Response(
+            pdf_file,
+            headers={'Content-Disposition': 'attachment; filename="file.pdf"'},
+            content_type='application/pdf'
+        )
+
+
+class SanctionTemplate(
+    APIView,
+):
+    permission_required = [
+        "dossier_eleve.ask_sanction",
+        "dossier_eleve.view_caseleve",
+        "dossier_eleve.add_caseleve"
+    ]
+
+    def get(self, request, cas_id, format=None):
+        try:
+            cas = CasEleve.objects.get(id=cas_id)
+        except ObjectDoesNotExist:
+            return Response(None)
+
+        template = cas.sanction_decision.letter_comment
+        t = Template(template)
+        core_settings = get_core_settings()
+        c = Context({"sanction": cas, "core_settings": core_settings})
+        return Response(t.render(context=c))
+
+
+class WarnSanctionAPI(APIView):
+    permission_required = [
+        "dossier_eleve.ask_sanction",
+        "dossier_eleve.view_caseleve",
+        "dossier_eleve.add_caseleve"
+    ]
+
+    def post(self, request, format=None):
+        sanction = CasEleve.objects.get(id=request.data.get("cas_id"))
+        recipients = request.data.get("recipients")
+        context = {
+            "sanction": sanction,
+            "text": request.data.get("msg"),
+            "core_settings": get_core_settings()
+        }
+
+        resp_school = get_resp_emails(sanction.matricule)
+
+        # Get recipients.
+        recipient_email = set()
+        if "mother" in recipients:
+            recipient_email.add(sanction.matricule.additionalstudentinfo.mother_email)
+        if "father" in recipients:
+            recipient_email.add(sanction.matricule.additionalstudentinfo.father_email)
+        if "resp" in recipients:
+            recipient_email.add(sanction.matricule.additionalstudentinfo.resp_email)
+        if "resp_school" in recipients:
+            recipient_email = recipient_email.union(resp_school)
+
+        for r in recipient_email:
+            send_email(
+                [r],
+                subject=f"Sanction concernant {sanction.matricule.fullname}",
+                email_template="dossier_eleve/email_sanction_parents.html",
+                context=context,
+                reply_to=list(resp_school)
+            )
+        return Response(status=201)

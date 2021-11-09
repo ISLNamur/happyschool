@@ -22,7 +22,9 @@ import Vue from "vue";
 import Vuex from "vuex";
 Vue.use(Vuex);
 
-import AskSanctions from "../dossier_eleve/askSanctions.vue";
+import router from "../dossier_eleve/router_ask_sanctions.js";
+
+import Menu from "../common/menu.vue";
 
 const store = new Vuex.Store({
     state: {
@@ -65,8 +67,31 @@ const store = new Vuex.Store({
 
 new Vue({
     el: "#vue-app",
-    data: {},
+    data: {
+        transitionName: "slide-left",
+        menuInfo: {},
+    },
     store,
-    template: "<ask-sanctions/>",
-    components: { AskSanctions },
+    router,
+    template: `
+    <div>
+    <app-menu :menu-info="menuInfo"></app-menu>
+      <transition :name="transitionName" mode="out-in">
+        <router-view></router-view>
+      </transition>
+    </div>`,
+    mounted: function() {
+        // eslint-disable-next-line no-undef
+        this.menuInfo = menu;
+    },
+    components: {
+        "app-menu": Menu,
+    },
+    watch: {
+        "$route" (to, from) {
+            const toDepth = to.path.split("/").length;
+            const fromDepth = from.path.split("/").length;
+            this.transitionName = toDepth < fromDepth ? "slide-right" : "slide-left";
+        }
+    }
 });

@@ -92,7 +92,7 @@
                                     variant="light"
                                     size="sm"
                                     class="card-link"
-                                    :href="`/dossier_eleve/get_pdf_retenue/${rowData.id}/`"
+                                    :to="`/warn/${rowData.id}/`"
                                 ><icon
                                     scale="1.3"
                                     name="file"
