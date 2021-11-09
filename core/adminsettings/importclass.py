@@ -773,7 +773,7 @@ class SyncCourses(ImportBase):
                 continue
 
             if entry[-1] == "0":
-                continue
+               continue
 
             course = self.get_value(entry, "course")
             teachers = self.get_value(entry, "teachers")
