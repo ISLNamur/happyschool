@@ -217,7 +217,7 @@ if "proeco" in settings.INSTALLED_APPS:
             return absences
 
         def _format_file_name(self, request, **kwargs):
-            return "Pref_CRITS_absences.TXT"
+            return "Pref_NOMS_absences.TXT"
 
 
 class AbsenceCountAPI(APIView):
