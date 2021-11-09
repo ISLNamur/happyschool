@@ -115,33 +115,41 @@ export default {
             }
         }
     },
+    computed: {
+        summaryUrl: function () {
+            return "/schedule_change/api/summary_pdf/?page_size=500&date_change__gte="
+            + this.export_from + "&date_change__lte=" + this.export_to + "&send_to_teachers=" + this.sendToTeachers
+            + "&message=" + encodeURIComponent(this.message);
+        }
+    },
     methods: {
         show: function () {
             this.$refs.exportModal.show();
         },
         submitExport: function (event) {
-            event.preventDefault();
-            let app = this;
-            this.buttonStr = "Traitement en cours";
-            this.processing = true;
-            const token = {
-                xsrfCookieName: "csrftoken",
-                xsrfHeaderName: "X-CSRFToken",
-            };
+            // event.preventDefault();
+            // let app = this;
+            // this.buttonStr = "Traitement en cours";
+            // this.processing = true;
+            // const token = {
+            //     xsrfCookieName: "csrftoken",
+            //     xsrfHeaderName: "X-CSRFToken",
+            // };
             const url = "/schedule_change/api/summary_pdf/?page_size=500&date_change__gte="
             + this.export_from + "&date_change__lte=" + this.export_to + "&send_to_teachers=" + this.sendToTeachers
             + "&message=" + encodeURIComponent(this.message);
-            axios.get(url, token)
-                .then(response => {
-                    const protocol = window.location.protocol === "http:" ? "ws" : "wss";
-                    app.ws = new WebSocket(protocol + "://" + window.location.host + "/ws/schedule_change/export_summary/" + JSON.parse(response.data) + "/");
-                    app.ws.onmessage = function (event) {
-                        window.open(JSON.parse(event.data)["file_url"],"_blank");
-                        app.sendToTeachers = false;
-                        app.buttonStr = "Créer le PDF";
-                        app.processing = false;
-                    };
-                });
+            document.location = url;
+            // axios.get(url, token)
+            //     .then(response => {
+            //         const protocol = window.location.protocol === "http:" ? "ws" : "wss";
+            //         app.ws = new WebSocket(protocol + "://" + window.location.host + "/ws/schedule_change/export_summary/" + JSON.parse(response.data) + "/");
+            //         app.ws.onmessage = function (event) {
+            //             window.open(JSON.parse(event.data)["file_url"],"_blank");
+            //             app.sendToTeachers = false;
+            //             app.buttonStr = "Créer le PDF";
+            //             app.processing = false;
+            //         };
+            //     });
         },
         resetModal: function () {
             Object.assign(this.$data, this.$options.data.call(this));
