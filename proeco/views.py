@@ -42,4 +42,4 @@ class ExportStudentSelectionAPI(APIView):
         pass
 
     def _format_file_name(self, request, **kwargs):
-        return "Pref_CRITS_.TXT"
+        return "Pref_NOMS_.TXT"
