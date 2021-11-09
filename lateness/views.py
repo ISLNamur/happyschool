@@ -312,7 +312,7 @@ if "proeco" in settings.INSTALLED_APPS:
             return today_lateness.values_list("student", flat=True)
 
         def _format_file_name(self, request, **kwargs):
-            return f"Pref_CRITS_{timezone.now().strftime('%y-%m-%d')}_retards.TXT"
+            return f"Pref_NOMS_{timezone.now().strftime('%y-%m-%d')}_retards.TXT"
 
 
 class TopLatenessAPI(APIView):
