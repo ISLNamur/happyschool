@@ -33,7 +33,7 @@
     <story firstPageTemplate="main">
         <keepInFrame frame="first" onOverflow="shrink">
             <para style="title">
-                 <h1><strong>PHOTOS {{ classe|upper }}</strong> ({{ students_numb }} élèves) Titulaire(s) : {% for t in tenures %}{{ t.fullname }} {% endfor %}</h1>
+                 <h1><strong>PHOTOS {{ classe|upper }}</strong> ({{ students_numb }} élèves) {% if tenures %} Titulaire(s) : {% for t in tenures %}{{ t.fullname }} {% endfor %}{% endif %}</h1>
             </para>
         </keepInFrame>
 
