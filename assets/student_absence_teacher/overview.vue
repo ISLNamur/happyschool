@@ -83,9 +83,14 @@
                             <b-dropdown-item
                                 v-for="p in educatorPeriods"
                                 :key="p.id"
-                                :href="`/student_absence/api/export_selection/?page_size=1000&date_absence=${date}&period__name=${p.name}&is_absent=true${exportOwnClasses}`"
+                                :href="`/student_absence/api/export_selection/?page_size=2000&date_absence=${date}&period__name=${p.name}&is_absent=true${exportOwnClasses}`"
                             >
                                 {{ p.name }}
+                            </b-dropdown-item>
+                            <b-dropdown-item
+                                :href="`/student_absence/api/export_selection/?page_size=2000&date_absence=${date}&is_absent=true${exportOwnClasses}`"
+                            >
+                                Toute la journée
                             </b-dropdown-item>
                         </b-dropdown>
                     </b-form-group>
