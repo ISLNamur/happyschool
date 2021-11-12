@@ -152,6 +152,34 @@ class LatenessViewSet(BaseModelViewSet):
     filter_class = LatenessFilter
     username_field = None
 
+    if "student_absence_teacher" in settings.INSTALLED_APPS:
+        def _update_student_absence_teacher(self, instance, time):
+            from student_absence_teacher.models import StudentAbsenceTeacherModel, PeriodModel
+
+            try:
+                period = PeriodModel.objects.get(start__lt=time, end__gte=time)
+            except ObjectDoesNotExist:
+                return
+
+            try:
+                student_lateness = StudentAbsenceTeacherModel.objects.get(
+                    date_absence=instance.datetime_creation,
+                    student=instance.student,
+                    period=period,
+                    status=StudentAbsenceTeacherModel.LATENESS,
+                )
+            except ObjectDoesNotExist:
+                student_lateness = StudentAbsenceTeacherModel(
+                    date_absence=instance.datetime_creation,
+                    student=instance.student,
+                    period=period,
+                    status=StudentAbsenceTeacherModel.LATENESS,
+                    user=self.request.user
+                )
+            student_lateness.comment = f"Retard à {time.time().strftime('%H:%M')} {'(justifié)' if instance.justified else ''}"
+            student_lateness.user = self.request.user
+            student_lateness.save()
+
     def perform_create(self, serializer):
         lateness = serializer.save()
         printing = self.request.query_params.get("print", None)
@@ -199,7 +227,7 @@ class LatenessViewSet(BaseModelViewSet):
                 pass
 
         now = timezone.localtime()
-        print(now)
+        # Trigger
         for trigger in SanctionTriggerModel.objects.filter(
             teaching=lateness.student.teaching, year__year=lateness.student.classe.year
         ).filter(
@@ -251,6 +279,7 @@ class LatenessViewSet(BaseModelViewSet):
             lateness.sanction_id = cas.id
             lateness.save()
 
+        # Notification
         if lateness_settings.notify_responsible:
             responsibles = get_resp_emails(lateness.student)
             context = {"lateness": lateness, "lateness_count": lateness_count}
@@ -265,6 +294,10 @@ class LatenessViewSet(BaseModelViewSet):
                 "lateness/lateness_email.html",
                 context=context,
             )
+
+        # Student absence teacher.
+        if "student_absence_teacher" in settings.INSTALLED_APPS:
+            self._update_student_absence_teacher(lateness, now)
 
     def remove_sanction(self, instance):
         if instance.sanction_id:
@@ -285,6 +318,11 @@ class LatenessViewSet(BaseModelViewSet):
         instance = serializer.save()
         if instance.sanction_id and instance.justified:
             self.remove_sanction(instance)
+
+        # Student absence teacher.
+        if "student_absence_teacher" in settings.INSTALLED_APPS:
+            # Take update time to show in student_absence_teacher comment
+            self._update_student_absence_teacher(instance, timezone.localtime())
 
     def get_group_all_access(self):
         return get_settings().all_access.all()
