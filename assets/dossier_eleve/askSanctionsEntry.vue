@@ -93,10 +93,8 @@
                                     size="sm"
                                     class="card-link"
                                     :to="`/warn/${rowData.id}/`"
-                                ><icon
-                                    scale="1.3"
-                                    name="file"
-                                    color="grey"
+                                ><b-icon
+                                    icon="file-earmark-post-fill"
                                     class="align-text-bottom"
                                 />
                                 </b-btn>
@@ -105,9 +103,8 @@
                                     size="sm"
                                     @click="editEntry"
                                     class="card-link"
-                                ><icon
-                                    scale="1.3"
-                                    name="edit"
+                                ><b-icon
+                                    icon="pencil-square"
                                     color="green"
                                     class="align-text-bottom"
                                 /></b-btn>
@@ -116,9 +113,8 @@
                                     size="sm"
                                     @click="deleteEntry"
                                     class="card-link"
-                                ><icon
-                                    scale="1.3"
-                                    name="trash"
+                                ><b-icon
+                                    icon="trash-fill"
                                     color="red"
                                     class="align-text-bottom"
                                 /></b-btn>
