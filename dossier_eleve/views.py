@@ -442,7 +442,9 @@ class AskSanctionsViewSet(BaseModelViewSet):
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     filter_class = AskSanctionsFilter
     ordering_fields = ('datetime_encodage', 'datetime_sanction', 'matricule__classe__year',
-                       'matricule__classe__letter', 'matricule__last_name')
+                       'matricule__classe__letter', 'matricule__last_name',
+                       "sanction_decision__sanction_decision"
+    )
     user_field = 'created_by'
 
     def get_queryset(self):

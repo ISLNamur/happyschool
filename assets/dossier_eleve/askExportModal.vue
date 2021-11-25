@@ -88,6 +88,28 @@
                         <b-col>
                             <b-form-group>
                                 <b-checkbox
+                                    v-model="sortByClasse"
+                                >
+                                    Trier par classe
+                                </b-checkbox>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col>
+                            <b-form-group>
+                                <b-checkbox
+                                    v-model="sortBySanction"
+                                >
+                                    Trier par sanction
+                                </b-checkbox>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col>
+                            <b-form-group>
+                                <b-checkbox
                                     v-model="sanction_not_done"
                                 >
                                     Sanctions non faites uniquement
@@ -120,6 +142,8 @@ export default {
             date_retenues_from: null,
             date_retenues_to: null,
             sanction_not_done: false,
+            sortByClasse: this.$store.state.settings.export_retenues_by_classe_default,
+            sortBySanction: this.$store.state.settings.export_retenues_by_sanction_default,
         };
     },
     watch: {
@@ -159,7 +183,12 @@ export default {
                     path += "&activate_not_done=true";
                 }
             }
-            path += "&ordering=matricule__classe__year,matricule__classe__letter,matricule__last_name&page_size=500";
+            let orderingFields = [];
+            if (this.sortBySanction && this.tabIndex !== 0) orderingFields.push("sanction_decision__sanction_decision");
+            if (this.sortByClasse && this.tabIndex !== 0) orderingFields.push("matricule__classe__year,matricule__classe__letter");
+            orderingFields.push("matricule__last_name");
+            path += `&ordering=${orderingFields.toString()}`;
+            path += "&page_size=500";
             window.open(path);
         },
     },

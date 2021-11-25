@@ -151,6 +151,16 @@ class DossierEleveSettingsModel(models.Model):
         help_text="""Si activé avec la demande de sanction, permet de prévoir de manière facultative
         une date pour statuer de la pertinence d'une demande de sanction."""
     )
+    export_retenues_by_classe_default = models.BooleanField(
+        default=False,
+        help_text="""Lors de l'export des retenues dans les demandes de sanction, la case pour
+        trier par classe sera cochée par défaut."""
+    )
+    export_retenues_by_sanction_default = models.BooleanField(
+        default=False,
+        help_text="""Lors de l'export des retenues dans les demandes de sanction, la case pour
+        trier par sanction sera cochée par défaut."""
+    )
 
 
 class InfoEleve(models.Model):
