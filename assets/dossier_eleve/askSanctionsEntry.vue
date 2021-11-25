@@ -93,10 +93,20 @@
                                     size="sm"
                                     class="card-link"
                                     :to="`/warn/${rowData.id}/`"
-                                ><b-icon
-                                    icon="file-earmark-post-fill"
-                                    class="align-text-bottom"
-                                />
+                                >
+                                    <b-iconstack>
+                                        <b-icon
+                                            icon="file-earmark-post-fill"
+                                            stacked
+                                        />
+                                        <b-icon
+                                            v-if="rowData.notified"
+                                            icon="check"
+                                            color="green"
+                                            scale="1.8"
+                                            stacked
+                                        />
+                                    </b-iconstack>
                                 </b-btn>
                                 <b-btn
                                     variant="light"

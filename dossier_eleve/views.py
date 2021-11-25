@@ -391,7 +391,6 @@ class AskSanctionsView(BaseDossierEleveView):
     ]
 
     def has_permission(self) -> bool:
-        print('coucou')
         permissions = self.get_permission_required()
         for p in permissions:
             if self.request.user.has_perm(p):
@@ -817,4 +816,6 @@ class WarnSanctionAPI(APIView):
                 context=context,
                 reply_to=list(resp_school)
             )
+        sanction.notified = True
+        sanction.save()
         return Response(status=201)

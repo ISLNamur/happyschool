@@ -38,6 +38,16 @@
                 </b-btn>
             </b-col>
         </b-row>
+        <b-row v-if="sanction && sanction.notified">
+            <b-col>
+                <b-alert
+                    show
+                    variant="warning"
+                >
+                    La sanction a déjà été notifié.
+                </b-alert>
+            </b-col>
+        </b-row>
         <b-row>
             <b-col>
                 <b-form-group
@@ -178,6 +188,12 @@ export default {
             axios.post("/dossier_eleve/api/warn_sanction/", data, token)
                 .then(() => {
                     this.sending = false;
+                    this.$router.push("/",() => {
+                        this.$root.$bvToast.toast("Le message a bien été envoyé.", {
+                            variant: "success",
+                            noCloseButton: true,
+                        });
+                    });
                 })
                 .catch(err => {
                     console.log(err);
