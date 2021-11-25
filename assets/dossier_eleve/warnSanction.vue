@@ -51,6 +51,32 @@
                 </b-form-group>
             </b-col>
         </b-row>
+        <b-row>
+            <b-col>
+                <b-form-group
+                    label="Autres personnes de l'école"
+                >
+                    <multiselect
+                        id="responsible-0"
+                        :internal-search="false"
+                        :options="responsibleOptions"
+                        @search-change="getResponsible"
+                        placeholder="Ajouter une autre personne de l'école"
+                        select-label=""
+                        selected-label="Sélectionné"
+                        deselect-label="Cliquer dessus pour enlever"
+                        v-model="otherRecipients"
+                        label="display"
+                        track-by="matricule"
+                        :show-no-options="false"
+                        multiple
+                    >
+                        <span slot="noResult">Aucun responsable trouvé.</span>
+                        <span slot="noOptions" />
+                    </multiselect>
+                </b-form-group>
+            </b-col>
+        </b-row>
         <b-row v-if="sanction">
             <b-col>
                 <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 15px;">
@@ -97,6 +123,11 @@ import "quill/dist/quill.snow.css";
 
 import axios from "axios";
 
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
+
+import {getPeopleByName} from "../common/search.js";
+
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 export default {
     props: {
@@ -115,6 +146,9 @@ export default {
                 {"text": "Responsable légal", "value": "resp"},
                 {"text": "Responsable à l'école", "value": "resp_school"},
             ],
+            otherRecipients: [],
+            responsibleOptions: [],
+            searchId: 0,
             text: "",
             editorOptions: {
                 modules: {
@@ -138,6 +172,7 @@ export default {
                 msg: this.text,
                 cas_id: this.id,
                 recipients: this.recipient,
+                other_recipients: this.otherRecipients.map(r => r.pk),
             };
             this.sending = true;
             axios.post("/dossier_eleve/api/warn_sanction/", data, token)
@@ -160,7 +195,6 @@ export default {
                 xsrfHeaderName: "X-CSRFToken"
             })
                 .then(resp => {
-                    console.log(resp);
                     const blob = new Blob([resp.data], { type: "application/pdf" });
                     var link = document.createElement("a");
                     link.href = window.URL.createObjectURL(blob);
@@ -170,7 +204,27 @@ export default {
                     document.body.removeChild(link);
                 });
 
-        }
+        },
+        getResponsible: function (searchQuery) {
+            this.searchId += 1;
+            let currentSearch = this.searchId;
+
+            const teachings = this.$store.state.settings.teachings.filter(
+                // eslint-disable-next-line no-undef
+                value => user_properties.teaching.includes(value));
+            getPeopleByName(searchQuery, teachings, "responsible")
+                .then( (resp) => {
+                // Avoid that a previous search overwrites a faster following search results.
+                    if (this.searchId !== currentSearch)
+                        return;
+                    this.responsibleOptions = resp.data;
+                // this.searching = false;
+                })
+                .catch( (err) => {
+                    alert(err);
+                // this.searching = false;
+                });
+        },
     },
     mounted: function () {
         axios.get(`/dossier_eleve/api/ask_sanctions/${this.id}/`)
@@ -183,7 +237,8 @@ export default {
             });
     },
     components: {
-        quillEditor
+        quillEditor,
+        Multiselect,
     }
 };
 </script>

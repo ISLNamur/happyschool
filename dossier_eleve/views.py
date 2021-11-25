@@ -804,6 +804,11 @@ class WarnSanctionAPI(APIView):
         if "resp_school" in recipients:
             recipient_email = recipient_email.union(resp_school)
 
+        other_responsibles = ResponsibleModel.objects.filter(pk__in=request.data.get("other_recipients"))
+        recipient_email = recipient_email.union(
+            {r.email_school if get_settings().use_school_email else r.email for r in other_responsibles}
+        )
+
         for r in recipient_email:
             send_email(
                 [r],
