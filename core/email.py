@@ -17,8 +17,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
-import os, requests
-import io
+import os
+import requests
 
 from django.core.mail import EmailMultiAlternatives, get_connection
 # from django.core.mail.backends.smtp import
@@ -28,7 +28,7 @@ from django.conf import settings
 from django.db.models.fields.files import FieldFile
 
 from email.mime.image import MIMEImage
-from .models import EmailModel
+from .models import EmailModel, StudentModel, ResponsibleModel
 
 
 def send_email(to, subject, email_template, cc=None, images=None, context=None, attachments=None, use_bcc=False, reply_to=None):
@@ -133,9 +133,17 @@ def send_email_with_sp(recipients, subject, body, from_email="Informatique ISLN 
     return response
 
 
-def get_resp_emails(student):
+def get_resp_emails(student: StudentModel) -> dict:
+    """Return a dict of emails and names of responsible that are in charge of the student.
+    """
     emails = {}
     for e in EmailModel.objects.filter(teaching=student.teaching, years=student.classe.year):
         emails[e.email] = e.display
+
+    # Get educators that are related by classes to the student.
+    educators = ResponsibleModel.objects.filter(
+        teaching=student.teaching, classe=student.classe, is_educator=True
+        )
+    emails = dict(emails, **{e.email_school: e.fullname for e in educators})
 
     return emails
