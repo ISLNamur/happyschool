@@ -73,6 +73,7 @@ class LatenessView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
         {"value": "student__display", "text": "Nom"},
         {"value": "student__matricule", "text": "Matricule"},
         {"value": "date_lateness", "text": "Date"},
+        {"value": "classe", "text": "Classe"},
         {"value": "count_lateness", "text": "Nombre de retard"},
         {"value": "activate_after_count", "text": "À partir du comptage"},
     ]
@@ -103,6 +104,7 @@ class LatenessFilter(BaseFilters):
     date_lateness__lte = filters.DateFilter(method="date_lateness_by")
     count_lateness = filters.NumberFilter(method="count_lateness_by")
     activate_after_count = filters.BooleanFilter(method="activate_after_count_by")
+    classe = filters.CharFilter(method='classe_by')
 
     class Meta:
         fields_to_filter = [
