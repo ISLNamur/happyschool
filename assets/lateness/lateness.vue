@@ -232,6 +232,15 @@
                 ref="topLateness"
                 ok-only
             >
+                <b-form-group>
+                    <b-form-checkbox
+                        v-model="topOwnClasses"
+                        switch
+                        @input="getTopList()"
+                    >
+                        N'afficher que ses classes
+                    </b-form-checkbox>
+                </b-form-group>
                 <b-list-group>
                     <b-list-group-item
                         v-for="item in topLateness"
@@ -295,6 +304,7 @@ export default {
             justified: false,
             countDate: this.$store.state.settings.date_count_start,
             topLateness: [],
+            topOwnClasses: false,
         };
     },
     methods: {
@@ -492,7 +502,7 @@ export default {
             }, 300);
         },
         getTopList: function () {
-            axios.get("/lateness/api/top_lateness")
+            axios.get(`/lateness/api/top_lateness?${this.topOwnClasses ? "own_classes=True" : ""}`)
                 .then(resp => {
                     this.topLateness = resp.data;
                 });

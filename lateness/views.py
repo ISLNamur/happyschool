@@ -38,10 +38,11 @@ from rest_framework.mixins import UpdateModelMixin
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from core.models import TeachingModel, StudentModel
+from core.models import ResponsibleModel, TeachingModel, StudentModel
 from core.utilities import get_menu
 from core.views import BaseModelViewSet, BaseFilters
 from core.email import get_resp_emails, send_email
+from core.people import get_classes
 from core.serializers import StudentSerializer
 
 from .models import LatenessSettingsModel, LatenessModel, SanctionTriggerModel
@@ -363,7 +364,18 @@ class TopLatenessAPI(APIView):
             return Response([])
 
         date_from = get_settings().date_count_start
-        top_list = LatenessModel.objects.filter(justified=False, datetime_creation__gte=date_from) \
+        latenesses = LatenessModel.objects.filter(justified=False, datetime_creation__gte=date_from)
+
+        own_classes = request.GET.get("own_classes", False)
+        if own_classes:
+            classes = get_classes(
+                        check_access=True,
+                        user=self.request.user,
+                        tenure_class_only=True,
+                        educ_by_years=True
+                    ).values_list("id")
+            latenesses = latenesses.filter(student__classe__id__in=classes)
+        top_list = latenesses \
             .values("student") \
             .annotate(count_lateness=Count("student")) \
             .order_by("-count_lateness") \
