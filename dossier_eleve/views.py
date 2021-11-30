@@ -733,6 +733,7 @@ class AskSanctionRetenuesPDFGenAPI(AskSanctionsPDFGenAPI):
 
 
 class SanctionPDF(APIView):
+    permission_classes = [DjangoModelPermissions]
     permission_required = ['dossier_eleve.ask_sanction', 'dossier_eleve.view_caseleve']
     renderer_classes = [BinaryFileRenderer]
 
@@ -755,6 +756,7 @@ class SanctionPDF(APIView):
 class SanctionTemplate(
     APIView,
 ):
+    permission_classes = [DjangoModelPermissions]
     permission_required = [
         "dossier_eleve.ask_sanction",
         "dossier_eleve.view_caseleve",
@@ -775,6 +777,7 @@ class SanctionTemplate(
 
 
 class WarnSanctionAPI(APIView):
+    permission_classes = [DjangoModelPermissions]
     permission_required = [
         "dossier_eleve.ask_sanction",
         "dossier_eleve.view_caseleve",
