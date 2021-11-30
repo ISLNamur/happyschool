@@ -17,14 +17,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
+import csv
 import json
 import datetime
 from itertools import groupby
 
+from weasyprint import HTML
+
+from django.template.loader import get_template
 from django.db.models import Count, ObjectDoesNotExist
 from django.conf import settings
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.http import HttpResponse
 
 from django_filters import rest_framework as filters
 
@@ -35,7 +40,8 @@ from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.filters import OrderingFilter
 
 from core.models import ClasseModel, StudentModel, ResponsibleModel
-from core.utilities import get_menu
+from core.utilities import get_menu, get_scholar_year
+from core.people import get_classes
 from core.views import BaseFilters, PageNumberSizePagination
 
 from .models import StudentAbsenceTeacherSettingsModel, StudentAbsenceTeacherModel, PeriodModel, LessonModel
@@ -242,3 +248,121 @@ class OverviewAPI(APIView):
             ]
 
             return Response(json.dumps(count_by_classe_by_period))
+
+
+class ExportAbsencesAPI(APIView):
+    permission_classes = [IsAuthenticated]
+    permission_required = [
+        "student_absence_teacher.view_studentabsenceteachermodel",
+    ]
+
+    def _status_by_day(self, statuses: list) -> list:
+        status = {s[0]: s[1] for s in StudentAbsenceTeacherModel.STATUS_CHOICES}
+
+        days = [""] * 5
+        for s in statuses:
+            day = s[4].weekday()
+            if days[day]:
+                days[day] += f"/{status[s[5]][0].upper()}"
+            else:
+                days[day] = status[s[5]][0].upper()
+        return days
+
+    def get(self, request, document="pdf", date_from=None, date_to=None, format=None):
+        classes = get_classes(
+            check_access=True, user=request.user, tenure_class_only=False, educ_by_years="both"
+        ).values_list("id")
+
+        absences = StudentAbsenceTeacherModel.objects.filter(
+            student__classe__id__in=classes,
+            date_absence__gte=date_from,
+            date_absence__lte=date_to,
+        ).exclude(
+            status=StudentAbsenceTeacherModel.PRESENCE
+        ).order_by(
+            "date_absence", "student__classe__year", "student__classe__letter", "student__last_name"
+        )
+
+        if not get_settings().can_see_list.filter(id__in=[g.id for g in request.user.groups.all()]).exists():
+            absences = absences.filter(user=request.user)
+
+        if document == "csv":
+            absences_list = absences.values_list(
+                "student__last_name",
+                "student__first_name",
+                "student__classe__year",
+                "student__classe__letter",
+                "date_absence",
+                "status",
+                "period__name",
+            )
+
+            response = HttpResponse(content_type="text/csv")
+            response["Content-Disposition"] = 'attachment; filename="export.csv"'
+            writer = csv.writer(response)
+            writer.writerow([
+                "Nom",
+                "Prénom",
+                "Année",
+                "Classe",
+                "Date",
+                "Statut",
+                "Période"
+            ])
+            status = {s[0]: s[1] for s in StudentAbsenceTeacherModel.STATUS_CHOICES}
+            for a in absences_list:
+                row = list(a)
+                row[-2] = status[row[-2]]
+                writer.writerow(
+                    row
+                )
+            return response
+
+        if document == "pdf":
+            absences_list = absences.values_list(
+                "student__last_name",
+                "student__first_name",
+                "student__classe__year",
+                "student__classe__letter",
+                "date_absence",
+                "status",
+                "period__name",
+            )
+
+            absences_by_week = [
+                {
+                    "name": datetime.datetime.strptime(key, '%G-W%V-%u').strftime("Semaine du %d/%m/%Y"),
+                    "absences": [
+                        {
+                            "name": cl,
+                            "students": [
+                                {
+                                    "name": stud,
+                                    "status": self._status_by_day(status)
+                                }
+                                for stud, status in groupby(
+                                    sorted(ab, key=lambda a: f"{a[0]}{a[1]}"),
+                                    key=lambda a: f"{a[0]} {a[1]}"
+                                )
+                            ]
+                        }
+                        for cl, ab in groupby(
+                            sorted(value, key=lambda a: f"{a[2]}{a[3]}"),
+                            key=lambda a: f"{a[2]}{a[3].upper()}"
+                        )  # Group by classe
+                    ]
+
+                }
+                for key, value in groupby(
+                    # Group by week (a[4].isocalendar()[1])
+                    absences_list, key=lambda a: f"{a[4].year}-W{a[4].isocalendar()[1]}-1"
+                )
+            ]
+            context = {"weeks": absences_by_week}
+            template = get_template("student_absence_teacher/export_pdf.html")
+            html_render = template.render(context)
+
+            response = HttpResponse(content_type="application/pdf")
+            response["Content-Disposition"] = 'attachment; filename="export.pdf"'
+            HTML(string=html_render).write_pdf(response)
+            return response

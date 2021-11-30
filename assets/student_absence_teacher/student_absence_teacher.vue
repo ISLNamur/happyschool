@@ -46,6 +46,12 @@
                     >
                         Vue d'ensemble
                     </b-nav-item>
+                    <b-nav-item
+                        v-if="can_access_list"
+                        to="/export"
+                    >
+                        Export
+                    </b-nav-item>
                 </b-nav>
             </b-row>
             <router-view />

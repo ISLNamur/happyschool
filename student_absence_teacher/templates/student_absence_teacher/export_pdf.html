@@ -1,0 +1,67 @@
+<html>
+    <style>
+        table {
+            border: 1px solid black;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .student {
+            border-top: 1px solid lightgrey;
+        }
+        .name {
+            border-right: 1px solid black;
+        }
+        .day {
+            text-align: center;
+        }
+        .classe {
+            border-top: 1px solid black;
+        }
+    </style>
+    <body>
+        {% for week in weeks %}
+        <h2>{{ week.name }}</h2>
+        <table>
+            <colgroup>
+                <col span="1" style="width: 44%;">
+                <col span="1" style="width: 11%;">
+                <col span="1" style="width: 11%;">
+                <col span="1" style="width: 11%;">
+                <col span="1" style="width: 11%;">
+                <col span="1" style="width: 11%;">
+             </colgroup>
+            <thead>
+                <tr>
+                    <th>Élève</th>
+                    <th class="day">Lu</th>
+                    <th class="day">Ma</th>
+                    <th class="day">Me</th>
+                    <th class="day">Je</th>
+                    <th class="day">Ve</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for class in week.absences %}
+                <tr class="classe">
+                    <td>
+                        <strong>{{ class.name }}</strong>
+                    </td>
+                </tr>
+                {% for student in class.students %}
+                <tr class="student">
+                    <td class="name">
+                        {{ student.name }}
+                    </td>
+                    {% for day in student.status %}
+                    <td class="day">
+                        {{ day }}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endfor %}
+    </body>
+</html>

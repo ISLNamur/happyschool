@@ -27,6 +27,7 @@ import AddAbsence from "./add_absence.vue";
 import ListAbsence from "./list_absence.vue";
 import Overview from "./overview.vue";
 import ClassView from "./class_view.vue";
+import Export from "./export.vue";
 
 export default new VueRouter({
     routes: [
@@ -49,6 +50,10 @@ export default new VueRouter({
                 {
                     path: "overview",
                     component: Overview,
+                },
+                {
+                    path: "export",
+                    component: Export,
                 },
                 {
                     path: "/class_view/:classId/:date/",
