@@ -71,7 +71,8 @@ vous connecter avec l'utilisateur `admin` et le mot de passe `admin`.
 
 Si vous voulez accéder au conteneur pour créer/appliquer une migration django
 ou bien pour générer le code javascript. La commande suivante vous-y donnera
-accès.
+accès (vous pouvez faire ``sudo docker ps`` pour voir quelles sont les
+conteneurs actifs à accéder).
 
 ::
 
