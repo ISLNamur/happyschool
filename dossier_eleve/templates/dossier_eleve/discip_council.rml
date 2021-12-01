@@ -70,7 +70,7 @@
                     </para>
                 </td>
                 <td>{{ c.datetime_conseil|date:'d/m/y' }}</td>
-                <td>{% if c.datetime_sanction %}{{ c.datetime_sanction|date:'d/m/y' }}{% else %}?{% endif %}</td>
+                <td>{% if c.date_sanction %}{{ c.date_sanction|date:'d/m/y' }}{% else %}?{% endif %}</td>
             </tr>
             {% endfor %}
         </blockTable>

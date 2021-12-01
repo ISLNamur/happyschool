@@ -88,7 +88,7 @@
                                     <b-icon icon="arrow-right-square" />
                                 </b-btn>
                                 <b-btn
-                                    v-if="rowData.datetime_sanction"
+                                    v-if="rowData.date_sanction"
                                     variant="light"
                                     size="sm"
                                     class="card-link"
@@ -222,7 +222,7 @@ export default {
     },
     computed: {
         outdated: function () {
-            return Moment(this.rowData.datetime_sanction) < Moment();
+            return Moment(this.rowData.date_sanction) < Moment();
         },
         title: function () {
             return this.displayStudent(this.rowData.matricule);
@@ -234,13 +234,13 @@ export default {
             return this.rowData.sanction_decision.sanction_decision;
         },
         date_sanction: function () {
-            return this.rowData.datetime_sanction ? Moment(this.rowData.datetime_sanction).format("DD/MM/YY") : "";
+            return this.rowData.date_sanction ? Moment(this.rowData.date_sanction).format("DD/MM/YY") : "";
         },
         date_council: function () {
             const datetime_conseil = this.rowData.datetime_conseil ? Moment(this.rowData.datetime_conseil).format("DD/MM/YY") : null;
             if (datetime_conseil)
                 return datetime_conseil;
-            if (!this.rowData.datetime_sanction) {
+            if (!this.rowData.date_sanction) {
                 return "À définir";
             } else {
                 return "Hors-conseil";
@@ -264,7 +264,7 @@ export default {
                 return false;
             } else {
                 // Check that sanction date is today or older.
-                return Moment(this.rowData.datetime_sanction).isSameOrBefore(Moment(), "day");
+                return Moment(this.rowData.date_sanction).isSameOrBefore(Moment(), "day");
             }
         },
         canEditSanction: function () {
@@ -280,7 +280,7 @@ export default {
     },
     methods: {
         nextWeek: function () {
-            const sanctionDay = Moment(this.rowData.datetime_sanction).day();
+            const sanctionDay = Moment(this.rowData.date_sanction).day();
             const nextDay = Moment().day() >= sanctionDay ? sanctionDay + 7 : sanctionDay;
             return Moment().day(nextDay).format("YYYY-MM-DD");
         },

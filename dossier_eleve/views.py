@@ -152,7 +152,7 @@ class DossierEleveView(BaseDossierEleveView):
         {'value': 'info__info', 'text': 'Info'},
         {'value': 'sanction_decision__sanction_decision', 'text': 'Sanction/décision'},
         {'value': 'datetime_encodage', 'text': 'Date encodage'},
-        {'value': 'datetime_sanction', 'text': 'Date sanction'},
+        {'value': 'date_sanction', 'text': 'Date sanction'},
         {'value': 'activate_important', 'text': 'Important'},
         {'value': 'matricule_id', 'text': 'Matricule'},
         {'value': 'scholar_year', 'text': 'Année scolaire'},
@@ -170,7 +170,7 @@ class CasEleveFilter(BaseFilters):
 
     class Meta:
         fields_to_filter = ('matricule_id', 'info__info', 'sanction_decision__sanction_decision',
-                            'datetime_encodage', "datetime_sanction")
+                            'datetime_encodage', "date_sanction")
         model = CasEleve
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
@@ -379,7 +379,7 @@ class AskSanctionsView(BaseDossierEleveView):
         {'value': 'matricule__display', 'text': 'Nom'},
         {'value': 'classe', 'text': 'Classe'},
         {'value': 'sanction_decision__sanction_decision', 'text': 'Sanction/décision'},
-        {'value': 'datetime_sanction', 'text': 'Date sanction'},
+        {'value': 'date_sanction', 'text': 'Date sanction'},
         {'value': 'datetime_conseil', 'text': 'Date du conseil'},
         {'value': 'datetime_encodage', 'text': 'Date encodage'},
         {'value': 'matricule_id', 'text': 'Matricule'},
@@ -408,7 +408,7 @@ class AskSanctionsFilter(BaseFilters):
     matricule__display = filters.CharFilter(method="people_name_by")
 
     class Meta:
-        fields_to_filter = ('matricule_id', 'sanction_decision__sanction_decision', 'datetime_sanction',
+        fields_to_filter = ('matricule_id', 'sanction_decision__sanction_decision', 'date_sanction',
                             'datetime_conseil', 'datetime_encodage', 'sanction_decision__is_retenue')
         model = CasEleve
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
@@ -416,21 +416,21 @@ class AskSanctionsFilter(BaseFilters):
 
     def activate_not_done_by(self, queryset, name, value):
         if value == 'true':
-            return queryset.filter(datetime_sanction__lt=timezone.now())
+            return queryset.filter(date_sanction__lt=timezone.now())
         return queryset
 
     def activate_waiting_by(self, queryset, name, value):
         if value == 'true':
-            return queryset.filter(datetime_conseil__isnull=True, datetime_sanction__isnull=True)
+            return queryset.filter(datetime_conseil__isnull=True, date_sanction__isnull=True)
         return queryset
 
     def activate_today_by(self, queryset, name, value):
         today = timezone.now()
         if value == "true":
             return queryset.filter(
-                datetime_sanction__day=today.day,
-                datetime_sanction__month=today.month,
-                datetime_sanction__year=today.year
+                date_sanction__day=today.day,
+                date_sanction__month=today.month,
+                date_sanction__year=today.year
             )
         return queryset
 
@@ -440,7 +440,7 @@ class AskSanctionsViewSet(BaseModelViewSet):
     serializer_class = CasEleveSerializer
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
     filter_class = AskSanctionsFilter
-    ordering_fields = ('datetime_encodage', 'datetime_sanction', 'matricule__classe__year',
+    ordering_fields = ('datetime_encodage', 'date_sanction', 'matricule__classe__year',
                        'matricule__classe__letter', 'matricule__last_name',
                        "sanction_decision__sanction_decision"
     )
@@ -649,7 +649,7 @@ class CasElevePDFGenAPI(APIView):
             r['datetime_encodage'] = timezone.datetime.strptime(r['datetime_encodage'][:19], "%Y-%m-%dT%H:%M:%S")
             if r['info']:
                 continue
-            r['datetime_sanction'] = timezone.datetime.strptime(r['datetime_sanction'][:19], "%Y-%m-%dT%H:%M:%S") if r['datetime_sanction'] else None
+            r['date_sanction'] = timezone.datetime.strptime(r['date_sanction'][:19], "%Y-%m-%d") if r['date_sanction'] else None
         student = StudentModel.objects.get(matricule=request.GET['matricule_id'])
         check_student_photo(student)
         #TODO: Should we show current year statistics or all years statistics?
@@ -680,8 +680,9 @@ class AskSanctionsPDFGenAPI(APIView):
         results = view_set(request._request).data['results']
         results = self.modify_entries(results)
 
-        date_from = request.GET.get('datetime_%s__gt' % self.field_date)
-        date_to = request.GET.get('datetime_%s__lt' % self.field_date)
+        field_date = "date_sanction" if self.field_date == "sanction" else "datetime_conseil"
+        date_from = request.GET.get('%s__gte' % field_date)
+        date_to = request.GET.get('%s__lte' % field_date)
         context = {'date_from': date_from, 'date_to': date_to,
                    'list': results}
         t = get_template(self.template)
@@ -708,11 +709,11 @@ class AskSanctionCouncilPDFGenAPI(AskSanctionsPDFGenAPI):
 
     def modify_entries(self, results):
         for r in results:
-            if r['datetime_sanction']:
-                r['datetime_sanction'] = timezone.datetime.strptime(r['datetime_sanction'][:19],
-                                                                    "%Y-%m-%dT%H:%M:%S")
+            if r['date_sanction']:
+                r['date_sanction'] = timezone.datetime.strptime(r['date_sanction'][:19],
+                                                                    "%Y-%m-%d")
             else:
-                r['datetime_sanction'] = None
+                r['date_sanction'] = None
             r['datetime_conseil'] = timezone.datetime.strptime(r['datetime_conseil'][:19],
                                                                "%Y-%m-%dT%H:%M:%S")
         return results
@@ -725,8 +726,8 @@ class AskSanctionRetenuesPDFGenAPI(AskSanctionsPDFGenAPI):
 
     def modify_entries(self, results):
         for r in results:
-            r['datetime_sanction'] = timezone.datetime.strptime(r['datetime_sanction'][:19],
-                                                                "%Y-%m-%dT%H:%M:%S")
+            r['date_sanction'] = timezone.datetime.strptime(r['date_sanction'][:19],
+                                                                "%Y-%m-%d")
             if r["time_sanction_end"]:
                 r["time_sanction_end"] = r["time_sanction_end"][:5]
         return results

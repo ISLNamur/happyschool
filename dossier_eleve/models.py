@@ -241,13 +241,15 @@ class CasEleve(models.Model):
     notified = models.BooleanField(default=False)
     explication_commentaire = models.CharField(max_length=5000)
     attachments = models.ManyToManyField(CasAttachment, blank=True)
-    datetime_sanction = models.DateTimeField("date de la sanction", null=True, blank=True)
+    datetime_sanction = models.DateTimeField("date de la sanction", null=True, blank=True)  # Deprecated
+    date_sanction = models.DateField("Date de la sanction", null=True, blank=True,)
+    time_sanction_start = models.TimeField("Heure de début de la sanction", null=True, blank=True)
     time_sanction_end = models.TimeField("Heure de fin de la sanction", null=True, blank=True)
     datetime_conseil = models.DateTimeField("date du conseil disciplinaire", null=True, blank=True)
     sanction_faite = models.NullBooleanField(default=None, null=True, blank=True)
     important = models.BooleanField(default=False)
     user = models.CharField(max_length=100, default="")
-    visible_by_educ = models.BooleanField(default=True) # Deprecated
+    visible_by_educ = models.BooleanField(default=True)  # Deprecated
     visible_by_tenure = models.BooleanField(default=False)
     visible_by_groups = models.ManyToManyField(Group, blank=True)
     created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)

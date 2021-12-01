@@ -204,14 +204,14 @@
                                 <b-form-group
                                     label="Date de la sanction"
                                     label-for="input-date-sanction"
-                                    :state="inputStates.datetime_sanction"
+                                    :state="inputStates.date_sanction"
                                 >
                                     <b-form-input
                                         id="input-date-sanction"
                                         type="date"
-                                        v-model="form.datetime_sanction"
+                                        v-model="form.date_sanction"
                                     />
-                                    <span slot="invalid-feedback">{{ errorMsg('datetime_sanction') }}</span>
+                                    <span slot="invalid-feedback">{{ errorMsg('date_sanction') }}</span>
                                 </b-form-group>
                                 <b-form-group
                                     v-if="form.sanction_faite !== null"
@@ -361,7 +361,7 @@ export default {
                 important: false,
                 demandeur: "",
                 visible_by_groups: [],
-                datetime_sanction: null,
+                date_sanction: null,
                 sanction_faite: null,
                 send_to_teachers: false,
                 attachments: [],
@@ -379,7 +379,6 @@ export default {
             demandeurLoading: false,
             searchId: 0,
             stats: {},
-            timeSanction: null,
             errors: {},
             inputStates: {
                 name: null,
@@ -481,11 +480,7 @@ export default {
                 this.form.info_id = this.casObject.info_id;
                 this.form.important = this.casObject.important;
                 this.form.sanction_decision_id = this.casObject.sanction_decision_id;
-                if (this.casObject.datetime_sanction) {
-                    let datetime = Moment(this.casObject.datetime_sanction);
-                    this.form.datetime_sanction = datetime.format("YYYY-MM-DD");
-                    this.timeSanction = datetime.format("HH:MM");
-                }
+                this.form.date_sanction = this.casObject.date_sanction;
                 this.form.sanction_faite = this.casObject.sanction_faite;
 
                 this.infoOrSanction = this.casObject.info_id ? "info" : "sanction-decision";
@@ -525,11 +520,6 @@ export default {
                 } else {
                     data.visible_by_tenure = false;
                 }
-            }
-            // Add times if any.
-            if (data.datetime_sanction) {
-                let time = this.timeSanction ? " " + this.timeSanction : " 12:00";
-                data.datetime_sanction += time;
             }
             if (this.uploadedFiles.length > 0) {
                 data.attachments = Array.from(this.uploadedFiles.map(u => u.id));

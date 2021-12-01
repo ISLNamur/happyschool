@@ -171,7 +171,7 @@ export default {
         axios.get("/dossier_eleve/api/cas_eleve/" + this.lateness.sanction_id + "/")
             .then(resp => {
                 this.sanction = {
-                    date_sanction: Moment(resp.data.datetime_sanction).format("DD/MM/YY"),
+                    date_sanction: Moment(resp.data.date_sanction).format("DD/MM/YY"),
                     sanction_faite: true,
                     to_be_done: false
                 };
@@ -181,9 +181,9 @@ export default {
                 axios.get("/dossier_eleve/api/ask_sanctions/" + this.lateness.sanction_id + "/")
                     .then(resp => {
                         this.sanction = {
-                            date_sanction: Moment(resp.data.datetime_sanction).format("DD/MM/YY"),
+                            date_sanction: Moment(resp.data.date_sanction).format("DD/MM/YY"),
                             sanction_faite: false,
-                            to_be_done: Moment(resp.data.datetime_sanction) > Moment()
+                            to_be_done: Moment(resp.data.date_sanction) > Moment()
                         };
                     });
             });

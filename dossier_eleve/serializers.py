@@ -69,7 +69,7 @@ class CasEleveSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Vous n'avez pas les droits nécessaire pour ajouter/modifier une sanction")
         return value
 
-    def validate_datetime_sanction(self, value):
+    def validate_date_sanction(self, value):
         if not self.context['request'].user.has_perm('dossier_eleve.set_sanction') and value:
             raise serializers.ValidationError("Vous n'avez pas les droits nécessaire pour ajouter/modifier la date d'une sanction")
         return value

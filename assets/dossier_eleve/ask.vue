@@ -154,24 +154,25 @@
                                     <b-form-group
                                         label="Date de la sanction"
                                         label-for="input-date-sanction"
-                                        :state="inputStates.datetime_sanction"
+                                        :state="inputStates.date_sanction"
                                     >
                                         <b-form-input
                                             id="input-date-sanction"
                                             type="date"
-                                            v-model="form.datetime_sanction"
+                                            v-model="form.date_sanction"
                                         />
-                                        <span slot="invalid-feedback">{{ errorMsg('datetime_sanction') }}</span>
+                                        <span slot="invalid-feedback">{{ errorMsg('date_sanction') }}</span>
                                     </b-form-group>
                                     <b-form-group
                                         label="Heure de début de la sanction"
-                                        label-for="input-time-sanction"
+                                        label-for="input-time-sanction-start"
                                     >
                                         <b-form-input
-                                            id="input-time-sanction"
+                                            id="input-time-sanction-start"
                                             type="time"
-                                            v-model="timeSanction"
+                                            v-model="form.time_sanction_start"
                                         />
+                                        <span slot="invalid-feedback">{{ errorMsg('time_sanction_start') }}</span>
                                     </b-form-group>
                                     <b-form-group
                                         label="Heure de fin de la sanction"
@@ -284,7 +285,8 @@ export default {
                 explication_commentaire: "",
                 important: false,
                 demandeur: "",
-                datetime_sanction: null,
+                date_sanction: null,
+                time_sanction_start: null,
                 time_sanction_end: null,
                 datetime_conseil: null,
                 visible_by_educ: true,
@@ -308,6 +310,7 @@ export default {
                 sanction_decision_id: null,
                 demandeur: null,
                 explication_commentaire: null,
+                time_sanction_start: null,
                 time_sanction_end: null,
             },
             editorOptions: {
@@ -344,7 +347,7 @@ export default {
         },
         errors: function (newErrors) {
             let inputs = ["name", "sanction_decision_id", "demandeur", "explication_commentaire",
-                "datetime_conseil", "datetime_sanctionl", "time_sanction_end"];
+                "datetime_conseil", "date_sanctionl", "time_sanction_start", "time_sanction_end"];
             for (let u in inputs) {
                 if (inputs[u] in newErrors) {
                     this.inputStates[inputs[u]] = newErrors[inputs[u]].length == 0;
@@ -367,11 +370,8 @@ export default {
                 this.form.important = entry.important;
 
                 this.form.sanction_decision_id = entry.sanction_decision_id;
-                if (entry.datetime_sanction) {
-                    let datetime = Moment(entry.datetime_sanction);
-                    this.form.datetime_sanction = datetime.format("YYYY-MM-DD");
-                    this.timeSanction = datetime.format("HH:MM");
-                }
+                this.form.date_sanction = entry.date_sanction;
+                this.form.time_sanction_start = entry.time_sanction_start ? entry.time_sanction_start : null;
                 this.form.time_sanction_end = entry.time_sanction_end ? entry.time_sanction_end.slice(0, 5) : null;
 
                 if (entry.datetime_conseil) {
@@ -409,9 +409,9 @@ export default {
             this.form.explication_commentaire = "";
             this.form.important = false;
             this.form.demandeur = "";
-            this.form.datetime_sanction = null;
+            this.form.date_sanction = null;
             this.form.datetime_conseil = null;
-            this.timeSanction = null;
+            this.form.time_sanction_start = null;
             this.form.time_sanction_end = null;
         },
         errorMsg(err) {
@@ -441,11 +441,11 @@ export default {
             this.form.demandeur = this.demandeur.display;
             let data = this.form;
             // Add times if any.
-            if (data.datetime_sanction) {
-                let time = this.timeSanction ? " " + this.timeSanction : " 12:00";
-                data.datetime_sanction += time;
-            } else {
-                data.datetime_sanction = null;
+            if (!data.date_sanction) {
+                data.date_sanction = null;
+            }
+            if (!data.time_sanction_start) {
+                data.time_sanction_start = null;
             }
             if (!data.time_sanction_end) {
                 data.time_sanction_end = null;

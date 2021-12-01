@@ -275,7 +275,7 @@ class LatenessViewSet(BaseModelViewSet):
                 sanction_decision=sanction,
                 explication_commentaire="Sanction pour cause de retard.",
                 sanction_faite=False,
-                datetime_sanction=day,
+                date_sanction=day,
                 created_by=self.request.user,
             )
             cas.visible_by_groups.set(Group.objects.all())

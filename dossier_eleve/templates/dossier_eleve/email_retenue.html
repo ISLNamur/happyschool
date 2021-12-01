@@ -10,7 +10,7 @@
         Elle a été demandé par <em>{{ retenue.demandeur }}</em> pour le motif suivant :</p>
     <p>{{ retenue.explication_commentaire|safe }}</p>
     <br>
-    <p>La date de la retenue a été initiallement fixée le {{ retenue.datetime_sanction|date:'d N Y' }}.</p>
+    <p>La date de la retenue a été initiallement fixée le {{ retenue.date_sanction|date:'d N Y' }}.</p>
     <p>Pour plus d'informations, merci de contacter les éducateurs et/ou coordonnateurs relevants.</p>
     <p>L'institut Saint-Louis Namur</p>
 </body>

@@ -167,8 +167,8 @@ export default {
         },
         subtitle: function () {
             let subtitle = "";
-            if (this.rowData.datetime_sanction) {
-                subtitle += "Sanction : " + Moment(this.rowData.datetime_sanction).format("DD/MM/YY") + ". ";
+            if (this.rowData.date_sanction) {
+                subtitle += "Sanction : " + Moment(this.rowData.date_sanction).format("DD/MM/YY") + ". ";
             }
             subtitle += "Demandé par " + this.rowData.demandeur + " (" + Moment(this.rowData.datetime_encodage).calendar() + ")";
             return subtitle;

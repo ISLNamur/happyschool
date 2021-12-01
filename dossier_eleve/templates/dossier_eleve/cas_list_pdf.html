@@ -51,7 +51,7 @@
             </div>
             {% elif el.sanction_decision %}
             <div><u>Sanction/décision</u>: <strong>{{ el.sanction_decision }}</strong> <em>({{ el.demandeur }} le {{ el.datetime_encodage|date:"d/m/Y H:i" }})</em></div>
-            <div>Date de la sanction : {{ el.datetime_sanction|date:"d/m/Y" }}</div>
+            <div>Date de la sanction : {{ el.date_sanction|date:"d/m/Y" }}</div>
             <div class="comment">
                 {{ el.explication_commentaire|safe }}
             </div>

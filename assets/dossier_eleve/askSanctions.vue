@@ -246,7 +246,7 @@ export default {
             if (this.$store.state.filters.find(f => f.filterType === "activate_today")) {
                 return "&ordering=matricule__last_name";
             } else {
-                return "&ordering=datetime_sanction,matricule__last_name";
+                return "&ordering=date_sanction,matricule__last_name";
             }
         },
         lightDisplay: function () {
@@ -269,7 +269,7 @@ export default {
     },
     methods: {
         updateSanction: function (entry, newDate) {
-            entry.datetime_sanction = newDate + Moment(entry.datetime_sanction).format(" HH:MM");
+            entry.date_sanction = newDate;
             axios.put(`/dossier_eleve/api/ask_sanctions/${entry.id}/`, entry, token);
         },
         changePage: function (page) {
