@@ -206,8 +206,6 @@ import axios from "axios";
 window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
-import Moment from "moment";
-
 import Info from "../annuaire/info.vue";
 
 import AskSanctionsEntry from "./askSanctionsEntry.vue";
