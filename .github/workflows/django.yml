@@ -13,7 +13,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        os: [ubuntu-18.04]
+        os: [ubuntu-18.04, ubuntu-20.04]
 
     services:
       postgres:
@@ -50,6 +50,7 @@ jobs:
         pip install pipenv
         pipenv install --dev
         pipenv run seleniumbase install geckodriver
+        npm install webpack-cli
         npm install
     - name: Prepare project
       run: |
