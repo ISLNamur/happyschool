@@ -20,7 +20,6 @@
 import uuid
 
 from django.db import models
-from django.contrib.postgres.fields import JSONField
 
 from core.models import StudentModel
 
@@ -56,5 +55,5 @@ class MailAnswerModel(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)
     template = models.ForeignKey(MailTemplateModel, on_delete=models.CASCADE, default=None, null=True)
-    answers = JSONField(default='{}')
+    answers = models.JSONField(default=dict)
     is_answered = models.BooleanField(default=False)
