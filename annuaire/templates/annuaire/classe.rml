@@ -39,7 +39,7 @@
 
         <setNextTemplate name="otherPages"/>
         <blockTable colWidths="95 95 95 95 95 95" style="cas">
-            {% load staticfiles %}
+            {% load static %}
             {% for row in list %}
             <tr>
                 {% for student in row %}

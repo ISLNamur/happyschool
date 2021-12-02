@@ -1,7 +1,7 @@
 {% extends "core/base.html" %}
 
 {% block header %}
-{% load staticfiles %}
+{% load static %}
 <script src="{% static 'js/bootstrap-typeahead.js' %}"></script>
 <link rel="stylesheet" href="{% static 'css/autocomplete.css' %}">
 <link href="{% static 'bootstrap3_datetime/css/bootstrap-datetimepicker.min.css' %}" type="text/css" media="all" rel="stylesheet">
@@ -119,7 +119,7 @@
     }
 
     function add_student_data(matricule) {
-        {% load staticfiles %}
+        {% load static %}
         $("#photoEleve").attr("src", "{% static '' %}photos/" + matricule + ".jpg");
 
         $.getJSON("stats/" + matricule, function(data) {

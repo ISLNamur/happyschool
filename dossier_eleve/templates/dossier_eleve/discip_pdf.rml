@@ -70,7 +70,7 @@
                 {% endfor %}
             </para>
         </keepInFrame>
-        {% load staticfiles %}
+        {% load static %}
         <keepInFrame frame="image" onOverflow="shrink">
             <illustration width="190" height="160" borderStrokeWidth="1"
                           borderStrokeColor="black">
