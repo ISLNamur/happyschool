@@ -267,7 +267,7 @@ def get_emails(email_to: list, to_type: str, teaching: str, responsibles: bool=T
                 })
 
             # Remove None and empty values.
-            return list(filter(lambda e: e is not None and e is not "", parents_email))
+            return list(filter(lambda e: e is not None and e != "", parents_email))
 
         # Attach for each student an AnswerModel (template case).
         if template:
