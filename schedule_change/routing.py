@@ -22,5 +22,5 @@ from django.urls import path
 from .consumers import ExportSummaryConsumer
 
 websocket_urlpatterns = [
-    path('ws/schedule_change/export_summary/<slug:celery_id>/', ExportSummaryConsumer),
+    path('ws/schedule_change/export_summary/<slug:celery_id>/', ExportSummaryConsumer.as_asgi()),
 ]
