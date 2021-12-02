@@ -37,7 +37,7 @@ jobs:
     - name: Setup postgresql
       run: |
         psql "postgresql://postgres:postgres@localhost/template1" -c "CREATE EXTENSION unaccent;"
-        psql "postgresql://postgresp:ostgres@localhost" -c "CREATE DATABASE happyschool;"
+        psql "postgresql://postgres:postgres@localhost" -c "CREATE DATABASE happyschool;"
         psql "postgresql://postgres:postgres@localhost" -c "CREATE USER happyschool WITH PASSWORD 'libreschool';"
         psql "postgresql://postgres:postgres@localhost" -c "ALTER USER happyschool CREATEDB;"
     - name: Install python version
