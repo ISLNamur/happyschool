@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='caseleve',
-            name='time_sanctio_start',
+            name='time_sanction_start',
             field=models.TimeField(blank=True, null=True, verbose_name='Heure de début de la sanction'),
         ),
         migrations.RunPython(migrate_datetime_sanction)
