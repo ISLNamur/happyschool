@@ -10,7 +10,7 @@ seleniumbase = "*"
 sphinx = "*"
 
 [packages]
-django-filter = "==2.4.0"
+django-filter = "==21.1"
 redis = "*"
 channels-redis = "==3.3.1"
 channels = "==3.0.3"
