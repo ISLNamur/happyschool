@@ -39,4 +39,4 @@ python-dateutil = "*"
 django-cas-ng = "*"
 
 [requires]
-python_version = "3.9"
+python_version = "3.8"
