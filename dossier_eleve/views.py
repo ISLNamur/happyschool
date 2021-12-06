@@ -563,7 +563,7 @@ class AttachmentView(APIView):
         except ObjectDoesNotExist:
             return HttpResponse(status=404)
 
-        response = HttpResponse(attachment.attachment)
+        response = HttpResponse(attachment.attachment, content_type='application/pdf')
         response["Content-Disposition"] = f'attachment; filename="{file if file else attachment.attachment.name}"'
 
         return response
