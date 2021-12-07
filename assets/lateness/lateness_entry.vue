@@ -32,10 +32,9 @@
                     />
                 </b-col>
                 <b-col>
-                    <icon
+                    <b-icon
                         v-if="lateness.sanction_id"
-                        name="exclamation-circle"
-                        class="align-text-bottom"
+                        icon="exclamation-circle"
                     />
                     <strong>{{ niceDate }}</strong>:
                     <a :href="`/annuaire/#/person/student/${lateness.student.matricule}/`">
@@ -72,11 +71,9 @@
                             @click="$emit('delete')"
                             class="card-link"
                         >
-                            <icon
-                                scale="1.3"
-                                name="trash"
-                                color="red"
-                                class="align-text-bottom"
+                            <b-icon
+                                icon="trash-fill"
+                                variant="danger"
                             />
                         </b-btn>
                     </div>
@@ -86,17 +83,17 @@
                 <b-col>
                     Date de la sanction : {{ sanction.date_sanction }}
                     <span v-if="!sanction.to_be_done">
-                        <icon
+                        <b-icon
                             v-if="sanction.sanction_faite"
-                            name="check"
-                            color="green"
+                            icon="check"
+                            variant="success"
                             v-b-tooltip.hover
                             title="Sanction faite"
                         />
-                        <icon
+                        <b-icon
                             v-else
-                            name="times"
-                            color="red"
+                            name="x"
+                            variant="danger"
                             v-b-tooltip.hover
                             title="Sanction non-faite"
                         />
@@ -108,16 +105,10 @@
 </template>
 
 <script>
-import Vue from "vue";
-
 import axios from "axios";
 
 import Moment from "moment";
 Moment.locale("fr");
-
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
-Vue.component("icon", Icon);
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 

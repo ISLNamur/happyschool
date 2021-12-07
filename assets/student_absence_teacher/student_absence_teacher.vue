@@ -32,11 +32,11 @@
             <b-row class="mb-1">
                 <b-nav tabs>
                     <b-nav-item to="/add_absence">
-                        <icon
-                            name="plus"
-                            scale="1"
+                        <b-icon
+                            icon="plus"
                             color="green"
-                            class="align-middle"
+                            scale="1.5"
+                            class="border"
                         />
                         Ajouter absenses/retards
                     </b-nav-item>
@@ -67,12 +67,7 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
-Vue.component("icon", Icon);
-
-
-import Menu from "../common/menu.vue";
+import Menu from "../common/menu_bar.vue";
 
 export default {
     data: function () {

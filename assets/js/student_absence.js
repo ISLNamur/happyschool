@@ -41,7 +41,7 @@ if ("serviceWorker" in navigator) {
     });
 }
 
-import Menu from "../common/menu.vue";
+import Menu from "../common/menu_bar.vue";
 
 new Vue({
     el: "#vue-app",

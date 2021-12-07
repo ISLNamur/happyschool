@@ -267,7 +267,7 @@
                             </b-col>
                         </b-row>
                     </b-tab>
-                    <schedule-info
+                    <person-schedule
                         v-if="$store.state.settings.show_schedule"
                         :courses="courses"
                     />
@@ -332,9 +332,8 @@
                             <b-row>
                                 <b-col>
                                     <b-btn :href="'/dossier_eleve/?matricule=' + matricule ">
-                                        <icon
-                                            name="eye"
-                                            scale="1"
+                                        <b-icon
+                                            icon="eye"
                                         />
                                         Voir tous les cas dans le dossier des élèves
                                     </b-btn>
@@ -365,9 +364,8 @@
                             <b-row class="mt-2">
                                 <b-col>
                                     <b-btn :href="`/lateness/?student__matricule=${this.matricule}`">
-                                        <icon
-                                            name="eye"
-                                            scale="1"
+                                        <b-icon
+                                            icon="eye"
                                         />
                                         Voir tous les retards
                                     </b-btn>
@@ -446,7 +444,7 @@
                             <em>Aucune donnée concernant l'élève n'est présente.</em>
                         </p>
                     </b-tab>
-                    <template v-slot:tabs-end>
+                    <template #tabs-end>
                         <b-nav-item
                             role="presentation"
                             v-if="pia"
@@ -462,21 +460,15 @@
 </template>
 
 <script>
-import Vue from "vue";
-
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
-Vue.component("icon", Icon);
-
 import axios from "axios";
 
 import Moment from "moment";
 Moment.locale("fr");
 
-import ContactInfo from "./contactinfo.vue";
-import MedicalInfo from "./medicalinfo.vue";
-import SensitiveInfo from "./sensitiveinfo.vue";
-import ScheduleInfo from "./schedule.vue";
+import ContactInfo from "./contact_info.vue";
+import MedicalInfo from "./medical_info.vue";
+import SensitiveInfo from "./sensitive_info.vue";
+import PersonSchedule from "./person_schedule.vue";
 
 import {getCurrentScholarYear} from "../common/utilities.js";
 
@@ -676,7 +668,7 @@ export default {
         ContactInfo,
         MedicalInfo,
         SensitiveInfo,
-        ScheduleInfo,
+        PersonSchedule,
     }
 };
 </script>

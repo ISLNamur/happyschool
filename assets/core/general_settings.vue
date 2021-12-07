@@ -45,10 +45,9 @@
                             @click="currentTeaching = item"
                             class="float-right"
                         >
-                            <icon
-                                name="edit"
-                                scale="1"
-                                color="green"
+                            <b-icon
+                                icon="pencil-square"
+                                variant="success"
                             />
                         </b-btn>
                         <b-btn
@@ -57,10 +56,9 @@
                             class="float-right"
                             @click="currentTeaching = item"
                         >
-                            <icon
-                                name="remove"
-                                scale="1"
-                                color="red"
+                            <b-icon
+                                icon="trash-fill"
+                                variant="danger"
                             />
                         </b-btn>
                     </b-list-group-item>
@@ -70,10 +68,10 @@
                         v-b-modal.addModal
                         variant="light"
                     >
-                        <icon
-                            name="plus"
-                            scale="1"
-                            color="green"
+                        <b-icon
+                            icon="plus"
+                            scale="1.5"
+                            variant="success"
                         />
                         Ajouter
                     </b-btn>
@@ -102,10 +100,10 @@
                         @click="sendLogo"
                         :disabled="!logo"
                     >
-                        <icon
-                            name="plus"
-                            scale="1"
-                            color="green"
+                        <b-icon
+                            icon="plus"
+                            scale="1.5"
+                            variant="success"
                         />
                         Envoyer
                     </b-btn>

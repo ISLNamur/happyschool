@@ -15,12 +15,11 @@
                     :cols="fullscreen ? 3 : 2"
                     class="current-data"
                 >
-                    <icon
+                    <b-icon
                         v-if="rowData.category"
-                        :name="icon"
+                        :icon="icon"
                         v-b-tooltip.hover
                         :title="category"
-                        class="align-text-bottom"
                     />
                     <em>{{ formatChange(rowData.change) }}</em>
                 </b-col>
@@ -37,7 +36,7 @@
                     <s v-if="rowData.teachers_substitute.length > 0">{{ formatTeachers(rowData.teachers_replaced) }}</s>
                     <span v-else>{{ formatTeachers(rowData.teachers_replaced) }}</span>
                     <span v-if="rowData.teachers_substitute.length > 0">
-                        <icon name="arrow-right" />
+                        <b-icon icon="arrow-right" />
                         {{ formatTeachers(rowData.teachers_substitute) }}
                     </span>
                 </b-col>
@@ -62,28 +61,25 @@
                         href="#"
                         @click="editEntry"
                         class="card-link"
-                    ><icon
-                        name="edit"
-                        scale="1"
-                        color="green"
+                    ><b-icon
+                        icon="pencil-square"
+                        variant="success"
                     /></a>
                     <a
                         href="#"
                         @click="copyEntry"
                         class=""
-                    ><icon
-                        name="copy"
-                        scale="1"
-                        color="blue"
+                    ><b-icon
+                        icon="files"
+                        variant="primary"
                     /></a>
                     <a
                         href="#"
                         @click="deleteEntry"
                         class=""
-                    ><icon
-                        name="remove"
-                        scale="1"
-                        color="red"
+                    ><b-icon
+                        icon="trash-fill"
+                        variant="danger"
                     /></a>
                 </b-col>
             </b-row>
@@ -93,12 +89,11 @@
             >
                 <tr>
                     <td width="20%">
-                        <icon
+                        <b-icon
                             v-if="rowData.category"
-                            :name="icon"
+                            :icon="icon"
                             v-b-tooltip.hover
                             :title="category"
-                            class="align-text-bottom"
                         />
                         <em>{{ formatChange(rowData.change) }}</em>
                     </td>
@@ -109,7 +104,7 @@
                         <s v-if="rowData.teachers_substitute.length > 0">{{ formatTeachers(rowData.teachers_replaced) }}</s>
                         <span v-else>{{ formatTeachers(rowData.teachers_replaced) }}</span>
                         <span v-if="rowData.teachers_substitute.length > 0">
-                            <icon name="arrow-right" />
+                            <b-icon icon="arrow-right" />
                             {{ formatTeachers(rowData.teachers_substitute) }}
                         </span>
                     </td>

@@ -22,7 +22,7 @@ import Vue from "vue";
 import store from "../dossier_eleve/store.js";
 import router from "../dossier_eleve/router_dossier_eleve.js";
 
-import Menu from "../common/menu.vue";
+import Menu from "../common/menu_bar.vue";
 
 new Vue({
     el: "#vue-app",

@@ -22,16 +22,16 @@
 // import VueRouter from 'vue-router'
 // Vue.use(VueRouter)
 
-import Annuaire from "../annuaire/annuaire.vue";
-import Info from "../annuaire/info.vue";
-import ClassList from "../annuaire/classe.vue";
+import AnnuairePage from "../annuaire/annuaire_page.vue";
+import PersonInfo from "../annuaire/person_info.vue";
+import ClassList from "../annuaire/classe_list.vue";
 
 export default [{
     path: "/",
-    component: Annuaire,
+    component: AnnuairePage,
     children: [{
         path: "/person/:type/:matricule/",
-        component: Info,
+        component: PersonInfo,
         props: (route) => {
             const props = {...route.params };
             props.matricule = Number(props.matricule);

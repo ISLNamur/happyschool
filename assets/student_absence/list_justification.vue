@@ -16,37 +16,3 @@
 <!--  -->
 <!-- You should have received a copy of the GNU Affero General Public License -->
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
-
-<template>
-    <div>
-        <b-card>
-            <strong>{{ absence.date_absence }}</strong>:
-            <a :href="`/annuaire/#/person/student/${absence.student.matricule}/`">
-                {{ absence.student.display }}
-            </a>
-            {{ display_absence }}
-        </b-card>
-    </div>
-</template>
-
-<script>
-export default {
-    props: {
-        "absence": {
-            type: Object,
-            default: () => {}
-        }
-    },
-    data: function () {
-        return {
-        };
-    },
-    computed: {
-        display_absence: function () {
-            const absence = (this.absence.is_absent ? "Absent" : "Présent");
-            const period = this.$store.state.periods.find(p => p.id == this.absence.period).name;
-            return absence + " (" + period + ")";
-        }
-    }
-};
-</script>

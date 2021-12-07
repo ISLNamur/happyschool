@@ -22,23 +22,23 @@ import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
-import PIA from "../pia/pia.vue";
-import Record from "../pia/record.vue";
+import PiaPage from "../pia/pia_page.vue";
+import PiaRecord from "../pia/pia_record.vue";
 
 export default new VueRouter({
     routes: [
         {
             path: "",
-            component: PIA,
+            component: PiaPage,
         },
         {
             path: "/edit/:id/",
-            component: Record,
+            component: PiaRecord,
             props: true
         },
         {
             path: "/new/",
-            component: Record,
+            component: PiaRecord,
             props: true
         },
     ]

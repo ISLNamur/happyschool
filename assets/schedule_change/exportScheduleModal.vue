@@ -74,12 +74,8 @@
             </b-col>
         </b-row>
         <template slot="modal-ok">
-            <icon
+            <b-spinner
                 v-if="processing"
-                name="spinner"
-                scale="1"
-                spin
-                class="align-baseline"
             />
             {{ buttonStr }}
         </template>

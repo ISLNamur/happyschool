@@ -230,11 +230,8 @@
             centered
         >
             <p v-if="sending">
-                <icon
-                    name="refresh"
-                    scale="1"
-                    spin
-                /> Envoi des emails en cours…
+                <b-spinner small />
+                Envoi des emails en cours…
             </p>
             <p v-if="!sending && !hasError">
                 La demande d'envoi des emails a été soumise !
@@ -273,16 +270,11 @@ Quill.register(Block, true);
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
 import axios from "axios";
 import Multiselect from "vue-multiselect";
 
 import FileUpload from "../common/file_upload.vue";
-import AppMenu from "../common/menu.vue";
-
-Vue.use(BootstrapVue);
-Vue.component("icon", Icon);
+import AppMenu from "../common/menu_bar.vue";
 
 export default {
     data: function () {

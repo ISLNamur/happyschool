@@ -24,7 +24,7 @@ Vue.use(Vuex);
 
 import axios from "axios";
 import router from "../appels/router.js";
-import Menu from "../common/menu.vue";
+import Menu from "../common/menu_bar.vue";
 
 const store = new Vuex.Store({
     state: {

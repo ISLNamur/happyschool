@@ -51,10 +51,9 @@
                                     size="sm"
                                     @click="deleteGroup(permission.permissionName, group)" 
                                 >
-                                    <icon
-                                        name="remove"
-                                        scale="1"
-                                        color="red"
+                                    <b-icon
+                                        icon="trash-fill"
+                                        variant="danger"
                                     />
                                 </b-btn>
                             </b-list-group-item>

@@ -34,18 +34,15 @@
 
 <script>
 import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
+import BootstrapVue, { BootstrapVueIcons } from "bootstrap-vue";
 Vue.use(BootstrapVue);
-
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
-Vue.component("Icon", Icon);
+Vue.use(BootstrapVueIcons);
 
 import MailTemplateList from "./mail_template_list.vue";
 import MailTemplate from "./mail_template.vue";
 import MailAnswerList from "./mail_answer_list.vue";
 
-import Menu from "../common/menu.vue";
+import Menu from "../common/menu_bar.vue";
 
 export default {
     data: function () {

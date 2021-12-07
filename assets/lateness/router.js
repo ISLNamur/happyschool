@@ -22,7 +22,7 @@ import VueRouter from "vue-router";
 
 Vue.use(VueRouter);
 
-import Lateness from "./lateness.vue";
+import Lateness from "./lateness_page.vue";
 
 export default new VueRouter({
     routes: [

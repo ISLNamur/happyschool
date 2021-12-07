@@ -27,16 +27,16 @@
                     :items="lastAbsences"
                     :fields="fields"
                 >
-                    <template v-slot:cell(student)="data">
+                    <template #cell(student)="data">
                         <a
                             href="#/list"
                             @click="filterStudent(data.item.student_id)"
                         >{{ data.value }}</a>
                     </template>
-                    <template v-slot:cell(date_absence)="data">
+                    <template #cell(date_absence)="data">
                         {{ data.value }}
                     </template>
-                    <template v-slot:cell(is_absent)="data">
+                    <template #cell(is_absent)="data">
                         {{ data.value }}
                     </template>
                 </b-table>

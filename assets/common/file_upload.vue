@@ -19,11 +19,9 @@
 
 <template>
     <b-list-group-item>
-        <icon
+        <b-spinner
             v-if="loading"
-            name="spinner"
-            scale="1"
-            :pulse="loading"
+            small
         />
         <b-btn
             v-else
@@ -46,7 +44,6 @@
 
 <script>
 import axios from "axios";
-import Icon from "vue-awesome/components/Icon.vue";
 
 export default {
     props: {
@@ -122,7 +119,6 @@ export default {
                 });
         }
     },
-    components: {Icon},
 };
 </script>
 

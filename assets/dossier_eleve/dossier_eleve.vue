@@ -141,17 +141,13 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
-Vue.component("icon", Icon);
-
 import axios from "axios";
 window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
-import Info from "../annuaire/info.vue";
+import Info from "../annuaire/person_info.vue";
 
-import Filters from "../common/filters.vue";
+import Filters from "../common/filters_form.vue";
 import {getFilters} from "../common/filters.js";
 import CasEleveEntry from "./casEleveEntry.vue";
 import ExportModal from "./exportModal.vue";

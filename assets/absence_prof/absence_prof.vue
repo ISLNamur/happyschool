@@ -39,10 +39,9 @@
                                 to="/new/"
                                 class="w-100"
                             >
-                                <icon
-                                    name="plus"
-                                    scale="1"
-                                    color="green"
+                                <b-icon
+                                    icon="plus"
+                                    scale="1.5"
                                 />
                                 Ajouter une absence
                             </b-button>
@@ -51,6 +50,9 @@
                                 target="_blank"
                                 class="w-100 mt-1"
                             >
+                                <b-icon
+                                    icon="file-earmark"
+                                />
                                 Exporter en PDF
                             </b-btn>
                         </div>
@@ -109,14 +111,10 @@ import axios from "axios";
 window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
-
-import Filters from "../common/filters.vue";
+import Filters from "../common/filters_form.vue";
 
 import AbsenceProfEntry from "./absenceProfEntry.vue";
 
-Vue.component("icon", Icon);
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 

@@ -206,7 +206,7 @@
                     </b-btn>
                 </b-tab>
                 <b-tab>
-                    <template v-slot:title>
+                    <template #title>
                         Autres absences non validées
                         <b-badge variant="primary">
                             {{ getAbsences(false, "student").length }}
@@ -278,12 +278,9 @@
                 </b-tab>
             </b-tabs>
             <template slot="modal-ok">
-                <icon
+                <b-spinner
                     v-if="sending"
-                    name="spinner"
-                    color="white"
-                    spin
-                    class="align-baseline"
+                    small
                 />
                 {{ validateChange }}
             </template>

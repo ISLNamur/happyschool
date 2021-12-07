@@ -203,12 +203,9 @@
             </b-form-group>
         </b-form>
         <template slot="modal-ok">
-            <icon
+            <b-spinner
                 v-if="submitting"
-                name="spinner"
-                scale="1"
-                spin
-                class="align-baseline"
+                small
             />
             Soumettre
         </template>

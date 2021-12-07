@@ -29,11 +29,11 @@
                         Vue d'ensemble
                     </b-nav-item>
                     <b-nav-item to="add_absence">
-                        <icon
-                            name="plus"
-                            scale="1"
-                            color="green"
-                            class="align-middle"
+                        <b-icon
+                            icon="plus"
+                            scale="1.5"
+                            variant="success"
+                            class="border"
                         />
                         Ajouter absences
                     </b-nav-item>
@@ -68,10 +68,6 @@ Vue.use(BootstrapVueIcons);
 
 import Moment from "moment";
 Moment.locale("fr");
-
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
-Vue.component("icon", Icon);
 
 export default {
     data: function () {

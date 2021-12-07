@@ -26,10 +26,9 @@
                 class="mr-1"
                 @click="changedText = text"
             >
-                <icon
-                    name="edit"
-                    scale="1"
-                    color="green"
+                <b-icon
+                    icon="pencil-square"
+                    variant="success"
                 />
             </b-btn>
             <b-form-checkbox id="acknowledgement">

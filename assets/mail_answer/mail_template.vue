@@ -83,7 +83,7 @@
                         id="has-choices"
                     >
                         <b-card>
-                            <choices
+                            <ask-choices
                                 :choices="choices"
                                 :disabled="is_used"
                             />
@@ -106,7 +106,7 @@
                         id="has-options"
                     >
                         <b-card>
-                            <options
+                            <ask-options
                                 :options="options"
                                 :disabled="is_used"
                             />
@@ -127,7 +127,7 @@
                         id="has-acknowlegde"
                     >
                         <b-card>
-                            <acknowledgement
+                            <parent-acknowledgement
                                 :text="acknowledgeText"
                                 @update="acknowledgeText = $event"
                             />
@@ -140,11 +140,10 @@
                                     variant="primary"
                                     @click="sendData"
                                 >
-                                    Sauvegarder <icon
+                                    Sauvegarder
+                                    <b-spinner
                                         v-if="saving"
-                                        name="spinner"
-                                        scale="1"
-                                        :spin="saving"
+                                        small
                                     />
                                 </b-btn>
                             </div>
@@ -157,17 +156,11 @@
 </template>
 
 <script>
-import Vue from "vue";
-
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
-Vue.component("Icon", Icon);
-
 import axios from "axios";
 
-import Choices from "./choices.vue";
-import Options from "./options.vue";
-import Acknowledgement from "./acknowledge.vue";
+import AskChoices from "./ask_choices.vue";
+import AskOptions from "./ask_options.vue";
+import ParentAcknowledgement from "./parent_acknowledge.vue";
 
 export default {
     props: {
@@ -278,7 +271,7 @@ export default {
                 });
         }
     },
-    components: { Choices, Options, Acknowledgement }
+    components: { AskChoices, AskOptions, ParentAcknowledgement }
 };
 </script>
 

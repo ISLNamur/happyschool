@@ -21,64 +21,66 @@
     <div>
         <b-row>
             <b-form-group>
-                <b-form-radio-group stacked>
-                    <b-form-radio
-                        v-for="(choice, index) in choices"
-                        :key="choice.id"
+                <b-form-checkbox-group stacked>
+                    <b-form-checkbox
+                        v-for="(option, index) in options"
+                        :key="option.id"
+                        :value="option.id"
                     >
                         <b-form inline>
-                            {{ choice.text }}
+                            {{ option.text }}
                             <b-form-input
                                 class="ml-1"
-                                v-if="choice.input"
+                                v-if="option.input"
                                 type="text"
                             />
                             <b-btn
-                                v-b-modal.addChoiceModal
+                                v-b-modal.addOptionModal
                                 variant="light"
                                 class="ml-1"
-                                @click="editChoice(index)"
+                                @click="editOption(index)"
                             >
-                                <icon
-                                    name="edit"
-                                    color="green"
+                                <b-icon
+                                    icon="pencil-square"
+                                    variant="success"
                                 />
                             </b-btn>
                             <b-btn
                                 variant="light"
                                 :disabled="disabled"
-                                @click="removeChoice(index)"
+                                @click="removeOption(index)"
                                 class="ml-1"
                             >
-                                <icon
-                                    name="remove"
-                                    color="red"
+                                <b-icon
+                                    name="trash-fill"
+                                    variant="danger"
                                 />
                             </b-btn>
                         </b-form>
-                    </b-form-radio>
-                </b-form-radio-group>
+                    </b-form-checkbox>
+                </b-form-checkbox-group>
             </b-form-group>
         </b-row>
         <b-row>
             <b-btn
-                v-b-modal.addChoiceModal
+                v-b-modal.addOptionModal
                 variant="success"
             >
-                <icon
-                    name="plus"
-                    color="white"
-                />Ajouter un choix
+                <b-icon
+                    icon="plus"
+                    scale="1.5"
+                />
+                Ajouter une option
             </b-btn>
         </b-row>
         <b-modal
-            ref="addChoiceModal"
-            id="addChoiceModal"
+            ref="addOptionModal"
+            id="addOptionModal"
             :disabled="disabled"
             cancel-title="Annuler"
-            title="Ajouter un choix"
+            title="Ajouter une option"
             centered
-            @ok="addChoice"
+            @ok="addOption"
             @hidden="resetModal"
         >
             <b-form>
@@ -99,9 +101,9 @@ import axios from "axios";
 
 export default {
     props: {
-        "choices": {
+        "options": {
             type: Array,
-            default: () => [],
+            default: () => []
         },
         "disabled": {
             type: Boolean,
@@ -110,49 +112,50 @@ export default {
     },
     data: function () {
         return {
+            selected: [],
             textInput: "",
             checkInclude: false,
             itemIndex: -1,
         };
     },
     methods: {
-        addChoice: function () {
+        addOption: function () {
             let token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             if (this.itemIndex < 0) {
-                // Create new choice.
+                // Create new option.
                 let data = {text: this.textInput, input: this.checkInclude};
-                axios.post("/mail_answer/api/choices/", data, token)
+                axios.post("/mail_answer/api/options/", data, token)
                     .then(response => {
                         data.id = response.data.id;
-                        // this.choices.push(data);
+                        // this.options.push(data);
                     })
                     .catch(function (error) {
                         console.log(error);
                     });
             } else {
-                // Update choice.
-                let data = this.choices[this.itemIndex];
+                // Update option.
+                let data = this.options[this.itemIndex];
                 data.text = this.textInput;
                 data.input = this.checkInclude;
-                axios.put("/mail_answer/api/choices/" + this.choices[this.itemIndex].id + "/", data, token)
+                axios.put("/mail_answer/api/options/" + this.options[this.itemIndex].id + "/", data, token)
                     .then(() => {
-                        // this.choices[this.itemIndex] = data;
+                        // this.options[this.itemIndex] = data;
                     })
                     .catch(function (error) {
                         console.log(error);
                     });
             }
         },
-        editChoice: function(index) {
-            this.textInput = this.choices[index].text;
-            this.checkInclude = this.choices[index].input;
+        editOption: function(index) {
+            this.textInput = this.options[index].text;
+            this.checkInclude = this.options[index].input;
             this.itemIndex = index;
         },
-        removeChoice: function(index) {
+        removeOption: function(index) {
             let token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
-            axios.delete("/mail_answer/api/choices/" + this.choices[index].id + "/", token)
+            axios.delete("/mail_answer/api/options/" + this.options[index].id + "/", token)
                 .then(() => {
-                    // this.choices.splice(index, 1);
+                    // this.options.splice(index, 1);
                 })
                 .catch(function (error) {
                     console.log(error);

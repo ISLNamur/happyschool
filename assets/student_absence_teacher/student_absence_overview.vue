@@ -107,7 +107,7 @@
                     :filter="filter"
                     :filter-included-fields="['classe']"
                 >
-                    <template v-slot:head(classe)="">
+                    <template #head(classe)="">
                         <b-form-group
                             label-for="filterInput"
                         >
@@ -119,12 +119,12 @@
                             />
                         </b-form-group>
                     </template>
-                    <template v-slot:cell(classe)="data">
+                    <template #cell(classe)="data">
                         <b-link :to="`/class_view/${data.item.classe__id}/${date}/`">
                             {{ data.value }}
                         </b-link>
                     </template>
-                    <template v-slot:cell()="data">
+                    <template #cell()="data">
                         <span
                             v-if="data.value.teacher_count >= 0"
                         >

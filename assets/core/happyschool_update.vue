@@ -35,12 +35,8 @@
                 @click="runUpdate"
                 :disabled="updating"
             >
-                <icon
+                <b-spinner
                     v-if="updating"
-                    name="spinner"
-                    scale="1"
-                    spin
-                    class="align-baseline"
                 />
                 Mettre à jour
             </b-btn>
@@ -67,13 +63,7 @@
 </template>
 
 <script>
-import Vue from "vue";
 import axios from "axios";
-
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
-
-Vue.component("icon", Icon);
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 export default {

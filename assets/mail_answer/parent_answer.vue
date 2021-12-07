@@ -100,11 +100,9 @@
                         variant="primary"
                     >
                         {{ sent ? "Mettre à jour" : "Envoyer" }}
-                        <icon
+                        <b-spinner
                             v-if="saving"
-                            name="spinner"
-                            scale="1"
-                            :spin="saving"
+                            small
                         />
                     </b-btn>
                 </p>
@@ -125,12 +123,9 @@
 
 <script>
 import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
+import BootstrapVue, { BootstrapVueIcons } from "bootstrap-vue";
 Vue.use(BootstrapVue);
-
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
-Vue.component("Icon", Icon);
+Vue.use(BootstrapVueIcons);
 
 import axios from "axios";
 

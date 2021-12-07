@@ -23,7 +23,7 @@
                             État : {{ email.errors }}
                         </p>
                         <p>
-                            Message {% if email.attachments.all|length > 0 %}<icon name="paperclip"></icon>{% endif %} :
+                            Message {% if email.attachments.all|length > 0 %}<b-icon name="paperclip"></icon>{% endif %} :
                         </p>
                         <b-card>
                             {{ email.body|truncatewords_html:10|safe }}

@@ -23,10 +23,8 @@
                                 size="sm"
                                 @click="filterStudent"
                             >
-                                <icon
-                                    name="eye"
-                                    scale="1.2"
-                                    class="align-text-middle"
+                                <b-icon
+                                    icon="funnel"
                                 />
                             </b-btn>
                         </h5>
@@ -48,20 +46,18 @@
                             :to="'/edit/' + rowData.id + '/0'"
                             class="card-link"
                         >
-                            <icon
-                                name="edit"
-                                scale="1.3"
-                                color="green"
+                            <b-icon
+                                icon="pencil-square"
+                                variant="success"
                             />
                         </b-link>
                         <b-link
                             @click="$emit('delete')"
                             class="card-link"
                         >
-                            <icon
-                                name="trash"
-                                scale="1.3"
-                                color="red"
+                            <b-icon
+                                icon="trash-fill"
+                                variant="danger"
                             />
                         </b-link>
                     </b-col>

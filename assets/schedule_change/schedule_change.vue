@@ -47,10 +47,9 @@
                                 @click="openModal('add-schedule-modal')"
                                 class="w-100"
                             >
-                                <icon
-                                    name="plus"
-                                    scale="1"
-                                    color="green"
+                                <b-icon
+                                    icon="plus"
+                                    scale="1.5"
                                 />
                                 Ajouter un changement
                             </b-btn>
@@ -59,8 +58,8 @@
                                 @click="openModal('export-schedule-modal')"
                                 class="w-100 mt-1"
                             >
-                                <icon
-                                    name="file"
+                                <b-icon
+                                    icon="file-earmark"
                                     scale="1"
                                 />
                                 Sommaire
@@ -194,8 +193,8 @@ Vue.use(BootstrapVueIcons);
 import Moment from "moment";
 Moment.locale("fr");
 
-import Filters from "../common/filters.vue";
-import Menu from "../common/menu.vue";
+import Filters from "../common/filters_form.vue";
+import Menu from "../common/menu_bar.vue";
 
 import ScheduleChangeEntry from "./scheduleChangeEntry.vue";
 import AddScheduleModal from "./addScheduleModal.vue";
@@ -205,10 +204,6 @@ import axios from "axios";
 window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
-
-Vue.component("icon", Icon);
 export default {
     data: function () {
         return {

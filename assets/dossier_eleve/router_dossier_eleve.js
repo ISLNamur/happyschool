@@ -23,7 +23,7 @@ import VueRouter from "vue-router";
 Vue.use(VueRouter);
 
 import DossierEleve from "../dossier_eleve/dossier_eleve.vue";
-import Cas from "../dossier_eleve/cas.vue";
+import CasEleve from "../dossier_eleve/cas_eleve.vue";
 
 export default new VueRouter({
     routes: [{
@@ -32,12 +32,12 @@ export default new VueRouter({
     },
     {
         path: "/edit/:id/",
-        component: Cas,
+        component: CasEleve,
         props: true
     },
     {
         path: "/new/",
-        component: Cas,
+        component: CasEleve,
         props: true
     },
     ]

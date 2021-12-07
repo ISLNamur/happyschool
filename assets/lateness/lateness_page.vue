@@ -61,12 +61,9 @@
                         :disabled="!search || addingStudent"
                         @click="addStudent"
                     >
-                        <icon
+                        <b-spinner
                             v-if="addingStudent"
-                            name="spinner"
-                            scale="1"
-                            spin
-                            class="align-baseline"
+                            small
                         />
                         Ajouter
                     </b-button>
@@ -271,14 +268,10 @@ Vue.use(BootstrapVueIcons);
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
-Vue.component("icon", Icon);
-
 import axios from "axios";
 
-import Menu from "assets/common/menu.vue";
-import Filters from "assets/common/filters.vue";
+import Menu from "assets/common/menu_bar.vue";
+import Filters from "assets/common/filters_form.vue";
 import {getFilters} from "assets/common/filters.js";
 import LatenessEntry from "./lateness_entry.vue";
 

@@ -29,9 +29,9 @@
                         variant="success"
                         to="/new"
                     >
-                        <icon
-                            name="plus"
-                            scale="1"
+                        <b-icon
+                            icon="plus"
+                            scale="1.5"
                         />
                         Ajouter un PIA
                     </b-btn>
@@ -71,7 +71,7 @@
             </b-row>
             <b-row>
                 <b-col>
-                    <entry
+                    <pia-entry
                         v-for="(entry, index) in entries"
                         :key="entry.id"
                         :row-data="entry"
@@ -90,16 +90,12 @@ import Vue from "vue";
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
-
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
-Vue.component("icon", Icon);
 
 import Multiselect from "vue-multiselect";
 
-import Entry from "./entry.vue";
+import PiaEntry from "./pia_entry.vue";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
@@ -192,7 +188,7 @@ export default {
         this.$store.dispatch("loadOptions");
     },
     components: {
-        Entry,
+        PiaEntry,
         Multiselect
     }
 };

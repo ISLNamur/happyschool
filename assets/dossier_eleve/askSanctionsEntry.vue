@@ -39,10 +39,8 @@
                                 size="sm"
                                 @click="filterStudent"
                             >
-                                <icon
-                                    name="eye"
-                                    scale="1"
-                                    class="align-text-top"
+                                <b-icon
+                                    icon="funnel"
                                 />
                             </b-btn>
                         </span>
@@ -53,10 +51,9 @@
                     >
                         <div class="text-right">
                             <span v-if="$store.state.canSetSanction">
-                                <icon
-                                    name="question-circle"
-                                    color="blue"
-                                    class="align-text-middle"
+                                <b-icon
+                                    icon="question-circle"
+                                    variant="primary"
                                     v-if="!canSetSanctionDone"
                                     v-b-tooltip.hover
                                     title="La date de sanction doit être antérieure ou égale à aujourd'hui."
@@ -170,11 +167,9 @@
                             v-if="comment.length > 100"
                             @click="expand = !expand"
                         >
-                            <icon
-                                color="grey"
+                            <b-icon
                                 class="align-text-top"
-                                scale="1.1"
-                                :name="expand ? 'angle-double-up' : 'angle-double-down'"
+                                :name="expand ? 'chevron-double-up' : 'chevron-double-down'"
                             />
                         </b-btn>
                     </b-col>

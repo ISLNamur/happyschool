@@ -4,8 +4,8 @@
             <div class="card-text">
                 <p>
                     Accepte :
-                    <icon
-                        :name="result.acknowledge ? 'check' : 'times'"
+                    <b-icon
+                        :icon="result.acknowledge ? 'check' : 'times'"
                         :color="result.acknowledge ? 'green' : 'red'"
                     />
                 </p>

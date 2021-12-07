@@ -85,20 +85,16 @@
 
 <script>
 import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
+import BootstrapVue, { BootstrapVueIcons } from "bootstrap-vue";
 
-Vue.use(BootstrapVue);
+Vue.use(BootstrapVue, BootstrapVueIcons);
 
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
-Vue.component("icon", Icon);
-
 import axios from "axios";
 
-import Menu from "../common/menu.vue";
+import Menu from "../common/menu_bar.vue";
 
 export default {
     data: function () {

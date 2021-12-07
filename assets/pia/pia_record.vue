@@ -296,7 +296,7 @@
                     </b-row>
                 </b-tab>
                 <b-tab>
-                    <template v-slot:title>
+                    <template #title>
                         Conseils de classe
                         <b-badge>{{ class_council.length }}</b-badge>
                     </template>
@@ -328,7 +328,7 @@
                     </b-row>
                 </b-tab>
                 <b-tab>
-                    <template v-slot:title>
+                    <template #title>
                         Objectifs
                         <b-badge>{{ cross_goal.length + branch_goal.length }}</b-badge>
                     </template>
@@ -348,7 +348,7 @@
                     </b-row>
                     <b-row>
                         <b-col>
-                            <goal
+                            <student-goal
                                 class="mt-2"
                                 v-for="(goal, index) in cross_goal"
                                 :key="'cg-' + goal.id"
@@ -377,7 +377,7 @@
                     </b-row>
                     <b-row>
                         <b-col>
-                            <goal
+                            <student-goal
                                 class="mt-2"
                                 v-for="(goal, index) in branch_goal"
                                 :key="'bg-' + goal.id"
@@ -394,7 +394,7 @@
                     <b-row />
                 </b-tab>
                 <b-tab>
-                    <template v-slot:title>
+                    <template #title>
                         Projet et avis
                         <b-badge>{{ student_project.length + parents_opinion.length }}</b-badge>
                     </template>
@@ -414,7 +414,7 @@
                     </b-row>
                     <b-row>
                         <b-col>
-                            <comment
+                            <pia-comment
                                 class="mt-2"
                                 v-for="(sP, index) in student_project"
                                 :key="sP.id"
@@ -441,7 +441,7 @@
                     </b-row>
                     <b-row>
                         <b-col>
-                            <comment
+                            <pia-comment
                                 class="mt-2"
                                 v-for="(pO, index) in parents_opinion"
                                 :key="pO.id"
@@ -454,7 +454,7 @@
                     </b-row>
                 </b-tab>
                 <b-tab v-if="hasDossierApp">
-                    <template v-slot:title>
+                    <template #title>
                         Autre infos
                         <b-badge>{{ dossier.length }}</b-badge>
                     </template>
@@ -519,9 +519,9 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 import {getPeopleByName} from "../common/search.js";
 import FileUpload from "../common/file_upload.vue";
 
-import Goal from "./goal.vue";
+import StudentGoal from "./student_goal.vue";
 import ClassCouncil from "./class_council.vue";
-import Comment from "./comment.vue";
+import PiaComment from "./pia_comment.vue";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
@@ -926,9 +926,9 @@ export default {
     },
     components: {
         Multiselect,
-        Goal,
+        StudentGoal,
         ClassCouncil,
-        Comment,
+        PiaComment,
         FileUpload,
         quillEditor,
     }

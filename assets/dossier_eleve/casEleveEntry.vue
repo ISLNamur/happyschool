@@ -82,9 +82,9 @@
                         no-caret
                     >
                         <template #button-content>
-                            <icon
-                                name="paperclip"
-                                color="blue"
+                            <b-icon
+                                icon="paperclip"
+                                variant="primary"
                                 v-if="rowData.attachments.length > 0"
                             />
                         </template>
@@ -119,15 +119,12 @@
                         <b-btn
                             class="move-up"
                             size="sm"
-                            variant="light"
+                            variant="outline-primary"
                             v-if="comment.length > 150"
                             @click="expand = !expand"
                         >
-                            <icon
-                                color="grey"
-                                class="align-text-top"
-                                scale="1.1"
-                                :name="expand ? 'angle-double-up' : 'angle-double-down'"
+                            <b-icon
+                                :icon="expand ? 'chevron-double-up' : 'chevron-double-down'"
                             />
                         </b-btn>
                     </b-col>

@@ -19,34 +19,20 @@
 
 <template>
     <div>
-        <b-card>
-            <strong>{{ absence.date_absence }}</strong>:
-            <a :href="`/annuaire/#/person/student/${absence.student.matricule}/`">
-                {{ absence.student.display }}
-            </a>
-            {{ display_absence }}
-        </b-card>
+        <b-row>
+            <b-col><note-entry /></b-col>
+        </b-row>
     </div>
 </template>
 
 <script>
+import NoteEntry from "./note_entry.vue";
+
 export default {
-    props: {
-        "absence": {
-            type: Object,
-            default: () => {}
-        }
-    },
     data: function () {
         return {
         };
     },
-    computed: {
-        display_absence: function () {
-            const absence = (this.absence.is_absent ? "Absent" : "Présent");
-            const period = this.$store.state.periods.find(p => p.id == this.absence.period).name;
-            return absence + " (" + period + ")";
-        }
-    }
+    components: {NoteEntry},
 };
 </script>

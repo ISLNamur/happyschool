@@ -55,10 +55,9 @@
                                 @click="openDynamicModal('ask-modal')"
                                 class="w-100 mb-1"
                             >
-                                <icon
-                                    name="plus"
-                                    scale="1"
-                                    class="align-middle"
+                                <b-icon
+                                    icon="plus"
+                                    scale="1.5"
                                 />
                                 Nouvelle demande
                             </b-btn>
@@ -67,9 +66,8 @@
                                 @click="openDynamicModal('ask-export-modal')"
                                 class="w-100"
                             >
-                                <icon
-                                    name="file"
-                                    scale="1"
+                                <b-icon
+                                    icon="file-earmark"
                                 />
                                 Export
                             </b-btn>
@@ -198,21 +196,17 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
-Vue.component("icon", Icon);
-
 import axios from "axios";
 window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
-import Info from "../annuaire/info.vue";
+import Info from "../annuaire/person_info.vue";
 
 import AskSanctionsEntry from "./askSanctionsEntry.vue";
-import AskModal from "./ask.vue";
+import AskModal from "./ask_form.vue";
 import AskExportModal from "./askExportModal.vue";
-import Filters from "../common/filters.vue";
-import Menu from "../common/menu.vue";
+import Filters from "../common/filters_form.vue";
+import Menu from "../common/menu_bar.vue";
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 

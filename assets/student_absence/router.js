@@ -23,10 +23,10 @@ import VueRouter from "vue-router";
 Vue.use(VueRouter);
 
 import StudentAbsence from "../student_absence/student_absence.vue";
-import Overview from "../student_absence/overview.vue";
+import AbsenceOverview from "../student_absence/absence_overview.vue";
 import AddAbsence from "../student_absence/add_absence.vue";
-import Notes from "../student_absence/notes.vue";
-import List from "../student_absence/list.vue";
+import ClasseNotes from "../student_absence/classe_notes.vue";
+import AbsenceList from "../student_absence/absence_list.vue";
 
 export default new VueRouter({
     routes: [
@@ -36,11 +36,11 @@ export default new VueRouter({
             children: [
                 {
                     path: "",
-                    component: Overview,
+                    component: AbsenceOverview,
                 },
                 {
                     path: "overview",
-                    component: Overview,
+                    component: AbsenceOverview,
                 },
                 {
                     path: "add_absence",
@@ -48,11 +48,11 @@ export default new VueRouter({
                 },
                 {
                     path: "notes",
-                    component: Notes,
+                    component: ClasseNotes,
                 },
                 {
                     path: "list",
-                    component: List,
+                    component: AbsenceList,
                 }
             ]
         },

@@ -36,11 +36,9 @@
                         @click="editing = true"
                         class="card-link mb-1"
                     >
-                        <icon
-                            scale="1.3"
-                            name="edit"
-                            color="green"
-                            class="align-text-bottom"
+                        <b-icon
+                            icon="pencil-square"
+                            variant="success"
                         />
                     </b-btn>
                     <b-btn
@@ -49,11 +47,9 @@
                         @click="$emit('remove')"
                         class="card-link"
                     >
-                        <icon
-                            scale="1.3"
-                            name="trash"
-                            color="red"
-                            class="align-text-bottom"
+                        <b-icon
+                            variant="danger"
+                            icon="trash-fill"
                         />
                     </b-btn>
                 </b-col>

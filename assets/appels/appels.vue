@@ -19,10 +19,9 @@
                         to="/add/"
                         class="w-100"
                     >
-                        <icon
-                            name="plus"
-                            scale="1"
-                            color="green"
+                        <b-icon
+                            icon="plus"
+                            scale="1.5"
                         />
                         Ajouter un appel
                     </b-button>
@@ -116,20 +115,17 @@ import Vue from "vue";
 import {BootstrapVue, BootstrapVueIcons} from "bootstrap-vue";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
-import Info from "../annuaire/info.vue";
+import PersonInfo from "../annuaire/person_info.vue";
 
-import Filters from "../common/filters.vue";
+import Filters from "../common/filters_form.vue";
 
 import axios from "axios";
 window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
 import AppelEntry from "./appelEntry.vue";
 
-Vue.component("icon", Icon);
-Vue.component("appel-entry", AppelEntry);
+Vue.component("AppelEntry", AppelEntry);
 
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
@@ -229,7 +225,7 @@ export default {
     },
     components: {
         "filters": Filters,
-        "info": Info,
+        "info": PersonInfo,
     },
 };
 </script>

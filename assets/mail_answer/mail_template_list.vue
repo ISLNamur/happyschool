@@ -26,7 +26,7 @@
                     variant="primary"
                     @click="editTemplate(null)"
                 >
-                    <icon name="plus" />
+                    <b-icon icon="plus" />
                     Ajouter un template
                 </b-button>
             </p>
@@ -39,8 +39,8 @@
             <b-col>
                 <b-card :title="template.name">
                     <p class="card-text">
-                        Utilisé par un envoi d'email : <icon
-                            :name="template.is_used ? 'check' : 'times'"
+                        Utilisé par un envoi d'email : <b-icon
+                            :icon="template.is_used ? 'check' : 'times'"
                             scale="1.2"
                             :color="template.is_used ? 'green' : 'red'"
                         />
@@ -49,14 +49,14 @@
                         v-if="!(remoteInUse && !(isRemote == template.is_used))"
                         @click="editTemplate(template.id)"
                     >
-                        <icon name="edit" />Modifier
+                        <b-icon icon="edit" />Modifier
                     </b-button>
                     <b-button
                         v-if="template.is_used && !(remoteInUse && !isRemote)"
                         @click="showAnswers(template.id)"
                         variant="light"
                     >
-                        <icon name="eye" />
+                        <b-icon icon="eye" />
                         Voir les réponses
                     </b-button>
                     <a

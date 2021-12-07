@@ -38,10 +38,9 @@
                         to="/new/"
                         class="w-100"
                     >
-                        <icon
-                            name="plus"
-                            scale="1"
-                            color="green"
+                        <b-icon
+                            icon="plus"
+                            scale="1.5"
                         />
                         Ajouter un malade
                     </b-button>
@@ -114,20 +113,17 @@ import Vue from "vue";
 import {BootstrapVue, BootstrapVueIcons} from "bootstrap-vue";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
-import Info from "../annuaire/info.vue";
+import Info from "../annuaire/person_info.vue";
 
-import Filters from "../common/filters.vue";
+import Filters from "../common/filters_form.vue";
 
 import axios from "axios";
 window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
 import InfirmerieEntry from "./infirmerieEntry.vue";
 
-Vue.component("icon", Icon);
-Vue.component("infirmerie-entry", InfirmerieEntry);
+Vue.component("InfirmerieEntry", InfirmerieEntry);
 
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);

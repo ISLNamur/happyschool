@@ -25,12 +25,12 @@ Vue.use(Vuex);
 import VueRouter from "vue-router";
 Vue.use(VueRouter);
 
-import Admin from "../core/admin.vue";
-import Import from "../core/import.vue";
+import Admin from "../core/admin_page.vue";
+import Import from "../core/import_people.vue";
 import GeneralSettings from "../core/general_settings.vue";
-import Photos from "../core/photos.vue";
-import Update from "../core/update.vue";
-import Menu from "../common/menu.vue";
+import Photos from "../core/import_photos.vue";
+import Update from "../core/happyschool_update.vue";
+import Menu from "../common/menu_bar.vue";
 import Annuaire from "../core/annuaire_settings.vue";
 
 const router = new VueRouter({

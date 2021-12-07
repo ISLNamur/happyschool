@@ -19,7 +19,7 @@
 
 import Vue from "vue";
 
-import Answer from "../mail_answer/answer.vue";
+import ParentAnswer from "../mail_answer/parent_answer.vue";
 
 new Vue({
     el: "#vue-app",
@@ -28,10 +28,10 @@ new Vue({
         component: "",
     },
     template: "<component :is=\"component\" :uuid=\"uuid\"/>",
-    components: { "answer": Answer },
+    components: { "parent-answer": ParentAnswer },
     mounted: function () {
         // eslint-disable-next-line no-undef
         this.uuid = uuid;
-        this.component = "answer";
+        this.component = "parent-answer";
     }
 });

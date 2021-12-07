@@ -86,8 +86,7 @@
                         >
                             <template
                                 v-for="(c, i) in studentColumnHeads.slice(0, fields_number)"
-                                v-slot:[c]="data"
-                                :keys="i"
+                                #[c]="data"
                             >
                                 <b-select
                                     v-model="student_columns[i]"
@@ -186,8 +185,7 @@
                         >
                             <template
                                 v-for="(c, i) in teacherColumnHeads.slice(0, fields_number)"
-                                v-slot:[c]="data"
-                                :keys="i"
+                                #[c]="data"
                             >
                                 <b-select
                                     v-model="teacher_columns[i]"
@@ -233,15 +231,12 @@
 
 <script>
 import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
+import BootstrapVue, { BootstrapVueIcons } from "bootstrap-vue";
 Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
 
 import axios from "axios";
 
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
-
-Vue.component("icon", Icon);
 
 const student_column_names = [
     {value: "matricule", text: "Matricule"},

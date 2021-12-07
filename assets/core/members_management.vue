@@ -28,9 +28,9 @@
                         v-b-modal.addGroupModal
                         variant="primary"
                     >
-                        <icon
-                            name="plus"
-                            scale="1"
+                        <b-icon
+                            icon="plus"
+                            scale="1.5"
                         />
                         Ajouter un groupe
                     </b-btn>
@@ -52,11 +52,10 @@
                         <b-card>
                             <div slot="header">
                                 <b>Autres personnels</b>
-                                <icon
+                                <b-icon
                                     id="others-info"
-                                    name="info-circle"
-                                    color="blue"
-                                    scale="1"
+                                    icon="info-circle"
+                                    variant="primary"
                                 />
                                 <b-tooltip
                                     target="others-info"
@@ -77,10 +76,10 @@
                                             variant="light"
                                             @click="fillModal(item)"
                                         >
-                                            <icon
-                                                name="edit"
+                                            <b-icon
+                                                icon="square-pencil"
                                                 scale="1"
-                                                color="green"
+                                                variant="success"
                                             />
                                         </b-btn>
                                         <b-btn
@@ -89,10 +88,9 @@
                                             class="card-link"
                                             @click="currentItem = item"
                                         >
-                                            <icon
-                                                name="remove"
-                                                scale="1"
-                                                color="red"
+                                            <b-icon
+                                                icon="trash-fill"
+                                                variant="danger"
                                             />
                                         </b-btn>
                                     </div>
@@ -103,10 +101,9 @@
                                     v-b-modal.addModal
                                     variant="light"
                                 >
-                                    <icon
-                                        name="plus"
-                                        scale="1"
-                                        color="green"
+                                    <b-icon
+                                        icon="plus"
+                                        variant="success"
                                     />
                                     Ajouter
                                 </b-btn>
@@ -124,10 +121,10 @@
                                     class="card-link"
                                     @click="currentGroup = g"
                                 >
-                                    <icon
-                                        name="remove"
-                                        scale="1"
-                                        color="red"
+                                    <b-icon
+                                        icon="dash"
+                                        scale="1.5"
+                                        variant="danger"
                                     />
                                 </b-btn>
                             </div>
@@ -145,10 +142,9 @@
                                             variant="light"
                                             @click="fillModal(p)"
                                         >
-                                            <icon
-                                                name="edit"
-                                                scale="1"
-                                                color="green"
+                                            <b-icon
+                                                name="pencil-square"
+                                                variant="success"
                                             />
                                         </b-btn>
                                         <b-btn
@@ -157,10 +153,9 @@
                                             class="card-link"
                                             @click="currentItem = p"
                                         >
-                                            <icon
-                                                name="remove"
-                                                scale="1"
-                                                color="red"
+                                            <b-icon
+                                                icon="trash-fill"
+                                                variant="danger"
                                             />
                                         </b-btn>
                                     </div>
@@ -172,10 +167,10 @@
                                     variant="light"
                                     @click="group = g.id"
                                 >
-                                    <icon
-                                        name="plus"
-                                        scale="1"
-                                        color="green"
+                                    <b-icon
+                                        icon="plus"
+                                        scale="1.5"
+                                        variant="success"
                                     />
                                     Ajouter
                                 </b-btn>
@@ -271,18 +266,14 @@
 
 <script>
 import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
+import BootstrapVue, { BootstrapVueIcons } from "bootstrap-vue";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
 
 import axios from "axios";
 
-import "vue-awesome/icons";
-import Icon from "vue-awesome/components/Icon.vue";
-
-Vue.component("icon", Icon);
-
-import Menu from "../common/menu.vue";
+import Menu from "../common/menu_bar.vue";
 
 export default {
     data: function () {

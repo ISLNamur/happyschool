@@ -24,7 +24,7 @@ Vue.use(Vuex);
 
 import store from "../absence_prof/store.js";
 import router from "../absence_prof/router.js";
-import Menu from "../common/menu.vue";
+import Menu from "../common/menu_bar.vue";
 
 
 new Vue({

@@ -24,7 +24,7 @@ Vue.use(Vuex);
 
 import router from "../dossier_eleve/router_ask_sanctions.js";
 
-import Menu from "../common/menu.vue";
+import Menu from "../common/menu_bar.vue";
 
 const store = new Vuex.Store({
     state: {

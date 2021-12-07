@@ -17,22 +17,3 @@
 <!-- You should have received a copy of the GNU Affero General Public License -->
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
-<template>
-    <div>
-        <b-row>
-            <b-col><note-entry /></b-col>
-        </b-row>
-    </div>
-</template>
-
-<script>
-import NoteEntry from "../student_absence/note_entry.vue";
-
-export default {
-    data: function () {
-        return {
-        };
-    },
-    components: {NoteEntry},
-};
-</script>

@@ -23,7 +23,7 @@ import VueRouter from "vue-router";
 Vue.use(VueRouter);
 
 import AskSanctions from "../dossier_eleve/askSanctions.vue";
-import Ask from "../dossier_eleve/ask.vue";
+import Ask from "../dossier_eleve/ask_form.vue";
 import WarnSanction from "../dossier_eleve/warnSanction.vue";
 
 export default new VueRouter({

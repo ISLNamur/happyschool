@@ -97,7 +97,7 @@
 import axios from "axios";
 
 import AbsenceEntry from "./absence_entry.vue";
-import Filters from "../common/filters.vue";
+import Filters from "../common/filters_form.vue";
 import {getFilters} from "../common/filters.js";
 
 export default {
