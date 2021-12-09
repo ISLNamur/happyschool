@@ -49,7 +49,7 @@
     "@vuelidate/validators": "^2.0.0-alpha.18",
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.21.2",
-    "idb": "^5.0.2",
+    "idb": "^7.0.0",
     "moment": "^2.24.0",
     "push.js": "^1.0.12",
     "vue-hot-reload-api": "^2.3.4",

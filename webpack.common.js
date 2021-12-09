@@ -2,7 +2,7 @@ var path = require("path");
 var webpack = require("webpack");
 var BundleTracker = require("webpack-bundle-tracker");
 const fs = require("fs");
-const VueLoaderPlugin = require("vue-loader/lib/plugin");
+const { VueLoaderPlugin } = require("vue-loader");
 const swCachePlugin = require("sw-cache-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
@@ -39,7 +39,7 @@ module.exports = {
                     from: "**", to: "", context: "assets/sw/"
                 },
                 {
-                    from: "with-async-ittr-min.js", to: "idb.js", context: "node_modules/idb/build/iife/"
+                    from: "umd-with-async-ittr.js", to: "idb.js", context: "node_modules/idb/build/"
                 },
                 {
                     from: "bootstrap.min.css", to: "", context: "node_modules/bootstrap/dist/css/"
