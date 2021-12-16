@@ -143,7 +143,7 @@
                                             @click="fillModal(p)"
                                         >
                                             <b-icon
-                                                name="pencil-square"
+                                                icon="pencil-square"
                                                 variant="success"
                                             />
                                         </b-btn>

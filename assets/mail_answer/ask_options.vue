@@ -52,7 +52,7 @@
                                 class="ml-1"
                             >
                                 <b-icon
-                                    name="trash-fill"
+                                    icon="trash-fill"
                                     variant="danger"
                                 />
                             </b-btn>

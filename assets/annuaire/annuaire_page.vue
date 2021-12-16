@@ -87,7 +87,8 @@
 import Vue from "vue";
 import BootstrapVue, { BootstrapVueIcons } from "bootstrap-vue";
 
-Vue.use(BootstrapVue, BootstrapVueIcons);
+Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
 
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";

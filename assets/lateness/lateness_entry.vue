@@ -92,7 +92,7 @@
                         />
                         <b-icon
                             v-else
-                            name="x"
+                            icon="x"
                             variant="danger"
                             v-b-tooltip.hover
                             title="Sanction non-faite"

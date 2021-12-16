@@ -169,7 +169,7 @@
                         >
                             <b-icon
                                 class="align-text-top"
-                                :name="expand ? 'chevron-double-up' : 'chevron-double-down'"
+                                :icon="expand ? 'chevron-double-up' : 'chevron-double-down'"
                             />
                         </b-btn>
                     </b-col>
