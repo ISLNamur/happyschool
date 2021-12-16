@@ -28,6 +28,7 @@ from django.contrib.auth.models import Group
 
 from rest_framework.filters import OrderingFilter
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
+from rest_framework.permissions import DjangoModelPermissions
 
 from django_filters import rest_framework as filters
 
@@ -108,6 +109,7 @@ class CrossGoalViewSet(ModelViewSet):
     ordering_fields = ['date_start', 'date_end', 'datetime_creation']
     ordering = ["-date_end", "-date_start",]
     pagination_class = LargePageSizePagination
+    permission_classes = (DjangoModelPermissions,)
 
 
 class BranchGoalViewSet(ModelViewSet):
@@ -116,8 +118,9 @@ class BranchGoalViewSet(ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filterset_fields = ('branch', "pia_model")
     ordering_fields = ['datetime_creation']
-    ordering = ["-date_end", "-date_start",]
+    ordering = ["-date_end", "-date_start", ]
     pagination_class = LargePageSizePagination
+    permission_classes = (DjangoModelPermissions,)
 
 
 class OtherStatementViewSet(ModelViewSet):
@@ -126,6 +129,7 @@ class OtherStatementViewSet(ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filterset_fields = ('class_council',)
     pagination_class = LargePageSizePagination
+    permission_classes = (DjangoModelPermissions,)
 
 
 class ClassCouncilPIAViewSet(ModelViewSet):
@@ -135,6 +139,7 @@ class ClassCouncilPIAViewSet(ModelViewSet):
     filterset_fields = ('pia_model',)
     ordering = ['-datetime_creation']
     pagination_class = LargePageSizePagination
+    permission_classes = (DjangoModelPermissions,)
 
 
 class DisorderViewSet(ReadOnlyModelViewSet):
@@ -193,6 +198,7 @@ class StudentProjectViewSet(ModelViewSet):
     filterset_fields = ('pia_model',)
     pagination_class = LargePageSizePagination
     ordering = ['-datetime_creation']
+    permission_classes = (DjangoModelPermissions,)
 
 
 class ParentsOpinionViewSet(ModelViewSet):
@@ -202,6 +208,7 @@ class ParentsOpinionViewSet(ModelViewSet):
     filterset_fields = ('pia_model',)
     pagination_class = LargePageSizePagination
     ordering = ['-datetime_creation']
+    permission_classes = (DjangoModelPermissions,)
 
 
 class StudentStateViewSet(ModelViewSet):
@@ -210,9 +217,10 @@ class StudentStateViewSet(ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filterset_fields = ('class_council',)
     pagination_class = LargePageSizePagination
+    permission_classes = (DjangoModelPermissions,)
 
 
-class ResourceDifficultyViewSet(ModelViewSet):
+class ResourceDifficultyViewSet(ReadOnlyModelViewSet):
     queryset = models.ResourceDifficultyModel.objects.all()
     serializer_class = serializers.ResourceDifficultySerializer
     pagination_class = LargePageSizePagination
