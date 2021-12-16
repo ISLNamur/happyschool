@@ -323,6 +323,7 @@
                                 ref="councils"
                                 class="mt-2"
                                 @remove="removeClassCouncil(index)"
+                                @save="submit"
                             />
                         </b-col>
                     </b-row>
@@ -778,7 +779,7 @@ export default {
             });
         },
         submit: function (evt) {
-            evt.preventDefault();
+            if (evt) evt.preventDefault();
 
             let app = this;
             this.sending = true;

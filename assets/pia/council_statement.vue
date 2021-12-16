@@ -65,7 +65,7 @@
                         <b-btn
                             variant="light"
                             size="sm"
-                            @click="editMode = !editMode"
+                            @click="editMode = !editMode; if (!editMode) $emit('save')"
                             class="card-link mb-1"
                         >
                             <b-icon
@@ -86,6 +86,14 @@
                         </b-btn>
                     </b-col>
                 </b-row>
+                <b-row v-if="editMode">
+                    <b-col>
+                        <p class="text-info">
+                            <b-icon icon="info-circle" />
+                            Il n'est <strong>pas nécessaire</strong> de statuer sur chacune des ressources et difficultés.
+                        </p>
+                    </b-col>
+                </b-row>
             </b-card-header>
             <b-list-group
                 flush
@@ -100,11 +108,11 @@
                 />
                 <b-list-group-item class="text-right">
                     <b-btn
-                        @click="editMode = false"
-                        variant="outline-secondary"
+                        @click="editMode = false; $emit('save')"
+                        variant="outline-primary"
                     >
-                        <b-icon icon="eye-slash" />
-                        Cacher les éléments indéfinis
+                        <b-icon icon="box-arrow-in-right" />
+                        Sauver
                     </b-btn>
                 </b-list-group-item>
             </b-list-group>

@@ -81,10 +81,14 @@
                         :council_statement="statement"
                         ref="councilstatements"
                         @remove="removeStatement(index, 'council_statement')"
+                        @save="$emit('save')"
                     />
                 </b-col>
             </b-row>
-            <b-row class="mt-1">
+            <b-row
+                v-if="council_statement.length > 0"
+                class="mt-1"
+            >
                 <b-col>
                     <b-btn
                         @click="other_statement.unshift({})"
