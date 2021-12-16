@@ -23,7 +23,7 @@ from django_weasyprint import WeasyTemplateView
 
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.views.generic import TemplateView
-from django.db.models import ObjectDoesNotExist
+from django.db.models import ObjectDoesNotExist, query
 from django.contrib.auth.models import Group
 
 from rest_framework.filters import OrderingFilter
@@ -120,9 +120,9 @@ class BranchGoalViewSet(ModelViewSet):
     pagination_class = LargePageSizePagination
 
 
-class BranchStatementViewSet(ModelViewSet):
-    queryset = models.BranchStatementModel.objects.all()
-    serializer_class = serializers.BranchStatementSerializer
+class OtherStatementViewSet(ModelViewSet):
+    queryset = models.OtherStatementModel.objects.all()
+    serializer_class = serializers.OtherStatementSerializer
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
     filterset_fields = ('class_council',)
     pagination_class = LargePageSizePagination
@@ -202,6 +202,20 @@ class ParentsOpinionViewSet(ModelViewSet):
     filterset_fields = ('pia_model',)
     pagination_class = LargePageSizePagination
     ordering = ['-datetime_creation']
+
+
+class StudentStateViewSet(ModelViewSet):
+    queryset = models.StudentStateModel.objects.all()
+    serializer_class = serializers.StudentStateSerializer
+    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
+    filterset_fields = ('class_council',)
+    pagination_class = LargePageSizePagination
+
+
+class ResourceDifficultyViewSet(ModelViewSet):
+    queryset = models.ResourceDifficultyModel.objects.all()
+    serializer_class = serializers.ResourceDifficultySerializer
+    pagination_class = LargePageSizePagination
 
 
 class ReportPDFView(

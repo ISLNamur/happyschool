@@ -55,7 +55,8 @@ export default new Vuex.Store({
                         axios.get("/pia/api/branch_goal_item/"),
                         axios.get("/pia/api/cross_goal_item/"),
                         axios.get("/pia/api/assessment/"),
-                        axios.get("/pia/api/branch/")
+                        axios.get("/pia/api/branch/"),
+                        axios.get("/pia/api/resource_difficulty/")
                     ];
                     Promise.all(promises)
                         .then(resps => {
@@ -66,6 +67,7 @@ export default new Vuex.Store({
                             context.state.crossGoalItems = resps[4].data.results;
                             context.state.assessments = resps[5].data.results;
                             context.state.branches = resps[6].data.results;
+                            context.state.resourceDifficulty = resps[7].data.results;
                             resolve();
                         });
                 } else {

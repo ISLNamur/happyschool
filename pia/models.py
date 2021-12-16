@@ -201,11 +201,35 @@ class ClassCouncilPIAModel(models.Model):
     datetime_update = models.DateTimeField(auto_now=True)
 
 
-class BranchStatementModel(models.Model):
-    """Statement from a class council for a specific branch."""
+class OtherStatementModel(models.Model):
+    """Free Statement from a class council for a specific branch."""
 
     class_council = models.ForeignKey(ClassCouncilPIAModel, on_delete=models.CASCADE)
     branch = models.ForeignKey(BranchModel, on_delete=models.CASCADE)
     resources = models.TextField(blank=True)
     difficulties = models.TextField(blank=True)
     others = models.TextField(blank=True)
+
+
+class ResourceDifficultyModel(models.Model):
+    resource = models.CharField(max_length=300)
+    difficulty = models.CharField(max_length=300)
+    category = models.CharField(max_length=300, blank=True)
+
+    def __str__(self) -> str:
+        return f"{self.resource} <-> {self.difficulty}"
+
+
+class StudentStateModel(models.Model):
+    """States the resources and difficulties of the student at a class council."""
+
+    class_council = models.ForeignKey(ClassCouncilPIAModel, on_delete=models.CASCADE)
+    branch = models.ForeignKey(BranchModel, on_delete=models.CASCADE, null=True, blank=True)
+    resources = models.ManyToManyField(
+        ResourceDifficultyModel, blank=True, related_name="resources"
+    )
+    difficulties = models.ManyToManyField(
+        ResourceDifficultyModel, blank=True, related_name="difficulties"
+    )
+    datetime_creation = models.DateTimeField(auto_now_add=True)
+    datetime_update = models.DateTimeField(auto_now=True)

@@ -44,8 +44,10 @@ router.register(r'api/branch_goal', views.BranchGoalViewSet)
 router.register(r'api/cross_goal_item', views.CrossGoalItemViewSet)
 router.register(r'api/branch_goal_item', views.BranchGoalItemViewSet)
 router.register(r'api/class_council', views.ClassCouncilPIAViewSet)
-router.register(r'api/branch_statement', views.BranchStatementViewSet)
+router.register(r'api/other_statement', views.OtherStatementViewSet)
 router.register(r'api/student_project', views.StudentProjectViewSet)
 router.register(r'api/parents_opinion', views.ParentsOpinionViewSet)
+router.register(r'api/resource_difficulty', views.ResourceDifficultyViewSet)
+router.register(r'api/council_statement', views.StudentStateViewSet)
 
 urlpatterns += router.urls

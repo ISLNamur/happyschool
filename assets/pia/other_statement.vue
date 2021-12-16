@@ -24,7 +24,7 @@
         <b-card class="mt-1">
             <b-row>
                 <b-col>
-                    <strong>{{ branchStatement ? branchStatement.branch : "" }}</strong>
+                    <strong>{{ councilStatement ? councilStatement.branch : "" }}</strong>
                 </b-col>
                 <b-col
                     cols="2"
@@ -86,7 +86,7 @@
                                 select-label=""
                                 selected-label="Sélectionné"
                                 deselect-label="Cliquer dessus pour enlever"
-                                v-model="branchStatement"
+                                v-model="councilStatement"
                                 :show-no-options="false"
                                 label="branch"
                                 track-by="id"
@@ -151,20 +151,20 @@ import "quill/dist/quill.snow.css";
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 /**
- * A branch statement from a class council.
+ * A council statement from a class council.
  */
 export default {
     props: {
-        /** branch_statement data from database (read-only). */
-        branch_statement: {
+        /** council_statement data from database (read-only). */
+        council_statement: {
             type: Object,
             default: () => {},
         },
     },
     data: function () {
         return {
-            /** Branch of the statement. */
-            branchStatement: null,
+            /** A statement. */
+            councilStatement: null,
             resources: "",
             difficulties: "",
             others: "",
@@ -188,15 +188,15 @@ export default {
         };
     },
     methods: {
-        initBranchStatement: function () {
+        initCouncilStatement: function () {
             this.$store.dispatch("loadOptions")
                 .then(() => {
-                    this.branchStatement = this.$store.state.branches.filter(b => b.id == this.branch_statement.branch)[0];
+                    this.councilStatement = this.$store.state.branches.filter(b => b.id == this.council_statement.branch)[0];
                     this.loading = false;
                 });
-            this.resources = this.branch_statement.resources;
-            this.difficulties = this.branch_statement.difficulties;
-            this.others = this.branch_statement.others;
+            this.resources = this.council_statement.resources;
+            this.difficulties = this.council_statement.difficulties;
+            this.others = this.council_statement.others;
         },
         /** 
          * Submit new/changes branch statement.
@@ -205,21 +205,21 @@ export default {
         submit: function (classCouncilId) {
             const data = {
                 class_council: classCouncilId,
-                branch: this.branchStatement.id,
+                branch: this.councilStatement.id,
                 resources: this.resources,
                 difficulties: this.difficulties,
                 others: this.others,
             };
 
-            let url = "/pia/api/branch_statement/";
-            if ("id" in this.branch_statement) url += this.branch_statement.id + "/";
+            let url = "/pia/api/other_statement/";
+            if ("id" in this.council_statement) url += this.council_statement.id + "/";
 
-            const send = "id" in this.branch_statement ? axios.put : axios.post;
+            const send = "id" in this.council_statement ? axios.put : axios.post;
             return send(url, data, token);
         },
     },
     mounted: function () {
-        this.initBranchStatement();
+        this.initCouncilStatement();
     },
     components: {
         quillEditor,

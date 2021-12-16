@@ -827,11 +827,11 @@ export default {
                                 app.showSuccess(recordId);
                                 return;
                             }
-                            // Get branch statement promises.
+                            // Get council statement promises.
                             councilResponses.forEach((r, i) => {
                                 if (!("id" in app.$refs.councils[i])) {
                                     app.class_council.splice(i, 1, r.data);
-                                    subPromises.concat(app.$refs.councils[i].submitBranchStatement(app.class_council[i].id));
+                                    subPromises.concat(app.$refs.councils[i].submitCouncilStatement(app.class_council[i].id));
                                 }
                             });
 

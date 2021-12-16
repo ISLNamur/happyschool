@@ -130,14 +130,14 @@ class BranchGoalItemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class BranchStatementSerializer(serializers.ModelSerializer):
-    """Serializer of a BranchStatementModel.
+class OtherStatementSerializer(serializers.ModelSerializer):
+    """Serializer of a OtherStatementModel.
 
     Expose all field of the model.
     """
 
     class Meta:
-        model = models.BranchStatementModel
+        model = models.OtherStatementModel
         fields = '__all__'
 
 
@@ -166,4 +166,22 @@ class ParentsOpinionSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = models.ParentsOpinionModel
+        fields = "__all__"
+
+
+class ResourceDifficultySerializer(serializers.ModelSerializer):
+    """
+    Serializer for the couple resource and difficulty.
+    """
+    class Meta:
+        model = models.ResourceDifficultyModel
+        fields = "__all__"
+
+
+class StudentStateSerializer(serializers.ModelSerializer):
+    """
+    Serializer for the state (resources and difficulties) of a student at a specific council.
+    """
+    class Meta:
+        model = models.StudentStateModel
         fields = "__all__"

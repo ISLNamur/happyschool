@@ -65,21 +65,44 @@
             <b-row>
                 <b-col>
                     <b-btn
-                        @click="branch_statement.unshift({})"
+                        @click="council_statement.unshift({resources: [], difficulties: []})"
                         variant="info"
                     >
+                        <b-icon icon="plus" />
                         Ajouter une branche
                     </b-btn>
                 </b-col>
             </b-row>
             <b-row>
                 <b-col>
-                    <branch-statement
-                        v-for="(branch, index) in branch_statement"
-                        :key="branch.id"
-                        :branch_statement="branch"
-                        ref="statements"
-                        @remove="removeBranchStatement(index)"
+                    <council-statement
+                        v-for="(statement, index) in council_statement"
+                        :key="statement.id"
+                        :council_statement="statement"
+                        ref="councilstatements"
+                        @remove="removeStatement(index, 'council_statement')"
+                    />
+                </b-col>
+            </b-row>
+            <b-row class="mt-1">
+                <b-col>
+                    <b-btn
+                        @click="other_statement.unshift({})"
+                        variant="outline-info"
+                    >
+                        <b-icon icon="plus" />
+                        Autres ressources/difficultés
+                    </b-btn>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <other-statement
+                        v-for="(statement, index) in other_statement"
+                        :key="statement.id"
+                        :council_statement="statement"
+                        ref="otherstatements"
+                        @remove="removeStatement(index, 'other_statement')"
                     />
                 </b-col>
             </b-row>
@@ -90,7 +113,8 @@
 <script>
 import axios from "axios";
 
-import BranchStatement from "./branch_statement.vue";
+import CouncilStatement from "./council_statement.vue";
+import OtherStatement from "./other_statement.vue";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
@@ -109,14 +133,16 @@ export default {
         return {
             /** Date of class council. */
             date_council: null,
-            /** A list of branch statement. */
-            branch_statement: [],
-            /** State if the list of branch should be shown. */
+            /** A list of council statement. */
+            council_statement: [],
+            /** Other (free) statements.  */
+            other_statement: [],
+            /** State if the list of statements should be shown. */
             expanded: false,
         };
     },
     methods: {
-        /** Toggle the visibility of the list of branch statement */
+        /** Toggle the visibility of the list of council statement */
         toggleExpand: function () {
             this.expanded = !this.expanded;
         },
@@ -139,15 +165,22 @@ export default {
             return send(url, data, token);
         },
         /** 
-         * Get all the promises of the branch statements of the class council.
+         * Get all the promises of the council statements of the class council.
          * 
          * @param {String} classCouncilId The current class council id.
         */
-        submitBranchStatement: function (classCouncilId) {
-            // Check if there is at least one branch statement.
-            if (this.branch_statement.length == 0) return [];
+        submitCouncilStatement: function (classCouncilId) {
+            // Check if there is at least one council statement.
+            if (this.council_statement.length === 0 && this.other_statement.length === 0) return [];
 
-            return this.$refs.statements.map(bs => bs.submit(classCouncilId));
+            let proms = [];
+            if (this.$refs.councilstatements) {
+                proms = proms.concat(this.$refs.councilstatements.map(bs => bs.submit(classCouncilId)));
+            }
+            if (this.$refs.otherstatements) {
+                proms = proms.concat(this.$refs.otherstatements.map(s => s.submit(classCouncilId)));
+            }
+            return proms;
         },
         /**
          * Assign data from the prop.
@@ -158,11 +191,11 @@ export default {
             this.date_council = this.class_council.date_council;
         },
         /**
-         * Remove a branch statement.
+         * Remove a council statement.
          * 
          * @param
          */
-        removeBranchStatement: function (branchStatementIndex) {
+        removeStatement: function (councilStatementIndex, statementType) {
             let app = this;
             this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer cette branche ?", {
                 okTitle: "Oui",
@@ -170,11 +203,11 @@ export default {
                 centered: true,
             }).then(resp => {
                 if (resp) {
-                    if (app.class_council.id < 0 || !("id" in app.branch_statement[branchStatementIndex])) {
-                        app.branch_statement.splice(branchStatementIndex, 1);
+                    if (app.class_council.id < 0 || !("id" in app[statementType][councilStatementIndex])) {
+                        app[statementType].splice(councilStatementIndex, 1);
                     } else {
-                        axios.delete("/pia/api/branch_statement/" + app.branch_statement[branchStatementIndex].id + "/", token)
-                            .then(() => app.branch_statement.splice(branchStatementIndex, 1))
+                        axios.delete(`/pia/api/${statementType}/${app[statementType][councilStatementIndex].id}/`, token)
+                            .then(() => app[statementType].splice(councilStatementIndex, 1))
                             .catch(err => alert(err));
                     }
                     
@@ -184,9 +217,13 @@ export default {
     },
     mounted: function () {
         if (this.class_council.id >= 0) {
-            axios.get("/pia/api/branch_statement/?class_council=" + this.class_council.id)
+            axios.get(`/pia/api/council_statement/?class_council=${this.class_council.id}`)
                 .then(resp => {
-                    this.branch_statement = resp.data.results;
+                    this.council_statement = resp.data.results;
+                });
+            axios.get(`/pia/api/other_statement/?class_council=${this.class_council.id}`)
+                .then(resp => {
+                    this.other_statement = resp.data.results;
                 });
         } else {
             this.expanded = true;
@@ -195,7 +232,8 @@ export default {
         this.assignClassCouncil();
     },
     components: {
-        BranchStatement,
+        CouncilStatement,
+        OtherStatement
     }
 };
 </script>
