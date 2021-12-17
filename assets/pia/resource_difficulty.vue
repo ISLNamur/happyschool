@@ -54,6 +54,17 @@
                     />
                     Non acquis
                 </b-btn>
+                <b-btn
+                    v-if="editMode && value !== null"
+                    variant="outline-info"
+                    @click="$emit('input', null)"
+                    size="sm"
+                >
+                    <b-icon
+                        icon="arrow-counterclockwise"
+                    />
+                    Non considéré
+                </b-btn>
             </span>
         </div>
     </b-list-group-item>
