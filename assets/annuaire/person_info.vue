@@ -295,7 +295,7 @@
                             </b-badge>
                         </template>
                         <b-card
-                            header="Derniers messages du dossier des élèves"
+                            :header="`Derniers messages du dossier des élèves (${dossier_eleve.count} au total)`"
                             class="mt-2"
                             v-if="dossier_eleve && dossier_eleve.count > 0"
                         >
@@ -341,7 +341,7 @@
                             </b-row>
                         </b-card>
                         <b-card
-                            header="Retards"
+                            :header="`Retards (${lateness.count} au total)`"
                             v-if="lateness && lateness.count > 0"
                             class="mt-2"
                         >
@@ -373,7 +373,7 @@
                             </b-row>
                         </b-card>
                         <b-card
-                            header="Derniers passages à l'infirmerie"
+                            :header="`Derniers passages à l'infirmerie (${infirmerie.count} au total)`"
                             class="mt-2"
                             v-if="infirmerie && infirmerie.count > 0"
                         >
@@ -407,9 +407,9 @@
                             </b-row>
                         </b-card>
                         <b-card
-                            header="Derniers appels"
+                            :header="`Derniers appels (${appels.count} au total)`"
                             class="mt-2"
-                            v-if="appels && appels.results.count > 0"
+                            v-if="appels && appels.count > 0"
                         >
                             <b-row>
                                 <b-col cols="2">
@@ -440,7 +440,7 @@
                                 <b-col>{{ appel.commentaire }}</b-col>
                             </b-row>
                         </b-card>
-                        <p v-if="appels && dossier_eleve && infirmerie">
+                        <p v-if="appels.count === 0 && dossier_eleve.count === 0 && infirmerie.count === 0 && lateness.count === 0">
                             <em>Aucune donnée concernant l'élève n'est présente.</em>
                         </p>
                     </b-tab>
