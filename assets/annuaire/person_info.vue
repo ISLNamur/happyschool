@@ -440,7 +440,7 @@
                                 <b-col>{{ appel.commentaire }}</b-col>
                             </b-row>
                         </b-card>
-                        <p v-if="appels.count === 0 && dossier_eleve.count === 0 && infirmerie.count === 0 && lateness.count === 0">
+                        <p v-if="infoCount > 0">
                             <em>Aucune donnée concernant l'élève n'est présente.</em>
                         </p>
                     </b-tab>
@@ -522,7 +522,7 @@ export default {
         tabTitle: function () {
             const start = "Fiche ";
             return this.type === "student" ? start + "de l'élève" : start + "du responsable";
-        }
+        },
     },
     watch: {
         matricule: function () {
