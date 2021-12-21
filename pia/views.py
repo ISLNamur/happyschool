@@ -100,6 +100,26 @@ class PIAViewSet(BaseModelViewSet):
     def get_group_all_access(self):
         return get_settings().all_access.all()
 
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        create_log = models.LogPIAModel(
+            log=f"PIA from {str(instance.student)} is created by {self.request.user.username}"
+        )
+        create_log.save()
+
+    def perform_destroy(self, instance):
+        delete_log = models.LogPIAModel(
+            log=f"PIA from {str(instance.student)} is deleted by {self.request.user.username}"
+        )
+        delete_log.save()
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        update_log = models.LogPIAModel(
+            log=f"PIA from {str(instance.student)} is updated by {self.request.user.username}"
+        )
+        update_log.save()
+
 
 class CrossGoalViewSet(ModelViewSet):
     queryset = models.CrossGoalModel.objects.all()

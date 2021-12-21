@@ -233,3 +233,11 @@ class StudentStateModel(models.Model):
     )
     datetime_creation = models.DateTimeField(auto_now_add=True)
     datetime_update = models.DateTimeField(auto_now=True)
+
+
+class LogPIAModel(models.Model):
+    log = models.CharField(max_length=300)
+    datetime = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"{self.datetime} - {self.log}"
