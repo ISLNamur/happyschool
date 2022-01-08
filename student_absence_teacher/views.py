@@ -262,6 +262,8 @@ class ExportAbsencesAPI(APIView):
         days = [""] * 5
         for s in statuses:
             day = s[4].weekday()
+            if day > 5:
+                continue
             if days[day]:
                 days[day] += f"/{status[s[5]][0].upper()}"
             else:
