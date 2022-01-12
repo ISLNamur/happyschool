@@ -183,8 +183,7 @@ export default {
 
             let path = "/dossier_eleve/get_pdf_";
             if (this.tabIndex == 0 && this.$store.state.settings.enable_disciplinary_council) {
-                path += "council/?datetime_conseil__gt=" + this.date_from;
-                path += " 00:00&datetime_conseil__lt=" + this.date_to;
+                path += `council/?datetime_conseil__gte=${this.date_from} 00:00&datetime_conseil__lte=${this.date_to} 23:59`;
             } else {
                 path += "retenues/?activate_all_retenues=true";
                 path += "&date_sanction__gte=" + this.date_from;

@@ -678,6 +678,7 @@ class AskSanctionsPDFGenAPI(APIView):
 
     def get(self, request, format=None):
         view_set = AskSanctionsViewSet.as_view({'get': 'list'})
+        print(view_set(request._request).data)
         results = view_set(request._request).data['results']
         results = self.modify_entries(results)
 
