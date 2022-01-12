@@ -41,6 +41,8 @@ const store = new Vuex.Store({
         canSetSanction: canSetSanction,
         // eslint-disable-next-line no-undef
         canAskSanction: canAskSanction,
+        // eslint-disable-next-line no-undef
+        hasProEco: proeco
     },
     mutations: {
         addFilter: function (state, filter) {

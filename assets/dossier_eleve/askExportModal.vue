@@ -22,12 +22,29 @@
         <b-modal
             size="lg"
             title="Exporter des données dans un fichier"
-            ok-title="Créer pdf"
-            :ok-only="true"
             ref="askExportModal"
-            @ok="getPdf"
             @hidden="resetModal"
         >
+            <template #modal-footer>
+                <div class="w-100 text-right">
+                    <b-button
+                        variant="primary"
+                        @click="getPdf"
+                        :disabled="!date_from && !date_to"
+                    >
+                        Créer PDF
+                    </b-button>
+                    <b-button
+                        v-if="$store.state.hasProEco"
+                        variant="primary"
+                        class="ml-1"
+                        @click="exportProEco"
+                        :disabled="!date_from && !date_to"
+                    >
+                        Exporter vers ProEco
+                    </b-button>
+                </div>
+            </template>
             <b-tabs v-model="tabIndex">
                 <b-tab
                     v-if="$store.state.settings.enable_disciplinary_council"
@@ -40,8 +57,8 @@
                                 <b-form-group label="À partir du">
                                     <input
                                         type="date"
-                                        v-model="date_council_from"
-                                        :max="date_council_to"
+                                        v-model="date_from"
+                                        :max="date_to"
                                     >
                                 </b-form-group>
                             </b-form-row>
@@ -51,8 +68,8 @@
                                 <b-form-group label="Jusqu'au">
                                     <input
                                         type="date"
-                                        v-model="date_council_to"
-                                        :min="date_council_from"
+                                        v-model="date_to"
+                                        :min="date_from"
                                     >
                                 </b-form-group>
                             </b-form-row>
@@ -66,8 +83,8 @@
                                 <b-form-group label="À partir du">
                                     <input
                                         type="date"
-                                        v-model="date_retenues_from"
-                                        :max="date_retenues_to"
+                                        v-model="date_from"
+                                        :max="date_to"
                                     >
                                 </b-form-group>
                             </b-form-row>
@@ -77,8 +94,8 @@
                                 <b-form-group label="Jusqu'au">
                                     <input
                                         type="date"
-                                        v-model="date_retenues_to"
-                                        :min="date_retenues_from"
+                                        v-model="date_to"
+                                        :min="date_from"
                                     >
                                 </b-form-group>
                             </b-form-row>
@@ -137,21 +154,16 @@ export default {
     data: function () {
         return {
             tabIndex: 0,
-            date_council_from: null,
-            date_council_to: null,
-            date_retenues_from: null,
-            date_retenues_to: null,
+            date_from: null,
+            date_to: null,
             sanction_not_done: false,
             sortByClasse: this.$store.state.settings.export_retenues_by_classe_default,
             sortBySanction: this.$store.state.settings.export_retenues_by_sanction_default,
         };
     },
     watch: {
-        date_council_from: function (date) {
-            if (this.date_council_to === null) this.date_council_to = date;
-        },
-        date_retenues_from: function (date) {
-            if (this.date_retenues_to === null) this.date_retenues_to = date;
+        date_from: function (date) {
+            if (this.date_to === null) this.date_to = date;
         },
     },
     methods: {
@@ -163,22 +175,20 @@ export default {
         },
         resetModal: function () {
             this.tabIndex = 0;
-            this.date_council_from = null;
-            this.date_council_to = null;
-            this.date_retenues_from = null;
-            this.date_retenues_to = null;
+            this.date_from = null;
+            this.date_to = null;
         },
         getPdf: function (evt) {
             evt.preventDefault();
 
             let path = "/dossier_eleve/get_pdf_";
             if (this.tabIndex == 0 && this.$store.state.settings.enable_disciplinary_council) {
-                path += "council/?datetime_conseil__gt=" + this.date_council_from;
-                path += " 00:00&datetime_conseil__lt=" + this.date_council_to;
+                path += "council/?datetime_conseil__gt=" + this.date_from;
+                path += " 00:00&datetime_conseil__lt=" + this.date_to;
             } else {
                 path += "retenues/?activate_all_retenues=true";
-                path += "&date_sanction__gte=" + this.date_retenues_from;
-                path += "&date_sanction__lte=" + this.date_retenues_to;
+                path += "&date_sanction__gte=" + this.date_from;
+                path += "&date_sanction__lte=" + this.date_to;
                 if (this.sanction_not_done) {
                     path += "&activate_not_done=true";
                 }
@@ -189,9 +199,14 @@ export default {
             orderingFields.push("matricule__last_name");
             path += `&ordering=${orderingFields.toString()}`;
             path += "&page_size=500";
-            console.log(path);
             window.open(path);
         },
+        exportProEco: function () {
+            const export_type = this.tabIndex == 0 && this.$store.state.settings.enable_disciplinary_council ? "council" : "retenue";
+            window.open(
+                `/dossier_eleve/get_proeco_sanction/${export_type}/${this.date_from}/${this.date_to}/`
+            );
+        }
     },
     mounted: function () {
         this.show();

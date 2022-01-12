@@ -136,6 +136,7 @@ class BaseDossierEleveView(LoginRequiredMixin,
         groups["teacher"] = {"id": groups["teacher"].id, "text": "Professeurs"}
         groups["pms"] = {"id": groups["pms"].id, "text": "PMS"}
         context['groups'] = groups
+        context["proeco"] = json.dumps("proeco" in settings.INSTALLED_APPS)
 
         context["dossier_eleve_last_access"] = self.request.session.get("dossier_eleve_last_access", "")
         # Set last access
@@ -820,3 +821,35 @@ class WarnSanctionAPI(APIView):
         sanction.notified = True
         sanction.save()
         return Response(status=201)
+
+
+if "proeco" in settings.INSTALLED_APPS:
+    from proeco.views import ExportStudentSelectionAPI
+
+    class ExportStudentToProEco(ExportStudentSelectionAPI):
+        def _get_student_list(self, request, kwargs):
+            date_from = kwargs["date_from"]
+            date_to = kwargs["date_to"]
+            export_type = kwargs["export_type"]
+
+            sanctions = CasEleve.objects.filter(
+                matricule__isnull=False,
+                sanction_decision__isnull=False,
+                sanction_faite=False,
+            )
+
+            if export_type == "council":
+                sanctions = sanctions.filter(
+                    datetime_conseil__gte=date_from,
+                    datetime_conseil__lte=date_to,
+                )
+            elif export_type == "retenue":
+                sanctions = sanctions.filter(
+                    date_sanction__gte=date_from,
+                    date_sanction__lte=date_to,
+                )
+
+            return sanctions.values_list("matricule", flat=True)
+
+        def _format_file_name(self, request, **kwargs):
+            return f"Pref_NOMS_{timezone.now().strftime('%y-%m-%d')}_sanctions.TXT"

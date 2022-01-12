@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url
+from django.conf import settings
 from django.urls import path
 
 from rest_framework.routers import DefaultRouter
@@ -53,3 +53,6 @@ router.register(r'api/sanction_decision', views.SanctionDecisionViewSet)
 router.register(r'api/ask_sanctions', views.AskSanctionsViewSet)
 
 urlpatterns += router.urls
+
+if "proeco" in settings.INSTALLED_APPS:
+    urlpatterns += path('get_proeco_sanction/<export_type>/<date_from>/<date_to>/', views.ExportStudentToProEco.as_view()),
