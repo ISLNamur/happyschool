@@ -621,7 +621,7 @@ export default {
                         apps.push("infirmerie");
                     }
                     if (userMenu.apps.find(a => a.app == "lateness")) {
-                        promises.push(axios.get(`/lateness/api/lateness/?student__matricule=${this.matricule}&scholar_year=${getCurrentScholarYear()}`));
+                        promises.push(axios.get(`/lateness/api/lateness/?ordering=-datetime_creation&student__matricule=${this.matricule}&scholar_year=${getCurrentScholarYear()}`));
                         apps.push("lateness");
                     }
                     Promise.all(promises)
