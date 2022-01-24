@@ -26,7 +26,7 @@
         ref="exportModal"
         @hidden="resetModal"
     >
-        <template #modal-footer="{ ok }">
+        <template #modal-footer="">
             <b-btn
                 variant="primary"
                 :href="summaryUrl"
