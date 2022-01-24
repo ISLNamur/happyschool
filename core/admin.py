@@ -66,7 +66,7 @@ class ResponsibleCoreAdmin(admin.ModelAdmin):
     list_display = [
         'matricule', 'last_name', 'first_name',
         'is_teacher', 'is_educator', 'is_secretary',
-        'user'
+        'user', 'is_sync'
     ]
     search_fields = ['last_name', "first_name", 'matricule']
     filter_horizontal = ('classe', 'tenure',)

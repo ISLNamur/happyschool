@@ -102,6 +102,9 @@ class ImportResponsible(ImportBase):
                 self.print_log("No last name found, skipping responsible.")
                 continue
             resp = self.get_responsible(entry)
+            if not resp.is_sync:
+                self.print_log(f"Is not synced, skipping responsible {resp.fullname}.")
+                continue
             if not resp:
                 self.print_log("No unique identifier found, skipping responsible.")
                 continue
@@ -241,7 +244,9 @@ class ImportResponsible(ImportBase):
         # Set inactives teachers.
         if len(resp_synced) != 0:
             self.print_log("Set inactive teachers…")
-            all_resp = ResponsibleModel.objects.filter(teaching=self.teaching, is_teacher=True)
+            all_resp = ResponsibleModel.objects.filter(
+                teaching=self.teaching, is_teacher=True, is_synced=True
+            )
             for r in all_resp:
                 if r.matricule not in resp_synced:
                     if not self.has_inactivity:

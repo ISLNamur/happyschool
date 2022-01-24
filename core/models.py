@@ -240,6 +240,7 @@ class ResponsibleModel(models.Model):
                                 on_delete=models.CASCADE,
                                 null=True,
                                 blank=True)
+    is_sync = models.BooleanField(default=True)
     inactive_from = models.DateTimeField(null=True, blank=True, default=None)
     birth_date = models.DateField("birth date", null=True, blank=True)
 
