@@ -232,14 +232,14 @@ class SummaryPDFAPI(APIView):
         send_to_teachers = json.loads(request.GET.get('send_to_teachers', 'false'))
         message = request.GET.get('message', "")
 
-        pdf_file = self.export(changes, date_from, date_to)
+        pdf_file = self.export(changes, date_from, date_to).read()
         pdf_name = 'changement_horaire_' + date_from + '_' + date_to + '.pdf'
         if send_to_teachers:
             self.send_to_teachers(changes, date_from, date_to, pdf_file, message)
 
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = 'filename; filename="' + pdf_name + '"'
-        response.write(pdf_file.read())
+        response.write(pdf_file)
         return response
 
     def export(self, changes, date_from, date_to):
@@ -265,7 +265,7 @@ class SummaryPDFAPI(APIView):
         teachers_involved = ResponsibleModel.objects.filter(
             Q(classe__in=classes) | Q(tenure__in=classes)
         )
-        attachments = [{'filename': pdf_name, 'file': pdf_file.read()}]
+        attachments = [{'filename': pdf_name, 'file': pdf_file}]
         settings = get_settings()
         core_settings = get_core_settings()
         teachers_email = [t.email_school for t in teachers_involved] if settings.email_school else \

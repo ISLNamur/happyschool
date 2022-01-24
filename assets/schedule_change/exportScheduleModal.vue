@@ -24,9 +24,19 @@
         cancel-title="Annuler"
         :ok-disabled="!export_to || !export_from || processing"
         ref="exportModal"
-        @ok="submitExport"
         @hidden="resetModal"
     >
+        <template #modal-footer="{ ok }">
+            <b-btn
+                variant="primary"
+                :href="summaryUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                @click="$refs.exportModal.hide()"
+            >
+                {{ buttonOkText }}
+            </b-btn>
+        </template>
         <b-row class="mt-2">
             <b-col>
                 <b-form-row>
@@ -73,12 +83,6 @@
                 />
             </b-col>
         </b-row>
-        <template slot="modal-ok">
-            <b-spinner
-                v-if="processing"
-            />
-            {{ buttonStr }}
-        </template>
     </b-modal>
 </template>
 
@@ -112,19 +116,19 @@ export default {
     computed: {
         summaryUrl: function () {
             return "/schedule_change/api/summary_pdf/?page_size=500&date_change__gte="
-            + this.export_from + "&date_change__lte=" + this.export_to + "&send_to_teachers=" + this.sendToTeachers
-            + "&message=" + encodeURIComponent(this.message);
+            + `${this.export_from}&date_change__lte=${this.export_to}&send_to_teachers=${this.sendToTeachers}`
+            + `&message=${encodeURIComponent(this.message)}`;
+        },
+        buttonOkText: function () {
+            if (this.sendToTeachers) {
+                return "Créer le PDF et envoyer";
+            }
+            return "Créer le PDF";
         }
     },
     methods: {
         show: function () {
             this.$refs.exportModal.show();
-        },
-        submitExport: function () {
-            const url = "/schedule_change/api/summary_pdf/?page_size=500&date_change__gte="
-            + this.export_from + "&date_change__lte=" + this.export_to + "&send_to_teachers=" + this.sendToTeachers
-            + "&message=" + encodeURIComponent(this.message);
-            document.location = url;
         },
         resetModal: function () {
             Object.assign(this.$data, this.$options.data.call(this));
