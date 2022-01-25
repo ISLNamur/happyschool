@@ -245,7 +245,7 @@ class ImportResponsible(ImportBase):
         if len(resp_synced) != 0:
             self.print_log("Set inactive teachers…")
             all_resp = ResponsibleModel.objects.filter(
-                teaching=self.teaching, is_teacher=True, is_synced=True
+                teaching=self.teaching, is_teacher=True, is_sync=True
             )
             for r in all_resp:
                 if r.matricule not in resp_synced:
