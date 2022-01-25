@@ -31,6 +31,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--nocourse", action="store_false")
+        parser.add_argument("--people", action="store", default="all")
 
     def handle(self, *args, **options):
         proecos = settings.SYNC_FDB_SERVER
@@ -52,5 +53,7 @@ class Command(BaseCommand):
                                                            username_attribute=username_attribute,
                                                            sync_course=options["nocourse"]
                                                            )
-            importation_student.sync()
-            importation_responsible.sync()
+            if options["people"] == "all" or options["people"] == "student":
+                importation_student.sync()
+            if options["people"] == "all" or options["people"] == "responsible":
+                importation_responsible.sync()
