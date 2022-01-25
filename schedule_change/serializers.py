@@ -54,6 +54,7 @@ class ScheduleChangeSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(label='ID', read_only=False, required=False)
     send_email_general = serializers.BooleanField(write_only=True, required=False)
     send_email_substitute = serializers.BooleanField(write_only=True, required=False)
+    send_email_replaced = serializers.BooleanField(write_only=True, required=False)
     classes = FlatArrayField()
 
     teachers_replaced = ResponsibleSerializer(read_only=True, many=True)
@@ -74,7 +75,7 @@ class ScheduleChangeSerializer(serializers.ModelSerializer):
             "id", "change", "category", "date_change", "time_start", "time_end",
             "send_email_general", "send_email_substitute", "teachers_replaced",
             "teachers_replaced_id", "teachers_substitute", "teachers_substitute_id",
-            "classes", "place", "comment", "hide_for_students",
+            "classes", "place", "comment", "hide_for_students", "send_email_replaced"
             ]
         read_only_fields = ('datetime_created', 'datetime_modified', 'user', 'created_by',)
 

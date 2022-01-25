@@ -113,7 +113,7 @@
                 </multiselect>
             </b-form-group>
             <b-form-group
-                label="Prof/Educ(s) absent(s) et/ou indisponible(s)"
+                label="Prof/Educ(s) absent(s)/indisponible(s)/concerné(s)"
             >
                 <multiselect
                     :internal-search="false"
@@ -188,6 +188,14 @@
             </b-form-group>
             <b-form-group>
                 <b-form-checkbox
+                    v-if="form.teachers_replaced.length > 0"
+                    v-model="form.send_email_replaced"
+                >
+                    Notifier le prof/éduc concerné par courriel
+                </b-form-checkbox>
+            </b-form-group>
+            <b-form-group>
+                <b-form-checkbox
                     v-if="form.teachers_substitute.length > 0"
                     v-model="form.send_email_substitute"
                 >
@@ -246,6 +254,7 @@ export default {
                 comment: "",
                 send_email_general: false,
                 send_email_substitute: false,
+                send_email_replaced: false,
                 hide_for_students: false,
             },
             classesOptions: [],
