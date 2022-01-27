@@ -123,9 +123,11 @@ class PeriodCoreModel(models.Model):
 
 
 class CourseScheduleModel(models.Model):
+    course_name = models.CharField(max_length=10, default="")
     period = models.ForeignKey(PeriodCoreModel, on_delete=models.CASCADE)
     day_of_week = models.PositiveSmallIntegerField()
-    given_course = models.ForeignKey(GivenCourseModel, on_delete=models.CASCADE)
+    given_course = models.ManyToManyField(GivenCourseModel, blank=True, default=None)
+    is_sync = models.BooleanField(default=True)
 
     @property
     def related_classes(self):
