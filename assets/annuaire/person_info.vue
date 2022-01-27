@@ -128,7 +128,11 @@
                                         :key="c.id"
                                         :class="{'col-7': index == 0, 'col-7 offset-5': index > 0}"
                                     >
-                                        <span v-if="c.course.long_name">
+                                        <span
+                                            v-if="c.course.long_name" 
+                                            v-b-tooltip
+                                            :title="c.course.short_name"
+                                        >
                                             {{ c.course.long_name }}
                                         </span>
                                         <span v-else>
