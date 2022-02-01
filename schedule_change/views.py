@@ -72,6 +72,7 @@ class ScheduleChangeView(LoginRequiredMixin, PermissionRequiredMixin, TemplateVi
     filters = [{'value': 'activate_ongoing', 'text': 'Prochains changements'},
                {'value': 'date_change', 'text': "Date du changement"},
                {'value': 'activate_has_classe', 'text': 'Concerne une classe'},
+               {'value': 'place', 'text': 'Lieu'},
                ]
 
     def get_context_data(self, **kwargs):
@@ -110,7 +111,7 @@ class ScheduleChangeFilter(BaseFilters):
     activate_show_for_students = filters.BooleanFilter(method="activate_show_for_students_by")
 
     class Meta:
-        fields_to_filter = ["date_change"]
+        fields_to_filter = ["date_change", "place"]
         model = ScheduleChangeModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
