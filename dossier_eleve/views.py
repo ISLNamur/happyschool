@@ -655,9 +655,11 @@ class CasElevePDFGenAPI(APIView):
             r['date_sanction'] = timezone.datetime.strptime(r['date_sanction'][:19], "%Y-%m-%d") if r['date_sanction'] else None
         student = StudentModel.objects.get(matricule=request.GET['student_id'])
         check_student_photo(student)
-        #TODO: Should we show current year statistics or all years statistics?
-        context = {'statistics': StatisticAPI().gen_stats(request.user, student,
-                                                          all_years=False)}
+
+        all_years = not request._request.GET.get("scholar_year", False)
+        context = {
+            'statistics': StatisticAPI().gen_stats(request.user, student, all_years=all_years)
+        }
         tenure = ResponsibleModel.objects.filter(tenure=student.classe).first()
         context['tenure'] = tenure.fullname if tenure else "—"
 
