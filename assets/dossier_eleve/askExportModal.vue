@@ -125,6 +125,20 @@
                     </b-row>
                     <b-row>
                         <b-col>
+                            <b-form-group
+                                label="Types de sanctions"
+                            >
+                                <b-form-select
+                                    v-model="selectedSanctions"
+                                    :options="optionsSanction"
+                                    multiple
+                                    :select-size="5"
+                                />
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col>
                             <b-form-group>
                                 <b-checkbox
                                     v-model="sanction_not_done"
@@ -159,6 +173,8 @@ export default {
             sanction_not_done: false,
             sortByClasse: this.$store.state.settings.export_retenues_by_classe_default,
             sortBySanction: this.$store.state.settings.export_retenues_by_sanction_default,
+            selectedSanctions: [],
+            optionsSanction: [],
         };
     },
     watch: {
@@ -198,6 +214,7 @@ export default {
             orderingFields.push("matricule__last_name");
             path += `&ordering=${orderingFields.toString()}`;
             path += "&page_size=500";
+            path += `&sanction_decision=${this.selectedSanctions.join()}`;
             window.open(path);
         },
         exportProEco: function () {
@@ -208,6 +225,16 @@ export default {
         }
     },
     mounted: function () {
+        axios.get("/dossier_eleve/api/sanction_decision/?only_sanction=1")
+            .then(resp => {
+                this.optionsSanction = resp.data.results.filter(sanct => sanct.can_ask).map(sanct => {
+                    return {
+                        value: sanct.id,
+                        text: sanct.sanction_decision,
+                    };
+                });
+                this.selectedSanctions = this.optionsSanction.map(s => s.value);
+            });
         this.show();
     },
 };

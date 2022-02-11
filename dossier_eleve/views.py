@@ -386,7 +386,7 @@ class AskSanctionsView(BaseDossierEleveView):
         {'value': 'matricule_id', 'text': 'Matricule'},
         {'value': 'scholar_year', 'text': 'Année scolaire'},
         {'value': 'activate_all_retenues', 'text': 'Toutes les retenues'},
-        {'value': 'activate_today', 'text': "Sanctions aujourd'hui"},
+        {'value': 'activate_today', 'text': "Sanctions aujourdhui"},
         {'value': 'activate_not_done', 'text': 'Sanctions non faites'},
         {'value': 'activate_waiting', 'text': 'En attente de validation'},
     ]
@@ -407,13 +407,21 @@ class AskSanctionsFilter(BaseFilters):
     activate_waiting = filters.CharFilter(method='activate_waiting_by')
     activate_today = filters.CharFilter(method="activate_today_by")
     matricule__display = filters.CharFilter(method="people_name_by")
+    sanction_decision = filters.CharFilter(method="sanction_decision_by")
 
     class Meta:
         fields_to_filter = ('matricule_id', 'sanction_decision__sanction_decision', 'date_sanction',
-                            'datetime_conseil', 'datetime_encodage', 'sanction_decision__is_retenue')
+                            'datetime_conseil', 'datetime_encodage', 'sanction_decision__is_retenue',
+                            )
         model = CasEleve
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
+
+    def sanction_decision_by(self, queryset, name, value):
+        query_filter = Q()
+        for i in value.split(","):
+            query_filter |= Q(sanction_decision__id=i)
+        return queryset.filter(query_filter)
 
     def activate_not_done_by(self, queryset, name, value):
         if value == 'true':
