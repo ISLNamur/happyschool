@@ -386,7 +386,7 @@ class AskSanctionsView(BaseDossierEleveView):
         {'value': 'matricule_id', 'text': 'Matricule'},
         {'value': 'scholar_year', 'text': 'Année scolaire'},
         {'value': 'activate_all_retenues', 'text': 'Toutes les retenues'},
-        {'value': 'activate_today', 'text': 'Sanction du jour'},
+        {'value': 'activate_today', 'text': "Sanctions aujourd'hui"},
         {'value': 'activate_not_done', 'text': 'Sanctions non faites'},
         {'value': 'activate_waiting', 'text': 'En attente de validation'},
     ]
