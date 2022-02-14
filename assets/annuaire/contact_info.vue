@@ -27,13 +27,17 @@
                 Téléphone de l'élève
             </dt>
             <dd class="col-7">
-                {{ contact.student_phone }}
+                <a :href="`tel:${contact.student_phone.replaceAll('.', '')}`">
+                    {{ contact.student_phone }}
+                </a>
             </dd>
             <dt class="col-5 text-right">
                 GSM de l'élève
             </dt>
             <dd class="col-7">
-                {{ contact.student_mobile }}
+                <a :href="`tel:${contact.student_mobile.replaceAll('.', '')}`">
+                    {{ contact.student_mobile }}
+                </a>
             </dd>
             <dt class="col-5 text-right">
                 Email de l'élève
@@ -51,13 +55,17 @@
                 Téléphone responsable
             </dt>
             <dd class="col-7">
-                {{ contact.resp_phone }}
+                <a :href="`tel:${contact.resp_phone.replaceAll('.', '')}`">
+                    {{ contact.resp_phone }}
+                </a>
             </dd>
             <dt class="col-5 text-right">
                 GSM responsable
             </dt>
             <dd class="col-7">
-                {{ contact.resp_mobile }}
+                <a :href="`tel:${contact.resp_mobile.replaceAll('.', '')}`">
+                    {{ contact.resp_mobile }}
+                </a>
             </dd>
             <dt class="col-5 text-right">
                 Email responsable
@@ -75,13 +83,17 @@
                 Téléphone de la mère
             </dt>
             <dd class="col-7">
-                {{ contact.mother_phone }}
+                <a :href="`tel:${contact.mother_phone.replaceAll('.', '')}`">
+                    {{ contact.mother_phone }}
+                </a>
             </dd>
             <dt class="col-5 text-right">
                 GSM de la mère
             </dt>
             <dd class="col-7">
-                {{ contact.mother_mobile }}
+                <a :href="`tel:${contact.mother_mobile.replaceAll('.', '')}`">
+                    {{ contact.mother_mobile }}
+                </a>
             </dd>
             <dt class="col-5 text-right">
                 Email de la mère
@@ -99,13 +111,17 @@
                 Téléphone du père
             </dt>
             <dd class="col-7">
-                {{ contact.father_phone }}
+                <a :href="`tel:${contact.father_phone.replaceAll('.', '')}`">
+                    {{ contact.father_phone }}
+                </a>
             </dd>
             <dt class="col-5 text-right">
                 GSM du père
             </dt>
             <dd class="col-7">
-                {{ contact.father_mobile }}
+                <a :href="`tel:${contact.father_mobile.replaceAll('.', '')}`">
+                    {{ contact.father_mobile }}
+                </a>
             </dd>
             <dt class="col-5 text-right">
                 Email du père
