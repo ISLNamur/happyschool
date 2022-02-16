@@ -83,6 +83,7 @@
                                 @search-change="getOptions"
                                 :internal-search="false"
                                 @open="handleSpecificInput"
+                                preserve-search
                             >
                                 <span slot="noOptions" />
                             </multiselect>
@@ -132,6 +133,10 @@
 <script>
 import Multiselect from "vue-multiselect";
 import axios from "axios";
+
+import {displayStudent} from "./utilities.js";
+
+const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
     props: {
@@ -213,6 +218,7 @@ export default {
         }
     },
     methods: {
+        displayStudent,
         setFocus: function () {
             if (this.filterType.startsWith("date")) {
                 return;
@@ -251,7 +257,6 @@ export default {
             this.searchId += 1;
             let currentSearch = this.searchId;
             if (this.filterType == "classe") {
-                const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
                 let data = {
                     query: search,
                     teachings: this.$store.state.settings.teachings,
@@ -288,6 +293,26 @@ export default {
                 }];
                 return;
             } else if (this.filterType.startsWith("count_")) {
+                return;
+            } else if (this.filterType === "student") {
+                const data = {
+                    query: search,
+                    people_type: "student",
+                    teachings: this.$store.state.settings.teachings,
+                    check_access: 0,
+                };
+                axios.post("/annuaire/api/people/", data, token)
+                    .then(resp => {
+                        if (this.searchId !== currentSearch)
+                            return;
+                        this.filterSearchOptions = resp.data.map(s => {
+                            return {
+                                tag: this.displayStudent(s),
+                                filterType: "student__matricule",
+                                value: s.matricule,
+                            };
+                        });
+                    });
                 return;
             }
 
