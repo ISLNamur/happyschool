@@ -158,6 +158,8 @@
 import Moment from "moment";
 Moment.locale("fr");
 
+import axios from "axios";
+
 export default {
     props: {
         "entriesCount": {
