@@ -43,7 +43,7 @@
         <div><em>Créée le {% now "j F Y à H\hi" %}</em></div>
         {% for el in list %}
         <div class="cas">
-            <h2>{{ el.matricule.fullname_classe }}</h2>
+            <h2>{{ el.student.fullname_classe }}</h2>
             {% if el.info %}
             <div><u>Info</u>: <strong>{{ el.info.info }}</strong> <em>({{ el.demandeur }} le {{ el.datetime_encodage|date:"d/m/Y H:i" }})</em></div>
             <div class="comment">

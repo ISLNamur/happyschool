@@ -230,7 +230,7 @@ class SanctionStatisticsModel(models.Model):
 
 
 class CasEleve(models.Model):
-    matricule = models.ForeignKey(StudentModel, on_delete=models.SET_NULL, to_field='matricule', null=True, blank=True)
+    student = models.ForeignKey(StudentModel, on_delete=models.SET_NULL, to_field='matricule', null=True, blank=True)
     # The name field is there only to have some history.
     name = models.CharField(max_length=100, default="")
     datetime_encodage = models.DateTimeField("date d'encodage", auto_now_add=True)

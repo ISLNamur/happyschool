@@ -186,14 +186,14 @@ export default {
             if (this.tabIndex == 0) {
                 let path = "/dossier_eleve/get_pdf/?page_size=500&";
 
-                path += "letter" in this.nameClasse ? "classe=" : "matricule_id=";
+                path += "letter" in this.nameClasse ? "classe=" : "student_id=";
                 path += this.nameClasse.id;
 
                 path += this.info ? "" : "&no_infos=true";
                 path += this.sanction ? "" : "&no_sanctions=true";
                 // eslint-disable-next-line no-undef
                 path += this.allYears ? "" : "&scholar_year=" + currentYear ;
-                path += "&ordering=matricule__last_name";
+                path += "&ordering=student__last_name";
 
                 window.open(path);
             } else if (this.tabIndex == 1) {

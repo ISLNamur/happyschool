@@ -280,7 +280,7 @@ export default {
         return {
             form: {
                 name: "",
-                matricule_id: null,
+                student_id: null,
                 sanction_decision_id: null,
                 explication_commentaire: "",
                 important: false,
@@ -334,7 +334,7 @@ export default {
             if (this.name.matricule) {
                 // First update form name data.
                 this.form.name = this.name.display;
-                this.form.matricule_id = this.name.matricule;
+                this.form.student_id = this.name.matricule;
                 // Get statistics.
                 axios.get("dossier_eleve/api/statistics/" + this.name.matricule + "/")
                     .then(response => {
@@ -361,7 +361,7 @@ export default {
                 // The name will update form.name and form.matricule_id
                 this.name = {
                     display: entry.name,
-                    matricule: entry.matricule_id,
+                    matricule: entry.student_id,
                 };
                 this.demandeur = {
                     display: entry.demandeur,
@@ -404,7 +404,7 @@ export default {
             this.uploadedFiles.splice(0, this.uploadedFiles.length);
 
             this.form.name = "";
-            this.form.matricule_id = null;
+            this.form.student_id = null;
             this.form.sanction_decision_id = null;
             this.form.explication_commentaire = "";
             this.form.important = false;

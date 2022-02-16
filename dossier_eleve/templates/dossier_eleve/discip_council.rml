@@ -51,7 +51,7 @@
             <tr>
                 <td>
                     <para alignment="center">
-                    {{ c.matricule.last_name }} {{ c.matricule.first_name }} {{ c.matricule.classe.year }}{{ c.matricule.classe.letter|upper }}
+                    {{ c.student.last_name }} {{ c.student.first_name }} {{ c.student.classe.year }}{{ c.student.classe.letter|upper }}
                     </para>
                 </td>
                 <td>

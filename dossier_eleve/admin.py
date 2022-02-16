@@ -23,7 +23,7 @@ from . import models
 
 
 class CasDisciplinaireAdmin(admin.ModelAdmin):
-    list_display = ('matricule', 'datetime_encodage', 'info', 'sanction_decision', 'datetime_conseil', 'sanction_faite')
+    list_display = ('student', 'datetime_encodage', 'info', 'sanction_decision', 'datetime_conseil', 'sanction_faite')
 
 
 admin.site.register(models.CasEleve, CasDisciplinaireAdmin)

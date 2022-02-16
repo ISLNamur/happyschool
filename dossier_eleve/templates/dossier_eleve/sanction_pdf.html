@@ -84,13 +84,13 @@
         <h2>{{ sanction.sanction_decision }}</h2>
         <dl id="informations">
             <dt>Concerne</dt>
-            <dd>{{ sanction.matricule.last_name }} {{ sanction.matricule.first_name }}</dd>
-            {% if sanction.matricule.additionalstudentinfo.birth_date %}
+            <dd>{{ sanction.student.last_name }} {{ sanction.student.first_name }}</dd>
+            {% if sanction.student.additionalstudentinfo.birth_date %}
             <dt>Né(e) le</dt>
-            <dd>{{ sanction.matricule.additionalstudentinfo.birth_date }}</dd>
+            <dd>{{ sanction.student.additionalstudentinfo.birth_date }}</dd>
             {% endif %}
             <dt>Classe</dt>
-            <dd>{{ sanction.matricule.classe.compact_str }}</dd>
+            <dd>{{ sanction.student.classe.compact_str }}</dd>
             <dt>Objet</dt>
             <dd>Mesure disciplinaire</dd>
         </dl>

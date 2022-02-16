@@ -93,10 +93,10 @@
                     {{ sanction.sanction_decision.sanction_decision }}
                 </p>
                 <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0px;">
-                    Concerne : <strong>{{ sanction.matricule.last_name }} {{ sanction.matricule.first_name }}</strong>
+                    Concerne : <strong>{{ sanction.student.last_name }} {{ sanction.student.first_name }}</strong>
                 </p>
                 <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0px;">
-                    Classe : <strong>{{ sanction.matricule.classe.year }}{{ sanction.matricule.classe.letter.toUpperCase() }}</strong>
+                    Classe : <strong>{{ sanction.student.classe.year }}{{ sanction.student.classe.letter.toUpperCase() }}</strong>
                 </p>
                 <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">
                     Objet : <strong>Mesure disciplinaire</strong>

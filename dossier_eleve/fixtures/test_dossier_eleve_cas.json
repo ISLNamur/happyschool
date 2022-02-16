@@ -3,7 +3,7 @@
     "model": "dossier_eleve.caseleve",
     "pk": 58,
     "fields": {
-        "matricule": 1001,
+        "student": 1001,
         "name": "Hardy Agn\u00e8s 1A",
         "datetime_encodage": "2020-05-26T07:47:00.496Z",
         "datetime_modified": "2020-05-26T07:47:00.513Z",
@@ -33,7 +33,7 @@
     "model": "dossier_eleve.caseleve",
     "pk": 59,
     "fields": {
-        "matricule": 1047,
+        "student": 1047,
         "name": "Le Roux Anastasie 1D",
         "datetime_encodage": "2020-05-26T07:50:08.546Z",
         "datetime_modified": "2020-05-26T07:50:08.557Z",
@@ -63,7 +63,7 @@
     "model": "dossier_eleve.caseleve",
     "pk": 60,
     "fields": {
-        "matricule": 1047,
+        "student": 1047,
         "name": "Le Roux Anastasie 1D",
         "datetime_encodage": "2020-05-26T08:39:58.257Z",
         "datetime_modified": "2020-05-26T08:39:58.269Z",
@@ -90,7 +90,7 @@
     "model": "dossier_eleve.caseleve",
     "pk": 61,
     "fields": {
-        "matricule": 1045,
+        "student": 1045,
         "name": "Dufour Luce 1D",
         "datetime_encodage": "2020-05-26T08:57:15.719Z",
         "datetime_modified": "2020-05-26T08:57:15.734Z",

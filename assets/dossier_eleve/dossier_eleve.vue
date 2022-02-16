@@ -110,7 +110,7 @@
             >
                 <info
                     v-if="currentEntry"
-                    :matricule="currentEntry.matricule_id"
+                    :matricule="currentEntry.student_id"
                     type="student"
                     no-news
                 />
@@ -174,7 +174,7 @@ export default {
     computed: {
         currentName: function () {
             if (this.currentEntry) {
-                return this.currentEntry.matricule.display;
+                return this.currentEntry.student.display;
             }
             return "";
         },
@@ -203,7 +203,7 @@ export default {
         filterStudent: function (matricule) {
             this.showFilters = true;
             this.$store.commit("addFilter",
-                {filterType: "matricule_id", tag: matricule, value: matricule}
+                {filterType: "student__matricule", tag: matricule, value: matricule}
             );
             this.applyFilter();
         },
@@ -246,7 +246,7 @@ export default {
             // const fullscreen = window.location.href.includes("matricule");
             const matricule = (new URL(document.location)).searchParams.get("matricule");
             if (matricule) {
-                this.$store.commit("addFilter", {filterType: "matricule_id", value: matricule, tag: matricule});
+                this.$store.commit("addFilter", {filterType: "student__matricule", value: matricule, tag: matricule});
                 this.showFilters = true;
             }
         }

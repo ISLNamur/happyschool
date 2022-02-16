@@ -174,7 +174,7 @@
             >
                 <info
                     v-if="currentEntry"
-                    :matricule="currentEntry.matricule_id"
+                    :matricule="currentEntry.student_id"
                     type="student"
                 />
             </b-modal>
@@ -230,15 +230,15 @@ export default {
     computed: {
         currentName: function () {
             if (this.currentEntry) {
-                return this.currentEntry.matricule.display;
+                return this.currentEntry.student.display;
             }
             return "";
         },
         ordering: function () {
             if (this.$store.state.filters.find(f => f.filterType === "activate_today")) {
-                return "&ordering=matricule__last_name";
+                return "&ordering=student__last_name";
             } else {
-                return "&ordering=date_sanction,matricule__last_name";
+                return "&ordering=date_sanction,student__last_name";
             }
         },
         lightDisplay: function () {
@@ -276,7 +276,7 @@ export default {
         filterStudent: function (matricule) {
             this.showFilters = true;
             this.$store.commit("addFilter",
-                {filterType: "matricule_id", tag: matricule, value: matricule}
+                {filterType: "student__matricule", tag: matricule, value: matricule}
             );
             this.applyFilter();
         },

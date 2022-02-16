@@ -34,7 +34,7 @@ from .models import CasEleve, DossierEleveSettingsModel
 @shared_task(bind=True)
 def notify_sanction(self, instance_id):
     instance = CasEleve.objects.get(id=instance_id)
-    student = instance.matricule
+    student = instance.student
     context = {'student': student, 'sanction': instance}
 
     for notify in instance.sanction_decision.notify.all():
@@ -45,7 +45,7 @@ def notify_sanction(self, instance_id):
         sanction_count = CasEleve.objects.filter(
             datetime_encodage__gte=scholar_year_start,
             datetime_encodage__lt=scholar_year_end,
-            matricule=student,
+            student=student,
             sanction_decision=instance.sanction_decision
         ).count()
         if sanction_count % notify.frequency != 0:
@@ -77,7 +77,7 @@ def notify_sanction(self, instance_id):
 @shared_task(bind=True)
 def task_send_info_email(self, instance_id):
     instance = CasEleve.objects.get(id=instance_id)
-    student = instance.matricule
+    student = instance.student
     teachers_obj = get_teachers_from_student(student)
     dossier_eleve_settings = DossierEleveSettingsModel.objects.first()
 

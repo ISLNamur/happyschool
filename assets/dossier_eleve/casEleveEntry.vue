@@ -160,7 +160,7 @@ export default {
             return Moment(this.rowData.datetime_modified) > Moment(dossierEleveLastAccess);
         },
         title: function () {
-            return this.displayStudent(this.rowData.matricule);
+            return this.displayStudent(this.rowData.student);
         },
         subtitle: function () {
             let subtitle = "";
@@ -207,7 +207,7 @@ export default {
             this.$emit("delete");
         },
         filterStudent: function () {
-            this.$emit("filterStudent", this.rowData.matricule_id);
+            this.$emit("filterStudent", this.rowData.student_id);
         },
         displayStudent,
     },

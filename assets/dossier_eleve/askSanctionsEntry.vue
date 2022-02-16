@@ -220,7 +220,7 @@ export default {
             return Moment(this.rowData.date_sanction) < Moment();
         },
         title: function () {
-            return this.displayStudent(this.rowData.matricule);
+            return this.displayStudent(this.rowData.student);
         },
         subtitle: function () {
             return "Demandé par " + this.rowData.demandeur + " (" + Moment(this.rowData.datetime_encodage).calendar() + ")";
@@ -286,7 +286,7 @@ export default {
             this.$emit("edit");
         },
         filterStudent: function () {
-            this.$emit("filterStudent", this.rowData.matricule_id);
+            this.$emit("filterStudent", this.rowData.student_id);
         },
         setSanctionDone: function () {
             const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};

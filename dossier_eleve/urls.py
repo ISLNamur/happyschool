@@ -32,7 +32,7 @@ urlpatterns = [
     # url(r'^get_pdf_retenues/', views.get_pdf_retenues, name='get_pdf_retenues'),
     path('', views.DossierEleveView.as_view(), name='dossier_eleve'),
     path('ask_sanctions', views.AskSanctionsView.as_view()),
-    path('api/statistics/<int:matricule>/', views.StatisticAPI.as_view(), name='statistics'),
+    path('api/statistics/<int:student>/', views.StatisticAPI.as_view(), name='statistics'),
     path('upload_file/', views.UploadFileView.as_view(), name='upload_file'),
     path('upload_file/<int:pk>/', views.UploadFileView.as_view(), name='remove_file'),
     path("<int:year>/<int:month>/<int:day>/<str:file>", views.AttachmentView.as_view()),

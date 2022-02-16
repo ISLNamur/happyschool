@@ -47,9 +47,9 @@ class SanctionDecisionDisciplinaireSerializer(serializers.ModelSerializer):
 class CasEleveSerializer(serializers.ModelSerializer):
     send_to_teachers = serializers.BooleanField(write_only=True, required=False)
 
-    matricule = StudentSerializer(read_only=True)
-    matricule_id = serializers.PrimaryKeyRelatedField(queryset=StudentModel.objects.all(),
-                                                      source='matricule', required=False,
+    student = StudentSerializer(read_only=True)
+    student_id = serializers.PrimaryKeyRelatedField(queryset=StudentModel.objects.all(),
+                                                      source='student', required=False,
                                                       allow_null=True)
     info = InfoEleveSerializer(read_only=True)
     info_id = serializers.PrimaryKeyRelatedField(queryset=InfoEleve.objects.all(),
@@ -79,7 +79,7 @@ class CasEleveSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Vous n'avez pas les droits nécessaire pour mettre une sanction comme faite")
         return value
 
-    def validate_matricule_id(self, value):
+    def validate_student_id(self, value):
         if not check_access_to_student(
             value,
             self.context['request'].user,

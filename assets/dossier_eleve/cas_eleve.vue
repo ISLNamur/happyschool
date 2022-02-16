@@ -354,7 +354,7 @@ export default {
             casObject: null,
             form: {
                 name: "",
-                matricule_id: null,
+                student_id: null,
                 info_id: null,
                 sanction_decision_id: null,
                 explication_commentaire: "",
@@ -410,7 +410,7 @@ export default {
             if (this.name.matricule) {
                 // First update form name data.
                 this.form.name = `${this.name.fullname}`;
-                this.form.matricule_id = this.name.matricule;
+                this.form.student_id = this.name.matricule;
                 // Get statistics.
                 axios.get("dossier_eleve/api/statistics/" + this.name.matricule + "/")
                     .then(response => {
@@ -466,12 +466,12 @@ export default {
         },
         setCas: function () {
             if (this.casObject) {
-                // The name will update form.name and form.matricule_id
+                // The name will update form.name and form.student_id
                 this.name = {
-                    display: this.casObject.matricule.display,
-                    fullname: `${this.casObject.matricule.last_name} ${this.casObject.matricule.first_name}`,
-                    matricule: this.casObject.matricule_id,
-                    classe: this.casObject.matricule.classe.id,
+                    display: this.casObject.student.display,
+                    fullname: `${this.casObject.student.last_name} ${this.casObject.student.first_name}`,
+                    matricule: this.casObject.student_id,
+                    classe: this.casObject.student.classe.id,
                 };
                 this.demandeur = {
                     display: this.casObject.demandeur,

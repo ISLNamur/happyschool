@@ -210,8 +210,8 @@ export default {
             }
             let orderingFields = [];
             if (this.sortBySanction && this.tabIndex !== 0) orderingFields.push("sanction_decision__sanction_decision");
-            if (this.sortByClasse && this.tabIndex !== 0) orderingFields.push("matricule__classe__year,matricule__classe__letter");
-            orderingFields.push("matricule__last_name");
+            if (this.sortByClasse && this.tabIndex !== 0) orderingFields.push("student__classe__year,student__classe__letter");
+            orderingFields.push("student__last_name");
             path += `&ordering=${orderingFields.toString()}`;
             path += "&page_size=500";
             path += `&sanction_decision=${this.selectedSanctions.join()}`;

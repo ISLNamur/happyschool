@@ -54,7 +54,7 @@ class PyramidVisibilityTests(APITestCase):
         url = "/dossier_eleve/api/cas_eleve/"
         data = {
             "name": "Tutu Toto",
-            "matricule_id": 1234,
+            "student_id": 1234,
             "info_id": 6,
             "sanction_decision_id": None,
             "explication_commentaire": "<p>Test</p>",
@@ -74,7 +74,7 @@ class PyramidVisibilityTests(APITestCase):
         cas_id = response.data["id"]
 
         response = self.client.get(f"{url}{cas_id}/")
-        self.assertEqual(response.data["matricule_id"], 1234)
+        self.assertEqual(response.data["student_id"], 1234)
         self.assertEqual(response.data["explication_commentaire"], "<p>Test</p>")
 
         # Test access with other users that should fail.
