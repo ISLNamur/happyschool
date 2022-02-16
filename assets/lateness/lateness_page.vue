@@ -499,11 +499,19 @@ export default {
                 .then(resp => {
                     this.topLateness = resp.data;
                 });
+        },
+        checkMatriculeFilter: function () {
+            const matricule = (new URL(document.location)).searchParams.get("student__matricule");
+            if (matricule) {
+                this.$store.commit("addFilter", {filterType: "student__matricule", value: matricule, tag: matricule});
+                this.showFilters = true;
+            }
         }
     },
     mounted: function () {
         // eslint-disable-next-line no-undef
         this.menuInfo = menu;
+        this.checkMatriculeFilter();
         this.applyFilter();
         this.overloadInput();        
         this.getTopList();
