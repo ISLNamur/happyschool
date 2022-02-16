@@ -71,7 +71,7 @@ class LatenessView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = "lateness/lateness.html"
     permission_required = "lateness.view_latenessmodel"
     filters = [
-        {"value": "student__display", "text": "Nom"},
+        {"value": "student", "text": "Nom"},
         {"value": "student__matricule", "text": "Matricule"},
         {"value": "date_lateness", "text": "Date"},
         {"value": "classe", "text": "Classe"},
