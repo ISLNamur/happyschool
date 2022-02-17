@@ -131,7 +131,7 @@
                                         <span
                                             v-if="c.course.long_name" 
                                             v-b-tooltip
-                                            :title="c.course.short_name"
+                                            :title="`${c.course.short_name} (${c.group.toUpperCase()})`"
                                         >
                                             {{ c.course.long_name }}
                                         </span>
@@ -139,7 +139,7 @@
                                             {{ c.course.short_name }}
                                         </span>
                                         <span v-if="c.group !== ''">
-                                            ({{ c.group.toUpperCase() }})
+                                            ({{ c.classes }})
                                         </span>
                                     </dd>
                                     <dt
@@ -272,7 +272,7 @@
                         </b-row>
                     </b-tab>
                     <person-schedule
-                        v-if="$store.state.settings.show_schedule"
+                        v-if="$store.state.settings.show_schedule && courses"
                         :courses="courses"
                     />
                     <sensitive-info

@@ -29,6 +29,21 @@
                 :options="calendarOptions"
             />
         </div>
+        <div v-if="showCalendar">
+            <b-popover 
+                v-for="course in calendarOptions.events"
+                :key="course.id"
+                tabindex="0"
+                :target="`popover-${course.id}`"
+                triggers="hover focus"
+                :title="`${course.description} (${course.title})`"
+            >
+                {{ course.related_classes }}
+                <br>
+                {{ course.place }} :
+                {{ course.related_responsibles }}
+            </b-popover>
+        </div>
     </b-tab>
 </template>
 
@@ -69,9 +84,13 @@ export default {
                 expandRows: true,
                 eventContent: (arg) => {
                     return {
-                        html: `<small>${arg.timeText}</small><br />
+                        html: `
+                        <div id=popover-${arg.event.id}>
+                        <small>${arg.timeText}</small><br />
                         ${arg.event.title} (${arg.event.extendedProps.related_classes})<br />
-                        ${arg.event.extendedProps.related_responsibles}`
+                        ${arg.event.extendedProps.place}:
+                        ${this.truncateString(arg.event.extendedProps.related_responsibles, 15)}
+                        </div>`
                     };
                 }
             }
@@ -83,6 +102,13 @@ export default {
         }
     },
     methods: {
+        truncateString: function(str, maxLength) {
+            if (str.length <= maxLength) {
+                return str;
+            }
+
+            return str.slice(0, maxLength) + "…";
+        },
         showCal: function () {
             this.showCalendar = false;
             setTimeout(() => {
@@ -91,23 +117,23 @@ export default {
         },
         getCourseSchedule: function () {
             this.calendarOptions.events = [];
-            const promises = this.courses.map(c => axios.get(`/core/api/course_schedule/?given_course=${c.id}`));
-            Promise.all(promises)
-                .then(resps => {
-                    resps.forEach((r, i) => {
-                        this.calendarOptions.events = this.calendarOptions.events.concat(r.data.results.map(e => {
-                            const eventDay = Moment().startOf("week").add(e.day_of_week, "d").format("").slice(0, 11);
-                            const start = `${eventDay}${this.periods[e.period - 1].start}`;
-                            const end = `${eventDay}${this.periods[e.period - 1].end}`;
-                            return {
-                                title: this.courses[i].course.short_name,
-                                related_classes: e.related_classes,
-                                related_responsibles: e.related_responsibles,
-                                description: this.courses[i].course.long_name,
-                                start: start,
-                                end: end
-                            };
-                        }));
+            axios.get(`/core/api/course_schedule/?student=${this.$route.params.matricule}`)
+                .then(resp => {
+                    this.calendarOptions.events = resp.data.results.map(cS => {
+                        const eventDay = Moment().startOf("week").add(cS.day_of_week, "d").format("").slice(0, 11);
+                        const start = `${eventDay}${this.periods[cS.period - 1].start}`;
+                        const end = `${eventDay}${this.periods[cS.period - 1].end}`;
+                        const course = this.courses.find(c => cS.given_course.find(gc => gc === c.id));
+                        return {
+                            id: cS.id,
+                            title: course.course.short_name,
+                            related_classes: cS.related_classes,
+                            related_responsibles: cS.related_responsibles,
+                            place: cS.place,
+                            description: course.course.long_name,
+                            start: start,
+                            end: end
+                        }; 
                     });
                 });
         },
