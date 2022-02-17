@@ -96,6 +96,10 @@ class GivenCourseModel(models.Model):
         return "%s (%s)" % (name, self.group)
 
     @property
+    def classes(self):
+        return ", ".join({s.classe.compact_str for s in self.studentmodel_set.distinct("classe")})
+
+    @property
     def display(self):
         return self.__str__()
 
@@ -126,17 +130,30 @@ class CourseScheduleModel(models.Model):
     course_name = models.CharField(max_length=10, default="")
     period = models.ForeignKey(PeriodCoreModel, on_delete=models.CASCADE)
     day_of_week = models.PositiveSmallIntegerField()
+    place = models.CharField(max_length=100)
     given_course = models.ManyToManyField(GivenCourseModel, blank=True, default=None)
     is_sync = models.BooleanField(default=True)
 
     @property
     def related_classes(self):
-        classes = [s.classe.compact_str for s in self.given_course.studentmodel_set.all().distinct("classe")]
+        classes_set = [
+            {s.classe.compact_str for s in gc.studentmodel_set.distinct("classe")}
+            for gc in self.given_course.all()
+        ]
+        classes = {cl for sub_list in classes_set for cl in sub_list}
         return ", ".join(classes)
 
     @property
     def related_responsibles(self):
-        return ", ".join([t.fullname for t in self.given_course.responsiblemodel_set.all()])
+        responsibles_set = [
+            {f"{t.last_name} {t.first_name[0]}." for t in gc.responsiblemodel_set.all()}
+            for gc in self.given_course.all()
+        ]
+        responsibles = {resp for sub_list in responsibles_set for resp in sub_list}
+        return ", ".join(responsibles)
+
+    def __str__(self) -> str:
+        return f"{self.course_name} le {self.day_of_week} à {self.period}"
 
 
 class StudentModel(models.Model):

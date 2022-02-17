@@ -79,6 +79,12 @@ class ClassCoreAdmin(admin.ModelAdmin):
     list_filter = ['year', 'letter', 'teaching']
 
 
+class CourseScheduleAdmin(admin.ModelAdmin):
+    list_display = ["course_name", "place", "period", "day_of_week", "is_sync"]
+    search_fields = ["course_name"]
+    filter_horizontal = ["given_course"]
+
+
 admin.site.register(StudentModel, StudentCoreAdmin)
 admin.site.register(TeachingModel)
 admin.site.register(ResponsibleModel, ResponsibleCoreAdmin)
@@ -91,5 +97,5 @@ admin.site.register(YearModel)
 admin.site.register(CoreSettingsModel)
 admin.site.register(ImportCalendarModel)
 admin.site.register(PeriodCoreModel)
-admin.site.register(CourseScheduleModel)
+admin.site.register(CourseScheduleModel, CourseScheduleAdmin)
 admin.site.register(MenuEntryModel)

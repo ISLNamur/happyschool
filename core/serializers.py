@@ -35,7 +35,7 @@ class CourseSerializer(serializers.ModelSerializer):
 class GivenCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = GivenCourseModel
-        fields = ["id", "course", "group", "display"]
+        fields = ["id", "course", "group", "display", "classes"]
         depth = 1
 
 
@@ -74,6 +74,8 @@ class ResponsibleRemoteSerializer(serializers.ModelSerializer):
 
 
 class StudentSerializer(serializers.ModelSerializer):
+    courses = GivenCourseSerializer(read_only=True, many=True)
+
     class Meta:
         model = StudentModel
         fields = ('matricule', 'first_name', 'last_name', 'display', 'classe', 'teaching', 'user', 'courses')
@@ -212,7 +214,9 @@ class UserSerializer(serializers.ModelSerializer):
 class CourseScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseScheduleModel
-        fields = ("id", "given_course", "period", "day_of_week", "related_classes", "related_responsibles")
+        fields = (
+            "id", "given_course", "period", "day_of_week", "related_classes", "related_responsibles", "place"
+        )
         read_only_fields = ("related_classes", "related_responsibles",)
 
 

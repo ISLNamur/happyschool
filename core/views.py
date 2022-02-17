@@ -386,13 +386,25 @@ class GroupViewSet(ModelViewSet):
     pagination_class = LargePageSizePagination
 
 
+class CourseScheduleFilter(filters.FilterSet):
+    student = filters.NumberFilter(method="student_by")
+
+    class Meta:
+        fields = ["given_course", "student"]
+
+    def student_by(self, queryset, field_name, value):
+        student = StudentModel.objects.get(matricule=value)
+        given_courses = [gc.id for gc in student.courses.all()]
+        return queryset.filter(given_course__id__in=given_courses)
+
+
 class CourseScheduleViewSet(ModelViewSet):
     queryset = CourseScheduleModel.objects.all()
     serializer_class = CourseScheduleSerializer
     permission_classes = (IsAuthenticated,)
     pagination_class = LargePageSizePagination
     filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
-    filterset_fields = ["given_course"]
+    filter_class = CourseScheduleFilter
 
 
 class PeriodCoreViewSet(ModelViewSet):
