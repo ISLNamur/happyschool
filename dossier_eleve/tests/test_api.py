@@ -17,12 +17,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
-import json
-
-from django.urls import reverse
-from rest_framework import status
 from rest_framework.test import APITestCase
-from django.contrib.auth.models import Group, User
+from django.contrib.auth.models import Group, User, Permission
 
 
 class PyramidVisibilityTests(APITestCase):
@@ -47,6 +43,19 @@ class PyramidVisibilityTests(APITestCase):
         self.director_group = Group.objects.get(name="direction")
         self.teacher_group = Group.objects.get(name="professeur")
 
+        permissions = [
+            Permission.objects.get(codename="view_caseleve"),
+            Permission.objects.get(codename="add_caseleve"),
+            Permission.objects.get(codename="change_caseleve"),
+            Permission.objects.get(codename="delete_caseleve"),
+            Permission.objects.get(codename="ask_sanction"),
+            Permission.objects.get(codename="set_sanction"),
+        ]
+        for g in [self.director_group, self.coordonator_group, self.educator_group, self.teacher_group]:
+            for p in permissions:
+                g.permissions.add(p)
+            g.save()
+
     def _create_cas_and_test_visibility(
         self, creator, users_success, users_failure, visible_by_group_id, visible_by_tenure=False,
     ):
@@ -67,6 +76,7 @@ class PyramidVisibilityTests(APITestCase):
             "attachments": [],
             "visible_by_tenure": visible_by_tenure
         }
+
         response = self.client.post(url, data, format='json')
         post_response = response
         # It should respond successfully.
