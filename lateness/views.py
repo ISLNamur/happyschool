@@ -269,7 +269,7 @@ class LatenessViewSet(BaseModelViewSet):
             day = day.replace(hour=trigger.sanction_time.hour, minute=trigger.sanction_time.minute)
 
             cas = CasEleve.objects.create(
-                matricule=lateness.student,
+                student=lateness.student,
                 name=lateness.student.display,
                 demandeur=self.request.user.get_full_name(),
                 sanction_decision=sanction,
