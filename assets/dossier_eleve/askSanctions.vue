@@ -291,8 +291,8 @@ export default {
                 if (storeFilters[f].filterType.startsWith("date")
                     || storeFilters[f].filterType.startsWith("time")) {
                     let ranges = storeFilters[f].value.split("_");
-                    this.filter += "&" + storeFilters[f].filterType + "__gt=" + ranges[0];
-                    this.filter += "&" + storeFilters[f].filterType + "__lt=" + ranges[1];
+                    this.filter += "&" + storeFilters[f].filterType + "__gte=" + ranges[0];
+                    this.filter += "&" + storeFilters[f].filterType + "__lte=" + ranges[1];
                 } else {
                     this.filter += "&" + storeFilters[f].filterType + "=" + storeFilters[f].value;
                 }
