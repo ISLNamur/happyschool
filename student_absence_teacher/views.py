@@ -206,8 +206,13 @@ class OverviewAPI(APIView):
         )
         if class_list == "ownclass":
             try:
-                resp = ResponsibleModel.objects.get(user=request.user)
-                classes = resp.classe.all()
+                classes = get_classes(
+                    teaching=get_settings().teachings.all(),
+                    check_access=True,
+                    user=request.user,
+                    tenure_class_only=False,
+                    educ_by_years="both"
+                ).order_by("year", "letter")
             except ObjectDoesNotExist:
                 pass
 
