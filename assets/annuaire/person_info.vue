@@ -602,7 +602,7 @@ export default {
                         this.medical = response.data;
                     });
 
-                axios.get("/dossier_eleve/api/cas_eleve/?ordering=-datetime_encodage&activate_important=true&matricule_id=" + this.matricule)
+                axios.get("/dossier_eleve/api/cas_eleve/?ordering=-datetime_encodage&activate_important=true&student__matricule=" + this.matricule)
                     .then(response => {
                         this.important = response.data.results;
                     });
@@ -613,7 +613,7 @@ export default {
                     // eslint-disable-next-line no-undef
                     const userMenu = menu;
                     if (userMenu.apps.find(a => a.app == "dossier_eleve")) {
-                        promises.push(axios.get("/dossier_eleve/api/cas_eleve/?ordering=-datetime_encodage&matricule_id=" + this.matricule));
+                        promises.push(axios.get("/dossier_eleve/api/cas_eleve/?ordering=-datetime_encodage&student__matricule=" + this.matricule));
                         apps.push("dossier_eleve");
                     }
                     if (userMenu.apps.find(a => a.app == "appels")) {
