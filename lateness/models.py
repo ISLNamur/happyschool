@@ -22,7 +22,7 @@ from datetime import date
 from django.db import models
 from django.contrib.auth.models import Group
 
-from core.models import StudentModel, TeachingModel, YearModel
+from core.models import StudentModel, TeachingModel, YearModel, ClasseModel
 
 
 class LatenessSettingsModel(models.Model):
@@ -50,6 +50,7 @@ class SanctionTriggerModel(models.Model):
     lateness_count_trigger_first = models.PositiveSmallIntegerField(default=4)
     lateness_count_trigger = models.PositiveSmallIntegerField(default=3)
     year = models.ManyToManyField(YearModel, blank=True)
+    classe = models.ManyToManyField(ClasseModel, blank=True)
     only_warn = models.BooleanField(default=False)
     next_week_day = models.PositiveSmallIntegerField(choices=WEEK_DAY_CHOICES, null=True, blank=True)
     delay = models.PositiveSmallIntegerField(

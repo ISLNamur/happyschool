@@ -231,8 +231,19 @@ class LatenessViewSet(BaseModelViewSet):
 
         now = timezone.localtime()
         # Trigger
+        print(
+            SanctionTriggerModel.objects.filter(
+            teaching=lateness.student.teaching
+            ).filter(
+                Q(year__year=lateness.student.classe.year)
+                | Q(classe=lateness.student.classe)
+            )
+        )
         for trigger in SanctionTriggerModel.objects.filter(
-            teaching=lateness.student.teaching, year__year=lateness.student.classe.year
+            teaching=lateness.student.teaching
+        ).filter(
+            Q(year__year=lateness.student.classe.year)
+            | Q(classe=lateness.student.classe)
         ).filter(
             Q(
                 time_lateness_start__isnull=False,
@@ -244,7 +255,7 @@ class LatenessViewSet(BaseModelViewSet):
                 time_lateness_start__isnull=True,
                 time_lateness_stop__isnull=True,
             )
-        ):
+        ).distinct():
             count_first = trigger.lateness_count_trigger_first
             count_trigger = trigger.lateness_count_trigger
             if lateness_count < count_first or (
