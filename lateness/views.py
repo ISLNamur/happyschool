@@ -231,14 +231,6 @@ class LatenessViewSet(BaseModelViewSet):
 
         now = timezone.localtime()
         # Trigger
-        print(
-            SanctionTriggerModel.objects.filter(
-            teaching=lateness.student.teaching
-            ).filter(
-                Q(year__year=lateness.student.classe.year)
-                | Q(classe=lateness.student.classe)
-            )
-        )
         for trigger in SanctionTriggerModel.objects.filter(
             teaching=lateness.student.teaching
         ).filter(
