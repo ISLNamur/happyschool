@@ -21,6 +21,10 @@ from django.contrib import admin
 
 from .models import LatenessModel, LatenessSettingsModel, SanctionTriggerModel
 
+class TriggerAdmin(admin.ModelAdmin):
+    filter_horizontal = ("classe",)
+
+
 admin.site.register(LatenessModel)
 admin.site.register(LatenessSettingsModel)
-admin.site.register(SanctionTriggerModel)
+admin.site.register(SanctionTriggerModel, TriggerAdmin)
