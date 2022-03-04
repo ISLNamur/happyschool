@@ -71,6 +71,16 @@
                                 />
                                 Export
                             </b-btn>
+                            <b-btn
+                                variant="secondary"
+                                @click="openMassActions"
+                                class="w-100 mt-1"
+                            >
+                                <b-icon
+                                    icon="list-check"
+                                />
+                                Actions de masse
+                            </b-btn>
                         </div>
                     </b-form-group>
                 </b-col>
@@ -113,13 +123,47 @@
                     </b-list-group>
                 </b-col>
             </b-row>
-            <b-pagination
-                class="mt-1"
-                :total-rows="entriesCount"
-                v-model="currentPage"
-                @change="changePage"
-                :per-page="20"
-            />
+            <b-row>
+                <b-col>
+                    <b-pagination
+                        class="mt-1"
+                        :total-rows="entriesCount"
+                        v-model="currentPage"
+                        @change="changePage"
+                        :per-page="entriesPerPage"
+                    />
+                </b-col>
+                <b-col>
+                    <b-form-group
+                        label="Sanctions par page"
+                        label-cols
+                        label-align-sm="right"
+                    >
+                        <b-select
+                            class="mt-1"
+                            v-model="entriesPerPage"
+                            @input="loadEntries"
+                            size="sm"
+                        >
+                            <option :value="2">
+                                2
+                            </option>
+                            <option :value="20">
+                                20
+                            </option>
+                            <option :value="50">
+                                50
+                            </option>
+                            <option :value="100">
+                                100
+                            </option>
+                            <option :value="200">
+                                200
+                            </option>
+                        </b-select>
+                    </b-form-group>
+                </b-col>
+            </b-row>
             <b-card
                 no-body
                 class="current-card d-none d-md-block d-lg-block d-xl-block"
@@ -152,6 +196,44 @@
                 @done="loadEntries"
                 @update-sanction="updateSanction(entry, $event)"
             />
+            <b-row>
+                <b-col>
+                    <b-pagination
+                        class="mt-1"
+                        :total-rows="entriesCount"
+                        v-model="currentPage"
+                        @change="changePage"
+                        :per-page="entriesPerPage"
+                    />
+                </b-col>
+                <b-col>
+                    <b-form-group
+                        label="Sanctions par page"
+                        label-cols
+                        label-align-sm="right"
+                    >
+                        <b-select
+                            class="mt-1"
+                            v-model="entriesPerPage"
+                            @input="loadEntries"
+                            size="sm"
+                        >
+                            <option :value="20">
+                                20
+                            </option>
+                            <option :value="50">
+                                50
+                            </option>
+                            <option :value="100">
+                                100
+                            </option>
+                            <option :value="200">
+                                200
+                            </option>
+                        </b-select>
+                    </b-form-group>
+                </b-col>
+            </b-row>
             <b-modal
                 ref="deleteModal"
                 cancel-title="Annuler"
@@ -171,12 +253,43 @@
                 centered
                 ok-only
                 @hidden="currentEntry = null"
+                ok-title="Fermer"
             >
                 <info
                     v-if="currentEntry"
                     :matricule="currentEntry.student_id"
                     type="student"
                 />
+            </b-modal>        
+            <b-modal
+                ref="massActions"
+                scrollable
+                size="xl"
+                ok-only
+                @hide="entriesPerPage = 20; loadEntries()"
+                body-class="position-static"
+                :busy="massActionsOverlay"
+                :hide-header-close="massActionsOverlay"
+                :no-close-on-esc="massActionsOverlay"
+                :no-close-on-backdrop="massActionsOverlay"
+            >
+                <b-overlay :show="massActionsOverlay">
+                    <template #overlay>
+                        <div class="text-center">
+                            <p>Modification en cours…</p>
+                            <b-progress
+                                :value="massActionsProgress"
+                                :max="1"
+                                show-progress
+                                animated
+                            />
+                        </div>
+                    </template>
+                    <mass-actions
+                        :sanctions="entries"
+                        @loading="updateMassActionsLoading"
+                    />
+                </b-overlay>
             </b-modal>
             <component
                 :is="currentModal"
@@ -205,6 +318,7 @@ import Info from "../annuaire/person_info.vue";
 import AskSanctionsEntry from "./askSanctionsEntry.vue";
 import AskModal from "./ask_form.vue";
 import AskExportModal from "./askExportModal.vue";
+import MassActions from "./massActions.vue";
 import Filters from "../common/filters_form.vue";
 import Menu from "../common/menu_bar.vue";
 
@@ -225,6 +339,9 @@ export default {
             currentModal: "ask-modal",
             retenues_mode: false,
             loaded: false,
+            entriesPerPage: 20,
+            massActionsOverlay: false,
+            massActionsProgress: 0,
         };
     },
     computed: {
@@ -260,7 +377,22 @@ export default {
         }
     },
     methods: {
+        updateMassActionsLoading: function (progress) {
+            this.massActionsProgress = progress;
+            this.massActionsOverlay = progress < 1;
+            if (this.massActionsProgress === 1) {
+                this.$refs.massActions.hide();
+            }
+        },
+        openMassActions: function () {
+            this.entriesPerPage = 200;
+            this.loadEntries()
+                .then(() => {
+                    this.$refs.massActions.show();
+                });
+        },
         updateSanction: function (entry, newDate) {
+            entry.explication_commentaire += `<p>Report de la sanction du ${entry.date_sanction} au ${newDate}</p>`;
             entry.date_sanction = newDate;
             axios.put(`/dossier_eleve/api/ask_sanctions/${entry.id}/`, entry, token);
         },
@@ -324,16 +456,19 @@ export default {
             this.applyFilter();
         },
         loadEntries: function () {
-            axios.get("/dossier_eleve/api/ask_sanctions/?page=" + this.currentPage + this.filter + this.ordering)
-                .then(response => {
-                    this.entriesCount = response.data.count;
-                    this.entries = response.data.results;
-                    this.loaded = true;
+            return new Promise(resolve => {
+                axios.get(`/dossier_eleve/api/ask_sanctions/?page=${this.currentPage}${this.filter}${this.ordering}&page_size=${this.entriesPerPage}`)
+                    .then(response => {
+                        this.entriesCount = response.data.count;
+                        this.entries = response.data.results;
+                        this.loaded = true;
 
-                    // Get other counts.
-                    this.getEntriesNotDone();
-                    this.getEntriesWaiting();
-                });
+                        // Get other counts.
+                        this.getEntriesNotDone();
+                        this.getEntriesWaiting();
+                        resolve();
+                    });
+            });
         },
         getEntriesNotDone: function () {
             axios.get("/dossier_eleve/api/ask_sanctions/?page=" + this.currentPage + this.filter + this.ordering + "&activate_not_done=true")
@@ -362,6 +497,7 @@ export default {
         "ask-export-modal": AskExportModal,
         "info": Info,
         "app-menu": Menu,
+        "mass-actions": MassActions,
     }
 };
 </script>
