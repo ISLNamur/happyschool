@@ -385,6 +385,7 @@ export default {
             }
         },
         openMassActions: function () {
+            this.loaded = true;
             this.entriesPerPage = 200;
             this.loadEntries()
                 .then(() => {
