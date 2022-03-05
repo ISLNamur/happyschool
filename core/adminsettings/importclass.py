@@ -102,11 +102,11 @@ class ImportResponsible(ImportBase):
                 self.print_log("No last name found, skipping responsible.")
                 continue
             resp = self.get_responsible(entry)
-            if not resp.is_sync:
-                self.print_log(f"Is not synced, skipping responsible {resp.fullname}.")
-                continue
             if not resp:
                 self.print_log("No unique identifier found, skipping responsible.")
+                continue
+            if not resp.is_sync:
+                self.print_log(f"Is not synced, skipping responsible {resp.fullname}.")
                 continue
             username = self.get_value(entry, self.username_attribute)
             if self.search_login_directory:
