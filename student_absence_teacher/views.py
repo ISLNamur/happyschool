@@ -205,16 +205,13 @@ class OverviewAPI(APIView):
             teaching__in=get_settings().teachings.all()
         )
         if class_list == "ownclass":
-            try:
-                classes = get_classes(
-                    teaching=get_settings().teachings.all(),
-                    check_access=True,
-                    user=request.user,
-                    tenure_class_only=False,
-                    educ_by_years="both"
-                ).order_by("year", "letter")
-            except ObjectDoesNotExist:
-                pass
+            classes = get_classes(
+                teaching=get_settings().teachings.all(),
+                check_access=True,
+                user=request.user,
+                tenure_class_only=False,
+                educ_by_years="both"
+            ).order_by("year", "letter")
 
         if point_of_view == "teacher":
             periods = PeriodModel.objects.order_by("start")
