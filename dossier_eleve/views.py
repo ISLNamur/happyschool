@@ -595,11 +595,11 @@ class CasElevePDFGenAPI(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
-        if request.GET.get('student_id'):
+        if request.GET.get('student__matricule'):
             pdf = self.create_pdf(request)
             if not pdf:
                 return render(request, 'dossier_eleve/no_student.html')
-            pdf_name = str(request.GET['student_id']) + '.pdf'
+            pdf_name = str(request.GET['student__matricule']) + '.pdf'
 
             response = HttpResponse(content_type='application/pdf')
             response['Content-Disposition'] = 'filename; filename="' + pdf_name + '"'
@@ -618,7 +618,7 @@ class CasElevePDFGenAPI(APIView):
             added = False
             for s in students:
                 request._request.GET = request.GET.copy()
-                request._request.GET['student_id'] = s.matricule
+                request._request.GET['student__matricule'] = s.matricule
                 pdf = self.create_pdf(request)
                 if not pdf:
                     continue
@@ -653,7 +653,7 @@ class CasElevePDFGenAPI(APIView):
             if r['info']:
                 continue
             r['date_sanction'] = timezone.datetime.strptime(r['date_sanction'][:19], "%Y-%m-%d") if r['date_sanction'] else None
-        student = StudentModel.objects.get(matricule=request.GET['student_id'])
+        student = StudentModel.objects.get(matricule=request.GET['student__matricule'])
         check_student_photo(student)
 
         all_years = not request._request.GET.get("scholar_year", False)

@@ -186,7 +186,7 @@ export default {
             if (this.tabIndex == 0) {
                 let path = "/dossier_eleve/get_pdf/?page_size=500&";
 
-                path += "letter" in this.nameClasse ? "classe=" : "student_id=";
+                path += "letter" in this.nameClasse ? "classe=" : "student__matricule=";
                 path += this.nameClasse.id;
 
                 path += this.info ? "" : "&no_infos=true";
