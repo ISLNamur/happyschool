@@ -382,8 +382,10 @@ def get_classes(teaching: list = ('all',), check_access: bool = False, user: Use
             if educ_by_years:
                 years = _get_years_by_group(user)
                 classes |= get_classes(teaching_models).filter(year__in=years)
-            elif educ_by_years == "both" or not educ_by_years:
-                classes |= responsible.classe.all().filter(teaching__in=teaching_models)
+                if educ_by_years == "both":
+                    classes = classes.union(responsible.classe.all().filter(teaching__in=teaching_models))
+            else:
+                classes = responsible.classe.all().filter(teaching__in=teaching_models)
             return classes
 
         # It should be a teacher.
