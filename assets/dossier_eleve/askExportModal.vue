@@ -211,8 +211,9 @@ export default {
                 }
             }
             let orderingFields = [];
-            if (this.sortBySanction && this.tabIndex !== 0) orderingFields.push("sanction_decision__sanction_decision");
-            if (this.sortByClasse && this.tabIndex !== 0) orderingFields.push("student__classe__year,student__classe__letter");
+            const isSanctionTab = this.$store.state.settings.enable_disciplinary_council ? this.tabIndex == 1 : true;
+            if (this.sortBySanction && isSanctionTab) orderingFields.push("sanction_decision__sanction_decision");
+            if (this.sortByClasse && isSanctionTab) orderingFields.push("student__classe__year,student__classe__letter");
             orderingFields.push("student__last_name");
             path += `&ordering=${orderingFields.toString()}`;
             path += "&page_size=500";
