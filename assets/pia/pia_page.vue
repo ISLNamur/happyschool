@@ -60,12 +60,10 @@
             </b-row>
             <b-row>
                 <b-col>
-                    <b-pagination
+                    <b-pagination-nav
                         class="mt-1"
-                        :total-rows="entriesCount"
-                        v-model="currentPage"
-                        @change="changePage"
-                        :per-page="20"
+                        :number-of-pages="Math.ceil(entriesCount/20)"
+                        use-router
                     />
                 </b-col>
             </b-row>
@@ -103,16 +101,26 @@ const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
  * The main PIA component. It lists all of the PIA records.
  */
 export default {
+    props: {
+        currentPage: {
+            type: String,
+            default: "1"
+        }
+    },
     data: function () {
         return {
             entries: [],
-            currentPage: 1,
-            entriesCount: 0,
+            entriesCount: 1,
             studentOptions: [],
             canAddPia: false,
             currentStudent: null,
             searchId: -1,
         };
+    },
+    watch: {
+        currentPage: function () {
+            this.loadEntries();
+        }
     },
     methods: {
         /**
@@ -160,15 +168,6 @@ export default {
                         .catch(err => alert(err));
                 }
             });
-        },
-        /**
-         * Change the currently displayed page.
-         * 
-         * @param {Number} page The page number to display.
-         */
-        changePage: function (page) {
-            this.currentPage = page;
-            this.loadEntries();
         },
         /** Load or reload PIA entries. */
         loadEntries: function () {

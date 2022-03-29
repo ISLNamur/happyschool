@@ -39,10 +39,14 @@ export default new Vuex.Store({
         branchGoalItems: [],
         crossGoalItems: [],
         assessments: [],
+        studentCourses: [],
     },
     mutations: {
         addFilter: addFilter,
         removeFilter: removeFilter,
+        setCourses: function (state, data) {
+            state.studentCourses = data;
+        }
     },
     actions: {
         loadOptions: function (context) {

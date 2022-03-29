@@ -28,8 +28,13 @@ import PiaRecord from "../pia/pia_record.vue";
 export default new VueRouter({
     routes: [
         {
-            path: "",
+            path: "/",
             component: PiaPage,
+        },
+        {
+            path: "/:currentPage/",
+            component: PiaPage,
+            props: true,
         },
         {
             path: "/edit/:id/",

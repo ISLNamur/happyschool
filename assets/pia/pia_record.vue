@@ -24,7 +24,7 @@
         </b-row>
         <b-row class="sticky-top p-2 first-line">
             <b-col>
-                <b-btn to="/">
+                <b-btn @click="$router.back()">
                     Retour à la liste des PIA
                 </b-btn>
             </b-col>
@@ -297,8 +297,10 @@
                 </b-tab>
                 <b-tab>
                     <template #title>
-                        Conseils de classe
-                        <b-badge>{{ class_council.length }}</b-badge>
+                        <b-overlay :show="loadingOthers">
+                            Conseils de classe
+                            <b-badge>{{ class_council.length }}</b-badge>
+                        </b-overlay>
                     </template>
                     <b-row>
                         <h4>Conseil de classe</h4>
@@ -330,8 +332,10 @@
                 </b-tab>
                 <b-tab>
                     <template #title>
-                        Objectifs
-                        <b-badge>{{ cross_goal.length + branch_goal.length }}</b-badge>
+                        <b-overlay :show="loadingOthers">
+                            Objectifs
+                            <b-badge>{{ cross_goal.length + branch_goal.length }}</b-badge>
+                        </b-overlay>
                     </template>
                     <b-row class="mt-2">
                         <h4>Objectifs transversaux</h4>
@@ -396,8 +400,10 @@
                 </b-tab>
                 <b-tab>
                     <template #title>
-                        Projet et avis
-                        <b-badge>{{ student_project.length + parents_opinion.length }}</b-badge>
+                        <b-overlay :show="loadingOthers">
+                            Projet et avis
+                            <b-badge>{{ student_project.length + parents_opinion.length }}</b-badge>
+                        </b-overlay>
                     </template>
                     <b-row>
                         <h4>Projet de l'élève</h4>
@@ -456,8 +462,10 @@
                 </b-tab>
                 <b-tab v-if="hasDossierApp">
                     <template #title>
-                        Autre infos
-                        <b-badge>{{ dossier.length }}</b-badge>
+                        <b-overlay :show="loadingOthers">
+                            Autre infos
+                            <b-badge>{{ dossier.length }}</b-badge>
+                        </b-overlay>
                     </template>
                     <b-row>
                         <b-col>
@@ -541,6 +549,7 @@ export default {
             searchId: -1,
             sending: false,
             loading: true,
+            loadingOthers: true,
             form: {
                 id: null,
                 student: null,
@@ -864,6 +873,7 @@ export default {
             axios.get("/pia/api/pia/" + newId + "/")
                 .then(resp => {
                     this.form.student = resp.data.student;
+                    
                     resp.data.referent.map(r => {
                         axios.get("/annuaire/api/responsible/" + r + "/")
                             .then(resp => this.form.referent.push(resp.data));
@@ -877,9 +887,16 @@ export default {
                     this.form.schedule_adjustment = this.$store.state.scheduleAdjustments.filter(sa => resp.data.schedule_adjustment.includes(sa.id));
                     this.form.other_adjustments = resp.data.other_adjustments;
 
+                    this.loading = false;
+
                     axios.get(`/dossier_eleve/api/cas_eleve/?page_size=100&info__info=PIA&student__matricule=${resp.data.student.matricule}`)
                         .then(resp => {
                             this.dossier = resp.data.results;
+                        });
+                    
+                    axios.get(`/annuaire/api/student/${resp.data.student.matricule}/`)
+                        .then(resp => {
+                            this.$store.commit("setCourses", resp.data.courses);
                         });
 
                     // Attachments
@@ -898,6 +915,7 @@ export default {
             this.$store.dispatch("loadOptions")
                 .then(() => {
                     if (this.id) {
+                        this.loadingOthers = true;
                         this.loadPIA(this.id);
                         const getAllData = [
                             axios.get("/pia/api/cross_goal/?pia_model=" + this.id),
@@ -915,6 +933,7 @@ export default {
                                 this.class_council = resps[4].data.results;
 
                                 this.loading = false;
+                                this.loadingOthers = false;
                             });
                     } else {
                         this.loading = false;
