@@ -357,9 +357,9 @@ export default {
                 }
                 this.entriesPerPage = 15;
                 setInterval(() => {
-                    this.currentPage = this.currentPage === 1 ? 2 : 1;
+                    this.currentPage = (this.currentPage + 1) % 4 === 0 ? 1 : this.currentPage + 1;
                     this.loadEntries();
-                }, 15000);
+                }, 12000);
             }
         },
     },
