@@ -32,7 +32,7 @@ export default new VueRouter({
             component: PiaPage,
         },
         {
-            path: "/:currentPage/",
+            path: "/page/:currentPage/",
             component: PiaPage,
             props: true,
         },

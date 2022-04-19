@@ -63,6 +63,7 @@
                     <b-pagination-nav
                         class="mt-1"
                         :number-of-pages="Math.ceil(entriesCount/20)"
+                        :link-gen="pageLink"
                         use-router
                     />
                 </b-col>
@@ -123,6 +124,16 @@ export default {
         }
     },
     methods: {
+        /**
+         * Generate link to other pages.
+         * 
+         * @param {Number} pageNum The page number
+         */
+        pageLink: function (pageNum) {
+            return {
+                path: `/page/${pageNum}/`,
+            };
+        },
         /**
          * Move to the PIA record page.
          * 

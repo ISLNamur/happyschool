@@ -937,6 +937,7 @@ export default {
                             });
                     } else {
                         this.loading = false;
+                        this.loadingOthers = false;
                     }
                 });
         }
