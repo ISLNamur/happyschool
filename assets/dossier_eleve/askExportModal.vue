@@ -206,7 +206,6 @@ export default {
                 path += "retenues/?activate_all_retenues=true";
                 path += "&date_sanction__gte=" + this.date_from;
                 path += "&date_sanction__lte=" + this.date_to;
-                path += `&sanction_decision=${this.selectedSanctions.join()}`;
                 if (this.sanction_not_done) {
                     path += "&activate_not_done=true";
                 }
@@ -218,6 +217,7 @@ export default {
             orderingFields.push("student__last_name");
             path += `&ordering=${orderingFields.toString()}`;
             path += "&page_size=500";
+            path += `&sanction_decision=${this.selectedSanctions.join()}`;
             window.open(path);
         },
         exportProEco: function () {
