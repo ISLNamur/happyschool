@@ -274,10 +274,14 @@ class StudentClasseAPI(APIView):
 
     def get(self, request, format=None):
         classe_id = request.GET.get('classe', None)
+        gender = request.GET.get("gender", None)
+        print(gender)
         if not classe_id or not classe_id.isdigit:
             return Response([])
 
         students = StudentModel.objects.filter(classe__id=classe_id).order_by('last_name', 'first_name')
+        if gender:
+            students = students.filter(additionalstudentinfo__gender=gender)
         serializer = StudentSerializer(students, many=True)
         return Response(serializer.data)
 
