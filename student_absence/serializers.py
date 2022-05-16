@@ -61,7 +61,7 @@ class StudentAbsenceSerializer(serializers.ModelSerializer):
         read_only_fields = ('user', 'username',)
 
     def update(self, instance, validated_data):
-        if models.StudentAbsenceSettingsModel.objects.first().sync_with_proeco:
+        if models.StudentAbsenceSettingsModel.objects.first().sync_with_proeco and "is_absent" in validated_data:
             if not self.sync_proeco(instance, validated_data["is_absent"]):
                 raise
         return super(StudentAbsenceSerializer, self).update(instance, validated_data)

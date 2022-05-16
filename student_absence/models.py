@@ -83,6 +83,7 @@ class StudentAbsenceModel(models.Model):
     date_absence = models.DateField("Date de l'absence")
     period = models.ForeignKey(PeriodModel, on_delete=models.SET_NULL, null=True)
     is_absent = models.BooleanField("Étudiant absent", default=False)
+    is_processed = models.BooleanField(default=False)
     username = models.CharField("Utilisateur qui a créé l'absence", max_length=100)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     datetime_creation = models.DateTimeField("Date et heure de création de l'absence",

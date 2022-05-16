@@ -39,6 +39,12 @@
                     <template #cell(is_absent)="data">
                         {{ data.value }}
                     </template>
+                    <template #cell(is_processed)="data">
+                        <b-form-checkbox
+                            :checked="data.value"
+                            @change="updateProcessed(!data.value, data.item.id, data.index)"
+                        />
+                    </template>
                 </b-table>
                 <b-overlay v-show="!loading">
                     <b-btn @click="getMoreAbsences">
@@ -59,6 +65,8 @@ import Moment from "moment";
 Moment.locale("fr");
 
 import {displayStudent} from "../common/utilities.js";
+
+const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
     data: function () {
@@ -93,6 +101,10 @@ export default {
                         return value ? period : "";
                     }
                 },
+                {
+                    key: "is_processed",
+                    label: "",
+                },
             ],
             absenceCount: [],
             absenceCountFields: {
@@ -117,6 +129,18 @@ export default {
     },
     methods: {
         displayStudent,
+        /** Update processed status for an absence.
+         * 
+         * @param {Boolean} event The processed status.
+         * @param {Number} id The unique id of the related object
+         * @param {Number} index Position of the related absence object.
+        */
+        updateProcessed(event, id, index) {
+            axios.patch(`/student_absence/api/student_absence/${id}/`, {is_processed: event}, token)
+                .then(resp => {
+                    this.lastAbsences[index] = resp.data;
+                });
+        },
         /**
          * Add a filter for a specific student for the list component.
          * @param {Number} matricule The matricule of the student.
