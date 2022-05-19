@@ -106,7 +106,7 @@ class StudentSensitiveInfoSerializer(serializers.ModelSerializer):
 class StudentGeneralInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdditionalStudentInfo
-        fields = ('student', 'gender', 'scholar_year', 'previous_classe',
+        fields = ('student', 'gender', 'group', 'scholar_year', 'previous_classe',
                   'orientation', 'username', 'password')
 
 

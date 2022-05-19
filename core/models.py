@@ -195,6 +195,7 @@ class StudentModel(models.Model):
 class AdditionalStudentInfo(models.Model):
     student = models.OneToOneField(StudentModel, primary_key=True, on_delete=models.CASCADE)
     gender = models.CharField(max_length=10, blank=True)
+    group = models.CharField(max_length=100, blank=True)
     scholar_year = models.CharField(max_length=9, blank=True)
     previous_classe = models.CharField(max_length=20, blank=True)
     orientation = models.CharField(max_length=200, blank=True)
