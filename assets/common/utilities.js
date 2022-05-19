@@ -26,8 +26,9 @@ function countCurrentTeaching(app) {
     return teachings.length;
 }
 
-export function displayStudent(student) {
-    if (countCurrentTeaching(this) === 1) {
+export function displayStudent(student, context) {
+    let app = context ? context : this; 
+    if (countCurrentTeaching(app) === 1) {
         const classeStr = student.classe ? `${student.classe.year}${student.classe.letter.toUpperCase()}` : "(Ancien)";
         return `${student.last_name} ${student.first_name} ${classeStr}`;
     } else {
