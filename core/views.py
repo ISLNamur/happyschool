@@ -312,10 +312,6 @@ class ScholarYearAPI(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, format=None):
-        query = self.request.GET.get('scholar_year', '')
-        if not query:
-            return Response([])
-
         current_year = get_scholar_year()
         options = []
         for y in reversed(range(current_year - 10, current_year + 1)):
