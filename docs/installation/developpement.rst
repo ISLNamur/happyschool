@@ -114,7 +114,7 @@ de passe et nom de la base de donnée :
 
    CREATE USER newuser WITH PASSWORD 'yourpassword';
    CREATE DATABASE mydb WITH OWNER newuser;
-   ALTER USER username CREATEDB;
+   ALTER USER newuser CREATEDB;
    \quit
 
 Paquets système
@@ -129,8 +129,9 @@ Pour les installer :
 
 ::
 
+   sudo apt install curl
    curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-   sudo apt install libldap2-dev libsasl2-dev python3-pip git python3-dateutil ttf-bitstream-vera redis-server build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl nodejs
+   sudo apt install libldap2-dev libsasl2-dev python3-pip git python3-dateutil ttf-bitstream-vera redis-server build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev nodejs
    
 
 HappySchool
@@ -155,9 +156,9 @@ sont utilisés. Pour les installer avec un shell bash:
 
    pip3 install --user pipenv
    curl https://pyenv.run | bash
-   echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> /.bashrc
-   echo 'eval "$(pyenv init -)"' >> /.bashrc
-   echo 'eval "$(pyenv virtualenv-init -)"' >> /bashrc
+   echo 'export PATH="$HOME/.pyenv/bin:$HOME/.local/bin:$PATH"' >> ~/.bashrc
+   echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+   echo 'eval "$(pyenv virtualenv-init -)"' >> ~/bashrc
    cd happyschool
    PIPENV_YES=1 pipenv install
 
@@ -172,7 +173,7 @@ racine d’Happyschool). Un fichier exemple est disponible et peut être copié 
 
 Dans celui-ci vous retrouverez la possibilité d’activer/désactiver les
 applications, configurer l’accès à la base de donnée (pensez à mettre le
-nom de la db, l’utilisateur et le mot de passe définit plus haut),
+nom de la db, l’utilisateur et le mot de passe définit plus haut !),
 configurer le serveur d’envoi d’email, configurer l'authentification à
 un serveur LDAP/ActiveDirectory, etc. Plus de détails sont disponibles
 dans la section :ref:`configuration_index`.
