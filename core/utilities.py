@@ -43,7 +43,8 @@ EXCLUDED_APPS = [
     'social_django',
     'webpack_loader',
     'proeco',
-    "django_cas_ng"
+    "django_cas_ng",
+    "debug_toolbar",
 ]
 
 

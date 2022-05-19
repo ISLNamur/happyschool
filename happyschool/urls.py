@@ -70,5 +70,8 @@ for app in settings.INSTALLED_APPS:
 if 'social_django' in settings.INSTALLED_APPS:
     urlpatterns.append(url('', include('social_django.urls', namespace='social')))
 
+if "debug_toolbar" in settings.INSTALLED_APPS:
+    urlpatterns.append(path('__debug__/', include('debug_toolbar.urls')))
+
 if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()
