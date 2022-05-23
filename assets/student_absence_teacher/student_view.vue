@@ -20,28 +20,24 @@
 <template>
     <div>
         <b-row>
-            <b-col md="4">
+            <b-col>
                 <b-input
                     :value="date"
                     type="date"
                     @change="moveToDate"
+                    class="w-50"
                 />
             </b-col>
-            <b-col class="text-right mb-1">
-                <b-btn
-                    variant="primary"
-                    @click="validateEducatorAbsences"
-                >
-                    Valider toutes les présences
-                </b-btn>
-            </b-col>
+            <b-btn @click="$router.go(-1)">
+                Retour
+            </b-btn>
         </b-row>
-        <b-row>
+        <b-row class="mt-1">
             <b-col>
                 <b-overlay :show="loading">
                     <b-table
                         id="classoverview"
-                        :items="students"
+                        :items="studentAsList"
                         :fields="fields"
                         class="text-center"
                     >
@@ -64,14 +60,11 @@
                                 </b-col>
                             </b-row>
                         </template>
-                        <template #cell(studentName)="data">
-                            <a :href="`#/student_view/${data.item.matricule}/${date}/`">{{ data.value }}</a>
-                        </template>
                         <template #cell(absence)="data">
                             <overview-teacher-entry :absences="data.item.absence_teachers" />
                             <overview-educator-entry
                                 :absences="data.item.absence_educators"
-                                @change="updateEducatorAbsence($event, data.index)"
+                                @change="updateEducatorAbsence($event)"
                             />
                         </template>
                     </b-table>
@@ -85,24 +78,28 @@
 import axios from "axios";
 
 import {displayStudent} from "../common/utilities.js";
+
 import OverviewTeacherEntry from "./overview_teacher_entry.vue";
 import OverviewEducatorEntry from "./overview_educator_entry.vue";
 
-const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+
 export default {
     props: {
-        classId: {
-            type: String,
-            default: "",
-        },
         date: {
             type: String,
             default: ""
         },
+        studentId: {
+            type: String,
+            default: -1
+        }
     },
     data: function () {
         return {
             loading: false,
+            student: null,
+            teachersPeriod: [],
+            educatorsPeriod: [],
             fields: [
                 {
                     key: "studentName",
@@ -113,75 +110,56 @@ export default {
                     label: ""
                 }
             ],
-            students: [],
-            teachersPeriod: [],
-            educatorsPeriod: [],
         };
     },
+    computed: {
+        studentAsList: function () {
+            if (this.student) return [this.student];
+
+            return [];
+        }
+    },
     methods: {
+        displayStudent,
         moveToDate: function(newDate) {
-            this.$router.push(`/class_view/${this.classId}/${newDate}/`, () => {
+            this.$router.push(`/student_view/${this.studentId}/${newDate}/`, () => {
                 document.location.reload();
             });
         },
-        validateEducatorAbsences: function () {
-            this.loading = true;
-            const absencesProm = this.educatorsPeriod.map((period, idx) => {
-                const absences = this.students
-                    .map(s => s.absence_educators[idx])
-                    .filter(a => a.is_absent === null)
-                    .map(a => {
-                        a.is_absent = false;
-                        return a;
-                    });
-                return axios.post("/student_absence/api/student_absence/", absences, token);
-            });
-            
-            Promise.all(absencesProm)
-                .then(() => {
-                    document.location.reload();
-                })
-                .catch(err => {
-                    console.log(err);
-                    this.loading = false;
-                });
-        },
-        updateEducatorAbsence: function (payload, studentIndex) {
+        updateEducatorAbsence: function (payload) {
             const data = payload[0];
             const periodIndex = payload[1];
-            this.students[studentIndex].absence_educators[periodIndex] = data;
+            this.student.absence_educators[periodIndex] = data;
         },
-        getStudentsAbsences: function () {
+        getStudentAbsences: function () {
             const promises = [
-                axios.get(`/annuaire/api/studentclasse/?classe=${this.classId}`),
+                axios.get(`/annuaire/api/student/${this.studentId}/`),
                 axios.get("/student_absence_teacher/api/period/"),
                 axios.get("/student_absence/api/period/"),
-                axios.get(`/student_absence_teacher/api/absence/?student__classe=${this.classId}&date_absence=${this.date}&page_size=500`),
-                axios.get(`/student_absence/api/student_absence/?student__classe=${this.classId}&date_absence=${this.date}&page_size=500`)
+                axios.get(`/student_absence_teacher/api/absence/?student__matricule=${this.studentId}&date_absence=${this.date}&page_size=500`),
+                axios.get(`/student_absence/api/student_absence/?student__matricule=${this.studentId}&date_absence=${this.date}&page_size=500`)
             ];
             Promise.all(promises).then(resp => {
                 const teachersAbsences = resp[3].data.results;
                 const educatorsAbsences = resp[4].data.results;
-                this.students = resp[0].data.map(s => {
-                    s.studentName = this.displayStudent(s);
-                    this.teachersPeriod = resp[1].data.results;
-                    this.educatorsPeriod = resp[2].data.results;
-                    s.absence_teachers = this.teachersPeriod.map(p => {
-                        const absence = teachersAbsences.find(a => a.period.id === p.id && a.student_id === s.matricule);
-                        return absence ? absence : null;
-                    });
-                    s.absence_educators = this.educatorsPeriod.map(p => {
-                        const absence = educatorsAbsences.find(a => a.period === p.id && a.student_id === s.matricule);
-                        return absence ? absence : {is_absent: null, student_id: s.matricule, period: p.id, date_absence: this.date};
-                    });
-                    return s;
+                this.teachersPeriod = resp[1].data.results;
+                this.educatorsPeriod = resp[2].data.results;
+                this.student = resp[0].data;
+                this.student.studentName = this.displayStudent(this.student);
+                this.student.absence_teachers = this.teachersPeriod.map(p => {
+                    const absence = teachersAbsences.find(a => a.period.id === p.id);
+                    return absence ? absence : null;
                 });
+                this.student.absence_educators = this.educatorsPeriod.map(p => {
+                    const absence = educatorsAbsences.find(a => a.period === p.id);
+                    return absence ? absence : {is_absent: null, student_id: this.student.matricule, period: p.id, date_absence: this.date};
+                });
+
             });
         },
-        displayStudent
     },
     mounted: function () {
-        this.getStudentsAbsences();
+        this.getStudentAbsences();
     },
     components: {
         OverviewTeacherEntry,
@@ -189,9 +167,3 @@ export default {
     }
 };
 </script>
-
-<style>
-    #classoverview table.b-table > thead > tr > :nth-child(2) {
-        width: 75%;
-    }
-</style>

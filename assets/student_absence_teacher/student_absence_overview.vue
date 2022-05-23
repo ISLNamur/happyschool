@@ -19,14 +19,18 @@
 
 <template>
     <div>
-        <b-row>
-            <b-col>
+        <b-row class="mb-1">
+            <b-col
+                cols="12"
+                md="8"
+            >
                 <b-form
                     inline
                     class="mb-1"
                 >
                     <b-form-group
                         label="Date"
+                        class="mr-2"
                     >
                         <b-overlay
                             :show="loading"
@@ -40,61 +44,37 @@
                         </b-overlay>
                     </b-form-group>
                     <b-form-group
-                        label="Vue pour les périodes"
-                        v-slot="{ ariaDescribedby }"
-                        class="ml-1"
+                        label="Rechercher"
                     >
-                        <b-form-radio-group
-                            id="point-of-view-radio"
-                            v-model="pointOfView"
-                            :options="optionsPointOfView"
-                            :aria-describedby="ariaDescribedby"
-                            button-variant="outline-primary"
-                            name="point-of-view-radio"
-                            @change="get_absence_count()"
-                            buttons
-                        />
-                    </b-form-group>
-                    <b-form-group
-                        label="Liste des classes"
-                        v-slot="{ ariaDescribedby }"
-                        class="ml-1"
-                    >
-                        <b-form-radio-group
-                            id="class-list-type-radio"
-                            v-model="classListType"
-                            :options="optionsClassListType"
-                            :aria-describedby="ariaDescribedby"
-                            button-variant="outline-primary"
-                            name="class-list-type-radio"
-                            @change="get_absence_count()"
-                            buttons
-                        />
-                    </b-form-group>
-                    <b-form-group
-                        v-if="isProecoActivated"
-                        label="Export vers ProEco"
-                        class="ml-1"
-                    >
-                        <b-dropdown
-                            text="Export"
-                            variant="outline-secondary"
+                        <multiselect
+                            ref="input"
+                            :show-no-options="false"
+                            :internal-search="false"
+                            :options="searchOptions"
+                            @search-change="getSearchOptions"
+                            placeholder="Une classe, un élève,…"
+                            select-label=""
+                            selected-label="Sélectionné"
+                            deselect-label=""
+                            label="display"
+                            track-by="id"
+                            v-model="search"
+                            @select="selected"
                         >
-                            <b-dropdown-item
-                                v-for="p in educatorPeriods"
-                                :key="p.id"
-                                :href="`/student_absence/api/export_selection/?page_size=2000&date_absence=${date}&period__name=${p.name}&is_absent=true${exportOwnClasses}`"
-                            >
-                                {{ p.name }}
-                            </b-dropdown-item>
-                            <b-dropdown-item
-                                :href="`/student_absence/api/export_selection/?page_size=2000&date_absence=${date}&is_absent=true${exportOwnClasses}`"
-                            >
-                                Toute la journée
-                            </b-dropdown-item>
-                        </b-dropdown>
+                            <span slot="noResult">Aucune personne trouvée.</span>
+                            <span slot="noOptions" />
+                        </multiselect>
                     </b-form-group>
                 </b-form>
+            </b-col>
+            <b-col>
+                <b-button
+                    v-b-toggle.other-options
+                    variant="primary"
+                >
+                    <b-icon icon="grid1x2" />
+                    Autres vues
+                </b-button>
             </b-col>
         </b-row>
         <b-row>
@@ -142,6 +122,68 @@
                 </b-table>
             </b-col>
         </b-row>
+        <b-sidebar
+            id="other-options"
+            title="Options de visualisation"
+            right
+            shadow
+        >
+            <b-form-group
+                label="Vue horaire"
+                v-slot="{ ariaDescribedby }"
+                class="ml-1"
+            >
+                <b-form-radio-group
+                    id="point-of-view-radio"
+                    v-model="pointOfView"
+                    :options="optionsPointOfView"
+                    :aria-describedby="ariaDescribedby"
+                    button-variant="outline-primary"
+                    name="point-of-view-radio"
+                    @change="get_absence_count()"
+                    buttons
+                />
+            </b-form-group>
+            <b-form-group
+                label="Liste des classes"
+                v-slot="{ ariaDescribedby }"
+                class="ml-1"
+            >
+                <b-form-radio-group
+                    id="class-list-type-radio"
+                    v-model="classListType"
+                    :options="optionsClassListType"
+                    :aria-describedby="ariaDescribedby"
+                    button-variant="outline-primary"
+                    name="class-list-type-radio"
+                    @change="get_absence_count()"
+                    buttons
+                />
+            </b-form-group>
+            <b-form-group
+                v-if="isProecoActivated"
+                label="Export vers ProEco"
+                class="ml-1"
+            >
+                <b-dropdown
+                    text="Export"
+                    variant="outline-secondary"
+                >
+                    <b-dropdown-item
+                        v-for="p in educatorPeriods"
+                        :key="p.id"
+                        :href="`/student_absence/api/export_selection/?page_size=2000&date_absence=${date}&period__name=${p.name}&is_absent=true${exportOwnClasses}`"
+                    >
+                        {{ p.name }}
+                    </b-dropdown-item>
+                    <b-dropdown-item
+                        :href="`/student_absence/api/export_selection/?page_size=2000&date_absence=${date}&is_absent=true${exportOwnClasses}`"
+                    >
+                        Toute la journée
+                    </b-dropdown-item>
+                </b-dropdown>
+            </b-form-group>
+        </b-sidebar>
     </div>
 </template>
 
@@ -150,6 +192,10 @@ import axios from "axios";
 
 import Moment from "moment";
 Moment.locale("fr");
+
+
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
 
 export default {
     data: function () {
@@ -171,6 +217,9 @@ export default {
             educatorPeriods: [],
             filter: "",
             loading: true,
+            searchOptions: [],
+            search: "",
+            searchId: -1,
         };
     },
     computed: {
@@ -245,10 +294,57 @@ export default {
                         );
                     }
                 });
-        }
+        },
+        selected: function (option) {
+            if (option.type == "classe") {
+                // reroute to classe
+                this.$router.push(`/class_view/${option.id}/${this.date}/`);
+                return;
+            } else {
+                // reroute to student
+            }
+        }, 
+        getSearchOptions: function (query) {
+            // Ensure the last search is the first response.
+            this.searchId += 1;
+            let currentSearch = this.searchId;
+
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            const data = {
+                query: query,
+                teachings: this.$store.state.settings.teachings,
+                people: "student",
+                check_access: this.classListType === "ownclass",
+            };
+            axios.post("/annuaire/api/people_or_classes/", data, token)
+                .then(response => {
+                    if (this.searchId !== currentSearch)
+                        return;
+
+                    const options = response.data.map(p => {
+                        if (Number.isNaN(Number.parseInt(query[0]))) {
+                            return {
+                                display: p.display,
+                                id: p.matricule,
+                                type: "student",
+                            };
+                        } else {
+                        // It is a classe.
+                            let classe = p;
+                            classe.type = "classe";
+                            return classe;
+                        }
+                    });
+
+                    this.searchOptions = options;
+                });
+        },
     },
     mounted: function () {
         this.get_absence_count();
+    },
+    components: {
+        Multiselect
     }
 };
 </script>
