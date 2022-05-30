@@ -68,7 +68,7 @@
                         {{ c.explication_commentaire|striptags }}
                     </para>
                 </td>
-                <td>{{ c.date_sanction|date:'d/m/y' }} {{ c.time_sanction_start }}{% if c.time_sanction_end %} -{{ c.time_sanction_end }}{% endif %}</td>
+                <td>{{ c.date_sanction|date:'d/m/y' }} {% if c.time_sanction_start %}{{ c.time_sanction_start }}{% endif %}{% if c.time_sanction_end %} -{{ c.time_sanction_end }}{% endif %}</td>
             </tr>
             {% endfor %}
         </blockTable>
