@@ -156,7 +156,7 @@ class LatenessViewSet(BaseModelViewSet):
     username_field = None
 
     if "student_absence_teacher" in settings.INSTALLED_APPS:
-        def _update_student_absence_teacher(self, instance, time):
+        def _get_student_absence_teacher(self, instance, time):
             from student_absence_teacher.models import StudentAbsenceTeacherModel, PeriodModel
 
             try:
@@ -165,13 +165,25 @@ class LatenessViewSet(BaseModelViewSet):
                 return
 
             try:
-                student_lateness = StudentAbsenceTeacherModel.objects.get(
+                return StudentAbsenceTeacherModel.objects.get(
                     date_absence=instance.datetime_creation,
                     student=instance.student,
                     period=period,
                     status=StudentAbsenceTeacherModel.LATENESS,
                 )
             except ObjectDoesNotExist:
+                return None
+
+        def _update_student_absence_teacher(self, instance, time):
+            from student_absence_teacher.models import StudentAbsenceTeacherModel, PeriodModel
+
+            student_lateness = self._get_student_absence_teacher(instance, time)
+            if not student_lateness:
+                try:
+                    period = PeriodModel.objects.get(start__lt=time, end__gte=time)
+                except ObjectDoesNotExist:
+                    return
+
                 student_lateness = StudentAbsenceTeacherModel(
                     date_absence=instance.datetime_creation,
                     student=instance.student,
@@ -182,6 +194,14 @@ class LatenessViewSet(BaseModelViewSet):
             student_lateness.comment = f"Retard à {time.time().strftime('%H:%M')} {'(justifié)' if instance.justified else ''}"
             student_lateness.user = self.request.user
             student_lateness.save()
+
+        def _remove_student_absence_teacher(self, instance):
+            from student_absence_teacher.models import StudentAbsenceTeacherModel
+
+            student_lateness = self._get_student_absence_teacher(instance, instance.datetime_update.astimezone().time())
+            if student_lateness:
+                student_lateness.delete()
+
 
     def perform_create(self, serializer):
         lateness = serializer.save()
@@ -318,6 +338,7 @@ class LatenessViewSet(BaseModelViewSet):
 
     def perform_destroy(self, instance):
         self.remove_sanction(instance)
+        self._remove_student_absence_teacher(instance)
         super().perform_destroy(instance)
 
     def perform_update(self, serializer):
