@@ -55,6 +55,8 @@ class ResponsibleSensitiveSerializer(serializers.ModelSerializer):
 
 
 class ResponsibleSerializer(serializers.ModelSerializer):
+    courses = GivenCourseSerializer(read_only=True, many=True)
+
     class Meta:
         model = ResponsibleModel
         fields = ('pk', 'matricule', 'last_name', 'first_name', 'is_secretary', 'email_school',
