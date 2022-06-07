@@ -29,11 +29,9 @@
             bordered
             hover
             foot-clone
+            stacked="sm"
             head-variant="dark"
         >
-            <template #head()="data">
-                {{ data.label !== "Mois" ? parseInt(data.label) + 1 : data.label }}
-            </template>
             <template #cell()="data">
                 <span :class="isToday(data.value) ? 'today' : ''">
                     {{ data.value[3] }}
@@ -76,7 +74,9 @@ export default {
     data: function () {
         return {
             calendar: [],
-            fields: ["Mois",],
+            fields: [
+                {key: "Mois"}
+            ],
             firstDate: null,
             month: [
                 "Jan.",
@@ -105,7 +105,12 @@ export default {
     },
     mounted: function () {
         for (let d = 0; d < 31; d++) {
-            this.fields.push(String(d));
+            this.fields.push(
+                {
+                    key: String(d),
+                    label: String(d + 1),
+                }
+            );
         }
 
         const from = "2021-08-01";
