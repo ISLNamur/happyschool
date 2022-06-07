@@ -136,6 +136,7 @@ class StudentAbsenceViewSet(ModelViewSet):
     ordering_fields = [
         'date_absence', 'datetime_update', 'datetime_creation',
         "student__classe__year", "student__classe__letter", "student__last_name", "student__first_name",
+        "period__start",
     ]
     cursor = None
 
