@@ -71,6 +71,14 @@
                 </b-overlay>
             </b-col>
         </b-row>
+        <b-row>
+            <b-col>
+                <student-year-view
+                    :student-id="parseInt(studentId)"
+                    :current-date="date"
+                />
+            </b-col>
+        </b-row>
     </div>
 </template>
 
@@ -81,6 +89,7 @@ import {displayStudent} from "../common/utilities.js";
 
 import OverviewTeacherEntry from "./overview_teacher_entry.vue";
 import OverviewEducatorEntry from "./overview_educator_entry.vue";
+import StudentYearView from "./student_year_view.vue";
 
 
 export default {
@@ -111,6 +120,11 @@ export default {
                 }
             ],
         };
+    },
+    watch: {
+        date: function () {
+            document.location.reload();
+        }
     },
     computed: {
         studentAsList: function () {
@@ -164,6 +178,7 @@ export default {
     components: {
         OverviewTeacherEntry,
         OverviewEducatorEntry,
+        StudentYearView,
     }
 };
 </script>
