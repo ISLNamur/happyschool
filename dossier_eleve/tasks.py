@@ -27,6 +27,7 @@ from core.email import send_email
 from core.models import ResponsibleModel, EmailModel
 from core.utilities import get_scholar_year
 from core.people import get_teachers_from_student
+from core.views import get_core_settings
 
 from .models import CasEleve, DossierEleveSettingsModel
 
@@ -36,12 +37,21 @@ def notify_sanction(self, instance_id):
     instance = CasEleve.objects.get(id=instance_id)
     student = instance.student
     context = {'student': student, 'sanction': instance}
+    core_settings = get_core_settings()
 
     for notify in instance.sanction_decision.notify.all():
         recipient = []
         # Check if we match the frequency.
-        scholar_year_start = date(year=get_scholar_year(), month=9, day=1)
-        scholar_year_end = date(year=get_scholar_year() + 1, month=9, day=1)
+        scholar_year_start = date(
+            year=get_scholar_year(),
+            month=core_settings.month_scholar_year_start,
+            day=core_settings.day_scholar_year_start
+        )
+        scholar_year_end = date(
+            year=get_scholar_year() + 1,
+            month=core_settings.month_scholar_year_start,
+            day=core_settings.day_scholar_year_start
+        )
         sanction_count = CasEleve.objects.filter(
             datetime_encodage__gte=scholar_year_start,
             datetime_encodage__lt=scholar_year_end,
