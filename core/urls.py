@@ -38,6 +38,7 @@ urlpatterns = [
     path('api/import_teachers/', admin_views.ImportTeacherAPIView.as_view()),
     path('api/birthday/', views.BirthdayAPI.as_view(), name='birthday'),
     path('api/calendar/', views.CalendarAPI.as_view(), name='calendar'),
+    path('api/scholar_calendar/', views.ScholarCalendarAPI.as_view(), name='scholar_calendar'),
     path('api/photo/', admin_views.PhotoAPI.as_view(), name='photo'),
     path('api/logo/', admin_views.LogoAPI.as_view(), name='logo'),
     path('api/update/', admin_views.UpdateAPIView.as_view(), name='update'),

@@ -49,27 +49,44 @@ EXCLUDED_APPS = [
 
 
 def get_scholar_year() -> int:
-    """Get current scholar year. The scholar year starts the 1st of September."""
+    """Get current scholar year. The scholar year starts from core settings."""
+
+    from core.views import get_core_settings as get_settings
+
     current_date = timezone.now()
     year = current_date.year
     month = current_date.month
+    day = current_date.day
 
-    if month < 9:
+    core_settings = get_settings()
+    if month < core_settings.month_scholar_year_start:
         return year - 1
-    else:
-        return year
+    elif month == core_settings.month_scholar_year_start and day < core_settings.day_scholar_year_start:
+        return year - 1
+
+    return year
 
 
 def in_scholar_year(date) -> bool:
+    from core.views import get_core_settings as get_settings
+
     current_year = get_scholar_year()
     if date.year < current_year:
         return False
 
-    if date.month >= 9 and date.year == current_year:
-        return True
+    core_settings = get_settings()
 
-    if date.month < 9 and date.year == current_year + 1:
-        return True
+    if date.year == current_year:
+        if date.month > core_settings.month_scholar_year_start:
+            return True
+        if date.month == core_settings.month_scholar_year_start and date.day >= core_settings.day_scholar_year_start:
+            return True
+
+    if date.year == current_year + 1:
+        if date.month < core_settings.month_scholar_year_start:
+            return True
+        if date.month == core_settings.month_scholar_year_start and date.day < core_settings.day_scholar_year_start:
+            return True
 
     return False
 

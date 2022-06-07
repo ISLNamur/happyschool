@@ -21,6 +21,8 @@ import json
 import warnings
 import requests
 import os
+import calendar
+import itertools
 
 from datetime import date, timedelta
 
@@ -433,6 +435,48 @@ class BirthdayAPI(APIView):
             responsibles = responsibles.values_list("last_name", "first_name")
             birthday += [{'name': "%s %s" % (s[0], s[1])} for s in responsibles]
         return Response({'results': birthday})
+
+
+class ScholarCalendarAPI(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, format=None):
+        start_year = get_scholar_year()
+        start_month = get_core_settings().month_scholar_year_start
+        start_day = get_core_settings().day_scholar_year_start
+        cal = calendar.Calendar()
+        day_of_week = {
+            0: "Lu",
+            1: "Ma",
+            2: "Me",
+            3: "Je",
+            4: "Ve",
+            5: "Sa",
+            6: "Di",
+        }
+        dates = [
+            d[:3] + (day_of_week[d[3]], "") if d[2] >= start_day else d[:3] + (day_of_week[d[3]], "×")
+            for d in cal.itermonthdays4(start_year, start_month) if d[1] == start_month
+        ]
+        for m in range(start_month + 1, 13):
+            dates += [
+                d[:3] + (day_of_week[d[3]], "")
+                for d in cal.itermonthdays4(start_year, m) if d[1] == m
+            ]
+        for m in range(1, start_month):
+            dates += [
+                d[:3] + (day_of_week[d[3]], "")
+                for d in cal.itermonthdays4(start_year + 1, m) if d[1] == m
+            ]
+        dates += [
+            d[:3] + (day_of_week[d[3]], "") if d[2] < start_day else d[:3] + (day_of_week[d[3]], "×")
+            for d in cal.itermonthdays4(start_year + 1, start_month) if d[1] == start_month
+        ]
+        dates = [
+            list(group)
+            for key, group in itertools.groupby(dates, lambda d: d[1])
+        ]
+        return Response(dates)
 
 
 class CalendarAPI(APIView):
