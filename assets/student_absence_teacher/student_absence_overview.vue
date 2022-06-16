@@ -301,7 +301,7 @@ export default {
                 this.$router.push(`/class_view/${option.id}/${this.date}/`);
                 return;
             } else {
-                // reroute to student
+                this.$router.push(`/student_view/${option.id}/${this.date}/`);
             }
         }, 
         getSearchOptions: function (query) {
