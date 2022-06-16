@@ -257,7 +257,6 @@ export default {
                 "datetime_sortie": null,
             },
             studentOptions: [],
-            motifOptions: [],
             searching: false,
             form: {
                 name: "",
@@ -322,7 +321,7 @@ export default {
         updateEnd: function (value) {
             if (!this.form.date_absence_end) this.form.date_absence_end = value;
         },
-        loadAbsence: function () {
+        loadPassage: function () {
             axios.get(`/infirmerie/api/passage/${this.id}/`, token)
                 .then(resp => {
                     if (resp.data) {
@@ -382,15 +381,7 @@ export default {
         }
     },
     mounted: function () {
-        const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
-        axios.get("/absence_prof/api/motif/", token)
-            .then(resp => {
-                this.motifOptions = resp.data.results.map(v => {return {value: v.motif, text: v.motif};});
-            })
-            .catch(() => {
-                alert("Unable to get motives");
-            });
-        if (this.id) this.loadAbsence();
+        if (this.id) this.loadPassage();
     },
     components: {
         Multiselect
