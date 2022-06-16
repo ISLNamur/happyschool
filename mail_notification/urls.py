@@ -19,22 +19,22 @@
 
 from rest_framework.routers import DefaultRouter
 
-from django.conf.urls import url
+from django.urls import path
 
 from . import views
 
 app_name = 'mail_notification'
 
 urlpatterns = [
-    url(r'^$', views.index, name='mail_notification'),
-    url(r'^list/$', views.get_list, name='list'),
-    url(r'^emails_list/$', views.EmailsList.as_view()),
-    url(r'^send_emails/$', views.SendEmailsView.as_view(), name='send_emails'),
-    url(r'^get_email_to_options/(?P<teaching>\w+)/(?P<to_type>\w+)/$', views.get_email_to_options, name='get_email_to_options'),
-    url(r'^get_tags_options/$', views.get_tags_options, name='get_tags_options'),
-    url(r'^get_senders/(?P<teaching>\w+)/', views.SendersList.as_view(), name='get_senders'),
-    url(r'^upload_file/$', views.UploadFile.as_view(), name='attached_file'),
-    url(r'^upload_file/(?P<pk>[0-9]+)/$', views.UploadFile.as_view(), name='remove_file'),
+    path("", views.index, name='mail_notification'),
+    path("list/", views.get_list, name='list'),
+    path("emails_list/", views.EmailsList.as_view()),
+    path("send_emails/", views.SendEmailsView.as_view(), name='send_emails'),
+    path("get_email_to_options/<teaching>/<to_type>/", views.get_email_to_options, name='get_email_to_options'),
+    path("get_tags_options/", views.get_tags_options, name='get_tags_options'),
+    path("get_senders/<teaching>/", views.SendersList.as_view(), name='get_senders'),
+    path("upload_file/", views.UploadFile.as_view(), name='attached_file'),
+    path("upload_file/<int:pk>/", views.UploadFile.as_view(), name='remove_file'),
 ]
 
 router = DefaultRouter()

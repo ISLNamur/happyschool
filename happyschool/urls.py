@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url, include
+from django.conf.urls import include
 from django.urls import path
 from django.contrib import admin
 from django.conf import settings
@@ -29,20 +29,20 @@ from django.contrib.auth.views import LoginView, LogoutView, TemplateView
 from core.utilities import EXCLUDED_APPS
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^core/', include('core.urls')),
-    url(r'^annuaire/', include('annuaire.urls'), name='annuaire'),
-    url(r'^no_access/', TemplateView.as_view(template_name='core/no_access.html'), name='no_access'),
-    url(r'^$', RedirectView.as_view(url='annuaire/', permanent=False)),
+    path("admin/", admin.site.urls),
+    path("core/", include('core.urls')),
+    path("annuaire/", include('annuaire.urls'), name='annuaire'),
+    path("no_access/", TemplateView.as_view(template_name='core/no_access.html'), name='no_access'),
+    path("", RedirectView.as_view(url='annuaire/', permanent=False)),
 ]
 
 # Handle SSO with CAS
 if "django_cas_ng" in settings.INSTALLED_APPS:
     import django_cas_ng.views
 
-    urlpatterns.append(path("auth", django_cas_ng.views.LoginView.as_view(), name='cas_ng_login'))
+    urlpatterns.append(path("auth/", django_cas_ng.views.LoginView.as_view(), name='cas_ng_login'))
     urlpatterns.append(path("logout/", django_cas_ng.views.LogoutView.as_view(), name='cas_ng_logout'))
-    urlpatterns.append(path("login", LoginView.as_view(
+    urlpatterns.append(path("login/", LoginView.as_view(
         template_name='core/auth.html',
         extra_context={
             'google': 'social_core.backends.google.GoogleOAuth2' in settings.AUTHENTICATION_BACKENDS,
@@ -51,7 +51,7 @@ if "django_cas_ng" in settings.INSTALLED_APPS:
             },
         ), name='auth',))
 else:
-    urlpatterns.append(url(r'^auth', LoginView.as_view(
+    urlpatterns.append(path("auth/", LoginView.as_view(
         template_name='core/auth.html',
         extra_context={
             'google': 'social_core.backends.google.GoogleOAuth2' in settings.AUTHENTICATION_BACKENDS,
@@ -59,16 +59,16 @@ else:
             'model': 'django.contrib.auth.backends.ModelBackend' in settings.AUTHENTICATION_BACKENDS,
             },
         ), name='auth',))
-    urlpatterns.append(url(r'^logout', LogoutView.as_view(next_page='auth'), name='logout'))
+    urlpatterns.append(path("logout/", LogoutView.as_view(next_page='auth'), name='logout'))
 
 for app in settings.INSTALLED_APPS:
     if app in EXCLUDED_APPS:
         continue
 
-    urlpatterns.append(url(r'^%s/' % (app), include('%s.urls' % (app))))
+    urlpatterns.append(path("%s/" % (app), include('%s.urls' % (app))))
 
 if 'social_django' in settings.INSTALLED_APPS:
-    urlpatterns.append(url('', include('social_django.urls', namespace='social')))
+    urlpatterns.append(path("", include('social_django.urls', namespace='social')))
 
 if "debug_toolbar" in settings.INSTALLED_APPS:
     urlpatterns.append(path('__debug__/', include('debug_toolbar.urls')))

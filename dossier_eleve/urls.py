@@ -25,11 +25,6 @@ from rest_framework.routers import DefaultRouter
 from . import views
 #
 urlpatterns = [
-    # url(r'^get_pdf_council/(?P<date_from>.*)/(?P<date_to>.*)/', views.get_pdf_council, name='get_pdf_council'),
-    # url(r'^get_pdf_council/', views.get_pdf_council, name='get_pdf_council'),
-    # url(r'^get_pdf_retenues/(?P<date>.*)/(?P<date2>.*)/', views.get_pdf_retenues, name='get_pdf_retenues'),
-    # url(r'^get_pdf_retenues/(?P<date>.*)', views.get_pdf_retenues, name='get_pdf_retenues'),
-    # url(r'^get_pdf_retenues/', views.get_pdf_retenues, name='get_pdf_retenues'),
     path('', views.DossierEleveView.as_view(), name='dossier_eleve'),
     path('ask_sanctions', views.AskSanctionsView.as_view()),
     path('api/statistics/<int:student>/', views.StatisticAPI.as_view(), name='statistics'),

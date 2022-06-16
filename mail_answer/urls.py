@@ -19,7 +19,6 @@
 
 from rest_framework.routers import DefaultRouter
 
-from django.conf.urls import url
 from django.urls import path
 
 from . import views
@@ -27,7 +26,7 @@ from . import views
 app_name = 'mail_answer'
 
 urlpatterns = [
-    url(r'^$', views.MailAnswerView.as_view(), name='mail_answer'),
+    path("", views.MailAnswerView.as_view(), name='mail_answer'),
     path('answer/<uuid:answer>/', views.AnswerView.as_view(), name='answer'),
     path('api/answers/<int:template>/<int:classe>/', views.AnswersAPI.as_view(), name='answers'),
     path('api/answers_classes/<int:template>/', views.AnswersClassesAPI.as_view(), name='answers_classes'),

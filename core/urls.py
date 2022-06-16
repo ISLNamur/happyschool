@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls import url
 from django.urls import path
 
 from rest_framework.routers import DefaultRouter
@@ -29,8 +28,8 @@ from .adminsettings import views as admin_views
 app_name = 'core'
 
 urlpatterns = [
-    url(r'^profil/$', views.ProfilView.as_view(), name='profil'),
-    url(r'^members/$', views.MembersView.as_view(), name='members'),
+    path("profil/", views.ProfilView.as_view(), name='profil'),
+    path("members/", views.MembersView.as_view(), name='members'),
     path('api/scholar_year/', views.ScholarYearAPI.as_view()),
     path('admin/', admin_views.AdminView.as_view()),
     path('api/testfile/', admin_views.TestFileAPIView.as_view()),
