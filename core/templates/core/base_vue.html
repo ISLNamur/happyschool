@@ -30,7 +30,7 @@
             };
             {% load groups %}
             {% load user_properties %}
-            {% autoescape off %}
+
             const user = "{{ user }}";
             var user_properties_raw = {% list_user_properties %};
             if (user_properties_raw) {
@@ -38,7 +38,7 @@
             }
             const user_properties = user_properties_raw;
             const user_groups = {% list_user_groups %};
-            {% endautoescape %}
+
         </script>
         {% render_bundle 'commons' %}
         <header></header>

@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
+import json
+
 from django import template
 
 register = template.Library()
@@ -24,5 +26,6 @@ register = template.Library()
 
 @register.simple_tag(takes_context=True)
 def list_user_groups(context):
+    context.autoescape = False
     groups = context['user'].groups.all()
-    return list(groups.values("id", "name"))
+    return json.dumps(list(groups.values("id", "name")))
