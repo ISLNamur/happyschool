@@ -42,7 +42,7 @@
                     </b-nav-item>
                     <b-nav-item
                         v-if="can_access_list"
-                        to="/overview"
+                        :to="`/overview/${today}/`"
                     >
                         Vue d'ensemble
                     </b-nav-item>
@@ -67,6 +67,9 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 
+import Moment from "moment";
+Moment.locale("fr");
+
 import Menu from "../common/menu_bar.vue";
 
 export default {
@@ -77,6 +80,9 @@ export default {
         };
     },
     computed: {
+        today: function () {
+            return Moment().format("YYYY-MM-DD");
+        },
         can_access_list: function () {
             const access_groups = this.$store.state.settings.can_see_list;
             for (let ag in this.$store.state.settings.can_see_list) {

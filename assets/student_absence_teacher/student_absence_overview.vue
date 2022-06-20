@@ -38,8 +38,8 @@
                         >
                             <b-input
                                 type="date"
-                                v-model="date"
-                                @input="get_absence_count"
+                                :value="date"
+                                @input="changeDate"
                             />
                         </b-overlay>
                     </b-form-group>
@@ -198,9 +198,14 @@ import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
 export default {
+    props: {
+        date: {
+            type: String,
+            default: () => Moment().format("YYYY-MM-DD")
+        }
+    },
     data: function () {
         return {
-            date: Moment().format("YYYY-MM-DD"),
             pointOfView: "teacher",
             optionsPointOfView: [
                 { text: "Prof.", value: "teacher"},
@@ -231,7 +236,15 @@ export default {
             return this.classListType === "ownclass" ? "&activate_own_classes=true" : "";
         }
     },
+    watch: {
+        date: function () {
+            this.get_absence_count();
+        }
+    },
     methods: {
+        changeDate: function (evt) {
+            this.$router.push(`/overview/${evt}/`);
+        },
         get_absence_count: function () {
             this.loading = true;
             this.getPeriods();
