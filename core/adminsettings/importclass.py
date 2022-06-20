@@ -718,7 +718,7 @@ class ImportStudentFDB(ImportStudent):
         "father_last_name": "father_surname", "father_first_name": "father_firstname", "father_mobile": "father_gsm",
         "mother_last_name": "mother_surname", "mother_first_name": "mother_firstname", "mother_mobile": "mother_gsm",
     }
-    scholar_year = get_scholar_year()
+    scholar_year = None
 
     def __init__(
         self,
@@ -734,6 +734,7 @@ class ImportStudentFDB(ImportStudent):
         self.teaching_type = teaching_type
         self.classe_format = classe_format
         self.sync_course = sync_course
+        self.scholar_year = get_scholar_year()
 
     def sync(self):
         from libreschoolfdb.reader import get_students
