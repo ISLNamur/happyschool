@@ -33,22 +33,18 @@
             head-variant="dark"
         >
             <template #cell()="data">
-                <span :class="isToday(data.value) ? 'today' : ''">
-                    {{ data.value[3] }}
-                </span>
-                <span :class="isCurrentDate(data.value) ? 'currentdate' : ''">
-                    <a
-                        v-if="data.value[3]"
-                        :href="`#/student_view/${$route.params.studentId}/${data.value[0]}-${String(data.value[1]).padStart(2, '0')}-${String(data.value[2]).padStart(2, '0')}`"
-                    >
-                        <span v-if="data.value[4]">
-                            {{ data.value[4] }}
-                        </span>
-                        <span v-else>
-                            _
-                        </span>
-                    </a>
-                </span>
+                {{ data.value[3] }}
+                <a
+                    v-if="data.value[3]"
+                    :href="`#/student_view/${$route.params.studentId}/${data.value[0]}-${String(data.value[1]).padStart(2, '0')}-${String(data.value[2]).padStart(2, '0')}`"
+                >
+                    <span v-if="data.value[4]">
+                        {{ data.value[4] }}
+                    </span>
+                    <span v-else>
+                        _
+                    </span>
+                </a>
             </template>
             <template #cell(Mois)="data">
                 <strong>{{ month[(firstDate.getMonth() + data.index) % 12] }}</strong>
@@ -100,15 +96,19 @@ export default {
             return data[0] === today.getFullYear() && data[1] === today.getMonth() + 1 && data[2] === today.getDate();
         },
         isCurrentDate: function (data) {
-            return data[0] === parseInt(this.currentDate.slice(0, 5)) && data[1] === parseInt(this.currentDate.slice(6, 8)) && data[2] === parseInt(this.currentDate.slice(9, 11));
+            return data[0] === parseInt(this.currentDate.slice(0, 4)) && data[1] === parseInt(this.currentDate.slice(5, 7)) && data[2] === parseInt(this.currentDate.slice(8, 10));
         }
     },
     mounted: function () {
+        let app = this;
         for (let d = 0; d < 31; d++) {
             this.fields.push(
                 {
                     key: String(d),
                     label: String(d + 1),
+                    tdClass: function (value, key, item) {
+                        return [app.isToday(value) ? "today" : "", app.isCurrentDate(value) ? "currentdate" : ""];
+                    }
                 }
             );
         }
@@ -142,5 +142,6 @@ export default {
     }
     .currentdate {
         font-weight: bold;
+        background-color: lightblue;
     }
 </style>
