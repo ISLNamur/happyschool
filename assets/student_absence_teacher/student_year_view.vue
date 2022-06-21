@@ -106,7 +106,7 @@ export default {
                 {
                     key: String(d),
                     label: String(d + 1),
-                    tdClass: function (value, key, item) {
+                    tdClass: function (value) {
                         return [app.isToday(value) ? "today" : "", app.isCurrentDate(value) ? "currentdate" : ""];
                     }
                 }
