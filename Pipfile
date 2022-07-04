@@ -12,7 +12,7 @@ sphinx = "*"
 [packages]
 django-filter = "==21.1"
 redis = "*"
-channels-redis = "==3.3.1"
+channels-redis = "==3.4.0"
 channels = "==3.0.5"
 django-crispy-forms = ">=1.7"
 django-auth-ldap = ">=1.7"
