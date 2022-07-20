@@ -47,7 +47,7 @@
     "@vue/composition-api": "^1.0.1",
     "@vuelidate/core": "^2.0.0-alpha.21",
     "@vuelidate/validators": "^2.0.0-alpha.18",
-    "bootstrap": "^4.4.1",
+    "bootstrap": "^5.2.0",
     "bootstrap-vue": "^2.21.2",
     "idb": "^7.0.0",
     "moment": "^2.24.0",
