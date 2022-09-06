@@ -666,7 +666,7 @@ class ImportStudentCSV(ImportStudent):
         super()._sync(reader)
 
     def get_value(self, entry: list, column: str) -> Union[int, str, date, None]:
-        if column == "courses":
+        if column == "courses" and "course_name_short" in self.column_to_index:
             course = {
                 "short_name": entry[self.column_to_index["course_name_short"]],
             }
