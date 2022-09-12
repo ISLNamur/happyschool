@@ -30,6 +30,7 @@
             };
             {% load groups %}
             {% load user_properties %}
+            {% load scholar_year %}
 
             const user = "{{ user }}";
             var user_properties_raw = {% list_user_properties %};
@@ -38,6 +39,7 @@
             }
             const user_properties = user_properties_raw;
             const user_groups = {% list_user_groups %};
+            const current_scholar_year = {% current_scholar_year %};
 
         </script>
         {% render_bundle 'commons' %}

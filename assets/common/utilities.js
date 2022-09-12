@@ -45,11 +45,5 @@ export function displayClasse(classe) {
 }
 
 export function getCurrentScholarYear() {
-    const currentMonth = new Date().getMonth() + 1;
-    const currentYear = new Date().getFullYear();
-    if (currentMonth >= 9) {
-        return currentYear;
-    } else {
-        return currentYear - 1;
-    }
+    return current_scholar_year;
 }
