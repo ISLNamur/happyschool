@@ -56,6 +56,8 @@
 <script>
 import axios from "axios";
 
+import { getCurrentScholarYear } from "../common/utilities.js";
+
 export default {
     props: {
         studentId: {
@@ -113,8 +115,9 @@ export default {
             );
         }
 
-        const from = "2021-08-01";
-        const to = "2022-08-31";
+        const currentYear = getCurrentScholarYear();
+        const from = `${currentYear}-08-02`;
+        const to = `${currentYear + 1}-08-01`;
         Promise.all([
             axios.get("/core/api/scholar_calendar/"),
             axios.get(`/student_absence/api/student_absence/?student__matricule=${this.studentId}&date_absence__gte=${from}&date_absence__lt=${to}&page_size=1000&ordering=period__start`),
