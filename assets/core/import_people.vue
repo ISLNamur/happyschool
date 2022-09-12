@@ -34,7 +34,7 @@
                                 <strong>Classe : </strong> La classe peut être un ou plusieurs caractères. La classe sera automatiquement mis en minuscule dans la base de donnée,
                                 mais sera affichée en majustcule dans HappySchool.
                             </li>
-                            <li><strong>Date de naissance :</strong> La date de naissance doit être sous la forme yyyymmdd. Par exemple, 20020322 donnera le 22 mars 2002.</li>
+                            <li><strong>Date de naissance :</strong> La date de naissance peut être sous les formes suivantes yyyymmdd, yyyy-mm-dd ou encore dd/mm/yyyy. Par exemple, 20020322 donnera le 22 mars 2002.</li>
                             <li><strong>Cours :</strong> Seul le nom du cours court est nécessaire. Pour prendre entre compte plusieurs cours, il suffit que la ligne de l'étudiant soit répétée (seul le matricule est nécessaire).</li>
                         </ul>
                         <b-alert

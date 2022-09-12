@@ -500,6 +500,15 @@ class ImportStudent(ImportBase):
                 return date(year=int(str(value)[:4]),
                             month=int(str(value)[4:6]),
                             day=int(str(value)[6:]))
+            elif type(value) == str:
+                if "-" in value:
+                    return value
+                if "/" in value:
+                    return date(
+                        year=int(str(value)[6:11]),
+                        month=int(value[3:5]),
+                        day=int(value[:2])
+                    )
 
         return value
 
