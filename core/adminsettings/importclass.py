@@ -495,7 +495,7 @@ class ImportStudent(ImportBase):
         if column == "birth_date":
             if type(value) == int:
                 # Ignore dummy values
-                if value == 19000000:
+                if value == 19000000 or value < 19900000:
                     return date.today()
                 return date(year=int(str(value)[:4]),
                             month=int(str(value)[4:6]),
