@@ -69,7 +69,6 @@ class Command(BaseCommand):
     def clean_classes(self, options, teachings):
         classes = ClasseModel.objects.filter(
             studentmodel__isnull=True,
-            responsiblemodel__isnull=True,
             teaching__in=teachings
         )
 
