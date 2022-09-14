@@ -51,7 +51,7 @@ class SeleniumTests(StaticLiveServerTestCase):
         self.selenium.find_element(By.XPATH, '//button[@type="submit"]').click()
         self.selenium.get('%s%s' % (self.live_server_url, '/annuaire/'))
 
-        search_input = self.selenium.find_element_by_class_name("multiselect__input")
+        search_input = self.selenium.find_element(By.CLASS_NAME, "multiselect__input")
         search_input.send_keys("tutu")
         time.sleep(1)
         search_input.send_keys(Keys.ENTER)
