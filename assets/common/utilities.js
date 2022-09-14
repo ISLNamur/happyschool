@@ -45,5 +45,6 @@ export function displayClasse(classe) {
 }
 
 export function getCurrentScholarYear() {
+    // eslint-disable-next-line no-undef
     return current_scholar_year;
 }
