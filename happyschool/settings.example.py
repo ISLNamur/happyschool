@@ -294,7 +294,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
 
 
-ASGI_APPLICATION = "happyschool.routing.application"
+ASGI_APPLICATION = "happyschool.asgi.application"
 
 CHANNEL_LAYERS = {
     "default": {
