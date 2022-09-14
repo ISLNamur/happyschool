@@ -22,6 +22,7 @@ import time
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
 
@@ -43,17 +44,17 @@ class SeleniumTests(StaticLiveServerTestCase):
 
     def test_login(self):
         self.selenium.get('%s%s' % (self.live_server_url, '/auth/'))
-        username_input = self.selenium.find_element_by_id("inputUser")
+        username_input = self.selenium.find_element(By.ID, "inputUser")
         username_input.send_keys('admin')
-        password_input = self.selenium.find_element_by_id("inputPassword")
+        password_input = self.selenium.find_element(By.ID, "inputPassword")
         password_input.send_keys('password')
-        self.selenium.find_element_by_xpath('//button[@type="submit"]').click()
+        self.selenium.find_element(By.XPATH, '//button[@type="submit"]').click()
         self.selenium.get('%s%s' % (self.live_server_url, '/annuaire/'))
 
         search_input = self.selenium.find_element_by_class_name("multiselect__input")
         search_input.send_keys("tutu")
         time.sleep(1)
         search_input.send_keys(Keys.ENTER)
-        self.selenium.find_element_by_id("info-student")
-        self.selenium.find_elements_by_xpath("//*[contains(text(), 'Toto')]")
-        self.selenium.find_elements_by_xpath("//*[contains(text(), '1234')]")
+        self.selenium.find_element(By.ID, "info-student")
+        self.selenium.find_elements(By.XPATH, "//*[contains(text(), 'Toto')]")
+        self.selenium.find_elements(By.XPATH, "//*[contains(text(), '1234')]")
