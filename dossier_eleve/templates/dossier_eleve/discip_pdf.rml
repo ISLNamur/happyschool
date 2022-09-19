@@ -78,15 +78,24 @@
             </illustration>
         </keepInFrame>
         <setNextTemplate name="otherPages"/>
-        <blockTable colWidths="80 350 110" style="cas">
+        <blockTable colWidths="80 350 125" style="cas">
             <tr>
                 <td><para><strong>Date</strong></para></td>
                 <td><para><strong>Faits</strong></para></td>
-                <td><para><strong>Sanction / Décision</strong></para></td>
+                <td><para><strong>Sanction/Décision, <span color="grey">Info</span></strong></para></td>
             </tr>
             {% for c in list %}
             <tr>
-                <td>{{ c.datetime_encodage|date:'Y/m/d' }}</td>
+                <td>
+                    <para alignment="center">
+                        {% if c.important %}<strong>{% endif %}{{ c.datetime_encodage|date:'Y/m/d' }}{% if c.important %}</strong>{% endif %}
+                    </para>
+                    {% if c.important %}
+                    <para alignment="center">
+                        Important
+                    </para>
+                    {% endif %}
+                </td>
                 <td>
                     <para alignment="justify">
                         {{ c.explication_commentaire|striptags }}
@@ -95,11 +104,11 @@
                 <td>
                     {% if c.sanction_decision %}
                     <para>
-                        {{ c.sanction_decision.sanction_decision }}{% if c.date_sanction %} le {{ c.date_sanction|date:'d/m/Y' }}{% endif %}
+                        {% if c.important %}<strong>{% endif %}{{ c.sanction_decision.sanction_decision }}{% if c.date_sanction %} le {{ c.date_sanction|date:'d/m/Y' }}{% endif %}{% if c.important %}</strong>{% endif %}
                     </para>
                     {% else %}
                     <para textColor="grey">
-                        Info non disciplinaire
+                        {% if c.important %}<strong>{% endif %}{{ c.info.info }}{% if c.important %}</strong>{% endif %}
                     </para>
                     {% endif %}
                 </td>
