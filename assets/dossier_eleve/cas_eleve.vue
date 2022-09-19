@@ -504,6 +504,7 @@ export default {
         submit: function (evt) {
             evt.preventDefault();
 
+            this.sending = true;
             this.form.demandeur = this.demandeur.display;
             let data = this.form;
             // Set visibility for all if it's sanction_decision.
@@ -542,6 +543,7 @@ export default {
                     });
                 });
             }).catch(function (error) {
+                this.sending = false;
                 modal.errors = error.response.data;
             });
         },
