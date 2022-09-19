@@ -193,7 +193,7 @@ export default {
                 path += this.sanction ? "" : "&no_sanctions=true";
                 // eslint-disable-next-line no-undef
                 path += this.allYears ? "" : "&scholar_year=" + currentYear ;
-                path += "&ordering=student__last_name";
+                path += "&ordering=student__last_name,-datetime_modified";
 
                 window.open(path);
             } else if (this.tabIndex == 1) {
