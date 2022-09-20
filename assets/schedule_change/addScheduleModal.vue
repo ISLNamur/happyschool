@@ -183,23 +183,48 @@
             </b-form-group>
             <b-form-group>
                 <b-form-checkbox v-model="form.send_email_general">
-                    Notifier le changement par courriel
+                    Notifier par courriel les responsables des changements
+                    <span
+                        v-b-tooltip
+                        :title="$store.state.settings.responsible_name"
+                    >
+                        <b-icon
+                            icon="question-circle"
+                            variant="primary"
+                        />
+                    </span>
                 </b-form-checkbox>
             </b-form-group>
-            <b-form-group>
+            <b-form-group v-if="form.teachers_replaced.length > 0">
                 <b-form-checkbox
-                    v-if="form.teachers_replaced.length > 0"
                     v-model="form.send_email_replaced"
                 >
-                    Notifier le prof/éduc concerné par courriel
+                    Notifier par courriel l'absent(s)/indisponible(s)/concerné(s)
+                    <span
+                        v-b-tooltip
+                        :title="form.teachers_replaced.map(t => t.display).join(', ')"
+                    >
+                        <b-icon
+                            icon="question-circle"
+                            variant="primary"
+                        />
+                    </span>
                 </b-form-checkbox>
             </b-form-group>
-            <b-form-group>
+            <b-form-group v-if="form.teachers_substitute.length > 0">
                 <b-form-checkbox
-                    v-if="form.teachers_substitute.length > 0"
                     v-model="form.send_email_substitute"
                 >
                     Notifier le remplaçant par courriel
+                    <span
+                        v-b-tooltip
+                        :title="form.teachers_substitute.map(t => t.display).join(', ')"
+                    >
+                        <b-icon
+                            icon="question-circle"
+                            variant="primary"
+                        />
+                    </span>
                 </b-form-checkbox>
             </b-form-group>
             <b-form-group>
