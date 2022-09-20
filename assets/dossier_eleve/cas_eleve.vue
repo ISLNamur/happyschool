@@ -506,7 +506,8 @@ export default {
 
             this.sending = true;
             this.form.demandeur = this.demandeur.display;
-            let data = this.form;
+            let data = JSON.parse(JSON.stringify(this.form));
+
             // Set visibility for all if it's sanction_decision.
             if (this.infoOrSanction == "sanction-decision") {
                 // Set visibility to all.
