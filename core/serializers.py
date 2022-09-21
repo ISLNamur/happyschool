@@ -77,10 +77,13 @@ class ResponsibleRemoteSerializer(serializers.ModelSerializer):
 
 class StudentSerializer(serializers.ModelSerializer):
     courses = GivenCourseSerializer(read_only=True, many=True)
+    group = serializers.CharField(source="additionalstudentinfo.group")
 
     class Meta:
         model = StudentModel
-        fields = ('matricule', 'first_name', 'last_name', 'display', 'classe', 'teaching', 'user', 'courses')
+        fields = (
+            'matricule', 'first_name', 'last_name', 'display', 'classe', 'teaching', 'user', 'courses', 'group'
+        )
         depth = 2
 
     def __init__(self, *args, **kwargs):
