@@ -98,8 +98,30 @@
                 </multiselect>
             </b-col>
         </b-row>
+        <b-row v-if="groups.length > 0">
+            <b-col md="6">
+                <b-form-group
+                    label="Groupe"
+                    label-cols="2"
+                >
+                    <multiselect
+                        :options="groups"
+                        placeholder="Choisir un groupe"
+                        select-label=""
+                        selected-label="Sélectionné"
+                        deselect-label="Ne plus filtrer"
+                        :searchable="false"
+                        v-model="studentGroup"
+                        :show-no-options="false"
+                        class="mb-1"
+                    >
+                        <span slot="noResult">Aucune classe ne correspond à votre recherche.</span>
+                    </multiselect>
+                </b-form-group>
+            </b-col>
+        </b-row>
         <b-row class="mt-2">
-            <b-col cols="3">
+            <b-col cols="4">
                 <b-btn
                     @click="sendChanges"
                     :disabled="!showAlert"
@@ -112,7 +134,7 @@
                     :show="showAlert"
                     variant="warning"
                 >
-                    Il y a des changements non-validés !
+                    Changements non-validés !
                 </b-alert>
             </b-col>
         </b-row>
@@ -121,7 +143,7 @@
                 <b-overlay :show="loadingStudent">
                     <b-list-group>
                         <add-absence-entry
-                            v-for="s in students"
+                            v-for="s in filteredStudent"
                             :key="s.matricule"
                             :student="s"
                             @update="computeAlert"
@@ -178,7 +200,23 @@ export default {
             showAlert: false,
             currentDate: Moment().format("YYYY-MM-DD"),
             loadingStudent: false,
+            studentGroup: null,
         };
+    },
+    computed: {
+        filteredStudent: function () {
+            if (!this.studentGroup) return this.students;
+
+            const students = this.students.filter(s => s.group == this.studentGroup);
+            this.$store.commit("resetChanges", students.map(s => s.matricule));
+            return students;
+        },
+        groups: function () {
+            const studentsWithGroup = this.students.filter(s => s.group);
+            if (!studentsWithGroup) return [];
+
+            return [...new Set(studentsWithGroup.map(s => s.group))];
+        }
     },
     methods: {
         computeAlert: function () {
@@ -225,7 +263,10 @@ export default {
             if (selectBy === "UND") {
                 // If undefined, try givenCourse and then classe.
                 selectBy = this.givenCourse ? "GC" : "CL";
+            } else {
+                this.studentGroup = null;
             }
+
             if (selectBy === "GC") {
                 this.classe = null;
                 if (!this.givenCourse || this.period.length === 0 || !this.currentDate) {
@@ -253,7 +294,6 @@ export default {
                     return;
                 }
 
-                console.log(periodChange);
                 if (periodChange && this.period.length > 1) return;
                 this.loadingStudent = true;
                 this.students = [];
