@@ -77,7 +77,7 @@
                     </b-row>
                 </b-tab>
                 <b-tab title="Retenues">
-                    <b-row class="mt-4">
+                    <b-form-row class="mt-4">
                         <b-col>
                             <b-form-row>
                                 <b-form-group label="À partir du">
@@ -100,8 +100,8 @@
                                 </b-form-group>
                             </b-form-row>
                         </b-col>
-                    </b-row>
-                    <b-row>
+                    </b-form-row>
+                    <b-form-row>
                         <b-col>
                             <b-form-group>
                                 <b-checkbox
@@ -111,8 +111,8 @@
                                 </b-checkbox>
                             </b-form-group>
                         </b-col>
-                    </b-row>
-                    <b-row>
+                    </b-form-row>
+                    <b-form-row>
                         <b-col>
                             <b-form-group>
                                 <b-checkbox
@@ -122,8 +122,8 @@
                                 </b-checkbox>
                             </b-form-group>
                         </b-col>
-                    </b-row>
-                    <b-row>
+                    </b-form-row>
+                    <b-form-row>
                         <b-col>
                             <b-form-group
                                 label="Types de sanctions"
@@ -136,8 +136,8 @@
                                 />
                             </b-form-group>
                         </b-col>
-                    </b-row>
-                    <b-row>
+                    </b-form-row>
+                    <b-form-row>
                         <b-col>
                             <b-form-group>
                                 <b-checkbox
@@ -147,7 +147,18 @@
                                 </b-checkbox>
                             </b-form-group>
                         </b-col>
-                    </b-row>
+                    </b-form-row>
+                    <b-form-row>
+                        <b-col>
+                            <b-form-group>
+                                <b-checkbox
+                                    v-model="ownClass"
+                                >
+                                    Uniquement ses classes
+                                </b-checkbox>
+                            </b-form-group>
+                        </b-col>
+                    </b-form-row>
                 </b-tab>
             </b-tabs>
         </b-modal>
@@ -173,6 +184,7 @@ export default {
             date_from: null,
             date_to: null,
             sanction_not_done: false,
+            ownClass: this.$store.state.settings.export_retenues_own_classes_default,
             sortByClasse: this.$store.state.settings.export_retenues_by_classe_default,
             sortBySanction: this.$store.state.settings.export_retenues_by_sanction_default,
             selectedSanctions: [],
@@ -203,7 +215,7 @@ export default {
             if (this.tabIndex == 0 && this.$store.state.settings.enable_disciplinary_council) {
                 path += `council/?datetime_conseil__gte=${this.date_from} 00:00&datetime_conseil__lte=${this.date_to} 23:59`;
             } else {
-                path += "retenues/?activate_all_retenues=true";
+                path += `retenues/?${this.ownClass ? "activate_all_retenues=true" : ""}`;
                 path += "&date_sanction__gte=" + this.date_from;
                 path += "&date_sanction__lte=" + this.date_to;
                 if (this.sanction_not_done) {

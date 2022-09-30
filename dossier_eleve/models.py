@@ -161,6 +161,11 @@ class DossierEleveSettingsModel(models.Model):
         help_text="""Lors de l'export des retenues dans les demandes de sanction, la case pour
         trier par sanction sera cochée par défaut."""
     )
+    export_retenues_own_classes_default = models.BooleanField(
+        default=False,
+        help_text="""Lors de l'export des retenues dans les demandes de sanction, la case pour
+        pour filter pour ses classes sera cochée par défaut."""
+    )
 
 
 class InfoEleve(models.Model):
