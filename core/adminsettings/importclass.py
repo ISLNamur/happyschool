@@ -755,6 +755,18 @@ class ImportStudentFDB(ImportStudent):
         super()._sync(students.items())
 
     def get_value(self, entry: dict, column: str) -> Union[int, str, date, None]:
+        if "proeco" in settings.INSTALLED_APPS:
+            from proeco.models import OverwriteDataModel
+            try:
+                overwrite = OverwriteDataModel.objects.get(
+                    people="student",
+                    uid=entry[0],
+                    field=column
+                )
+                return overwrite.value
+            except ObjectDoesNotExist:
+                pass
+
         if column == "matricule":
             return entry[0]
         elif column == "previous_class":
