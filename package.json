@@ -45,7 +45,7 @@
     "@fullcalendar/vue": "^5.5.0",
     "@vuelidate/core": "^2.0.0-alpha.31",
     "@vuelidate/validators": "^2.0.0-alpha.31",
-    "bootstrap": "^4.4.1",
+    "bootstrap": "^5.2.2",
     "bootstrap-vue": "^2.21.2",
     "idb": "^7.0.0",
     "moment": "^2.24.0",
