@@ -728,6 +728,10 @@ class ImportStudentFDB(ImportStudent):
         "mother_last_name": "mother_surname", "mother_first_name": "mother_firstname", "mother_mobile": "mother_gsm",
     }
     scholar_year = None
+    overwrites = {
+        "students": {},
+        "columns": {},
+    }
 
     def __init__(
         self,
@@ -745,6 +749,27 @@ class ImportStudentFDB(ImportStudent):
         self.sync_course = sync_course
         self.scholar_year = get_scholar_year()
 
+        if "proeco" in settings.INSTALLED_APPS:
+            from proeco.models import OverwriteDataModel
+
+            students_overwrite = OverwriteDataModel.objects.filter(
+                people="student",
+                uid__isnull=False,
+            )
+            self.overwrites["students"] = {
+                f"{s.uid}-{s.field}": s.value
+                for s in students_overwrite
+            }
+
+            columns_overwrite = OverwriteDataModel.objects.filter(
+                people="student",
+                uid=None,
+            )
+            self.overwrites["columns"] = {
+                f"{c.field}|{c.old_value}": c.value
+                for c in columns_overwrite
+            }
+
     def sync(self):
         from libreschoolfdb.reader import get_students
         self.print_log("Collecting students informations from ProEco database.")
@@ -756,16 +781,10 @@ class ImportStudentFDB(ImportStudent):
 
     def get_value(self, entry: dict, column: str) -> Union[int, str, date, None]:
         if "proeco" in settings.INSTALLED_APPS:
-            from proeco.models import OverwriteDataModel
-            try:
-                overwrite = OverwriteDataModel.objects.get(
-                    people="student",
-                    uid=entry[0],
-                    field=column
-                )
-                return overwrite.value
-            except ObjectDoesNotExist:
-                pass
+            if f"{entry[0]}-{column}" in self.overwrites["students"]:
+                return self.overwrites["students"][f"{entry[0]}-{column}"]
+            if column in entry[1] and f"{column}|{entry[1][column]}" in self.overwrites["columns"]:
+                return self.overwrites["columns"][f"{column}|{entry[1][column]}"]
 
         if column == "matricule":
             return entry[0]

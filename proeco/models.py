@@ -24,9 +24,13 @@ people_type = [("student", "Étudiant"), ("responsible", "Responsable")]
 
 class OverwriteDataModel(models.Model):
     people = models.CharField(max_length=20, choices=people_type)
-    uid = models.BigIntegerField(help_text="Identifiant unique (matricule de l'étudiant ou du responsable).")
+    uid = models.BigIntegerField(
+        help_text="Identifiant unique (matricule de l'étudiant ou du responsable).",
+        null=True, blank=True
+    )
     field = models.CharField(max_length=100)
     value = models.CharField(max_length=100)
+    old_value = models.CharField(max_length=100, blank=True)
 
 
 class TemplateSelectionModel(models.Model):
