@@ -139,3 +139,16 @@ def check_student_photo(student, copy=True) -> bool:
             shutil.copy(str(photos_dir.joinpath("unknown.jpg")), str(student_photo))
         return False
     return True
+
+
+def extract_day_of_week(day_of_week: str) -> list:
+    seq_days = day_of_week.strip().split(",")
+    days = [int(day.strip()) for day in seq_days if len(day.strip()) == 1]
+    ranges = [day.strip() for day in seq_days if len(day.strip()) == 3]
+    for r in ranges:
+        if r[1] != "-":
+            continue
+        days += list(range(int(r[0]), int(r[2]) + 1))
+    days = list(set(days))
+    days.sort()
+    return days
