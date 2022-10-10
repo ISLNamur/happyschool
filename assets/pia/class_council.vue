@@ -25,7 +25,7 @@
                     <b-col>
                         <strong>
                             <b-form inline>
-                                Date du conseil de classe
+                                Date {{ advanced ? "du conseil de classe" : "de l'auto-évaluation" }}
                                 <b-form-input
                                     type="date"
                                     v-model="date_council"
@@ -69,7 +69,7 @@
                         variant="info"
                     >
                         <b-icon icon="plus" />
-                        Ajouter une branche
+                        Ajouter <span v-if="advanced">une branche</span>
                     </b-btn>
                 </b-col>
             </b-row>
@@ -79,6 +79,7 @@
                         v-for="(statement, index) in council_statement"
                         :key="statement.id"
                         :council_statement="statement"
+                        :advanced="advanced"
                         ref="councilstatements"
                         @remove="removeStatement(index, 'council_statement')"
                         @save="$emit('save')"
@@ -132,6 +133,11 @@ export default {
             type: Object,
             default: () => {},
         },
+        /** Wether the council is advanced or not. */
+        advanced: {
+            type: Boolean,
+            default: true,
+        }
     },
     data: function () {
         return {
@@ -201,7 +207,7 @@ export default {
          */
         removeStatement: function (councilStatementIndex, statementType) {
             let app = this;
-            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer cette branche ?", {
+            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer ?", {
                 okTitle: "Oui",
                 cancelTitle: "Non",
                 centered: true,

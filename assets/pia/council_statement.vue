@@ -28,10 +28,10 @@
         >
             <b-card-header>
                 <b-row>
-                    <b-col v-if="!editMode">
+                    <b-col v-if="!editMode && advanced">
                         <strong>{{ branch ? branch.branch : "Ne concerne pas une branche en particulier" }}</strong>
                     </b-col>
-                    <b-col v-else>
+                    <b-col v-else-if="advanced">
                         <b-form-group
                             label="Branche"
                             label-cols="2"
@@ -177,6 +177,11 @@ export default {
                 };
             }
         },
+        /** Wether the statement is advanced or not. */
+        advanced: {
+            type: Boolean,
+            default: true,
+        }
     },
     data: function () {
         return {
@@ -205,7 +210,7 @@ export default {
     computed: {
         resourcesDifficulties: function () {
             if (this.editMode) {
-                return this.$store.state.resourceDifficulty;
+                return this.$store.state.resourceDifficulty.filter(rD => rD.advanced === this.advanced);
             }
 
             return this.$store.state.resourceDifficulty.filter(
@@ -231,13 +236,14 @@ export default {
                     this.branch = this.$store.state.branches.find(b => b.id == this.council_statement.branch);
                     this.loading = false;
                 });
-            this.statements = this.$store.state.resourceDifficulty.map(s => {
-                const isResource = this.council_statement.resources.includes(s.id);
-                if (isResource) return true;
-                const isDifficulty = this.council_statement.difficulties.includes(s.id);
-                if (isDifficulty) return false;
-                return null;
-            });
+            this.statements = this.$store.state.resourceDifficulty.filter(rD => rD.advanced === this.advanced)
+                .map(s => {
+                    const isResource = this.council_statement.resources.includes(s.id);
+                    if (isResource) return true;
+                    const isDifficulty = this.council_statement.difficulties.includes(s.id);
+                    if (isDifficulty) return false;
+                    return null;
+                });
         },
         /** 
          * Submit new/changes council statement.

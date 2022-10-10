@@ -25,16 +25,23 @@
             </b-row>
             <b-row>
                 <b-col v-if="canAddPia">
-                    <b-btn
+                    <b-dropdown
                         variant="success"
-                        to="/new"
                     >
-                        <b-icon
-                            icon="plus"
-                            scale="1.5"
-                        />
-                        Ajouter un PIA
-                    </b-btn>
+                        <template #button-content>
+                            <b-icon
+                                icon="plus"
+                                scale="1.5"
+                            />
+                            Ajouter
+                        </template>
+                        <b-dropdown-item to="/new/true/">
+                            PIA
+                        </b-dropdown-item>
+                        <b-dropdown-item to="/new/false/">
+                            Aide élève
+                        </b-dropdown-item>
+                    </b-dropdown>
                 </b-col>
                 <b-col>
                     <multiselect

@@ -20,12 +20,12 @@
 <template>
     <b-container>
         <b-row>
-            <h3>PIA : {{ id ? "Modifier" : "Nouveau" }}</h3>
+            <h3>{{ advanced ? "PIA" : "Aide élève" }} : {{ id ? "Modifier" : "Nouveau" }}</h3>
         </b-row>
         <b-row class="sticky-top p-2 first-line">
             <b-col>
                 <b-btn @click="$router.back()">
-                    Retour à la liste des PIA
+                    Retour à la liste des élèves
                 </b-btn>
             </b-col>
             <b-col
@@ -67,7 +67,7 @@
                 >
                     <b-row>
                         <b-col>
-                            <h4>Référents PIA</h4>
+                            <h4>Référents {{ advanced ? "PIA" : "" }}</h4>
                         </b-col>
                     </b-row>
                     <b-row>
@@ -117,7 +117,7 @@
                                             :internal-search="false"
                                             :options="responsibleOptions"
                                             @search-change="getPeople"
-                                            placeholder="Référent"
+                                            placeholder="Choisir un ou plusieurs référents"
                                             select-label=""
                                             selected-label="Sélectionné"
                                             deselect-label="Cliquer dessus pour enlever"
@@ -137,7 +137,7 @@
                             <b-form-row>
                                 <b-col>
                                     <b-form-group
-                                        label="Parrain/Marraine"
+                                        label="Parrain(s)/Marraine(s)"
                                         :state="inputStates.referent"
                                     >
                                         <multiselect
@@ -145,7 +145,7 @@
                                             :internal-search="false"
                                             :options="responsibleOptions"
                                             @search-change="getPeople"
-                                            placeholder="Parrain/Marraine"
+                                            placeholder="Choisir un ou plusieurs parrains/marraines"
                                             select-label=""
                                             selected-label="Sélectionné"
                                             deselect-label="Cliquer dessus pour enlever"
@@ -165,9 +165,11 @@
                         </b-col>
                     </b-row>
                     <b-row>
-                        <h4>Aménagements</h4>
+                        <b-col>
+                            <h4>{{ advanced ? "Aménagements" : "Activités de soutien" }}</h4>
+                        </b-col>
                     </b-row>
-                    <b-row>
+                    <b-row v-if="advanced">
                         <b-col>
                             <b-form-group
                                 label="Trouble d'apprentissage"
@@ -194,7 +196,7 @@
                             </b-form-group>
                         </b-col>
                     </b-row>
-                    <b-row>
+                    <b-row v-if="advanced">
                         <b-col>
                             <b-form-group
                                 label="Aménagements raisonnables liés au trouble"
@@ -220,7 +222,7 @@
                             </b-form-group>
                         </b-col>
                     </b-row>
-                    <b-row>
+                    <b-row v-if="advanced">
                         <b-col>
                             <b-form-group
                                 label="Aménagements d'horaire"
@@ -246,7 +248,7 @@
                             </b-form-group>
                         </b-col>
                     </b-row>
-                    <b-row>
+                    <b-row v-if="advanced">
                         <b-col>
                             <b-form-group
                                 label="Autres aménagements"
@@ -258,8 +260,69 @@
                             </b-form-group>
                         </b-col>
                     </b-row>
+                    <b-row v-else>
+                        <b-col>
+                            <b-table-simple v-if="!loading">
+                                <b-thead>
+                                    <b-tr>
+                                        <b-th>Jour</b-th>
+                                        <b-th>Cours</b-th>
+                                        <b-th>Prof</b-th>
+                                    </b-tr>
+                                </b-thead>
+                                <b-tbody>
+                                    <b-tr
+                                        v-for="day in supportDays"
+                                        :key="day"
+                                    >
+                                        <b-td>{{ dayOfWeek[day] }}</b-td>
+                                        <b-td>
+                                            <multiselect
+                                                :internal-search="false"
+                                                :options="$store.state.branches"
+                                                placeholder="Choisir une matière"
+                                                select-label=""
+                                                selected-label="Sélectionné"
+                                                deselect-label="Cliquer dessus pour enlever"
+                                                v-model="form.support_activities[day].branch"
+                                                :show-no-options="false"
+                                                label="branch"
+                                                track-by="id"
+                                                multiple
+                                            >
+                                                <span slot="noResult">Aucune branche trouvé.</span>
+                                                <span slot="noOptions" />
+                                            </multiselect>
+                                        </b-td>
+                                        <b-td>
+                                            <multiselect
+                                                :id="`responsible-support-${day}`"
+                                                :internal-search="false"
+                                                :options="responsibleOptions"
+                                                @search-change="getPeople"
+                                                placeholder="Choisir un ou plusieurs profs"
+                                                select-label=""
+                                                selected-label="Sélectionné"
+                                                deselect-label="Cliquer dessus pour enlever"
+                                                v-model="form.support_activities[day].teachers"
+                                                label="display"
+                                                track-by="matricule"
+                                                :show-no-options="false"
+                                                multiple
+                                            >
+                                                <span slot="noResult">Aucun responsable trouvé.</span>
+                                                <span slot="noOptions" />
+                                            </multiselect>
+                                        </b-td>
+                                    </b-tr>
+                                </b-tbody>
+                            </b-table-simple>
+                        </b-col>
+                    </b-row>
                     <b-row>
-                        <h4>Attachements</h4>
+                        <b-col>
+                            <h4>Attachements</h4>
+                        </b-col>
                     </b-row>
                     <b-row>
                         <b-col>
@@ -298,12 +361,13 @@
                 <b-tab>
                     <template #title>
                         <b-overlay :show="loadingOthers">
-                            Conseils de classe
+                            {{ advanced ? "Conseils de classe" : "Auto-évaluation" }}
                             <b-badge>{{ class_council.length }}</b-badge>
                         </b-overlay>
                     </template>
                     <b-row>
-                        <h4>Conseil de classe</h4>
+                        <h4 v-if="advanced">Conseil de classe</h4>
+                        <h4 v-else>Auto-évaluation</h4>
                     </b-row>
                     <b-row>
                         <b-col>
@@ -322,6 +386,7 @@
                                 v-for="(council, index) in class_council"
                                 :key="council.id"
                                 :class_council="council"
+                                :advanced="advanced"
                                 ref="councils"
                                 class="mt-2"
                                 @remove="removeClassCouncil(index)"
@@ -333,12 +398,12 @@
                 <b-tab>
                     <template #title>
                         <b-overlay :show="loadingOthers">
-                            Objectifs
+                            Objectifs {{ advanced ? "" : "du CCL" }}
                             <b-badge>{{ cross_goal.length + branch_goal.length }}</b-badge>
                         </b-overlay>
                     </template>
                     <b-row class="mt-2">
-                        <h4>Objectifs transversaux</h4>
+                        <h4>Objectifs {{ advanced ? "transversaux" : "du CCL" }}</h4>
                     </b-row>
                     <b-row>
                         <b-col>
@@ -358,6 +423,7 @@
                                 v-for="(goal, index) in cross_goal"
                                 :key="'cg-' + goal.id"
                                 :goal-object="goal"
+                                :advanced="advanced"
                                 ref="crossgoals"
                                 @remove="removeObject('cross_goal', index)"
                                 @clone="cloneObject('cross_goal', index)"
@@ -366,10 +432,13 @@
                             />
                         </b-col>
                     </b-row>
-                    <b-row class="mt-2">
+                    <b-row
+                        v-if="advanced"
+                        class="mt-2"
+                    >
                         <h4>Objectifs de branche</h4>
                     </b-row>
-                    <b-row>
+                    <b-row v-if="advanced">
                         <b-col>
                             <b-btn
                                 @click="branch_goal.unshift({id: -1})"
@@ -380,7 +449,7 @@
                             </b-btn>
                         </b-col>
                     </b-row>
-                    <b-row>
+                    <b-row v-if="advanced">
                         <b-col>
                             <student-goal
                                 class="mt-2"
@@ -539,6 +608,10 @@ export default {
         id: {
             type: String,
             default: null,
+        },
+        advanced: {
+            type: Boolean,
+            default: true,
         }
     },
     data: function () {
@@ -550,6 +623,7 @@ export default {
             sending: false,
             loading: true,
             loadingOthers: true,
+
             form: {
                 id: null,
                 student: null,
@@ -559,7 +633,8 @@ export default {
                 disorder_response: [],
                 schedule_adjustment: [],
                 attachments: [],
-                other_adjustments: ""
+                other_adjustments: "",
+                support_activities: {}
             },
             uploadedFiles: [],
             cross_goal: [],
@@ -593,6 +668,7 @@ export default {
                 },
                 placeholder: ""
             },
+            dayOfWeek: {1: "Lundi", 2: "Mardi", 3: "Mercredi", 4: "Jeudi", 5: "Vendredi", 6: "Samedi", 7: "Dimanche"}
         };
     },
     computed: {
@@ -602,6 +678,23 @@ export default {
         hasDossierApp: function () {
             // eslint-disable-next-line no-undef
             return menu.apps.some(a => a.app === "dossier_eleve");
+        },
+        /**
+         * A list of supported days from settings.
+         */
+        supportDays: function () {
+            const seqDays = this.$store.state.settings.weekday_support_activity.split(",");
+            const days = seqDays.filter(d => d.length === 1).map(d => Number(d.trim()));
+            const ranges = seqDays.filter(d => d.length === 3).map(d => d.trim()).filter(d => d[1] === "-");
+            ranges.forEach(r => {
+                const start = Number(r[0]);
+                const end = Number(r[2]);
+                if (start <= end) {
+                    Array(end - start + 1).fill().map((_, i) => i + start).forEach(d => days.push(d));
+                }
+            });
+
+            return days.sort();
         }
     },
     watch: {
@@ -772,7 +865,7 @@ export default {
                     noCloseButton: true,
                 });
             } else {
-                app.$router.push("/edit/" + recordId + "/",() => {
+                app.$router.replace(`/edit/${recordId}/${this.advanced}/`,() => {
                     app.$root.$bvToast.toast("Les données ont bien été sauvegardées", {
                         variant: "success",
                         noCloseButton: true,
@@ -793,6 +886,7 @@ export default {
             let app = this;
             this.sending = true;
             const data = Object.assign({}, this.form);
+            data.advanced = this.advanced;
             data.student_id = data.student.matricule;
             data.disorder = data.disorder.map(d => d.id);
             data.disorder_response = data.disorder_response.map(dr => dr.id);
@@ -816,7 +910,7 @@ export default {
                     }
 
                     const crossGoalPromises = this.cross_goal.length != 0 ? this.$refs.crossgoals.map(g => g.submit(recordId)) : [];
-                    const branchGoalPromises = this.branch_goal.length != 0 ? this.$refs.branchgoals.map(g => g.submit(recordId)) : [];
+                    const branchGoalPromises = this.branch_goal.length != 0 && this.$refs.branchgoals ? this.$refs.branchgoals.map(g => g.submit(recordId)) : [];
                     const sPPromises = this.student_project.length != 0 ? this.$refs.studentprojects.map(sP => sP.submit(recordId)) : [];
                     const pOPromises = this.parents_opinion.length != 0 ? this.$refs.parentsopinions.map(pO => pO.submit(recordId)) : [];
                     const classCouncilPromises = this.class_council.length != 0 ? this.$refs.councils.map(c => c.submit(recordId)) : [];
@@ -860,6 +954,7 @@ export default {
                         });
 
                 }).catch(function (error) {
+                    console.log(error);
                     app.showFailure();
                     if ("response" in error) app.errors = error.response.data;
                 });
@@ -886,6 +981,7 @@ export default {
                     this.form.disorder_response = this.$store.state.disorderResponses.filter(dr => resp.data.disorder_response.includes(dr.id));
                     this.form.schedule_adjustment = this.$store.state.scheduleAdjustments.filter(sa => resp.data.schedule_adjustment.includes(sa.id));
                     this.form.other_adjustments = resp.data.other_adjustments;
+                    this.form.support_activities = resp.data.support_activities;
 
                     this.loading = false;
 
@@ -912,6 +1008,9 @@ export default {
          * the retrieval of the current data record (goals, comments and council included).
          */
         initApp: function () {
+            this.supportDays.forEach(d => {
+                this.form.support_activities[d] = {branch: [], teachers: []};
+            });
             this.$store.dispatch("loadOptions")
                 .then(() => {
                     if (this.id) {

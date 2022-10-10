@@ -44,6 +44,12 @@ class PIASettingsModel(models.Model):
         Sinon sera limité aux classes associées.
         """
     )
+    weekday_support_activity = models.CharField(
+        max_length=20, default="1-5", help_text="""Jour de la semaine où il y activité de support.
+        Spécifier les jours par intervalles avec un tiret ('1-5' pour du lundi au vendredi)
+        et par virgule pour des jours distincts ('1,3,5' pour lundi, mercredi, vendredi).
+        Peut être une combinaison des deux."""
+    )
 
 
 class AttachmentModel(models.Model):
@@ -90,11 +96,13 @@ class PIAModel(models.Model):
     student = models.OneToOneField(StudentModel, on_delete=models.CASCADE)
     referent = models.ManyToManyField(ResponsibleModel, related_name="referent")
     sponsor = models.ManyToManyField(ResponsibleModel, related_name="sponsor")
-    disorder = models.ManyToManyField(DisorderModel)
-    disorder_response = models.ManyToManyField(DisorderResponseModel)
-    schedule_adjustment = models.ManyToManyField(ScheduleAdjustmentModel)
+    disorder = models.ManyToManyField(DisorderModel, blank=True)
+    disorder_response = models.ManyToManyField(DisorderResponseModel, blank=True)
+    schedule_adjustment = models.ManyToManyField(ScheduleAdjustmentModel, blank=True)
     other_adjustments = models.TextField(blank=True)
     attachments = models.ManyToManyField(AttachmentModel, blank=True)
+    advanced = models.BooleanField(default=True)
+    support_activities = models.JSONField(default=dict)
 
     def __str__(self):
         """String representation of the PIAModel, return the student's description."""
@@ -119,6 +127,8 @@ class ParentsOpinionModel(models.Model):
 
 class CrossGoalItemModel(models.Model):
     goal = models.CharField(max_length=200)
+    advanced = models.BooleanField(default=True)
+    basic = models.BooleanField(default=False)
     teachings = models.ManyToManyField(TeachingModel)
 
     def __str__(self):
@@ -215,6 +225,7 @@ class ResourceDifficultyModel(models.Model):
     resource = models.CharField(max_length=300)
     difficulty = models.CharField(max_length=300)
     category = models.CharField(max_length=300, blank=True)
+    advanced = models.BooleanField(default=True)
 
     def __str__(self) -> str:
         return f"{self.resource} <-> {self.difficulty}"

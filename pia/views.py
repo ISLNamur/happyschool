@@ -254,11 +254,23 @@ class ReportPDFView(
     permission_required = ('pia.view_piamodel')
 
     template_name = "pia/report.html"
+    day_of_week = {
+        1: "Lundi", 2: "Mardi", 3: "Mercredi", 4: "Jeudi", 5: "Vendredi", 6: "Samedi", 7: "Dimanche"
+    }
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
         try:
             context["pia"] = models.PIAModel.objects.get(id=int(kwargs["pia"]))
+            if not context["pia"].advanced:
+                context["support_activities"] = [
+                    {
+                        "day": self.day_of_week[int(s_a[0])],
+                        "branch": " ".join([b["branch"] for b in s_a[1]["branch"]]),
+                        "teachers": " ".join([f"{t['first_name']} {t['last_name']}" for t in s_a[1]["teachers"]])
+                    }
+                    for s_a in context["pia"].support_activities.items()
+                ]
         except ObjectDoesNotExist:
             pass
         return context

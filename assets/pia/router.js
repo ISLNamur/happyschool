@@ -37,14 +37,22 @@ export default new VueRouter({
             props: true,
         },
         {
-            path: "/edit/:id/",
+            path: "/edit/:id/:advanced/",
             component: PiaRecord,
-            props: true
+            props: (route) => {
+                const props = { ...route.params };
+                props.advanced = props.advanced === "true";
+                return props;
+            }
         },
         {
-            path: "/new/",
+            path: "/new/:advanced/",
             component: PiaRecord,
-            props: true
+            props: (route) => {
+                const props = { ...route.params };
+                props.advanced = props.advanced === "true";
+                return props;
+            }
         },
     ]
 });

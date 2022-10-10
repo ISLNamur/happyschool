@@ -162,7 +162,7 @@
                         </b-form-group>
                     </b-col>
                 </b-form-row>
-                <b-form-row v-if="!useBranch">
+                <b-form-row v-if="!useBranch && advanced">
                     <b-col>
                         <b-form-group
                             label="Branches concernées"
@@ -194,7 +194,7 @@
                         </b-form-group>
                     </b-col>
                 </b-form-row>
-                <b-form-row>
+                <b-form-row v-if="advanced">
                     <b-col>
                         <b-form-group
                             label="Intervenant(s)"
@@ -223,7 +223,7 @@
                         </b-form-group>
                     </b-col>
                 </b-form-row>
-                <b-form-row>
+                <b-form-row v-if="advanced">
                     <b-col>
                         <b-form-group
                             label="Indicateur(s)/Action(s)"
@@ -236,7 +236,7 @@
                         </b-form-group>
                     </b-col>
                 </b-form-row>
-                <b-form-row>
+                <b-form-row v-if="advanced">
                     <b-col>
                         <b-form-group
                             label="Aide(s)"
@@ -249,7 +249,7 @@
                         </b-form-group>
                     </b-col>
                 </b-form-row>
-                <b-form-row>
+                <b-form-row v-if="advanced">
                     <b-col>
                         <b-form-group label="Auto-évaluation">
                             <quill-editor
@@ -278,7 +278,7 @@
                         </b-form-group>
                     </b-col>
                 </b-form-row>
-                <b-form-row>
+                <b-form-row v-if="advanced">
                     <b-col>
                         <b-form-group label="Validation">
                             <b-form-checkbox
@@ -290,7 +290,7 @@
                         </b-form-group>
                     </b-col>
                 </b-form-row>
-                <b-form-row>
+                <b-form-row v-if="advanced">
                     <b-col>
                         <b-form-group
                             description="Ajouter un ou des fichiers. Accepte uniquement des fichiers images et pdf."
@@ -368,6 +368,10 @@ export default {
         useBranch: {
             type: Boolean,
             default: false
+        },
+        advanced: {
+            type: Boolean,
+            default: true,
         }
     },
     data: function () {
@@ -576,7 +580,9 @@ export default {
                 if (this.useBranch) {
                     this.goalOptions = this.$store.state.branchGoalItems;
                 } else {
-                    this.goalOptions = this.$store.state.crossGoalItems;
+                    this.goalOptions = this.$store.state.crossGoalItems.filter(
+                        cGI => this.advanced ? cGI.advanced : cGI.basic
+                    );
                 }
                 this.assignGoal();
             });

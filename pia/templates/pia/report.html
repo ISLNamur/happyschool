@@ -57,6 +57,20 @@
                 padding-left: 0.5em;
             }
 
+            table, td, th {  
+                border: 1px solid black;
+                text-align: left;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+            th, td {
+                padding: 5px;
+            }
+
             h2 {
                 page-break-before: always;
             }
@@ -72,8 +86,9 @@
         <h1>PIA : {{ pia.student.fullname_classe }}</h1>
         <h2>Élève</h2>
         <div class="row">
-            <div>
-                <img src="/static/photos/{{ pia.student.matricule }}.jpg" />
+            <div style="margin-right: 40px">
+                {% load static %}
+                <img src="{% get_static_prefix %}photos/{{ pia.student.matricule }}.jpg" />
             </div>
             <div>
                 <dl>
@@ -87,7 +102,7 @@
                     </dd>
                 </dl>
                 <dl>
-                    <dt>Parrain/Marraine</dt>
+                    <dt>Parrain(s)/Marraine(s)</dt>
                     <dd>
                         <ul>
                             {% for s in pia.sponsor.all %}
@@ -98,6 +113,7 @@
                 </dl>
             </div>
         </div>
+        {% if pia.advanced %}
         <h3>Aménagements</h3>
         <div class="row">
             <dl>
@@ -143,47 +159,80 @@
                 </dd>
             </dl>
         </div>
+        {% else %}
+        <h3>
+            Activités de soutien
+        </h3>
+        <div class="row">
+            <ul>
+                {% for a_s in support_activities %}
+                <li>{{ a_s.day }}: {{ a_s.branch }} avec {{ a_s.teachers }} </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
 
         {% if pia.classcouncilpiamodel_set.all %}
-        <h2>Conseils de classe</h2>
+        <h2>{% if pia.advanced %}Conseils de classe{% else %}Auto-évaluation{% endif %}</h2>
         {% for council in pia.classcouncilpiamodel_set.all %}
         <div>
+            <h3>{{ council.date_council }}</h3>
+            {% for student_state in council.studentstatemodel_set.all %}
             <div>
-                <h3>{{ council.date_council }}</h3>
-                {% for branch in council.branchstatementmodel_set.all %}
-                    <div>
-                        <strong>{{ branch.branch }}</strong>
-                        <div class="row spaced">
-                            <div class="h-padding">
-                                <em>Ressources</em>
-                                <div class="border-left">
-                                    {{ branch.resources|safe }}
-                                </div>
+                <strong>{% if student_state.branch %}{{ student_state.branch }}{% endif %}</strong>
+                <div class="row spaced">
+                    <div class="h-padding">
+                        <em>Ressources</em>
+                        <div class="border-left">
+                            {% for r in student_state.resources.all %}
+                            >{{ r.resource }}<br>
+                            {% endfor %}
+                            </div>
                             </div>
                             <div class="h-padding">
                                 <em>Difficultés</em>
                                 <div class="border-left">
-                                    {{ branch.difficulties|safe }}
-                                </div>
+                            {% for r in student_state.difficulties.all %}
+                            >{{ r.difficulty }}<br>
+                            {% endfor %}
                             </div>
-                            {% if branch.others %}
-                            <div class="h-padding">
-                                <em>Autres</em>
-                                <div class="border-left">
-                                    {{ branch.others|safe }}
-                                </div>
                             </div>
-                            {% endif %}
-                        </div>
-                    </div>    
+                </div>
+                </div>
                 {% endfor %}
-            </div>
+                {% for other_statement in council.otherstatementmodel_set.all %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ressources</th>
+                            <th>Difficultés</th>
+                            {% if other_statement.others %}<th>Autres</th>{% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                {{ other_statement.resources|safe }}
+                            </td>
+                            <td>
+                                {{ other_statement.difficulties|safe }}
+                            </td>
+                            {% if other_statement.others %}
+                            <td>
+                                {{ other_statement.others|safe }}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        </tbody>
+                        </table>
+                {% endfor %}
         </div>
         {% endfor %}
         {% endif %}
         
         {% if pia.crossgoalmodel_set.all or pia.branchgoalmodel_set.all %}
-        <h2>Objectifs</h2>
+        <h2>Objectifs {% if not pia.advanced %}du CCL{% endif %}</h2>
+        {% if pia.advanced %}
         <h3>Objectifs transversaux</h3>
         {% for obj in pia.crossgoalmodel_set.all %}
             <div>
@@ -288,6 +337,19 @@
                 </div>
             {% endfor %}
         </div>
+        {% else %}
+        {% for obj in pia.crossgoalmodel_set.all %}
+        <div>
+            <strong>Du {{ obj.date_start }} au {{ obj.date_end }} :</strong>
+            <dl>
+                <dt>Objectifs transversaux</dt>
+                <dd>
+                    <strong>{{ obj.cross_goals }}</strong>
+                </dd>
+            </dl>
+        </div>
+        {% endfor %}
+        {% endif %}
         {% endif %}
         {% if pia.parentsopinionmodel_set.all or pia.studentprojectmodel_set.all %}
         <h2>Projet et avis</h2>

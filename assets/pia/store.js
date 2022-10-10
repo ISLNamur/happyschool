@@ -40,6 +40,7 @@ export default new Vuex.Store({
         crossGoalItems: [],
         assessments: [],
         studentCourses: [],
+        resourceDifficulty: [],
     },
     mutations: {
         addFilter: addFilter,

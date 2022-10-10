@@ -36,7 +36,7 @@
                             <b-btn
                                 variant="light"
                                 size="sm"
-                                :to="'/edit/' + rowData.id + '/'"
+                                :to="`/edit/${rowData.id}/${rowData.advanced}/`"
                                 class="card-link"
                             >
                                 <b-icon
