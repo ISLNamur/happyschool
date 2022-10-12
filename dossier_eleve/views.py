@@ -402,6 +402,7 @@ class AskSanctionsFilter(BaseFilters):
     activate_waiting = filters.CharFilter(method='activate_waiting_by')
     activate_today = filters.CharFilter(method="activate_today_by")
     sanction_decision = filters.CharFilter(method="sanction_decision_by")
+    activate_own_classes = filters.CharFilter(method='activate_own_classes_by')
 
     class Meta:
         fields_to_filter = ('student__matricule', 'sanction_decision__sanction_decision', 'date_sanction',
@@ -436,6 +437,16 @@ class AskSanctionsFilter(BaseFilters):
                 date_sanction__year=today.year
             )
         return queryset
+
+    def activate_own_classes_by(self, queryset, name, value):
+        classes = get_classes(
+                teaching=get_settings().teachings.all(),
+                check_access=True,
+                user=self.request.user,
+                tenure_class_only=False,
+                educ_by_years=False
+            )
+        return queryset.filter(student__classe__in=list(classes))
 
 
 class AskSanctionsViewSet(BaseModelViewSet):

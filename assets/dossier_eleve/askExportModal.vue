@@ -215,7 +215,7 @@ export default {
             if (this.tabIndex == 0 && this.$store.state.settings.enable_disciplinary_council) {
                 path += `council/?datetime_conseil__gte=${this.date_from} 00:00&datetime_conseil__lte=${this.date_to} 23:59`;
             } else {
-                path += `retenues/?${this.ownClass ? "activate_all_retenues=true" : ""}`;
+                path += `retenues/?${this.ownClass ? "activate_own_classes=true" : "activate_all_retenues=true"}`;
                 path += "&date_sanction__gte=" + this.date_from;
                 path += "&date_sanction__lte=" + this.date_to;
                 if (this.sanction_not_done) {
