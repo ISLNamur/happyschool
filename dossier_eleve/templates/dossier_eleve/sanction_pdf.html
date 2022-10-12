@@ -93,6 +93,10 @@
             <dd>{{ sanction.student.classe.compact_str }}</dd>
             <dt>Objet</dt>
             <dd>Mesure disciplinaire</dd>
+            {% if sanction.date_sanction %}
+            <dt>Date de la sanction</dt>
+            <dd>{{ sanction.date_sanction }}</dd>
+            {% endif %}
         </dl>
         {% autoescape off %}
         {{ text }}
