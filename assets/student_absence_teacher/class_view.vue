@@ -44,6 +44,7 @@
                         :items="students"
                         :fields="fields"
                         class="text-center"
+                        small
                     >
                         <template #head(absence)="">
                             <b-row>
@@ -176,6 +177,12 @@ export default {
                     });
                     return s;
                 });
+                // Check if there are groups amongs students. If yes add group column.
+                if (this.students.some(s => s.group)) {
+                    if (this.fields.length === 2) {
+                        this.fields.splice(1, 0, { key: "group", label: "Groupe"});
+                    }
+                }
             });
         },
         displayStudent
