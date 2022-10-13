@@ -433,12 +433,11 @@
                         </b-col>
                     </b-row>
                     <b-row
-                        v-if="advanced"
                         class="mt-2"
                     >
                         <h4>Objectifs de branche</h4>
                     </b-row>
-                    <b-row v-if="advanced">
+                    <b-row>
                         <b-col>
                             <b-btn
                                 @click="branch_goal.unshift({id: -1})"
@@ -449,13 +448,14 @@
                             </b-btn>
                         </b-col>
                     </b-row>
-                    <b-row v-if="advanced">
+                    <b-row>
                         <b-col>
                             <student-goal
                                 class="mt-2"
                                 v-for="(goal, index) in branch_goal"
                                 :key="'bg-' + goal.id"
                                 :goal-object="goal"
+                                :advanced="advanced"
                                 ref="branchgoals"
                                 @remove="removeObject('branch_goal', index)"
                                 @clone="cloneObject('branch_goal', index)"
