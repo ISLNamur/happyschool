@@ -366,8 +366,12 @@
                         </b-overlay>
                     </template>
                     <b-row>
-                        <h4 v-if="advanced">Conseil de classe</h4>
-                        <h4 v-else>Auto-évaluation</h4>
+                        <h4 v-if="advanced">
+                            Conseil de classe
+                        </h4>
+                        <h4 v-else>
+                            Auto-évaluation
+                        </h4>
                     </b-row>
                     <b-row>
                         <b-col>
