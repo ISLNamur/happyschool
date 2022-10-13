@@ -349,6 +349,17 @@
             </dl>
         </div>
         {% endfor %}
+        {% for obj in pia.branchgoalmodel_set.all %}
+        <div>
+            <strong>Du {{ obj.date_start }} au {{ obj.date_end }} :</strong>
+            <dl>
+                <dt>Objectifs de {{ obj.branch }}</dt>
+                <dd>
+                    <strong>{{ obj.branch_goals }}</strong>
+                </dd>
+            </dl>
+        </div>
+        {% endfor %}
         {% endif %}
         {% endif %}
         {% if pia.parentsopinionmodel_set.all or pia.studentprojectmodel_set.all %}
