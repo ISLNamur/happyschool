@@ -146,6 +146,8 @@ class BranchModel(models.Model):
 class BranchGoalItemModel(models.Model):
     goal = models.CharField(max_length=200)
     branch = models.ForeignKey(BranchModel, on_delete=models.CASCADE, null=True, blank=True)
+    advanced = models.BooleanField(default=True)
+    basic = models.BooleanField(default=False)
 
     def __str__(self):
         return "%s (%s)" % (self.goal, self.branch)

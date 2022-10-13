@@ -578,7 +578,9 @@ export default {
         this.$store.dispatch("loadOptions")
             .then(() => {
                 if (this.useBranch) {
-                    this.goalOptions = this.$store.state.branchGoalItems;
+                    this.goalOptions = this.$store.state.branchGoalItems.filter(
+                        bGI => this.advanced ? bGI.advanced : bGI.basic
+                    );
                 } else {
                     this.goalOptions = this.$store.state.crossGoalItems.filter(
                         cGI => this.advanced ? cGI.advanced : cGI.basic
