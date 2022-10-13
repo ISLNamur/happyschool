@@ -25,7 +25,7 @@
                     <b-col>
                         <strong>
                             <b-form inline>
-                                Date {{ advanced ? "du conseil de classe" : "de l'auto-évaluation" }}
+                                {{ advanced ? "Semaine du conseil de classe" : "Date de l'auto-évaluation" }}
                                 <b-form-input
                                     type="date"
                                     v-model="date_council"
