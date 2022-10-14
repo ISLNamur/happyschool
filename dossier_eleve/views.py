@@ -842,16 +842,27 @@ if "proeco" in settings.INSTALLED_APPS:
     from proeco.views import ExportStudentSelectionAPI
 
     class ExportStudentToProEco(ExportStudentSelectionAPI):
-        def _get_student_list(self, request, kwargs):
+        def _get_student_list(self, request, kwargs, own_classes="false"):
             date_from = kwargs["date_from"]
             date_to = kwargs["date_to"]
             export_type = kwargs["export_type"]
+            own_classes = (kwargs["own_classes"] if "own_classes" in kwargs else own_classes) == "true"
 
             sanctions = CasEleve.objects.filter(
                 student__isnull=False,
                 sanction_decision__isnull=False,
                 sanction_faite=False,
             )
+
+            if own_classes:
+                classes = get_classes(
+                    teaching=get_settings().teachings.all(),
+                    check_access=True,
+                    user=self.request.user,
+                    tenure_class_only=False,
+                    educ_by_years=False
+                )
+                sanctions.filter(student__classe__in=list(classes))
 
             if export_type == "council":
                 sanctions = sanctions.filter(

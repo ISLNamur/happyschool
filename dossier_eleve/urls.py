@@ -50,4 +50,13 @@ router.register(r'api/ask_sanctions', views.AskSanctionsViewSet)
 urlpatterns += router.urls
 
 if "proeco" in settings.INSTALLED_APPS:
-    urlpatterns += path('get_proeco_sanction/<export_type>/<date_from>/<date_to>/', views.ExportStudentToProEco.as_view()),
+    urlpatterns += [
+        path(
+            "get_proeco_sanction/<export_type>/<date_from>/<date_to>/<own_classes>/",
+            views.ExportStudentToProEco.as_view()
+        ),
+        path(
+            "get_proeco_sanction/<export_type>/<date_from>/<date_to>/",
+            views.ExportStudentToProEco.as_view()
+        ),
+    ]

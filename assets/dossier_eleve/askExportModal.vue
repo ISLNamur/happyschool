@@ -234,9 +234,11 @@ export default {
         },
         exportProEco: function () {
             const export_type = this.tabIndex == 0 && this.$store.state.settings.enable_disciplinary_council ? "council" : "retenue";
-            window.open(
-                `/dossier_eleve/get_proeco_sanction/${export_type}/${this.date_from}/${this.date_to}/`
-            );
+            let url = `/dossier_eleve/get_proeco_sanction/${export_type}/${this.date_from}/${this.date_to}/`;
+            if (export_type === "retenue") {
+                url += `${this.ownClass}/`;
+            }
+            window.open(url);
         }
     },
     mounted: function () {
