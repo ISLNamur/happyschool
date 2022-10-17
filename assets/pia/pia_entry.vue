@@ -29,7 +29,12 @@
             >
                 <b-row>
                     <b-col>
-                        <h5>{{ rowData.student.display }}</h5>
+                        <h5>
+                            {{ displayStudent(rowData.student) }}
+                            <b-badge v-if="!rowData.advanced">
+                                Aide Élève
+                            </b-badge>
+                        </h5>
                     </b-col>
                     <b-col sm="2">
                         <div class="text-right">
@@ -67,6 +72,8 @@
 import Moment from "moment";
 Moment.locale("fr");
 
+import {displayStudent} from "../common/utilities.js";
+
 export default {
     props: {
         rowData : {
@@ -83,7 +90,8 @@ export default {
     methods: {
         deleteEntry: function () {
             this.$emit("delete");
-        }
+        },
+        displayStudent
     }
 };
 </script>
