@@ -147,7 +147,7 @@ export default {
          * @param {object} student A student object with the matricule.
          */
         goToRecord: function (student) {
-            this.$router.push(`/edit/${student.pia}/`);
+            this.$router.push(`/edit/${student.pia}/${student.advanced}/`);
         },
         /**
          * Search for a student.
@@ -165,6 +165,7 @@ export default {
                             "display": p.student.display,
                             "matricule": p.student.matricule,
                             "pia": p.id,
+                            "advanced": p.advanced,
                         };
                     });
                 });
