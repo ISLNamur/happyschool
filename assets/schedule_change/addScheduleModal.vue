@@ -195,6 +195,11 @@
                     </span>
                 </b-form-checkbox>
             </b-form-group>
+            <b-form-group>
+                <b-form-checkbox v-model="form.send_email_educ">
+                    Notifier par courriel les educateurs
+                </b-form-checkbox>
+            </b-form-group>
             <b-form-group v-if="form.teachers_replaced.length > 0">
                 <b-form-checkbox
                     v-model="form.send_email_replaced"
@@ -278,6 +283,7 @@ export default {
                 place: "",
                 comment: "",
                 send_email_general: false,
+                send_email_educ: false,
                 send_email_substitute: false,
                 send_email_replaced: false,
                 hide_for_students: false,

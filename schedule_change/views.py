@@ -163,21 +163,27 @@ class ScheduleChangeViewSet(BaseModelViewSet):
 
     def perform_create(self, serializer):
         email_general = serializer.validated_data.pop('send_email_general')
+        email_educ = serializer.validated_data.pop('send_email_educ')
         email_substitute = serializer.validated_data.pop('send_email_substitute')
         email_replaced = serializer.validated_data.pop('send_email_replaced')
         super().perform_create(serializer)
         change = serializer.save()
-        self.notify_email(change, email_general, email_substitute, email_replaced, "Nouveau changement")
+        self.notify_email(
+            change, email_general, email_educ, email_substitute, email_replaced, "Nouveau changement"
+        )
         if get_settings().copy_to_remote:
             self.copy_to_remote(requests.post, change.id)
 
     def perform_update(self, serializer):
         email_general = serializer.validated_data.pop('send_email_general')
+        email_educ = serializer.validated_data.pop('send_email_educ')
         email_substitute = serializer.validated_data.pop('send_email_substitute')
         email_replaced = serializer.validated_data.pop('send_email_replaced')
         super().perform_update(serializer)
         change = serializer.save()
-        self.notify_email(change, email_general, email_substitute, email_replaced, "Changement modifié")
+        self.notify_email(
+            change, email_general, email_educ, email_substitute, email_replaced, "Changement modifié"
+        )
         if get_settings().copy_to_remote:
             self.copy_to_remote(requests.put, change.id)
 
@@ -200,12 +206,36 @@ class ScheduleChangeViewSet(BaseModelViewSet):
         self.request.data['id'] = id
         method(remote_url, headers=headers, json=self.request.data)
 
-    def notify_email(self, change, email_general, email_substitute, email_replaced, title):
+    def notify_email(self, change, email_general, email_educ, email_substitute, email_replaced, title):
         if email_general:
             recipients = map(lambda e: e.email, get_settings().notify_by_email_to.all())
             send_email(to=recipients, subject="[Changement horaire] %s" % title,
                        email_template="schedule_change/email.html",
                        context={"change": change})
+        if email_educ:
+            classes_and_years = change.classes.split(";")
+            classes = ClasseModel.objects.none()
+            teachings = get_settings().teachings.all()
+            # Find related classe model
+            for c in classes_and_years:
+                # Is it a year?
+                if "année" in c:
+                    classes |= ClasseModel.objects.filter(
+                        year=int(c[0]), teaching__in=teachings
+                    )
+                else:
+                    classes |= ClasseModel.objects.filter(
+                        year=int(c[0]), letter__iexact=c[1:], teaching__in=teachings
+                    )
+            educators = ResponsibleModel.objects.filter(
+                classe__in=classes, is_educator=True
+            )
+            emails = list(set([e.email_school for e in educators]))
+            send_email(
+                to=emails, subject=f"[Changement horaire] {title}",
+                email_template="schedule_change/email.html", context={"change": change}
+            )
+
         if email_substitute and change.teachers_substitute.all():
             email_school = get_settings().email_school
             recipients = map(lambda t: t.email_school if email_school else t.email, change.teachers_substitute.all())
