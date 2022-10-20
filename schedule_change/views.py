@@ -228,7 +228,7 @@ class ScheduleChangeViewSet(BaseModelViewSet):
                         year=int(c[0]), letter__iexact=c[1:], teaching__in=teachings
                     )
             educators = ResponsibleModel.objects.filter(
-                classe__in=classes, is_educator=True
+                classe__in=classes, is_educator=True, inactive_from__isnull=True
             )
             emails = list(set([e.email_school for e in educators]))
             send_email(
