@@ -602,22 +602,19 @@ class CasEleveListPDFGen(
         return results
 
 
-class CasElevePDFGenAPI(APIView):
-    permission_classes = (IsAuthenticated,)
+class CasElevePDFGenAPI(
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
+    WeasyTemplateView
+):
+    template_name = "dossier_eleve/discip_pdf.html"
+    permission_required = ["dossier_eleve.view_caseleve"]
 
-    def get(self, request, format=None):
+    def get(self, request, *args, **kwargs):
         if request.GET.get('student__matricule'):
-            pdf = self.create_pdf(request)
-            if not pdf:
-                return render(request, 'dossier_eleve/no_student.html')
-            pdf_name = str(request.GET['student__matricule']) + '.pdf'
+            return self.render_to_response(self.generate_context(request))
 
-            response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = 'filename; filename="' + pdf_name + '"'
-            response.write(pdf.read())
-            return response
-
-        if request.GET.get('classe'):
+        elif request.GET.get('classe'):
             classe_access = get_classes(get_settings().teachings.all(), True, request.user)
             try:
                 classe = classe_access.get(id=request.GET['classe'])
@@ -628,9 +625,13 @@ class CasElevePDFGenAPI(APIView):
             merger = PdfFileMerger()
             added = False
             for s in students:
-                request._request.GET = request.GET.copy()
-                request._request.GET['student__matricule'] = s.matricule
-                pdf = self.create_pdf(request)
+                request.GET = request.GET.copy()
+                request.GET['student__matricule'] = s.matricule
+                student_context = self.generate_context(request)
+                if not student_context:
+                    continue
+                student_response = self.render_to_response(student_context)
+                pdf = BytesIO(student_response.rendered_content)
                 if not pdf:
                     continue
 
@@ -646,15 +647,16 @@ class CasElevePDFGenAPI(APIView):
             response['Content-Disposition'] = 'filename; filename="' + classe.compact_str + '.pdf"'
             response.write(output_stream.getvalue())
             return response
-
-        return render(request, 'dossier_eleve/no_student.html')
+        else:
+            context = self.get_context_data(**kwargs)
+            return self.render_to_response(context)
 
     @staticmethod
-    def create_pdf(request):
-        if request._request.GET.get('classe'):
-            request._request.GET.pop('classe')
+    def generate_context(request):
+        if request.GET.get('classe'):
+            request.GET.pop('classe')
         view_set = CasEleveViewSet.as_view({'get': 'list'})
-        results = view_set(request._request).data['results']
+        results = view_set(request).data['results']
         if not results:
             return None
 
@@ -667,7 +669,7 @@ class CasElevePDFGenAPI(APIView):
         student = StudentModel.objects.get(matricule=request.GET['student__matricule'])
         check_student_photo(student)
 
-        all_years = not request._request.GET.get("scholar_year", False)
+        all_years = not request.GET.get("scholar_year", False)
         context = {
             'statistics': StatisticAPI().gen_stats(request.user, student, all_years=all_years)
         }
@@ -676,13 +678,7 @@ class CasElevePDFGenAPI(APIView):
 
         context['student'] = student
         context['list'] = results
-        context['absolute_path'] = settings.BASE_DIR
-
-        t = get_template('dossier_eleve/discip_pdf.rml')
-        rml_str = t.render(context)
-
-        pdf = rml2pdf.parseString(rml_str)
-        return pdf
+        return context
 
 
 class AskSanctionsPDFGenAPI(APIView):

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ student.last_name }} {{ student.first_name }} {{ student.classe.year }}{{ student.classe.letter }}</title>
+    <style>
+        @page {
+            @top-left {
+                background: lightgray;
+                content: counter(page);
+                height: 1cm;
+                text-align: center;
+                width: 1cm;
+            }
+            @top-center {
+                background: lightgray;
+                content: '';
+                display: block;
+                height: .05cm;
+                opacity: .5;
+                width: 100%;
+            }
+            @top-right {
+                content: '{{ student.last_name }} {{ student.first_name }} {{ student.classe.year }}{{ student.classe.letter }}';
+                font-size: 9pt;
+                height: 1cm;
+                vertical-align: middle;
+                width: 100%;
+            }
+        }
+        @page :first {
+            margin-top: 0px;
+            margin-left: 1cm;
+            margin-right: 1cm;
+            @top-left { background: none; content: none }
+            @top-center { content: none }
+            @top-right { content: none }
+        }
+        h1 {
+            font-size: medium;
+            text-align: center;
+        }
+        #subtitle {
+            text-align: center;
+            font-size: 0.8em;
+        }
+        #student {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            font-size: 0.8em;
+        }
+        table {
+            font-size: 0.85em;
+        }
+        th, td {
+            border-bottom: 2px solid gray;
+        }
+        table p {
+            margin: 0px 5px;
+        }
+        .fact {
+            text-align: justify;
+        }
+        .info {
+            color: gray;
+        }
+        .date {
+            font-size: 0.8em;
+        }
+        .category {
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>JOURNALIER ET DOSSIER DISCIPLINAIRE DE L'ÉLÈVE</h1>
+    <p id="subtitle">
+        Année scolaire : <strong>{{ student.additionalstudentinfo.scholar_year }}-{{ student.additionalstudentinfo.scholar_year|add:"1" }}</strong>  
+        Classe : <strong>{{ student.classe.compact_str|upper }}</strong>  
+        Classe précédente : <strong>{% if student.additionalstudentinfo.previous_classe %}
+        {{ student.additionalstudentinfo.previous_classe|upper }}
+        {% else %}—{% endif %}
+        {% if student.orientation %}Orientation : {{ student.additionalstudentinfo.orientation }}{% endif %}</strong>  
+        Titulaire : <strong>{{ tenure }}</strong>
+    </p>
+    <div id="student">
+        <p style="width: 40%;">
+            Élève :   <strong>{{ student.fullname }}</strong><br/>
+            Née le :  <em>{{ student.additionalstudentinfo.birth_date }}</em><br/>
+            Adresse : <em>{{ student.additionalstudentinfo.street }} - {{ student.additionalstudentinfo.postal_code }} {{ student.additionalstudentinfo.l }}</em><br/>
+            Mère :    <em>{{ student.additionalstudentinfo.mother_last_name }} {{ student.additionalstudentinfo.mother_first_name }}  ({%if student.additionalstudentinfo.mother_job %}{{ student.additionalstudentinfo.mother_job }}{% else %} N.C.{% endif %})</em><br/>
+            Tél. :    <em>{% if student.additionalstudentinfo.mother_phone %}{{ student.additionalstudentinfo.mother_phone }}{% else %}N.C.{% endif %}</em>     GSM :  <em>{% if student.additionalstudentinfo.mother_mobile %}{{ student.mother_mobile }}{% else %}N.C.{% endif %}</em><br/>
+            Père :    <em>{{ student.additionalstudentinfo.father_last_name }} {{ student.additionalstudentinfo.father_first_name }}  ({%if student.additionalstudentinfo.father_job %}{{ student.additionalstudentinfo.father_job }}{% else %} N.C.{% endif %})</em><br/>
+            Tél. :    <em>{% if student.additionalstudentinfo.father_phone %}{{ student.additionalstudentinfo.father_phone }}{% else %}N.C.{% endif %}</em>     GSM :  <em>{% if student.additionalstudentinfo.father_mobile %}{{ student.father_mobile }}{% else %}N.C.{% endif %}</em><br/>
+            Mail Resp. légal : <em>{% if student.additionalstudentinfo.resp_email %}{{ student.additionalstudentinfo.resp_email }}{% else %}N.C.{% endif %}</em><br/>
+        </p>
+        <p style="width: 25%;">
+            <strong>Récapitulatif</strong><br>
+            {% for s in statistics %}
+                {{ s.display }} : {{ s.value }}<br/>
+                {% endfor %}
+        </p>
+        {% load static %}
+        <p>
+            <img src="{% get_static_prefix %}photos/{{ student.matricule }}.jpg" style="width: 3cm;">
+        </p>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Faits</th>
+                <th style="width:24%">Sanction/Décision, <span style="color: grey">Info</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in list %}
+            <tr>
+                <td class="date">
+                    {% if c.important %}<strong>{% endif %}{{ c.datetime_encodage|date:'Y/m/d' }}{% if c.important %}</strong>{% endif %}
+                    {% if c.important %}
+                    Important
+                    {% endif %}
+                </td>
+                <td class="fact">
+                    {{ c.explication_commentaire|safe }}
+                </td>
+                <td class="category">
+                    {% if c.sanction_decision %}
+                    {% if c.important %}<strong>{% endif %}{{ c.sanction_decision.sanction_decision }}{% if c.date_sanction %} le {{ c.date_sanction|date:'d/m/Y' }}{% endif %}{% if c.important %}</strong>{% endif %}
+                    {% else %}
+                    <span class="info">{% if c.important %}<strong>{% endif %}{{ c.info.info }}{% if c.important %}</strong>{% endif %}</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+
+</html>
