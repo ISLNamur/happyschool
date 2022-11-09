@@ -31,7 +31,10 @@
             <h1>Absence des élèves</h1>
             <b-row class="mb-1">
                 <b-nav tabs>
-                    <b-nav-item to="/add_absence">
+                    <b-nav-item
+                        to="/add_absence"
+                        v-if="can_access_adding"
+                    >
                         <b-icon
                             icon="plus"
                             color="green"
@@ -47,7 +50,7 @@
                         Vue d'ensemble
                     </b-nav-item>
                     <b-nav-item
-                        v-if="can_access_list"
+                        v-if="can_access_adding"
                         to="/export"
                     >
                         Export
@@ -93,6 +96,22 @@ export default {
                 }
             }
             return false;
+        },
+        can_access_adding: function () {
+            const access_groups = this.$store.state.settings.can_see_adding;
+            for (let ag in this.$store.state.settings.can_see_adding) {
+                // eslint-disable-next-line no-undef
+                for (let g in user_groups) {
+                    // eslint-disable-next-line no-undef
+                    if (user_groups[g].id == access_groups[ag]) return true;
+                }
+            }
+            return false;
+        }
+    },
+    beforeMount: function () {
+        if (!this.can_access_adding) {
+            this.$router.push(`/overview/${this.today}`);
         }
     },
     mounted: function () {

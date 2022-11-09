@@ -34,6 +34,7 @@ class StudentAbsenceTeacherSettingsModel(models.Model):
     ]
     teachings = models.ManyToManyField(TeachingModel, default=None)
     can_see_list = models.ManyToManyField(Group, default=None, blank=True, related_name="can_see_list")
+    can_see_adding = models.ManyToManyField(Group, default=None, blank=True, related_name="can_see_adding")
     select_student_by = models.CharField(choices=SELECT_STUDENT, max_length=4, default=CLASS)
 
 
