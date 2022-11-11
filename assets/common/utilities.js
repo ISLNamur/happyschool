@@ -48,3 +48,20 @@ export function getCurrentScholarYear() {
     // eslint-disable-next-line no-undef
     return current_scholar_year;
 }
+
+export function extractDayOfWeek(daysOfWeek) {
+    const seqDays = daysOfWeek.trim().split(",");
+    // Extract lonely days.
+    const days = seqDays.filter(sD => sD.length === 1).map(d => Number(d.trim()));
+    // Extract range of days and create inbetween days.
+    const ranges = seqDays.filter(sD => sD.trim().length === 3)
+        .map(range => {
+            const from = Number(range[0]);
+            const to = Number(range[2]);
+            return Array.from(new Array(to - from + 1), (x, i) => i + from);
+        }).flat();
+    // Make it distinct.
+    const daysArray = [...new Set(days.concat(ranges))];
+    daysArray.sort();
+    return daysArray;
+}
