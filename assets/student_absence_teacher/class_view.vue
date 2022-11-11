@@ -85,7 +85,7 @@
 <script>
 import axios from "axios";
 
-import {displayStudent} from "../common/utilities.js";
+import {displayStudent, extractDayOfWeek} from "../common/utilities.js";
 import OverviewTeacherEntry from "./overview_teacher_entry.vue";
 import OverviewEducatorEntry from "./overview_educator_entry.vue";
 
@@ -161,16 +161,21 @@ export default {
                 axios.get(`/student_absence/api/student_absence/?student__classe=${this.classId}&date_absence=${this.date}&page_size=500`)
             ];
             Promise.all(promises).then(resp => {
+                const currentDay = (new Date(this.date)).getDay();
                 const teachersAbsences = resp[3].data.results;
                 const educatorsAbsences = resp[4].data.results;
+                this.teachersPeriod = resp[1].data.results
+                    .filter(p => extractDayOfWeek(p.day_of_week).includes(currentDay));
+                this.educatorsPeriod = resp[2].data.results
+                    .filter(p => extractDayOfWeek(p.day_of_week).includes(currentDay));
                 this.students = resp[0].data.map(s => {
                     s.studentName = this.displayStudent(s);
-                    this.teachersPeriod = resp[1].data.results;
-                    this.educatorsPeriod = resp[2].data.results;
+
                     s.absence_teachers = this.teachersPeriod.map(p => {
                         const absence = teachersAbsences.find(a => a.period.id === p.id && a.student_id === s.matricule);
                         return absence ? absence : null;
                     });
+
                     s.absence_educators = this.educatorsPeriod.map(p => {
                         const absence = educatorsAbsences.find(a => a.period === p.id && a.student_id === s.matricule);
                         return absence ? absence : {is_absent: null, student_id: s.matricule, period: p.id, date_absence: this.date};

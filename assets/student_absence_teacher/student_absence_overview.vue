@@ -193,6 +193,7 @@ import axios from "axios";
 import Moment from "moment";
 Moment.locale("fr");
 
+import {extractDayOfWeek} from "../common/utilities.js";
 
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
@@ -278,26 +279,32 @@ export default {
         },
         getPeriods: function () {
             this.fields = [{key: "classe", }];
+            const currentDay = (new Date(this.date)).getDay();
+
             if (this.pointOfView === "teacher") {
                 axios.get("/student_absence_teacher/api/period/")
                     .then(resp => {
                         this.fields = this.fields.concat(
-                            resp.data.results.map(p => {
-                                return {
-                                    key: `period-${p.id}`,
-                                    label: `${p.start.slice(0, 5)} ${p.end.slice(0, 5)}`,
-                                    name: p.name
-                                };
-                            })
+                            resp.data.results
+                                .filter(p => extractDayOfWeek(p.day_of_week).includes(currentDay))
+                                .map(p => {
+                                    return {
+                                        key: `period-${p.id}`,
+                                        label: `${p.start.slice(0, 5)} ${p.end.slice(0, 5)}`,
+                                        name: p.name
+                                    };
+                                })
                         );
                     });
             }
+
             axios.get("/student_absence/api/period/")
                 .then(resp => {
-                    this.educatorPeriods = resp.data.results;
+                    this.educatorPeriods = resp.data.results
+                        .filter(p => extractDayOfWeek(p.day_of_week).includes(currentDay));
                     if (this.pointOfView === "educator") {
                         this.fields = this.fields.concat(
-                            resp.data.results.map(p => {
+                            this.educatorPeriods.map(p => {
                                 return {
                                     key: `period-${p.id}`,
                                     label: `${p.start.slice(0, 5)} ${p.end.slice(0, 5)}`,
