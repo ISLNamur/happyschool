@@ -68,6 +68,7 @@ class PeriodModel(models.Model):
     start = models.TimeField()
     end = models.TimeField()
     name = models.CharField(max_length=200)
+    day_of_week = models.CharField(max_length=10, default="1-5")
 
     @property
     def display(self):
