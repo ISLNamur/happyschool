@@ -36,7 +36,7 @@ class StudentAbsenceTeacherSettingsSerializer(serializers.ModelSerializer):
 class PeriodSerializer(serializers.ModelSerializer):
     class Meta:
         model = PeriodModel
-        fields = ('id', 'name', 'start', 'end', 'display',)
+        fields = ('id', 'name', 'start', 'end', 'display', 'day_of_week')
 
 
 class StudentAbsenceTeacherSerializer(serializers.ModelSerializer):
