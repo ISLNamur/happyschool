@@ -25,6 +25,7 @@
 import AnnuairePage from "../annuaire/annuaire_page.vue";
 import PersonInfo from "../annuaire/person_info.vue";
 import ClassList from "../annuaire/classe_list.vue";
+import CourseInfo from "../annuaire/course_info.vue";
 
 export default [{
     path: "/",
@@ -43,5 +44,10 @@ export default [{
         component: ClassList,
         props: true
     },
+    {
+        path: "/course/:course/",
+        component: CourseInfo,
+        props: true,
+    }
     ]
 }, ];
