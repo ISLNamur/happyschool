@@ -57,7 +57,7 @@ from core.permissions import IsSecretaryPermission
 from core.serializers import ResponsibleSensitiveSerializer, TeachingSerializer,\
     EmailSerializer, ClasseSerializer, ResponsibleRemoteSerializer, StudentWriteSerializer, UserSerializer,\
     GroupSerializer, CourseSerializer, GivenCourseFlatSerializer, CourseScheduleModel, PeriodCoreModel, \
-    PeriodCoreSerializer, CourseScheduleSerializer
+    PeriodCoreSerializer, CourseScheduleSerializer, GivenCourseSerializer
 from core.utilities import get_scholar_year, get_menu
 
 
@@ -356,6 +356,14 @@ class GivenCourseViewSet(ModelViewSet):
     permission_classes = (IsAuthenticated, DjangoModelPermissions,)
 
 
+class GivenCourseInfoViewSet(ReadOnlyModelViewSet):
+    queryset = GivenCourseModel.objects.all()
+    serializer_class = GivenCourseSerializer
+    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_fields = ["course"]
+
+
 class ResponsibleViewSet(ModelViewSet):
     queryset = ResponsibleModel.objects.all()
     serializer_class = ResponsibleRemoteSerializer
@@ -390,14 +398,26 @@ class GroupViewSet(ModelViewSet):
 
 class CourseScheduleFilter(filters.FilterSet):
     student = filters.NumberFilter(method="student_by")
+    responsible = filters.NumberFilter(method="responsible_by")
 
     class Meta:
-        fields = ["given_course", "student"]
+        fields = ["given_course", "student", "responsible"]
 
     def student_by(self, queryset, field_name, value):
-        student = StudentModel.objects.get(matricule=value)
-        given_courses = [gc.id for gc in student.courses.all()]
-        return queryset.filter(given_course__id__in=given_courses)
+        try:
+            student = StudentModel.objects.get(matricule=value)
+            given_courses = [gc.id for gc in student.courses.all()]
+            return queryset.filter(given_course__id__in=given_courses)
+        except ObjectDoesNotExist:
+            return queryset.none()
+
+    def responsible_by(self, queryset, field_name, value):
+        try:
+            resp = ResponsibleModel.objects.get(matricule=value)
+            given_courses = [gc.id for gc in resp.courses.all()]
+            return queryset.filter(given_course__id__in=given_courses)
+        except ObjectDoesNotExist:
+            return queryset.none()
 
 
 class CourseScheduleViewSet(ModelViewSet):
