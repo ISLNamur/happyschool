@@ -40,7 +40,7 @@
             >
                 {{ course.related_classes }}
                 <br>
-                {{ course.place }} :
+                {{ course.place ? `${course.place} : ` : "" }}
                 {{ course.related_responsibles }}
             </b-popover>
         </div>
@@ -88,7 +88,7 @@ export default {
                         <div id=popover-${arg.event.id}>
                         <small>${arg.timeText}</small><br />
                         ${arg.event.title} (${arg.event.extendedProps.related_classes})<br />
-                        ${arg.event.extendedProps.place}:
+                        ${arg.event.extendedProps.place ? arg.event.extendedProps.place + " : " : "" }
                         ${this.truncateString(arg.event.extendedProps.related_responsibles, 15)}
                         </div>`
                     };
@@ -117,7 +117,7 @@ export default {
         },
         getCourseSchedule: function () {
             this.calendarOptions.events = [];
-            axios.get(`/core/api/course_schedule/?student=${this.$route.params.matricule}`)
+            axios.get(`/core/api/course_schedule/?${this.$route.params.type}=${this.$route.params.matricule}`)
                 .then(resp => {
                     this.calendarOptions.events = resp.data.results.map(cS => {
                         const eventDay = Moment().startOf("week").add(cS.day_of_week, "d").format("").slice(0, 11);
