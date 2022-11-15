@@ -102,6 +102,13 @@ class GivenCourseModel(models.Model):
         return ", ".join({s.classe.compact_str for s in self.studentmodel_set.distinct("classe")})
 
     @property
+    def teachers(self):
+        return [
+            {"id": teacher.id, "matricule": teacher.matricule, "fullname": teacher.fullname}
+            for teacher in self.responsiblemodel_set.all()
+        ]
+
+    @property
     def display(self):
         return self.__str__()
 
