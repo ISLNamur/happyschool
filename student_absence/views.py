@@ -19,7 +19,7 @@
 
 import json
 
-from django.db.models import IntegerField, Sum, Case, When, Q, Subquery, F, OuterRef, ObjectDoesNotExist
+from django.db.models import IntegerField, Sum, Case, When, Q, Subquery, F, OuterRef, ObjectDoesNotExist, Count
 from django.db.models.functions import Coalesce
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
@@ -38,7 +38,7 @@ from rest_framework.filters import OrderingFilter
 from core.utilities import get_menu, get_scholar_year
 from core.people import get_classes
 from core.models import ResponsibleModel, StudentModel
-from core.views import BaseFilters, PageNumberSizePagination, get_app_settings
+from core.views import BaseFilters, PageNumberSizePagination, get_app_settings, get_core_settings
 
 from .models import StudentAbsenceModel, StudentAbsenceSettingsModel, JustificationModel, ClasseNoteModel,\
     PeriodModel
@@ -228,29 +228,31 @@ class AbsenceCountAPI(APIView):
         teachings = ResponsibleModel.objects.get(user=self.request.user).teaching.all()
         classes = get_classes(list(map(lambda t: t.name, teachings)), True, self.request.user)
         students = StudentModel.objects.filter(classe__in=classes)
-        absences = self._filter_scholar_year(StudentAbsenceModel.objects.filter(student=OuterRef('matricule'))).values('student').annotate(
-            half_days=Sum(
-                Case(When(morning=True, afternoon=True, then=2), When(Q(morning=True) | Q(afternoon=True), then=1),
-                     When(morning=False, afternoon=False, then=0), output_field=IntegerField()))).values('half_days')
+        limit = self._get_scholar_year_limit()
+        absence_count = StudentAbsenceModel.objects.filter(
+            student__in=students, date_absence__gte=limit[0], date_absence__lt=limit[1]
+        ).annotate(Count("student")).order_by("-student__count")
 
-        justif = JustificationModel.objects.filter(student=OuterRef('matricule')).values('student').annotate(
-            total=Sum('half_days')).values('total')
+        justif = JustificationModel.objects.filter(student__in=students).values('student').annotate(
+            total=Sum('half_days')
+        ).values('total').order_by("-total")
 
-        half_days = students.annotate(half_day_miss=Subquery(absences), half_day_just=Coalesce(Subquery(justif), 0))\
-            .exclude(half_day_miss__isnull=True).annotate(half_day_diff=F('half_day_miss') - F('half_day_just'))\
-            .values('matricule', 'half_day_miss', 'half_day_just', 'half_day_diff').order_by('-half_day_diff')
+        # half_days = students.annotate(half_day_miss=Subquery(absences), half_day_just=Coalesce(Subquery(justif), 0))\
+        #     .exclude(half_day_miss__isnull=True).annotate(half_day_diff=F('half_day_miss') - F('half_day_just'))\
+        #     .values('matricule', 'half_day_miss', 'half_day_just', 'half_day_diff').order_by('-half_day_diff')
 
-        # Keep only the first 15 students.
-        half_days = list(map(lambda s: {**s, 'student': StudentModel.objects.get(matricule=s['matricule']).fullname_classe},
-                             half_days[:15]))
+        # # Keep only the first 15 students.
+        # half_days = list(map(lambda s: {**s, 'student': StudentModel.objects.get(matricule=s['matricule']).fullname_classe},
+        #                      half_days[:15]))
         return Response(half_days)
 
-    def _filter_scholar_year(self, queryset):
+    def _get_scholar_year_limit(self):
         start_year = get_scholar_year()
         end_year = start_year + 1
-        start = timezone.datetime(year=start_year, month=8, day=20)
-        end = timezone.datetime(year=end_year, month=8, day=19)
-        return queryset.filter(datetime_creation__gt=start, datetime_creation__lt=end)
+        core_settings = get_core_settings()
+        start = timezone.datetime(year=start_year, month=core_settings.month_scholar_year_start, day=core_settings.day_scholar_year_start)
+        end = timezone.datetime(year=end_year, month=core_settings.month_scholar_year_start, day=core_settings.day_scholar_year_start)
+        return (start, end)
 
 
 class JustificationViewSet(ReadOnlyModelViewSet):
