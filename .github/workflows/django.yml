@@ -19,7 +19,9 @@ jobs:
       postgres:
         image: postgres
         env:
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: libreschool
+          POSTGRES_USER: happyschool
+          POSTGRES_DB: happyschool
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -36,10 +38,8 @@ jobs:
       run: sudo apt update && sudo apt install -y libldap2-dev libsasl2-dev zlib1g-dev make build-essential libssl-dev libbz2-dev libreadline-dev libsqlite3-dev wget llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev liblzma-dev libffi-dev git python3-dateutil ttf-bitstream-vera redis-server nodejs python3-pip libpangocairo-1.0-0
     - name: Setup postgresql
       run: |
-        psql "postgresql://postgres:postgres@localhost/template1" -c "CREATE EXTENSION unaccent;"
-        psql "postgresql://postgres:postgres@localhost" -c "CREATE DATABASE happyschool;"
-        psql "postgresql://postgres:postgres@localhost" -c "CREATE USER happyschool WITH PASSWORD 'libreschool';"
-        psql "postgresql://postgres:postgres@localhost" -c "ALTER USER happyschool CREATEDB;"
+        psql "postgresql://happyschool:libreschool@localhost/template1" -c "CREATE EXTENSION unaccent;"
+        psql "postgresql://happyschool:libreschool@localhost/happyschool" -c "CREATE EXTENSION unaccent;"
     - name: Install python version
       uses: gabrielfalcao/pyenv-action@v8
       with:
