@@ -103,6 +103,7 @@
                 <b-form-group
                     label="Groupe"
                     label-cols="2"
+                    label-class="font-weight-bold"
                 >
                     <multiselect
                         :options="groups"
