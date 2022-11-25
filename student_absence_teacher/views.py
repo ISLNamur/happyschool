@@ -292,10 +292,12 @@ class ExportAbsencesAPI(APIView):
 
         if document == "csv":
             absences_list = absences.values_list(
+                "student__matricule",
                 "student__last_name",
                 "student__first_name",
                 "student__classe__year",
                 "student__classe__letter",
+                "student__additionalstudentinfo__group",
                 "date_absence",
                 "status",
                 "period__name",
@@ -305,10 +307,12 @@ class ExportAbsencesAPI(APIView):
             response["Content-Disposition"] = 'attachment; filename="export.csv"'
             writer = csv.writer(response)
             writer.writerow([
+                "Matricule unique",
                 "Nom",
                 "Prénom",
                 "Année",
                 "Classe",
+                "Groupe",
                 "Date",
                 "Statut",
                 "Période"
