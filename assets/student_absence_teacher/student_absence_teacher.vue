@@ -111,7 +111,10 @@ export default {
     },
     beforeMount: function () {
         if (!this.can_access_adding) {
-            this.$router.push(`/overview/${this.today}`);
+            if (this.$router.currentRoute.fullPath.includes("add_absence")) {
+                this.$router.push(`/overview/${this.today}`);
+            }
+            
         }
     },
     mounted: function () {
