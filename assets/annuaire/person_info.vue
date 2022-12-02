@@ -128,19 +128,21 @@
                                         :key="c.id"
                                         :class="{'col-7': index == 0, 'col-7 offset-5': index > 0}"
                                     >
-                                        <span
-                                            v-if="c.course.long_name" 
-                                            v-b-tooltip
-                                            :title="`${c.course.short_name} (${c.group.toUpperCase()})`"
-                                        >
-                                            {{ c.course.long_name }}
-                                        </span>
-                                        <span v-else>
-                                            {{ c.course.short_name }}
-                                        </span>
-                                        <span v-if="c.group !== ''">
-                                            ({{ c.classes }})
-                                        </span>
+                                        <a :href="`/annuaire/#/course/${c.course.id}/`">
+                                            <span
+                                                v-if="c.course.long_name" 
+                                                v-b-tooltip
+                                                :title="`${c.course.short_name} (${c.group.toUpperCase()})`"
+                                            >
+                                                {{ c.course.long_name }}
+                                            </span>
+                                            <span v-else>
+                                                {{ c.course.short_name }}
+                                            </span>
+                                            <span v-if="c.group !== ''">
+                                                ({{ c.classes }})
+                                            </span>
+                                        </a>
                                     </dd>
                                     <dt
                                         v-if="student_info.orientation"
