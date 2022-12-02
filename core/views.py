@@ -399,9 +399,10 @@ class GroupViewSet(ModelViewSet):
 class CourseScheduleFilter(filters.FilterSet):
     student = filters.NumberFilter(method="student_by")
     responsible = filters.NumberFilter(method="responsible_by")
+    classe = filters.NumberFilter(method="classe_by")
 
     class Meta:
-        fields = ["given_course", "student", "responsible"]
+        fields = ["given_course", "place"]
 
     def student_by(self, queryset, field_name, value):
         try:
@@ -415,6 +416,19 @@ class CourseScheduleFilter(filters.FilterSet):
         try:
             resp = ResponsibleModel.objects.get(matricule=value)
             given_courses = [gc.id for gc in resp.courses.all()]
+            return queryset.filter(given_course__id__in=given_courses)
+        except ObjectDoesNotExist:
+            return queryset.none()
+
+    def classe_by(self, queryset, field_name, value):
+        try:
+            classe = ClasseModel.objects.get(id=value)
+            related_students = StudentModel.objects.filter(classe=classe)
+            given_courses = [
+                gc.id
+                for student in related_students
+                for gc in student.courses.all()
+            ]
             return queryset.filter(given_course__id__in=given_courses)
         except ObjectDoesNotExist:
             return queryset.none()
