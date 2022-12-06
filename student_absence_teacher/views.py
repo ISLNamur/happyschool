@@ -301,6 +301,7 @@ class ExportAbsencesAPI(APIView):
                 "date_absence",
                 "status",
                 "period__name",
+                "comment",
             )
 
             response = HttpResponse(content_type="text/csv")
@@ -316,6 +317,7 @@ class ExportAbsencesAPI(APIView):
                 "Date",
                 "Statut",
                 "Période"
+                "Commentaire"
             ])
             status = {s[0]: s[1] for s in StudentAbsenceTeacherModel.STATUS_CHOICES}
             for a in absences_list:
