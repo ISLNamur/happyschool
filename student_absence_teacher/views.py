@@ -273,22 +273,26 @@ class ExportAbsencesAPI(APIView):
         return days
 
     def get(self, request, document="pdf", date_from=None, date_to=None, format=None):
-        classes = get_classes(
-            check_access=True, user=request.user, tenure_class_only=False, educ_by_years="both"
-        ).values_list("id")
-
         absences = StudentAbsenceTeacherModel.objects.filter(
-            student__classe__id__in=classes,
             date_absence__gte=date_from,
             date_absence__lte=date_to,
+            student__classe__isnull=False,
         ).exclude(
             status=StudentAbsenceTeacherModel.PRESENCE
-        ).order_by(
-            "date_absence", "student__classe__year", "student__classe__letter", "student__last_name"
         )
 
+        # If user cannot see list (overview), only show own absences.
         if not get_settings().can_see_list.filter(id__in=[g.id for g in request.user.groups.all()]).exists():
             absences = absences.filter(user=request.user)
+        else:
+            classes = get_classes(
+                check_access=True, user=request.user, tenure_class_only=False, educ_by_years="both"
+            ).values_list("id")
+            absences = absences.filter(student__classe__id__in=classes)
+
+        absences = absences.order_by(
+            "date_absence", "student__classe__year", "student__classe__letter", "student__last_name"
+        )
 
         if document == "csv":
             absences_list = absences.values_list(
