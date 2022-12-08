@@ -320,13 +320,13 @@ class ExportAbsencesAPI(APIView):
                 "Groupe",
                 "Date",
                 "Statut",
-                "Période"
+                "Période",
                 "Commentaire"
             ])
             status = {s[0]: s[1] for s in StudentAbsenceTeacherModel.STATUS_CHOICES}
             for a in absences_list:
                 row = list(a)
-                row[-2] = status[row[-2]]
+                row[-3] = status[row[-3]]
                 writer.writerow(
                     row
                 )
