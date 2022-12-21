@@ -556,6 +556,7 @@ export default {
         this.availablePrinters = this.$store.state.settings.printer.split(",")
             .map((p, i) => {
                 return {
+                    // eslint-disable-next-line no-irregular-whitespace
                     text: `Impr. ${i + 1}`,
                     value: p,
                 };
