@@ -96,7 +96,7 @@
                     </b-card>
                 </b-col>
                 <b-col
-                    cols="5"
+                    cols="4"
                     md="4"
                 >
                     <b-card
@@ -107,6 +107,28 @@
                         <b-form-checkbox v-model="justified">
                             Retard justifié
                         </b-form-checkbox>
+                    </b-card>
+                </b-col>
+                <b-col
+                    cols="3"
+                    md="4"
+                    v-if="$store.state.settings.printer.length > 0 && availablePrinters.length > 1"
+                >
+                    <b-card
+                        bg-variant="light"
+                        no-body
+                        class="p-1"
+                    >
+                        <b-btn
+                            v-b-modal.printer-selection
+                            size="sm"
+                        >
+                            <b-icon icon="printer" />
+                            <span class="d-none d-md-inline">
+                                Imprimante :
+                            </span>
+                            {{ printer ? availablePrinters.find(p => p.value === printer).text : "" }}
+                        </b-btn>
                     </b-card>
                 </b-col>
             </b-row>
@@ -251,6 +273,19 @@
                     </b-list-group-item>
                 </b-list-group>
             </b-modal>
+            <b-modal
+                id="printer-selection"
+                ok-only
+            >
+                <b-form-group
+                    label="Sélectionner l'imprimante à utiliser"
+                >
+                    <b-select
+                        v-model="printer"
+                        :options="availablePrinters"
+                    />
+                </b-form-group>
+            </b-modal>
         </b-container>
     </div>
 </template>
@@ -298,6 +333,8 @@ export default {
             countDate: this.$store.state.settings.date_count_start,
             topLateness: [],
             topOwnClasses: false,
+            printer: null,
+            availablePrinters: [],
         };
     },
     methods: {
@@ -393,7 +430,7 @@ export default {
                 justified: this.justified
             };
             let url = "/lateness/api/lateness/";
-            if (this.printing) url += "?print=1";
+            if (this.printing) url += `?print=1&printer=${this.printer}`;
             this.addingStudent = true;
             axios.post(url, data, token)
                 .then(response => {
@@ -515,6 +552,15 @@ export default {
         this.applyFilter();
         this.overloadInput();        
         this.getTopList();
+
+        this.availablePrinters = this.$store.state.settings.printer.split(",")
+            .map((p, i) => {
+                return {
+                    text: `Impr. ${i + 1}`,
+                    value: p,
+                };
+            });
+        this.printer = this.availablePrinters ? this.availablePrinters[0].value : null;
     },
     components: {
         "multiselect": Multiselect,

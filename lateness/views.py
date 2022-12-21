@@ -202,10 +202,10 @@ class LatenessViewSet(BaseModelViewSet):
             if student_lateness:
                 student_lateness.delete()
 
-
     def perform_create(self, serializer):
         lateness = serializer.save()
         printing = self.request.query_params.get("print", None)
+        printer = self.request.query_params.get("printer", 0)
 
         lateness_settings = get_settings()
 
@@ -221,7 +221,9 @@ class LatenessViewSet(BaseModelViewSet):
 
         if lateness_settings.printer and printing:
             try:
-                printer = Network(lateness_settings.printer) if not settings.DEBUG else Dummy()
+                if settings.DEBUG:
+                    print(printer)
+                printer = Network(printer) if not settings.DEBUG else Dummy()
                 printer.charcode("USA")
                 printer.set(align="CENTER", text_type="B")
                 printer.text("RETARD\n")

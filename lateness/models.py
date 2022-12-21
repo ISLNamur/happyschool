@@ -28,7 +28,11 @@ from core.models import StudentModel, TeachingModel, YearModel, ClasseModel
 class LatenessSettingsModel(models.Model):
     teachings = models.ManyToManyField(TeachingModel, default=None)
     all_access = models.ManyToManyField(Group, default=None, blank=True)
-    printer = models.CharField(max_length=200, blank=True)
+    printer = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="IP address of one or multiple printers. If multiple, it must be separated by a comma \",\""
+    )
     date_count_start = models.DateField(default=date(year=2019, month=9, day=1))
     notify_responsible = models.BooleanField(default=False)
     enable_camera_scan = models.BooleanField(default=False)
