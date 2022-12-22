@@ -32,7 +32,9 @@
                         <span :class="lightDisplay ? '' : 'h5'">
                             <a
                                 class="clickable"
-                                @click="$emit('showInfo')"
+                                :href="urlToStudentInfo"
+                                target="_blank"
+                                rel="noopener noreferrer"
                             >{{ title }}</a>
                             <b-btn
                                 variant="link"
@@ -216,6 +218,12 @@ export default {
         };
     },
     computed: {
+        urlToStudentInfo:function(){
+        /**
+        * Gets called when the user clicks on the button to see student details
+        */
+            return `/annuaire/#/person/student/${this.rowData.student_id}/`;
+        },
         outdated: function () {
             return Moment(this.rowData.date_sanction) < Moment();
         },

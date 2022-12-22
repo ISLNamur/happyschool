@@ -192,7 +192,6 @@
                 @delete="askDelete(entry)"
                 @edit="editEntry(index)"
                 @filterStudent="filterStudent($event)"
-                @showInfo="showInfo(entry)"
                 @done="loadEntries"
                 @update-sanction="updateSanction(entry, $event)"
             />
@@ -310,10 +309,6 @@ Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 
 import axios from "axios";
-window.axios = axios;
-window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
-
-import Info from "../annuaire/person_info.vue";
 
 import AskSanctionsEntry from "./askSanctionsEntry.vue";
 import AskModal from "./ask_form.vue";
@@ -413,10 +408,6 @@ export default {
             );
             this.applyFilter();
         },
-        showInfo: function (entry) {
-            this.currentEntry = entry;
-            this.$refs.infoModal.show();
-        },
         applyFilter: function () {
             this.filter = "";
             let storeFilters = this.$store.state.filters;
@@ -496,7 +487,6 @@ export default {
         "ask-sanctions-entry": AskSanctionsEntry,
         "ask-modal": AskModal,
         "ask-export-modal": AskExportModal,
-        "info": Info,
         "app-menu": Menu,
         "mass-actions": MassActions,
     }

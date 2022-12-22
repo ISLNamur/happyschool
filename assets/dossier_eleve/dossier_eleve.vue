@@ -98,23 +98,7 @@
                 :row-data="entry"
                 @delete="askDelete(entry)"
                 @filterStudent="filterStudent($event)"
-                @showInfo="showInfo(entry)"
             />
-            <b-modal
-                :title="currentName"
-                size="lg"
-                ref="infoModal"
-                centered
-                ok-only
-                @hidden="currentEntry = null"
-            >
-                <info
-                    v-if="currentEntry"
-                    :matricule="currentEntry.student_id"
-                    type="student"
-                    no-news
-                />
-            </b-modal>
             <component
                 :is="currentModal"
                 ref="dynamicModal"
@@ -142,10 +126,6 @@ Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 
 import axios from "axios";
-window.axios = axios;
-window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
-
-import Info from "../annuaire/person_info.vue";
 
 import Filters from "../common/filters_form.vue";
 import {getFilters} from "../common/filters.js";
@@ -195,10 +175,6 @@ export default {
         openDynamicModal: function (modal) {
             this.currentModal = modal;
             if ("dynamicModal" in this.$refs) this.$refs.dynamicModal.show();
-        },
-        showInfo: function (entry) {
-            this.currentEntry = entry;
-            this.$refs.infoModal.show();
         },
         filterStudent: function (matricule) {
             this.showFilters = true;
@@ -269,7 +245,6 @@ export default {
         "filters": Filters,
         "cas-eleve-entry": CasEleveEntry,
         "export-modal": ExportModal,
-        "info": Info,
     }
 };
 </script>

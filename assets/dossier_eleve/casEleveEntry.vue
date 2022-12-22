@@ -32,7 +32,9 @@
                         <h5>
                             <a
                                 class="clickable"
-                                @click="$emit('showInfo')"
+                                :href="urlToStudentInfo"
+                                target="_blank"
+                                rel="noopener noreferrer"
                             >{{ title }}</a>
                             <b-btn
                                 variant="link"
@@ -155,6 +157,12 @@ export default {
         };
     },
     computed: {
+        urlToStudentInfo:function(){
+        /**
+        * Gets called when the user clicks on the button to see student details
+        */
+            return `/annuaire/#/person/student/${this.rowData.student_id}/`;
+        },
         new: function () {
             // eslint-disable-next-line no-undef
             return Moment(this.rowData.datetime_modified) > Moment(dossierEleveLastAccess);
