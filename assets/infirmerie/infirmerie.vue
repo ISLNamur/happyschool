@@ -90,21 +90,6 @@
         >
             Êtes-vous sûr de vouloir supprimer ce passage ?
         </b-modal>
-        <b-modal
-            :title="currentName"
-            size="lg"
-            ref="infoModal"
-            centered
-            ok-only
-            @hidden="currentEntry = null"
-        >
-            <info
-                v-if="currentEntry"
-                :matricule="currentEntry.matricule_id"
-                type="student"
-                no-news
-            />
-        </b-modal>
     </div>
 </template>
 
@@ -113,13 +98,9 @@ import Vue from "vue";
 import {BootstrapVue, BootstrapVueIcons} from "bootstrap-vue";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
-import Info from "../annuaire/person_info.vue";
-
 import Filters from "../common/filters_form.vue";
 
 import axios from "axios";
-window.axios = axios;
-window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
 import InfirmerieEntry from "./infirmerieEntry.vue";
 
@@ -218,7 +199,6 @@ export default {
     },
     components: {
         "filters": Filters,
-        "info": Info,
     },
 };
 </script>

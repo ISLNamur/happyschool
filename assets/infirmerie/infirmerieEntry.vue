@@ -32,7 +32,7 @@
                         <h5>
                             <a
                                 class="clickable"
-                                @click="$emit('showInfo')"
+                                :href="urlToStudentInfo"
                             >{{ title }}</a>
                             <b-btn
                                 variant="link"
@@ -121,6 +121,12 @@ export default {
         };
     },
     computed: {
+        urlToStudentInfo:function(){
+        /**
+        * Gets called when the user clicks on the button to see student details
+        */
+            return `/annuaire/#/person/student/${this.rowData.matricule_id}/`;
+        },
         title: function () {
             return this.rowData.matricule.display;
         },
