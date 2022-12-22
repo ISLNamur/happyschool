@@ -18,128 +18,140 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-tab
-        title="Moyens de contacts"
-        v-if="contact"
-    >
-        <dl class="row">
-            <dt class="col-5 text-right">
-                Téléphone de l'élève
-            </dt>
-            <dd class="col-7">
-                <a :href="`tel:${contact.student_phone.replaceAll('.', '')}`">
-                    {{ contact.student_phone }}
-                </a>
-            </dd>
-            <dt class="col-5 text-right">
-                GSM de l'élève
-            </dt>
-            <dd class="col-7">
-                <a :href="`tel:${contact.student_mobile.replaceAll('.', '')}`">
-                    {{ contact.student_mobile }}
-                </a>
-            </dd>
-            <dt class="col-5 text-right">
-                Email de l'élève
-            </dt>
-            <dd class="col-7">
-                <a :href="'mailto:' + contact.student_email">{{ contact.student_email }}</a>
-            </dd>
-            <dt class="col-5 text-right">
-                Nom du responsable
-            </dt>
-            <dd class="col-7">
-                {{ contact.resp_last_name }} {{ contact.resp_first_name }}
-            </dd>
-            <dt class="col-5 text-right">
-                Téléphone responsable
-            </dt>
-            <dd class="col-7">
-                <a :href="`tel:${contact.resp_phone.replaceAll('.', '')}`">
-                    {{ contact.resp_phone }}
-                </a>
-            </dd>
-            <dt class="col-5 text-right">
-                GSM responsable
-            </dt>
-            <dd class="col-7">
-                <a :href="`tel:${contact.resp_mobile.replaceAll('.', '')}`">
-                    {{ contact.resp_mobile }}
-                </a>
-            </dd>
-            <dt class="col-5 text-right">
-                Email responsable
-            </dt>
-            <dd class="col-7">
-                <a :href="'mailto:' + contact.resp_email">{{ contact.resp_email }}</a>
-            </dd>
-            <dt class="col-5 text-right">
-                Nom de la mère
-            </dt>
-            <dd class="col-7">
-                {{ contact.mother_last_name }} {{ contact.mother_first_name }}
-            </dd>
-            <dt class="col-5 text-right">
-                Téléphone de la mère
-            </dt>
-            <dd class="col-7">
-                <a :href="`tel:${contact.mother_phone.replaceAll('.', '')}`">
-                    {{ contact.mother_phone }}
-                </a>
-            </dd>
-            <dt class="col-5 text-right">
-                GSM de la mère
-            </dt>
-            <dd class="col-7">
-                <a :href="`tel:${contact.mother_mobile.replaceAll('.', '')}`">
-                    {{ contact.mother_mobile }}
-                </a>
-            </dd>
-            <dt class="col-5 text-right">
-                Email de la mère
-            </dt>
-            <dd class="col-7">
-                <a :href="'mailto:' + contact.mother_email">{{ contact.mother_email }}</a>
-            </dd>
-            <dt class="col-5 text-right">
-                Nom du père
-            </dt>
-            <dd class="col-7">
-                {{ contact.father_last_name }} {{ contact.father_first_name }}
-            </dd>
-            <dt class="col-5 text-right">
-                Téléphone du père
-            </dt>
-            <dd class="col-7">
-                <a :href="`tel:${contact.father_phone.replaceAll('.', '')}`">
-                    {{ contact.father_phone }}
-                </a>
-            </dd>
-            <dt class="col-5 text-right">
-                GSM du père
-            </dt>
-            <dd class="col-7">
-                <a :href="`tel:${contact.father_mobile.replaceAll('.', '')}`">
-                    {{ contact.father_mobile }}
-                </a>
-            </dd>
-            <dt class="col-5 text-right">
-                Email du père
-            </dt>
-            <dd class="col-7">
-                <a :href="'mailto:' + contact.father_email">{{ contact.father_email }}</a>
-            </dd>
-        </dl>
-    </b-tab>
+    <b-overlay :show="loading">
+        <div v-if="contact">
+            <dl class="row">
+                <dt class="col-5 text-right">
+                    Téléphone de l'élève
+                </dt>
+                <dd class="col-7">
+                    <a :href="`tel:${contact.student_phone.replaceAll('.', '')}`">
+                        {{ contact.student_phone }}
+                    </a>
+                </dd>
+                <dt class="col-5 text-right">
+                    GSM de l'élève
+                </dt>
+                <dd class="col-7">
+                    <a :href="`tel:${contact.student_mobile.replaceAll('.', '')}`">
+                        {{ contact.student_mobile }}
+                    </a>
+                </dd>
+                <dt class="col-5 text-right">
+                    Email de l'élève
+                </dt>
+                <dd class="col-7">
+                    <a :href="'mailto:' + contact.student_email">{{ contact.student_email }}</a>
+                </dd>
+                <dt class="col-5 text-right">
+                    Nom du responsable
+                </dt>
+                <dd class="col-7">
+                    {{ contact.resp_last_name }} {{ contact.resp_first_name }}
+                </dd>
+                <dt class="col-5 text-right">
+                    Téléphone responsable
+                </dt>
+                <dd class="col-7">
+                    <a :href="`tel:${contact.resp_phone.replaceAll('.', '')}`">
+                        {{ contact.resp_phone }}
+                    </a>
+                </dd>
+                <dt class="col-5 text-right">
+                    GSM responsable
+                </dt>
+                <dd class="col-7">
+                    <a :href="`tel:${contact.resp_mobile.replaceAll('.', '')}`">
+                        {{ contact.resp_mobile }}
+                    </a>
+                </dd>
+                <dt class="col-5 text-right">
+                    Email responsable
+                </dt>
+                <dd class="col-7">
+                    <a :href="'mailto:' + contact.resp_email">{{ contact.resp_email }}</a>
+                </dd>
+                <dt class="col-5 text-right">
+                    Nom de la mère
+                </dt>
+                <dd class="col-7">
+                    {{ contact.mother_last_name }} {{ contact.mother_first_name }}
+                </dd>
+                <dt class="col-5 text-right">
+                    Téléphone de la mère
+                </dt>
+                <dd class="col-7">
+                    <a :href="`tel:${contact.mother_phone.replaceAll('.', '')}`">
+                        {{ contact.mother_phone }}
+                    </a>
+                </dd>
+                <dt class="col-5 text-right">
+                    GSM de la mère
+                </dt>
+                <dd class="col-7">
+                    <a :href="`tel:${contact.mother_mobile.replaceAll('.', '')}`">
+                        {{ contact.mother_mobile }}
+                    </a>
+                </dd>
+                <dt class="col-5 text-right">
+                    Email de la mère
+                </dt>
+                <dd class="col-7">
+                    <a :href="'mailto:' + contact.mother_email">{{ contact.mother_email }}</a>
+                </dd>
+                <dt class="col-5 text-right">
+                    Nom du père
+                </dt>
+                <dd class="col-7">
+                    {{ contact.father_last_name }} {{ contact.father_first_name }}
+                </dd>
+                <dt class="col-5 text-right">
+                    Téléphone du père
+                </dt>
+                <dd class="col-7">
+                    <a :href="`tel:${contact.father_phone.replaceAll('.', '')}`">
+                        {{ contact.father_phone }}
+                    </a>
+                </dd>
+                <dt class="col-5 text-right">
+                    GSM du père
+                </dt>
+                <dd class="col-7">
+                    <a :href="`tel:${contact.father_mobile.replaceAll('.', '')}`">
+                        {{ contact.father_mobile }}
+                    </a>
+                </dd>
+                <dt class="col-5 text-right">
+                    Email du père
+                </dt>
+                <dd class="col-7">
+                    <a :href="'mailto:' + contact.father_email">{{ contact.father_email }}</a>
+                </dd>
+            </dl>
+        </div>
+    </b-overlay>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
-    props: {
-        contact: {
-            type: Object,
-            default: () => {}
-        }
+    data: function () {
+        return {
+            contact: null,
+            loading: true,
+        };
+    },
+    mounted: function () {
+        axios.get(`/annuaire/api/info_contact/${this.$route.params.matricule}/`)
+            .then(response => {
+                this.contact = response.data;
+                this.loading = false;
+            })
+            .catch(err => {
+                console.log(err);
+                this.loading = false;
+            });
     }
 };
 </script>

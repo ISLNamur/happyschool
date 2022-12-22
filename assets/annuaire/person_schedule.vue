@@ -18,10 +18,7 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-tab
-        title="Horaire"
-        @click="showCal"
-    >
+    <div>
         <div>
             <full-calendar
                 v-if="showCalendar"
@@ -30,7 +27,7 @@
             />
         </div>
         <div v-if="showCalendar">
-            <b-popover 
+            <b-popover
                 v-for="course in calendarOptions.events"
                 :key="course.id"
                 tabindex="0"
@@ -44,7 +41,7 @@
                 {{ course.related_responsibles }}
             </b-popover>
         </div>
-    </b-tab>
+    </div>
 </template>
 
 <script>
@@ -109,12 +106,6 @@ export default {
 
             return str.slice(0, maxLength) + "…";
         },
-        showCal: function () {
-            this.showCalendar = false;
-            setTimeout(() => {
-                this.showCalendar = true;
-            }, 100);
-        },
         getCourseSchedule: function () {
             this.calendarOptions.events = [];
             axios.get(`/core/api/course_schedule/?${this.$route.params.type}=${this.$route.params.matricule}`)
@@ -142,6 +133,10 @@ export default {
         axios.get("/core/api/period/")
             .then(resp => {
                 this.periods = resp.data.results;
+
+                setTimeout(() => {
+                    this.showCalendar = true;
+                }, 100);
             });
     },
     components: {

@@ -23,7 +23,13 @@
 // Vue.use(VueRouter)
 
 import AnnuairePage from "../annuaire/annuaire_page.vue";
+import PersonCard from "../annuaire/person_card.vue";
 import PersonInfo from "../annuaire/person_info.vue";
+import PersonSchedule from "../annuaire/person_schedule.vue";
+import SensitiveInfo from "../annuaire/sensitive_info.vue";
+import ContactInfo from "../annuaire/contact_info.vue";
+import MedicalInfo from "../annuaire/medical_info.vue";
+import OtherInfo from "../annuaire/other_info.vue";
 import ClassList from "../annuaire/classe_list.vue";
 import CourseInfo from "../annuaire/course_info.vue";
 
@@ -32,12 +38,38 @@ export default [{
     component: AnnuairePage,
     children: [{
         path: "/person/:type/:matricule/",
-        component: PersonInfo,
+        component: PersonCard,
         props: (route) => {
             const props = {...route.params };
             props.matricule = Number(props.matricule);
             return props;
         },
+        children: [
+            {
+                path: "",
+                component: PersonInfo,
+            },
+            {
+                path: "schedule",
+                component: PersonSchedule,
+            },
+            {
+                path: "sensitive",
+                component: SensitiveInfo,
+            },
+            {
+                path: "contact",
+                component: ContactInfo,
+            },
+            {
+                path: "medical",
+                component: MedicalInfo,
+            },
+            {
+                path: "other",
+                component: OtherInfo,
+            },
+        ]
     },
     {
         path: "/classe/:classe/",

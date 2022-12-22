@@ -18,85 +18,83 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-tab
-        title="Infos personnelles"
-    >
-        <dl
-            v-if="type !== 'student'"
-            class="row"
-        >
-            <dt
-                class="col-5 text-right"
+    <b-overlay :show="loading">
+        <div v-if="info">
+            <dl
+                v-if="$route.params.type !== 'student'"
+                class="row"
             >
-                Courriel
-            </dt>
-            <dd
-                class="col-7"
+                <dt
+                    class="col-5 text-right"
+                >
+                    Courriel
+                </dt>
+                <dd
+                    class="col-7"
+                >
+                    {{ info.email }}
+                </dd>
+            </dl>
+            <dl
+                v-else
+                class="row"
             >
-                {{ info.email }}
-            </dd>
-        </dl>
-        <dl
-            v-else
-            class="row"
-        >
-            <dt class="col-5 text-right">
-                Date de naissance
-            </dt>
-            <dd class="col-7">
-                {{ niceDate(info.birth_date) }}
-            </dd>
-            <dt class="col-5 text-right">
-                Adresse
-            </dt>
-            <dd
-                v-if="info.street"
-                class="col-7"
-            >
-                {{ info.street }}
-            </dd>
-            <dd
-                v-if="info.postal_code && info.locality"
-                class="col-7 offset-5"
-            >
-                {{ info.postal_code }} – {{ info.locality }}
-            </dd>
-            <dt
-                v-if="info.father_job"
-                class="col-5 text-right"
-            >
-                Profession du père
-            </dt>
-            <dd class="col-7">
-                {{ info.father_job }}
-            </dd>
-            <dt
-                v-if="info.mother_job"
-                class="col-5 text-right"
-            >
-                Profession de la mère
-            </dt>
-            <dd class="col-7">
-                {{ info.mother_job }}
-            </dd>
-        </dl>
-    </b-tab>
+                <dt class="col-5 text-right">
+                    Date de naissance
+                </dt>
+                <dd class="col-7">
+                    {{ niceDate(info.birth_date) }}
+                </dd>
+                <dt class="col-5 text-right">
+                    Adresse
+                </dt>
+                <dd
+                    v-if="info.street"
+                    class="col-7"
+                >
+                    {{ info.street }}
+                </dd>
+                <dd
+                    v-if="info.postal_code && info.locality"
+                    class="col-7 offset-5"
+                >
+                    {{ info.postal_code }} – {{ info.locality }}
+                </dd>
+                <dt
+                    v-if="info.father_job"
+                    class="col-5 text-right"
+                >
+                    Profession du père
+                </dt>
+                <dd class="col-7">
+                    {{ info.father_job }}
+                </dd>
+                <dt
+                    v-if="info.mother_job"
+                    class="col-5 text-right"
+                >
+                    Profession de la mère
+                </dt>
+                <dd class="col-7">
+                    {{ info.mother_job }}
+                </dd>
+            </dl>
+        </div>
+    </b-overlay>
 </template>
 
 <script>
 import Moment from "moment";
 Moment.locale("fr");
 
+import axios from "axios";
+
 export default {
-    props: {
-        info: {
-            type: Object,
-            default: () => {}
-        },
-        type: {
-            type: String,
-            default: "student"
-        }
+    data: function () {
+        return {
+            info: null,
+            loading: true,
+        };
     },
     methods: {
         niceDate: function (date) {
@@ -104,6 +102,29 @@ export default {
 
             return Moment(date).calendar();
         },
+    },
+    mounted: function () {
+        if (this.$route.params.type === "student") {
+            axios.get(`/annuaire/api/student_sensitive/${this.$route.params.matricule}/`)
+                .then(response => {
+                    this.info = response.data;
+                    this.loading = false;
+                })
+                .catch(err => {
+                    console.log(err);
+                    this.loading = false;
+                });
+        } else if (this.$route.params.type === "responsible") {
+            axios.get(`/annuaire/api/responsible_sensitive/${this.$route.params.matricule}/`)
+                .then(response => {
+                    this.info = {email: response.data.email};
+                    this.loading = false;
+                })
+                .catch(err => {
+                    console.log(err);
+                    this.loading = false;
+                });
+        }
     }
 };
 </script>

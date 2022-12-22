@@ -18,52 +18,64 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-tab
-        title="Info médicales"
-        v-if="medical"
-    >
-        <dl class="row">
-            <dt class="col-5 text-right">
-                Médecin
-            </dt>
-            <dd class="col-7">
-                {{ medical.doctor }}
-            </dd>
-            <dt class="col-5 text-right">
-                Téléphone médecin
-            </dt>
-            <dd class="col-7">
-                {{ medical.doctor_phone }}
-            </dd>
-            <dt class="col-5 text-right">
-                Mutuelle
-            </dt>
-            <dd class="col-7">
-                {{ medical.mutual }}
-            </dd>
-            <dt class="col-5 text-right">
-                Numéro mutuelle
-            </dt>
-            <dd class="col-7">
-                {{ medical.mutual_number }}
-            </dd>
-            <dt class="col-5 text-right">
-                Infos complémentaires
-            </dt>
-            <dd class="col-7">
-                {{ medical.medical_information }}
-            </dd>
-        </dl>
-    </b-tab>
+    <b-overlay :show="loading">
+        <div v-if="medical">
+            <dl class="row">
+                <dt class="col-5 text-right">
+                    Médecin
+                </dt>
+                <dd class="col-7">
+                    {{ medical.doctor }}
+                </dd>
+                <dt class="col-5 text-right">
+                    Téléphone médecin
+                </dt>
+                <dd class="col-7">
+                    {{ medical.doctor_phone }}
+                </dd>
+                <dt class="col-5 text-right">
+                    Mutuelle
+                </dt>
+                <dd class="col-7">
+                    {{ medical.mutual }}
+                </dd>
+                <dt class="col-5 text-right">
+                    Numéro mutuelle
+                </dt>
+                <dd class="col-7">
+                    {{ medical.mutual_number }}
+                </dd>
+                <dt class="col-5 text-right">
+                    Infos complémentaires
+                </dt>
+                <dd class="col-7">
+                    {{ medical.medical_information }}
+                </dd>
+            </dl>
+        </div>
+    </b-overlay>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
-    props: {
-        medical: {
-            type: Object,
-            default: () => {}
-        }
+    data: function () {
+        return {
+            medical: null,
+            loading: true,
+        };
+    },
+    mounted: function () {
+        axios.get(`/annuaire/api/info_medical/${this.$route.params.matricule}/`)
+            .then(response => {
+                this.medical = response.data;
+                this.loading = false;
+            })
+            .catch(err => {
+                console.log(err);
+                this.loading = false;
+            });
     }
 };
 </script>
