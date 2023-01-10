@@ -61,7 +61,7 @@
                             {{ person.matricule }}
                         </dd>
                         <dt
-                            v-if="personType === 'responsible'"
+                            v-if="personType === 'responsible' && person.tenure.length > 0"
                             class="col-5 text-right"
                         >
                             Titulariat
