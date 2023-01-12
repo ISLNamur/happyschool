@@ -56,12 +56,6 @@ import interactionPlugin from "@fullcalendar/interaction";
 import frLocale from "@fullcalendar/core/locales/fr";
 
 export default {
-    props: {
-        courses: {
-            type: Array,
-            default: () => []
-        }
-    },
     data: function () {
         return {
             periods: [],
@@ -93,11 +87,6 @@ export default {
             }
         };
     },
-    watch: {
-        courses: function () {
-            this.getCourseSchedule();
-        }
-    },
     methods: {
         truncateString: function(str, maxLength) {
             if (str.length <= maxLength) {
@@ -108,13 +97,18 @@ export default {
         },
         getCourseSchedule: function () {
             this.calendarOptions.events = [];
-            axios.get(`/core/api/course_schedule/?${this.$route.params.type}=${this.$route.params.matricule}`)
-                .then(resp => {
-                    this.calendarOptions.events = resp.data.results.map(cS => {
+            const courseInfoProm = [
+                axios.get(`/core/api/course_schedule/?${this.$route.params.type}=${this.$route.params.matricule}`),
+                axios.get(`/annuaire/api/${this.$route.params.type}/${this.$route.params.matricule}/`)
+            ];
+
+            Promise.all(courseInfoProm)
+                .then(resps => {
+                    this.calendarOptions.events = resps[0].data.results.map(cS => {
                         const eventDay = Moment().startOf("week").add(cS.day_of_week, "d").format("").slice(0, 11);
                         const start = `${eventDay}${this.periods[cS.period - 1].start}`;
                         const end = `${eventDay}${this.periods[cS.period - 1].end}`;
-                        const course = this.courses.find(c => cS.given_course.find(gc => gc === c.id));
+                        const course = resps[1].data.courses.find(c => cS.given_course.find(gc => gc === c.id));
                         return {
                             id: cS.id,
                             title: course.course.short_name,
@@ -133,6 +127,7 @@ export default {
         axios.get("/core/api/period/")
             .then(resp => {
                 this.periods = resp.data.results;
+                this.getCourseSchedule();
 
                 setTimeout(() => {
                     this.showCalendar = true;
