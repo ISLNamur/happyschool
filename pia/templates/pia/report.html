@@ -192,48 +192,48 @@
                             </div>
                         </td>
                     </tr>
-                </div>
-                </div>
-                {% endfor %}
-                {% for other_statement in council.otherstatementmodel_set.all %}
-                <table class="border-bottom">
-                    <colgroup>
+                </table>
+            </div>
+            {% endfor %}
+            {% for other_statement in council.otherstatementmodel_set.all %}
+            <table class="border-bottom">
+                <colgroup>
+                    {% if other_statement.others %}
+                    <col style="width: 33%" />
+                    <col style="width: 33%" />
+                    <col style="width: 33%" />
+                    {% else %}
+                    <col style="width: 50%" />
+                    <col style="width: 50%" />
+                    {% endif %}
+                </colgroup>
+                <thead>
+                    <tr>
+                        <td><strong>{{ other_statement.branch }}</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Ressources</th>
+                        <th>Difficultés</th>
+                        {% if other_statement.others %}<th>Autres</th>{% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="border-left">
+                            {{ other_statement.resources|safe }}
+                        </td>
+                        <td class="border-left">
+                            {{ other_statement.difficulties|safe }}
+                        </td>
                         {% if other_statement.others %}
-                        <col style="width: 33%" />
-                        <col style="width: 33%" />
-                        <col style="width: 33%" />
-                        {% else %}
-                        <col style="width: 50%" />
-                        <col style="width: 50%" />
+                        <td class="border-left">
+                            {{ other_statement.others|safe }}
+                        </td>
                         {% endif %}
-                    </colgroup>
-                    <thead>
-                        <tr>
-                            <td><strong>{{ other_statement.branch }}</strong></td>
-                        </tr>
-                        <tr>
-                            <th>Ressources</th>
-                            <th>Difficultés</th>
-                            {% if other_statement.others %}<th>Autres</th>{% endif %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="border-left">
-                                {{ other_statement.resources|safe }}
-                            </td>
-                            <td class="border-left">
-                                {{ other_statement.difficulties|safe }}
-                            </td>
-                            {% if other_statement.others %}
-                            <td class="border-left">
-                                {{ other_statement.others|safe }}
-                            </td>
-                            {% endif %}
-                        </tr>
-                        </tbody>
-                        </table>
-                {% endfor %}
+                    </tr>
+                    </tbody>
+                    </table>
+            {% endfor %}
         </div>
         {% endfor %}
         {% endif %}
