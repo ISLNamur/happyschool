@@ -194,11 +194,18 @@ class CrossGoalModel(BaseGoal):
     cross_goals = models.CharField(max_length=2000)
     branches = models.ManyToManyField(BranchModel, blank=True)
 
+    def cross_goals_list(self):
+        return self.cross_goals.split(";")
+
 
 class BranchGoalModel(BaseGoal):
     branch = models.ForeignKey(BranchModel, on_delete=models.CASCADE)
     branch_goals = models.CharField(max_length=2000)
     parent_commitment = models.TextField(blank=True)
+
+    def branch_goals_list(self):
+        return self.branch_goals.split(";")
+
 
 
 class ClassCouncilPIAModel(models.Model):
