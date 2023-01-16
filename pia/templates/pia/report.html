@@ -17,7 +17,7 @@
             }
 
             html {
-                font-size: 0.9em;
+                font-size: 0.8em;
             }
 
             p {
@@ -26,25 +26,6 @@
 
             img {
                 width: 100px;
-            }
-
-            .nexttoimg {
-                margin-left: 5%;
-                flex-grow: 2;
-            }
-
-            .row {
-                display: flex;
-            }
-
-            .column {
-                display: flex;
-                flex-direction: column;
-                flex-wrap: wrap;
-            }
-
-            .spaced {
-                justify-content: space-between;
             }
 
             .h-padding {
@@ -57,18 +38,14 @@
                 padding-left: 0.5em;
             }
 
-            table, td, th {  
-                border: 1px solid black;
-                text-align: left;
-            }
             table {
-                border-collapse: collapse;
                 width: 100%;
-                margin-bottom: 5px;
             }
-
-            th, td {
-                padding: 5px;
+            th, .em {
+                font-weight: normal;
+                font-style: italic;
+                color: #666;
+                text-align: center;
             }
 
             h2 {
@@ -82,76 +59,90 @@
             .nopagebreak {
                 page-break-inside: avoid;
             }
+            dl {
+            }
+            dt {
+                text-decoration: underline;
+            }
+            dd {
+            }
+            .chevron {
+                color:darkgray;
+            }
+            .border-bottom {
+                border-bottom: lightgrey 1px solid;
+                margin-bottom: 0.8em;
+                padding-bottom: 0.4em;
+            }
+
         </style>
         <h1>PIA : {{ pia.student.fullname_classe }}</h1>
         <h2>Élève</h2>
-        <div class="row">
-            <div style="margin-right: 40px">
+        <div>
+            <div style="margin-right: 40px; float:left">
                 {% load static %}
                 <img src="{% get_static_prefix %}photos/{{ pia.student.matricule }}.jpg" />
             </div>
             <div>
                 <dl>
+                    <dt>Nom</dt>
+                    <dd>{{ pia.student.last_name }}</dd>
+                </dl>
+                <dl>
+                    <dt>Prénom</dt>
+                    <dd>{{ pia.student.first_name }}</dd>
+                </dl>
+                <dl>
                     <dt>Référent(s)</dt>
+                    {% for r in pia.referent.all %}
                     <dd>
-                        <ul>
-                            {% for r in pia.referent.all %}
-                            <li>{{ r }}</li>
-                            {% endfor %}
-                        </ul>
+                        <span class="chevron">> </span>{{ r }}
                     </dd>
+                    {% endfor %}
                 </dl>
                 <dl>
                     <dt>Parrain(s)/Marraine(s)</dt>
+                    {% for s in pia.sponsor.all %}
                     <dd>
-                        <ul>
-                            {% for s in pia.sponsor.all %}
-                            <li>{{ s }}</li>
-                            {% endfor %}
-                        </ul>
+                        <span class="chevron">> </span>{{ s }}
                     </dd>
+                    {% endfor %}
                 </dl>
             </div>
         </div>
         {% if pia.advanced %}
         <h3>Aménagements</h3>
-        <div class="row">
+        <div>
             <dl>
                 <dt>Trouble d'apprentissage</dt>
+                {% for d in pia.disorder.all %}
                 <dd>
-                    <ul>
-                        {% for d in pia.disorder.all %}
-                        <li>{{ d }}</li>
-                        {% endfor %}
-                    </ul>
+                    <span class="chevron">> </span>{{ d }}
                 </dd>
+                {% endfor %}
             </dl>
         </div>
-        <div class="row">
+        <div>
             <dl>
                 <dt>Aménagements raisonnables liés au trouble</dt>
+                {% for d_r in pia.disorder_response.all %}
                 <dd>
-                    <ul>
-                        {% for d_r in pia.disorder_response.all %}
-                        <li>{{ d_r }}</li>
-                        {% endfor %}
-                    </ul>
+                    <span class="chevron">> </span>{{ d_r }}
                 </dd>
+                {% endfor %}
             </dl>
         </div>
-        <div class="row">
+        <div>
             <dl>
                 <dt>Aménagements d'horaire</dt>
+                {% for s_a in pia.schedule_adjustment.all %}
                 <dd>
-                    <ul>
-                        {% for s_a in pia.schedule_adjustment.all %}
-                        <li>{{ s_a }}</li>
-                        {% endfor %}
-                    </ul>
+                    <span class="chevron">> </span>{{ s_a }}
                 </dd>
+                {% endfor %}
             </dl>
         </div>
-        <div class="row">
+        <div>
             <dl>
                 <dt>Autres aménagements</dt>
                 <dd>
@@ -163,12 +154,10 @@
         <h3>
             Activités de soutien
         </h3>
-        <div class="row">
-            <ul>
-                {% for a_s in support_activities %}
-                <li>{{ a_s.day }}: {{ a_s.branch }} avec {{ a_s.teachers }} </li>
-                {% endfor %}
-            </ul>
+        <div>
+            {% for a_s in support_activities %}
+            <p><span class="chevron">> </span>{{ a_s.day }}: {{ a_s.branch }} avec {{ a_s.teachers }}</p>
+            {% endfor %}
         </div>
         {% endif %}
 
@@ -176,33 +165,52 @@
         <h2>{% if pia.advanced %}Conseils de classe{% else %}Auto-évaluation{% endif %}</h2>
         {% for council in pia.classcouncilpiamodel_set.all %}
         <div>
-            <h3>{{ council.date_council }}</h3>
+            <h3>DATE : {{ council.date_council }}</h3>
             {% for student_state in council.studentstatemodel_set.all %}
             <div>
                 <strong>{% if student_state.branch %}{{ student_state.branch }}{% endif %}</strong>
-                <div class="row spaced">
-                    <div class="h-padding">
-                        <em>Ressources</em>
-                        <div class="border-left">
-                            {% for r in student_state.resources.all %}
-                            >{{ r.resource }}<br>
-                            {% endfor %}
+                <table style="margin-left:10px" class="border-bottom">
+                    <colgroup>
+                        <col style="width: 50%" />
+                        <col style="width: 50%" />
+                    </colgroup>
+                    <tr>
+                        <td>
+                            <div class="em">Ressources</div>
+                            <div class="border-left">
+                                {% for r in student_state.resources.all %}
+                                <span class="chevron">> </span>{{ r.resource }}<br>
+                                {% endfor %}
                             </div>
+                        </td>
+                        <td>
+                            <div class="em">Difficultés</div>
+                            <div class="border-left">
+                                {% for r in student_state.difficulties.all %}
+                                <span class="chevron">> </span>{{ r.difficulty }}<br>
+                                {% endfor %}
                             </div>
-                            <div class="h-padding">
-                                <em>Difficultés</em>
-                                <div class="border-left">
-                            {% for r in student_state.difficulties.all %}
-                            >{{ r.difficulty }}<br>
-                            {% endfor %}
-                            </div>
-                            </div>
+                        </td>
+                    </tr>
                 </div>
                 </div>
                 {% endfor %}
                 {% for other_statement in council.otherstatementmodel_set.all %}
-                <table>
+                <table class="border-bottom">
+                    <colgroup>
+                        {% if other_statement.others %}
+                        <col style="width: 33%" />
+                        <col style="width: 33%" />
+                        <col style="width: 33%" />
+                        {% else %}
+                        <col style="width: 50%" />
+                        <col style="width: 50%" />
+                        {% endif %}
+                    </colgroup>
                     <thead>
+                        <tr>
+                            <td><strong>{{ other_statement.branch }}</strong></td>
+                        </tr>
                         <tr>
                             <th>Ressources</th>
                             <th>Difficultés</th>
@@ -211,14 +219,14 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>
+                            <td class="border-left">
                                 {{ other_statement.resources|safe }}
                             </td>
-                            <td>
+                            <td class="border-left">
                                 {{ other_statement.difficulties|safe }}
                             </td>
                             {% if other_statement.others %}
-                            <td>
+                            <td class="border-left">
                                 {{ other_statement.others|safe }}
                             </td>
                             {% endif %}
@@ -235,43 +243,49 @@
         {% if pia.advanced %}
         <h3>Objectifs transversaux</h3>
         {% for obj in pia.crossgoalmodel_set.all %}
-            <div>
+            <div style="margin-left:0.5em" class="border-bottom">
                 <strong>Du {{ obj.date_start }} au {{ obj.date_end }} :</strong>
-                <dl>
+                <dl style="margin-left:0.5em">
                     <dt>Objectifs transversaux</dt>
+                    {% for cg in obj.cross_goals_list %}
                     <dd>
-                        <strong>{{ obj.cross_goals }}</strong>
+                        <strong>{{ cg }}</strong>
                     </dd>
+                    {% endfor %}
+                    {% if obj.responsible.all %}
                     <dt>Intervenant(s)</dt>
+                    {% for r in obj.responsible.all %}
                     <dd>
-                        <ul>
-                            {% for r in obj.responsible.all %}
-                            <li>{{ r }}</li>
-                            {% endfor %}
-                        </ul>
+                        <span class="chevron">> </span>{{ r }}
                     </dd>
-                    <div class="row spaced">
-                        <div class="h-padding">
+                    {% endfor %}
+                    {% endif %}
+                    <div>
+                        {% if obj.indicator_action %}
+                        <div>
                             <em>Indicateur(s)/Action(s)</em>
                             <div class="border-left">
                                 {{ obj.indicator_action|safe }}
                             </div>
                         </div>
-                        <div class="h-padding">
+                        {% endif %}
+                        {% if obj.given_help %}
+                        <div>
                             <em>Aide(s)</em>
                             <div class="border-left">
                                 {{ obj.given_help|safe }}
                             </div>
                         </div>
+                        {% endif %}
                     </div>
-                    <div class="row spaced">
-                        <div class="h-padding">
-                            <em>Auto-évaluation</em>
-                            <div class="border-left">
-                                {{ obj.self_assessment|safe }}
-                            </div>
+                    {% if obj.self_assessment %}
+                    <div>
+                        <em>Auto-évaluation</em>
+                        <div class="border-left">
+                            {{ obj.self_assessment|safe }}
                         </div>
                     </div>
+                    {% endif %}
                     {% if obj.assessment %}
                     <div class="h-padding">
                         <em>Évaluation</em>
@@ -288,44 +302,51 @@
         <div class="nopagebreak">
             <h3>Objectifs de branche</h3>
             {% for obj in pia.branchgoalmodel_set.all %}
-                <div>
+                <div class="border-bottom" style="margin-left: 0.5em;">
                     <strong>{{ obj.branch }}, du {{ obj.date_start }} au {{ obj.date_end }} :</strong>
                     <dl>
                         <dt>Objectifs de branche</dt>
+                        {% for bg in obj.branch_goals_list %}
                         <dd>
-                            <strong>{{ obj.branch_goals }}</strong>
+                            <span class="chevron">> </span><strong>{{ bg }}</strong>
                         </dd>
+                        {% endfor %}
+                        {% if obj.responsible.all %}
                         <dt>Intervenant(s)</dt>
+                        {% for r in obj.responsible.all %}
                         <dd>
-                            <ul>
-                                {% for r in obj.responsible.all %}
-                                <li>{{ r }}</li>
-                                {% endfor %}
-                            </ul>
+                            <span class="chevron">> </span>{{ r }}
                         </dd>
-                        <div class="row spaced">
-                            <div class="h-padding">
+                        {% endfor %}
+                        {% endif %}
+                        <div>
+                            {% if obj.indicator_action %}
+                            <div>
                                 <em>Indicateur(s)/Action(s)</em>
                                 <div class="border-left">
                                     {{ obj.indicator_action|safe }}
                                 </div>
                             </div>
-                            <div class="h-padding">
+                            {% endif %}
+                            {% if obj.given_help %}
+                            <div>
                                 <em>Aide(s)</em>
                                 <div class="border-left">
                                     {{ obj.given_help|safe }}
                                 </div>
                             </div>
+                            {% endif %}
                         </div>
-                        <div class="row spaced">
-                            <div class="h-padding">
-                                <em>Auto-évaluation</em>
-                                <div class="border-left">
-                                    {{ obj.self_assessment|safe }}
-                                </div>
+                        {% if obj.self_assessment %}
+                        <div>
+                            <em>Auto-évaluation</em>
+                            <div class="border-left">
+                                {{ obj.self_assessment|safe }}
                             </div>
                         </div>
-                        <div class="h-padding">
+                        {% endif %}
+                        {% if obj.assessment %}
+                        <div>
                             <em>Évaluation</em>
                             <div class="border-left">
                                 <p>
@@ -333,30 +354,35 @@
                                 </p>
                             </div>
                         </div>
+                        {% endif %}
                     </dl>
                 </div>
             {% endfor %}
         </div>
         {% else %}
         {% for obj in pia.crossgoalmodel_set.all %}
-        <div>
-            <strong>Du {{ obj.date_start }} au {{ obj.date_end }} :</strong>
+        <div class="border-bottom" >
+            <h3>Du {{ obj.date_start }} au {{ obj.date_end }}</h3>
             <dl>
                 <dt>Objectifs transversaux</dt>
+                {% for cg in obj.cross_goals_list %}
                 <dd>
-                    <strong>{{ obj.cross_goals }}</strong>
+                    <span class="chevron">> </span><strong>{{ cg }}</strong>
                 </dd>
+                {% endfor %}
             </dl>
         </div>
         {% endfor %}
         {% for obj in pia.branchgoalmodel_set.all %}
-        <div>
-            <strong>Du {{ obj.date_start }} au {{ obj.date_end }} :</strong>
+        <div class="border-bottom" >
+            <h3>Du {{ obj.date_start }} au {{ obj.date_end }}</h3>
             <dl>
                 <dt>Objectifs de {{ obj.branch }}</dt>
+                {% for bg in obj.branch_goals_list %}
                 <dd>
-                    <strong>{{ obj.branch_goals }}</strong>
+                    <span class="chevron">> </span><strong>{{ bg }}</strong>
                 </dd>
+                {% endfor %}
             </dl>
         </div>
         {% endfor %}
