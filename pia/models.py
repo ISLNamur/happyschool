@@ -64,9 +64,17 @@ class DisorderModel(models.Model):
         return self.disorder
 
 
+class DisorderResponseCategoryModel(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+
 class DisorderResponseModel(models.Model):
     disorder = models.ForeignKey(DisorderModel, on_delete=models.CASCADE)
     response = models.CharField(max_length=1000)
+    categories = models.ManyToManyField(DisorderResponseCategoryModel)
 
     def __str__(self):
         return "%s (%s)" % (self.response, self.disorder)
@@ -205,7 +213,6 @@ class BranchGoalModel(BaseGoal):
 
     def branch_goals_list(self):
         return self.branch_goals.split(";")
-
 
 
 class ClassCouncilPIAModel(models.Model):
