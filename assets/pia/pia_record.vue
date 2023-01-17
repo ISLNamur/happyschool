@@ -196,30 +196,119 @@
                             </b-form-group>
                         </b-col>
                     </b-row>
-                    <b-row v-if="advanced">
+                    <b-row v-if="advanced && form.disorder.length > 0">
+                        <b-col
+                            v-for="category in this.disorderResponseCategories"
+                            :key="category.id"
+                        >
+                            <b-card no-body>
+                                <template #header>
+                                    <div class="d-flex justify-content-between">
+                                        <span>
+                                            <strong class="text-primary">{{ category.name }}</strong>
+                                            <b-icon
+                                                v-if="category.explanation"
+                                                v-b-popover.hover.top="category.explanation"
+                                                icon="question-circle"
+                                                variant="primary"
+                                            />
+                                        </span>
+                                        <b-form-checkbox
+                                            v-model="editDisorderResponse"
+                                            switch
+                                        >
+                                            <span class="text-secondary">Modifier</span>
+                                        </b-form-checkbox>
+                                    </div>
+                                </template>
+                                <b-list-group flush>
+                                    <b-list-group-item
+                                        v-for="disorderResponse in disorderResponsesByCat(category.id, editDisorderResponse, true)"
+                                        :key="disorderResponse.id"
+                                        class="d-flex justify-content-between"
+                                        :variant="form.disorder_response.map(dR => dR.id).includes(disorderResponse.id) ? '' : 'info'"
+                                    >
+                                        <span>
+                                            <b-icon icon="chevron-compact-right" />
+                                            {{ disorderResponse.response }}
+                                            (<em>{{ form.disorder.find(d => d.id === disorderResponse.disorder).disorder }}</em>)
+                                        </span>
+                                        <span
+                                            v-if="editDisorderResponse"
+                                            class="ml-2"
+                                        >
+                                            
+                                            <b-btn
+                                                size="sm"
+                                                variant="danger"
+                                                v-if="form.disorder_response.map(dR => dR.id).includes(disorderResponse.id)"
+                                                @click="removeDisorderResponse(disorderResponse, true, false)"
+                                            >
+                                                <b-icon icon="x" />
+                                            </b-btn>
+                                            <b-btn
+                                                v-else
+                                                size="sm"
+                                                variant="success"
+                                                @click="form.disorder_response.push(disorderResponse)"
+                                            >
+                                                <b-icon icon="check" />
+                                            </b-btn>
+                                        </span>
+                                    </b-list-group-item>
+                                </b-list-group>
+                            </b-card>
+                        </b-col>
+                    </b-row>
+                    <b-row v-if="advanced && form.disorder.length > 0">
                         <b-col>
-                            <b-form-group
-                                label="Aménagements raisonnables liés au trouble"
-                                label-cols="3"
-                                :state="inputStates.disorder_response"
-                            >
-                                <multiselect
-                                    :options="disorderResponseOptions"
-                                    placeholder="Sélectionner le ou les différents aménagements"
-                                    select-label=""
-                                    selected-label="Sélectionné"
-                                    deselect-label="Cliquer dessus pour enlever"
-                                    v-model="form.disorder_response"
-                                    :show-no-options="false"
-                                    track-by="id"
-                                    label="response"
-                                    multiple
-                                >
-                                    <span slot="noResult">Aucun aménagements trouvé.</span>
-                                    <span slot="noOptions" />
-                                </multiselect>
-                                <span slot="invalid-feedback">{{ errorMsg('disorder_response') }}</span>
-                            </b-form-group>
+                            <h5 class="mt-2">
+                                Aménagements conseillés
+                            </h5>
+                        </b-col>
+                    </b-row>
+                    <b-row
+                        v-if="advanced && form.disorder.length > 0"
+                        class="mb-2"
+                    >
+                        <b-col
+                            v-for="category in this.disorderResponseCategories"
+                            :key="category.id"
+                        >
+                            <b-card no-body>
+                                <template #header>
+                                    <div class="d-flex justify-content-between">
+                                        <span>
+                                            <strong class="text-secondary">{{ category.name }}</strong>
+                                            <b-badge>
+                                                {{ disorderResponsesByCat(category.id, false, false).length }}
+                                            </b-badge>
+                                        </span>
+                                        <b-btn
+                                            size="sm"
+                                            variant="outline-info"
+                                            v-b-toggle="`adviced-response-cat-${category.id}`"
+                                        >
+                                            <b-icon icon="chevron-bar-expand" />
+                                        </b-btn>
+                                    </div>
+                                </template>
+                                <b-collapse :id="`adviced-response-cat-${category.id}`">
+                                    <b-list-group flush>
+                                        <b-list-group-item
+                                            v-for="disorderResponse in disorderResponsesByCat(category.id, false, false)"
+                                            :key="disorderResponse.id"
+                                            class="d-flex justify-content-between"
+                                        >
+                                            <span>
+                                                <b-icon icon="chevron-compact-right" />
+                                                {{ disorderResponse.response }}
+                                                (<em>{{ form.disorder.find(d => d.id === disorderResponse.disorder).disorder }}</em>)
+                                            </span>
+                                        </b-list-group-item>
+                                    </b-list-group>
+                                </b-collapse>
+                            </b-card>
                         </b-col>
                     </b-row>
                     <b-row v-if="advanced">
@@ -623,6 +712,9 @@ export default {
             responsibleOptions: [],
             studentOptions: [],
             disorderResponseOptions: [],
+            // eslint-disable-next-line no-undef
+            disorderResponseCategories: disorderResponseCategories,
+            editDisorderResponse: false,
             searchId: -1,
             sending: false,
             loading: true,
@@ -727,6 +819,26 @@ export default {
         },
     },
     methods: {
+        disorderResponsesByCat: function (categoryId, showAll, selectionned) {
+            const respByCatAndDisorder = this.$store.state.disorderResponses.filter(
+                dR => dR.categories.includes(categoryId)
+                && this.form.disorder.map(d => d.id).includes(dR.disorder)
+            );
+
+            if (showAll) {
+                return respByCatAndDisorder;
+            } else {
+                if (selectionned) {
+                    return respByCatAndDisorder.filter(dR => this.form.disorder_response.map(dRF => dRF.id).includes(dR.id));
+                } else {
+                    return respByCatAndDisorder.filter(dR => !this.form.disorder_response.map(dRF => dRF.id).includes(dR.id));
+                }
+            }
+        },
+        removeDisorderResponse: function (disorderResponse) {
+            const dRIndex = this.form.disorder_response.findIndex(dR => dR.id === disorderResponse.id);
+            this.form.disorder_response.splice(dRIndex, 1);
+        },
         addFiles: function() {
             this.uploadedFiles = this.uploadedFiles.concat(this.form.attachments.map(a => { return {file: a, id: -1};}));
             this.form.attachments.splice(0, this.form.attachments.length);

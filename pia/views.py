@@ -72,6 +72,16 @@ class PIAView(LoginRequiredMixin,
         context['settings'] = json.dumps((serializers.PIASettingsSerializer(get_settings()).data))
         context['can_add_pia'] = json.dumps(self.request.user.has_perm('pia.add_piamodel'))
 
+        dis_resp_cat = models.DisorderResponseCategoryModel.objects.all()
+        dis_resp_cat_ser = serializers.DisorderResponseCategorySerializer(dis_resp_cat, many=True)
+        context["disorder_response_category"] = json.dumps(dis_resp_cat_ser.data)
+
+        context["disorder_responses"] = json.dumps(
+            serializers.DisorderResponseSerializer(
+                models.DisorderResponseModel.objects.all(), many=True
+            ).data
+        )
+
         return context
 
 
