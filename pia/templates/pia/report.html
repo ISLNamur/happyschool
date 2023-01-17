@@ -48,6 +48,10 @@
                 text-align: center;
             }
 
+            td {
+                vertical-align: top;
+            }
+
             h2 {
                 page-break-before: always;
             }
@@ -249,7 +253,7 @@
                     <dt>Objectifs transversaux</dt>
                     {% for cg in obj.cross_goals_list %}
                     <dd>
-                        <strong>{{ cg }}</strong>
+                        <strong><span class="chevron">> </span>{{ cg }}</strong>
                     </dd>
                     {% endfor %}
                     {% if obj.responsible.all %}
