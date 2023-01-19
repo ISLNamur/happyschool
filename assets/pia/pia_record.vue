@@ -206,6 +206,9 @@
                                     <div class="d-flex justify-content-between">
                                         <span>
                                             <strong class="text-primary">{{ category.name }}</strong>
+                                            <b-badge variant="primary">
+                                                {{ disorderResponsesByCat(category.id, false, true).length }}
+                                            </b-badge>
                                             <b-icon
                                                 v-if="category.explanation"
                                                 v-b-popover.hover.top="category.explanation"
@@ -221,7 +224,10 @@
                                         </b-form-checkbox>
                                     </div>
                                 </template>
-                                <b-list-group flush>
+                                <b-list-group
+                                    class="scrollable"
+                                    flush
+                                >
                                     <b-list-group-item
                                         v-for="disorderResponse in disorderResponsesByCat(category.id, editDisorderResponse, true)"
                                         :key="disorderResponse.id"
@@ -294,7 +300,10 @@
                                     </div>
                                 </template>
                                 <b-collapse :id="`adviced-response-cat-${category.id}`">
-                                    <b-list-group flush>
+                                    <b-list-group
+                                        flush
+                                        class="scrollable"
+                                    >
                                         <b-list-group-item
                                             v-for="disorderResponse in disorderResponsesByCat(category.id, false, false)"
                                             :key="disorderResponse.id"
@@ -1174,5 +1183,11 @@ export default {
 <style>
 .first-line {
     background-color: rgba(236, 236, 236, 0.8);
+}
+
+.scrollable {
+    height: 300px;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 </style>
