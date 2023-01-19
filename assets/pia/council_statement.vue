@@ -263,7 +263,10 @@ export default {
             if ("id" in this.council_statement) url += this.council_statement.id + "/";
 
             const send = "id" in this.council_statement ? axios.put : axios.post;
-            return send(url, data, token);
+            return send(url, data, token)
+                .then(resp => {
+                    this.$emit("update", resp.data);
+                });
         },
     },
     mounted: function () {

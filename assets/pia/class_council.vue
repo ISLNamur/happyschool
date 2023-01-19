@@ -83,6 +83,7 @@
                         ref="councilstatements"
                         @remove="removeStatement(index, 'council_statement')"
                         @save="$emit('save')"
+                        @update="updateStatement(index, $event)"
                     />
                 </b-col>
             </b-row>
@@ -152,6 +153,10 @@ export default {
         };
     },
     methods: {
+        /** Update data for the new or updated council statement. */
+        updateStatement: function (index, data) {
+            this.council_statement.splice(index, 1, data);
+        },
         /** Toggle the visibility of the list of council statement */
         toggleExpand: function () {
             this.expanded = !this.expanded;
