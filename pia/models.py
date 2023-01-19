@@ -113,6 +113,9 @@ class PIAModel(models.Model):
     advanced = models.BooleanField(default=True)
     support_activities = models.JSONField(default=dict)
 
+    datetime_created = models.DateTimeField(auto_now_add=True)
+    datetime_updated = models.DateTimeField(auto_now=True)
+
     def __str__(self):
         """String representation of the PIAModel, return the student's description."""
         return str(self.student)

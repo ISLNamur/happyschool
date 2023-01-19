@@ -25,6 +25,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMix
 from django.views.generic import TemplateView
 from django.db.models import ObjectDoesNotExist, query
 from django.contrib.auth.models import Group
+from django.utils import timezone
 
 from rest_framework.filters import OrderingFilter
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
@@ -42,12 +43,26 @@ from . import serializers
 def get_menu_entry(active_app: str, request) -> dict:
     if not request.user.has_perm('pia.view_piamodel'):
         return {}
-    return {
+    menu_entry = {
             "app": "pia",
             "display": "PIA",
             "url": "/pia",
             "active": active_app == "pia"
     }
+
+    last_access = request.session.get("pia_last_access", None)
+    if last_access:
+        request.GET = request.GET.copy()
+        request.GET["ordering"] = "-datetime_updated"
+        view_set = PIAViewSet.as_view({'get': 'list'})
+        results = [c["id"] for c in view_set(request).data['results']]
+        menu_entry["new_items"] = models.PIAModel.objects.filter(
+            id__in=results, datetime_updated__gt=last_access
+        ).count()
+        if menu_entry["new_items"] >= 20:
+            menu_entry["new_items"] = "20+"
+
+    return menu_entry
 
 
 def get_settings():
@@ -82,6 +97,10 @@ class PIAView(LoginRequiredMixin,
             ).data
         )
 
+        context["pia_last_access"] = self.request.session.get("pia_last_access", "")
+        # Set last access
+        self.request.session["pia_last_access"] = timezone.now().isoformat()
+
         return context
 
 
@@ -99,7 +118,7 @@ class PIAFilterSet(BaseFilters):
 class PIAViewSet(BaseModelViewSet):
     queryset = models.PIAModel.objects.all()
     serializer_class = serializers.PIASerializer
-    ordering_fields = ('student__classe__year', "student__classe__letter",)
+    ordering_fields = ('student__classe__year', "student__classe__letter", "datetime_updated",)
     filter_class = PIAFilterSet
 
     username_field = None
