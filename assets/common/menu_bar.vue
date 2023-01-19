@@ -48,7 +48,7 @@
                     >
                         {{ app.display }}
                         <b-badge
-                            v-if="app.new_items > 0"
+                            v-if="app.new_items && (app.new_items > 0 || app.new_items.length > 1)"
                             variant="primary"
                         >
                             {{ app.new_items }}
