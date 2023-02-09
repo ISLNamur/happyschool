@@ -52,11 +52,11 @@ urlpatterns += router.urls
 if "proeco" in settings.INSTALLED_APPS:
     urlpatterns += [
         path(
-            "get_proeco_sanction/<export_type>/<date_from>/<date_to>/<own_classes>/",
+            "get_proeco_sanction/<export_type>/<date_from>/<date_to>/<sanctions>/<own_classes>/",
             views.ExportStudentToProEco.as_view()
         ),
         path(
-            "get_proeco_sanction/<export_type>/<date_from>/<date_to>/",
+            "get_proeco_sanction/<export_type>/<date_from>/<date_to>/<sanctions>/",
             views.ExportStudentToProEco.as_view()
         ),
     ]

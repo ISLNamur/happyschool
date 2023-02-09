@@ -842,11 +842,12 @@ if "proeco" in settings.INSTALLED_APPS:
             date_from = kwargs["date_from"]
             date_to = kwargs["date_to"]
             export_type = kwargs["export_type"]
+            sanctions = kwargs["sanctions"].split(",")
             own_classes = (kwargs["own_classes"] if "own_classes" in kwargs else own_classes) == "true"
 
             sanctions = CasEleve.objects.filter(
                 student__isnull=False,
-                sanction_decision__isnull=False,
+                sanction_decision__in=sanctions,
                 sanction_faite=False,
             )
 
