@@ -244,7 +244,7 @@ class CasEleve(models.Model):
     demandeur = models.CharField(max_length=100)
     sanction_decision = models.ForeignKey(SanctionDecisionDisciplinaire, null=True, blank=True, on_delete=models.SET_NULL)
     notified = models.BooleanField(default=False)
-    explication_commentaire = models.CharField(max_length=5000)
+    explication_commentaire = models.TextField()
     attachments = models.ManyToManyField(CasAttachment, blank=True)
     datetime_sanction = models.DateTimeField("date de la sanction", null=True, blank=True)  # Deprecated
     date_sanction = models.DateField("Date de la sanction", null=True, blank=True,)
