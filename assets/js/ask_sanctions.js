@@ -23,49 +23,9 @@ import Vuex from "vuex";
 Vue.use(Vuex);
 
 import router from "../dossier_eleve/router_ask_sanctions.js";
+import store from "../dossier_eleve/store_ask_sanctions.js";
 
 import Menu from "../common/menu_bar.vue";
-
-const store = new Vuex.Store({
-    state: {
-        // eslint-disable-next-line no-undef
-        settings: settings,
-        filters: [{
-            filterType: "scholar_year",
-            // eslint-disable-next-line no-undef
-            tag: currentYear,
-            // eslint-disable-next-line no-undef
-            value: currentYear,
-        }],
-        // eslint-disable-next-line no-undef
-        canSetSanction: canSetSanction,
-        // eslint-disable-next-line no-undef
-        canAskSanction: canAskSanction,
-        // eslint-disable-next-line no-undef
-        hasProEco: proeco
-    },
-    mutations: {
-        addFilter: function (state, filter) {
-            // If filter is a matricule, remove name filter to avoid conflict.
-            if (filter.filterType === "matricule_id") {
-                this.commit("removeFilter", "name");
-            }
-
-            // Overwrite same filter type.
-            this.commit("removeFilter", filter.filterType);
-
-            state.filters.push(filter);
-        },
-        removeFilter: function (state, key) {
-            for (let f in state.filters) {
-                if (state.filters[f].filterType === key) {
-                    state.filters.splice(f, 1);
-                    break;
-                }
-            }
-        }
-    }
-});
 
 new Vue({
     el: "#vue-app",
