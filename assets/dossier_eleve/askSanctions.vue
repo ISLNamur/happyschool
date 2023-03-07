@@ -393,10 +393,10 @@ export default {
                 entry.date_sanction = newData.date;
             }
 
-            if (entry.sanction_decision_id !== newData.sanction_decision) {
-                entry.explication_commentaire += `<p>Changement de sanction: ${newData.sanctionName}</p>`;
-                entry.sanction_decision_id = newData.sanction;
-                entry.sanction_decision.sanction_decision = newData.sanctionName;
+            if (entry.sanction_decision_id !== newData.sanction.id) {
+                entry.explication_commentaire += `<p>Changement de sanction: ${newData.sanction.sanction_decision}</p>`;
+                entry.sanction_decision_id = newData.sanction.id;
+                entry.sanction_decision = newData.sanction;
             }
             axios.put(`/dossier_eleve/api/ask_sanctions/${entry.id}/`, entry, token);
         },
