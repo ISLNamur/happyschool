@@ -387,9 +387,17 @@ export default {
                     this.$refs.massActions.show();
                 });
         },
-        updateSanction: function (entry, newDate) {
-            entry.explication_commentaire += `<p>Report de la sanction du ${entry.date_sanction} au ${newDate}</p>`;
-            entry.date_sanction = newDate;
+        updateSanction: function (entry, newData) {
+            if (entry.date_sanction != newData.date) {
+                entry.explication_commentaire += `<p>Report de la sanction du ${entry.date_sanction} au ${newData.date}</p>`;
+                entry.date_sanction = newData.date;
+            }
+
+            if (entry.sanction_decision_id !== newData.sanction_decision) {
+                entry.explication_commentaire += `<p>Changement de sanction: ${newData.sanctionName}</p>`;
+                entry.sanction_decision_id = newData.sanction;
+                entry.sanction_decision.sanction_decision = newData.sanctionName;
+            }
             axios.put(`/dossier_eleve/api/ask_sanctions/${entry.id}/`, entry, token);
         },
         changePage: function (page) {

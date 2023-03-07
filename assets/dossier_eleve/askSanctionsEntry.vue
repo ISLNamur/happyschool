@@ -82,7 +82,7 @@
                                     class="card-link"
                                     v-b-modal="`move-sanction-date-${rowData.id}`"
                                     v-b-tooltip.hover
-                                    title="Déplacer la date de la sanction"
+                                    title="Déplacer la sanction (date et/ou type de sanction)"
                                 >
                                     <b-icon icon="arrow-right-square" />
                                 </b-btn>
@@ -182,11 +182,17 @@
                     centered
                     title="Date de la sanction"
                     cancel-title="Annuler"
-                    @ok="$emit('update-sanction', nextDate)"
+                    @ok="$emit('update-sanction', nextSanctionData)"
                 >
                     <b-form-input
                         type="date"
                         v-model="nextDate"
+                    />
+                    <b-select
+                        :options="sanctionOptions"
+                        text-field="sanction_decision"
+                        value-field="id"
+                        v-model="nextSanction"
                     />
                 </b-modal>
             </b-card>
@@ -215,6 +221,8 @@ export default {
         return {
             expand: false,
             nextDate: this.nextWeek(),
+            nextSanction: null,
+            sanctionOptions: [],
         };
     },
     computed: {
@@ -223,6 +231,12 @@ export default {
         * Gets called when the user clicks on the button to see student details
         */
             return `/annuaire/#/person/student/${this.rowData.student_id}/`;
+        },
+        nextSanctionData: function () {
+            return {
+                date: this.nextDate,
+                sanction: this.sanctionOptions.find(s => s.id === this.nextSanction)
+            };
         },
         outdated: function () {
             return Moment(this.rowData.date_sanction) < Moment();
@@ -309,6 +323,13 @@ export default {
                 });
         },
         displayStudent
+    },
+    mounted: function () {
+        this.$store.dispatch("getSanctions")
+            .then(() => {
+                this.sanctionOptions = this.$store.state.sanctions;
+                this.nextSanction = this.rowData.sanction_decision.id;
+            });
     }
 };
 </script>
