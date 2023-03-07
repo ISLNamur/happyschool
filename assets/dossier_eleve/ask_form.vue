@@ -532,9 +532,9 @@ export default {
     },
     mounted: function () {
         // Set sanctions and decisions options.
-        axios.get("/dossier_eleve/api/sanction_decision/?only_sanctions=1")
-            .then(response => {
-                this.sanctionOptions = response.data.results.map(m => {
+        this.$store.dispatch("getSanctions")
+            .then(() => {
+                this.sanctionOptions = this.$store.state.sanctions.map(m => {
                     return {value: m.id, text: m.sanction_decision};
                 });
             })
