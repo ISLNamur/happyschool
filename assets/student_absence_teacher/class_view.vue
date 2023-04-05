@@ -27,6 +27,27 @@
                     @change="moveToDate"
                 />
             </b-col>
+            <b-col md="4">
+                <b-form-group>
+                    <multiselect
+                        :show-no-options="false"
+                        :internal-search="false"
+                        :options="classOptions"
+                        @search-change="getSearchOptions"
+                        placeholder="Rechercher classe"
+                        select-label=""
+                        selected-label="Sélectionné"
+                        deselect-label=""
+                        label="display"
+                        track-by="id"
+                        :v-model="search"
+                        @select="moveToClass"
+                    >
+                        <span slot="noResult">Aucune classe trouvée.</span>
+                        <span slot="noOptions" />
+                    </multiselect>
+                </b-form-group>
+            </b-col>
             <b-col class="text-right mb-1">
                 <b-btn
                     variant="primary"
@@ -84,10 +105,12 @@
 
 <script>
 import axios from "axios";
+import Multiselect from "vue-multiselect";
 
 import {displayStudent, extractDayOfWeek} from "../common/utilities.js";
 import OverviewTeacherEntry from "./overview_teacher_entry.vue";
 import OverviewEducatorEntry from "./overview_educator_entry.vue";
+
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 export default {
@@ -117,13 +140,41 @@ export default {
             students: [],
             teachersPeriod: [],
             educatorsPeriod: [],
+            classOptions: [],
+            search: "",
+            searchId: 0,
         };
     },
     methods: {
         moveToDate: function(newDate) {
             this.$router.push(`/class_view/${this.classId}/${newDate}/`, () => {
-                document.location.reload();
+                this.loading = true;
+                this.getStudentsAbsences(this.classId, newDate);
             });
+        },
+        moveToClass: function(newClass) {
+            this.$router.push(`/class_view/${newClass.id}/${this.date}/`, () => {
+                this.loading = true;
+                this.getStudentsAbsences(newClass.id, this.date);
+            });
+        },
+        getSearchOptions: function (query) {
+            // Ensure the last search is the first response.
+            this.searchId += 1;
+            let currentSearch = this.searchId;
+
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            let data = {
+                query: query,
+                teachings: this.$store.state.settings.teachings,
+                check_access: 1
+            };
+            axios.post("/annuaire/api/classes/", data, token)
+                .then(response => {
+                    if (this.searchId !== currentSearch)
+                        return;
+                    this.classOptions = response.data;
+                });
         },
         validateEducatorAbsences: function () {
             this.loading = true;
@@ -152,16 +203,17 @@ export default {
             const periodIndex = payload[1];
             this.students[studentIndex].absence_educators[periodIndex] = data;
         },
-        getStudentsAbsences: function () {
+        getStudentsAbsences: function (classId, date) {
+            this.students = [];
             const promises = [
-                axios.get(`/annuaire/api/studentclasse/?classe=${this.classId}`),
+                axios.get(`/annuaire/api/studentclasse/?classe=${classId}`),
                 axios.get("/student_absence_teacher/api/period/"),
                 axios.get("/student_absence/api/period/"),
-                axios.get(`/student_absence_teacher/api/absence/?student__classe=${this.classId}&date_absence=${this.date}&page_size=500`),
-                axios.get(`/student_absence/api/student_absence/?student__classe=${this.classId}&date_absence=${this.date}&page_size=500`)
+                axios.get(`/student_absence_teacher/api/absence/?student__classe=${classId}&date_absence=${date}&page_size=500`),
+                axios.get(`/student_absence/api/student_absence/?student__classe=${classId}&date_absence=${date}&page_size=500`)
             ];
             Promise.all(promises).then(resp => {
-                const currentDay = (new Date(this.date)).getDay();
+                const currentDay = (new Date(date)).getDay();
                 const teachersAbsences = resp[3].data.results;
                 const educatorsAbsences = resp[4].data.results;
                 this.teachersPeriod = resp[1].data.results
@@ -178,7 +230,7 @@ export default {
 
                     s.absence_educators = this.educatorsPeriod.map(p => {
                         const absence = educatorsAbsences.find(a => a.period === p.id && a.student_id === s.matricule);
-                        return absence ? absence : {is_absent: null, student_id: s.matricule, period: p.id, date_absence: this.date};
+                        return absence ? absence : {is_absent: null, student_id: s.matricule, period: p.id, date_absence: date};
                     });
                     return s;
                 });
@@ -188,16 +240,18 @@ export default {
                         this.fields.splice(1, 0, { key: "group", label: "Groupe"});
                     }
                 }
+                this.loading = false;
             });
         },
         displayStudent
     },
     mounted: function () {
-        this.getStudentsAbsences();
+        this.getStudentsAbsences(this.classId, this.date);
     },
     components: {
         OverviewTeacherEntry,
         OverviewEducatorEntry,
+        Multiselect
     }
 };
 </script>
