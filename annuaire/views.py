@@ -292,7 +292,7 @@ class StudentGivenCourseAPI(APIView):
     def get(self, request, given_course_id, format=None):
         try:
             given_course = GivenCourseModel.objects.get(id=given_course_id)
-            students = StudentModel.objects.filter(courses=given_course).order_by('last_name', 'first_name')
+            students = StudentModel.objects.filter(courses=given_course, classe__isnull=False).order_by('last_name', 'first_name')
             serializer = StudentSerializer(students, many=True)
             return Response(serializer.data)
         except ObjectDoesNotExist:
