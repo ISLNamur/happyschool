@@ -67,7 +67,7 @@
                 >
                     <b-row>
                         <b-col>
-                            <h4>Référents {{ advanced ? "PIA" : "" }}</h4>
+                            <h3>Référents {{ advanced ? "PIA" : "" }}</h3>
                         </b-col>
                     </b-row>
                     <b-row>
@@ -78,6 +78,7 @@
                             <b-img
                                 :src="`/static/photos/${form.student.matricule}.jpg`"
                                 alt="Photo de l'élève"
+                                rounded
                                 fluid
                             />
                         </b-col>
@@ -164,9 +165,9 @@
                             </b-form-row>
                         </b-col>
                     </b-row>
-                    <b-row>
+                    <b-row class="mt-3">
                         <b-col>
-                            <h4>{{ advanced ? "Aménagements" : "Activités de soutien" }}</h4>
+                            <h3>{{ advanced ? "Aménagements" : "Activités de soutien" }}</h3>
                         </b-col>
                     </b-row>
                     <b-row v-if="advanced">
@@ -194,6 +195,11 @@
                                 </multiselect>
                                 <span slot="invalid-feedback">{{ errorMsg('disorder') }}</span>
                             </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row v-if="advanced && form.disorder.length > 0">
+                        <b-col>
+                            <h4>Aménagements incontournables</h4>
                         </b-col>
                     </b-row>
                     <b-row v-if="advanced && form.disorder.length > 0">
@@ -268,9 +274,9 @@
                     </b-row>
                     <b-row v-if="advanced && form.disorder.length > 0">
                         <b-col>
-                            <h5 class="mt-2">
+                            <h4 class="mt-4">
                                 Aménagements conseillés
-                            </h5>
+                            </h4>
                         </b-col>
                     </b-row>
                     <b-row
@@ -322,9 +328,8 @@
                     </b-row>
                     <b-row v-if="advanced">
                         <b-col>
+                            <h4 class="mt-4">Aménagements d'horaire</h4>
                             <b-form-group
-                                label="Aménagements d'horaire"
-                                label-cols="3"
                                 :state="inputStates.schedule_adjustment"
                             >
                                 <multiselect
@@ -348,9 +353,8 @@
                     </b-row>
                     <b-row v-if="advanced">
                         <b-col>
-                            <b-form-group
-                                label="Autres aménagements"
-                            >
+                            <h4 class="mt-4">Autres aménagements</h4>
+                            <b-form-group>
                                 <quill-editor
                                     v-model="form.other_adjustments"
                                     :options="editorOptions"
@@ -417,9 +421,9 @@
                             </b-table-simple>
                         </b-col>
                     </b-row>
-                    <b-row>
+                    <b-row class="mt-4">
                         <b-col>
-                            <h4>Attachements</h4>
+                            <h3>Attachements</h3>
                         </b-col>
                     </b-row>
                     <b-row>
