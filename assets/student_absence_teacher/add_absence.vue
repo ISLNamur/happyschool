@@ -52,7 +52,7 @@
                     @input="getStudents('UND', true)"
                     class="mb-1"
                 >
-                    <span slot="noResult">Aucune période ne correspond à votre recherche.</span>
+                    <template #noResult>Aucune période ne correspond à votre recherche.</template>
                 </multiselect>
             </b-col>
             <b-col
@@ -74,7 +74,7 @@
                     @input="getStudents('GC')"
                     class="mb-1"
                 >
-                    <span slot="noResult">Aucun cours ne correspond à votre recherche.</span>
+                    <template #noResult>Aucun cours ne correspond à votre recherche.</template>
                 </multiselect>
             </b-col>
             <span v-if="$store.state.settings.select_student_by === 'CLGC'">ou</span>
@@ -94,7 +94,7 @@
                     @search-change="searchClasses"
                     class="mb-1"
                 >
-                    <span slot="noResult">Aucune classe ne correspond à votre recherche.</span>
+                    <template #noResult>Aucune classe ne correspond à votre recherche.</template>
                 </multiselect>
             </b-col>
         </b-row>
@@ -116,7 +116,7 @@
                         :show-no-options="false"
                         class="mb-1"
                     >
-                        <span slot="noResult">Aucune classe ne correspond à votre recherche.</span>
+                        <template #noResult>Aucune classe ne correspond à votre recherche.</template>
                     </multiselect>
                 </b-form-group>
             </b-col>

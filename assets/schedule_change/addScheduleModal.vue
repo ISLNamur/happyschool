@@ -50,7 +50,7 @@
                         value-field="id"
                         text-field="category"
                     >
-                        <template slot="first">
+                        <template #first>
                             <option :value="null" />
                         </template>
                     </b-form-select>
@@ -66,7 +66,7 @@
                         type="date"
                         v-model="form.date_change"
                     />
-                    <span slot="invalid-feedback">{{ errorMsg('date_change') }}</span>
+                    <template #invalid-feedback>{{ errorMsg('date_change') }}</template>
                 </b-form-group>
             </b-form-row>
             <b-form-row>
@@ -79,7 +79,7 @@
                         type="time"
                         v-model="form.time_start"
                     />
-                    <span slot="invalid-feedback">{{ errorMsg('time_start') }}</span>
+                    <template #invalid-feedback>{{ errorMsg('time_start') }}</template>
                 </b-form-group>
                 <b-form-group
                     id="time-end-input-group"
@@ -90,7 +90,7 @@
                         type="time"
                         v-model="form.time_end"
                     />
-                    <span slot="invalid-feedback">{{ errorMsg('time_end') }}</span>
+                    <template #invalid-feedback>{{ errorMsg('time_end') }}</template>
                 </b-form-group>
             </b-form-row>
             <b-form-group
@@ -108,8 +108,8 @@
                     deselect-label="Cliquer dessus pour enlever"
                     v-model="form.classes"
                 >
-                    <span slot="noResult">Aucune classe trouvée.</span>
-                    <span slot="noOptions" />
+                    <template #noResult>Aucune classe trouvée.</template>
+                    <template #noOptions />
                 </multiselect>
             </b-form-group>
             <b-form-group
@@ -129,8 +129,8 @@
                     label="display"
                     track-by="matricule"
                 >
-                    <span slot="noResult">Aucun professeur trouvé.</span>
-                    <span slot="noOptions" />
+                    <template #noResult>Aucun professeur trouvé.</template>
+                    <template #noOptions />
                 </multiselect>
             </b-form-group>
             <b-form-group
@@ -151,8 +151,8 @@
                     label="display"
                     track-by="matricule"
                 >
-                    <span slot="noResult">Aucun professeur trouvé.</span>
-                    <span slot="noOptions" />
+                    <template #noResult>Aucun professeur trouvé.</template>
+                    <template #noOptions />
                 </multiselect>
             </b-form-group>
             <b-form-group
@@ -169,7 +169,7 @@
                     selected-label="Sélectionné"
                     deselect-label="Cliquer dessus pour enlever"
                 >
-                    <span slot="noOptions" />
+                    <template #noOptions />
                 </multiselect>
             </b-form-group>
             <b-form-group
@@ -240,7 +240,7 @@
                 </b-form-checkbox>
             </b-form-group>
         </b-form>
-        <template slot="modal-ok">
+        <template #modal-ok>
             <b-spinner
                 v-if="submitting"
                 small

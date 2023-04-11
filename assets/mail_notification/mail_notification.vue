@@ -88,8 +88,8 @@
                                 deselect-label="Cliquer dessus pour enlever"
                                 v-model="emailFrom"
                             >
-                                <span slot="noResult">Aucun expéditeur trouvé.</span>
-                                <span slot="noOptions" />
+                                <template #noResult>Aucun expéditeur trouvé.</template>
+                                <template #noOptions />
                             </multiselect>
                             <b-alert
                                 variant="danger"
@@ -116,8 +116,8 @@
                                 deselect-label="Cliquer dessus pour enlever"
                                 v-model="emailTo"
                             >
-                                <span slot="noResult">Aucun destinataire trouvé.</span>
-                                <span slot="noOptions" />
+                                <template #noResult>Aucun destinataire trouvé.</template>
+                                <template #noOptions />
                             </multiselect>
                             <b-alert
                                 variant="danger"
@@ -139,7 +139,7 @@
                                 label="name"
                                 placeholder="Ajouter un formulaire à remplir"
                             >
-                                <span slot="noOptions" />
+                                <template #noOptions />
                             </multiselect>
                         </b-form-group>
                         <b-form-group
@@ -158,8 +158,8 @@
                                 deselect-label="Cliquer dessus pour enlever"
                                 v-model="tags"
                             >
-                                <span slot="noResult">Aucun tag trouvé.</span>
-                                <span slot="noOptions" />
+                                <template #noResult>Aucun tag trouvé.</template>
+                                <template #noOptions />
                             </multiselect>
                         </b-form-group>
 
@@ -237,9 +237,9 @@
                 La demande d'envoi des emails a été soumise !
             </p><p /><p v-if="!sending && hasError">
                 Désolé, une erreur est survenue lors de l'envoi du mail. Merci de réessayer plus tard ou de contacter un administrateur.
-            </p><p /><div
-                slot="modal-footer"
-                class="w-100"
+            </p><p />
+            <template
+                #modal-footer
             >
                 <b-btn
                     size="sm"
@@ -249,7 +249,7 @@
                 >
                     OK
                 </b-btn>
-            </div>
+            </template>
         </b-modal>
     </div>
 </template>

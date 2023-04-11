@@ -57,8 +57,10 @@
                             :show-no-options="false"
                             :multiple="!id"
                         >
-                            <span slot="noResult">Aucun responsable trouvé.</span>
-                            <span slot="noOptions" />
+                            <template #noResult>
+                                Aucun responsable trouvé.
+                            </template>
+                            <template #noOptions />
                         </multiselect>
                     </b-form-group>
                     <b-form-group>
@@ -78,7 +80,9 @@
                             required
                             @change="updateEnd"
                         />
-                        <span slot="invalid-feedback">{{ errorMsg('non_field_errors') }}</span>
+                        <template #invalid-feedback>
+                            {{ errorMsg('non_field_errors') }}
+                        </template>
                     </b-form-group>
                     <b-form-group
                         label="Date de fin"
@@ -89,7 +93,9 @@
                             type="date"
                             required
                         />
-                        <span slot="invalid-feedback">{{ errorMsg('non_field_errors') }}</span>
+                        <template #invalid-feedback>
+                            {{ errorMsg('non_field_errors') }}
+                        </template>
                     </b-form-group>
                     <b-form-group label="commentaire">
                         <b-textarea v-model="form.comment" />

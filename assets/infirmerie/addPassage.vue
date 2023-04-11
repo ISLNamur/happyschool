@@ -64,10 +64,10 @@
                                     track-by="matricule"
                                     v-model="name"
                                 >
-                                    <span slot="noResult">Aucun étudiant trouvé.</span>
-                                    <span slot="noOptions" />
+                                    <template #noResult>Aucun étudiant trouvé.</template>
+                                    <template #noOptions />
                                 </multiselect>
-                                <span slot="invalid-feedback">{{ errorMsg('name') }}</span>
+                                <template #invalid-feedback>{{ errorMsg('name') }}</template>
                             </b-form-group>
                         </b-col>
                         <b-col sm="4">
@@ -96,7 +96,7 @@
                                     :rows="3"
                                     v-model="form.motifs_admission"
                                 />
-                                <span slot="invalid-feedback">{{ errorMsg('motifs_admission') }}</span>
+                                <template #invalid-feedback>{{ errorMsg('motifs_admission') }}</template>
                             </b-form-group>
                         </b-col>
                     </b-form-row>
@@ -112,7 +112,7 @@
                                     type="date"
                                     v-model="dateArrive"
                                 />
-                                <span slot="invalid-feedback">{{ errorMsg('datetime_arrive') }}</span>
+                                <template #invalid-feedback>{{ errorMsg('datetime_arrive') }}</template>
                             </b-form-group>
                         </b-col>
                         <b-col>
@@ -126,7 +126,7 @@
                                     type="time"
                                     v-model="timeArrive"
                                 />
-                                <span slot="invalid-feedback">{{ errorMsg('datetime_arrive') }}</span>
+                                <template #invalid-feedback>{{ errorMsg('datetime_arrive') }}</template>
                             </b-form-group>
                         </b-col>
                     </b-form-row>
@@ -143,7 +143,7 @@
                                         :rows="3"
                                         v-model="form.remarques_sortie"
                                     />
-                                    <span slot="invalid-feedback">{{ errorMsg('non_field_errors') }}</span>
+                                    <template #invalid-feedback>{{ errorMsg('non_field_errors') }}</template>
                                 </b-form-group>
                             </b-col>
                         </b-form-row>
@@ -159,7 +159,7 @@
                                         type="date"
                                         v-model="dateSortie"
                                     />
-                                    <span slot="invalid-feedback">{{ errorMsg('datetime_sortie') }}</span>
+                                    <template #invalid-feedback>{{ errorMsg('datetime_sortie') }}</template>
                                 </b-form-group>
                             </b-col>
                             <b-col>
@@ -173,7 +173,7 @@
                                         type="time"
                                         v-model="timeSortie"
                                     />
-                                    <span slot="invalid-feedback">{{ errorMsg('datetime_sortie') }}</span>
+                                    <template #invalid-feedback>{{ errorMsg('datetime_sortie') }}</template>
                                 </b-form-group>
                             </b-col>
                         </b-form-row>

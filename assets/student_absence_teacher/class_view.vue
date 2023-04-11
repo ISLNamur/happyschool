@@ -43,8 +43,8 @@
                         :v-model="search"
                         @select="moveToClass"
                     >
-                        <span slot="noResult">Aucune classe trouvée.</span>
-                        <span slot="noOptions" />
+                        <template #noResult>Aucune classe trouvée.</template>
+                        <template #noOptions />
                     </multiselect>
                 </b-form-group>
             </b-col>

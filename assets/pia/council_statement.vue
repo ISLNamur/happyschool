@@ -48,13 +48,12 @@
                                 track-by="id"
                             >
                                 <template
-                                    slot="singleLabel"
-                                    slot-scope="props"
+                                    #singleLabel="props"
                                 >
                                     <strong>{{ props.option.branch }}</strong>
                                 </template>
-                                <span slot="noResult">Aucune branche trouvée.</span>
-                                <span slot="noOptions" />
+                                <template #noResult>Aucune branche trouvée.</template>
+                                <template #noOptions />
                             </multiselect>
                         </b-form-group>
                     </b-col>

@@ -101,8 +101,8 @@
                                             :show-no-options="false"
                                             :disabled="parseInt(id) >= 0"
                                         >
-                                            <span slot="noResult">Aucun élève trouvé.</span>
-                                            <span slot="noOptions" />
+                                            <template #noResult>Aucun élève trouvé.</template>
+                                            <template #noOptions />
                                         </multiselect>
                                     </b-form-group>
                                 </b-col>
@@ -128,10 +128,10 @@
                                             :show-no-options="false"
                                             multiple
                                         >
-                                            <span slot="noResult">Aucun responsable trouvé.</span>
-                                            <span slot="noOptions" />
+                                            <template #noResult>Aucun responsable trouvé.</template>
+                                            <template #noOptions />
                                         </multiselect>
-                                        <span slot="invalid-feedback">{{ errorMsg('referent') }}</span>
+                                        <template #invalid-feedback>{{ errorMsg('referent') }}</template>
                                     </b-form-group>
                                 </b-col>
                             </b-form-row>
@@ -156,10 +156,10 @@
                                             :show-no-options="false"
                                             multiple
                                         >
-                                            <span slot="noResult">Aucun responsable trouvé.</span>
-                                            <span slot="noOptions" />
+                                            <template #noResult>Aucun responsable trouvé.</template>
+                                            <template #noOptions />
                                         </multiselect>
-                                        <span slot="invalid-feedback">{{ errorMsg('sponsor') }}</span>
+                                        <template #invalid-feedback>{{ errorMsg('sponsor') }}</template>
                                     </b-form-group>
                                 </b-col>
                             </b-form-row>
@@ -190,10 +190,10 @@
                                     @input="updateDisorderResponse"
                                     multiple
                                 >
-                                    <span slot="noResult">Aucun trouble trouvé.</span>
-                                    <span slot="noOptions" />
+                                    <template #noResult>Aucun trouble trouvé.</template>
+                                    <template #noOptions />
                                 </multiselect>
-                                <span slot="invalid-feedback">{{ errorMsg('disorder') }}</span>
+                                <template #invalid-feedback>{{ errorMsg('disorder') }}</template>
                             </b-form-group>
                         </b-col>
                     </b-row>
@@ -344,10 +344,10 @@
                                     :show-no-options="false"
                                     multiple
                                 >
-                                    <span slot="noResult">Aucun aménagements trouvé.</span>
-                                    <span slot="noOptions" />
+                                    <template #noResult>Aucun aménagements trouvé.</template>
+                                    <template #noOptions />
                                 </multiselect>
-                                <span slot="invalid-feedback">{{ errorMsg('schedule_adjustment') }}</span>
+                                <template #invalid-feedback>{{ errorMsg('schedule_adjustment') }}</template>
                             </b-form-group>
                         </b-col>
                     </b-row>
@@ -392,8 +392,8 @@
                                                 track-by="id"
                                                 multiple
                                             >
-                                                <span slot="noResult">Aucune branche trouvé.</span>
-                                                <span slot="noOptions" />
+                                                <template #noResult>Aucune branche trouvé.</template>
+                                                <template #noOptions />
                                             </multiselect>
                                         </b-td>
                                         <b-td>
@@ -412,8 +412,8 @@
                                                 :show-no-options="false"
                                                 multiple
                                             >
-                                                <span slot="noResult">Aucun responsable trouvé.</span>
-                                                <span slot="noOptions" />
+                                                <template #noResult>Aucun responsable trouvé.</template>
+                                                <template #noOptions />
                                             </multiselect>
                                         </b-td>
                                     </b-tr>

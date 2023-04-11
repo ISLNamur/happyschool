@@ -85,7 +85,7 @@
                                 @open="handleSpecificInput"
                                 preserve-search
                             >
-                                <span slot="noOptions" />
+                                <template #noOptions />
                             </multiselect>
                         </b-col>
                     </b-input-group>

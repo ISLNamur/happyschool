@@ -50,7 +50,7 @@
                             </b-list-group>
                         </b-card>
                         <b-card>
-                            <div slot="header">
+                            <template #header>
                                 <b>Autres personnels</b>
                                 <b-icon
                                     id="others-info"
@@ -61,7 +61,7 @@
                                     target="others-info"
                                     title="Personnes responsables"
                                 />
-                            </div>
+                            </template>
                             <b-list-group>
                                 <b-list-group-item
                                     v-for="item in others"
@@ -113,7 +113,7 @@
                             v-for="g in groups"
                             :key="g.id"
                         >
-                            <div slot="header">
+                            <template #header>
                                 <b>{{ g.name }}</b>
                                 <b-btn
                                     v-b-modal.deleteGroupModal
@@ -127,7 +127,7 @@
                                         variant="danger"
                                     />
                                 </b-btn>
-                            </div>
+                            </template>
                             <b-list-group>
                                 <b-list-group-item
                                     v-for="p in otherEmails[g.id]"

@@ -93,7 +93,7 @@
                                     :options="student_column_names"
                                     :key="i"
                                 >
-                                    <template slot="first">
+                                    <template #first>
                                         <option
                                             :value="null"
                                             disabled
@@ -192,7 +192,7 @@
                                     :options="teacher_column_names"
                                     :key="i"
                                 >
-                                    <template slot="first">
+                                    <template #first>
                                         <option
                                             :value="null"
                                             disabled

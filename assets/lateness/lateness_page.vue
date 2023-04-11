@@ -49,7 +49,9 @@
                         track-by="matricule"
                         v-model="search"
                     >
-                        <span slot="noResult">Aucune personne trouvée.</span>
+                        <template #noResult>
+                            Aucune personne trouvée.
+                        </template>
                     </multiselect>
                 </b-col>
                 <b-col

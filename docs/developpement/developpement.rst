@@ -1102,11 +1102,13 @@ l’utilisateur d’ajouter/modifier une absence :
                                track-by="matricule"
                                v-model="student"
                                >
-                               <span slot="noResult">Aucune personne trouvée.</span>
-                               <span slot="noOptions"></span>
+                               <template #noResult>
+                                    Aucune personne trouvée.
+                                </template>
+                               <template #noOptions />
 
                            </multiselect>
-                           <span slot="invalid-feedback">{{ errorMsg('student_id') }}</span>
+                           <template #invalid-feedback>{{ errorMsg('student_id') }}</template>
                        </b-form-group>
                    </b-col>
                    <b-col sm="4">
@@ -1120,7 +1122,7 @@ l’utilisateur d’ajouter/modifier une absence :
                        <b-form-row>
                            <b-form-group label="À partir du" :state="inputStates.date_absence_start">
                                <input type="date" v-model="form.date_absence_start" :max="form.date_absence_end"/>
-                               <span slot="invalid-feedback">{{ errorMsg('date_absence_start') }}</span>
+                               <template #invalid-feedback>{{ errorMsg('date_absence_start') }}</template>
                            </b-form-group>
                        </b-form-row>
                    </b-col>
@@ -1128,7 +1130,7 @@ l’utilisateur d’ajouter/modifier une absence :
                        <b-form-row>
                            <b-form-group label="Jusqu'au" :state="inputStates.date_absence_end">
                                <input type="date" v-model="form.date_absence_end" :min="form.date_absence_start"/>
-                               <span slot="invalid-feedback">{{ errorMsg('date_absence_end') }}</span>
+                               <template #invalid-feedback>{{ errorMsg('date_absence_end') }}</template>
                            </b-form-group>
                        </b-form-row>
                    </b-col>

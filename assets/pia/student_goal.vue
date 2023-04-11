@@ -111,16 +111,13 @@
                                 label="branch"
                                 track-by="id"
                             >
-                                <template
-                                    slot="singleLabel"
-                                    slot-scope="props"
-                                >
+                                <template #singleLabel="props">
                                     <strong>{{ props.option.branch }}</strong>
                                 </template>
-                                <span slot="noResult">Aucune branche trouvée.</span>
-                                <span slot="noOptions" />
+                                <template #noResult>Aucune branche trouvée.</template>
+                                <template #noOptions />
                             </multiselect>
-                            <span slot="invalid-feedback">{{ errorMsg('branch') }}</span>
+                            <template #invalid-feedback>{{ errorMsg('branch') }}</template>
                         </b-form-group>
                     </b-col>
                 </b-form-row>
@@ -146,19 +143,20 @@
                                 multiple
                                 taggable
                             >
-                                <template
-                                    slot="option"
-                                    slot-scope="props"
-                                >
+                                <template #option="props">
                                     {{ props.option.goal }}
                                     <span v-if="props.option.branch">
                                         ({{ $store.state.branches.find(b => b.id === props.option.branch).branch }})
                                     </span>
                                 </template>
-                                <span slot="noResult">Aucun aménagements trouvé.</span>
-                                <span slot="noOptions" />
+                                <template #noResult>
+                                    Aucun aménagements trouvé.
+                                </template>
+                                <template #noOptions />
                             </multiselect>
-                            <span slot="invalid-feedback">{{ errorMsg('cross_goals') }}{{ errorMsg('branch_goals') }}</span>
+                            <template #invalid-feedback>
+                                {{ errorMsg('cross_goals') }}{{ errorMsg('branch_goals') }}
+                            </template>
                         </b-form-group>
                     </b-col>
                 </b-form-row>
@@ -181,16 +179,13 @@
                                 track-by="id"
                                 multiple
                             >
-                                <template
-                                    slot="singleLabel"
-                                    slot-scope="props"
-                                >
+                                <template #singleLabel="props">
                                     <strong>{{ props.option.branch }}</strong>
                                 </template>
-                                <span slot="noResult">Aucune branche trouvée.</span>
-                                <span slot="noOptions" />
+                                <template #noResult>Aucune branche trouvée.</template>
+                                <template #noOptions />
                             </multiselect>
-                            <span slot="invalid-feedback">{{ errorMsg('branches') }}</span>
+                            <template #invalid-feedback>{{ errorMsg('branches') }}</template>
                         </b-form-group>
                     </b-col>
                 </b-form-row>
@@ -216,10 +211,10 @@
                                 :show-no-options="false"
                                 multiple
                             >
-                                <span slot="noResult">Aucun intervenant trouvé.</span>
-                                <span slot="noOptions" />
+                                <template #noResult>Aucun intervenant trouvé.</template>
+                                <template #noOptions />
                             </multiselect>
-                            <span slot="invalid-feedback">{{ errorMsg('responsible') }}</span>
+                            <template #invalid-feedback>{{ errorMsg('responsible') }}</template>
                         </b-form-group>
                     </b-col>
                 </b-form-row>
@@ -272,8 +267,8 @@
                                 label="assessment"
                                 track-by="id"
                             >
-                                <span slot="noResult">Aucune évaluation trouvée.</span>
-                                <span slot="noOptions" />
+                                <template #noResult>Aucune évaluation trouvée.</template>
+                                <template #noOptions />
                             </multiselect>
                         </b-form-group>
                     </b-col>

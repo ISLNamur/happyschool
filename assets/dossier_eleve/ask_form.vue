@@ -63,10 +63,14 @@
                                         track-by="matricule"
                                         v-model="name"
                                     >
-                                        <span slot="noResult">Aucune personne trouvée.</span>
-                                        <span slot="noOptions" />
+                                        <template #noResult>
+                                            Aucune personne trouvée.
+                                        </template>
+                                        <template #noOptions />
                                     </multiselect>
-                                    <span slot="invalid-feedback">{{ errorMsg('name') }}</span>
+                                    <template #invalid-feedback>
+                                        {{ errorMsg('name') }}
+                                    </template>
                                 </b-form-group>
                             </b-col>
                             <b-col sm="4">
@@ -103,10 +107,14 @@
                                     track-by="display"
                                     v-model="demandeur"
                                 >
-                                    <span slot="noResult">Aucun responsable trouvée.</span>
-                                    <span slot="noOptions" />
+                                    <template #noResult>
+                                        Aucun responsable trouvée.
+                                    </template>
+                                    <template #noOptions />
                                 </multiselect>
-                                <span slot="invalid-feedback">{{ errorMsg('demandeur') }}</span>
+                                <template #invalid-feedback>
+                                    {{ errorMsg('demandeur') }}
+                                </template>
                             </b-form-group>
                         </b-form-row>
                         <b-form-row v-if="$store.state.canSetSanction">
@@ -126,7 +134,7 @@
                                         v-model="form.sanction_decision_id"
                                         :options="sanctionOptions"
                                     >
-                                        <template slot="first">
+                                        <template #first>
                                             <option
                                                 :value="null"
                                                 disabled
@@ -135,7 +143,9 @@
                                             </option>
                                         </template>
                                     </b-form-select>
-                                    <span slot="invalid-feedback">{{ errorMsg('sanction_decision_id') }}</span>
+                                    <template #invalid-feedback>
+                                        {{ errorMsg('sanction_decision_id') }}
+                                    </template>
                                 </b-form-group>
                                 <div v-if="$store.state.canSetSanction">
                                     <b-form-group
@@ -149,7 +159,9 @@
                                             type="date"
                                             v-model="form.datetime_conseil"
                                         />
-                                        <span slot="invalid-feedback">{{ errorMsg('datetime_conseil') }}</span>
+                                        <template #invalid-feedback>
+                                            {{ errorMsg('datetime_conseil') }}
+                                        </template>
                                     </b-form-group>
                                     <b-form-group
                                         label="Date de la sanction"
@@ -161,7 +173,9 @@
                                             type="date"
                                             v-model="form.date_sanction"
                                         />
-                                        <span slot="invalid-feedback">{{ errorMsg('date_sanction') }}</span>
+                                        <template #invalid-feedback>
+                                            {{ errorMsg('date_sanction') }}
+                                        </template>
                                     </b-form-group>
                                     <b-form-group
                                         label="Heure de début de la sanction"
@@ -172,7 +186,9 @@
                                             type="time"
                                             v-model="form.time_sanction_start"
                                         />
-                                        <span slot="invalid-feedback">{{ errorMsg('time_sanction_start') }}</span>
+                                        <template #invalid-feedback>
+                                            {{ errorMsg('time_sanction_start') }}
+                                        </template>
                                     </b-form-group>
                                     <b-form-group
                                         label="Heure de fin de la sanction"
@@ -184,7 +200,9 @@
                                             type="time"
                                             v-model="form.time_sanction_end"
                                         />
-                                        <span slot="invalid-feedback">{{ errorMsg('time_sanction_end') }}</span>
+                                        <template #invalid-feedback>
+                                            {{ errorMsg('time_sanction_end') }}
+                                        </template>
                                     </b-form-group>
                                 </div>
                             </b-col>
@@ -212,7 +230,9 @@
                                         v-model="form.explication_commentaire"
                                         :options="editorOptions"
                                     />
-                                    <span slot="invalid-feedback">{{ errorMsg('explication_commentaire') }}</span>
+                                    <template #invalid-feedback>
+                                        {{ errorMsg('explication_commentaire') }}
+                                    </template>
                                 </b-form-group>
                                 <b-form-group
                                     description="Ajouter un ou des fichiers. Accepte uniquement des fichiers pdf."

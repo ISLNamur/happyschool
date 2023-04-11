@@ -101,8 +101,10 @@
                             @select="selected"
                             :disabled="$store.state.updating"
                         >
-                            <span slot="noResult">Aucune personne trouvée.</span>
-                            <span slot="noOptions" />
+                            <template #noResult>
+                                Aucune personne trouvée.
+                            </template>
+                            <template #noOptions />
                         </multiselect>
                     </b-form-group>
                 </b-overlay>
@@ -277,7 +279,7 @@
                     </b-btn>
                 </b-tab>
             </b-tabs>
-            <template slot="modal-ok">
+            <template #modal-ok>
                 <b-spinner
                     v-if="sending"
                     small

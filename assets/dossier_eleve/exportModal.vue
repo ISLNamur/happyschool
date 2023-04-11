@@ -54,8 +54,10 @@
                                     track-by="id"
                                     v-model="nameClasse"
                                 >
-                                    <span slot="noResult">Aucune personne trouvée.</span>
-                                    <span slot="noOptions" />
+                                    <template #noResult>
+                                        Aucune personne trouvée.
+                                    </template>
+                                    <template #noOptions />
                                 </multiselect>
                             </b-form-group>
                             <b-form-group label="Type de données">

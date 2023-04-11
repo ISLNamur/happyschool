@@ -46,10 +46,14 @@
                                         track-by="matricule"
                                         v-model="name"
                                     >
-                                        <span slot="noResult">Aucune personne trouvée.</span>
-                                        <span slot="noOptions" />
+                                        <template #noResult>
+                                            Aucune personne trouvée.
+                                        </template>
+                                        <template #noOptions />
                                     </multiselect>
-                                    <span slot="invalid-feedback">{{ errorMsg('name') }}</span>
+                                    <template #invalid-feedback>
+                                        {{ errorMsg('name') }}
+                                    </template>
                                 </b-form-group>
                             </b-col>
                             <b-col sm="4">
@@ -78,7 +82,7 @@
                                         v-model="form.object_id"
                                         :options="objectOptions"
                                     >
-                                        <template slot="first">
+                                        <template #first>
                                             <option
                                                 :value="null"
                                                 disabled
@@ -87,7 +91,9 @@
                                             </option>
                                         </template>
                                     </b-form-select>
-                                    <span slot="invalid-feedback">{{ errorMsg('object_id') }}</span>
+                                    <template #invalid-feedback>
+                                        {{ errorMsg('object_id') }}
+                                    </template>
                                 </b-form-group>
                             </b-col>
                             <b-col>
@@ -100,7 +106,7 @@
                                         v-model="form.motive_id"
                                         :options="motiveOptions"
                                     >
-                                        <template slot="first">
+                                        <template #first>
                                             <option
                                                 :value="null"
                                                 disabled
@@ -109,7 +115,9 @@
                                             </option>
                                         </template>
                                     </b-form-select>
-                                    <span slot="invalid-feedback">{{ errorMsg('motive_id') }}</span>
+                                    <template #invalid-feedback>
+                                        {{ errorMsg('motive_id') }}
+                                    </template>
                                 </b-form-group>
                             </b-col>
                         </b-form-row>
@@ -126,7 +134,9 @@
                                             type="date"
                                             v-model="form.date_motif_start"
                                         />
-                                        <span slot="invalid-feedback">{{ errorMsg('date_motif_start') }}</span>
+                                        <template #invalid-feedback>
+                                            {{ errorMsg('date_motif_start') }}
+                                        </template>
                                     </b-form-group>
                                 </b-col>
                                 <b-col>
@@ -154,7 +164,9 @@
                                             type="date"
                                             v-model="form.date_motif_end"
                                         />
-                                        <span slot="invalid-feedback">{{ errorMsg('date_motif_end') }}</span>
+                                        <template #invalid-feedback>
+                                            {{ errorMsg('date_motif_end') }}
+                                        </template>
                                     </b-form-group>
                                 </b-col>
                                 <b-col>
@@ -182,7 +194,9 @@
                                             type="date"
                                             v-model="form.datetime_appel"
                                         />
-                                        <span slot="invalid-feedback">{{ errorMsg('datetime_appel') }}</span>
+                                        <template #invalid-feedback>
+                                            {{ errorMsg('datetime_appel') }}
+                                        </template>
                                     </b-form-group>
                                 </b-col>
                                 <b-col>
@@ -225,7 +239,9 @@
                                         id="input-custom-email"
                                         placeholder="Courriel personnalisé"
                                     />
-                                    <span slot="invalid-feedback">{{ errorMsg('custom_email') }}</span>
+                                    <template #invalid-feedback>
+                                        {{ errorMsg('custom_email') }}
+                                    </template>
                                 </b-form-group>
                             </b-form-row>
                         </div>
@@ -254,7 +270,7 @@
                     </b-form>
                 </b-col>
             </b-row>
-            <template slot="modal-ok">
+            <template #modal-ok>
                 <b-spinner
                     v-if="loading"
                     small

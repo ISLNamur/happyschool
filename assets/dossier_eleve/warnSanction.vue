@@ -81,8 +81,8 @@
                         :show-no-options="false"
                         multiple
                     >
-                        <span slot="noResult">Aucun responsable trouvé.</span>
-                        <span slot="noOptions" />
+                        <template #noResult>Aucun responsable trouvé.</template>
+                        <template #noOptions />
                     </multiselect>
                 </b-form-group>
             </b-col>

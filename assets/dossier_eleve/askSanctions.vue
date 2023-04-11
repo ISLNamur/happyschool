@@ -29,7 +29,7 @@
             </b-row>
             <b-row>
                 <b-tabs>
-                    <template slot="tabs">
+                    <template #tabs>
                         <b-nav-item href="/dossier_eleve/">
                             Dossier des élèves
                         </b-nav-item>
