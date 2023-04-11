@@ -221,19 +221,6 @@
                 Êtes-vous sûr de vouloir supprimer ce passage ?
             </b-modal>
             <b-modal
-                ref="scanModal"
-                hide-footer
-                centered
-                no-fade
-                size="xl"
-                @hidden="closeQuagga"
-            >
-                <div
-                    id="interactive"
-                    class="viewport"
-                />
-            </b-modal>
-            <b-modal
                 ref="changeCountModal"
                 title="Changer la date du début de comptage"
                 hide-header-close
@@ -293,8 +280,6 @@
 </template>
 
 <script>
-import Quagga from "@ericblade/quagga2";
-
 import Vue from "vue";
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 import "bootstrap-vue/dist/bootstrap-vue.css";
@@ -478,60 +463,6 @@ export default {
             // Move to the top of the page.
             scroll(0, 0);
             return;
-        },
-        closeQuagga: function () {
-            Quagga.stop();
-        },
-        scanCode: function () {
-            let vueApp = this;
-            vueApp.$refs.scanModal.show();
-            setTimeout(() => {
-                var App = {
-                    init: function() {
-                        var self = this;
-
-                        Quagga.init(this.state, function(err) {
-                            if (err) {
-                                return self.handleError(err);
-                            }
-                            Quagga.start();
-                        });
-                    },
-                    handleError: function(err) {
-                        console.log(err);
-                    },
-                    state: {
-                        inputStream: {
-                            type : "LiveStream",
-                            constraints: {
-                                width: {min: 640},
-                                height: {min: 480},
-                                facingMode: "environment",
-                                aspectRatio: {min: 1, max: 2}
-                            }
-                        },
-                        numOfWorkers: 2,
-                        frequency: 10,
-                        decoder: {
-                            readers : [{
-                                format: "code_128_reader",
-                                config: {}
-                            }]
-                        },
-                    },
-                };
-
-                App.init();
-
-                Quagga.onDetected(function(result) {
-                    if (vueApp.addingStudent) return;
-                    vueApp.addingStudent = true;
-                    const code = result.codeResult.code;
-                    Quagga.stop();
-                    vueApp.$refs.scanModal.hide();
-                    vueApp.selectStudent(code);
-                });
-            }, 300);
         },
         getTopList: function () {
             axios.get(`/lateness/api/top_lateness?${this.topOwnClasses ? "own_classes=True" : ""}`)
