@@ -19,92 +19,40 @@
 
 import Vue from "vue";
 
-import Vuex from "vuex";
-Vue.use(Vuex);
+import store from "../schedule_change/store.js";
+import router from "../schedule_change/router.js";
 
-import axios from "axios";
+import AppMenu from "../common/menu_bar.vue";
 
-const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
-
-const store = new Vuex.Store({
-    state: {
-        // eslint-disable-next-line no-undef
-        settings: settings,
-        filters: [{
-            filterType: "activate_ongoing",
-            tag: "Activer",
-            value: true,
-        }],
-        changeType: [],
-        changeCategory: [],
-        // eslint-disable-next-line no-undef
-        canAdd: can_add,
-        ready: false,
-    },
-    actions: {
-        getChangeType (context) {
-            axios.get("/schedule_change/api/schedule_change_type/", token)
-                .then(resp => {
-                    context.commit("setChangeType", resp.data.results);
-                });
-        },
-        getChangeCategory (context) {
-            axios.get("/schedule_change/api/schedule_change_category/", token)
-                .then(resp => {
-                    context.commit("setChangeCategory", resp.data.results);
-                });
-        }
-    },
-    mutations: {
-        enableFullscreen: function (state) {
-            state.canAdd = false;
-            this.commit("addFilter", {filterType: "activate_has_classe", tag: "Activer", value: true});
-        },
-        setChangeType: function (state, types) {
-            state.changeType = types;
-        },
-        setChangeCategory: function (state, categories) {
-            state.changeCategory = categories;
-            state.ready = true;
-
-            // Add style.
-            var sheet = document.createElement("style");
-            for (let c in categories) {
-                sheet.innerHTML +=  ".category-" + categories[c].id + " {background-color: #" + categories[c].color + "60;} ";
-            }
-            document.body.appendChild(sheet);
-        },
-        addFilter: function (state, filter) {
-            // If filter is a matricule, remove name filter to avoid conflict.
-            if (filter.filterType === "matricule_id") {
-                this.commit("removeFilter", "name");
-            }
-
-            // Overwrite same filter type.
-            this.commit("removeFilter", filter.filterType);
-
-            state.filters.push(filter);
-        },
-        removeFilter: function (state, key) {
-            for (let f in state.filters) {
-                if (state.filters[f].filterType === key) {
-                    state.filters.splice(f, 1);
-                    break;
-                }
-            }
-        },
-    },
-});
-
-import ScheduleChange from "../schedule_change/schedule_change.vue";
 
 new Vue({
     el: "#vue-app",
+    data: {
+        menuInfo: {},
+        transitionName: "slide-left",
+    },
     store,
-    template: "<schedule-change/>",
-    components: { ScheduleChange },
+    router,
+    template: `
+    <div>
+        <app-menu :menu-info="menuInfo" />
+        <transition :name="transitionName" mode="out-in">
+            <router-view></router-view>
+        </transition>
+    </div>`,
+    components: { AppMenu },
     mounted: function () {
+        // eslint-disable-next-line no-undef
+        this.menuInfo = menu;
+
         this.$store.dispatch("getChangeType");
         this.$store.dispatch("getChangeCategory");
+    },
+    watch: {
+        "$route" (to, from) {
+            const toDepth = to.path.split("/").length;
+            const fromDepth = from.path.split("/").length;
+            this.transitionName = toDepth < fromDepth ? "slide-right" : "slide-left";
+        }
     }
 });

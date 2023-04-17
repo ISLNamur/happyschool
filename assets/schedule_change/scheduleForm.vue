@@ -18,17 +18,17 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-modal
-        size="lg"
-        title="Ajouter un changement"
-        cancel-title="Annuler"
-        :ok-disabled="!form.change || submitting || !$store.state.canAdd"
-        ref="addModal"
-        @ok="submitForm"
-        @hidden="resetData"
-    >
-        <b-form>
-            <b-form-row>
+    <b-container>
+        <b-row>
+            <b-col>
+                <b-btn to="/">
+                    <b-icon icon="chevron-left" />
+                    Retour
+                </b-btn>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
                 <b-form-group
                     label="Type de changement"
                 >
@@ -39,14 +39,14 @@
                         text-field="name"
                     />
                 </b-form-group>
-            </b-form-row>
-            <b-form-row>
+            </b-col>
+            <b-col>
                 <b-form-group
                     label="Catégorie"
                 >
                     <b-form-select
                         v-model="form.category"
-                        :options="categoryOptions"
+                        :options="$store.state.changeCategory"
                         value-field="id"
                         text-field="category"
                     >
@@ -55,199 +55,261 @@
                         </template>
                     </b-form-select>
                 </b-form-group>
-            </b-form-row>
-            <b-form-row>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col sm="4">
                 <b-form-group
                     id="date-start-input-group"
                     label="Date"
                     :state="inputStates.date_change"
+                    label-cols="4"
                 >
                     <b-form-input
                         type="date"
                         v-model="form.date_change"
                     />
-                    <template #invalid-feedback>{{ errorMsg('date_change') }}</template>
+                    <template #invalid-feedback>
+                        {{ errorMsg('date_change') }}
+                    </template>
                 </b-form-group>
-            </b-form-row>
-            <b-form-row>
+            </b-col>
+            <b-col>
                 <b-form-group
                     id="time-start-input-group"
                     label="Heure début"
                     :state="inputStates.time_start"
+                    label-cols-sm="8"
+                    label-class="text-right"
                 >
                     <b-form-input
                         type="time"
                         v-model="form.time_start"
                     />
-                    <template #invalid-feedback>{{ errorMsg('time_start') }}</template>
+                    <template #invalid-feedback>
+                        {{ errorMsg('time_start') }}
+                    </template>
                 </b-form-group>
+            </b-col>
+            <b-col>
                 <b-form-group
                     id="time-end-input-group"
                     label="Heure fin"
                     :state="inputStates.time_end"
+                    label-cols-sm="8"
+                    label-class="text-right"
                 >
                     <b-form-input
                         type="time"
                         v-model="form.time_end"
                     />
-                    <template #invalid-feedback>{{ errorMsg('time_end') }}</template>
+                    <template #invalid-feedback>
+                        {{ errorMsg('time_end') }}
+                    </template>
                 </b-form-group>
-            </b-form-row>
-            <b-form-group
-                label="Classe(s) et/ou année(s) concernée(s)"
-            >
-                <multiselect
-                    :internal-search="false"
-                    :options="classesOptions"
-                    @search-change="getStudentsClassesYears"
-                    :multiple="true"
-                    :loading="classesLoading"
-                    placeholder="Chercher une classe ou une année…"
-                    select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
-                    selected-label="Sélectionné"
-                    deselect-label="Cliquer dessus pour enlever"
-                    v-model="form.classes"
+            </b-col>
+        </b-row>
+
+        <b-row>
+            <b-col>
+                <b-form-group
+                    label="Classe(s) et/ou année(s) concernée(s)"
                 >
-                    <template #noResult>Aucune classe trouvée.</template>
-                    <template #noOptions />
-                </multiselect>
-            </b-form-group>
-            <b-form-group
-                label="Prof/Educ(s) absent(s)/indisponible(s)/concerné(s)"
-            >
-                <multiselect
-                    :internal-search="false"
-                    :options="teachersReplacedOptions"
-                    @search-change="getTeachersReplaced"
-                    :multiple="true"
-                    placeholder="Ajouter un ou des prof/educ…"
-                    :loading="teachersReplacedLoading"
-                    select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
-                    selected-label="Sélectionné"
-                    deselect-label="Cliquer dessus pour enlever"
-                    v-model="form.teachers_replaced"
-                    label="display"
-                    track-by="matricule"
-                >
-                    <template #noResult>Aucun professeur trouvé.</template>
-                    <template #noOptions />
-                </multiselect>
-            </b-form-group>
-            <b-form-group
-                v-if="isReplacement"
-                label="Prof/Educ(s) remplacant(s)"
-            >
-                <multiselect
-                    :internal-search="false"
-                    :options="teachersSubstituteOptions"
-                    @search-change="getTeachersSubstitute"
-                    :multiple="true"
-                    placeholder="Ajouter un ou des professeurs…"
-                    :loading="teachersReplacedLoading"
-                    select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
-                    selected-label="Sélectionné"
-                    deselect-label="Cliquer dessus pour enlever"
-                    v-model="form.teachers_substitute"
-                    label="display"
-                    track-by="matricule"
-                >
-                    <template #noResult>Aucun professeur trouvé.</template>
-                    <template #noOptions />
-                </multiselect>
-            </b-form-group>
-            <b-form-group
-                label="Local/Lieu de subtitution"
-            >
-                <multiselect
-                    v-model="form.place"
-                    tag-placeholder="Ajouter le local/lieu"
-                    placeholder="Ajouter local/lieu"
-                    :taggable="true"
-                    :options="placesOptions"
-                    @tag="addPlaces"
-                    select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
-                    selected-label="Sélectionné"
-                    deselect-label="Cliquer dessus pour enlever"
-                >
-                    <template #noOptions />
-                </multiselect>
-            </b-form-group>
-            <b-form-group
-                label="Commentaire"
-            >
-                <b-form-textarea
-                    v-model="form.comment"
-                    :rows="2"
-                    placeholder="Un commentaire sur le changement"
-                />
-            </b-form-group>
-            <b-form-group>
-                <b-form-checkbox v-model="form.send_email_general">
-                    Notifier par courriel les responsables des changements
-                    <span
-                        v-b-tooltip
-                        :title="$store.state.settings.responsible_name"
+                    <multiselect
+                        :internal-search="false"
+                        :options="classesOptions"
+                        @search-change="getStudentsClassesYears"
+                        :multiple="true"
+                        :loading="classesLoading"
+                        placeholder="Chercher une classe ou une année…"
+                        select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
+                        selected-label="Sélectionné"
+                        deselect-label="Cliquer dessus pour enlever"
+                        v-model="form.classes"
                     >
-                        <b-icon
-                            icon="question-circle"
-                            variant="primary"
-                        />
-                    </span>
-                </b-form-checkbox>
-            </b-form-group>
-            <b-form-group>
-                <b-form-checkbox v-model="form.send_email_educ">
-                    Notifier par courriel les educateurs
-                </b-form-checkbox>
-            </b-form-group>
-            <b-form-group v-if="form.teachers_replaced.length > 0">
-                <b-form-checkbox
-                    v-model="form.send_email_replaced"
+                        <template #noResult>Aucune classe trouvée.</template>
+                        <template #noOptions />
+                    </multiselect>
+                </b-form-group>
+            </b-col>
+        </b-row>
+
+        <b-row>
+            <b-col>
+                <b-form-group
+                    label="Prof/Educ(s) absent(s)/indisponible(s)/concerné(s)"
                 >
-                    Notifier par courriel l'absent(s)/indisponible(s)/concerné(s)
-                    <span
-                        v-b-tooltip
-                        :title="form.teachers_replaced.map(t => t.display).join(', ')"
+                    <multiselect
+                        :internal-search="false"
+                        :options="teachersReplacedOptions"
+                        @search-change="getTeachersReplaced"
+                        :multiple="true"
+                        placeholder="Ajouter un ou des prof/educ…"
+                        :loading="teachersReplacedLoading"
+                        select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
+                        selected-label="Sélectionné"
+                        deselect-label="Cliquer dessus pour enlever"
+                        v-model="form.teachers_replaced"
+                        label="display"
+                        track-by="matricule"
                     >
-                        <b-icon
-                            icon="question-circle"
-                            variant="primary"
-                        />
-                    </span>
-                </b-form-checkbox>
-            </b-form-group>
-            <b-form-group v-if="form.teachers_substitute.length > 0">
-                <b-form-checkbox
-                    v-model="form.send_email_substitute"
+                        <template #noResult>
+                            Aucun professeur trouvé.
+                        </template>
+                        <template #noOptions />
+                    </multiselect>
+                </b-form-group>
+            </b-col>
+        </b-row>
+
+        <b-row>
+            <b-col>
+                <b-form-group
+                    v-if="isReplacement"
+                    label="Prof/Educ(s) remplacant(s)"
                 >
-                    Notifier le remplaçant par courriel
-                    <span
-                        v-b-tooltip
-                        :title="form.teachers_substitute.map(t => t.display).join(', ')"
+                    <multiselect
+                        :internal-search="false"
+                        :options="teachersSubstituteOptions"
+                        @search-change="getTeachersSubstitute"
+                        :multiple="true"
+                        placeholder="Ajouter un ou des professeurs…"
+                        :loading="teachersReplacedLoading"
+                        select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
+                        selected-label="Sélectionné"
+                        deselect-label="Cliquer dessus pour enlever"
+                        v-model="form.teachers_substitute"
+                        label="display"
+                        track-by="matricule"
                     >
-                        <b-icon
-                            icon="question-circle"
-                            variant="primary"
-                        />
-                    </span>
-                </b-form-checkbox>
-            </b-form-group>
-            <b-form-group>
-                <b-form-checkbox
-                    v-model="form.hide_for_students"
+                        <template #noResult>Aucun professeur trouvé.</template>
+                        <template #noOptions />
+                    </multiselect>
+                </b-form-group>
+            </b-col>
+        </b-row>
+
+        <b-row>
+            <b-col>
+                <b-form-group
+                    label="Local/Lieu de subtitution"
                 >
-                    Cacher aux étudiants
-                </b-form-checkbox>
-            </b-form-group>
-        </b-form>
-        <template #modal-ok>
-            <b-spinner
-                v-if="submitting"
-                small
-            />
-            Soumettre
-        </template>
-    </b-modal>
+                    <multiselect
+                        v-model="form.place"
+                        tag-placeholder="Ajouter le local/lieu"
+                        placeholder="Ajouter local/lieu"
+                        :taggable="true"
+                        :options="placesOptions"
+                        @tag="addPlaces"
+                        select-label="Appuyer sur entrée pour sélectionner ou cliquer dessus"
+                        selected-label="Sélectionné"
+                        deselect-label="Cliquer dessus pour enlever"
+                    >
+                        <template #noOptions />
+                    </multiselect>
+                </b-form-group>
+            </b-col>
+        </b-row>
+
+        <b-row>
+            <b-col>
+                <b-form-group
+                    label="Commentaire"
+                >
+                    <b-form-textarea
+                        v-model="form.comment"
+                        :rows="2"
+                        placeholder="Un commentaire sur le changement"
+                    />
+                </b-form-group>
+                <b-form-group>
+                    <b-form-checkbox v-model="form.send_email_general">
+                        Notifier par courriel les responsables des changements
+                        <span
+                            v-b-tooltip
+                            :title="$store.state.settings.responsible_name"
+                        >
+                            <b-icon
+                                icon="question-circle"
+                                variant="primary"
+                            />
+                        </span>
+                    </b-form-checkbox>
+                </b-form-group>
+            </b-col>
+        </b-row>
+
+        <b-row>
+            <b-col>
+                <b-form-group>
+                    <b-form-checkbox v-model="form.send_email_educ">
+                        Notifier par courriel les educateurs
+                    </b-form-checkbox>
+                </b-form-group>
+                <b-form-group v-if="form.teachers_replaced.length > 0">
+                    <b-form-checkbox
+                        v-model="form.send_email_replaced"
+                    >
+                        Notifier par courriel l'absent(s)/indisponible(s)/concerné(s)
+                        <span
+                            v-b-tooltip
+                            :title="form.teachers_replaced.map(t => t.display).join(', ')"
+                        >
+                            <b-icon
+                                icon="question-circle"
+                                variant="primary"
+                            />
+                        </span>
+                    </b-form-checkbox>
+                </b-form-group>
+                <b-form-group v-if="form.teachers_substitute.length > 0">
+                    <b-form-checkbox
+                        v-model="form.send_email_substitute"
+                    >
+                        Notifier le remplaçant par courriel
+                        <span
+                            v-b-tooltip
+                            :title="form.teachers_substitute.map(t => t.display).join(', ')"
+                        >
+                            <b-icon
+                                icon="question-circle"
+                                variant="primary"
+                            />
+                        </span>
+                    </b-form-checkbox>
+                </b-form-group>
+                <b-form-group>
+                    <b-form-checkbox
+                        v-model="form.hide_for_students"
+                    >
+                        Cacher aux étudiants
+                    </b-form-checkbox>
+                </b-form-group>
+            </b-col>
+        </b-row>
+
+        <b-row>
+            <b-col>
+                <b-btn @click="copy">
+                    <b-icon icon="files" />
+                    Copier
+                </b-btn>
+            </b-col>
+            <b-col class="text-right">
+                <b-btn
+                    @click="submitForm"
+                    :disabled="submitting"
+                    variant="primary"
+                >
+                    <b-spinner
+                        v-if="submitting"
+                        small
+                    />
+                    Soumettre
+                </b-btn>
+            </b-col>
+        </b-row>
+    </b-container>
 </template>
 
 <script>
@@ -261,13 +323,14 @@ import axios from "axios";
 
 export default {
     props: {
-        entry: {
-            type: Object,
-            default: () => null,
+        id: {
+            type: Number,
+            default: -1,
         }
     },
     data: function () {
         return {
+            entry: null,
             searchId: -1,
             form: {
                 change: null,
@@ -290,7 +353,6 @@ export default {
             },
             classesOptions: [],
             classesLoading: false,
-            categoryOptions: [],
             teachersReplacedOptions: [],
             teachersReplacedLoading: false,
             teachersSubstituteOptions: [],
@@ -314,8 +376,6 @@ export default {
                 this.form.classes = this.initArray(this.form.classes);
                 this.form.teachers_replaced_id = this.form.teachers_replaced;
                 this.form.teachers_substitute_id = this.form.teachers_substitute;
-            } else {
-                this.resetData();
             }
         },
         errors: function (newErrors) {
@@ -339,6 +399,15 @@ export default {
         }
     },
     methods: {
+        copy: function () {
+            delete this.form.id;
+            delete this.entry.id;
+            this.$router.push("/schedule_form/-1/");
+            this.$root.$bvToast.toast("Ceci est une copie de l'entrée, vous pouvez maintenant modifier les données sans changer la précédente.", {
+                variant: "info",
+                noCloseButton: true,
+            });
+        },
         addPlaces: function (newPlace) {
             this.placesOptions.push(newPlace);
             this.form.place = newPlace;
@@ -350,33 +419,12 @@ export default {
                 return [];
             }
         },
-        resetData: function () {
-            const places = this.placesOptions;
-            Object.assign(this.$data, this.$options.data.call(this));
-            this.placesOptions = places;
-            this.categoryOptions = this.$store.state.changeCategory;
-            this.$emit("reset");
-        },
-        show: function () {
-            this.categoryOptions = this.$store.state.changeCategory;
-            this.$refs.addModal.show();
-        },
-        hide: function() {
-            this.$refs.addModal.hide();
-        },
         errorMsg(err) {
             if (err in this.errors) {
                 return this.errors[err][0];
             } else {
                 return "";
             }
-        },
-        getPlaces() {
-            const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
-            axios.get("/schedule_change/api/schedule_change_place/", token)
-                .then(resp => {
-                    this.placesOptions = resp.data.results.map(p => p.name);
-                });
         },
         getStudentsClassesYears(query) {
             this.classesLoading = true;
@@ -473,19 +521,38 @@ export default {
             if (isPut) path += this.form.id + "/";
             const send = isPut ? axios.put(path, data, token) : axios.post(path, data, token);
             send.then(() => {
-                this.hide();
                 this.errors = {};
-                this.$emit("update");
+                this.$router.push("/",() => {
+                    this.$root.$bvToast.toast("Les données ont bien été envoyées.", {
+                        variant: "success",
+                        noCloseButton: true,
+                    });
+                });
                 this.submitting = false;
             }).catch(function (error) {
                 modal.submitting = false;
                 modal.errors = error.response.data;
             });
+        },
+        loadEntry: function () {
+            if (this.id > 0) {
+                axios.get(`/schedule_change/api/schedule_change/${this.id}/`)
+                    .then((resp) => {
+                        this.entry = resp.data;
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            }
         }
     },
     components: {Multiselect},
     mounted: function () {
-        this.getPlaces();
+        this.loadEntry();
+        this.$store.dispatch("getPlaces")
+            .then(() => {
+                this.placesOptions = this.$store.state.places;
+            });
     }
 };
 </script>

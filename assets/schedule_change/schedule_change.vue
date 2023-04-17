@@ -23,10 +23,6 @@
             class="loading"
             v-if="!loaded"
         />
-        <app-menu
-            v-if="!fullscreen"
-            :menu-info="menu"
-        />
         <b-container
             v-if="loaded"
             :fluid="fullscreen"
@@ -41,18 +37,30 @@
                 >
                     <b-form-group>
                         <div>
-                            <b-btn
+                            <b-dropdown
                                 v-if="$store.state.canAdd"
-                                variant="outline-success"
-                                @click="openModal('add-schedule-modal')"
+                                split
+                                split-to="/schedule_form/-1/"
+                                variant="success"
                                 class="w-100"
                             >
-                                <b-icon
-                                    icon="plus"
-                                    scale="1.5"
-                                />
-                                Ajouter un changement
-                            </b-btn>
+                                <template #button-content>
+                                    <b-icon
+                                        icon="plus"
+                                        scale="1.5"
+                                    />
+                                    Ajouter un changement
+                                </template>
+                                <b-dropdown-item
+                                    to="/mass_schedule_change/"
+                                    variant="success"
+                                >
+                                    <b-icon
+                                        icon="list"
+                                    />
+                                    Génerer des changements
+                                </b-dropdown-item>
+                            </b-dropdown>
                             <b-btn
                                 variant="secondary"
                                 @click="openModal('export-schedule-modal')"
@@ -144,9 +152,6 @@
                             :key="entry.id"
                             :row-data="entry"
                             @delete="askDelete(entry)"
-                            @edit="editEntry(entry, false)"
-                            @copy="editEntry(entry, true)"
-                            @showInfo="showInfo(entry)"
                             :fullscreen="fullscreen"
                         />
                     </b-overlay>
@@ -173,12 +178,6 @@
         >
             Êtes-vous sûr de vouloir supprimer ce changement ?
         </b-modal>
-        <add-schedule-modal
-            ref="addScheduleModal"
-            :entry="currentEntry"
-            @update="loadEntries"
-            @reset="currentEntry = null"
-        />
         <export-schedule-modal ref="exportScheduleModal" />
     </div>
 </template>
@@ -194,15 +193,11 @@ import Moment from "moment";
 Moment.locale("fr");
 
 import Filters from "../common/filters_form.vue";
-import Menu from "../common/menu_bar.vue";
 
 import ScheduleChangeEntry from "./scheduleChangeEntry.vue";
-import AddScheduleModal from "./addScheduleModal.vue";
 import ExportScheduleModal from "./exportScheduleModal.vue";
 
 import axios from "axios";
-window.axios = axios;
-window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
 export default {
     data: function () {
@@ -258,7 +253,6 @@ export default {
             this.loadEntries();
         },
         openModal: function (modal) {
-            if (modal === "add-schedule-modal") this.$refs.addScheduleModal.show();
             if (modal === "export-schedule-modal") this.$refs.exportScheduleModal.show();
         },
         applyFilter: function () {
@@ -289,15 +283,6 @@ export default {
                 });
 
             this.currentEntry = null;
-        },
-        editEntry: function(entry, copy) {
-            if (copy) {
-                this.currentEntry = Object.assign({}, entry);
-                delete this.currentEntry.id;
-            } else {
-                this.currentEntry = entry;
-            }
-            this.openModal("add-schedule-modal");
         },
         loadEntries: function () {
             axios.get(
@@ -365,14 +350,10 @@ export default {
     },
     mounted: function () {
         this.checkFullscreenMode();
-        // eslint-disable-next-line no-undef
-        this.menu = menu;
         this.applyFilter();
     },
     components: {
         "filters": Filters,
-        "app-menu": Menu,
-        "add-schedule-modal": AddScheduleModal,
         "export-schedule-modal": ExportScheduleModal,
         "schedule-change-entry": ScheduleChangeEntry,
     },

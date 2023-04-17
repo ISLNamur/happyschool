@@ -58,20 +58,12 @@
                     v-if="$store.state.canAdd"
                 >
                     <a
-                        href="#"
+                        :href="`#/schedule_form/${rowData.id}/`"
                         @click="editEntry"
                         class="card-link"
                     ><b-icon
                         icon="pencil-square"
                         variant="success"
-                    /></a>
-                    <a
-                        href="#"
-                        @click="copyEntry"
-                        class=""
-                    ><b-icon
-                        icon="files"
-                        variant="primary"
                     /></a>
                     <a
                         href="#"
