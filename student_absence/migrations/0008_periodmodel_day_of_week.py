@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('student_absence', '0007_studentabsencemodel_is_processed'),
+        ("student_absence", "0007_studentabsencemodel_is_processed"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='periodmodel',
-            name='day_of_week',
-            field=models.CharField(default='1-5', max_length=10),
+            model_name="periodmodel",
+            name="day_of_week",
+            field=models.CharField(default="1-5", max_length=10),
         ),
     ]

@@ -4,23 +4,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pia', '0003_auto_20191205_1118'),
+        ("pia", "0003_auto_20191205_1118"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='assessmentmodel',
-            name='branches',
+            model_name="assessmentmodel",
+            name="branches",
         ),
         migrations.RemoveField(
-            model_name='assessmentmodel',
-            name='cross_goals',
+            model_name="assessmentmodel",
+            name="cross_goals",
         ),
         migrations.AlterField(
-            model_name='assessmentmodel',
-            name='assessment',
+            model_name="assessmentmodel",
+            name="assessment",
             field=models.CharField(help_text="Description de l'évaluation.", max_length=200),
         ),
     ]

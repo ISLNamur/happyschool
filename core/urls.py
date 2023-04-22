@@ -25,39 +25,39 @@ from . import views
 from .adminsettings import views as admin_views
 
 
-app_name = 'core'
+app_name = "core"
 
 urlpatterns = [
-    path("profil/", views.ProfilView.as_view(), name='profil'),
-    path("members/", views.MembersView.as_view(), name='members'),
-    path('api/scholar_year/', views.ScholarYearAPI.as_view()),
-    path('admin/', admin_views.AdminView.as_view()),
-    path('api/testfile/', admin_views.TestFileAPIView.as_view()),
-    path('api/import_students/', admin_views.ImportStudentAPIView.as_view()),
-    path('api/import_teachers/', admin_views.ImportTeacherAPIView.as_view()),
-    path('api/birthday/', views.BirthdayAPI.as_view(), name='birthday'),
-    path('api/calendar/', views.CalendarAPI.as_view(), name='calendar'),
-    path('api/scholar_calendar/', views.ScholarCalendarAPI.as_view(), name='scholar_calendar'),
-    path('api/photo/', admin_views.PhotoAPI.as_view(), name='photo'),
-    path('api/logo/', admin_views.LogoAPI.as_view(), name='logo'),
-    path('api/update/', admin_views.UpdateAPIView.as_view(), name='update'),
-    path('api/restart/', admin_views.RestartAPIView.as_view(), name='restart'),
-    path('ping/', views.PingAPI.as_view(), name='ping'),
+    path("profil/", views.ProfilView.as_view(), name="profil"),
+    path("members/", views.MembersView.as_view(), name="members"),
+    path("api/scholar_year/", views.ScholarYearAPI.as_view()),
+    path("admin/", admin_views.AdminView.as_view()),
+    path("api/testfile/", admin_views.TestFileAPIView.as_view()),
+    path("api/import_students/", admin_views.ImportStudentAPIView.as_view()),
+    path("api/import_teachers/", admin_views.ImportTeacherAPIView.as_view()),
+    path("api/birthday/", views.BirthdayAPI.as_view(), name="birthday"),
+    path("api/calendar/", views.CalendarAPI.as_view(), name="calendar"),
+    path("api/scholar_calendar/", views.ScholarCalendarAPI.as_view(), name="scholar_calendar"),
+    path("api/photo/", admin_views.PhotoAPI.as_view(), name="photo"),
+    path("api/logo/", admin_views.LogoAPI.as_view(), name="logo"),
+    path("api/update/", admin_views.UpdateAPIView.as_view(), name="update"),
+    path("api/restart/", admin_views.RestartAPIView.as_view(), name="restart"),
+    path("ping/", views.PingAPI.as_view(), name="ping"),
 ]
 
 router = DefaultRouter()
-router.register(r'api/members', views.MembersAPI)
-router.register(r'api/teaching', views.TeachingViewSet)
-router.register(r'api/email', views.EmailViewSet)
-router.register(r'api/classe', views.ClasseViewSet)
-router.register(r'api/responsible', views.ResponsibleViewSet)
-router.register(r'api/student', views.StudentViewSet)
-router.register(r'api/user', views.UserViewSet)
-router.register(r'api/group', views.GroupViewSet)
-router.register(r'api/course', views.CourseViewSet)
-router.register(r'api/given_course', views.GivenCourseViewSet)
-router.register(r'api/given_course_info', views.GivenCourseInfoViewSet)
-router.register(r'api/course_schedule', views.CourseScheduleViewSet)
-router.register(r'api/period', views.PeriodCoreViewSet)
+router.register(r"api/members", views.MembersAPI)
+router.register(r"api/teaching", views.TeachingViewSet)
+router.register(r"api/email", views.EmailViewSet)
+router.register(r"api/classe", views.ClasseViewSet)
+router.register(r"api/responsible", views.ResponsibleViewSet)
+router.register(r"api/student", views.StudentViewSet)
+router.register(r"api/user", views.UserViewSet)
+router.register(r"api/group", views.GroupViewSet)
+router.register(r"api/course", views.CourseViewSet)
+router.register(r"api/given_course", views.GivenCourseViewSet)
+router.register(r"api/given_course_info", views.GivenCourseInfoViewSet)
+router.register(r"api/course_schedule", views.CourseScheduleViewSet)
+router.register(r"api/period", views.PeriodCoreViewSet)
 
 urlpatterns += router.urls

@@ -29,7 +29,7 @@ from core.models import TeachingModel, StudentModel, ResponsibleModel
 
 
 def unique_file_name(instance, filename):
-    path = strftime('pia/%Y/%m/%d/')
+    path = strftime("pia/%Y/%m/%d/")
     file = "".join(random.choice(string.ascii_letters) for x in range(0, 3)) + "_" + filename
     return path + file
 
@@ -42,13 +42,15 @@ class PIASettingsModel(models.Model):
         help_text="""
         Si activé, seuls les titulaires peuvent voir les PIA de leurs élèves.
         Sinon sera limité aux classes associées.
-        """
+        """,
     )
     weekday_support_activity = models.CharField(
-        max_length=20, default="1-5", help_text="""Jour de la semaine où il y activité de support.
+        max_length=20,
+        default="1-5",
+        help_text="""Jour de la semaine où il y activité de support.
         Spécifier les jours par intervalles avec un tiret ('1-5' pour du lundi au vendredi)
         et par virgule pour des jours distincts ('1,3,5' pour lundi, mercredi, vendredi).
-        Peut être une combinaison des deux."""
+        Peut être une combinaison des deux.""",
     )
 
 
@@ -89,8 +91,7 @@ class ScheduleAdjustmentModel(models.Model):
     """
 
     schedule_adjustment = models.CharField(
-        max_length=200,
-        help_text="Description de l'aménagement horaire"
+        max_length=200, help_text="Description de l'aménagement horaire"
     )
 
     def __str__(self):
@@ -168,17 +169,15 @@ class BranchGoalItemModel(models.Model):
 class AssessmentModel(models.Model):
     """Assessment model of a goal (cross goal or branch goal).
 
-        Attributes:
-            assessment Description of the assessment.
+    Attributes:
+        assessment Description of the assessment.
     """
 
-    assessment = models.CharField(
-        max_length=200,
-        help_text="Description de l'évaluation."
-    )
+    assessment = models.CharField(max_length=200, help_text="Description de l'évaluation.")
 
     """String representation of the AssessmentModel, return the description of
     the assessment."""
+
     def __str__(self):
         return self.assessment
 
@@ -191,7 +190,9 @@ class BaseGoal(models.Model):
     given_help = models.TextField(blank=True)
     responsible = models.ManyToManyField(ResponsibleModel, blank=True)
     self_assessment = models.CharField(max_length=2000, blank=True)
-    assessment = models.ForeignKey(AssessmentModel, on_delete=models.SET_NULL, null=True, blank=True)
+    assessment = models.ForeignKey(
+        AssessmentModel, on_delete=models.SET_NULL, null=True, blank=True
+    )
     validated = models.BooleanField(default=False)
     attachments = models.ManyToManyField(AttachmentModel, blank=True)
     datetime_creation = models.DateTimeField(auto_now_add=True)
@@ -199,7 +200,10 @@ class BaseGoal(models.Model):
 
     class Meta:
         abstract = True
-        ordering = ["-date_end", "-date_start",]
+        ordering = [
+            "-date_end",
+            "-date_start",
+        ]
 
 
 class CrossGoalModel(BaseGoal):

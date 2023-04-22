@@ -4,19 +4,34 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0013_courseschedulemodel_periodcoremodel'),
+        ("core", "0013_courseschedulemodel_periodcoremodel"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='MenuEntryModel',
+            name="MenuEntryModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('display', models.CharField(help_text='Nom qui sera affiché dans le menu.', max_length=20)),
-                ('link', models.URLField()),
-                ('forced_order', models.PositiveSmallIntegerField(blank=True, default=None, help_text='Forcer une position dans le menu.', null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "display",
+                    models.CharField(help_text="Nom qui sera affiché dans le menu.", max_length=20),
+                ),
+                ("link", models.URLField()),
+                (
+                    "forced_order",
+                    models.PositiveSmallIntegerField(
+                        blank=True,
+                        default=None,
+                        help_text="Forcer une position dans le menu.",
+                        null=True,
+                    ),
+                ),
             ],
         ),
     ]

@@ -28,20 +28,20 @@ from .models import Absence, MotifAbsence, AbsenceProfSettingsModel
 class AbsenceProfSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = AbsenceProfSettingsModel
-        fields = '__all__'
+        fields = "__all__"
 
 
 class MotifAbsenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = MotifAbsence
-        fields = '__all__'
+        fields = "__all__"
 
 
 class AbsenceProfSerializer(serializers.ModelSerializer):
     responsible = ResponsibleSerializer(read_only=True)
-    responsible_id = serializers.PrimaryKeyRelatedField(queryset=ResponsibleModel.objects.all(),
-                                                        source='matricule', required=False,
-                                                        allow_null=True)
+    responsible_id = serializers.PrimaryKeyRelatedField(
+        queryset=ResponsibleModel.objects.all(), source="matricule", required=False, allow_null=True
+    )
     status = serializers.ReadOnlyField()
 
     def validate(self, data):
@@ -49,9 +49,11 @@ class AbsenceProfSerializer(serializers.ModelSerializer):
 
         print(data)
         if data["date_absence_start"] > data["date_absence_end"]:
-            raise serializers.ValidationError("La date de fin doit se trouver après la date de début.")
+            raise serializers.ValidationError(
+                "La date de fin doit se trouver après la date de début."
+            )
         return data
 
     class Meta:
         model = Absence
-        exclude = ('user',)
+        exclude = ("user",)

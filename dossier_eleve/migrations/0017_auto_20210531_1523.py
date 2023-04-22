@@ -4,61 +4,117 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('auth', '0011_update_proxy_permissions'),
-        ('dossier_eleve', '0016_auto_20210511_1211'),
+        ("auth", "0011_update_proxy_permissions"),
+        ("dossier_eleve", "0016_auto_20210511_1211"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='dossierelevesettingsmodel',
-            name='tenure_allow_visibility_from',
-            field=models.ManyToManyField(blank=True, default=None, help_text="Les groupes selectionnés auront le titulaire comme choix pour la visibilité.\n        Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.", related_name='tenure_allow_visibility_from', to='auth.Group'),
+            model_name="dossierelevesettingsmodel",
+            name="tenure_allow_visibility_from",
+            field=models.ManyToManyField(
+                blank=True,
+                default=None,
+                help_text="Les groupes selectionnés auront le titulaire comme choix pour la visibilité.\n        Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.",
+                related_name="tenure_allow_visibility_from",
+                to="auth.Group",
+            ),
         ),
         migrations.AddField(
-            model_name='dossierelevesettingsmodel',
-            name='tenure_force_visibility_from',
-            field=models.ManyToManyField(blank=True, default=None, help_text="Les groupes selectionnés seront forcément visibles par les titulaires.\n        Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.", related_name='tenure_force_visibility_from', to='auth.Group'),
+            model_name="dossierelevesettingsmodel",
+            name="tenure_force_visibility_from",
+            field=models.ManyToManyField(
+                blank=True,
+                default=None,
+                help_text="Les groupes selectionnés seront forcément visibles par les titulaires.\n        Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.",
+                related_name="tenure_force_visibility_from",
+                to="auth.Group",
+            ),
         ),
         migrations.AlterField(
-            model_name='dossierelevesettingsmodel',
-            name='coord_force_visibility_to',
-            field=models.ManyToManyField(blank=True, default=None, help_text="Les groupes selectionnés auront forcément la visibilité sur les cas venant\n        d'un coordonateur. Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.", related_name='coord_force_visibility_to', to='auth.Group'),
+            model_name="dossierelevesettingsmodel",
+            name="coord_force_visibility_to",
+            field=models.ManyToManyField(
+                blank=True,
+                default=None,
+                help_text="Les groupes selectionnés auront forcément la visibilité sur les cas venant\n        d'un coordonateur. Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.",
+                related_name="coord_force_visibility_to",
+                to="auth.Group",
+            ),
         ),
         migrations.AlterField(
-            model_name='dossierelevesettingsmodel',
-            name='dir_force_visibility_to',
-            field=models.ManyToManyField(blank=True, default=None, help_text="Les groupes selectionnés auront forcément la visibilité sur les cas venant\n        de la direction. Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.", related_name='dir_force_visibility_to', to='auth.Group'),
+            model_name="dossierelevesettingsmodel",
+            name="dir_force_visibility_to",
+            field=models.ManyToManyField(
+                blank=True,
+                default=None,
+                help_text="Les groupes selectionnés auront forcément la visibilité sur les cas venant\n        de la direction. Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.",
+                related_name="dir_force_visibility_to",
+                to="auth.Group",
+            ),
         ),
         migrations.AlterField(
-            model_name='dossierelevesettingsmodel',
-            name='educ_force_visibility_to',
-            field=models.ManyToManyField(blank=True, default=None, help_text="Les groupes selectionnés auront forcément la visibilité sur les cas venant\n        d'un éducateur. Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.", related_name='educ_force_visibility_to', to='auth.Group'),
+            model_name="dossierelevesettingsmodel",
+            name="educ_force_visibility_to",
+            field=models.ManyToManyField(
+                blank=True,
+                default=None,
+                help_text="Les groupes selectionnés auront forcément la visibilité sur les cas venant\n        d'un éducateur. Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.",
+                related_name="educ_force_visibility_to",
+                to="auth.Group",
+            ),
         ),
         migrations.AlterField(
-            model_name='dossierelevesettingsmodel',
-            name='filter_teacher_entries_by_tenure',
-            field=models.BooleanField(default=True, help_text='Si activé, seuls les titulaires peuvent voir les cas de leurs élèves.'),
+            model_name="dossierelevesettingsmodel",
+            name="filter_teacher_entries_by_tenure",
+            field=models.BooleanField(
+                default=True,
+                help_text="Si activé, seuls les titulaires peuvent voir les cas de leurs élèves.",
+            ),
         ),
         migrations.AlterField(
-            model_name='dossierelevesettingsmodel',
-            name='pms_force_visibility_to',
-            field=models.ManyToManyField(blank=True, default=None, help_text="Les groupes selectionnés auront forcément la visibilité sur les cas venant\n        du pms. Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.", related_name='pms_force_visibility_to', to='auth.Group'),
+            model_name="dossierelevesettingsmodel",
+            name="pms_force_visibility_to",
+            field=models.ManyToManyField(
+                blank=True,
+                default=None,
+                help_text="Les groupes selectionnés auront forcément la visibilité sur les cas venant\n        du pms. Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.",
+                related_name="pms_force_visibility_to",
+                to="auth.Group",
+            ),
         ),
         migrations.AlterField(
-            model_name='dossierelevesettingsmodel',
-            name='teacher_force_visibility_to',
-            field=models.ManyToManyField(blank=True, default=None, help_text="Les groupes selectionnés auront forcément la visibilité sur les cas venant\n        d'un professeur. Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.", related_name='teacher_force_visibility_to', to='auth.Group'),
+            model_name="dossierelevesettingsmodel",
+            name="teacher_force_visibility_to",
+            field=models.ManyToManyField(
+                blank=True,
+                default=None,
+                help_text="Les groupes selectionnés auront forcément la visibilité sur les cas venant\n        d'un professeur. Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.",
+                related_name="teacher_force_visibility_to",
+                to="auth.Group",
+            ),
         ),
         migrations.AlterField(
-            model_name='dossierelevesettingsmodel',
-            name='tenure_allow_visibility_to',
-            field=models.ManyToManyField(blank=True, default=None, help_text="Les groupes selectionnés pourront donner la visibilité aux titulaires.\n        Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.", related_name='tenure_allow_visibility_to', to='auth.Group'),
+            model_name="dossierelevesettingsmodel",
+            name="tenure_allow_visibility_to",
+            field=models.ManyToManyField(
+                blank=True,
+                default=None,
+                help_text="Les groupes selectionnés pourront donner la visibilité aux titulaires.\n        Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.",
+                related_name="tenure_allow_visibility_to",
+                to="auth.Group",
+            ),
         ),
         migrations.AlterField(
-            model_name='dossierelevesettingsmodel',
-            name='tenure_force_visibility_to',
-            field=models.ManyToManyField(blank=True, default=None, help_text="Les groupes selectionnés donneront forcément la visibilité aux titulaires.\n        Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.", related_name='tenure_force_visibility_to', to='auth.Group'),
+            model_name="dossierelevesettingsmodel",
+            name="tenure_force_visibility_to",
+            field=models.ManyToManyField(
+                blank=True,
+                default=None,
+                help_text="Les groupes selectionnés donneront forcément la visibilité aux titulaires.\n        Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.",
+                related_name="tenure_force_visibility_to",
+                to="auth.Group",
+            ),
         ),
     ]

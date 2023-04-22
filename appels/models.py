@@ -44,10 +44,17 @@ class ObjectModel(models.Model):
 
 
 class Appel(models.Model):
-    matricule = models.ForeignKey(StudentModel, on_delete=models.SET_NULL, to_field='matricule',
-                                  null=True, blank=True, default=None)
-    responsible = models.ForeignKey(ResponsibleModel, on_delete=models.SET_NULL,
-                                    null=True, blank=True, default=None)
+    matricule = models.ForeignKey(
+        StudentModel,
+        on_delete=models.SET_NULL,
+        to_field="matricule",
+        null=True,
+        blank=True,
+        default=None,
+    )
+    responsible = models.ForeignKey(
+        ResponsibleModel, on_delete=models.SET_NULL, null=True, blank=True, default=None
+    )
     name = models.CharField(max_length=100)
     is_student = models.BooleanField(default=True)
     user = models.CharField(max_length=100, default="")
@@ -55,10 +62,14 @@ class Appel(models.Model):
     motif = models.CharField(max_length=300)  # DEPRECATED, use motive instead.
     object = models.ForeignKey(ObjectModel, on_delete=models.CASCADE, null=True, blank=True)
     motive = models.ForeignKey(MotiveModel, on_delete=models.CASCADE, null=True, blank=True)
-    datetime_motif_start = models.DateTimeField("Début date d'appel", null=True, default=None) # DEPRECATED
+    datetime_motif_start = models.DateTimeField(
+        "Début date d'appel", null=True, default=None
+    )  # DEPRECATED
     date_motif_start = models.DateField(null=True)
     time_motif_start = models.TimeField("Début heure d'appel", null=True, default=None)
-    datetime_motif_end = models.DateTimeField("Fin date d'appel", null=True, default=None)# DEPRECATED
+    datetime_motif_end = models.DateTimeField(
+        "Fin date d'appel", null=True, default=None
+    )  # DEPRECATED
     date_motif_end = models.DateField(null=True)
     time_motif_end = models.TimeField(null=True)
     datetime_appel = models.DateTimeField("Date d'appel")

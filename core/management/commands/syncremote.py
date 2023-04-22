@@ -21,14 +21,29 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User, Group
 
 from core.views import get_core_settings
-from core.models import TeachingModel, ClasseModel, ResponsibleModel, StudentModel, CourseModel, GivenCourseModel
-from core.serializers import TeachingSerializer, ClasseSerializer, ResponsibleRemoteSerializer, StudentWriteSerializer,\
-    GroupSerializer, UserSerializer, GivenCourseFlatSerializer, CourseSerializer
+from core.models import (
+    TeachingModel,
+    ClasseModel,
+    ResponsibleModel,
+    StudentModel,
+    CourseModel,
+    GivenCourseModel,
+)
+from core.serializers import (
+    TeachingSerializer,
+    ClasseSerializer,
+    ResponsibleRemoteSerializer,
+    StudentWriteSerializer,
+    GroupSerializer,
+    UserSerializer,
+    GivenCourseFlatSerializer,
+    CourseSerializer,
+)
 
 
 class Command(BaseCommand):
-    help = 'Sync core with a remote instance.'
-    remote_url = ''
+    help = "Sync core with a remote instance."
+    remote_url = ""
     header = {}
 
     def handle(self, *args, **options):
@@ -37,31 +52,39 @@ class Command(BaseCommand):
             print("Settings for remote is not set in CoreSettings")
 
         self.remote_url = settings.remote
-        if self.remote_url[-1] != '/':
-            self.remote_url += '/'
+        if self.remote_url[-1] != "/":
+            self.remote_url += "/"
         remote_token = settings.remote_token
-        self.header = {'Authorization': 'Token %s' % remote_token}
+        self.header = {"Authorization": "Token %s" % remote_token}
 
         print("Teachings…")
-        self.create_or_update_remote(TeachingModel, 'core/api/teaching', TeachingSerializer)
+        self.create_or_update_remote(TeachingModel, "core/api/teaching", TeachingSerializer)
         print("Classes…")
-        self.create_or_update_remote(ClasseModel, 'core/api/classe', ClasseSerializer)
+        self.create_or_update_remote(ClasseModel, "core/api/classe", ClasseSerializer)
         print("Groups…")
-        self.create_or_update_remote(Group, 'core/api/group', GroupSerializer)
+        self.create_or_update_remote(Group, "core/api/group", GroupSerializer)
         print("Users…")
-        self.create_or_update_remote(User, 'core/api/user', UserSerializer)
+        self.create_or_update_remote(User, "core/api/user", UserSerializer)
         print("Courses…")
         self.create_or_update_remote(CourseModel, "core/api/course", CourseSerializer)
-        self.create_or_update_remote(GivenCourseModel, "core/api/given_course", GivenCourseFlatSerializer)
+        self.create_or_update_remote(
+            GivenCourseModel, "core/api/given_course", GivenCourseFlatSerializer
+        )
         print("Responsibles…")
-        self.create_or_update_remote(ResponsibleModel, 'core/api/responsible', ResponsibleRemoteSerializer)
+        self.create_or_update_remote(
+            ResponsibleModel, "core/api/responsible", ResponsibleRemoteSerializer
+        )
         print("Students…")
-        self.create_or_update_remote(StudentModel, 'core/api/student', StudentWriteSerializer)
+        self.create_or_update_remote(StudentModel, "core/api/student", StudentWriteSerializer)
 
     def create_or_update_remote(self, model, base_url, serializer_class):
         import requests
+
         for obj in model.objects.all():
-            url = self.remote_url + '%s/%i/' % (base_url, obj.pk,)
+            url = self.remote_url + "%s/%i/" % (
+                base_url,
+                obj.pk,
+            )
             result = requests.get(url, headers=self.header)
 
             serializer = serializer_class(obj)

@@ -5,15 +5,19 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pia', '0016_piamodel_attachments'),
+        ("pia", "0016_piamodel_attachments"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='branchgoalitemmodel',
-            name='branch',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='pia.BranchModel'),
+            model_name="branchgoalitemmodel",
+            name="branch",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="pia.BranchModel",
+            ),
         ),
     ]

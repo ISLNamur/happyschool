@@ -4,55 +4,58 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pia', '0024_auto_20211221_1405'),
+        ("pia", "0024_auto_20211221_1405"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='crossgoalitemmodel',
-            name='advanced',
+            model_name="crossgoalitemmodel",
+            name="advanced",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='crossgoalitemmodel',
-            name='basic',
+            model_name="crossgoalitemmodel",
+            name="basic",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='piamodel',
-            name='advanced',
+            model_name="piamodel",
+            name="advanced",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='piamodel',
-            name='support_activities',
+            model_name="piamodel",
+            name="support_activities",
             field=models.JSONField(default=dict),
         ),
         migrations.AddField(
-            model_name='piasettingsmodel',
-            name='weekday_support_activity',
-            field=models.CharField(default='1-5', help_text="Jour de la semaine où il y activité de support.\n        Spécifier les jours par intervalles avec un tiret ('1-5' pour du lundi au vendredi)\n        et par virgule pour des jours distincts ('1,3,5' pour lundi, mercredi, vendredi).\n        Peut être une combinaison des deux.", max_length=20),
+            model_name="piasettingsmodel",
+            name="weekday_support_activity",
+            field=models.CharField(
+                default="1-5",
+                help_text="Jour de la semaine où il y activité de support.\n        Spécifier les jours par intervalles avec un tiret ('1-5' pour du lundi au vendredi)\n        et par virgule pour des jours distincts ('1,3,5' pour lundi, mercredi, vendredi).\n        Peut être une combinaison des deux.",
+                max_length=20,
+            ),
         ),
         migrations.AddField(
-            model_name='resourcedifficultymodel',
-            name='advanced',
+            model_name="resourcedifficultymodel",
+            name="advanced",
             field=models.BooleanField(default=True),
         ),
         migrations.AlterField(
-            model_name='piamodel',
-            name='disorder',
-            field=models.ManyToManyField(blank=True, to='pia.disordermodel'),
+            model_name="piamodel",
+            name="disorder",
+            field=models.ManyToManyField(blank=True, to="pia.disordermodel"),
         ),
         migrations.AlterField(
-            model_name='piamodel',
-            name='disorder_response',
-            field=models.ManyToManyField(blank=True, to='pia.disorderresponsemodel'),
+            model_name="piamodel",
+            name="disorder_response",
+            field=models.ManyToManyField(blank=True, to="pia.disorderresponsemodel"),
         ),
         migrations.AlterField(
-            model_name='piamodel',
-            name='schedule_adjustment',
-            field=models.ManyToManyField(blank=True, to='pia.scheduleadjustmentmodel'),
+            model_name="piamodel",
+            name="schedule_adjustment",
+            field=models.ManyToManyField(blank=True, to="pia.scheduleadjustmentmodel"),
         ),
     ]

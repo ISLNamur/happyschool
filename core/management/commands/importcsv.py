@@ -28,53 +28,65 @@ from core.adminsettings.importclass import ImportStudentCSV, ImportResponsibleCS
 
 
 class Command(BaseCommand):
-    help = 'Import a csv file for student or teachers.'
+    help = "Import a csv file for student or teachers."
 
     def add_arguments(self, parser):
         parser.add_argument(
             "-s",
-            '--student',
+            "--student",
             help="Path to students csv file. Expected header columns: 'Nom Elève', 'Prénom Elève',"
-                 " 'Matric Info', 'Année', 'Classe'"
+            " 'Matric Info', 'Année', 'Classe'",
         )
 
         parser.add_argument(
             "-t",
-            '--teacher',
+            "--teacher",
             help="Path to teacher csv file. Expected header columns: 'Nom Enseignant',"
-                 " 'Prénom Enseignant', 'Matricule Ministère', 'Classe'"
+            " 'Prénom Enseignant', 'Matricule Ministère', 'Classe'",
         )
 
         parser.add_argument(
             "implementation",
-            help="Implementation of the related people i.e. teaching field of the person."
+            help="Implementation of the related people i.e. teaching field of the person.",
         )
 
     def handle(self, *args, **options):
-        if options['student']:
-            with open(options['student'], newline='', encoding="utf-8-sig") as student_csv:
+        if options["student"]:
+            with open(options["student"], newline="", encoding="utf-8-sig") as student_csv:
                 try:
                     teaching = TeachingModel.objects.get(name=options["implementation"])
                 except ObjectDoesNotExist:
-                    teaching = TeachingModel(name=options["implementation"],
-                                             display_name=options["implementation"].title())
-                column_map = {'Matric Info': 'matricule', 'Nom Elève': 'last_name',
-                              'Prénom Elève': 'first_name', 'Année': 'year',
-                              'Classe': 'classe_letter', 'Email': 'email'}
+                    teaching = TeachingModel(
+                        name=options["implementation"],
+                        display_name=options["implementation"].title(),
+                    )
+                column_map = {
+                    "Matric Info": "matricule",
+                    "Nom Elève": "last_name",
+                    "Prénom Elève": "first_name",
+                    "Année": "year",
+                    "Classe": "classe_letter",
+                    "Email": "email",
+                }
                 import_student_csv = ImportStudentCSV(teaching, column_map)
                 import_student_csv.sync(student_csv, has_header=True)
 
-        if options['teacher']:
-            with open(options['teacher'], newline='', encoding="utf-8-sig") as teacher_csv:
+        if options["teacher"]:
+            with open(options["teacher"], newline="", encoding="utf-8-sig") as teacher_csv:
                 try:
                     teaching = TeachingModel.objects.get(name=options["implementation"])
                 except ObjectDoesNotExist:
-                    teaching = TeachingModel(name=options["implementation"],
-                                             display_name=options["implementation"].title())
-                column_map = {'Matricule Ministère': 'matricule', 'Nom Enseignant': 'last_name',
-                              'Prénom Enseignant': 'first_name', 'Classe': 'classe',
-                              'Email': 'email'}
+                    teaching = TeachingModel(
+                        name=options["implementation"],
+                        display_name=options["implementation"].title(),
+                    )
+                column_map = {
+                    "Matricule Ministère": "matricule",
+                    "Nom Enseignant": "last_name",
+                    "Prénom Enseignant": "first_name",
+                    "Classe": "classe",
+                    "Email": "email",
+                }
                 import_teacher_csv = ImportResponsibleCSV(teaching, column_map, is_teacher=True)
                 import_teacher_csv.sync(teacher_csv, has_header=True)
         return
-

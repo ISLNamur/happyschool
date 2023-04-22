@@ -23,16 +23,16 @@ from rest_framework.routers import DefaultRouter
 
 from . import views
 
-app_name = 'student_absence_teacher'
+app_name = "student_absence_teacher"
 
 urlpatterns = [
-    path('', views.StudentAbsenceTeacherView.as_view(), name="student_absence_teacher"),
+    path("", views.StudentAbsenceTeacherView.as_view(), name="student_absence_teacher"),
     path("export/<document>/<date_from>/<date_to>/", views.ExportAbsencesAPI.as_view()),
     path("api/count_absence/<date>/<point_of_view>/<class_list>/", views.OverviewAPI.as_view()),
 ]
 
 router = DefaultRouter()
-router.register(r'api/period', views.PeriodViewSet)
-router.register(r'api/absence', views.StudentAbsenceTeacherViewSet)
+router.register(r"api/period", views.PeriodViewSet)
+router.register(r"api/absence", views.StudentAbsenceTeacherViewSet)
 
 urlpatterns += router.urls

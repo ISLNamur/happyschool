@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('dossier_eleve', '0022_auto_20211126_1522'),
+        ("dossier_eleve", "0022_auto_20211126_1522"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='caseleve',
-            name='sanction_faite',
+            model_name="caseleve",
+            name="sanction_faite",
             field=models.BooleanField(blank=True, default=None, null=True),
         ),
     ]

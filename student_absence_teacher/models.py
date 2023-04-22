@@ -33,8 +33,12 @@ class StudentAbsenceTeacherSettingsModel(models.Model):
         (CLASS_AND_GIVEN_COURSE, "Par classe et par cours"),
     ]
     teachings = models.ManyToManyField(TeachingModel, default=None)
-    can_see_list = models.ManyToManyField(Group, default=None, blank=True, related_name="can_see_list")
-    can_see_adding = models.ManyToManyField(Group, default=None, blank=True, related_name="can_see_adding")
+    can_see_list = models.ManyToManyField(
+        Group, default=None, blank=True, related_name="can_see_list"
+    )
+    can_see_adding = models.ManyToManyField(
+        Group, default=None, blank=True, related_name="can_see_adding"
+    )
     select_student_by = models.CharField(choices=SELECT_STUDENT, max_length=4, default=CLASS)
 
 
@@ -71,14 +75,18 @@ class StudentAbsenceTeacherModel(models.Model):
     student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)
     date_absence = models.DateField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=PRESENCE)
-    given_course = models.ForeignKey(GivenCourseModel, on_delete=models.SET_NULL, null=True, blank=True)
+    given_course = models.ForeignKey(
+        GivenCourseModel, on_delete=models.SET_NULL, null=True, blank=True
+    )
     period = models.ForeignKey(PeriodModel, on_delete=models.SET_NULL, null=True)
     comment = models.TextField(blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    datetime_creation = models.DateTimeField("Date et heure de création de l'absence",
-                                             auto_now_add=True)
-    datetime_update = models.DateTimeField("Date et heure de mise à jour de l'absence",
-                                           auto_now=True)
+    datetime_creation = models.DateTimeField(
+        "Date et heure de création de l'absence", auto_now_add=True
+    )
+    datetime_update = models.DateTimeField(
+        "Date et heure de mise à jour de l'absence", auto_now=True
+    )
 
     def __str__(self):
         return f"{self.date_absence} ({self.period.name}): {self.student} ({self.status})"

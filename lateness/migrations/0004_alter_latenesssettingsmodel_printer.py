@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('lateness', '0003_sanctiontriggermodel_classe'),
+        ("lateness", "0003_sanctiontriggermodel_classe"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='latenesssettingsmodel',
-            name='printer',
-            field=models.CharField(blank=True, help_text='IP address of one or multiple printers. If multiple, it must be separated by a comma ","', max_length=200),
+            model_name="latenesssettingsmodel",
+            name="printer",
+            field=models.CharField(
+                blank=True,
+                help_text='IP address of one or multiple printers. If multiple, it must be separated by a comma ","',
+                max_length=200,
+            ),
         ),
     ]

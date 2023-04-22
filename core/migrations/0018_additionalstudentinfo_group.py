@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0017_courseschedulemodel_place'),
+        ("core", "0017_courseschedulemodel_place"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='additionalstudentinfo',
-            name='group',
+            model_name="additionalstudentinfo",
+            name="group",
             field=models.CharField(blank=True, max_length=100),
         ),
     ]

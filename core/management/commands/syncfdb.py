@@ -27,24 +27,31 @@ from core.adminsettings.importclass import ImportStudentFDB, ImportResponsibleFD
 
 
 class Command(BaseCommand):
-    help = 'Sync django database with a ProEco database.'
+    help = "Sync django database with a ProEco database."
 
     def handle(self, *args, **options):
-
         proecos = settings.SYNC_FDB_SERVER
         for proeco in proecos:
             teaching = TeachingModel.objects.get(name=proeco["teaching_name"])
             classe_format = proeco["classe_format"] if "classe_format" in proeco else "%C"
-            username_attribute = proeco["username_attribute"] if "username_attribute" in proeco else None
-            importation_student = ImportStudentFDB(teaching=teaching, fdb_server=proeco["server"],
-                                                   teaching_type=proeco["teaching_type"],
-                                                   search_login_directory=settings.USE_LDAP_INFO,
-                                                   classe_format=classe_format)
-            importation_responsible = ImportResponsibleFDB(teaching=teaching, fdb_server=proeco["server"],
-                                                           teaching_type=proeco["teaching_type"],
-                                                           search_login_directory=settings.USE_LDAP_INFO,
-                                                           ldap_unique_attr=proeco["ldap_unique_attr"]["teacher_ldap_attr"],
-                                                           classe_format=classe_format,
-                                                           username_attribute=username_attribute)
+            username_attribute = (
+                proeco["username_attribute"] if "username_attribute" in proeco else None
+            )
+            importation_student = ImportStudentFDB(
+                teaching=teaching,
+                fdb_server=proeco["server"],
+                teaching_type=proeco["teaching_type"],
+                search_login_directory=settings.USE_LDAP_INFO,
+                classe_format=classe_format,
+            )
+            importation_responsible = ImportResponsibleFDB(
+                teaching=teaching,
+                fdb_server=proeco["server"],
+                teaching_type=proeco["teaching_type"],
+                search_login_directory=settings.USE_LDAP_INFO,
+                ldap_unique_attr=proeco["ldap_unique_attr"]["teacher_ldap_attr"],
+                classe_format=classe_format,
+                username_attribute=username_attribute,
+            )
             importation_student.sync()
             importation_responsible.sync()

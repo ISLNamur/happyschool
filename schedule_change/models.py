@@ -25,18 +25,24 @@ from core.models import TeachingModel, EmailModel, ResponsibleModel
 class ScheduleChangeSettingsModel(models.Model):
     teachings = models.ManyToManyField(TeachingModel, default=None)
     all_access = models.ManyToManyField(Group, default=None, blank=True)
-    enable_fullscreen = models.BooleanField(default=False, help_text="Permet d'accéder à la page principale "
-                                                                     "en lecture avec l'adresse "
-                                                                     "/schedule_change/fullscreen/ et ce sans"
-                                                                     " authentification")
+    enable_fullscreen = models.BooleanField(
+        default=False,
+        help_text="Permet d'accéder à la page principale "
+        "en lecture avec l'adresse "
+        "/schedule_change/fullscreen/ et ce sans"
+        " authentification",
+    )
     notify_by_email_to = models.ManyToManyField(EmailModel)
     responsible_phone = models.CharField(max_length=30, default="")
     responsible_name = models.CharField(max_length=100, default="")
     email_school = models.BooleanField(default=False)
-    copy_to_remote = models.BooleanField(default=False, help_text="Copie toutes les entrées créées "
-                                                                  "sur le serveur distant (remote)."
-                                                                  "Le serveur distant doit être"
-                                                                  "configuré dans CoreSettingsModel")
+    copy_to_remote = models.BooleanField(
+        default=False,
+        help_text="Copie toutes les entrées créées "
+        "sur le serveur distant (remote)."
+        "Le serveur distant doit être"
+        "configuré dans CoreSettingsModel",
+    )
 
 
 class ScheduleChangeTypeModel(models.Model):
@@ -48,11 +54,18 @@ class ScheduleChangeTypeModel(models.Model):
 
 class ScheduleChangeCategoryModel(models.Model):
     category = models.CharField(max_length=100)
-    color = models.CharField(default="", max_length=6, help_text="Valeur hexadecimal de la couleur.")
-    icon = models.CharField(default="", max_length=50, help_text="Icône utilisée par Font Awesome 4.7.")
+    color = models.CharField(
+        default="", max_length=6, help_text="Valeur hexadecimal de la couleur."
+    )
+    icon = models.CharField(
+        default="", max_length=50, help_text="Icône utilisée par Font Awesome 4.7."
+    )
 
     def __str__(self):
-        return "%s %s" % (self.category, self.color,)
+        return "%s %s" % (
+            self.category,
+            self.color,
+        )
 
 
 class ScheduleChangePlaceModel(models.Model):
@@ -64,13 +77,17 @@ class ScheduleChangePlaceModel(models.Model):
 
 class ScheduleChangeModel(models.Model):
     change = models.ForeignKey(ScheduleChangeTypeModel, on_delete=models.SET_NULL, null=True)
-    category = models.ForeignKey(ScheduleChangeCategoryModel, on_delete=models.SET_NULL, blank=True, null=True)
+    category = models.ForeignKey(
+        ScheduleChangeCategoryModel, on_delete=models.SET_NULL, blank=True, null=True
+    )
     date_change = models.DateField("Date")
     time_start = models.TimeField(null=True, blank=True)
     time_end = models.TimeField(null=True, blank=True)
     classes = models.CharField(default="", blank=True, max_length=100)
     teachers_replaced = models.ManyToManyField(ResponsibleModel, related_name="teachers_replaced")
-    teachers_substitute = models.ManyToManyField(ResponsibleModel, related_name="teachers_substitute", blank=True)
+    teachers_substitute = models.ManyToManyField(
+        ResponsibleModel, related_name="teachers_substitute", blank=True
+    )
     place = models.CharField(default="", blank=True, max_length=200)
     comment = models.CharField(default="", blank=True, max_length=500)
     datetime_created = models.DateTimeField("date d'encodage", auto_now_add=True)
@@ -80,7 +97,9 @@ class ScheduleChangeModel(models.Model):
     hide_for_students = models.BooleanField(default=False)
 
     def __str__(self):
-        return "%s (%s-%s): %s" % (self.date_change,
-                                   self.time_start.strftime("%H:%M") if self.time_start else "-",
-                                   self.time_end.strftime("%H:%M") if self.time_end else "-",
-                                   self.change.name,)
+        return "%s (%s-%s): %s" % (
+            self.date_change,
+            self.time_start.strftime("%H:%M") if self.time_start else "-",
+            self.time_end.strftime("%H:%M") if self.time_end else "-",
+            self.change.name,
+        )

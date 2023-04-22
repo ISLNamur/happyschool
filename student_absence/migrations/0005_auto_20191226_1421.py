@@ -6,8 +6,8 @@ from django.db import migrations
 
 
 def two_period_to_any(apps, schema_editor):
-    StudentAbsenceModel = apps.get_model('student_absence', 'StudentAbsenceModel')
-    PeriodModel = apps.get_model('student_absence', 'PeriodModel')
+    StudentAbsenceModel = apps.get_model("student_absence", "StudentAbsenceModel")
+    PeriodModel = apps.get_model("student_absence", "PeriodModel")
     if not StudentAbsenceModel.objects.exists():
         return
 
@@ -40,9 +40,8 @@ def two_period_to_any(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('student_absence', '0004_auto_20191224_1145'),
+        ("student_absence", "0004_auto_20191224_1145"),
     ]
 
     operations = [

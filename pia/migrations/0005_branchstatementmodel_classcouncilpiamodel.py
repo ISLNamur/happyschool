@@ -5,31 +5,55 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pia', '0004_auto_20191205_1328'),
+        ("pia", "0004_auto_20191205_1328"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ClassCouncilPIAModel',
+            name="ClassCouncilPIAModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date_council', models.DateField()),
-                ('datetime_creation', models.DateTimeField(auto_now_add=True)),
-                ('datetime_update', models.DateTimeField(auto_now=True)),
-                ('pia_model', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pia.PIAModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("date_council", models.DateField()),
+                ("datetime_creation", models.DateTimeField(auto_now_add=True)),
+                ("datetime_update", models.DateTimeField(auto_now=True)),
+                (
+                    "pia_model",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="pia.PIAModel"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='BranchStatementModel',
+            name="BranchStatementModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('resources', models.CharField(max_length=2000)),
-                ('difficulties', models.CharField(max_length=2000)),
-                ('others', models.CharField(max_length=1000)),
-                ('branch', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pia.BranchModel')),
-                ('class_council', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pia.ClassCouncilPIAModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("resources", models.CharField(max_length=2000)),
+                ("difficulties", models.CharField(max_length=2000)),
+                ("others", models.CharField(max_length=1000)),
+                (
+                    "branch",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="pia.BranchModel"
+                    ),
+                ),
+                (
+                    "class_council",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="pia.ClassCouncilPIAModel"
+                    ),
+                ),
             ],
         ),
     ]

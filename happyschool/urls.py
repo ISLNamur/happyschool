@@ -30,48 +30,68 @@ from core.utilities import EXCLUDED_APPS
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("core/", include('core.urls')),
-    path("annuaire/", include('annuaire.urls'), name='annuaire'),
-    path("no_access/", TemplateView.as_view(template_name='core/no_access.html'), name='no_access'),
-    path("", RedirectView.as_view(url='annuaire/', permanent=False)),
+    path("core/", include("core.urls")),
+    path("annuaire/", include("annuaire.urls"), name="annuaire"),
+    path("no_access/", TemplateView.as_view(template_name="core/no_access.html"), name="no_access"),
+    path("", RedirectView.as_view(url="annuaire/", permanent=False)),
 ]
 
 # Handle SSO with CAS
 if "django_cas_ng" in settings.INSTALLED_APPS:
     import django_cas_ng.views
 
-    urlpatterns.append(path("auth/", django_cas_ng.views.LoginView.as_view(), name='cas_ng_login'))
-    urlpatterns.append(path("logout/", django_cas_ng.views.LogoutView.as_view(), name='cas_ng_logout'))
-    urlpatterns.append(path("login/", LoginView.as_view(
-        template_name='core/auth.html',
-        extra_context={
-            'google': 'social_core.backends.google.GoogleOAuth2' in settings.AUTHENTICATION_BACKENDS,
-            'microsoft': 'social_core.backends.microsoft.MicrosoftOAuth2' in settings.AUTHENTICATION_BACKENDS,
-            'model': 'django.contrib.auth.backends.ModelBackend' in settings.AUTHENTICATION_BACKENDS,
-            },
-        ), name='auth',))
+    urlpatterns.append(path("auth/", django_cas_ng.views.LoginView.as_view(), name="cas_ng_login"))
+    urlpatterns.append(
+        path("logout/", django_cas_ng.views.LogoutView.as_view(), name="cas_ng_logout")
+    )
+    urlpatterns.append(
+        path(
+            "login/",
+            LoginView.as_view(
+                template_name="core/auth.html",
+                extra_context={
+                    "google": "social_core.backends.google.GoogleOAuth2"
+                    in settings.AUTHENTICATION_BACKENDS,
+                    "microsoft": "social_core.backends.microsoft.MicrosoftOAuth2"
+                    in settings.AUTHENTICATION_BACKENDS,
+                    "model": "django.contrib.auth.backends.ModelBackend"
+                    in settings.AUTHENTICATION_BACKENDS,
+                },
+            ),
+            name="auth",
+        )
+    )
 else:
-    urlpatterns.append(path("auth/", LoginView.as_view(
-        template_name='core/auth.html',
-        extra_context={
-            'google': 'social_core.backends.google.GoogleOAuth2' in settings.AUTHENTICATION_BACKENDS,
-            'microsoft': 'social_core.backends.microsoft.MicrosoftOAuth2' in settings.AUTHENTICATION_BACKENDS,
-            'model': 'django.contrib.auth.backends.ModelBackend' in settings.AUTHENTICATION_BACKENDS,
-            },
-        ), name='auth',))
-    urlpatterns.append(path("logout/", LogoutView.as_view(next_page='auth'), name='logout'))
+    urlpatterns.append(
+        path(
+            "auth/",
+            LoginView.as_view(
+                template_name="core/auth.html",
+                extra_context={
+                    "google": "social_core.backends.google.GoogleOAuth2"
+                    in settings.AUTHENTICATION_BACKENDS,
+                    "microsoft": "social_core.backends.microsoft.MicrosoftOAuth2"
+                    in settings.AUTHENTICATION_BACKENDS,
+                    "model": "django.contrib.auth.backends.ModelBackend"
+                    in settings.AUTHENTICATION_BACKENDS,
+                },
+            ),
+            name="auth",
+        )
+    )
+    urlpatterns.append(path("logout/", LogoutView.as_view(next_page="auth"), name="logout"))
 
 for app in settings.INSTALLED_APPS:
     if app in EXCLUDED_APPS:
         continue
 
-    urlpatterns.append(path("%s/" % (app), include('%s.urls' % (app))))
+    urlpatterns.append(path("%s/" % (app), include("%s.urls" % (app))))
 
-if 'social_django' in settings.INSTALLED_APPS:
-    urlpatterns.append(path("", include('social_django.urls', namespace='social')))
+if "social_django" in settings.INSTALLED_APPS:
+    urlpatterns.append(path("", include("social_django.urls", namespace="social")))
 
 if "debug_toolbar" in settings.INSTALLED_APPS:
-    urlpatterns.append(path('__debug__/', include('debug_toolbar.urls')))
+    urlpatterns.append(path("__debug__/", include("debug_toolbar.urls")))
 
 if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()

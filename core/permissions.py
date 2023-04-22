@@ -38,20 +38,20 @@ class IsInGroupPermission(permissions.BasePermission):
 
 
 class IsSysadminPermission(IsInGroupPermission):
-    group = ('sysadmin')
+    group = "sysadmin"
 
 
 class IsDirectionPermission(IsInGroupPermission):
-    group = ('sysadmin', 'direction')
+    group = ("sysadmin", "direction")
 
 
 class IsTeacherPermission(IsInGroupPermission):
-    group = ('sysadmin', 'direction', 'professeur')
+    group = ("sysadmin", "direction", "professeur")
 
 
 class IsEducatorPermission(IsInGroupPermission):
-    group = ('sysadmin', 'direction', 'educator')
+    group = ("sysadmin", "direction", "educator")
 
 
 class IsSecretaryPermission(IsInGroupPermission):
-    group = ('sysadmin', 'direction', 'secretaire')
+    group = ("sysadmin", "direction", "secretaire")

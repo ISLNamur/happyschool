@@ -39,14 +39,21 @@ from django_filters import rest_framework as filters
 # from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions, BasePermission
+
 # from rest_framework.parsers import MultiPartParser
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
 
-from core.views import BaseFilters, BaseModelViewSet, get_app_settings, BaseUploadFileView, \
-    get_core_settings, BinaryFileRenderer
+from core.views import (
+    BaseFilters,
+    BaseModelViewSet,
+    get_app_settings,
+    BaseUploadFileView,
+    get_core_settings,
+    BinaryFileRenderer,
+)
 from core.utilities import get_menu
 from core.utilities import get_scholar_year, check_student_photo
 from core.models import StudentModel, ResponsibleModel
@@ -70,8 +77,10 @@ def get_menu_entry(active_app, request):
     ):
         return {}
 
-    has_only_ask = not request.user.has_perm("dossier_eleve.view_caseleve") \
-        and (request.user.has_perm("dossier_eleve.ask_sanction") or request.user.has_perm("dossier_eleve.set_sanction"))
+    has_only_ask = not request.user.has_perm("dossier_eleve.view_caseleve") and (
+        request.user.has_perm("dossier_eleve.ask_sanction")
+        or request.user.has_perm("dossier_eleve.set_sanction")
+    )
 
     menu_entry = {
         "app": "dossier_eleve",
@@ -81,9 +90,11 @@ def get_menu_entry(active_app, request):
     }
     last_access = request.session.get("dossier_eleve_last_access", None)
     if last_access:
-        view_set = CasEleveViewSet.as_view({'get': 'list'})
-        results = [c["id"] for c in view_set(request).data['results']]
-        menu_entry["new_items"] = CasEleve.objects.filter(id__in=results, datetime_modified__gt=last_access).count()
+        view_set = CasEleveViewSet.as_view({"get": "list"})
+        results = [c["id"] for c in view_set(request).data["results"]]
+        menu_entry["new_items"] = CasEleve.objects.filter(
+            id__in=results, datetime_modified__gt=last_access
+        ).count()
         if menu_entry["new_items"] >= 20:
             menu_entry["new_items"] = "20+"
     return menu_entry
@@ -100,18 +111,17 @@ def get_generic_groups() -> dict:
     educ_group = Group.objects.get(name=settings.EDUCATOR_GROUP)
     teacher_group = Group.objects.get(name=settings.TEACHER_GROUP)
     pms_group = Group.objects.get(name=settings.PMS_GROUP)
-    return {"sysadmin": sysadmin_group,
-            "direction": direction_group,
-            "coordonator": coord_group,
-            "educator": educ_group,
-            "teacher": teacher_group,
-            "pms": pms_group,
-            }
+    return {
+        "sysadmin": sysadmin_group,
+        "direction": direction_group,
+        "coordonator": coord_group,
+        "educator": educ_group,
+        "teacher": teacher_group,
+        "pms": pms_group,
+    }
 
 
-class BaseDossierEleveView(LoginRequiredMixin,
-                       PermissionRequiredMixin,
-                       TemplateView):
+class BaseDossierEleveView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     filters = []
 
     def get_context_data(self, **kwargs):
@@ -120,14 +130,24 @@ class BaseDossierEleveView(LoginRequiredMixin,
 
         # Add to the current context.
         context = super().get_context_data(**kwargs)
-        context['settings'] = JSONRenderer().render(DossierEleveSettingsSerializer(settings_dossier_eleve).data).decode()
-        context['menu'] = json.dumps(get_menu(self.request, "dossier_eleve"))
-        context['filters'] = json.dumps(self.filters)
+        context["settings"] = (
+            JSONRenderer()
+            .render(DossierEleveSettingsSerializer(settings_dossier_eleve).data)
+            .decode()
+        )
+        context["menu"] = json.dumps(get_menu(self.request, "dossier_eleve"))
+        context["filters"] = json.dumps(self.filters)
         scholar_year = get_scholar_year()
-        context['current_year'] = json.dumps('%i-%i' % (scholar_year, scholar_year + 1))
-        context['can_set_sanction'] = json.dumps(self.request.user.has_perm('dossier_eleve.set_sanction'))
-        context['can_ask_sanction'] = json.dumps(self.request.user.has_perm('dossier_eleve.ask_sanction'))
-        context['can_add_cas'] = json.dumps(self.request.user.has_perm('dossier_eleve.add_caseleve'))
+        context["current_year"] = json.dumps("%i-%i" % (scholar_year, scholar_year + 1))
+        context["can_set_sanction"] = json.dumps(
+            self.request.user.has_perm("dossier_eleve.set_sanction")
+        )
+        context["can_ask_sanction"] = json.dumps(
+            self.request.user.has_perm("dossier_eleve.ask_sanction")
+        )
+        context["can_add_cas"] = json.dumps(
+            self.request.user.has_perm("dossier_eleve.add_caseleve")
+        )
         groups = get_generic_groups()
         groups["sysadmin"] = {"id": groups["sysadmin"].id, "text": "Admin"}
         groups["direction"] = {"id": groups["direction"].id, "text": "Direction"}
@@ -135,10 +155,12 @@ class BaseDossierEleveView(LoginRequiredMixin,
         groups["educator"] = {"id": groups["educator"].id, "text": "Educateur"}
         groups["teacher"] = {"id": groups["teacher"].id, "text": "Professeurs"}
         groups["pms"] = {"id": groups["pms"].id, "text": "PMS"}
-        context['groups'] = groups
+        context["groups"] = groups
         context["proeco"] = json.dumps("proeco" in settings.INSTALLED_APPS)
 
-        context["dossier_eleve_last_access"] = self.request.session.get("dossier_eleve_last_access", "")
+        context["dossier_eleve_last_access"] = self.request.session.get(
+            "dossier_eleve_last_access", ""
+        )
         # Set last access
         self.request.session["dossier_eleve_last_access"] = timezone.now().isoformat()
         return context
@@ -148,27 +170,32 @@ class DossierEleveView(BaseDossierEleveView):
     template_name = "dossier_eleve/dossier_eleve.html"
     permission_required = ["dossier_eleve.view_caseleve"]
     filters = [
-        {'value': 'student', 'text': 'Nom'},
-        {'value': 'classe', 'text': 'Classe'},
-        {'value': 'info__info', 'text': 'Info'},
-        {'value': 'sanction_decision__sanction_decision', 'text': 'Sanction/décision'},
-        {'value': 'datetime_encodage', 'text': 'Date encodage'},
-        {'value': 'date_sanction', 'text': 'Date sanction'},
-        {'value': 'activate_important', 'text': 'Important'},
-        {'value': 'student__matricule', 'text': 'Matricule'},
-        {'value': 'scholar_year', 'text': 'Année scolaire'},
+        {"value": "student", "text": "Nom"},
+        {"value": "classe", "text": "Classe"},
+        {"value": "info__info", "text": "Info"},
+        {"value": "sanction_decision__sanction_decision", "text": "Sanction/décision"},
+        {"value": "datetime_encodage", "text": "Date encodage"},
+        {"value": "date_sanction", "text": "Date sanction"},
+        {"value": "activate_important", "text": "Important"},
+        {"value": "student__matricule", "text": "Matricule"},
+        {"value": "scholar_year", "text": "Année scolaire"},
     ]
 
 
 class CasEleveFilter(BaseFilters):
-    classe = filters.CharFilter(method='classe_by')
+    classe = filters.CharFilter(method="classe_by")
     activate_important = filters.BooleanFilter(field_name="important")
     no_sanctions = filters.BooleanFilter(method="no_sanctions_by")
     no_infos = filters.BooleanFilter(method="no_infos_by")
 
     class Meta:
-        fields_to_filter = ('student__matricule', 'info__info', 'sanction_decision__sanction_decision',
-                            'datetime_encodage', "date_sanction")
+        fields_to_filter = (
+            "student__matricule",
+            "info__info",
+            "sanction_decision__sanction_decision",
+            "datetime_encodage",
+            "date_sanction",
+        )
         model = CasEleve
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
@@ -199,10 +226,13 @@ class CasEleveViewSet(BaseModelViewSet):
     queryset = CasEleve.objects.filter(student__isnull=False).order_by("-datetime_modified")
 
     serializer_class = CasEleveSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
     filter_class = CasEleveFilter
-    ordering_fields = ('datetime_encodage', "student__last_name", "datetime_modified")
-    user_field = 'created_by'
+    ordering_fields = ("datetime_encodage", "student__last_name", "datetime_modified")
+    user_field = "created_by"
 
     def get_group_all_access(self):
         return get_settings().all_access.all()
@@ -230,22 +260,18 @@ class CasEleveViewSet(BaseModelViewSet):
         send_to_teachers = serializer.validated_data.get("send_to_teachers", False)
         # Remove from serializer as model doesn't need it.
         if "send_to_teachers" in serializer.validated_data:
-            serializer.validated_data.pop('send_to_teachers')
+            serializer.validated_data.pop("send_to_teachers")
 
         super().perform_create(serializer)
         cas = serializer.save(created_by=self.request.user)
         if send_to_teachers:
             task_send_info_email.apply_async(
-                countdown=1,
-                kwargs={'instance_id': serializer.save().id}
+                countdown=1, kwargs={"instance_id": serializer.save().id}
             )
 
         if cas.sanction_decision:
             if cas.sanction_decision.notify:
-                notify_sanction.apply_async(
-                    countdown=1,
-                    kwargs={"instance_id": cas.id}
-                )
+                notify_sanction.apply_async(countdown=1, kwargs={"instance_id": cas.id})
 
         if serializer.validated_data["info"]:
             self.force_visibility(serializer)
@@ -255,10 +281,9 @@ class CasEleveViewSet(BaseModelViewSet):
     def perform_update(self, serializer):
         super().perform_update(serializer)
 
-        if serializer.validated_data['send_to_teachers']:
+        if serializer.validated_data["send_to_teachers"]:
             task_send_info_email.apply_async(
-                countdown=1,
-                kwargs={'instance_id': serializer.save().id}
+                countdown=1, kwargs={"instance_id": serializer.save().id}
             )
 
         if serializer.validated_data["info"]:
@@ -289,21 +314,29 @@ class CasEleveViewSet(BaseModelViewSet):
             concerned_settings = [
                 {
                     "group": g.id,
-                    "is_allowed": set(getattr(
-                        dossier_settings, group_settings_match[g.name] + "_allow_visibility_to"
-                    ).all().values_list("id", flat=True)),
-                    "is_forced": set(getattr(
-                        dossier_settings, group_settings_match[g.name] + "_force_visibility_to"
-                    ).all().values_list("id", flat=True)),
+                    "is_allowed": set(
+                        getattr(
+                            dossier_settings, group_settings_match[g.name] + "_allow_visibility_to"
+                        )
+                        .all()
+                        .values_list("id", flat=True)
+                    ),
+                    "is_forced": set(
+                        getattr(
+                            dossier_settings, group_settings_match[g.name] + "_force_visibility_to"
+                        )
+                        .all()
+                        .values_list("id", flat=True)
+                    ),
                 }
                 for g in considered_groups
-                ]
+            ]
 
             # Complete group.
             for g in dossier_settings.tenure_force_visibility_from.all():
                 group_index = next(
                     (i for i, group in enumerate(concerned_settings) if group["group"] == g.id),
-                    None
+                    None,
                 )
                 if group_index is None:
                     continue
@@ -311,7 +344,7 @@ class CasEleveViewSet(BaseModelViewSet):
             for g in dossier_settings.tenure_allow_visibility_from.all():
                 group_index = next(
                     (i for i, group in enumerate(concerned_settings) if group["group"] == g.id),
-                    None
+                    None,
                 )
                 if group_index is None:
                     continue
@@ -324,11 +357,15 @@ class CasEleveViewSet(BaseModelViewSet):
                         {
                             "group": -1,
                             "is_allowed": set(
-                                dossier_settings.tenure_allow_visibility_to.all().values_list("id", flat=True)
+                                dossier_settings.tenure_allow_visibility_to.all().values_list(
+                                    "id", flat=True
+                                )
                             ),
                             "is_forced": set(
-                                dossier_settings.tenure_force_visibility_to.all().values_list("id", flat=True)
-                            )
+                                dossier_settings.tenure_force_visibility_to.all().values_list(
+                                    "id", flat=True
+                                )
+                            ),
                         }
                     )
             except ObjectDoesNotExist:
@@ -341,14 +378,16 @@ class CasEleveViewSet(BaseModelViewSet):
             for c_s in concerned_settings:
                 # It should be in allowed and forced simultaneously or only in forced.
                 could_be_forced_perm = could_be_forced_perm.union(
-                    c_s["is_allowed"].intersection(c_s["is_forced"]).union(
-                        c_s["is_forced"].difference(c_s["is_allowed"])
-                    )
+                    c_s["is_allowed"]
+                    .intersection(c_s["is_forced"])
+                    .union(c_s["is_forced"].difference(c_s["is_allowed"]))
                 )
 
             only_allowed_perm = set()
             for c_s in concerned_settings:
-                only_allowed_perm = only_allowed_perm.union(c_s["is_allowed"].difference(c_s["is_forced"]))
+                only_allowed_perm = only_allowed_perm.union(
+                    c_s["is_allowed"].difference(c_s["is_forced"])
+                )
 
             forced_visibility = [
                 f_g
@@ -374,18 +413,18 @@ class AskSanctionsView(BaseDossierEleveView):
     template_name = "dossier_eleve/ask_sanctions.html"
     permission_required = ["dossier_eleve.ask_sanction", "dossier_eleve.set_sanction"]
     filters = [
-        {'value': 'student', 'text': 'Nom'},
-        {'value': 'classe', 'text': 'Classe'},
-        {'value': 'sanction_decision__sanction_decision', 'text': 'Sanction/décision'},
-        {'value': 'date_sanction', 'text': 'Date sanction'},
-        {'value': 'datetime_conseil', 'text': 'Date du conseil'},
-        {'value': 'datetime_encodage', 'text': 'Date encodage'},
-        {'value': 'student__matricule', 'text': 'Matricule'},
-        {'value': 'scholar_year', 'text': 'Année scolaire'},
-        {'value': 'activate_all_retenues', 'text': 'Toutes les retenues'},
-        {'value': 'activate_today', 'text': "Sanctions aujourdhui"},
-        {'value': 'activate_not_done', 'text': 'Sanctions non faites'},
-        {'value': 'activate_waiting', 'text': 'En attente de validation'},
+        {"value": "student", "text": "Nom"},
+        {"value": "classe", "text": "Classe"},
+        {"value": "sanction_decision__sanction_decision", "text": "Sanction/décision"},
+        {"value": "date_sanction", "text": "Date sanction"},
+        {"value": "datetime_conseil", "text": "Date du conseil"},
+        {"value": "datetime_encodage", "text": "Date encodage"},
+        {"value": "student__matricule", "text": "Matricule"},
+        {"value": "scholar_year", "text": "Année scolaire"},
+        {"value": "activate_all_retenues", "text": "Toutes les retenues"},
+        {"value": "activate_today", "text": "Sanctions aujourdhui"},
+        {"value": "activate_not_done", "text": "Sanctions non faites"},
+        {"value": "activate_waiting", "text": "En attente de validation"},
     ]
 
     def has_permission(self) -> bool:
@@ -397,17 +436,22 @@ class AskSanctionsView(BaseDossierEleveView):
 
 
 class AskSanctionsFilter(BaseFilters):
-    classe = filters.CharFilter(method='classe_by')
-    activate_not_done = filters.CharFilter(method='activate_not_done_by')
-    activate_waiting = filters.CharFilter(method='activate_waiting_by')
+    classe = filters.CharFilter(method="classe_by")
+    activate_not_done = filters.CharFilter(method="activate_not_done_by")
+    activate_waiting = filters.CharFilter(method="activate_waiting_by")
     activate_today = filters.CharFilter(method="activate_today_by")
     sanction_decision = filters.CharFilter(method="sanction_decision_by")
-    activate_own_classes = filters.CharFilter(method='activate_own_classes_by')
+    activate_own_classes = filters.CharFilter(method="activate_own_classes_by")
 
     class Meta:
-        fields_to_filter = ('student__matricule', 'sanction_decision__sanction_decision', 'date_sanction',
-                            'datetime_conseil', 'datetime_encodage', 'sanction_decision__is_retenue',
-                            )
+        fields_to_filter = (
+            "student__matricule",
+            "sanction_decision__sanction_decision",
+            "date_sanction",
+            "datetime_conseil",
+            "datetime_encodage",
+            "sanction_decision__is_retenue",
+        )
         model = CasEleve
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
@@ -419,12 +463,12 @@ class AskSanctionsFilter(BaseFilters):
         return queryset.filter(query_filter)
 
     def activate_not_done_by(self, queryset, name, value):
-        if value == 'true':
+        if value == "true":
             return queryset.filter(date_sanction__lt=timezone.now())
         return queryset
 
     def activate_waiting_by(self, queryset, name, value):
-        if value == 'true':
+        if value == "true":
             return queryset.filter(datetime_conseil__isnull=True, date_sanction__isnull=True)
         return queryset
 
@@ -434,31 +478,40 @@ class AskSanctionsFilter(BaseFilters):
             return queryset.filter(
                 date_sanction__day=today.day,
                 date_sanction__month=today.month,
-                date_sanction__year=today.year
+                date_sanction__year=today.year,
             )
         return queryset
 
     def activate_own_classes_by(self, queryset, name, value):
         classes = get_classes(
-                teaching=get_settings().teachings.all(),
-                check_access=True,
-                user=self.request.user,
-                tenure_class_only=False,
-                educ_by_years=False
-            )
+            teaching=get_settings().teachings.all(),
+            check_access=True,
+            user=self.request.user,
+            tenure_class_only=False,
+            educ_by_years=False,
+        )
         return queryset.filter(student__classe__in=list(classes))
 
 
 class AskSanctionsViewSet(BaseModelViewSet):
-    queryset = CasEleve.objects.filter(student__isnull=False, sanction_decision__isnull=False, sanction_faite=False)
-    serializer_class = CasEleveSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
-    filter_class = AskSanctionsFilter
-    ordering_fields = ('datetime_encodage', 'date_sanction', 'student__classe__year',
-                       'student__classe__letter', 'student__last_name',
-                       "sanction_decision__sanction_decision"
+    queryset = CasEleve.objects.filter(
+        student__isnull=False, sanction_decision__isnull=False, sanction_faite=False
     )
-    user_field = 'created_by'
+    serializer_class = CasEleveSerializer
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
+    filter_class = AskSanctionsFilter
+    ordering_fields = (
+        "datetime_encodage",
+        "date_sanction",
+        "student__classe__year",
+        "student__classe__letter",
+        "student__last_name",
+        "sanction_decision__sanction_decision",
+    )
+    user_field = "created_by"
 
     def get_queryset(self):
         sanctions = SanctionDecisionDisciplinaire.objects.filter(can_ask=True)
@@ -479,10 +532,7 @@ class AskSanctionsViewSet(BaseModelViewSet):
 
         if cas.sanction_decision:
             if cas.sanction_decision.notify:
-                notify_sanction.apply_async(
-                    countdown=1,
-                    kwargs={"instance_id": cas.id}
-                )
+                notify_sanction.apply_async(countdown=1, kwargs={"instance_id": cas.id})
 
     def perform_update(self, serializer):
         super().perform_update(serializer)
@@ -500,7 +550,7 @@ class SanctionDecisionViewSet(ReadOnlyModelViewSet):
 
     def get_queryset(self):
         self.queryset = super().get_queryset()
-        only_sanctions = self.request.GET.get('only_sanctions', 0) == "1"
+        only_sanctions = self.request.GET.get("only_sanctions", 0) == "1"
         if only_sanctions:
             return self.queryset.filter(can_ask=True)
 
@@ -511,7 +561,7 @@ class StatisticAPI(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, student, format=None):
-        only_sanctions = request.GET.get('only_sanctions', 1) == 1
+        only_sanctions = request.GET.get("only_sanctions", 1) == 1
         stats = self.gen_stats(request.user, student, only_sanctions)
         return Response(json.dumps(stats))
 
@@ -523,8 +573,9 @@ class StatisticAPI(APIView):
             classes = get_classes(list(map(lambda t: t.name, teachings)), True, user_from)
             queryset = queryset.filter(student__classe__in=classes)
 
-        cas_discip = queryset.filter(info=None, student=student)\
-                             .filter(Q(sanction_faite=True) | Q(sanction_faite__isnull=True))
+        cas_discip = queryset.filter(info=None, student=student).filter(
+            Q(sanction_faite=True) | Q(sanction_faite__isnull=True)
+        )
         cas_info = queryset.filter(sanction_decision=None, student=student)
 
         if not all_years:
@@ -538,14 +589,14 @@ class StatisticAPI(APIView):
         stats = []
         for s in sanctions:
             stat = {
-                'display': s.display,
-                'value': len(cas_discip.filter(sanction_decision__in=s.sanctions_decisions.all()))
+                "display": s.display,
+                "value": len(cas_discip.filter(sanction_decision__in=s.sanctions_decisions.all())),
             }
             stats.append(stat)
 
         if not only_sanctions:
-            stats.append({'display': 'Non disciplinaire', 'value': len(cas_info)})
-            stats.append({'display': 'Total disciplinaire', 'value': len(cas_discip)})
+            stats.append({"display": "Non disciplinaire", "value": len(cas_info)})
+            stats.append({"display": "Total disciplinaire", "value": len(cas_discip)})
 
         return stats
 
@@ -563,7 +614,9 @@ class AttachmentView(APIView):
             if pk:
                 attachment = CasAttachment.objects.get(pk=pk)
             else:
-                attachment = CasAttachment.objects.get(attachment__exact=f"dossier_eleve/{year}/{str(month).zfill(2)}/{str(day).zfill(2)}/{file}")
+                attachment = CasAttachment.objects.get(
+                    attachment__exact=f"dossier_eleve/{year}/{str(month).zfill(2)}/{str(day).zfill(2)}/{file}"
+                )
             queryset = CasEleve.objects.filter(attachments=attachment)
             filter_by_groups = Q()
             for g in request.user.groups.all():
@@ -577,47 +630,41 @@ class AttachmentView(APIView):
         except ObjectDoesNotExist:
             return HttpResponse(status=404)
 
-        response = HttpResponse(attachment.attachment, content_type='application/pdf')
-        response["Content-Disposition"] = f'attachment; filename="{file if file else attachment.attachment.name}"'
+        response = HttpResponse(attachment.attachment, content_type="application/pdf")
+        response[
+            "Content-Disposition"
+        ] = f'attachment; filename="{file if file else attachment.attachment.name}"'
 
         return response
 
 
-class CasEleveListPDFGen(
-    LoginRequiredMixin,
-    PermissionRequiredMixin,
-    WeasyTemplateView
-):
+class CasEleveListPDFGen(LoginRequiredMixin, PermissionRequiredMixin, WeasyTemplateView):
     permission_required = ["dossier_eleve.view_caseleve"]
     template_name = "dossier_eleve/cas_list_pdf.html"
 
     def get_context_data(self, **kwargs) -> dict:
-        view_set = CasEleveViewSet.as_view({'get': 'list'})
-        results = [c["id"] for c in view_set(self.request).data['results']]
+        view_set = CasEleveViewSet.as_view({"get": "list"})
+        results = [c["id"] for c in view_set(self.request).data["results"]]
         results = CasEleve.objects.filter(id__in=results)
-        context = {'list': results}
+        context = {"list": results}
         return context
 
     def modify_entries(self, results):
         return results
 
 
-class CasElevePDFGenAPI(
-    LoginRequiredMixin,
-    PermissionRequiredMixin,
-    WeasyTemplateView
-):
+class CasElevePDFGenAPI(LoginRequiredMixin, PermissionRequiredMixin, WeasyTemplateView):
     template_name = "dossier_eleve/discip_pdf.html"
     permission_required = ["dossier_eleve.view_caseleve"]
 
     def get(self, request, *args, **kwargs):
-        if request.GET.get('student__matricule'):
+        if request.GET.get("student__matricule"):
             return self.render_to_response(self.generate_context(request))
 
-        elif request.GET.get('classe'):
+        elif request.GET.get("classe"):
             classe_access = get_classes(get_settings().teachings.all(), True, request.user)
             try:
-                classe = classe_access.get(id=request.GET['classe'])
+                classe = classe_access.get(id=request.GET["classe"])
             except ObjectDoesNotExist:
                 return HttpResponse("Vous n'avez pas les accès nécessaire.", status=401)
 
@@ -626,7 +673,7 @@ class CasElevePDFGenAPI(
             added = False
             for s in students:
                 request.GET = request.GET.copy()
-                request.GET['student__matricule'] = s.matricule
+                request.GET["student__matricule"] = s.matricule
                 student_context = self.generate_context(request)
                 if not student_context:
                     continue
@@ -639,12 +686,12 @@ class CasElevePDFGenAPI(
                 added = True
 
             if not added:
-                return render(request, 'dossier_eleve/no_student.html')
+                return render(request, "dossier_eleve/no_student.html")
 
             output_stream = BytesIO()
             merger.write(output_stream)
-            response = HttpResponse(content_type='application/pdf')
-            response['Content-Disposition'] = 'filename; filename="' + classe.compact_str + '.pdf"'
+            response = HttpResponse(content_type="application/pdf")
+            response["Content-Disposition"] = 'filename; filename="' + classe.compact_str + '.pdf"'
             response.write(output_stream.getvalue())
             return response
         else:
@@ -653,31 +700,37 @@ class CasElevePDFGenAPI(
 
     @staticmethod
     def generate_context(request):
-        if request.GET.get('classe'):
-            request.GET.pop('classe')
-        view_set = CasEleveViewSet.as_view({'get': 'list'})
-        results = view_set(request).data['results']
+        if request.GET.get("classe"):
+            request.GET.pop("classe")
+        view_set = CasEleveViewSet.as_view({"get": "list"})
+        results = view_set(request).data["results"]
         if not results:
             return None
 
         # Use datetime object instead of plain text.
         for r in results:
-            r['datetime_encodage'] = timezone.datetime.strptime(r['datetime_encodage'][:19], "%Y-%m-%dT%H:%M:%S")
-            if r['info']:
+            r["datetime_encodage"] = timezone.datetime.strptime(
+                r["datetime_encodage"][:19], "%Y-%m-%dT%H:%M:%S"
+            )
+            if r["info"]:
                 continue
-            r['date_sanction'] = timezone.datetime.strptime(r['date_sanction'][:19], "%Y-%m-%d") if r['date_sanction'] else None
-        student = StudentModel.objects.get(matricule=request.GET['student__matricule'])
+            r["date_sanction"] = (
+                timezone.datetime.strptime(r["date_sanction"][:19], "%Y-%m-%d")
+                if r["date_sanction"]
+                else None
+            )
+        student = StudentModel.objects.get(matricule=request.GET["student__matricule"])
         check_student_photo(student)
 
         all_years = not request.GET.get("scholar_year", False)
         context = {
-            'statistics': StatisticAPI().gen_stats(request.user, student, all_years=all_years)
+            "statistics": StatisticAPI().gen_stats(request.user, student, all_years=all_years)
         }
         tenure = ResponsibleModel.objects.filter(tenure=student.classe).first()
-        context['tenure'] = tenure.fullname if tenure else "—"
+        context["tenure"] = tenure.fullname if tenure else "—"
 
-        context['student'] = student
-        context['list'] = results
+        context["student"] = student
+        context["list"] = results
         return context
 
 
@@ -688,25 +741,24 @@ class AskSanctionsPDFGenAPI(APIView):
     field_date = ""
 
     def get(self, request, format=None):
-        view_set = AskSanctionsViewSet.as_view({'get': 'list'})
-        results = view_set(request._request).data['results']
+        view_set = AskSanctionsViewSet.as_view({"get": "list"})
+        results = view_set(request._request).data["results"]
         results = self.modify_entries(results)
 
         field_date = "date_sanction" if self.field_date == "sanction" else "datetime_conseil"
-        date_from = request.GET.get('%s__gte' % field_date)
-        date_to = request.GET.get('%s__lte' % field_date)
-        context = {'date_from': date_from, 'date_to': date_to,
-                   'list': results}
+        date_from = request.GET.get("%s__gte" % field_date)
+        date_to = request.GET.get("%s__lte" % field_date)
+        context = {"date_from": date_from, "date_to": date_to, "list": results}
         t = get_template(self.template)
         rml_str = t.render(context)
 
         pdf = rml2pdf.parseString(rml_str)
         if not pdf:
-            return render(request, 'dossier_eleve/no_student.html')
-        pdf_name = self.file_name + '_' + date_from + '_' + date_to + '.pdf'
+            return render(request, "dossier_eleve/no_student.html")
+        pdf_name = self.file_name + "_" + date_from + "_" + date_to + ".pdf"
 
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'filename; filename="' + pdf_name + '"'
+        response = HttpResponse(content_type="application/pdf")
+        response["Content-Disposition"] = 'filename; filename="' + pdf_name + '"'
         response.write(pdf.read())
         return response
 
@@ -721,13 +773,13 @@ class AskSanctionCouncilPDFGenAPI(AskSanctionsPDFGenAPI):
 
     def modify_entries(self, results):
         for r in results:
-            if r['date_sanction']:
-                r['date_sanction'] = timezone.datetime.strptime(r['date_sanction'][:19],
-                                                                    "%Y-%m-%d")
+            if r["date_sanction"]:
+                r["date_sanction"] = timezone.datetime.strptime(r["date_sanction"][:19], "%Y-%m-%d")
             else:
-                r['date_sanction'] = None
-            r['datetime_conseil'] = timezone.datetime.strptime(r['datetime_conseil'][:19],
-                                                               "%Y-%m-%dT%H:%M:%S")
+                r["date_sanction"] = None
+            r["datetime_conseil"] = timezone.datetime.strptime(
+                r["datetime_conseil"][:19], "%Y-%m-%dT%H:%M:%S"
+            )
         return results
 
 
@@ -738,15 +790,14 @@ class AskSanctionRetenuesPDFGenAPI(AskSanctionsPDFGenAPI):
 
     def modify_entries(self, results):
         for r in results:
-            r['date_sanction'] = timezone.datetime.strptime(r['date_sanction'][:19],
-                                                                "%Y-%m-%d")
+            r["date_sanction"] = timezone.datetime.strptime(r["date_sanction"][:19], "%Y-%m-%d")
             if r["time_sanction_end"]:
                 r["time_sanction_end"] = r["time_sanction_end"][:5]
         return results
 
 
 class SanctionPDF(APIView):
-    permission_required = ['dossier_eleve.ask_sanction', 'dossier_eleve.view_caseleve']
+    permission_required = ["dossier_eleve.ask_sanction", "dossier_eleve.view_caseleve"]
     renderer_classes = [BinaryFileRenderer]
 
     def post(self, request, format=None):
@@ -754,14 +805,14 @@ class SanctionPDF(APIView):
         context = {
             "sanction": CasEleve.objects.get(id=request.data.get("sanction")),
             "text": request.data.get("text"),
-            "core_settings": get_core_settings()
+            "core_settings": get_core_settings(),
         }
         html_render = template.render(context)
         pdf_file = HTML(string=html_render).write_pdf()
         return Response(
             pdf_file,
-            headers={'Content-Disposition': 'attachment; filename="file.pdf"'},
-            content_type='application/pdf'
+            headers={"Content-Disposition": 'attachment; filename="file.pdf"'},
+            content_type="application/pdf",
         )
 
 
@@ -771,7 +822,7 @@ class SanctionTemplate(
     permission_required = [
         "dossier_eleve.ask_sanction",
         "dossier_eleve.view_caseleve",
-        "dossier_eleve.add_caseleve"
+        "dossier_eleve.add_caseleve",
     ]
 
     def get(self, request, cas_id, format=None):
@@ -791,7 +842,7 @@ class WarnSanctionAPI(APIView):
     permission_required = [
         "dossier_eleve.ask_sanction",
         "dossier_eleve.view_caseleve",
-        "dossier_eleve.add_caseleve"
+        "dossier_eleve.add_caseleve",
     ]
 
     def post(self, request, format=None):
@@ -800,7 +851,7 @@ class WarnSanctionAPI(APIView):
         context = {
             "sanction": sanction,
             "text": request.data.get("msg"),
-            "core_settings": get_core_settings()
+            "core_settings": get_core_settings(),
         }
 
         resp_school = get_resp_emails(sanction.student)
@@ -816,9 +867,14 @@ class WarnSanctionAPI(APIView):
         if "resp_school" in recipients:
             recipient_email = recipient_email.union(resp_school)
 
-        other_responsibles = ResponsibleModel.objects.filter(pk__in=request.data.get("other_recipients"))
+        other_responsibles = ResponsibleModel.objects.filter(
+            pk__in=request.data.get("other_recipients")
+        )
         recipient_email = recipient_email.union(
-            {r.email_school if get_settings().use_school_email else r.email for r in other_responsibles}
+            {
+                r.email_school if get_settings().use_school_email else r.email
+                for r in other_responsibles
+            }
         )
 
         for r in recipient_email:
@@ -827,7 +883,7 @@ class WarnSanctionAPI(APIView):
                 subject=f"Sanction concernant {sanction.student.fullname}",
                 email_template="dossier_eleve/email_sanction_parents.html",
                 context=context,
-                reply_to=list(resp_school)
+                reply_to=list(resp_school),
             )
         sanction.notified = True
         sanction.save()
@@ -843,7 +899,9 @@ if "proeco" in settings.INSTALLED_APPS:
             date_to = kwargs["date_to"]
             export_type = kwargs["export_type"]
             sanctions = kwargs["sanctions"].split(",")
-            own_classes = (kwargs["own_classes"] if "own_classes" in kwargs else own_classes) == "true"
+            own_classes = (
+                kwargs["own_classes"] if "own_classes" in kwargs else own_classes
+            ) == "true"
 
             sanctions = CasEleve.objects.filter(
                 student__isnull=False,
@@ -857,7 +915,7 @@ if "proeco" in settings.INSTALLED_APPS:
                     check_access=True,
                     user=self.request.user,
                     tenure_class_only=False,
-                    educ_by_years=False
+                    educ_by_years=False,
                 )
                 sanctions.filter(student__classe__in=list(classes))
 

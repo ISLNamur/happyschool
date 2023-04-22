@@ -26,51 +26,34 @@ from core.models import TeachingModel, ClasseModel, CourseModel, StudentModel
 
 
 class Command(BaseCommand):
-    help = 'Clean up database. Clear empty classes and courses, and remove students older than 6 years.'
+    help = "Clean up database. Clear empty classes and courses, and remove students older than 6 years."
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "-i",
-            '--implementation',
-            help="Specify teaching, default all teachings."
+            "-i", "--implementation", help="Specify teaching, default all teachings."
         )
 
         parser.add_argument(
             "--dry-run",
             action="store_true",
-            help="Just show objects that will be removed; don't actually remove them."
+            help="Just show objects that will be removed; don't actually remove them.",
         )
 
         parser.add_argument(
             "-o",
             "--older-than",
             default=6,
-            help="The number of year of inactivity before students will be deleted."
+            help="The number of year of inactivity before students will be deleted.",
         )
 
-        parser.add_argument(
-            "--only-classes",
-            action="store_true",
-            help="Clean only classes."
-        )
+        parser.add_argument("--only-classes", action="store_true", help="Clean only classes.")
 
-        parser.add_argument(
-            "--only-courses",
-            action="store_true",
-            help="Clean only courses."
-        )
+        parser.add_argument("--only-courses", action="store_true", help="Clean only courses.")
 
-        parser.add_argument(
-            "--only-students",
-            action="store_true",
-            help="Clean only students."
-        )
+        parser.add_argument("--only-students", action="store_true", help="Clean only students.")
 
     def clean_classes(self, options, teachings):
-        classes = ClasseModel.objects.filter(
-            studentmodel__isnull=True,
-            teaching__in=teachings
-        )
+        classes = ClasseModel.objects.filter(studentmodel__isnull=True, teaching__in=teachings)
 
         print("Removing empty classes :")
         for c in classes:
@@ -82,7 +65,7 @@ class Command(BaseCommand):
         courses = CourseModel.objects.filter(
             givencoursemodel__studentmodel__isnull=True,
             givencoursemodel__responsiblemodel__isnull=True,
-            teaching__in=teachings
+            teaching__in=teachings,
         )
 
         print("Removing empty courses :")
@@ -96,7 +79,7 @@ class Command(BaseCommand):
             classe__isnull=True,
             courses__isnull=True,
             inactive_from__lte=timezone.now() - relativedelta(years=options["older_than"]),
-            teaching__in=teachings
+            teaching__in=teachings,
         )
 
         print(f"Removing old students (at least {options['older_than']} years of inactivity):")
@@ -106,7 +89,9 @@ class Command(BaseCommand):
             students.delete()
 
     def handle(self, *args, **options):
-        teaching_filter_field = {"name": options["implementation"]} if options["implementation"] else {}
+        teaching_filter_field = (
+            {"name": options["implementation"]} if options["implementation"] else {}
+        )
         teachings = TeachingModel.objects.filter(**teaching_filter_field)
 
         if not options["only_courses"] and not options["only_students"]:

@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0005_auto_20200119_2055'),
+        ("core", "0005_auto_20200119_2055"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='responsiblemodel',
-            name='matricule',
+            model_name="responsiblemodel",
+            name="matricule",
             field=models.BigIntegerField(null=True, unique=True),
         ),
     ]

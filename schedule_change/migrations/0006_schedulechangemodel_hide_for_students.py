@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('schedule_change', '0005_auto_20191017_1010'),
+        ("schedule_change", "0005_auto_20191017_1010"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='schedulechangemodel',
-            name='hide_for_students',
+            model_name="schedulechangemodel",
+            name="hide_for_students",
             field=models.BooleanField(default=False),
         ),
     ]

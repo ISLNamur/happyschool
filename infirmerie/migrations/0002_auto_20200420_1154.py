@@ -43,15 +43,14 @@ def migrate_access_permission(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('infirmerie', '0001_initial'),
+        ("infirmerie", "0001_initial"),
     ]
 
     operations = [
         migrations.RunPython(migrate_access_permission),
         migrations.AlterModelOptions(
-            name='passage',
+            name="passage",
             options={},
         ),
     ]

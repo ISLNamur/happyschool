@@ -5,124 +5,220 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('core', '0004_auto_20190901_2035'),
+        ("core", "0004_auto_20190901_2035"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AssessmentModel',
+            name="AssessmentModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('assessment', models.CharField(max_length=200)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("assessment", models.CharField(max_length=200)),
             ],
         ),
         migrations.CreateModel(
-            name='BranchModel',
+            name="BranchModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('branch', models.CharField(max_length=200)),
-                ('teachings', models.ManyToManyField(to='core.TeachingModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("branch", models.CharField(max_length=200)),
+                ("teachings", models.ManyToManyField(to="core.TeachingModel")),
             ],
         ),
         migrations.CreateModel(
-            name='DisorderModel',
+            name="DisorderModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('disorder', models.CharField(max_length=1000)),
-                ('teachings', models.ManyToManyField(to='core.TeachingModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("disorder", models.CharField(max_length=1000)),
+                ("teachings", models.ManyToManyField(to="core.TeachingModel")),
             ],
         ),
         migrations.CreateModel(
-            name='DisorderResponseModel',
+            name="DisorderResponseModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('response', models.CharField(max_length=1000)),
-                ('disorder', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='pia.DisorderModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("response", models.CharField(max_length=1000)),
+                (
+                    "disorder",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE, to="pia.DisorderModel"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='GoalModel',
+            name="GoalModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date_start', models.DateField()),
-                ('date_end', models.DateField()),
-                ('cross_goals', models.CharField(max_length=2000)),
-                ('given_help', models.CharField(max_length=1000)),
-                ('self_assessment', models.CharField(max_length=2000)),
-                ('datetime_creation', models.DateTimeField(auto_now_add=True)),
-                ('datetime_update', models.DateTimeField(auto_now=True)),
-                ('assessment', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='pia.AssessmentModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("date_start", models.DateField()),
+                ("date_end", models.DateField()),
+                ("cross_goals", models.CharField(max_length=2000)),
+                ("given_help", models.CharField(max_length=1000)),
+                ("self_assessment", models.CharField(max_length=2000)),
+                ("datetime_creation", models.DateTimeField(auto_now_add=True)),
+                ("datetime_update", models.DateTimeField(auto_now=True)),
+                (
+                    "assessment",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="pia.AssessmentModel",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='SubGoalModel',
+            name="SubGoalModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('branch_goals', models.CharField(max_length=2000)),
-                ('given_help', models.CharField(max_length=1000)),
-                ('self_assessment', models.CharField(max_length=2000)),
-                ('parent_commitment', models.CharField(max_length=2000)),
-                ('assessment', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='pia.AssessmentModel')),
-                ('branch', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='pia.BranchModel')),
-                ('goal', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pia.GoalModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("branch_goals", models.CharField(max_length=2000)),
+                ("given_help", models.CharField(max_length=1000)),
+                ("self_assessment", models.CharField(max_length=2000)),
+                ("parent_commitment", models.CharField(max_length=2000)),
+                (
+                    "assessment",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="pia.AssessmentModel",
+                    ),
+                ),
+                (
+                    "branch",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="pia.BranchModel",
+                    ),
+                ),
+                (
+                    "goal",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="pia.GoalModel"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='PIASettingsModel',
+            name="PIASettingsModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('teachings', models.ManyToManyField(to='core.TeachingModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("teachings", models.ManyToManyField(to="core.TeachingModel")),
             ],
         ),
         migrations.CreateModel(
-            name='PIAModel',
+            name="PIAModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('disorder', models.ManyToManyField(to='pia.DisorderModel')),
-                ('disorder_response', models.ManyToManyField(to='pia.DisorderResponseModel')),
-                ('referent', models.ManyToManyField(related_name='referent', to='core.ResponsibleModel')),
-                ('sponsor', models.ManyToManyField(related_name='sponsor', to='core.ResponsibleModel')),
-                ('student', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='core.StudentModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("disorder", models.ManyToManyField(to="pia.DisorderModel")),
+                ("disorder_response", models.ManyToManyField(to="pia.DisorderResponseModel")),
+                (
+                    "referent",
+                    models.ManyToManyField(related_name="referent", to="core.ResponsibleModel"),
+                ),
+                (
+                    "sponsor",
+                    models.ManyToManyField(related_name="sponsor", to="core.ResponsibleModel"),
+                ),
+                (
+                    "student",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE, to="core.StudentModel"
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='goalmodel',
-            name='pia_model',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pia.PIAModel'),
+            model_name="goalmodel",
+            name="pia_model",
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="pia.PIAModel"),
         ),
         migrations.AddField(
-            model_name='goalmodel',
-            name='responsible',
-            field=models.ManyToManyField(to='core.ResponsibleModel'),
+            model_name="goalmodel",
+            name="responsible",
+            field=models.ManyToManyField(to="core.ResponsibleModel"),
         ),
         migrations.CreateModel(
-            name='CrossGoalModel',
+            name="CrossGoalModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('goal', models.CharField(max_length=200)),
-                ('teachings', models.ManyToManyField(to='core.TeachingModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("goal", models.CharField(max_length=200)),
+                ("teachings", models.ManyToManyField(to="core.TeachingModel")),
             ],
         ),
         migrations.CreateModel(
-            name='BranchGoalModel',
+            name="BranchGoalModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('goal', models.CharField(max_length=200)),
-                ('branch', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pia.BranchModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("goal", models.CharField(max_length=200)),
+                (
+                    "branch",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="pia.BranchModel"
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='assessmentmodel',
-            name='branches',
-            field=models.ManyToManyField(blank=True, to='pia.BranchGoalModel'),
+            model_name="assessmentmodel",
+            name="branches",
+            field=models.ManyToManyField(blank=True, to="pia.BranchGoalModel"),
         ),
         migrations.AddField(
-            model_name='assessmentmodel',
-            name='cross_goals',
-            field=models.ManyToManyField(to='pia.CrossGoalModel'),
+            model_name="assessmentmodel",
+            name="cross_goals",
+            field=models.ManyToManyField(to="pia.CrossGoalModel"),
         ),
     ]

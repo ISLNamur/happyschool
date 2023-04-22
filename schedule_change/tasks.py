@@ -39,15 +39,19 @@ from .models import ScheduleChangeSettingsModel, ScheduleChangeModel, ScheduleCh
 def task_export(self, ids, date_from, date_to, send_to_teachers=False, message=""):
     changes = [ScheduleChangeModel.objects.get(id=c) for c in ids]
     categories = ScheduleChangeCategoryModel.objects.all()
-    context = {'date_from': date_from, 'date_to': date_to,
-               'list': changes, 'phone': get_settings().responsible_phone,
-               'responsible': get_settings().responsible_name,
-               'categories': categories}
-    t = get_template('schedule_change/summary.rml')
+    context = {
+        "date_from": date_from,
+        "date_to": date_to,
+        "list": changes,
+        "phone": get_settings().responsible_phone,
+        "responsible": get_settings().responsible_name,
+        "categories": categories,
+    }
+    t = get_template("schedule_change/summary.rml")
     rml_str = t.render(context)
 
     pdf_file = rml2pdf.parseString(rml_str)
-    pdf_name = 'changement_horaire_' + date_from + '_' + date_to + '.pdf'
+    pdf_name = "changement_horaire_" + date_from + "_" + date_to + ".pdf"
 
     if send_to_teachers:
         classes = ClasseModel.objects.none()
@@ -56,39 +60,49 @@ def task_export(self, ids, date_from, date_to, send_to_teachers=False, message="
                 classes |= get_classes_from_display(c.classes)
 
         teachers_involved = ResponsibleModel.objects.filter(
-            Q(classe__in=classes) | Q(tenure__in=classes))
-        attachments = [{'filename': pdf_name, 'file': pdf_file.read()}]
+            Q(classe__in=classes) | Q(tenure__in=classes)
+        )
+        attachments = [{"filename": pdf_name, "file": pdf_file.read()}]
         settings = get_settings()
         core_settings = get_core_settings()
-        teachers_email = [t.email_school for t in teachers_involved] if settings.email_school else \
-            [t.email for t in teachers_involved]
+        teachers_email = (
+            [t.email_school for t in teachers_involved]
+            if settings.email_school
+            else [t.email for t in teachers_involved]
+        )
         substitutes = []
         for c in changes:
             subs = c.teachers_substitute.filter(is_teacher=True)
             if not subs:
                 continue
-            substitutes += [t.email_school for t in subs] if settings.email_school \
-                else [t.email for t in subs]
+            substitutes += (
+                [t.email_school for t in subs] if settings.email_school else [t.email for t in subs]
+            )
 
         teachers_email += substitutes
 
         url = core_settings.remote if settings.copy_to_remote else core_settings.root
-        context = {'date_from': date_from, 'date_to': date_to,
-                   'url': url, 'message': message}
-        send_email(set(teachers_email), 'Changement horaire', 'schedule_change/email_summary.html',
-                   context=context, attachments=attachments, use_bcc=True)
+        context = {"date_from": date_from, "date_to": date_to, "url": url, "message": message}
+        send_email(
+            set(teachers_email),
+            "Changement horaire",
+            "schedule_change/email_summary.html",
+            context=context,
+            attachments=attachments,
+            use_bcc=True,
+        )
 
     # Save file to media.
     saved_file = default_storage.save(pdf_name, pdf_file)
     # Send file url to websocket.
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
-        'schedule_change_export_summary_%s' % self.request.id,
+        "schedule_change_export_summary_%s" % self.request.id,
         {
-            'type': 'schedule.export.summary',
-            'task': self.request.id,
-            'file_url': default_storage.url(saved_file),
-        }
+            "type": "schedule.export.summary",
+            "task": self.request.id,
+            "file_url": default_storage.url(saved_file),
+        },
     )
 
 
@@ -108,12 +122,21 @@ def get_classes_from_display(flat_classes: str) -> QuerySet:
     for cl in classes_str:
         classe = cl.split(" — ")[0] if use_teaching_display else cl
         year = classe[0]
-        teaching = TeachingModel.objects.get(display_name=cl.split(" — ")[1])\
-            if use_teaching_display else get_settings().teachings.all()[0]
+        teaching = (
+            TeachingModel.objects.get(display_name=cl.split(" — ")[1])
+            if use_teaching_display
+            else get_settings().teachings.all()[0]
+        )
         if "année" in classe:
-            classes_ids += [cm.id for cm in ClasseModel.objects.filter(year=int(year), teaching=teaching)]
+            classes_ids += [
+                cm.id for cm in ClasseModel.objects.filter(year=int(year), teaching=teaching)
+            ]
         else:
             classe_letter = classe[1:].lower()
-            classes_ids.append(ClasseModel.objects.get(year=int(year), letter__iexact=classe_letter, teaching=teaching).id)
+            classes_ids.append(
+                ClasseModel.objects.get(
+                    year=int(year), letter__iexact=classe_letter, teaching=teaching
+                ).id
+            )
 
     return ClasseModel.objects.filter(pk__in=classes_ids)

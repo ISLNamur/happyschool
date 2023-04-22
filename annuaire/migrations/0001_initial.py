@@ -4,22 +4,59 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('auth', '0009_alter_user_last_name_max_length'),
+        ("auth", "0009_alter_user_last_name_max_length"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AnnuaireSettingsModel',
+            name="AnnuaireSettingsModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('can_see_responsibles', models.ManyToManyField(blank=True, default=None, related_name='can_see_responsibles', to='auth.Group')),
-                ('can_see_responsibles_sensitive', models.ManyToManyField(blank=True, default=None, help_text="Permet aux groupes sélectionnés de voir les données sensibles comme le nom d'utilisateur.", related_name='can_see_responsibles_data', to='auth.Group')),
-                ('can_see_student_contact', models.ManyToManyField(blank=True, default=None, related_name='can_see_student_contact', to='auth.Group')),
-                ('can_see_student_medical', models.ManyToManyField(blank=True, default=None, related_name='can_see_student_medical', to='auth.Group')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "can_see_responsibles",
+                    models.ManyToManyField(
+                        blank=True,
+                        default=None,
+                        related_name="can_see_responsibles",
+                        to="auth.Group",
+                    ),
+                ),
+                (
+                    "can_see_responsibles_sensitive",
+                    models.ManyToManyField(
+                        blank=True,
+                        default=None,
+                        help_text="Permet aux groupes sélectionnés de voir les données sensibles comme le nom d'utilisateur.",
+                        related_name="can_see_responsibles_data",
+                        to="auth.Group",
+                    ),
+                ),
+                (
+                    "can_see_student_contact",
+                    models.ManyToManyField(
+                        blank=True,
+                        default=None,
+                        related_name="can_see_student_contact",
+                        to="auth.Group",
+                    ),
+                ),
+                (
+                    "can_see_student_medical",
+                    models.ManyToManyField(
+                        blank=True,
+                        default=None,
+                        related_name="can_see_student_medical",
+                        to="auth.Group",
+                    ),
+                ),
             ],
         ),
     ]

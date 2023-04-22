@@ -44,7 +44,9 @@ class MailTemplateModel(models.Model):
     name = models.CharField(max_length=200)
     text = models.TextField(blank=True)
     acknowledge = models.BooleanField()
-    acknowledge_text = models.CharField(max_length=500, default="Je déclare avoir pris connaissance des présentes informations.")
+    acknowledge_text = models.CharField(
+        max_length=500, default="Je déclare avoir pris connaissance des présentes informations."
+    )
     choices = models.ManyToManyField(ChoiceModel, blank=True)
     options = models.ManyToManyField(OptionModel, blank=True)
     is_used = models.BooleanField(default=False)
@@ -54,6 +56,8 @@ class MailTemplateModel(models.Model):
 class MailAnswerModel(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)
-    template = models.ForeignKey(MailTemplateModel, on_delete=models.CASCADE, default=None, null=True)
+    template = models.ForeignKey(
+        MailTemplateModel, on_delete=models.CASCADE, default=None, null=True
+    )
     answers = models.JSONField(default=dict)
     is_answered = models.BooleanField(default=False)

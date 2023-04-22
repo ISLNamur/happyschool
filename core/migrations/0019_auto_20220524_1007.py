@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0018_additionalstudentinfo_group'),
+        ("core", "0018_additionalstudentinfo_group"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='coresettingsmodel',
-            name='day_scholar_year_start',
+            model_name="coresettingsmodel",
+            name="day_scholar_year_start",
             field=models.PositiveSmallIntegerField(default=20),
         ),
         migrations.AddField(
-            model_name='coresettingsmodel',
-            name='month_scholar_year_start',
+            model_name="coresettingsmodel",
+            name="month_scholar_year_start",
             field=models.PositiveSmallIntegerField(default=8),
         ),
     ]

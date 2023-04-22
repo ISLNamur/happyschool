@@ -5,21 +5,20 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pia', '0028_disorderresponsecategorymodel_explanation'),
+        ("pia", "0028_disorderresponsecategorymodel_explanation"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='piamodel',
-            name='datetime_created',
+            model_name="piamodel",
+            name="datetime_created",
             field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='piamodel',
-            name='datetime_updated',
+            model_name="piamodel",
+            name="datetime_updated",
             field=models.DateTimeField(auto_now=True),
         ),
     ]

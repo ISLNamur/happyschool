@@ -26,5 +26,5 @@ from django.conf import settings
 
 @shared_task(bind=True)
 def task_sync_mail_answers(self):
-    subprocess.run(settings.MAIL_ANSWER['template_sync'], shell=True)
-    subprocess.run(settings.MAIL_ANSWER['mail_answers_create'], shell=True)
+    subprocess.run(settings.MAIL_ANSWER["template_sync"], shell=True)
+    subprocess.run(settings.MAIL_ANSWER["mail_answers_create"], shell=True)

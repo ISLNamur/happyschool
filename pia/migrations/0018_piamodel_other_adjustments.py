@@ -4,16 +4,15 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pia', '0017_auto_20200709_1031'),
+        ("pia", "0017_auto_20200709_1031"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='piamodel',
-            name='other_adjustments',
-            field=models.TextField(default=''),
+            model_name="piamodel",
+            name="other_adjustments",
+            field=models.TextField(default=""),
             preserve_default=False,
         ),
     ]

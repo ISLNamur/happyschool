@@ -25,7 +25,7 @@ from core.models import *
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(label='ID', read_only=False)
+    id = serializers.IntegerField(label="ID", read_only=False)
 
     class Meta:
         model = CourseModel
@@ -40,7 +40,7 @@ class GivenCourseSerializer(serializers.ModelSerializer):
 
 
 class GivenCourseFlatSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(label='ID', read_only=False)
+    id = serializers.IntegerField(label="ID", read_only=False)
 
     class Meta:
         model = GivenCourseModel
@@ -50,7 +50,17 @@ class GivenCourseFlatSerializer(serializers.ModelSerializer):
 class ResponsibleSensitiveSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResponsibleModel
-        fields = ('pk', 'last_name', 'first_name', 'is_secretary', 'email', 'email_school', 'teaching', 'user', 'password')
+        fields = (
+            "pk",
+            "last_name",
+            "first_name",
+            "is_secretary",
+            "email",
+            "email_school",
+            "teaching",
+            "user",
+            "password",
+        )
         depth = 1
 
 
@@ -59,20 +69,42 @@ class ResponsibleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ResponsibleModel
-        fields = ('pk', 'matricule', 'last_name', 'first_name', 'is_secretary', 'email_school',
-                  'teaching', 'classe', 'tenure', 'display', 'courses')
+        fields = (
+            "pk",
+            "matricule",
+            "last_name",
+            "first_name",
+            "is_secretary",
+            "email_school",
+            "teaching",
+            "classe",
+            "tenure",
+            "display",
+            "courses",
+        )
         depth = 2
 
 
 class ResponsibleRemoteSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(label='ID', read_only=False)
+    id = serializers.IntegerField(label="ID", read_only=False)
 
     class Meta:
         model = ResponsibleModel
-        fields = ('id', 'matricule', 'last_name', 'first_name',
-                  'is_teacher', 'is_educator', 'is_secretary',
-                  'teaching', 'classe', 'tenure', 'email_school',
-                  'courses', 'user')
+        fields = (
+            "id",
+            "matricule",
+            "last_name",
+            "first_name",
+            "is_teacher",
+            "is_educator",
+            "is_secretary",
+            "teaching",
+            "classe",
+            "tenure",
+            "email_school",
+            "courses",
+            "user",
+        )
 
 
 class StudentSerializer(serializers.ModelSerializer):
@@ -82,12 +114,20 @@ class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentModel
         fields = (
-            'matricule', 'first_name', 'last_name', 'display', 'classe', 'teaching', 'user', 'courses', 'group'
+            "matricule",
+            "first_name",
+            "last_name",
+            "display",
+            "classe",
+            "teaching",
+            "user",
+            "courses",
+            "group",
         )
         depth = 2
 
     def __init__(self, *args, **kwargs):
-        no_course = kwargs.pop('no_course', True)
+        no_course = kwargs.pop("no_course", True)
 
         super(StudentSerializer, self).__init__(*args, **kwargs)
 
@@ -98,42 +138,87 @@ class StudentSerializer(serializers.ModelSerializer):
 class StudentWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentModel
-        fields = ('matricule', 'first_name', 'last_name', 'classe', 'teaching', 'inactive_from', 'courses')
+        fields = (
+            "matricule",
+            "first_name",
+            "last_name",
+            "classe",
+            "teaching",
+            "inactive_from",
+            "courses",
+        )
 
 
 class StudentSensitiveInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdditionalStudentInfo
-        fields = ("student", "birth_date", "street", "postal_code",
-                  "locality", "father_job", "mother_job")
+        fields = (
+            "student",
+            "birth_date",
+            "street",
+            "postal_code",
+            "locality",
+            "father_job",
+            "mother_job",
+        )
 
 
 class StudentGeneralInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdditionalStudentInfo
-        fields = ('student', 'gender', 'group', 'scholar_year', 'previous_classe',
-                  'orientation', 'username', 'password')
+        fields = (
+            "student",
+            "gender",
+            "group",
+            "scholar_year",
+            "previous_classe",
+            "orientation",
+            "username",
+            "password",
+        )
 
 
 class StudentContactInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdditionalStudentInfo
-        fields = ('student',
-                  'student_phone', 'student_mobile', 'student_email',
-                  'resp_last_name', 'resp_first_name', 'resp_phone', 'resp_mobile', 'resp_email',
-                  'mother_last_name', 'mother_first_name', 'mother_phone', 'mother_mobile', 'mother_email',
-                  'father_last_name', 'father_first_name', 'father_phone', 'father_mobile', 'father_email',
-                  )
+        fields = (
+            "student",
+            "student_phone",
+            "student_mobile",
+            "student_email",
+            "resp_last_name",
+            "resp_first_name",
+            "resp_phone",
+            "resp_mobile",
+            "resp_email",
+            "mother_last_name",
+            "mother_first_name",
+            "mother_phone",
+            "mother_mobile",
+            "mother_email",
+            "father_last_name",
+            "father_first_name",
+            "father_phone",
+            "father_mobile",
+            "father_email",
+        )
 
 
 class StudentMedicalInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdditionalStudentInfo
-        fields = ('student', 'doctor', 'doctor_phone', 'mutual', 'mutual_number', 'medical_information')
+        fields = (
+            "student",
+            "doctor",
+            "doctor_phone",
+            "mutual",
+            "mutual_number",
+            "medical_information",
+        )
 
 
 class ClasseSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(label='ID', read_only=False)
+    id = serializers.IntegerField(label="ID", read_only=False)
 
     # Enable showing/hiding teaching
     def __init__(self, *args, **kwargs):
@@ -147,7 +232,7 @@ class ClasseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ClasseModel
-        fields = '__all__'
+        fields = "__all__"
 
 
 class YearField(serializers.Field):
@@ -168,7 +253,9 @@ class YearField(serializers.Field):
 
     def to_internal_value(self, data):
         if self.show_teaching:
-            return ClasseModel.objects.filter(year=data[0], teaching__display_name=data.split(" — ")[1]).first()
+            return ClasseModel.objects.filter(
+                year=data[0], teaching__display_name=data.split(" — ")[1]
+            ).first()
         else:
             return ClasseModel.objects.filter(year=data[0]).first()
 
@@ -177,52 +264,71 @@ class YearSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         self.show_teaching = kwargs.pop("show_teaching", True)
         super().__init__(*args, **kwargs)
-        self.fields["display"] = YearField(source='*', show_teaching=self.show_teaching)
+        self.fields["display"] = YearField(source="*", show_teaching=self.show_teaching)
 
-    display = YearField(source='*', show_teaching=True)
+    display = YearField(source="*", show_teaching=True)
 
     class Meta:
         model = ClasseModel
-        fields = ('display',)
+        fields = ("display",)
 
 
 class TeachingSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(label='ID', read_only=False, required=False)
+    id = serializers.IntegerField(label="ID", read_only=False, required=False)
 
     class Meta:
         model = TeachingModel
-        fields = '__all__'
+        fields = "__all__"
 
 
 class EmailSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailModel
-        fields = '__all__'
+        fields = "__all__"
 
 
 class GroupSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(label='ID', read_only=False)
+    id = serializers.IntegerField(label="ID", read_only=False)
 
     class Meta:
         model = Group
-        fields = ('id', 'name',)
+        fields = (
+            "id",
+            "name",
+        )
 
 
 class UserSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(label='ID', read_only=False)
+    id = serializers.IntegerField(label="ID", read_only=False)
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'last_name', 'first_name', 'email', 'groups',)
+        fields = (
+            "id",
+            "username",
+            "last_name",
+            "first_name",
+            "email",
+            "groups",
+        )
 
 
 class CourseScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseScheduleModel
         fields = (
-            "id", "given_course", "period", "day_of_week", "related_classes", "related_responsibles", "place"
+            "id",
+            "given_course",
+            "period",
+            "day_of_week",
+            "related_classes",
+            "related_responsibles",
+            "place",
         )
-        read_only_fields = ("related_classes", "related_responsibles",)
+        read_only_fields = (
+            "related_classes",
+            "related_responsibles",
+        )
 
 
 class PeriodCoreSerializer(serializers.ModelSerializer):

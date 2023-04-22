@@ -27,8 +27,15 @@ from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 
-from core.models import StudentModel, TeachingModel, ClasseModel, AdditionalStudentInfo,\
-    ResponsibleModel, CourseModel, GivenCourseModel
+from core.models import (
+    StudentModel,
+    TeachingModel,
+    ClasseModel,
+    AdditionalStudentInfo,
+    ResponsibleModel,
+    CourseModel,
+    GivenCourseModel,
+)
 from core.ldap import get_ldap_connection, get_django_dict_from_ldap
 from core.utilities import get_scholar_year
 
@@ -45,23 +52,27 @@ class ImportBase:
         pass
 
     """Get value from an entry."""
+
     def get_value(self, entry: object, column: str) -> Union[int, str, date, None]:
-        try :
+        try:
             return self.format_value(entry[column], column)
         except KeyError:
             return None
 
     """Handle different entry format."""
+
     def format_value(self, value: Union[int, str], column: str) -> Union[int, date, str, None]:
         return value
 
     """Print progress"""
+
     def print_log(self, log: str) -> None:
         print(log)
 
 
 class ImportResponsible(ImportBase):
     """Base class for importing responsibles."""
+
     search_login_directory = False
     ldap_unique_attr = "matricule"
     has_inactivity = False
@@ -111,11 +122,12 @@ class ImportResponsible(ImportBase):
             username = self.get_value(entry, self.username_attribute)
             if self.search_login_directory:
                 matricule = self.get_value(entry, "matricule")
-                self.ldap_connection.search(self.base_dn, "(%s=%i)" % (self.ldap_unique_attr, matricule),
-                                            attributes='*')
+                self.ldap_connection.search(
+                    self.base_dn, "(%s=%i)" % (self.ldap_unique_attr, matricule), attributes="*"
+                )
                 for r in self.ldap_connection.response:
                     ldap_info = get_django_dict_from_ldap(r)
-                    username = ldap_info['username']
+                    username = ldap_info["username"]
             if username and len(username.strip(" ")) > 0:
                 try:
                     user = User.objects.get(username=username)
@@ -140,7 +152,8 @@ class ImportResponsible(ImportBase):
                 inactive_from = self.get_value(entry, "inactive_from")
                 if inactive_from:
                     resp.inactive_from = timezone.make_aware(
-                        timezone.datetime.combine(inactive_from, timezone.datetime.min.time()))
+                        timezone.datetime.combine(inactive_from, timezone.datetime.min.time())
+                    )
                 else:
                     resp.inactive_from = None
 
@@ -171,11 +184,13 @@ class ImportResponsible(ImportBase):
                         if len(c) < 2:
                             continue
                         try:
-                            classe_model = ClasseModel.objects.get(year=int(c[0]), letter=c[1:].lower(),
-                                                                teaching=self.teaching)
+                            classe_model = ClasseModel.objects.get(
+                                year=int(c[0]), letter=c[1:].lower(), teaching=self.teaching
+                            )
                         except ObjectDoesNotExist:
-                            classe_model = ClasseModel(year=int(c[0]), letter=c[1:].lower(),
-                                                    teaching=self.teaching)
+                            classe_model = ClasseModel(
+                                year=int(c[0]), letter=c[1:].lower(), teaching=self.teaching
+                            )
                             classe_model.save()
                         resp.classe.add(classe_model)
 
@@ -194,11 +209,13 @@ class ImportResponsible(ImportBase):
                                 id=c["id"],
                                 short_name=c["short_name"],
                                 long_name=c["long_name"],
-                                teaching=self.teaching
+                                teaching=self.teaching,
                             )
                             course_model.save()
                         try:
-                            given_course = GivenCourseModel.objects.get(course=course_model, group=c["group"])
+                            given_course = GivenCourseModel.objects.get(
+                                course=course_model, group=c["group"]
+                            )
                         except ObjectDoesNotExist:
                             given_course = GivenCourseModel(course=course_model, group=c["group"])
                             given_course.save()
@@ -213,11 +230,13 @@ class ImportResponsible(ImportBase):
                         tenure = [tenure]
                     for t in tenure:
                         try:
-                            tenure_model = ClasseModel.objects.get(year=int(t[0]), letter=t[1:].lower(),
-                                                                teaching=self.teaching)
+                            tenure_model = ClasseModel.objects.get(
+                                year=int(t[0]), letter=t[1:].lower(), teaching=self.teaching
+                            )
                         except ObjectDoesNotExist:
-                            tenure_model = ClasseModel(year=int(t[0]), letter=t[1:].lower(),
-                                                    teaching=self.teaching)
+                            tenure_model = ClasseModel(
+                                year=int(t[0]), letter=t[1:].lower(), teaching=self.teaching
+                            )
                             tenure_model.save()
                         resp.tenure.add(tenure_model)
                         resp.classe.add(tenure_model)
@@ -271,9 +290,11 @@ class ImportResponsibleLDAP(ImportResponsible):
         self.base_dn = settings.AUTH_LDAP_USER_SEARCH.base_dn
 
     def sync(self):
-        self.connection.search(self.base_dn,
-                               "(&(objectClass=responsible)(enseignement=%s))" % self.teaching.name,
-                               attributes='*')
+        self.connection.search(
+            self.base_dn,
+            "(&(objectClass=responsible)(enseignement=%s))" % self.teaching.name,
+            attributes="*",
+        )
         ldap_entries = map(lambda entry: get_django_dict_from_ldap(entry), self.connection.response)
         super()._sync(ldap_entries)
 
@@ -299,23 +320,27 @@ class ImportResponsibleLDAP(ImportResponsible):
 
 
 class ImportResponsibleCSV(ImportResponsible):
-    def __init__(self, teaching: TeachingModel, column_map: dict = None,
-                 column_index: dict = None, is_teacher: bool = False,
-                 is_educator: bool = False) -> None:
-
+    def __init__(
+        self,
+        teaching: TeachingModel,
+        column_map: dict = None,
+        column_index: dict = None,
+        is_teacher: bool = False,
+        is_educator: bool = False,
+    ) -> None:
         super().__init__(teaching=teaching)
         self.is_teacher = is_teacher
         self.is_educator = is_educator
         self.column_map = column_map
         if not column_index:
-            self.column_to_index = {j: i for i, j in
-                                    enumerate(["matricule", "last_name", "first_name",
-                                               "classe", "tenure"])}
+            self.column_to_index = {
+                j: i
+                for i, j in enumerate(["matricule", "last_name", "first_name", "classe", "tenure"])
+            }
         else:
             self.column_to_index = column_index
 
-    def sync(self, text: TextIO, ignore_first_line: bool=False,
-             has_header: bool=False) -> None:
+    def sync(self, text: TextIO, ignore_first_line: bool = False, has_header: bool = False) -> None:
         # First detect dialect.
         dialect = csv.Sniffer().sniff(text.readline())
         # Return to start.
@@ -328,11 +353,9 @@ class ImportResponsibleCSV(ImportResponsible):
         if has_header:
             header = next(reader, None)
             if self.column_map:
-                self.column_to_index = {self.column_map[j]: i for i, j in
-                                        enumerate(header)}
+                self.column_to_index = {self.column_map[j]: i for i, j in enumerate(header)}
             else:
-                self.column_to_index = {j: i for i, j in
-                                        enumerate(header)}
+                self.column_to_index = {j: i for i, j in enumerate(header)}
 
         super()._sync(reader)
 
@@ -364,14 +387,24 @@ class ImportResponsibleCSV(ImportResponsible):
 
 class ImportResponsibleFDB(ImportResponsible):
     column_map = {
-        "last_name": "surname", "first_name": "firstname", "classe": "classes",
+        "last_name": "surname",
+        "first_name": "firstname",
+        "classe": "classes",
     }
     is_teacher = False
     is_educator = False
 
-    def __init__(self, teaching: TeachingModel, fdb_server, search_login_directory: bool,
-                 teaching_type: str, ldap_unique_attr="matricule", classe_format="%C",
-                 username_attribute=None, sync_course=True) -> None:
+    def __init__(
+        self,
+        teaching: TeachingModel,
+        fdb_server,
+        search_login_directory: bool,
+        teaching_type: str,
+        ldap_unique_attr="matricule",
+        classe_format="%C",
+        username_attribute=None,
+        sync_course=True,
+    ) -> None:
         super().__init__(teaching)
         self.server = fdb_server
         self.teaching_type = teaching_type
@@ -384,10 +417,12 @@ class ImportResponsibleFDB(ImportResponsible):
 
     def sync(self) -> None:
         from libreschoolfdb.reader import get_teachers, get_educators
+
         year = get_scholar_year()
         self.print_log("Collecting teachers from ProEco database…")
-        teachers = get_teachers(year, self.server, self.teaching_type,
-                                classe_format=self.classe_format)
+        teachers = get_teachers(
+            year, self.server, self.teaching_type, classe_format=self.classe_format
+        )
         self.is_teacher = True
         self.is_educator = False
         self._sync(teachers.items())
@@ -401,11 +436,10 @@ class ImportResponsibleFDB(ImportResponsible):
     def get_value(self, entry: dict, column: str) -> Union[int, str, date, None]:
         if "proeco" in settings.INSTALLED_APPS:
             from proeco.models import OverwriteDataModel
+
             try:
                 overwrite = OverwriteDataModel.objects.get(
-                    people="responsible",
-                    uid=entry[0],
-                    field=column
+                    people="responsible", uid=entry[0], field=column
                 )
                 return overwrite.value
             except ObjectDoesNotExist:
@@ -456,20 +490,40 @@ class ImportStudent(ImportBase):
     """Base class for importing students."""
 
     additional_columns = [
-        "gender", "scholar_year", "previous_class",
-        "orientation", "street", "postal_code",
-        "locality", "student_phone", "student_mobile",
-        "student_email", "resp_last_name", "resp_first_name",
-        "resp_phone", "resp_mobile", "resp_email",
-        "father_last_name", "father_first_name",
-        "father_job", "father_phone", "father_mobile",
+        "gender",
+        "scholar_year",
+        "previous_class",
+        "orientation",
+        "street",
+        "postal_code",
+        "locality",
+        "student_phone",
+        "student_mobile",
+        "student_email",
+        "resp_last_name",
+        "resp_first_name",
+        "resp_phone",
+        "resp_mobile",
+        "resp_email",
+        "father_last_name",
+        "father_first_name",
+        "father_job",
+        "father_phone",
+        "father_mobile",
         "father_email",
-        "mother_last_name", "mother_first_name",
-        "mother_job","mother_phone", "mother_mobile",
+        "mother_last_name",
+        "mother_first_name",
+        "mother_job",
+        "mother_phone",
+        "mother_mobile",
         "mother_email",
-        "doctor", "doctor_phone", "mutual",
+        "doctor",
+        "doctor_phone",
+        "mutual",
         "medical_information",
-        "birth_date", "username", "password",
+        "birth_date",
+        "username",
+        "password",
     ]
     ldap_connection = None
     base_dn = None
@@ -497,17 +551,15 @@ class ImportStudent(ImportBase):
                 # Ignore dummy values
                 if value == 19000000 or value < 19900000:
                     return date.today()
-                return date(year=int(str(value)[:4]),
-                            month=int(str(value)[4:6]),
-                            day=int(str(value)[6:]))
+                return date(
+                    year=int(str(value)[:4]), month=int(str(value)[4:6]), day=int(str(value)[6:])
+                )
             elif type(value) == str:
                 if "-" in value:
                     return value
                 if "/" in value:
                     return date(
-                        year=int(str(value)[6:11]),
-                        month=int(value[3:5]),
-                        day=int(value[:2])
+                        year=int(str(value)[6:11]), month=int(value[3:5]), day=int(value[:2])
                     )
 
         return value
@@ -538,13 +590,13 @@ class ImportStudent(ImportBase):
                 continue
             year = self.get_value(entry, "year")
             if not year:
-                self.print_log("No year found, skipping student (%s %s)."
-                               % (last_name, first_name))
+                self.print_log("No year found, skipping student (%s %s)." % (last_name, first_name))
                 continue
             classe_letter = self.get_value(entry, "classe_letter")
             if not classe_letter:
-                self.print_log("No classe letter found, skipping student (%s %s)."
-                               % (last_name, first_name))
+                self.print_log(
+                    "No classe letter found, skipping student (%s %s)." % (last_name, first_name)
+                )
                 continue
             try:
                 student = StudentModel.objects.get(matricule=matricule)
@@ -558,13 +610,11 @@ class ImportStudent(ImportBase):
 
             # Check if student's classe already exists.
             try:
-                classe = ClasseModel.objects.get(year=year,
-                                                 letter=classe_letter,
-                                                 teaching=self.teaching)
+                classe = ClasseModel.objects.get(
+                    year=year, letter=classe_letter, teaching=self.teaching
+                )
             except ObjectDoesNotExist:
-                classe = ClasseModel(year=year,
-                                     letter=classe_letter,
-                                     teaching=self.teaching)
+                classe = ClasseModel(year=year, letter=classe_letter, teaching=self.teaching)
                 classe.save()
 
             student.classe = classe
@@ -588,11 +638,13 @@ class ImportStudent(ImportBase):
                             id=c["id"],
                             short_name=c["short_name"],
                             long_name=c["long_name"] if "long_name" in c else "",
-                            teaching=self.teaching
+                            teaching=self.teaching,
                         )
                         course_model.save()
                     try:
-                        given_course = GivenCourseModel.objects.get(course=course_model, group=c["group"])
+                        given_course = GivenCourseModel.objects.get(
+                            course=course_model, group=c["group"]
+                        )
                     except ObjectDoesNotExist:
                         given_course = GivenCourseModel(course=course_model, group=c["group"])
                         given_course.save()
@@ -620,11 +672,13 @@ class ImportStudent(ImportBase):
                         continue
                     setattr(info, c, "")
             if self.search_login_directory:
-                self.ldap_connection.search(self.base_dn, "(matricule=%i)" % matricule, attributes='*')
+                self.ldap_connection.search(
+                    self.base_dn, "(matricule=%i)" % matricule, attributes="*"
+                )
                 for r in self.ldap_connection.response:
                     ldap_info = get_django_dict_from_ldap(r)
-                    info.username = ldap_info['username']
-                    info.password = ldap_info['password']
+                    info.username = ldap_info["username"]
+                    info.password = ldap_info["password"]
             info.save()
 
         # Set inactives.
@@ -641,19 +695,22 @@ class ImportStudent(ImportBase):
 
 
 class ImportStudentCSV(ImportStudent):
-    def __init__(self, teaching: TeachingModel, column_map: dict=None,
-                 column_index: dict=None) -> None:
+    def __init__(
+        self, teaching: TeachingModel, column_map: dict = None, column_index: dict = None
+    ) -> None:
         super().__init__(teaching=teaching, search_login_directory=False)
         self.column_map = column_map
         if not column_index:
-            self.column_to_index = {j: i for i, j in
-                                    enumerate(["matricule", "last_name", "first_name",
-                                               "year", "classe_letter"])}
+            self.column_to_index = {
+                j: i
+                for i, j in enumerate(
+                    ["matricule", "last_name", "first_name", "year", "classe_letter"]
+                )
+            }
         else:
             self.column_to_index = column_index
 
-    def sync(self, text: TextIO, ignore_first_line: bool=False,
-             has_header: bool=False) -> None:
+    def sync(self, text: TextIO, ignore_first_line: bool = False, has_header: bool = False) -> None:
         # First detect dialect.
         dialect = csv.Sniffer().sniff(text.readline())
         # Return to start.
@@ -666,11 +723,9 @@ class ImportStudentCSV(ImportStudent):
         if has_header:
             header = next(reader, None)
             if self.column_map:
-                self.column_to_index = {self.column_map[j]: i for i, j in
-                                        enumerate(header)}
+                self.column_to_index = {self.column_map[j]: i for i, j in enumerate(header)}
             else:
-                self.column_to_index = {j: i for i, j in
-                                        enumerate(header)}
+                self.column_to_index = {j: i for i, j in enumerate(header)}
 
         super()._sync(reader)
 
@@ -703,29 +758,44 @@ class ImportStudentLDAP(ImportStudent):
         self.base_dn = settings.AUTH_LDAP_USER_SEARCH.base_dn
 
     def sync(self):
-        self.connection.search(self.base_dn,
-                               "(&(objectClass=eleve)(enseignement=%s))" % self.teaching.name,
-                               attributes='*')
+        self.connection.search(
+            self.base_dn,
+            "(&(objectClass=eleve)(enseignement=%s))" % self.teaching.name,
+            attributes="*",
+        )
         ldap_entries = map(lambda entry: get_django_dict_from_ldap(entry), self.connection.response)
         super()._sync(ldap_entries)
 
     def get_value(self, entry: dict, column: str) -> Union[int, str, date, None]:
-        if column == 'password':
-            if '{SHA512}' in entry[column]:
-                return 'Les données sensibles ne sont disponibles que sur https://local.isln.be'
+        if column == "password":
+            if "{SHA512}" in entry[column]:
+                return "Les données sensibles ne sont disponibles que sur https://local.isln.be"
         return super().get_value(entry, column)
 
 
 class ImportStudentFDB(ImportStudent):
     column_map = {
-        "last_name": "surname", "first_name": "firstname", "year": "classe_year",
-        "doctor": "medecin", "doctor_phone": "medecin_phone", "mutual": "mutuelle",
+        "last_name": "surname",
+        "first_name": "firstname",
+        "year": "classe_year",
+        "doctor": "medecin",
+        "doctor_phone": "medecin_phone",
+        "mutual": "mutuelle",
         "medical_information": "medical_info",
-        "street": "address", "locality": "city", "student_mobile": "student_gsm",
-        "resp_last_name": "resp_surname", "resp_first_name": "resp_firstname",
-        "resp_phone": "phone", "resp_mobile": "gsm", "resp_email": "email",
-        "father_last_name": "father_surname", "father_first_name": "father_firstname", "father_mobile": "father_gsm",
-        "mother_last_name": "mother_surname", "mother_first_name": "mother_firstname", "mother_mobile": "mother_gsm",
+        "street": "address",
+        "locality": "city",
+        "student_mobile": "student_gsm",
+        "resp_last_name": "resp_surname",
+        "resp_first_name": "resp_firstname",
+        "resp_phone": "phone",
+        "resp_mobile": "gsm",
+        "resp_email": "email",
+        "father_last_name": "father_surname",
+        "father_first_name": "father_firstname",
+        "father_mobile": "father_gsm",
+        "mother_last_name": "mother_surname",
+        "mother_first_name": "mother_firstname",
+        "mother_mobile": "mother_gsm",
     }
     scholar_year = None
     overwrites = {
@@ -740,7 +810,7 @@ class ImportStudentFDB(ImportStudent):
         search_login_directory,
         teaching_type,
         classe_format="%C",
-        sync_course=True
+        sync_course=True,
     ) -> None:
         super().__init__(teaching, search_login_directory)
         self.server = fdb_server
@@ -757,8 +827,7 @@ class ImportStudentFDB(ImportStudent):
                 uid__isnull=False,
             )
             self.overwrites["students"] = {
-                f"{s.uid}-{s.field}": s.value
-                for s in students_overwrite
+                f"{s.uid}-{s.field}": s.value for s in students_overwrite
             }
 
             columns_overwrite = OverwriteDataModel.objects.filter(
@@ -766,16 +835,20 @@ class ImportStudentFDB(ImportStudent):
                 uid=None,
             )
             self.overwrites["columns"] = {
-                f"{c.field}|{c.old_value}": c.value
-                for c in columns_overwrite
+                f"{c.field}|{c.old_value}": c.value for c in columns_overwrite
             }
 
     def sync(self):
         from libreschoolfdb.reader import get_students
+
         self.print_log("Collecting students informations from ProEco database.")
-        students = get_students(year=self.scholar_year, fdb_server=self.server,
-                                teaching=self.teaching_type, absences_info=False,
-                                classe_format=self.classe_format)
+        students = get_students(
+            year=self.scholar_year,
+            fdb_server=self.server,
+            teaching=self.teaching_type,
+            absences_info=False,
+            classe_format=self.classe_format,
+        )
         # print(students)
         super()._sync(students.items())
 
@@ -819,7 +892,7 @@ class SyncCourses(ImportBase):
                 continue
 
             if entry[-1] == "0":
-               continue
+                continue
 
             course = self.get_value(entry, "course")
             teachers = self.get_value(entry, "teachers")
@@ -835,7 +908,9 @@ class SyncCourses(ImportBase):
             # print(f"classes: {classes}")
 
             # Build a string like 'classe1.compact_str GRX/classe2.compact_str GRY/...'
-            group = "/".join([" ".join((c[0].compact_str, f"GR{c[1]}" if c[1] else "")) for c in classes])
+            group = "/".join(
+                [" ".join((c[0].compact_str, f"GR{c[1]}" if c[1] else "")) for c in classes]
+            )
             given_course = GivenCourseModel.objects.get_or_create(course=course, group=group)[0]
 
             # Add courses and classes to teachers.
@@ -887,7 +962,9 @@ class EDTTextSyncCourses(SyncCourses):
                 return None
             # Check if it has group.
             has_group = "<" in entry[7]
-            classes_text = [c for c in entry[7].split(",") if c and (c[0].isnumeric() or c[1].isnumeric())]
+            classes_text = [
+                c for c in entry[7].split(",") if c and (c[0].isnumeric() or c[1].isnumeric())
+            ]
             classes = []
             for c in classes_text:
                 c = re.sub(r"(?<=\<).*(?=\>)", "", c).replace("<>", "")
@@ -903,9 +980,7 @@ class EDTTextSyncCourses(SyncCourses):
                     group = None
                 try:
                     classe = ClasseModel.objects.get(
-                        teaching=self.teaching,
-                        year=year,
-                        letter__unaccent__icontains=letter
+                        teaching=self.teaching, year=year, letter__unaccent__icontains=letter
                     )
                     classes.append((classe, group))
                 except ObjectDoesNotExist:
@@ -920,14 +995,20 @@ class EDTTextSyncCourses(SyncCourses):
 
             teachers = []
             for teacher_text in entry[5].split(";"):
-                first_name_start = teacher_text.split(" ")[-1][:-1] if teacher_text[-1] == "." else None
-                last_name = " ".join(teacher_text.split(" ")[:-1]) if first_name_start else teacher_text
+                first_name_start = (
+                    teacher_text.split(" ")[-1][:-1] if teacher_text[-1] == "." else None
+                )
+                last_name = (
+                    " ".join(teacher_text.split(" ")[:-1]) if first_name_start else teacher_text
+                )
                 teacher = ResponsibleModel.objects.filter(last_name__unaccent__iexact=last_name)
                 if first_name_start:
                     teacher = teacher.filter(first_name__unaccent__istartswith=first_name_start)
 
                 if teacher.count() != 1:
-                    print(f"Error while searching teacher, teacher found is {teacher.count()} ({last_name})")
+                    print(
+                        f"Error while searching teacher, teacher found is {teacher.count()} ({last_name})"
+                    )
                     return None
 
                 teachers.append(teacher.first())

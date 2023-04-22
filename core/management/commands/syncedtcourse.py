@@ -26,14 +26,15 @@ from core.adminsettings.importclass import EDTTextSyncCourses
 
 
 class Command(BaseCommand):
-    help = 'Sync courses from an EDT export file.'
+    help = "Sync courses from an EDT export file."
 
     def add_arguments(self, parser):
-        parser.add_argument("export", help="Export file from EDT must be the list of given courses.")
+        parser.add_argument(
+            "export", help="Export file from EDT must be the list of given courses."
+        )
         parser.add_argument("teaching", help="The teaching where the sync has to be done.")
         parser.add_argument(
-            "group_relation",
-            help="A csv file with two columns, the matricule and the group number"
+            "group_relation", help="A csv file with two columns, the matricule and the group number"
         )
 
     def handle(self, *args, **options):

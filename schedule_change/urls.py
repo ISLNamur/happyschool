@@ -23,18 +23,20 @@ from rest_framework.routers import DefaultRouter
 
 from . import views
 
-app_name = 'schedule_change'
+app_name = "schedule_change"
 
 urlpatterns = [
-    path('', views.ScheduleChangeView.as_view(), name="schedule_change"),
-    path('fullscreen/', views.ScheduleChangeViewReadOnly.as_view(), name="schedule_change_readonly"),
-    path('api/summary_pdf/', views.SummaryPDFAPI.as_view()),
+    path("", views.ScheduleChangeView.as_view(), name="schedule_change"),
+    path(
+        "fullscreen/", views.ScheduleChangeViewReadOnly.as_view(), name="schedule_change_readonly"
+    ),
+    path("api/summary_pdf/", views.SummaryPDFAPI.as_view()),
 ]
 
 router = DefaultRouter()
-router.register(r'api/schedule_change', views.ScheduleChangeViewSet)
-router.register(r'api/schedule_change_type', views.ScheduleChangeTypeViewSet)
-router.register(r'api/schedule_change_place', views.ScheduleChangePlaceViewSet)
-router.register(r'api/schedule_change_category', views.ScheduleChangeCategoryViewSet)
+router.register(r"api/schedule_change", views.ScheduleChangeViewSet)
+router.register(r"api/schedule_change_type", views.ScheduleChangeTypeViewSet)
+router.register(r"api/schedule_change_place", views.ScheduleChangePlaceViewSet)
+router.register(r"api/schedule_change_category", views.ScheduleChangeCategoryViewSet)
 
 urlpatterns += router.urls

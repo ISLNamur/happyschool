@@ -4,22 +4,31 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pia', '0002_auto_20191203_1436'),
+        ("pia", "0002_auto_20191203_1436"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ScheduleAdjustmentModel',
+            name="ScheduleAdjustmentModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('schedule_adjustment', models.CharField(help_text="Description de l'aménagement horaire", max_length=200)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                (
+                    "schedule_adjustment",
+                    models.CharField(
+                        help_text="Description de l'aménagement horaire", max_length=200
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='piamodel',
-            name='schedule_adjustment',
-            field=models.ManyToManyField(to='pia.ScheduleAdjustmentModel'),
+            model_name="piamodel",
+            name="schedule_adjustment",
+            field=models.ManyToManyField(to="pia.ScheduleAdjustmentModel"),
         ),
     ]

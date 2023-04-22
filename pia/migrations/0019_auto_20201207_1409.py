@@ -4,21 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('auth', '0011_update_proxy_permissions'),
-        ('pia', '0018_piamodel_other_adjustments'),
+        ("auth", "0011_update_proxy_permissions"),
+        ("pia", "0018_piamodel_other_adjustments"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='piasettingsmodel',
-            name='all_access',
-            field=models.ManyToManyField(blank=True, default=None, to='auth.Group'),
+            model_name="piasettingsmodel",
+            name="all_access",
+            field=models.ManyToManyField(blank=True, default=None, to="auth.Group"),
         ),
         migrations.AlterField(
-            model_name='piamodel',
-            name='other_adjustments',
+            model_name="piamodel",
+            name="other_adjustments",
             field=models.TextField(blank=True),
         ),
     ]

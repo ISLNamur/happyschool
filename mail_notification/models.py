@@ -29,17 +29,23 @@ from mail_answer.models import MailTemplateModel
 
 
 def unique_file_name(instance, filename):
-    path = strftime('mail_notification/%Y/%m/%d/')
+    path = strftime("mail_notification/%Y/%m/%d/")
     file = "".join(random.choice(string.ascii_letters) for x in range(0, 8)) + "_" + filename
     return path + file
 
 
 class EmailNotificationSettingsModel(models.Model):
     use_email_school = models.BooleanField(default=False)
-    add_cc_parents = models.ManyToManyField(EmailModel, related_name="add_cc_parents",
-                                            help_text="When sending an email to parents send a copy to those emails.")
-    add_cc_teachers = models.ManyToManyField(EmailModel, related_name="add_cc_teachers",
-                                             help_text="When sending an email to teachers send a copy to those emails.")
+    add_cc_parents = models.ManyToManyField(
+        EmailModel,
+        related_name="add_cc_parents",
+        help_text="When sending an email to parents send a copy to those emails.",
+    )
+    add_cc_teachers = models.ManyToManyField(
+        EmailModel,
+        related_name="add_cc_teachers",
+        help_text="When sending an email to teachers send a copy to those emails.",
+    )
 
 
 class EmailAttachment(models.Model):
@@ -84,12 +90,17 @@ class EmailNotification(models.Model):
         body: %s
         attachments: %i
         teaching: %s
-        """ % (self.email_to, self.email_from, self.subject, self.body[:40], len(self.attachments.all()), self.teaching)
+        """ % (
+            self.email_to,
+            self.email_from,
+            self.subject,
+            self.body[:40],
+            len(self.attachments.all()),
+            self.teaching,
+        )
 
     class Meta:
-        permissions = (
-            ('access_mail_notification', 'Can access to mail notification'),
-        )
+        permissions = (("access_mail_notification", "Can access to mail notification"),)
 
 
 class OtherEmailGroupModel(models.Model):
@@ -106,4 +117,4 @@ class OtherEmailModel(models.Model):
     group = models.ForeignKey(OtherEmailGroupModel, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.email + '(%s)' % str(self.group)
+        return self.email + "(%s)" % str(self.group)

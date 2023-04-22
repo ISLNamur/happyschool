@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('schedule_change', '0003_auto_20190516_1433'),
+        ("schedule_change", "0003_auto_20190516_1433"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='schedulechangesettingsmodel',
-            name='enable_fullscreen',
+            model_name="schedulechangesettingsmodel",
+            name="enable_fullscreen",
             field=models.BooleanField(default=False),
         ),
     ]

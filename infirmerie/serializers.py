@@ -27,20 +27,20 @@ from .models import *
 class InfirmerieSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = InfirmerieSettingsModel
-        fields = '__all__'
+        fields = "__all__"
 
 
 class PassageSerializer(serializers.ModelSerializer):
     matricule = StudentSerializer(read_only=True)
-    matricule_id = serializers.PrimaryKeyRelatedField(queryset=StudentModel.objects.all(),
-                                                      source='matricule', required=False,
-                                                      allow_null=True)
+    matricule_id = serializers.PrimaryKeyRelatedField(
+        queryset=StudentModel.objects.all(), source="matricule", required=False, allow_null=True
+    )
 
     def validate(self, data):
-        if data['datetime_sortie'] and not data['remarques_sortie']:
+        if data["datetime_sortie"] and not data["remarques_sortie"]:
             raise serializers.ValidationError("Une remarque de sortie doit être indiquée")
         return data
 
     class Meta:
         model = Passage
-        fields = '__all__'
+        fields = "__all__"

@@ -44,18 +44,27 @@ from core.utilities import get_menu, get_scholar_year
 from core.people import get_classes
 from core.views import BaseFilters, PageNumberSizePagination
 
-from .models import StudentAbsenceTeacherSettingsModel, StudentAbsenceTeacherModel, PeriodModel, LessonModel
-from .serializers import StudentAbsenceTeacherSettingsSerializer, PeriodSerializer, StudentAbsenceTeacherSerializer
+from .models import (
+    StudentAbsenceTeacherSettingsModel,
+    StudentAbsenceTeacherModel,
+    PeriodModel,
+    LessonModel,
+)
+from .serializers import (
+    StudentAbsenceTeacherSettingsSerializer,
+    PeriodSerializer,
+    StudentAbsenceTeacherSerializer,
+)
 
 
 def get_menu_entry(active_app: str, request) -> dict:
-    if not request.user.has_perm('student_absence_teacher.view_studentabsenceteachermodel'):
+    if not request.user.has_perm("student_absence_teacher.view_studentabsenceteachermodel"):
         return {}
     return {
-            "app": "student_absence_teacher",
-            "display": "Abs. Élèves (prof)",
-            "url": "/student_absence_teacher",
-            "active": active_app == "student_absence_teacher"
+        "app": "student_absence_teacher",
+        "display": "Abs. Élèves (prof)",
+        "url": "/student_absence_teacher",
+        "active": active_app == "student_absence_teacher",
     }
 
 
@@ -68,38 +77,43 @@ def get_settings():
     return settings_student_absence
 
 
-class StudentAbsenceTeacherView(LoginRequiredMixin,
-                                PermissionRequiredMixin,
-                                TemplateView):
+class StudentAbsenceTeacherView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = "student_absence_teacher/student_absence_teacher.html"
-    permission_required = ('student_absence_teacher.view_studentabsenceteachermodel')
+    permission_required = "student_absence_teacher.view_studentabsenceteachermodel"
     filters = [
-        {'value': 'student__display', 'text': 'Nom'},
-        {'value': 'student__matricule', 'text': 'Matricule'},
-        {'value': 'classe', 'text': 'Classe'},
-        {'value': 'period__name', 'text': 'Période'},
-        {'value': 'activate_absent', 'text': 'Absents'},
-        {'value': 'date_absence', 'text': 'Date'},
+        {"value": "student__display", "text": "Nom"},
+        {"value": "student__matricule", "text": "Matricule"},
+        {"value": "classe", "text": "Classe"},
+        {"value": "period__name", "text": "Période"},
+        {"value": "activate_absent", "text": "Absents"},
+        {"value": "date_absence", "text": "Date"},
     ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['menu'] = json.dumps(get_menu(self.request, "student_absence_absence"))
-        context['filters'] = json.dumps(self.filters)
-        context['settings'] = json.dumps((StudentAbsenceTeacherSettingsSerializer(get_settings()).data))
+        context["menu"] = json.dumps(get_menu(self.request, "student_absence_absence"))
+        context["filters"] = json.dumps(self.filters)
+        context["settings"] = json.dumps(
+            (StudentAbsenceTeacherSettingsSerializer(get_settings()).data)
+        )
         context["proeco"] = json.dumps("proeco" in settings.INSTALLED_APPS)
 
         return context
 
 
 class StudentAbsenceTeacherFilter(BaseFilters):
-    student__display = filters.CharFilter(method='people_name_by')
-    classe = filters.CharFilter(method='classe_by')
+    student__display = filters.CharFilter(method="people_name_by")
+    classe = filters.CharFilter(method="classe_by")
     activate_absent = filters.BooleanFilter(method="activate_absent_by")
 
     class Meta:
         fields_to_filter = [
-            'student', 'date_absence', 'student__matricule', 'student__classe', "period", "period__name",
+            "student",
+            "date_absence",
+            "student__matricule",
+            "student__classe",
+            "period",
+            "period__name",
         ]
         model = StudentAbsenceTeacherModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
@@ -122,10 +136,16 @@ class StudentAbsenceTeacherFilter(BaseFilters):
 class StudentAbsenceTeacherViewSet(ModelViewSet):
     queryset = StudentAbsenceTeacherModel.objects.filter(student__isnull=False)
     serializer_class = StudentAbsenceTeacherSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
-    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    )
     filter_class = StudentAbsenceTeacherFilter
-    ordering_fields = ['date_absence', 'datetime_update', 'datetime_creation', 'period']
+    ordering_fields = ["date_absence", "datetime_update", "datetime_creation", "period"]
     pagination_class = PageNumberSizePagination
 
     def perform_create(self, serializer):
@@ -141,10 +161,7 @@ class OverviewAPI(APIView):
     permission_classes = [IsAuthenticated]
 
     def _extract_count_from_educator(self, classe, absences, periods, date):
-        counts = {
-            "classe": classe.compact_str,
-            "classe__id": classe.id
-        }
+        counts = {"classe": classe.compact_str, "classe__id": classe.id}
 
         teacher_abs = StudentAbsenceTeacherModel.objects.filter(
             student__classe=classe,
@@ -156,30 +173,30 @@ class OverviewAPI(APIView):
             )
             # If teacher count is -1, it means that the teacher didn't take attendences.
             if teacher_abs_period.count() > 0:
-                teacher_count = teacher_abs_period.filter(
-                    status=StudentAbsenceTeacherModel.ABSENCE
-                ).distinct("student").count()
+                teacher_count = (
+                    teacher_abs_period.filter(status=StudentAbsenceTeacherModel.ABSENCE)
+                    .distinct("student")
+                    .count()
+                )
             else:
                 teacher_count = -1
             counts[f"period-{period.id}"] = {"teacher_count": teacher_count}
             # Hu?
             counts[f"period-{period.id}"]["not_teacher_count"] = next(
-                (x["id__count"] for x in absences \
-                    if x["period"] == period.id and x["is_absent"]),
-                next((0 for y in absences if y["period"] == period.id), -1)
+                (x["id__count"] for x in absences if x["period"] == period.id and x["is_absent"]),
+                next((0 for y in absences if y["period"] == period.id), -1),
             )
         return counts
 
     def _extract_count_from_teacher(self, classe, absences, periods, date):
-        counts = {
-            "classe": classe.compact_str,
-            "classe__id": classe.id
-        }
+        counts = {"classe": classe.compact_str, "classe__id": classe.id}
 
         use_student_absence = "student_absence" in settings.INSTALLED_APPS
         if use_student_absence:
             from student_absence.models import StudentAbsenceModel
-        not_teacher_abs = StudentAbsenceModel.objects.filter(student__classe=classe, date_absence=date)
+        not_teacher_abs = StudentAbsenceModel.objects.filter(
+            student__classe=classe, date_absence=date
+        )
 
         for period in periods:
             if use_student_absence:
@@ -192,9 +209,13 @@ class OverviewAPI(APIView):
                     not_teacher_count = -1
                 counts[f"period-{period.id}"] = {"not_teacher_count": not_teacher_count}
             counts[f"period-{period.id}"]["teacher_count"] = next(
-                (x["id__count"] for x in absences \
-                    if x["period"] == period.id and x["status"] == StudentAbsenceTeacherModel.ABSENCE),
-                next((0 for y in absences if y["period"] == period.id), -1)
+                (
+                    x["id__count"]
+                    for x in absences
+                    if x["period"] == period.id
+                    and x["status"] == StudentAbsenceTeacherModel.ABSENCE
+                ),
+                next((0 for y in absences if y["period"] == period.id), -1),
             )
 
         return counts
@@ -210,7 +231,7 @@ class OverviewAPI(APIView):
                 check_access=True,
                 user=request.user,
                 tenure_class_only=False,
-                educ_by_years="both"
+                educ_by_years="both",
             ).order_by("year", "letter")
 
         if point_of_view == "teacher":
@@ -218,13 +239,14 @@ class OverviewAPI(APIView):
             count_by_classe_by_period = [
                 self._extract_count_from_teacher(
                     c,
-                    StudentAbsenceTeacherModel.objects \
-                        ## Exclude only LATENESS ????
-                        .exclude(status=StudentAbsenceTeacherModel.LATENESS) \
-                        .filter(date_absence=date, student__classe=c) \
-                        .values("period", "status").annotate(Count("id")),
+                    StudentAbsenceTeacherModel.objects.exclude(  ## Exclude only LATENESS ????
+                        status=StudentAbsenceTeacherModel.LATENESS
+                    )
+                    .filter(date_absence=date, student__classe=c)
+                    .values("period", "status")
+                    .annotate(Count("id")),
                     periods,
-                    date
+                    date,
                 )
                 for c in classes
             ]
@@ -234,15 +256,18 @@ class OverviewAPI(APIView):
             if "student_absence" not in settings.INSTALLED_APPS:
                 return Response(json.dumps({}))
 
-            from student_absence.models import StudentAbsenceModel, PeriodModel as PeriodModelEducator
+            from student_absence.models import (
+                StudentAbsenceModel,
+                PeriodModel as PeriodModelEducator,
+            )
 
             periods = PeriodModelEducator.objects.order_by("start")
             count_by_classe_by_period = [
                 self._extract_count_from_educator(
                     c,
-                    StudentAbsenceModel.objects
-                    .filter(date_absence=date, student__classe=c)
-                    .values("period", "is_absent").annotate(Count("id")),
+                    StudentAbsenceModel.objects.filter(date_absence=date, student__classe=c)
+                    .values("period", "is_absent")
+                    .annotate(Count("id")),
                     periods,
                     date,
                 )
@@ -277,12 +302,14 @@ class ExportAbsencesAPI(APIView):
             date_absence__gte=date_from,
             date_absence__lte=date_to,
             student__classe__isnull=False,
-        ).exclude(
-            status=StudentAbsenceTeacherModel.PRESENCE
-        )
+        ).exclude(status=StudentAbsenceTeacherModel.PRESENCE)
 
         # If user cannot see list (overview), only show own absences.
-        if not get_settings().can_see_list.filter(id__in=[g.id for g in request.user.groups.all()]).exists():
+        if (
+            not get_settings()
+            .can_see_list.filter(id__in=[g.id for g in request.user.groups.all()])
+            .exists()
+        ):
             absences = absences.filter(user=request.user)
         else:
             classes = get_classes(
@@ -311,25 +338,25 @@ class ExportAbsencesAPI(APIView):
             response = HttpResponse(content_type="text/csv")
             response["Content-Disposition"] = 'attachment; filename="export.csv"'
             writer = csv.writer(response)
-            writer.writerow([
-                "Matricule unique",
-                "Nom",
-                "Prénom",
-                "Année",
-                "Classe",
-                "Groupe",
-                "Date",
-                "Statut",
-                "Période",
-                "Commentaire"
-            ])
+            writer.writerow(
+                [
+                    "Matricule unique",
+                    "Nom",
+                    "Prénom",
+                    "Année",
+                    "Classe",
+                    "Groupe",
+                    "Date",
+                    "Statut",
+                    "Période",
+                    "Commentaire",
+                ]
+            )
             status = {s[0]: s[1] for s in StudentAbsenceTeacherModel.STATUS_CHOICES}
             for a in absences_list:
                 row = list(a)
                 row[-3] = status[row[-3]]
-                writer.writerow(
-                    row
-                )
+                writer.writerow(row)
             return response
 
         if document == "pdf":
@@ -345,31 +372,30 @@ class ExportAbsencesAPI(APIView):
 
             absences_by_week = [
                 {
-                    "name": datetime.datetime.strptime(key, '%G-W%V-%u').strftime("Semaine du %d/%m/%Y"),
+                    "name": datetime.datetime.strptime(key, "%G-W%V-%u").strftime(
+                        "Semaine du %d/%m/%Y"
+                    ),
                     "absences": [
                         {
                             "name": cl,
                             "students": [
-                                {
-                                    "name": stud,
-                                    "status": self._status_by_day(status)
-                                }
+                                {"name": stud, "status": self._status_by_day(status)}
                                 for stud, status in groupby(
                                     sorted(ab, key=lambda a: f"{a[0]}{a[1]}"),
-                                    key=lambda a: f"{a[0]} {a[1]}"
+                                    key=lambda a: f"{a[0]} {a[1]}",
                                 )
-                            ]
+                            ],
                         }
                         for cl, ab in groupby(
                             sorted(value, key=lambda a: f"{a[2]}{a[3]}"),
-                            key=lambda a: f"{a[2]}{a[3].upper()}"
+                            key=lambda a: f"{a[2]}{a[3].upper()}",
                         )  # Group by classe
-                    ]
-
+                    ],
                 }
                 for key, value in groupby(
                     # Group by week (a[4].isocalendar()[1])
-                    absences_list, key=lambda a: f"{a[4].year}-W{a[4].isocalendar()[1]}-1"
+                    absences_list,
+                    key=lambda a: f"{a[4].year}-W{a[4].isocalendar()[1]}-1",
                 )
             ]
             context = {"weeks": absences_by_week}

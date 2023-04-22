@@ -4,15 +4,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('annuaire', '0002_annuairesettingsmodel_show_credentials'),
+        ("annuaire", "0002_annuairesettingsmodel_show_credentials"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='annuairesettingsmodel',
-            name='show_credentials',
-            field=models.BooleanField(default=True, help_text="Permet d'afficher/cacher les champs utilisateur/mot de passe dans la fiche info\n            et ainsi que la liste des mots de passe des élèves par classe"),
+            model_name="annuairesettingsmodel",
+            name="show_credentials",
+            field=models.BooleanField(
+                default=True,
+                help_text="Permet d'afficher/cacher les champs utilisateur/mot de passe dans la fiche info\n            et ainsi que la liste des mots de passe des élèves par classe",
+            ),
         ),
     ]

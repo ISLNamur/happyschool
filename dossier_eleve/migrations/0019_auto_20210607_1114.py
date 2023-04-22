@@ -4,20 +4,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('dossier_eleve', '0018_auto_20210601_1246'),
+        ("dossier_eleve", "0018_auto_20210601_1246"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='dossierelevesettingsmodel',
-            name='filter_teacher_entries_by_tenure',
-            field=models.BooleanField(default=False, help_text='Déprécié.'),
+            model_name="dossierelevesettingsmodel",
+            name="filter_teacher_entries_by_tenure",
+            field=models.BooleanField(default=False, help_text="Déprécié."),
         ),
         migrations.AlterField(
-            model_name='dossierelevesettingsmodel',
-            name='tenure_force_visibility_to',
-            field=models.ManyToManyField(blank=True, default=None, help_text="Les groupes selectionnés auront forcément la visibilité sur les cas venant\n        du titulaire. Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.", related_name='tenure_force_visibility_to', to='auth.Group'),
+            model_name="dossierelevesettingsmodel",
+            name="tenure_force_visibility_to",
+            field=models.ManyToManyField(
+                blank=True,
+                default=None,
+                help_text="Les groupes selectionnés auront forcément la visibilité sur les cas venant\n        du titulaire. Ne concerne que les groupes 'direction', 'coordonateur',\n        'educateur', 'professeur' et 'pms'.",
+                related_name="tenure_force_visibility_to",
+                to="auth.Group",
+            ),
         ),
     ]

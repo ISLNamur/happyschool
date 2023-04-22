@@ -5,16 +5,16 @@ from django.db import migrations
 
 
 def datetime_to_date(apps, schema_editor):
-    Absence = apps.get_model('absence_prof', 'Absence')
+    Absence = apps.get_model("absence_prof", "Absence")
     for a in Absence.objects.all():
         a.date_absence_start = (a.datetime_absence_start + timedelta(hours=3)).date()
         a.date_absence_end = (a.datetime_absence_end - timedelta(hours=3)).date()
         a.save()
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
-        ('absence_prof', '0004_auto_20190909_1427'),
+        ("absence_prof", "0004_auto_20190909_1427"),
     ]
 
     operations = [

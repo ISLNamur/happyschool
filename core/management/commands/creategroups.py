@@ -24,7 +24,7 @@ from django.conf import settings
 
 
 class Command(BaseCommand):
-    help = 'Create groups in database based on settings.py.'
+    help = "Create groups in database based on settings.py."
 
     def handle(self, *args, **options):
         Group.objects.get_or_create(name=settings.SYSADMIN_GROUP)

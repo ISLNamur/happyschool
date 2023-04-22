@@ -4,20 +4,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0004_auto_20190901_2035'),
+        ("core", "0004_auto_20190901_2035"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='coresettingsmodel',
-            name='school_name',
-            field=models.CharField(default='', help_text="Nom complet de l'école.", max_length=200),
+            model_name="coresettingsmodel",
+            name="school_name",
+            field=models.CharField(default="", help_text="Nom complet de l'école.", max_length=200),
         ),
         migrations.AddField(
-            model_name='coresettingsmodel',
-            name='school_name_short',
-            field=models.CharField(default='', help_text="Nom court de l'école (abréviation, sigle,…).", max_length=10),
+            model_name="coresettingsmodel",
+            name="school_name_short",
+            field=models.CharField(
+                default="", help_text="Nom court de l'école (abréviation, sigle,…).", max_length=10
+            ),
         ),
     ]

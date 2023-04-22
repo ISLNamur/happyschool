@@ -4,20 +4,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('dossier_eleve', '0019_auto_20210607_1114'),
+        ("dossier_eleve", "0019_auto_20210607_1114"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='dossierelevesettingsmodel',
-            name='export_retenues_by_classe_default',
-            field=models.BooleanField(default=False, help_text="Lors de l'export des retenues dans les demandes de sanction, la case pour\n        trier par classe sera cochée par défaut."),
+            model_name="dossierelevesettingsmodel",
+            name="export_retenues_by_classe_default",
+            field=models.BooleanField(
+                default=False,
+                help_text="Lors de l'export des retenues dans les demandes de sanction, la case pour\n        trier par classe sera cochée par défaut.",
+            ),
         ),
         migrations.AddField(
-            model_name='dossierelevesettingsmodel',
-            name='export_retenues_by_sanction_default',
-            field=models.BooleanField(default=False, help_text="Lors de l'export des retenues dans les demandes de sanction, la case pour\n        trier par sanction sera cochée par défaut."),
+            model_name="dossierelevesettingsmodel",
+            name="export_retenues_by_sanction_default",
+            field=models.BooleanField(
+                default=False,
+                help_text="Lors de l'export des retenues dans les demandes de sanction, la case pour\n        trier par sanction sera cochée par défaut.",
+            ),
         ),
     ]

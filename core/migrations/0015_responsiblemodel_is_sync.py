@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0014_menuentrymodel'),
+        ("core", "0014_menuentrymodel"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='responsiblemodel',
-            name='is_sync',
+            model_name="responsiblemodel",
+            name="is_sync",
             field=models.BooleanField(default=True),
         ),
     ]

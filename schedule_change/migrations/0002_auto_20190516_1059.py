@@ -6,8 +6,8 @@ import django.db.models.deletion
 
 
 def migrate_change(apps, schema_editor):
-    ScheduleChangeModel = apps.get_model('schedule_change', 'ScheduleChangeModel')
-    ScheduleChangeTypeModel = apps.get_model('schedule_change', 'ScheduleChangeTypeModel')
+    ScheduleChangeModel = apps.get_model("schedule_change", "ScheduleChangeModel")
+    ScheduleChangeTypeModel = apps.get_model("schedule_change", "ScheduleChangeTypeModel")
 
     for sc in ScheduleChangeModel.objects.all():
         try:
@@ -19,53 +19,80 @@ def migrate_change(apps, schema_editor):
             sc.change = ch
             sc.save()
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
-        ('schedule_change', '0001_initial'),
+        ("schedule_change", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ScheduleChangeCategoryModel',
+            name="ScheduleChangeCategoryModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('category', models.CharField(max_length=100)),
-                ('color', models.CharField(help_text='Valeur hexadecimal de la couleur.', max_length=6)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("category", models.CharField(max_length=100)),
+                (
+                    "color",
+                    models.CharField(help_text="Valeur hexadecimal de la couleur.", max_length=6),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='ScheduleChangePlaceModel',
+            name="ScheduleChangePlaceModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
             ],
         ),
         migrations.CreateModel(
-            name='ScheduleChangeTypeModel',
+            name="ScheduleChangeTypeModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.RenameField(
-            model_name='schedulechangemodel',
-            old_name='change',
-            new_name='change_old',
+            model_name="schedulechangemodel",
+            old_name="change",
+            new_name="change_old",
         ),
         migrations.AddField(
-            model_name='schedulechangemodel',
-            name='change',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='schedule_change.ScheduleChangeTypeModel'),
+            model_name="schedulechangemodel",
+            name="change",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="schedule_change.ScheduleChangeTypeModel",
+            ),
         ),
         migrations.RunPython(migrate_change),
         migrations.RemoveField(
-            model_name='schedulechangemodel',
-            name='change_old',
+            model_name="schedulechangemodel",
+            name="change_old",
         ),
         migrations.AddField(
-            model_name='schedulechangemodel',
-            name='category',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='schedule_change.ScheduleChangeCategoryModel'),
+            model_name="schedulechangemodel",
+            name="category",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="schedule_change.ScheduleChangeCategoryModel",
+            ),
         ),
     ]

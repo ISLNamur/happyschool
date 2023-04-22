@@ -16,9 +16,8 @@ def load_fixtures(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('dossier_eleve', '0012_sanctiondecisiondisciplinaire_letter_comment'),
+        ("dossier_eleve", "0012_sanctiondecisiondisciplinaire_letter_comment"),
     ]
 
     operations = [

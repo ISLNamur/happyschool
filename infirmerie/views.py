@@ -38,13 +38,13 @@ from .serializers import PassageSerializer, InfirmerieSettingsSerializer
 
 
 def get_menu_entry(active_app, request):
-    if not request.user.has_perm('infirmerie.view_passage'):
+    if not request.user.has_perm("infirmerie.view_passage"):
         return {}
     return {
-            "app": "infirmerie",
-            "display": "Infirmerie",
-            "url": "/infirmerie",
-            "active": active_app == "infirmerie"
+        "app": "infirmerie",
+        "display": "Infirmerie",
+        "url": "/infirmerie",
+        "active": active_app == "infirmerie",
     }
 
 
@@ -59,37 +59,51 @@ def send_emails(passage, template, subject):
     else:
         image = static("/photos/unknown.jpg")
 
-    context = {'eleve': eleve, 'heure_arrive': passage.datetime_arrive,
-               'commentaire': passage.motifs_admission, 'passage': passage,
-               'phone_number': get_settings().phone_number}
+    context = {
+        "eleve": eleve,
+        "heure_arrive": passage.datetime_arrive,
+        "commentaire": passage.motifs_admission,
+        "passage": passage,
+        "phone_number": get_settings().phone_number,
+    }
     recipients = email.get_resp_emails(eleve)
     recipients_emails = []
     for r in recipients.items():
         recipients_emails.append(r[0])
 
     if not settings.DEBUG:
-        email.send_email(to=recipients, subject="[Infirmerie] %s %s %s" % (subject, eleve.fullname, eleve.classe.compact_str),
-                         email_template="infirmerie/" + template + ".html", context=context, images=[image])
+        email.send_email(
+            to=recipients,
+            subject="[Infirmerie] %s %s %s" % (subject, eleve.fullname, eleve.classe.compact_str),
+            email_template="infirmerie/" + template + ".html",
+            context=context,
+            images=[image],
+        )
     else:
         print("Sending to: " + str(recipients_emails))
-        email.send_email(to=[settings.EMAIL_ADMIN], subject="[Infirmerie] %s %s %s" % (subject, eleve.fullname, eleve.classe.compact_str),
-                         email_template="infirmerie/" + template + ".html", context=context, images=[image])
+        email.send_email(
+            to=[settings.EMAIL_ADMIN],
+            subject="[Infirmerie] %s %s %s" % (subject, eleve.fullname, eleve.classe.compact_str),
+            email_template="infirmerie/" + template + ".html",
+            context=context,
+            images=[image],
+        )
 
 
-class PassageView(LoginRequiredMixin,
-                 PermissionRequiredMixin,
-                 TemplateView):
+class PassageView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = "infirmerie/infirmerie.html"
-    permission_required = ('infirmerie.view_passage')
-    filters = [{'value': 'name', 'text': 'Nom'},
-               {'value': 'activate_ongoing', 'text': 'Malades présents'},
-               {'value': 'matricule_id', 'text': 'Matricule'},]
+    permission_required = "infirmerie.view_passage"
+    filters = [
+        {"value": "name", "text": "Nom"},
+        {"value": "activate_ongoing", "text": "Malades présents"},
+        {"value": "matricule_id", "text": "Matricule"},
+    ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['menu'] = json.dumps(get_menu(self.request, "infirmerie"))
-        context['filters'] = json.dumps(self.filters)
-        context['settings'] = json.dumps((InfirmerieSettingsSerializer(get_settings()).data))
+        context["menu"] = json.dumps(get_menu(self.request, "infirmerie"))
+        context["filters"] = json.dumps(self.filters)
+        context["settings"] = json.dumps((InfirmerieSettingsSerializer(get_settings()).data))
 
         return context
 
@@ -110,9 +124,12 @@ class PassageFilter(BaseFilters):
 class PassageViewSet(BaseModelViewSet):
     queryset = Passage.objects.filter(matricule__isnull=False)
     serializer_class = PassageSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
     filter_class = PassageFilter
-    ordering_fields = ('datetime_arrive',)
+    ordering_fields = ("datetime_arrive",)
 
     def perform_create(self, serializer):
         # Override user save.
@@ -121,7 +138,7 @@ class PassageViewSet(BaseModelViewSet):
 
     def perform_update(self, serializer):
         p = serializer.save()
-        if serializer.validated_data['datetime_sortie']:
+        if serializer.validated_data["datetime_sortie"]:
             send_emails(p, "sortie_email", "Sortie de")
         else:
             send_emails(p, "nouveau_email", "[Mise à jour]Arrivée de")

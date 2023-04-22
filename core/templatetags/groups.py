@@ -27,5 +27,5 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def list_user_groups(context):
     context.autoescape = False
-    groups = context['user'].groups.all()
+    groups = context["user"].groups.all()
     return json.dumps(list(groups.values("id", "name")))

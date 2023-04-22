@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('absence_prof', '0006_auto_20190909_1500'),
+        ("absence_prof", "0006_auto_20190909_1500"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='absence',
-            name='date_absence_end',
+            model_name="absence",
+            name="date_absence_end",
             field=models.DateField(verbose_name="Date de la fin de l'absence"),
         ),
         migrations.AlterField(
-            model_name='absence',
-            name='date_absence_start',
+            model_name="absence",
+            name="date_absence_start",
             field=models.DateField(verbose_name="Date du début de l'absence"),
         ),
     ]

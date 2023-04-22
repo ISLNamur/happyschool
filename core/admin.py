@@ -18,14 +18,32 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.contrib import admin
-from .models import StudentModel, TeachingModel, ResponsibleModel, AdditionalStudentInfo, \
-    ClasseModel, EmailModel, YearModel, CoreSettingsModel, ImportCalendarModel, \
-    CourseModel, GivenCourseModel, PeriodCoreModel, CourseScheduleModel, MenuEntryModel
+from .models import (
+    StudentModel,
+    TeachingModel,
+    ResponsibleModel,
+    AdditionalStudentInfo,
+    ClasseModel,
+    EmailModel,
+    YearModel,
+    CoreSettingsModel,
+    ImportCalendarModel,
+    CourseModel,
+    GivenCourseModel,
+    PeriodCoreModel,
+    CourseScheduleModel,
+    MenuEntryModel,
+)
 
 
 class StudentCoreAdmin(admin.ModelAdmin):
-    list_display = ('matricule', 'last_name', 'first_name', 'classe',)
-    search_fields = ['last_name', "first_name", 'matricule']
+    list_display = (
+        "matricule",
+        "last_name",
+        "first_name",
+        "classe",
+    )
+    search_fields = ["last_name", "first_name", "matricule"]
     list_filter = ["classe"]
     list_select_related = True
     ordering = ["classe__year", "classe__letter", "last_name", "first_name"]
@@ -33,18 +51,20 @@ class StudentCoreAdmin(admin.ModelAdmin):
 
 class AdditionalStudentInfoCoreAdmin(admin.ModelAdmin):
     list_display = ["student", "resp_email", "mother_email", "father_email"]
-    search_fields = ['student__last_name', "student__first_name", 'student__matricule']
+    search_fields = ["student__last_name", "student__first_name", "student__matricule"]
     list_filter = ["student__classe"]
     ordering = [
-        "student__classe__year", "student__classe__letter",
-        "student__last_name", "student__first_name"
+        "student__classe__year",
+        "student__classe__letter",
+        "student__last_name",
+        "student__first_name",
     ]
 
 
 class InactivesListFilter(admin.SimpleListFilter):
     title = "Inactivité"
 
-    parameter_name = 'inactives'
+    parameter_name = "inactives"
 
     def lookups(self, request, model_admin):
         return (
@@ -64,19 +84,32 @@ class InactivesListFilter(admin.SimpleListFilter):
 
 class ResponsibleCoreAdmin(admin.ModelAdmin):
     list_display = [
-        'matricule', 'last_name', 'first_name',
-        'is_teacher', 'is_educator', 'is_secretary',
-        'user', 'is_sync'
+        "matricule",
+        "last_name",
+        "first_name",
+        "is_teacher",
+        "is_educator",
+        "is_secretary",
+        "user",
+        "is_sync",
     ]
-    search_fields = ['last_name', "first_name", 'matricule']
-    filter_horizontal = ('classe', 'tenure',)
-    list_filter = ["is_teacher", "is_educator", "is_secretary", InactivesListFilter, ]
+    search_fields = ["last_name", "first_name", "matricule"]
+    filter_horizontal = (
+        "classe",
+        "tenure",
+    )
+    list_filter = [
+        "is_teacher",
+        "is_educator",
+        "is_secretary",
+        InactivesListFilter,
+    ]
     autocomplete_fields = ["user"]
 
 
 class ClassCoreAdmin(admin.ModelAdmin):
-    ordering = ['teaching', 'year', 'letter']
-    list_filter = ['year', 'letter', 'teaching']
+    ordering = ["teaching", "year", "letter"]
+    list_filter = ["year", "letter", "teaching"]
 
 
 class CourseScheduleAdmin(admin.ModelAdmin):

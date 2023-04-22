@@ -46,11 +46,25 @@ from unidecode import unidecode
 
 from core.utilities import get_menu, check_student_photo
 from core.people import People, get_classes
-from core.models import StudentModel, ClasseModel, TeachingModel, ResponsibleModel, AdditionalStudentInfo
-from core.serializers import StudentSerializer, ResponsibleSerializer, ClasseSerializer,\
-    StudentGeneralInfoSerializer, StudentContactInfoSerializer, StudentMedicalInfoSerializer,\
-    ResponsibleSensitiveSerializer, YearSerializer, StudentSensitiveInfoSerializer, \
-    GivenCourseModel
+from core.models import (
+    StudentModel,
+    ClasseModel,
+    TeachingModel,
+    ResponsibleModel,
+    AdditionalStudentInfo,
+)
+from core.serializers import (
+    StudentSerializer,
+    ResponsibleSerializer,
+    ClasseSerializer,
+    StudentGeneralInfoSerializer,
+    StudentContactInfoSerializer,
+    StudentMedicalInfoSerializer,
+    ResponsibleSensitiveSerializer,
+    YearSerializer,
+    StudentSensitiveInfoSerializer,
+    GivenCourseModel,
+)
 from core.views import get_app_settings
 
 from .models import AnnuaireSettingsModel
@@ -62,7 +76,7 @@ def get_menu_entry(active_app, request):
         "app": "annuaire",
         "display": "Annuaire",
         "url": "/annuaire/",
-        "active": active_app == "annuaire"
+        "active": active_app == "annuaire",
     }
 
 
@@ -82,15 +96,16 @@ def get_settings():
     return get_app_settings(AnnuaireSettingsModel)
 
 
-class AnnuaireView(LoginRequiredMixin,
-                       TemplateView):
+class AnnuaireView(LoginRequiredMixin, TemplateView):
     template_name = "annuaire/annuaire.html"
 
     def get_context_data(self, **kwargs):
         # Add to the current context.
         context = super().get_context_data(**kwargs)
-        context['settings'] = JSONRenderer().render(AnnuaireSettingsSerializer(get_settings()).data).decode()
-        context['menu'] = json.dumps(get_menu(self.request, "annuaire"))
+        context["settings"] = (
+            JSONRenderer().render(AnnuaireSettingsSerializer(get_settings()).data).decode()
+        )
+        context["menu"] = json.dumps(get_menu(self.request, "annuaire"))
         return context
 
 
@@ -103,7 +118,7 @@ def search_classes(query, teachings, check_access, user):
 
     truncate = True
     classes = get_classes(teaching=teachings, check_access=check_access, user=user)
-    classes = classes.filter(year=query[0]).order_by('year', 'letter')
+    classes = classes.filter(year=query[0]).order_by("year", "letter")
     if len(query) > 1:
         classes = classes.filter(letter__icontains=query[1:])
 
@@ -124,9 +139,12 @@ def search_years(query, teachings, check_access, user):
         if query[1] != "é" or query[1] != "e":
             return []
 
-    years = get_classes(teaching=teachings, check_access=check_access, user=user).distinct('year', 'teaching')
-    return YearSerializer(years.filter(year=query[0]).order_by('year'), many=True,
-                          show_teaching=len(teachings) > 1).data
+    years = get_classes(teaching=teachings, check_access=check_access, user=user).distinct(
+        "year", "teaching"
+    )
+    return YearSerializer(
+        years.filter(year=query[0]).order_by("year"), many=True, show_teaching=len(teachings) > 1
+    ).data
 
 
 def serialize_people(person):
@@ -138,61 +156,90 @@ def serialize_people(person):
         return ResponsibleSerializer(person).data
 
 
-def search_people(query, people_type, teachings, check_access, user,
-                  tenure_class_only=True, educ_by_years=True, active=True):
+def search_people(
+    query,
+    people_type,
+    teachings,
+    check_access,
+    user,
+    tenure_class_only=True,
+    educ_by_years=True,
+    active=True,
+):
     if len(query) < 1:
         return []
 
     truncate_limit = 50
 
     people = []
-    if people_type == 'all':
-        classe_years = get_classes(teachings, check_access=True,
-                                   user=user) if check_access else None
+    if people_type == "all":
+        classe_years = (
+            get_classes(teachings, check_access=True, user=user) if check_access else None
+        )
 
         result = People().get_people_by_name(query, teachings, classes=classe_years, active=active)
         # Check quality.
-        if result['student'][1] > result['responsible'][1]:
-            people = StudentSerializer(result['student'][0][:truncate_limit], many=True).data
-        elif result['responsible'][1] > result['student'][1]:
-            people = ResponsibleSerializer(result['responsible'][0][:truncate_limit], many=True).data
+        if result["student"][1] > result["responsible"][1]:
+            people = StudentSerializer(result["student"][0][:truncate_limit], many=True).data
+        elif result["responsible"][1] > result["student"][1]:
+            people = ResponsibleSerializer(
+                result["responsible"][0][:truncate_limit], many=True
+            ).data
         else:
-            people = StudentSerializer(result['student'][0][:truncate_limit/2], many=True).data + ResponsibleSerializer(result['responsible'][0][:truncate_limit/2], many=True).data
+            people = (
+                StudentSerializer(result["student"][0][: truncate_limit / 2], many=True).data
+                + ResponsibleSerializer(
+                    result["responsible"][0][: truncate_limit / 2], many=True
+                ).data
+            )
 
-    if people_type == 'student':
-        classe_years = get_classes(teachings, check_access=True,
-                                   user=user, tenure_class_only=tenure_class_only,
-                                   educ_by_years=educ_by_years) if check_access else None
-        if query == 'everybody':
+    if people_type == "student":
+        classe_years = (
+            get_classes(
+                teachings,
+                check_access=True,
+                user=user,
+                tenure_class_only=tenure_class_only,
+                educ_by_years=educ_by_years,
+            )
+            if check_access
+            else None
+        )
+        if query == "everybody":
             students = StudentModel.objects.all()
             if active:
                 students = students.filter(inactive_from__isnull=True, classe__isnull=False)
             if classe_years:
                 students = students.filter(classe__in=classe_years)
-            if teachings and 'all' not in teachings:
+            if teachings and "all" not in teachings:
                 if type(teachings[0]) == TeachingModel:
                     students = students.filter(teaching__in=teachings)
                 else:
                     students = students.filter(teaching__name__in=teachings)
             truncate_limit = len(students)
         else:
-            students = People().get_students_by_name(query, teachings, classes=classe_years, active=active)[:truncate_limit]
+            students = People().get_students_by_name(
+                query, teachings, classes=classe_years, active=active
+            )[:truncate_limit]
 
         people = StudentSerializer(students, many=True).data
 
-    if people_type == 'responsible':
+    if people_type == "responsible":
         people = ResponsibleSerializer(
-            People().get_responsibles_by_name(query, teachings, active=active)[:truncate_limit], many=True
+            People().get_responsibles_by_name(query, teachings, active=active)[:truncate_limit],
+            many=True,
         ).data
 
-    if people_type == 'teacher':
+    if people_type == "teacher":
         people = ResponsibleSerializer(
-            People().get_teachers_by_name(query, teachings, active=active)[:truncate_limit], many=True
+            People().get_teachers_by_name(query, teachings, active=active)[:truncate_limit],
+            many=True,
         ).data
 
-    if people_type == 'educator':
+    if people_type == "educator":
         people = ResponsibleSerializer(
-            People().get_educators_by_name(query, teachings, active=active)[:truncate_limit], many=True
+            People().get_educators_by_name(query, teachings, active=active)[:truncate_limit],
+            many=True,
         ).data
 
     return people[:truncate_limit]
@@ -203,27 +250,39 @@ class SearchPeopleAPI(APIView):
     parser_classes = (JSONParser,)
 
     def get(self, request, format=None):
-        query = request.GET.get('query', '')
-        people_type = request.GET.get('people', 'all')
-        teachings = request.GET.get('teaching', 'all')
-        check_access = request.GET.get('check_access', '0') == 1
+        query = request.GET.get("query", "")
+        people_type = request.GET.get("people", "all")
+        teachings = request.GET.get("teaching", "all")
+        check_access = request.GET.get("check_access", "0") == 1
 
-        people = search_people(query=query, people_type=people_type, teachings=teachings,
-                               check_access=check_access, user=request.user)
+        people = search_people(
+            query=query,
+            people_type=people_type,
+            teachings=teachings,
+            check_access=check_access,
+            user=request.user,
+        )
         return Response(people)
 
     def post(self, request, format=None):
-        query = request.data.get('query', '')
-        people_type = request.data.get('people', 'all')
-        teachings = TeachingModel.objects.filter(id__in=request.data.get('teachings', []))
-        check_access = request.data.get('check_access', 0) == 1
-        active = request.data.get('active', 1) == 1
-        tenure_class_only = request.data.get('tenure_class_only', True)
-        educ_by_years = request.data.get('educ_by_years', True)
+        query = request.data.get("query", "")
+        people_type = request.data.get("people", "all")
+        teachings = TeachingModel.objects.filter(id__in=request.data.get("teachings", []))
+        check_access = request.data.get("check_access", 0) == 1
+        active = request.data.get("active", 1) == 1
+        tenure_class_only = request.data.get("tenure_class_only", True)
+        educ_by_years = request.data.get("educ_by_years", True)
 
-        people = search_people(query=query, people_type=people_type, teachings=teachings,
-                               check_access=check_access, user=request.user, active=active,
-                               tenure_class_only=tenure_class_only, educ_by_years=educ_by_years)
+        people = search_people(
+            query=query,
+            people_type=people_type,
+            teachings=teachings,
+            check_access=check_access,
+            user=request.user,
+            active=active,
+            tenure_class_only=tenure_class_only,
+            educ_by_years=educ_by_years,
+        )
         return Response(people)
 
 
@@ -232,16 +291,21 @@ class SearchClassesAPI(APIView):
     parser_classes = (JSONParser,)
 
     def post(self, request, format=None):
-        query = request.data.get('query', '')
-        teachings = TeachingModel.objects.filter(id__in=request.data.get('teachings', []))
-        check_access = request.data.get('check_access', 0) == 1
-        years = request.data.get('years', 0) == 1
+        query = request.data.get("query", "")
+        teachings = TeachingModel.objects.filter(id__in=request.data.get("teachings", []))
+        check_access = request.data.get("check_access", 0) == 1
+        years = request.data.get("years", 0) == 1
 
-        classes = search_classes(query=query, teachings=teachings,
-                                 check_access=check_access, user=request.user)
+        classes = search_classes(
+            query=query, teachings=teachings, check_access=check_access, user=request.user
+        )
         if years:
-            classes = search_years(query=query, teachings=teachings,
-                                   check_access=check_access, user=request.user) + classes
+            classes = (
+                search_years(
+                    query=query, teachings=teachings, check_access=check_access, user=request.user
+                )
+                + classes
+            )
         return Response(classes)
 
 
@@ -250,21 +314,30 @@ class SearchClassesOrPeopleAPI(APIView):
     parser_classes = (JSONParser,)
 
     def post(self, request, format=None):
-        query = request.data.get('query', '')
-        people_type = request.data.get('people', 'student')
-        teachings = TeachingModel.objects.filter(id__in=request.data.get('teachings', []))
-        check_access = request.data.get('check_access', 0) == 1
-        active = request.data.get('active', 1) == 1
+        query = request.data.get("query", "")
+        people_type = request.data.get("people", "student")
+        teachings = TeachingModel.objects.filter(id__in=request.data.get("teachings", []))
+        check_access = request.data.get("check_access", 0) == 1
+        active = request.data.get("active", 1) == 1
 
         if len(query) == 0:
             return Response([])
 
         if query[0].isdigit():
-            return Response(search_classes(query=query, teachings=teachings,
-                                           check_access=check_access, user=request.user))
+            return Response(
+                search_classes(
+                    query=query, teachings=teachings, check_access=check_access, user=request.user
+                )
+            )
 
-        people = search_people(query=query, people_type=people_type, teachings=teachings,
-                               check_access=check_access, user=request.user, active=active)
+        people = search_people(
+            query=query,
+            people_type=people_type,
+            teachings=teachings,
+            check_access=check_access,
+            user=request.user,
+            active=active,
+        )
         return Response(people)
 
 
@@ -273,13 +346,15 @@ class StudentClasseAPI(APIView):
     parser_classes = (JSONParser,)
 
     def get(self, request, format=None):
-        classe_id = request.GET.get('classe', None)
+        classe_id = request.GET.get("classe", None)
         gender = request.GET.get("gender", None)
         print(gender)
         if not classe_id or not classe_id.isdigit:
             return Response([])
 
-        students = StudentModel.objects.filter(classe__id=classe_id).order_by('last_name', 'first_name')
+        students = StudentModel.objects.filter(classe__id=classe_id).order_by(
+            "last_name", "first_name"
+        )
         if gender:
             students = students.filter(additionalstudentinfo__gender=gender)
         serializer = StudentSerializer(students, many=True)
@@ -292,7 +367,9 @@ class StudentGivenCourseAPI(APIView):
     def get(self, request, given_course_id, format=None):
         try:
             given_course = GivenCourseModel.objects.get(id=given_course_id)
-            students = StudentModel.objects.filter(courses=given_course, classe__isnull=False).order_by('last_name', 'first_name')
+            students = StudentModel.objects.filter(
+                courses=given_course, classe__isnull=False
+            ).order_by("last_name", "first_name")
             serializer = StudentSerializer(students, many=True)
             return Response(serializer.data)
         except ObjectDoesNotExist:
@@ -305,8 +382,12 @@ class CourseToClassesAPI(APIView):
     def get(self, request, given_course_id, format=None):
         try:
             course = GivenCourseModel.objects.get(id=given_course_id)
-            classes = course.studentmodel_set.distinct("classe").values_list("classe__year", "classe__letter")
-            return Response([f"{classe_year}{classe_letter}" for (classe_year, classe_letter) in classes])
+            classes = course.studentmodel_set.distinct("classe").values_list(
+                "classe__year", "classe__letter"
+            )
+            return Response(
+                [f"{classe_year}{classe_letter}" for (classe_year, classe_letter) in classes]
+            )
         except ObjectDoesNotExist:
             return Response([])
 
@@ -397,17 +478,17 @@ class StudentMedicalInfoViewSet(ReadOnlyModelViewSet):
 
 class ClasseListExcelView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        classe_id = kwargs['classe_id']
+        classe_id = kwargs["classe_id"]
         try:
             classe = ClasseModel.objects.get(id=classe_id)
         except ObjectDoesNotExist:
             # Class not found
-            return render(request, 'dossier_eleve/no_student.html')
+            return render(request, "dossier_eleve/no_student.html")
 
-        students = StudentModel.objects.filter(classe=classe).order_by('last_name', 'first_name')
-        file_name = 'classes_%s_%s%s.xlsx' % (classe.teaching.name, classe.year, classe.letter)
+        students = StudentModel.objects.filter(classe=classe).order_by("last_name", "first_name")
+        file_name = "classes_%s_%s%s.xlsx" % (classe.teaching.name, classe.year, classe.letter)
         output = BytesIO()
-        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+        workbook = xlsxwriter.Workbook(output, {"in_memory": True})
         worksheet = workbook.add_worksheet()
         worksheet.set_column(0, 2, 30)
 
@@ -418,48 +499,65 @@ class ClasseListExcelView(LoginRequiredMixin, View):
             if not s.additionalstudentinfo:
                 worksheet.write(row, 0, s.fullname)
             else:
-                worksheet.write_row(row, 0, [s.fullname, s.additionalstudentinfo.username, s.additionalstudentinfo.password])
+                worksheet.write_row(
+                    row,
+                    0,
+                    [
+                        s.fullname,
+                        s.additionalstudentinfo.username,
+                        s.additionalstudentinfo.password,
+                    ],
+                )
             row += 1
         workbook.close()
 
-        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = 'filename; filename="' + file_name + '"'
+        response = HttpResponse(
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        response["Content-Disposition"] = 'filename; filename="' + file_name + '"'
         response.write(output.getvalue())
         return response
 
 
 class ClasseListPDFView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        classe_id = kwargs['classe_id']
+        classe_id = kwargs["classe_id"]
         try:
             classe = ClasseModel.objects.get(id=classe_id)
         except ObjectDoesNotExist:
             # Class not found
-            return render(request, 'dossier_eleve/no_student.html')
+            return render(request, "dossier_eleve/no_student.html")
 
-        students = StudentModel.objects.filter(classe=classe).order_by('last_name', 'first_name')
+        students = StudentModel.objects.filter(classe=classe).order_by("last_name", "first_name")
         tenures = ResponsibleModel.objects.filter(tenure=classe)
-        t = get_template('annuaire/classe_list.rml')
-        rml_str = t.render({'students': students, 'students_numb': len(students), 'classe': classe, 'tenures': tenures})
+        t = get_template("annuaire/classe_list.rml")
+        rml_str = t.render(
+            {
+                "students": students,
+                "students_numb": len(students),
+                "classe": classe,
+                "tenures": tenures,
+            }
+        )
 
         pdf = rml2pdf.parseString(rml_str)
         if not pdf:
-            return render(request, 'dossier_eleve/no_student.html')
-        pdf_name = 'classes_%s_%s%s.pdf' % (classe.teaching.name, classe.year, classe.letter)
+            return render(request, "dossier_eleve/no_student.html")
+        pdf_name = "classes_%s_%s%s.pdf" % (classe.teaching.name, classe.year, classe.letter)
 
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'filename; filename="' + pdf_name + '"'
+        response = HttpResponse(content_type="application/pdf")
+        response["Content-Disposition"] = 'filename; filename="' + pdf_name + '"'
         response.write(pdf.read())
         return response
 
 
 class ClassePhotosView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        classe_id = kwargs['classe_id']
+        classe_id = kwargs["classe_id"]
         try:
             classe = ClasseModel.objects.get(id=classe_id)
         except ObjectDoesNotExist:
-            return render(request, 'dossier_eleve/no_student.html')
+            return render(request, "dossier_eleve/no_student.html")
         students = StudentModel.objects.filter(classe=classe)
 
         students = sorted(students, key=lambda s: unidecode(s.last_name.lower()))
@@ -474,22 +572,22 @@ class ClassePhotosView(LoginRequiredMixin, View):
             if i % student_by_row == student_by_row - 1 or len(students) == i + 1:
                 rows.append(row)
 
-        context = {'classe': classe.compact_str, 'list': rows, 'students_numb': len(students)}
+        context = {"classe": classe.compact_str, "list": rows, "students_numb": len(students)}
 
         tenures = ResponsibleModel.objects.filter(tenure=classe)
 
-        context['tenures'] = tenures
+        context["tenures"] = tenures
 
-        context['absolute_path'] = settings.BASE_DIR
-        t = get_template('annuaire/classe.rml')
+        context["absolute_path"] = settings.BASE_DIR
+        t = get_template("annuaire/classe.rml")
         rml_str = t.render(context)
 
         pdf = rml2pdf.parseString(rml_str)
         if not pdf:
-            return render(request, 'dossier_eleve/no_student.html')
-        pdf_name = 'classes_%s%s.pdf' % (classe.year, classe.letter)
+            return render(request, "dossier_eleve/no_student.html")
+        pdf_name = "classes_%s%s.pdf" % (classe.year, classe.letter)
 
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'filename; filename="' + pdf_name + '"'
+        response = HttpResponse(content_type="application/pdf")
+        response["Content-Disposition"] = 'filename; filename="' + pdf_name + '"'
         response.write(pdf.read())
         return response

@@ -34,16 +34,18 @@ class StudentAbsenceSettingsModel(models.Model):
 
     teachings = models.ManyToManyField(TeachingModel, default=None)
     sync_with_proeco = models.BooleanField("Synchronise les absences avec ProEco", default=False)
-    filter_students_for_educ = models.CharField(max_length=5, choices=FILTER_CHOICES, default=FILTER_NONE)
+    filter_students_for_educ = models.CharField(
+        max_length=5, choices=FILTER_CHOICES, default=FILTER_NONE
+    )
 
 
 class ClasseNoteModel(models.Model):
     classe = models.OneToOneField(ClasseModel, on_delete=models.CASCADE)
     note = models.TextField(blank=True)
-    datetime_creation = models.DateTimeField("Date et heure de création de la note",
-                                             auto_now_add=True)
-    datetime_update = models.DateTimeField("Date et heure de mise à jour de la note",
-                                           auto_now=True)
+    datetime_creation = models.DateTimeField(
+        "Date et heure de création de la note", auto_now_add=True
+    )
+    datetime_update = models.DateTimeField("Date et heure de mise à jour de la note", auto_now=True)
 
 
 class JustificationModel(models.Model):
@@ -52,8 +54,12 @@ class JustificationModel(models.Model):
     name = models.CharField("Nom de la justification", max_length=200)
     date_just_start = models.DateField("Date de début de la justification")
     date_just_end = models.DateField("Date de fin de la justification")
-    half_day_start = models.PositiveSmallIntegerField("Début demi-jour de la justification", default=0)
-    half_day_end = models.PositiveSmallIntegerField("Fin de demi-jour de la justification", default=1)
+    half_day_start = models.PositiveSmallIntegerField(
+        "Début demi-jour de la justification", default=0
+    )
+    half_day_end = models.PositiveSmallIntegerField(
+        "Fin de demi-jour de la justification", default=1
+    )
     half_days = models.PositiveIntegerField("Nombre de demi-jour", default=0)
 
 
@@ -65,6 +71,7 @@ class PeriodModel(models.Model):
         end Ending time of the period.
         name Simple alias of the period.
     """
+
     start = models.TimeField()
     end = models.TimeField()
     name = models.CharField(max_length=200)
@@ -87,7 +94,9 @@ class StudentAbsenceModel(models.Model):
     is_processed = models.BooleanField(default=False)
     username = models.CharField("Utilisateur qui a créé l'absence", max_length=100)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    datetime_creation = models.DateTimeField("Date et heure de création de l'absence",
-                                             auto_now_add=True)
-    datetime_update = models.DateTimeField("Date et heure de mise à jour de l'absence",
-                                           auto_now=True)
+    datetime_creation = models.DateTimeField(
+        "Date et heure de création de l'absence", auto_now_add=True
+    )
+    datetime_update = models.DateTimeField(
+        "Date et heure de mise à jour de l'absence", auto_now=True
+    )

@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pia', '0027_disorderresponsecategorymodel_and_more'),
+        ("pia", "0027_disorderresponsecategorymodel_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='disorderresponsecategorymodel',
-            name='explanation',
+            model_name="disorderresponsecategorymodel",
+            name="explanation",
             field=models.CharField(blank=True, max_length=2000),
         ),
     ]

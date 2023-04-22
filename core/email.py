@@ -21,6 +21,7 @@ import os
 import requests
 
 from django.core.mail import EmailMultiAlternatives, get_connection
+
 # from django.core.mail.backends.smtp import
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -31,7 +32,17 @@ from email.mime.image import MIMEImage
 from .models import EmailModel, StudentModel, ResponsibleModel
 
 
-def send_email(to, subject, email_template, cc=None, images=None, context=None, attachments=None, use_bcc=False, reply_to=None):
+def send_email(
+    to,
+    subject,
+    email_template,
+    cc=None,
+    images=None,
+    context=None,
+    attachments=None,
+    use_bcc=False,
+    reply_to=None,
+):
     to = list(to)
     if not to:
         return
@@ -40,26 +51,28 @@ def send_email(to, subject, email_template, cc=None, images=None, context=None, 
     html_content = render_to_string(email_template, context)
     text_content = strip_tags(html_content)
 
-    email = EmailMultiAlternatives(subject, text_content, settings.EMAIL_FROM, to, cc, connection, reply_to=reply_to)
+    email = EmailMultiAlternatives(
+        subject, text_content, settings.EMAIL_FROM, to, cc, connection, reply_to=reply_to
+    )
     if use_bcc:
         email.to = []
         email.bcc = to
     email.attach_alternative(html_content, "text/html")
 
     if images:
-        email.mixed_subtype = 'related'
+        email.mixed_subtype = "related"
         for i in images:
-            #email.headers()
+            # email.headers()
             image_name = i.split("/")[-1]
-            fp = open(settings.BASE_DIR + i, 'rb')
+            fp = open(settings.BASE_DIR + i, "rb")
             msg_img = MIMEImage(fp.read())
-            msg_img.add_header('Content-Id', '<' + image_name + '>')
+            msg_img.add_header("Content-Id", "<" + image_name + ">")
             email.attach(msg_img)
             fp.close()
     if attachments:
         for a in attachments:
             if isinstance(a, dict):
-                email.attach(filename=a['filename'], content=a['file'])
+                email.attach(filename=a["filename"], content=a["file"])
             elif isinstance(a.attachment, FieldFile):
                 email.attach_file(a.attachment.path)
 
@@ -74,14 +87,19 @@ def send_email(to, subject, email_template, cc=None, images=None, context=None, 
         email.send()
 
 
-def send_email_with_mg(recipients, subject, body, from_email="Informatique ISLN <informatique@isln.be>",attachments=()):
-    attachments = list(map(lambda a: ("attachment", (os.path.basename(a), open(a, 'rb+').read())), attachments))
-    data = {"from": from_email.replace("@", "@mg."),
-            "subject": subject,
-            "text": strip_tags(body),
-            "html": body,
-            "h:Reply-To": from_email
-            }
+def send_email_with_mg(
+    recipients, subject, body, from_email="Informatique ISLN <informatique@isln.be>", attachments=()
+):
+    attachments = list(
+        map(lambda a: ("attachment", (os.path.basename(a), open(a, "rb+").read())), attachments)
+    )
+    data = {
+        "from": from_email.replace("@", "@mg."),
+        "subject": subject,
+        "text": strip_tags(body),
+        "html": body,
+        "h:Reply-To": from_email,
+    }
     if settings.DEBUG:
         data["to"] = [settings.EMAIL_ADMIN]
         data["html"] = data["html"].replace("</html>", str(recipients) + "</html>")
@@ -91,15 +109,17 @@ def send_email_with_mg(recipients, subject, body, from_email="Informatique ISLN 
         "https://api.mailgun.net/v3/mg.isln.be/messages",
         auth=("api", settings.MAILGUN_KEY),
         data=data,
-        files=attachments
+        files=attachments,
     )
 
 
-def send_email_with_sp(recipients, subject, body, from_email="Informatique ISLN <informatique@isln.be>", attachments=()):
+def send_email_with_sp(
+    recipients, subject, body, from_email="Informatique ISLN <informatique@isln.be>", attachments=()
+):
     recipients = list(map(lambda r: {"address": r}, recipients))
     if "<" in from_email:
         name = from_email.split("<")[0]
-        reply_to = from_email.split("<")[1][:-1] # Remove last chevron.
+        reply_to = from_email.split("<")[1][:-1]  # Remove last chevron.
         from_email = {"name": name, "email": reply_to.replace("@", "@email.")}
     else:
         reply_to = from_email
@@ -115,18 +135,20 @@ def send_email_with_sp(recipients, subject, body, from_email="Informatique ISLN 
         "options": {
             "open_tracking": False,
             "click_tracking": False,
-        }
+        },
     }
     if settings.DEBUG:
         data["recipients"] = [{"address": settings.EMAIL_ADMIN}]
-        data["content"]["html"] = data["content"]["html"].replace("</html>", str(recipients) + "</html>")
+        data["content"]["html"] = data["content"]["html"].replace(
+            "</html>", str(recipients) + "</html>"
+        )
     else:
         data["recipients"] = recipients
 
     response = requests.post(
         "https://api.sparkpost.com/api/v1/transmissions",
-        headers={'Authorization': settings.SPARKPOST_KEY},
-        json=data
+        headers={"Authorization": settings.SPARKPOST_KEY},
+        json=data,
     )
     if settings.DEBUG:
         print(response.json())
@@ -134,8 +156,7 @@ def send_email_with_sp(recipients, subject, body, from_email="Informatique ISLN 
 
 
 def get_resp_emails(student: StudentModel) -> dict:
-    """Return a dict of emails and names of responsible that are in charge of the student.
-    """
+    """Return a dict of emails and names of responsible that are in charge of the student."""
     emails = {}
     for e in EmailModel.objects.filter(teaching=student.teaching, years=student.classe.year):
         emails[e.email] = e.display
@@ -143,7 +164,7 @@ def get_resp_emails(student: StudentModel) -> dict:
     # Get educators that are related by classes to the student.
     educators = ResponsibleModel.objects.filter(
         teaching=student.teaching, classe=student.classe, is_educator=True
-        )
+    )
     emails = dict(emails, **{e.email_school: e.fullname for e in educators})
 
     return emails

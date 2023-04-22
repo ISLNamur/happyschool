@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('dossier_eleve', '0025_dossierelevesettingsmodel_export_retenues_own_default'),
+        ("dossier_eleve", "0025_dossierelevesettingsmodel_export_retenues_own_default"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='caseleve',
-            name='explication_commentaire',
+            model_name="caseleve",
+            name="explication_commentaire",
             field=models.TextField(),
         ),
     ]

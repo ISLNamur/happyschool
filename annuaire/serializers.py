@@ -24,4 +24,4 @@ from .models import AnnuaireSettingsModel
 class AnnuaireSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnnuaireSettingsModel
-        fields = '__all__'
+        fields = "__all__"

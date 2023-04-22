@@ -5,41 +5,60 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0006_auto_20200331_1600'),
+        ("core", "0006_auto_20200331_1600"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CourseModel',
+            name="CourseModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=120)),
-                ('teaching', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.TeachingModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=120)),
+                (
+                    "teaching",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="core.TeachingModel"
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='responsiblemodel',
-            name='phone',
+            model_name="responsiblemodel",
+            name="phone",
             field=models.CharField(blank=True, max_length=200),
         ),
         migrations.CreateModel(
-            name='GivenCourseModel',
+            name="GivenCourseModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('group', models.CharField(blank=True, default='', max_length=20)),
-                ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.CourseModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("group", models.CharField(blank=True, default="", max_length=20)),
+                (
+                    "course",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="core.CourseModel"
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='responsiblemodel',
-            name='courses',
-            field=models.ManyToManyField(blank=True, default=None, to='core.GivenCourseModel'),
+            model_name="responsiblemodel",
+            name="courses",
+            field=models.ManyToManyField(blank=True, default=None, to="core.GivenCourseModel"),
         ),
         migrations.AddField(
-            model_name='studentmodel',
-            name='courses',
-            field=models.ManyToManyField(blank=True, default=None, to='core.GivenCourseModel'),
+            model_name="studentmodel",
+            name="courses",
+            field=models.ManyToManyField(blank=True, default=None, to="core.GivenCourseModel"),
         ),
     ]

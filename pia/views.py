@@ -34,28 +34,29 @@ from rest_framework.permissions import DjangoModelPermissions
 from django_filters import rest_framework as filters
 
 from core.utilities import get_menu
-from core.views import BaseModelViewSet, get_app_settings, BaseUploadFileView, LargePageSizePagination, BaseFilters
+from core.views import (
+    BaseModelViewSet,
+    get_app_settings,
+    BaseUploadFileView,
+    LargePageSizePagination,
+    BaseFilters,
+)
 
 from . import models
 from . import serializers
 
 
 def get_menu_entry(active_app: str, request) -> dict:
-    if not request.user.has_perm('pia.view_piamodel'):
+    if not request.user.has_perm("pia.view_piamodel"):
         return {}
-    menu_entry = {
-            "app": "pia",
-            "display": "PIA",
-            "url": "/pia",
-            "active": active_app == "pia"
-    }
+    menu_entry = {"app": "pia", "display": "PIA", "url": "/pia", "active": active_app == "pia"}
 
     last_access = request.session.get("pia_last_access", None)
     if last_access:
         request.GET = request.GET.copy()
         request.GET["ordering"] = "-datetime_updated"
-        view_set = PIAViewSet.as_view({'get': 'list'})
-        results = [c["id"] for c in view_set(request).data['results']]
+        view_set = PIAViewSet.as_view({"get": "list"})
+        results = [c["id"] for c in view_set(request).data["results"]]
         menu_entry["new_items"] = models.PIAModel.objects.filter(
             id__in=results, datetime_updated__gt=last_access
         ).count()
@@ -69,23 +70,21 @@ def get_settings():
     return get_app_settings(models.PIASettingsModel)
 
 
-class PIAView(LoginRequiredMixin,
-              PermissionRequiredMixin,
-              TemplateView):
+class PIAView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = "pia/pia.html"
-    permission_required = ('pia.view_piamodel',)
+    permission_required = ("pia.view_piamodel",)
     filters = [
-        {'value': 'student__display', 'text': 'Nom'},
-        {'value': 'student__matricule', 'text': 'Matricule'},
-        {'value': 'classe', 'text': 'Classe'},
+        {"value": "student__display", "text": "Nom"},
+        {"value": "student__matricule", "text": "Matricule"},
+        {"value": "classe", "text": "Classe"},
     ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['menu'] = json.dumps(get_menu(self.request, "pia"))
-        context['filters'] = json.dumps(self.filters)
-        context['settings'] = json.dumps((serializers.PIASettingsSerializer(get_settings()).data))
-        context['can_add_pia'] = json.dumps(self.request.user.has_perm('pia.add_piamodel'))
+        context["menu"] = json.dumps(get_menu(self.request, "pia"))
+        context["filters"] = json.dumps(self.filters)
+        context["settings"] = json.dumps((serializers.PIASettingsSerializer(get_settings()).data))
+        context["can_add_pia"] = json.dumps(self.request.user.has_perm("pia.add_piamodel"))
 
         dis_resp_cat = models.DisorderResponseCategoryModel.objects.all()
         dis_resp_cat_ser = serializers.DisorderResponseCategorySerializer(dis_resp_cat, many=True)
@@ -106,10 +105,7 @@ class PIAView(LoginRequiredMixin,
 
 class PIAFilterSet(BaseFilters):
     class Meta:
-        fields_to_filter = [
-            "student__matricule",
-            "student__last_name"
-        ]
+        fields_to_filter = ["student__matricule", "student__last_name"]
         model = models.PIAModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
@@ -118,7 +114,11 @@ class PIAFilterSet(BaseFilters):
 class PIAViewSet(BaseModelViewSet):
     queryset = models.PIAModel.objects.all()
     serializer_class = serializers.PIASerializer
-    ordering_fields = ('student__classe__year', "student__classe__letter", "datetime_updated",)
+    ordering_fields = (
+        "student__classe__year",
+        "student__classe__letter",
+        "datetime_updated",
+    )
     filter_class = PIAFilterSet
 
     username_field = None
@@ -153,10 +153,16 @@ class PIAViewSet(BaseModelViewSet):
 class CrossGoalViewSet(ModelViewSet):
     queryset = models.CrossGoalModel.objects.all()
     serializer_class = serializers.CrossGoalSerializer
-    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
-    filterset_fields = ('pia_model',)
-    ordering_fields = ['date_start', 'date_end', 'datetime_creation']
-    ordering = ["-date_end", "-date_start",]
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    )
+    filterset_fields = ("pia_model",)
+    ordering_fields = ["date_start", "date_end", "datetime_creation"]
+    ordering = [
+        "-date_end",
+        "-date_start",
+    ]
     pagination_class = LargePageSizePagination
     permission_classes = (DjangoModelPermissions,)
 
@@ -164,10 +170,16 @@ class CrossGoalViewSet(ModelViewSet):
 class BranchGoalViewSet(ModelViewSet):
     queryset = models.BranchGoalModel.objects.all()
     serializer_class = serializers.BranchGoalSerializer
-    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
-    filterset_fields = ('branch', "pia_model")
-    ordering_fields = ['datetime_creation']
-    ordering = ["-date_end", "-date_start", ]
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    )
+    filterset_fields = ("branch", "pia_model")
+    ordering_fields = ["datetime_creation"]
+    ordering = [
+        "-date_end",
+        "-date_start",
+    ]
     pagination_class = LargePageSizePagination
     permission_classes = (DjangoModelPermissions,)
 
@@ -175,8 +187,11 @@ class BranchGoalViewSet(ModelViewSet):
 class OtherStatementViewSet(ModelViewSet):
     queryset = models.OtherStatementModel.objects.all()
     serializer_class = serializers.OtherStatementSerializer
-    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
-    filterset_fields = ('class_council',)
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    )
+    filterset_fields = ("class_council",)
     pagination_class = LargePageSizePagination
     permission_classes = (DjangoModelPermissions,)
 
@@ -184,9 +199,12 @@ class OtherStatementViewSet(ModelViewSet):
 class ClassCouncilPIAViewSet(ModelViewSet):
     queryset = models.ClassCouncilPIAModel.objects.all()
     serializer_class = serializers.ClassCouncilPIASerializer
-    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
-    filterset_fields = ('pia_model',)
-    ordering = ['-datetime_creation']
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    )
+    filterset_fields = ("pia_model",)
+    ordering = ["-datetime_creation"]
     pagination_class = LargePageSizePagination
     permission_classes = (DjangoModelPermissions,)
 
@@ -243,28 +261,37 @@ class UploadFileView(BaseUploadFileView):
 class StudentProjectViewSet(ModelViewSet):
     queryset = models.StudentProjectModel.objects.all()
     serializer_class = serializers.StudentProjectSerializer
-    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
-    filterset_fields = ('pia_model',)
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    )
+    filterset_fields = ("pia_model",)
     pagination_class = LargePageSizePagination
-    ordering = ['-datetime_creation']
+    ordering = ["-datetime_creation"]
     permission_classes = (DjangoModelPermissions,)
 
 
 class ParentsOpinionViewSet(ModelViewSet):
     queryset = models.ParentsOpinionModel.objects.all()
     serializer_class = serializers.ParentsOpinionSerializer
-    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
-    filterset_fields = ('pia_model',)
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    )
+    filterset_fields = ("pia_model",)
     pagination_class = LargePageSizePagination
-    ordering = ['-datetime_creation']
+    ordering = ["-datetime_creation"]
     permission_classes = (DjangoModelPermissions,)
 
 
 class StudentStateViewSet(ModelViewSet):
     queryset = models.StudentStateModel.objects.all()
     serializer_class = serializers.StudentStateSerializer
-    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
-    filterset_fields = ('class_council',)
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    )
+    filterset_fields = ("class_council",)
     pagination_class = LargePageSizePagination
     permission_classes = (DjangoModelPermissions,)
 
@@ -275,16 +302,18 @@ class ResourceDifficultyViewSet(ReadOnlyModelViewSet):
     pagination_class = LargePageSizePagination
 
 
-class ReportPDFView(
-    LoginRequiredMixin,
-    PermissionRequiredMixin,
-    WeasyTemplateView
-):
-    permission_required = ('pia.view_piamodel')
+class ReportPDFView(LoginRequiredMixin, PermissionRequiredMixin, WeasyTemplateView):
+    permission_required = "pia.view_piamodel"
 
     template_name = "pia/report.html"
     day_of_week = {
-        1: "Lundi", 2: "Mardi", 3: "Mercredi", 4: "Jeudi", 5: "Vendredi", 6: "Samedi", 7: "Dimanche"
+        1: "Lundi",
+        2: "Mardi",
+        3: "Mercredi",
+        4: "Jeudi",
+        5: "Vendredi",
+        6: "Samedi",
+        7: "Dimanche",
     }
 
     def get_context_data(self, **kwargs) -> dict:
@@ -296,7 +325,9 @@ class ReportPDFView(
                     {
                         "day": self.day_of_week[int(s_a[0])],
                         "branch": " ".join([b["branch"] for b in s_a[1]["branch"]]),
-                        "teachers": " ".join([f"{t['first_name']} {t['last_name']}" for t in s_a[1]["teachers"]])
+                        "teachers": " ".join(
+                            [f"{t['first_name']} {t['last_name']}" for t in s_a[1]["teachers"]]
+                        ),
                     }
                     for s_a in context["pia"].support_activities.items()
                 ]

@@ -24,15 +24,14 @@ def migrate_access_permission(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('absence_prof', '0007_auto_20190920_1146'),
+        ("absence_prof", "0007_auto_20190920_1146"),
     ]
 
     operations = [
         migrations.RunPython(migrate_access_permission),
         migrations.AlterModelOptions(
-            name='absence',
+            name="absence",
             options={},
         ),
     ]

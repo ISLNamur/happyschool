@@ -15,21 +15,25 @@ def move_data(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pia', '0013_piasettingsmodel_filter_teacher_entries_by_tenure'),
+        ("pia", "0013_piasettingsmodel_filter_teacher_entries_by_tenure"),
     ]
 
     operations = [
         migrations.RunPython(move_data),
         migrations.AlterField(
-            model_name='branchgoalmodel',
-            name='branch',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pia.BranchModel'),
+            model_name="branchgoalmodel",
+            name="branch",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="pia.BranchModel"
+            ),
         ),
         migrations.AlterField(
-            model_name='piasettingsmodel',
-            name='filter_teacher_entries_by_tenure',
-            field=models.BooleanField(default=False, help_text='\n        Si activé, seuls les titulaires peuvent voir les PIA de leurs élèves.\n        Sinon sera limité aux classes associées.\n        '),
+            model_name="piasettingsmodel",
+            name="filter_teacher_entries_by_tenure",
+            field=models.BooleanField(
+                default=False,
+                help_text="\n        Si activé, seuls les titulaires peuvent voir les PIA de leurs élèves.\n        Sinon sera limité aux classes associées.\n        ",
+            ),
         ),
     ]

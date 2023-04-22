@@ -4,16 +4,15 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0017_courseschedulemodel_place'),
-        ('lateness', '0002_auto_20210908_1407'),
+        ("core", "0017_courseschedulemodel_place"),
+        ("lateness", "0002_auto_20210908_1407"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='sanctiontriggermodel',
-            name='classe',
-            field=models.ManyToManyField(blank=True, to='core.ClasseModel'),
+            model_name="sanctiontriggermodel",
+            name="classe",
+            field=models.ManyToManyField(blank=True, to="core.ClasseModel"),
         ),
     ]

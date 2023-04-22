@@ -4,25 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0010_auto_20200826_1700'),
+        ("core", "0010_auto_20200826_1700"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='coursemodel',
-            name='long_name',
-            field=models.CharField(blank=True, default='', max_length=240),
+            model_name="coursemodel",
+            name="long_name",
+            field=models.CharField(blank=True, default="", max_length=240),
         ),
         migrations.RenameField(
-            model_name='coursemodel',
-            old_name='name',
-            new_name='short_name',
+            model_name="coursemodel",
+            old_name="name",
+            new_name="short_name",
         ),
         migrations.AlterField(
-            model_name='coursemodel',
-            name='short_name',
+            model_name="coursemodel",
+            name="short_name",
             field=models.CharField(blank=True, max_length=20),
         ),
     ]

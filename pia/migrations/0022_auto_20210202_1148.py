@@ -4,18 +4,17 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pia', '0021_auto_20210202_0916'),
+        ("pia", "0021_auto_20210202_0916"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='branchgoalmodel',
-            options={'ordering': ['-date_end', '-date_start']},
+            name="branchgoalmodel",
+            options={"ordering": ["-date_end", "-date_start"]},
         ),
         migrations.AlterModelOptions(
-            name='crossgoalmodel',
-            options={'ordering': ['-date_end', '-date_start']},
+            name="crossgoalmodel",
+            options={"ordering": ["-date_end", "-date_start"]},
         ),
     ]

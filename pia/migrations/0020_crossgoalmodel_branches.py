@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pia', '0019_auto_20201207_1409'),
+        ("pia", "0019_auto_20201207_1409"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='crossgoalmodel',
-            name='branches',
-            field=models.ManyToManyField(blank=True, to='pia.BranchModel'),
+            model_name="crossgoalmodel",
+            name="branches",
+            field=models.ManyToManyField(blank=True, to="pia.BranchModel"),
         ),
     ]

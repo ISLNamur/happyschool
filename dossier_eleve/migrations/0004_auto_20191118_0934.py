@@ -4,14 +4,19 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('dossier_eleve', '0003_dossierelevesettingsmodel_filter_teacher_entries_by_tenure'),
+        ("dossier_eleve", "0003_dossierelevesettingsmodel_filter_teacher_entries_by_tenure"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='caseleve',
-            options={'permissions': (('access_dossier_eleve', 'Can access to dossier_eleve data'), ('set_sanction', 'Can set sanction'), ('ask_sanction', 'Can ask sanction'))},
+            name="caseleve",
+            options={
+                "permissions": (
+                    ("access_dossier_eleve", "Can access to dossier_eleve data"),
+                    ("set_sanction", "Can set sanction"),
+                    ("ask_sanction", "Can ask sanction"),
+                )
+            },
         ),
     ]

@@ -29,8 +29,8 @@ from bootstrap3_datetime.widgets import DateTimePicker
 from .models import InfoEleve, SanctionDecisionDisciplinaire
 
 
-infos = [('default', 'Choisissez l\'info')]
-sanct = [('default', 'Choisissez la sanction/décision')]
+infos = [("default", "Choisissez l'info")]
+sanct = [("default", "Choisissez la sanction/décision")]
 
 # Avoid error when no database has been built
 try:
@@ -51,52 +51,52 @@ class NouveauCasForm(forms.Form):
     """
 
     name = forms.CharField(
-        label='Nom et prénom :',
+        label="Nom et prénom :",
         max_length=300,
         required=True,
     )
 
     matricule = forms.IntegerField(
-        label='Matricule :',
+        label="Matricule :",
         required=True,
     )
 
     demandeur = forms.CharField(
-        label='Demandeur',
+        label="Demandeur",
         max_length=50,
         required=True,
     )
 
     important = forms.BooleanField(
-        label='Mettre comme important',
+        label="Mettre comme important",
         required=False,
     )
 
     est_disciplinaire = forms.ChoiceField(
-        label='Type d\'info',
-        choices=(('non_disciplinaire', 'Non disciplinaire'), ('disciplinaire', 'Disciplinaire')),
-        required=True
+        label="Type d'info",
+        choices=(("non_disciplinaire", "Non disciplinaire"), ("disciplinaire", "Disciplinaire")),
+        required=True,
     )
 
     info = forms.ChoiceField(
-        label='Info',
+        label="Info",
         choices=tuple(infos),
         # initial='default',
         required=False,
     )
 
     visible_by_educ = forms.BooleanField(
-        label='Visible par les éducateurs',
+        label="Visible par les éducateurs",
         required=False,
     )
 
     visible_by_tenure = forms.BooleanField(
-        label='Visible par le titulaire',
+        label="Visible par le titulaire",
         required=False,
     )
 
     send_to_teachers = forms.BooleanField(
-        label='Envoyer l\'info par email aux professeurs de la classe de l\'élève',
+        label="Envoyer l'info par email aux professeurs de la classe de l'élève",
         required=False,
     )
 
@@ -108,14 +108,14 @@ class NouveauCasForm(forms.Form):
     )
 
     sanction_decision = forms.ChoiceField(
-        label='Type de sanction/décision',
+        label="Type de sanction/décision",
         choices=tuple(sanct),
         # initial='default',
         required=False,
     )
 
     datetime_sanction = forms.DateTimeField(
-        label='Date sanction',
+        label="Date sanction",
         widget=DateTimePicker(),
         required=False,
     )
@@ -128,69 +128,70 @@ class NouveauCasForm(forms.Form):
     )
 
     conseil_discipline = forms.BooleanField(
-        label='Conseil de discipline',
+        label="Conseil de discipline",
         required=False,
     )
 
     datetime_conseil = forms.DateTimeField(
-        label='Date du conseil',
+        label="Date du conseil",
         widget=DateTimePicker(),
         required=False,
     )
 
     sanction_faite = forms.BooleanField(
-        label='La sanction a été faite ?',
+        label="La sanction a été faite ?",
         required=False,
     )
 
     def __init__(self, *args, **kwargs):
-        self.id = kwargs.pop('id', -1)
-        self.is_info = kwargs.pop('is_info', False)
-        info_css = 'hidden'
-        disciplinary_css = 'hidden'
+        self.id = kwargs.pop("id", -1)
+        self.is_info = kwargs.pop("is_info", False)
+        info_css = "hidden"
+        disciplinary_css = "hidden"
         if self.id >= 0:
             if self.is_info:
-                info_css = ''
+                info_css = ""
             else:
-                disciplinary_css = ''
+                disciplinary_css = ""
 
         super(NouveauCasForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.include_media = False
-        self.helper.form_class = 'col-sm-8'
+        self.helper.form_class = "col-sm-8"
         self.helper.html5_required = True
         self.helper.layout = Layout(
             Div(
-                Field('name', id="nomForm", autocomplete='off'),
-                Field('matricule', id="matriculeForm", autocomplete='off'),
-                css_class='form-inline'
+                Field("name", id="nomForm", autocomplete="off"),
+                Field("matricule", id="matriculeForm", autocomplete="off"),
+                css_class="form-inline",
             ),
-            Field('demandeur', length=50, autocomplete='off'),
-            Field('important'),
-            InlineRadios('est_disciplinaire'),
+            Field("demandeur", length=50, autocomplete="off"),
+            Field("important"),
+            InlineRadios("est_disciplinaire"),
             Div(
-                Field('info'),
-                Field('commentaire_info'),
+                Field("info"),
+                Field("commentaire_info"),
                 Div(
-                    Field('visible_by_educ'),
-                    Field('visible_by_tenure'),
-                    css_class='form-inline',
+                    Field("visible_by_educ"),
+                    Field("visible_by_tenure"),
+                    css_class="form-inline",
                 ),
-                Field('send_to_teachers'),
-                css_class=info_css
+                Field("send_to_teachers"),
+                css_class=info_css,
             ),
             Div(
                 Div(
-                    Field('sanction_decision'),
-                    Field('datetime_sanction'),
-                    Field('sanction_faite'),
-                    Field('explication_sanction'),
-                    Field('conseil_discipline'),
-                    Div(Field('datetime_conseil'), css_class='hidden'),
-                    css_class='col-sm-7',
+                    Field("sanction_decision"),
+                    Field("datetime_sanction"),
+                    Field("sanction_faite"),
+                    Field("explication_sanction"),
+                    Field("conseil_discipline"),
+                    Div(Field("datetime_conseil"), css_class="hidden"),
+                    css_class="col-sm-7",
                 ),
                 Div(
-                    HTML("""
+                    HTML(
+                        """
                         <h4>Récapitulatif :</h4>
                         <dl class="dl-horizontal">
                             <dt>Temps de midi :</dt>
@@ -206,45 +207,44 @@ class NouveauCasForm(forms.Form):
                             <dt>Autres :</dt>
                             <dd id="stat_autre">{{ autre }}</dd>
                         </dl>
-                        """),
-                    css_class='col-sm-5',
+                        """
+                    ),
+                    css_class="col-sm-5",
                 ),
-                css_class='row ' + disciplinary_css
+                css_class="row " + disciplinary_css,
             ),
-            Div(css_class="alert alert-warning",
-                css_id="alertBox",
-                style="display:none"),
-            Hidden('type', 'nouveau'),
-            Hidden('id', self.id),
-            Submit('submit', 'Soumettre')
+            Div(css_class="alert alert-warning", css_id="alertBox", style="display:none"),
+            Hidden("type", "nouveau"),
+            Hidden("id", self.id),
+            Submit("submit", "Soumettre"),
         )
 
 
 class GenerateSummaryPDFForm(forms.Form):
     """
-        Generating pdf form.
+    Generating pdf form.
     """
 
     name = forms.CharField(
-        label='Nom et prénom ou classe:',
+        label="Nom et prénom ou classe:",
         max_length=300,
         required=True,
     )
 
     infos = forms.BooleanField(
-        label='Informations',
+        label="Informations",
         initial=True,
-        required = False,
+        required=False,
     )
 
     sanctions = forms.BooleanField(
-        label='Sanctions',
+        label="Sanctions",
         initial=True,
         required=False,
     )
 
     all_year = forms.BooleanField(
-        label='Toutes années scolaires confondues',
+        label="Toutes années scolaires confondues",
         initial=False,
         required=False,
     )
@@ -253,23 +253,24 @@ class GenerateSummaryPDFForm(forms.Form):
         super(GenerateSummaryPDFForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.include_media = False
-        self.helper.form_class = 'col-sm-8'
+        self.helper.form_class = "col-sm-8"
         self.helper.html5_required = True
         self.helper.layout = Layout(
-            Field('name', id="nomForm", autocomplete='off'),
-            Field('infos'),
-            Field('sanctions'),
-            Field('all_year'),
-            Button('genpdf', 'Créer PDF'),
+            Field("name", id="nomForm", autocomplete="off"),
+            Field("infos"),
+            Field("sanctions"),
+            Field("all_year"),
+            Button("genpdf", "Créer PDF"),
         )
+
 
 class GenDisciplinaryCouncilForm(forms.Form):
     """
-        Form that generate disciplinary council pdf
+    Form that generate disciplinary council pdf
     """
 
     datetime_from = forms.DateTimeField(
-        label='À partir du : ',
+        label="À partir du : ",
         widget=DateTimePicker(),
         required=False,
     )
@@ -284,21 +285,22 @@ class GenDisciplinaryCouncilForm(forms.Form):
         super(GenDisciplinaryCouncilForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.include_media = False
-        self.helper.form_class = 'col-sm-8'
+        self.helper.form_class = "col-sm-8"
         self.helper.html5_required = True
         self.helper.layout = Layout(
-            Field('datetime_from', autocomplete='off'),
-            Field('datetime_to', autocomplete='off'),
-            Button('genpdf_council', 'Créer PDF'),
+            Field("datetime_from", autocomplete="off"),
+            Field("datetime_to", autocomplete="off"),
+            Button("genpdf_council", "Créer PDF"),
         )
 
 
 class GenRetenueForm(forms.Form):
     """
-        Form to generate retenue pdf
+    Form to generate retenue pdf
     """
+
     date_retenues = forms.DateTimeField(
-        label='Jour de la retenue : ',
+        label="Jour de la retenue : ",
         widget=DateTimePicker(),
         required=False,
     )
@@ -307,9 +309,9 @@ class GenRetenueForm(forms.Form):
         super(GenRetenueForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.include_media = False
-        self.helper.form_class = 'col-sm-8'
+        self.helper.form_class = "col-sm-8"
         self.helper.html5_required = True
         self.helper.layout = Layout(
-            Field('date_retenues', autocomplete='off'),
-            Button('genpdf_retenues', 'Créer PDF'),
+            Field("date_retenues", autocomplete="off"),
+            Button("genpdf_retenues", "Créer PDF"),
         )

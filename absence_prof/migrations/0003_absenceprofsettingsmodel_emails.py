@@ -4,16 +4,15 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0004_auto_20190901_2035'),
-        ('absence_prof', '0002_auto_20190701_2046'),
+        ("core", "0004_auto_20190901_2035"),
+        ("absence_prof", "0002_auto_20190701_2046"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='absenceprofsettingsmodel',
-            name='emails',
-            field=models.ManyToManyField(default=None, null=True, to='core.EmailModel'),
+            model_name="absenceprofsettingsmodel",
+            name="emails",
+            field=models.ManyToManyField(default=None, null=True, to="core.EmailModel"),
         ),
     ]

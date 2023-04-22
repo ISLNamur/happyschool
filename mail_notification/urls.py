@@ -23,23 +23,27 @@ from django.urls import path
 
 from . import views
 
-app_name = 'mail_notification'
+app_name = "mail_notification"
 
 urlpatterns = [
-    path("", views.index, name='mail_notification'),
-    path("list/", views.get_list, name='list'),
+    path("", views.index, name="mail_notification"),
+    path("list/", views.get_list, name="list"),
     path("emails_list/", views.EmailsList.as_view()),
-    path("send_emails/", views.SendEmailsView.as_view(), name='send_emails'),
-    path("get_email_to_options/<teaching>/<to_type>/", views.get_email_to_options, name='get_email_to_options'),
-    path("get_tags_options/", views.get_tags_options, name='get_tags_options'),
-    path("get_senders/<teaching>/", views.SendersList.as_view(), name='get_senders'),
-    path("upload_file/", views.UploadFile.as_view(), name='attached_file'),
-    path("upload_file/<int:pk>/", views.UploadFile.as_view(), name='remove_file'),
+    path("send_emails/", views.SendEmailsView.as_view(), name="send_emails"),
+    path(
+        "get_email_to_options/<teaching>/<to_type>/",
+        views.get_email_to_options,
+        name="get_email_to_options",
+    ),
+    path("get_tags_options/", views.get_tags_options, name="get_tags_options"),
+    path("get_senders/<teaching>/", views.SendersList.as_view(), name="get_senders"),
+    path("upload_file/", views.UploadFile.as_view(), name="attached_file"),
+    path("upload_file/<int:pk>/", views.UploadFile.as_view(), name="remove_file"),
 ]
 
 router = DefaultRouter()
-router.register(r'api/other_email', views.OtherEmailViewSet)
-router.register(r'api/other_email_group', views.OtherEmailGroupViewSet)
-router.register(r'api/notif', views.EmailNotificationViewSet)
+router.register(r"api/other_email", views.OtherEmailViewSet)
+router.register(r"api/other_email_group", views.OtherEmailGroupViewSet)
+router.register(r"api/notif", views.EmailNotificationViewSet)
 
 urlpatterns += router.urls

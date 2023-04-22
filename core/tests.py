@@ -19,11 +19,17 @@
 
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .people import People, STUDENT, get_years, get_classes, \
-    get_all_teachings, check_access_to_student, get_students_from_teacher
+from .people import (
+    People,
+    STUDENT,
+    get_years,
+    get_classes,
+    get_all_teachings,
+    check_access_to_student,
+    get_students_from_teacher,
+)
 
-from .models import TeachingModel, StudentModel, ClasseModel, ResponsibleModel, \
-    CoreSettingsModel
+from .models import TeachingModel, StudentModel, ClasseModel, ResponsibleModel, CoreSettingsModel
 
 
 class GetAllTeachingTest(TestCase):
@@ -58,20 +64,19 @@ class PeopleTest(TestCase):
         self.assertEqual(responsible.first_name, "Jean")
 
     def test_get_person(self):
-        student = People().get_person(person_type='student',
-                                      person_id=1000,
-                                      teaching=['secondaire'])
+        student = People().get_person(
+            person_type="student", person_id=1000, teaching=["secondaire"]
+        )
         self._assert_student_exist(student)
         # Check that it doesn't depend on teaching.
-        self.assertEqual(student, People().get_person(person_type='student',
-                                                      person_id=1000))
-        teacher = People().get_person(person_type='teacher',
-                                      person_id=100003,
-                                      teaching=['secondaire'])
+        self.assertEqual(student, People().get_person(person_type="student", person_id=1000))
+        teacher = People().get_person(
+            person_type="teacher", person_id=100003, teaching=["secondaire"]
+        )
         self._assert_teacher_exist(teacher)
-        educator = People().get_person(person_type='educator',
-                                       person_id=100002,
-                                       teaching=['secondaire'])
+        educator = People().get_person(
+            person_type="educator", person_id=100002, teaching=["secondaire"]
+        )
         self._assert_educator_exist(educator)
 
     def test_get_student(self):
@@ -84,52 +89,34 @@ class PeopleTest(TestCase):
         teacher = People().get_teacher_by_id(person_id=100003)
         self._assert_teacher_exist(teacher)
 
-        teacher = People().get_teacher_by_id(
-            person_id=100003, teaching=["secondaire"]
-        )
+        teacher = People().get_teacher_by_id(person_id=100003, teaching=["secondaire"])
         self._assert_teacher_exist(teacher)
-        other_teacher = People().get_teacher_by_id(
-            person_id=1234, teaching=['secondaire']
-        )
+        other_teacher = People().get_teacher_by_id(person_id=1234, teaching=["secondaire"])
         self.assertIsNone(other_teacher)
-        other_teacher = People().get_teacher_by_id(
-            person_id=100003, teaching=['primaire']
-        )
+        other_teacher = People().get_teacher_by_id(person_id=100003, teaching=["primaire"])
         self.assertIsNone(other_teacher)
 
     def test_get_educator(self):
         educator = People().get_educator_by_id(person_id=100002)
         self._assert_educator_exist(educator)
 
-        educator = People().get_educator_by_id(
-            person_id=100002, teaching=['secondaire']
-        )
+        educator = People().get_educator_by_id(person_id=100002, teaching=["secondaire"])
         self._assert_educator_exist(educator)
-        educator = People().get_educator_by_id(
-            person_id=1, teaching=['secondaire']
-        )
+        educator = People().get_educator_by_id(person_id=1, teaching=["secondaire"])
         self.assertIsNone(educator)
 
     def test_get_responsible(self):
         responsible = People().get_responsible_by_id(person_id=1)
         self._assert_responsible_exist(responsible)
 
-        responsible = People().get_responsible_by_id(
-            person_id=1, teaching=['secondaire']
-        )
+        responsible = People().get_responsible_by_id(person_id=1, teaching=["secondaire"])
         self._assert_responsible_exist(responsible)
-        educator = People().get_responsible_by_id(
-            person_id=100002, teaching=['secondaire']
-        )
+        educator = People().get_responsible_by_id(person_id=100002, teaching=["secondaire"])
         self._assert_educator_exist(educator)
-        teacher = People().get_responsible_by_id(
-            person_id=100003, teaching=['secondaire']
-        )
+        teacher = People().get_responsible_by_id(person_id=100003, teaching=["secondaire"])
         self._assert_teacher_exist(teacher)
 
-        responsible = People().get_responsible_by_id(
-            person_id=9999, teaching=['secondaire']
-        )
+        responsible = People().get_responsible_by_id(person_id=9999, teaching=["secondaire"])
         self.assertIsNone(responsible)
 
     def test_get_people_by_name_by_model(self):
@@ -138,34 +125,36 @@ class PeopleTest(TestCase):
 
         self.assertEqual(type(result[0][0]), StudentModel)
         result = People()._get_people_by_name_by_model(
-            StudentModel, "Adelai", teaching=['secondaire']
+            StudentModel, "Adelai", teaching=["secondaire"]
         )
         self.assertEqual(len(result[0]), 2)
 
-        result = People()._get_people_by_name_by_model(StudentModel, "Barre Adelai",
-                                                       teaching=['secondaire'])
+        result = People()._get_people_by_name_by_model(
+            StudentModel, "Barre Adelai", teaching=["secondaire"]
+        )
         self.assertEqual(len(result[0]), 1)
         self.assertEqual(type(result[0][0]), StudentModel)
 
         teaching_secondaire = TeachingModel.objects.filter(name="secondaire")
-        result = People()._get_people_by_name_by_model(StudentModel, "Barre Adelai",
-                                                       teaching=teaching_secondaire)
+        result = People()._get_people_by_name_by_model(
+            StudentModel, "Barre Adelai", teaching=teaching_secondaire
+        )
         self.assertEqual(len(result[0]), 1)
 
     def test_get_people_by_name(self):
         result = People().get_people_by_name(name="jacquel")
-        self.assertEqual(len(result['student'][0]) + len(result['responsible'][0]), 6)
+        self.assertEqual(len(result["student"][0]) + len(result["responsible"][0]), 6)
 
         result = People().get_people_by_name(name="jacquel", person_type=STUDENT)
         self.assertEqual(len(result), 5)
 
         result = People().get_people_by_name(name="jacqueline d")
-        self.assertEqual(len(result['student'][0]) + len(result['responsible'][0]), 2)
+        self.assertEqual(len(result["student"][0]) + len(result["responsible"][0]), 2)
 
-        result = People().get_people_by_name(name="jacquel", teaching=['all'])
-        self.assertEqual(len(result['student'][0]) + len(result['responsible'][0]), 6)
-        result = People().get_people_by_name(name="jacquel", teaching=['primaire'])
-        self.assertEqual(len(result['student'][0]) + len(result['responsible'][0]), 1)
+        result = People().get_people_by_name(name="jacquel", teaching=["all"])
+        self.assertEqual(len(result["student"][0]) + len(result["responsible"][0]), 6)
+        result = People().get_people_by_name(name="jacquel", teaching=["primaire"])
+        self.assertEqual(len(result["student"][0]) + len(result["responsible"][0]), 1)
 
     def test_get_students_by_name(self):
         result = People().get_students_by_name("Adelaï")
@@ -225,7 +214,9 @@ class PeopleTest(TestCase):
         result = People().get_students_by_classe("a")
         self.assertEqual(result.count(), 0)
 
-        classe = ClasseModel.objects.get(year=1, letter__iexact="a", teaching=teaching_secondaire.first())
+        classe = ClasseModel.objects.get(
+            year=1, letter__iexact="a", teaching=teaching_secondaire.first()
+        )
         result = People().get_students_by_classe(classe)
         self.assertEqual(result.count(), 15)
 
@@ -238,15 +229,15 @@ class AccessTest(TestCase):
 
     def setUp(self):
         # Get a direction user.
-        self.dir_user = User.objects.get(username='director')
+        self.dir_user = User.objects.get(username="director")
         # Get a student user.
-        self.student_user = User.objects.get(username='student')
+        self.student_user = User.objects.get(username="student")
         # Get a teacher user.
-        self.teacher_user = User.objects.get(username='teacher')
+        self.teacher_user = User.objects.get(username="teacher")
         # Get an educator user.
-        self.educator_user = User.objects.get(username='educator')
+        self.educator_user = User.objects.get(username="educator")
         # Get a coordonator user.
-        self.coordonator_user = User.objects.get(username='coordonator')
+        self.coordonator_user = User.objects.get(username="coordonator")
 
 
 class GetClassesTest(TestCase):
@@ -254,15 +245,15 @@ class GetClassesTest(TestCase):
 
     def setUp(self):
         # Get a direction user.
-        self.dir_user = User.objects.get(username='director')
+        self.dir_user = User.objects.get(username="director")
         # Get a student user.
-        self.student_user = User.objects.get(username='student')
+        self.student_user = User.objects.get(username="student")
         # Get a teacher user.
-        self.teacher_user = User.objects.get(username='teacher')
+        self.teacher_user = User.objects.get(username="teacher")
         # Get an educator user.
-        self.educator_user = User.objects.get(username='educator')
+        self.educator_user = User.objects.get(username="educator")
         # Get a coordonator user.
-        self.coordonator_user = User.objects.get(username='coordonator')
+        self.coordonator_user = User.objects.get(username="coordonator")
 
     def test_teaching(self):
         classes = get_classes([])
@@ -284,7 +275,10 @@ class GetClassesTest(TestCase):
 
         # The following parameters should not change the results.
         classes = get_classes(
-            ["primaire", "secondaire"], check_access=True, user=self.dir_user, tenure_class_only=False
+            ["primaire", "secondaire"],
+            check_access=True,
+            user=self.dir_user,
+            tenure_class_only=False,
         )
         self.assertEqual(classes.count(), 42)
         classes = get_classes(
@@ -304,7 +298,9 @@ class GetClassesTest(TestCase):
         self.assertEqual(classes.count(), 5)
 
         teaching_secondaire = TeachingModel.objects.filter(name="secondaire")
-        classes = get_classes(teaching=teaching_secondaire, check_access=True, user=self.teacher_user)
+        classes = get_classes(
+            teaching=teaching_secondaire, check_access=True, user=self.teacher_user
+        )
         classes = list(map(lambda c: c.compact_str, classes))
         self.assertListEqual(classes, ["1D"])
 
@@ -327,15 +323,15 @@ class GetYearsTest(TestCase):
 
     def setUp(self):
         # Get a direction user.
-        self.dir_user = User.objects.get(username='director')
+        self.dir_user = User.objects.get(username="director")
         # Get a student user.
-        self.student_user = User.objects.get(username='student')
+        self.student_user = User.objects.get(username="student")
         # Get a teacher user.
-        self.teacher_user = User.objects.get(username='teacher')
+        self.teacher_user = User.objects.get(username="teacher")
         # Get an educator user.
-        self.educator_user = User.objects.get(username='educator')
+        self.educator_user = User.objects.get(username="educator")
         # Get a coordonator user.
-        self.coordonator_user = User.objects.get(username='coordonator')
+        self.coordonator_user = User.objects.get(username="coordonator")
 
     def test_teaching(self):
         years = get_years(teaching=["all"])
@@ -377,19 +373,19 @@ class CheckAccessToStudentTest(TestCase):
 
     def setUp(self):
         # Get a direction user.
-        self.dir_user = User.objects.get(username='director')
+        self.dir_user = User.objects.get(username="director")
         # Get a student user.
-        self.student_user = User.objects.get(username='student')
+        self.student_user = User.objects.get(username="student")
         # Get a teacher user.
         # Classes (secondaire): [1C, 5D, 5G, 6C]
         # Tenure (secondaire): [1D]
-        self.teacher_user = User.objects.get(username='teacher')
+        self.teacher_user = User.objects.get(username="teacher")
         # Get an educator user.
         # Classes (secondaire): [2D, 3B, 6C, 6F]
         # Years: [5, 6, 7]
-        self.educator_user = User.objects.get(username='educator')
+        self.educator_user = User.objects.get(username="educator")
         # Get a coordonator user.
-        self.coordinator_user = User.objects.get(username='coordonator')
+        self.coordinator_user = User.objects.get(username="coordonator")
         # Years: [1, 2, 3]
 
         # Get students to test on.
@@ -435,15 +431,11 @@ class CheckAccessToStudentTest(TestCase):
 
         # Check access by classes.
         has_access = check_access_to_student(
-            self.student_two_d_secondaire,
-            self.educator_user,
-            educ_by_years=False
+            self.student_two_d_secondaire, self.educator_user, educ_by_years=False
         )
         self.assertTrue(has_access)
         has_access = check_access_to_student(
-            self.student_six_a_secondaire,
-            self.educator_user,
-            educ_by_years=False
+            self.student_six_a_secondaire, self.educator_user, educ_by_years=False
         )
         self.assertFalse(has_access)
 
