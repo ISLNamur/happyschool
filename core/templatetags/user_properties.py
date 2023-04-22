@@ -31,17 +31,19 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def list_user_properties(context):
     context.autoescape = False
-    if context['user'].is_anonymous:
+    if context["user"].is_anonymous:
         return "null"
     try:
-        responsible = ResponsibleModel.objects.get(user=context['user'])
+        responsible = ResponsibleModel.objects.get(user=context["user"])
         given_courses_serialized = GivenCourseSerializer(responsible.courses.all(), many=True)
-        return json.dumps({
-            "matricule": responsible.matricule,
-            "teaching": [t.id for t in responsible.teaching.all()],
-            "classes": [c.id for c in responsible.classe.all()],
-            "given_courses": json.dumps(given_courses_serialized.data),
-            "tenure": [t.id for t in responsible.tenure.all()],
-        })
+        return json.dumps(
+            {
+                "matricule": responsible.matricule,
+                "teaching": [t.id for t in responsible.teaching.all()],
+                "classes": [c.id for c in responsible.classe.all()],
+                "given_courses": json.dumps(given_courses_serialized.data),
+                "tenure": [t.id for t in responsible.tenure.all()],
+            }
+        )
     except ObjectDoesNotExist:
         return "null"

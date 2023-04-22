@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('dossier_eleve', '0001_initial'),
+        ("dossier_eleve", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='caseleve',
-            name='demandeur',
+            model_name="caseleve",
+            name="demandeur",
             field=models.CharField(max_length=100),
         ),
         migrations.AlterField(
-            model_name='caseleve',
-            name='user',
-            field=models.CharField(default='', max_length=100),
+            model_name="caseleve",
+            name="user",
+            field=models.CharField(default="", max_length=100),
         ),
     ]

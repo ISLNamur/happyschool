@@ -23,20 +23,24 @@ from django.urls import path
 
 from . import views
 
-app_name = 'mail_answer'
+app_name = "mail_answer"
 
 urlpatterns = [
-    path("", views.MailAnswerView.as_view(), name='mail_answer'),
-    path('answer/<uuid:answer>/', views.AnswerView.as_view(), name='answer'),
-    path('api/answers/<int:template>/<int:classe>/', views.AnswersAPI.as_view(), name='answers'),
-    path('api/answers_classes/<int:template>/', views.AnswersClassesAPI.as_view(), name='answers_classes'),
+    path("", views.MailAnswerView.as_view(), name="mail_answer"),
+    path("answer/<uuid:answer>/", views.AnswerView.as_view(), name="answer"),
+    path("api/answers/<int:template>/<int:classe>/", views.AnswersAPI.as_view(), name="answers"),
+    path(
+        "api/answers_classes/<int:template>/",
+        views.AnswersClassesAPI.as_view(),
+        name="answers_classes",
+    ),
 ]
 
 router = DefaultRouter()
-router.register(r'api/choices', views.ChoicesViewSet)
-router.register(r'api/options', views.OptionsViewSet)
-router.register(r'api/mail_template', views.MailTemplateViewSet)
-router.register(r'api/mail_answer', views.MailAnswerViewSet)
-router.register(r'api/public/mail_answer', views.MailAnswerUpdateViewSet)
+router.register(r"api/choices", views.ChoicesViewSet)
+router.register(r"api/options", views.OptionsViewSet)
+router.register(r"api/mail_template", views.MailTemplateViewSet)
+router.register(r"api/mail_answer", views.MailAnswerViewSet)
+router.register(r"api/public/mail_answer", views.MailAnswerUpdateViewSet)
 
 urlpatterns += router.urls

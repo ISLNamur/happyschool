@@ -24,15 +24,14 @@ def migrate_access_permission(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('dossier_eleve', '0008_auto_20200119_2111'),
+        ("dossier_eleve", "0008_auto_20200119_2111"),
     ]
 
     operations = [
         migrations.RunPython(migrate_access_permission),
         migrations.AlterModelOptions(
-            name='caseleve',
+            name="caseleve",
             options={},
         ),
     ]

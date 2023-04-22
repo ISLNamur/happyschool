@@ -4,22 +4,26 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pia', '0026_branchgoalitemmodel_advanced_and_more'),
+        ("pia", "0026_branchgoalitemmodel_advanced_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='DisorderResponseCategoryModel',
+            name="DisorderResponseCategoryModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
             ],
         ),
         migrations.AddField(
-            model_name='disorderresponsemodel',
-            name='categories',
-            field=models.ManyToManyField(to='pia.disorderresponsecategorymodel'),
+            model_name="disorderresponsemodel",
+            name="categories",
+            field=models.ManyToManyField(to="pia.disorderresponsecategorymodel"),
         ),
     ]

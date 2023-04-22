@@ -4,18 +4,27 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('student_absence_teacher', '0007_auto_20200918_0959'),
+        ("student_absence_teacher", "0007_auto_20200918_0959"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='studentabsenceteachermodel',
-            name='status',
-            field=models.CharField(choices=[('presence', 'Présence'), ('lateness', 'Retard'), ('absence', 'Absence'), ('excluded', 'Exclus'), ('internship', 'Stage')], default='presence', max_length=10),
+            model_name="studentabsenceteachermodel",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("presence", "Présence"),
+                    ("lateness", "Retard"),
+                    ("absence", "Absence"),
+                    ("excluded", "Exclus"),
+                    ("internship", "Stage"),
+                ],
+                default="presence",
+                max_length=10,
+            ),
         ),
         migrations.DeleteModel(
-            name='StudentLatenessTeacherModel',
+            name="StudentLatenessTeacherModel",
         ),
     ]

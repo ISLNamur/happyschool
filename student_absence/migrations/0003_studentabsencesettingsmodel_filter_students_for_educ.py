@@ -4,15 +4,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('student_absence', '0002_classenotemodel'),
+        ("student_absence", "0002_classenotemodel"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='studentabsencesettingsmodel',
-            name='filter_students_for_educ',
-            field=models.CharField(choices=[('none', 'No filter'), ('year', 'Filter by year'), ('class', 'Filter by class')], default='none', max_length=5),
+            model_name="studentabsencesettingsmodel",
+            name="filter_students_for_educ",
+            field=models.CharField(
+                choices=[
+                    ("none", "No filter"),
+                    ("year", "Filter by year"),
+                    ("class", "Filter by class"),
+                ],
+                default="none",
+                max_length=5,
+            ),
         ),
     ]

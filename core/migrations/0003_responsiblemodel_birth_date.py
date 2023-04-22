@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0002_importcalendarmodel'),
+        ("core", "0002_importcalendarmodel"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='responsiblemodel',
-            name='birth_date',
-            field=models.DateField(blank=True, null=True, verbose_name='birth date'),
+            model_name="responsiblemodel",
+            name="birth_date",
+            field=models.DateField(blank=True, null=True, verbose_name="birth date"),
         ),
     ]

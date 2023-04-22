@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('student_absence', '0006_auto_20200108_1031'),
+        ("student_absence", "0006_auto_20200108_1031"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='studentabsencemodel',
-            name='is_processed',
+            model_name="studentabsencemodel",
+            name="is_processed",
             field=models.BooleanField(default=False),
         ),
     ]

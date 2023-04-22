@@ -4,15 +4,14 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('dossier_eleve', '0023_alter_caseleve_sanction_faite'),
+        ("dossier_eleve", "0023_alter_caseleve_sanction_faite"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='caseleve',
-            old_name='matricule',
-            new_name='student',
+            model_name="caseleve",
+            old_name="matricule",
+            new_name="student",
         ),
     ]

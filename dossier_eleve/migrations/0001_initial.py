@@ -7,108 +7,265 @@ import dossier_eleve.models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('auth', '0009_alter_user_last_name_max_length'),
-        ('core', '0001_initial'),
+        ("auth", "0009_alter_user_last_name_max_length"),
+        ("core", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CasAttachment',
+            name="CasAttachment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('attachment', models.FileField(upload_to=dossier_eleve.models.unique_file_name)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("attachment", models.FileField(upload_to=dossier_eleve.models.unique_file_name)),
             ],
         ),
         migrations.CreateModel(
-            name='CasEleve',
+            name="CasEleve",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(default='', max_length=100)),
-                ('datetime_encodage', models.DateTimeField(auto_now_add=True, verbose_name="date d'encodage")),
-                ('datetime_modified', models.DateTimeField(auto_now=True, verbose_name='Date de modification')),
-                ('demandeur', models.CharField(max_length=50)),
-                ('explication_commentaire', models.CharField(max_length=5000)),
-                ('datetime_sanction', models.DateTimeField(blank=True, null=True, verbose_name='date de la sanction')),
-                ('datetime_conseil', models.DateTimeField(blank=True, null=True, verbose_name='date du conseil disciplinaire')),
-                ('sanction_faite', models.NullBooleanField(default=None)),
-                ('important', models.BooleanField(default=False)),
-                ('user', models.CharField(default='', max_length=20)),
-                ('visible_by_educ', models.BooleanField(default=True)),
-                ('visible_by_tenure', models.BooleanField(default=False)),
-                ('attachments', models.ManyToManyField(blank=True, to='dossier_eleve.CasAttachment')),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(default="", max_length=100)),
+                (
+                    "datetime_encodage",
+                    models.DateTimeField(auto_now_add=True, verbose_name="date d'encodage"),
+                ),
+                (
+                    "datetime_modified",
+                    models.DateTimeField(auto_now=True, verbose_name="Date de modification"),
+                ),
+                ("demandeur", models.CharField(max_length=50)),
+                ("explication_commentaire", models.CharField(max_length=5000)),
+                (
+                    "datetime_sanction",
+                    models.DateTimeField(blank=True, null=True, verbose_name="date de la sanction"),
+                ),
+                (
+                    "datetime_conseil",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="date du conseil disciplinaire"
+                    ),
+                ),
+                ("sanction_faite", models.NullBooleanField(default=None)),
+                ("important", models.BooleanField(default=False)),
+                ("user", models.CharField(default="", max_length=20)),
+                ("visible_by_educ", models.BooleanField(default=True)),
+                ("visible_by_tenure", models.BooleanField(default=False)),
+                (
+                    "attachments",
+                    models.ManyToManyField(blank=True, to="dossier_eleve.CasAttachment"),
+                ),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'permissions': (('access_dossier_eleve', 'Can access to dossier_eleve data'), ('set_sanction', 'Can set sanction')),
+                "permissions": (
+                    ("access_dossier_eleve", "Can access to dossier_eleve data"),
+                    ("set_sanction", "Can set sanction"),
+                ),
             },
         ),
         migrations.CreateModel(
-            name='DossierEleveSettingsModel',
+            name="DossierEleveSettingsModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('enable_submit_sanctions', models.BooleanField(default=True)),
-                ('use_school_email', models.BooleanField(default=False)),
-                ('all_access', models.ManyToManyField(blank=True, default=None, to='auth.Group')),
-                ('coord_allow_visibility_to', models.ManyToManyField(blank=True, default=None, related_name='coord_allow_visibility_to', to='auth.Group')),
-                ('coord_force_visibility_to', models.ManyToManyField(blank=True, default=None, related_name='coord_force_visibility_to', to='auth.Group')),
-                ('dir_allow_visibility_to', models.ManyToManyField(blank=True, default=None, related_name='dir_allow_visibility_to', to='auth.Group')),
-                ('dir_force_visibility_to', models.ManyToManyField(blank=True, default=None, related_name='dir_force_visibility_to', to='auth.Group')),
-                ('educ_allow_visibility_to', models.ManyToManyField(blank=True, default=None, related_name='educ_allow_visibility_to', to='auth.Group')),
-                ('educ_force_visibility_to', models.ManyToManyField(blank=True, default=None, related_name='educ_force_visibility_to', to='auth.Group')),
-                ('pms_allow_visibility_to', models.ManyToManyField(blank=True, default=None, related_name='pms_allow_visibility_to', to='auth.Group')),
-                ('pms_force_visibility_to', models.ManyToManyField(blank=True, default=None, related_name='pms_force_visibility_to', to='auth.Group')),
-                ('teacher_allow_visibility_to', models.ManyToManyField(blank=True, default=None, related_name='teacher_allow_visibility_to', to='auth.Group')),
-                ('teacher_force_visibility_to', models.ManyToManyField(blank=True, default=None, related_name='teacher_force_visibility_to', to='auth.Group')),
-                ('teachings', models.ManyToManyField(default=None, to='core.TeachingModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("enable_submit_sanctions", models.BooleanField(default=True)),
+                ("use_school_email", models.BooleanField(default=False)),
+                ("all_access", models.ManyToManyField(blank=True, default=None, to="auth.Group")),
+                (
+                    "coord_allow_visibility_to",
+                    models.ManyToManyField(
+                        blank=True,
+                        default=None,
+                        related_name="coord_allow_visibility_to",
+                        to="auth.Group",
+                    ),
+                ),
+                (
+                    "coord_force_visibility_to",
+                    models.ManyToManyField(
+                        blank=True,
+                        default=None,
+                        related_name="coord_force_visibility_to",
+                        to="auth.Group",
+                    ),
+                ),
+                (
+                    "dir_allow_visibility_to",
+                    models.ManyToManyField(
+                        blank=True,
+                        default=None,
+                        related_name="dir_allow_visibility_to",
+                        to="auth.Group",
+                    ),
+                ),
+                (
+                    "dir_force_visibility_to",
+                    models.ManyToManyField(
+                        blank=True,
+                        default=None,
+                        related_name="dir_force_visibility_to",
+                        to="auth.Group",
+                    ),
+                ),
+                (
+                    "educ_allow_visibility_to",
+                    models.ManyToManyField(
+                        blank=True,
+                        default=None,
+                        related_name="educ_allow_visibility_to",
+                        to="auth.Group",
+                    ),
+                ),
+                (
+                    "educ_force_visibility_to",
+                    models.ManyToManyField(
+                        blank=True,
+                        default=None,
+                        related_name="educ_force_visibility_to",
+                        to="auth.Group",
+                    ),
+                ),
+                (
+                    "pms_allow_visibility_to",
+                    models.ManyToManyField(
+                        blank=True,
+                        default=None,
+                        related_name="pms_allow_visibility_to",
+                        to="auth.Group",
+                    ),
+                ),
+                (
+                    "pms_force_visibility_to",
+                    models.ManyToManyField(
+                        blank=True,
+                        default=None,
+                        related_name="pms_force_visibility_to",
+                        to="auth.Group",
+                    ),
+                ),
+                (
+                    "teacher_allow_visibility_to",
+                    models.ManyToManyField(
+                        blank=True,
+                        default=None,
+                        related_name="teacher_allow_visibility_to",
+                        to="auth.Group",
+                    ),
+                ),
+                (
+                    "teacher_force_visibility_to",
+                    models.ManyToManyField(
+                        blank=True,
+                        default=None,
+                        related_name="teacher_force_visibility_to",
+                        to="auth.Group",
+                    ),
+                ),
+                ("teachings", models.ManyToManyField(default=None, to="core.TeachingModel")),
             ],
         ),
         migrations.CreateModel(
-            name='InfoEleve',
+            name="InfoEleve",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('info', models.CharField(max_length=200)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("info", models.CharField(max_length=200)),
             ],
         ),
         migrations.CreateModel(
-            name='SanctionDecisionDisciplinaire',
+            name="SanctionDecisionDisciplinaire",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('sanction_decision', models.CharField(max_length=200)),
-                ('is_retenue', models.BooleanField(default=False)),
-                ('can_ask', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("sanction_decision", models.CharField(max_length=200)),
+                ("is_retenue", models.BooleanField(default=False)),
+                ("can_ask", models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(
-            name='SanctionStatisticsModel',
+            name="SanctionStatisticsModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('display', models.CharField(max_length=100)),
-                ('sanctions_decisions', models.ManyToManyField(blank=True, default=None, to='dossier_eleve.SanctionDecisionDisciplinaire')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("display", models.CharField(max_length=100)),
+                (
+                    "sanctions_decisions",
+                    models.ManyToManyField(
+                        blank=True, default=None, to="dossier_eleve.SanctionDecisionDisciplinaire"
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='caseleve',
-            name='info',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='dossier_eleve.InfoEleve'),
+            model_name="caseleve",
+            name="info",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="dossier_eleve.InfoEleve",
+            ),
         ),
         migrations.AddField(
-            model_name='caseleve',
-            name='matricule',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='core.StudentModel'),
+            model_name="caseleve",
+            name="matricule",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="core.StudentModel",
+            ),
         ),
         migrations.AddField(
-            model_name='caseleve',
-            name='sanction_decision',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='dossier_eleve.SanctionDecisionDisciplinaire'),
+            model_name="caseleve",
+            name="sanction_decision",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="dossier_eleve.SanctionDecisionDisciplinaire",
+            ),
         ),
         migrations.AddField(
-            model_name='caseleve',
-            name='visible_by_groups',
-            field=models.ManyToManyField(blank=True, to='auth.Group'),
+            model_name="caseleve",
+            name="visible_by_groups",
+            field=models.ManyToManyField(blank=True, to="auth.Group"),
         ),
     ]

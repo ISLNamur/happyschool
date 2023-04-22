@@ -24,26 +24,26 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 urlpatterns = [
-    path('get_class_photo_pdf/<int:classe_id>/', views.ClassePhotosView.as_view()),
-    path('', views.AnnuaireView.as_view(), name='annuaire'),
-    path('get_class_list_excel/<int:classe_id>/', views.ClasseListExcelView.as_view()),
-    path('get_class_list_pdf/<int:classe_id>/', views.ClasseListPDFView.as_view()),
-    path('api/people/', views.SearchPeopleAPI.as_view()),
-    path('api/classes/', views.SearchClassesAPI.as_view()),
-    path('api/people_or_classes/', views.SearchClassesOrPeopleAPI.as_view()),
-    path('api/studentclasse/', views.StudentClasseAPI.as_view()),
-    path('api/student_given_course/<int:given_course_id>/', views.StudentGivenCourseAPI.as_view()),
-    path('api/course_to_classes/<int:given_course_id>/', views.CourseToClassesAPI.as_view()),
+    path("get_class_photo_pdf/<int:classe_id>/", views.ClassePhotosView.as_view()),
+    path("", views.AnnuaireView.as_view(), name="annuaire"),
+    path("get_class_list_excel/<int:classe_id>/", views.ClasseListExcelView.as_view()),
+    path("get_class_list_pdf/<int:classe_id>/", views.ClasseListPDFView.as_view()),
+    path("api/people/", views.SearchPeopleAPI.as_view()),
+    path("api/classes/", views.SearchClassesAPI.as_view()),
+    path("api/people_or_classes/", views.SearchClassesOrPeopleAPI.as_view()),
+    path("api/studentclasse/", views.StudentClasseAPI.as_view()),
+    path("api/student_given_course/<int:given_course_id>/", views.StudentGivenCourseAPI.as_view()),
+    path("api/course_to_classes/<int:given_course_id>/", views.CourseToClassesAPI.as_view()),
 ]
 
 router = DefaultRouter()
-router.register(r'api/settings', views.AnnuaireSettingsViewSet)
-router.register(r'api/student', views.StudentInfoViewSet)
-router.register(r'api/responsible', views.ResponsibleInfoViewSet)
-router.register(r'api/responsible_sensitive', views.ResponsibleSensitiveViewSet)
-router.register(r'api/student_sensitive', views.StudentSensitiveInfoViewSet)
-router.register(r'api/info_general', views.StudentGeneralInfoViewSet)
-router.register(r'api/info_contact', views.StudentContactInfoViewSet)
-router.register(r'api/info_medical', views.StudentMedicalInfoViewSet)
+router.register(r"api/settings", views.AnnuaireSettingsViewSet)
+router.register(r"api/student", views.StudentInfoViewSet)
+router.register(r"api/responsible", views.ResponsibleInfoViewSet)
+router.register(r"api/responsible_sensitive", views.ResponsibleSensitiveViewSet)
+router.register(r"api/student_sensitive", views.StudentSensitiveInfoViewSet)
+router.register(r"api/info_general", views.StudentGeneralInfoViewSet)
+router.register(r"api/info_contact", views.StudentContactInfoViewSet)
+router.register(r"api/info_medical", views.StudentMedicalInfoViewSet)
 
 urlpatterns += router.urls

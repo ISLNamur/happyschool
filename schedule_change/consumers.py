@@ -22,25 +22,20 @@ from channels.generic.websocket import JsonWebsocketConsumer
 
 
 class ExportSummaryConsumer(JsonWebsocketConsumer):
-
     def connect(self):
-        celery_id = self.scope['url_route']['kwargs']['celery_id']
-        self.group_name = 'schedule_change_export_summary_%s' % celery_id
+        celery_id = self.scope["url_route"]["kwargs"]["celery_id"]
+        self.group_name = "schedule_change_export_summary_%s" % celery_id
 
-        async_to_sync(self.channel_layer.group_add)(
-            self.group_name,
-            self.channel_name
-        )
+        async_to_sync(self.channel_layer.group_add)(self.group_name, self.channel_name)
         self.accept()
 
     def disconnect(self, close_code):
-        async_to_sync(self.channel_layer.group_discard)(
-            self.group_name,
-            self.channel_name
-        )
+        async_to_sync(self.channel_layer.group_discard)(self.group_name, self.channel_name)
 
     def schedule_export_summary(self, event):
-        self.send_json({
-            "task": event["task"],
-            "file_url": event["file_url"],
-        })
+        self.send_json(
+            {
+                "task": event["task"],
+                "file_url": event["file_url"],
+            }
+        )

@@ -5,29 +5,53 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0012_auto_20201209_1955'),
+        ("core", "0012_auto_20201209_1955"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PeriodCoreModel',
+            name="PeriodCoreModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('start', models.TimeField()),
-                ('end', models.TimeField()),
-                ('name', models.CharField(max_length=200)),
-                ('teaching', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.TeachingModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("start", models.TimeField()),
+                ("end", models.TimeField()),
+                ("name", models.CharField(max_length=200)),
+                (
+                    "teaching",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="core.TeachingModel"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='CourseScheduleModel',
+            name="CourseScheduleModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('day_of_week', models.PositiveSmallIntegerField()),
-                ('given_course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.GivenCourseModel')),
-                ('period', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.PeriodCoreModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("day_of_week", models.PositiveSmallIntegerField()),
+                (
+                    "given_course",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="core.GivenCourseModel"
+                    ),
+                ),
+                (
+                    "period",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="core.PeriodCoreModel"
+                    ),
+                ),
             ],
         ),
     ]

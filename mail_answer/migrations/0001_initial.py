@@ -7,69 +7,109 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('core', '0001_initial'),
+        ("core", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ChoiceModel',
+            name="ChoiceModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('text', models.CharField(max_length=500)),
-                ('input', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("text", models.CharField(max_length=500)),
+                ("input", models.BooleanField(default=False)),
             ],
         ),
         migrations.CreateModel(
-            name='MailAnswerModel',
+            name="MailAnswerModel",
             fields=[
-                ('uuid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('answers', django.contrib.postgres.fields.jsonb.JSONField(default='{}')),
-                ('is_answered', models.BooleanField(default=False)),
-                ('student', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.StudentModel')),
+                (
+                    "uuid",
+                    models.UUIDField(
+                        default=uuid.uuid4, editable=False, primary_key=True, serialize=False
+                    ),
+                ),
+                ("answers", django.contrib.postgres.fields.jsonb.JSONField(default="{}")),
+                ("is_answered", models.BooleanField(default=False)),
+                (
+                    "student",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="core.StudentModel"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='MailAnswerSettingsModel',
+            name="MailAnswerSettingsModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('use_remote', models.BooleanField(default=False)),
-                ('is_remote', models.BooleanField(default=False)),
-                ('remote_url', models.URLField(default='http://localhost/')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("use_remote", models.BooleanField(default=False)),
+                ("is_remote", models.BooleanField(default=False)),
+                ("remote_url", models.URLField(default="http://localhost/")),
             ],
         ),
         migrations.CreateModel(
-            name='MailTemplateModel',
+            name="MailTemplateModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('text', models.TextField(blank=True)),
-                ('acknowledge', models.BooleanField()),
-                ('acknowledge_text', models.CharField(default='Je déclare avoir pris connaissance des présentes informations.', max_length=500)),
-                ('is_used', models.BooleanField(default=False)),
-                ('datetime_creation', models.DateTimeField()),
-                ('choices', models.ManyToManyField(blank=True, to='mail_answer.ChoiceModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("text", models.TextField(blank=True)),
+                ("acknowledge", models.BooleanField()),
+                (
+                    "acknowledge_text",
+                    models.CharField(
+                        default="Je déclare avoir pris connaissance des présentes informations.",
+                        max_length=500,
+                    ),
+                ),
+                ("is_used", models.BooleanField(default=False)),
+                ("datetime_creation", models.DateTimeField()),
+                ("choices", models.ManyToManyField(blank=True, to="mail_answer.ChoiceModel")),
             ],
         ),
         migrations.CreateModel(
-            name='OptionModel',
+            name="OptionModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('text', models.CharField(max_length=500)),
-                ('input', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("text", models.CharField(max_length=500)),
+                ("input", models.BooleanField(default=False)),
             ],
         ),
         migrations.AddField(
-            model_name='mailtemplatemodel',
-            name='options',
-            field=models.ManyToManyField(blank=True, to='mail_answer.OptionModel'),
+            model_name="mailtemplatemodel",
+            name="options",
+            field=models.ManyToManyField(blank=True, to="mail_answer.OptionModel"),
         ),
         migrations.AddField(
-            model_name='mailanswermodel',
-            name='template',
-            field=models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='mail_answer.MailTemplateModel'),
+            model_name="mailanswermodel",
+            name="template",
+            field=models.ForeignKey(
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="mail_answer.MailTemplateModel",
+            ),
         ),
     ]

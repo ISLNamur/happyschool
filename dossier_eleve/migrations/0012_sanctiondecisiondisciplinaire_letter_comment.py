@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('dossier_eleve', '0011_auto_20200603_1436'),
+        ("dossier_eleve", "0011_auto_20200603_1436"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='sanctiondecisiondisciplinaire',
-            name='letter_comment',
-            field=models.TextField(blank=True, default='', help_text='Texte qui sera mis en fin de lettre de sanction (balise html pris en charge).'),
+            model_name="sanctiondecisiondisciplinaire",
+            name="letter_comment",
+            field=models.TextField(
+                blank=True,
+                default="",
+                help_text="Texte qui sera mis en fin de lettre de sanction (balise html pris en charge).",
+            ),
         ),
     ]

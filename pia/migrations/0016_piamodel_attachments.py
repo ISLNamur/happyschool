@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pia', '0015_auto_20200507_1151'),
+        ("pia", "0015_auto_20200507_1151"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='piamodel',
-            name='attachments',
-            field=models.ManyToManyField(blank=True, to='pia.AttachmentModel'),
+            model_name="piamodel",
+            name="attachments",
+            field=models.ManyToManyField(blank=True, to="pia.AttachmentModel"),
         ),
     ]

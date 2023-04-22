@@ -18,36 +18,41 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from rest_framework import serializers
-from mail_notification.models import EmailNotification, EmailAttachment, EmailSender,\
-    OtherEmailModel, OtherEmailGroupModel
+from mail_notification.models import (
+    EmailNotification,
+    EmailAttachment,
+    EmailSender,
+    OtherEmailModel,
+    OtherEmailGroupModel,
+)
 
 
 class EmailNotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailNotification
-        fields = '__all__'
+        fields = "__all__"
         depth = 1
 
 
 class EmailSenderSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailSender
-        fields = ['sender_email', 'sender_email_name']
+        fields = ["sender_email", "sender_email_name"]
 
 
 class EmailAttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmailAttachment
-        fields = '__all__'
+        fields = "__all__"
 
 
 class OtherEmailSerializer(serializers.ModelSerializer):
     class Meta:
         model = OtherEmailModel
-        fields = '__all__'
+        fields = "__all__"
 
 
 class OtherEmailGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = OtherEmailGroupModel
-        fields = '__all__'
+        fields = "__all__"

@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('student_absence_teacher', '0009_auto_20210825_1740'),
+        ("student_absence_teacher", "0009_auto_20210825_1740"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='studentabsenceteachermodel',
-            name='date_absence',
+            model_name="studentabsenceteachermodel",
+            name="date_absence",
             field=models.DateField(),
         ),
     ]

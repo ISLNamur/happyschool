@@ -5,15 +5,16 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pia', '0005_branchstatementmodel_classcouncilpiamodel'),
+        ("pia", "0005_branchstatementmodel_classcouncilpiamodel"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='disorderresponsemodel',
-            name='disorder',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pia.DisorderModel'),
+            model_name="disorderresponsemodel",
+            name="disorder",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="pia.DisorderModel"
+            ),
         ),
     ]

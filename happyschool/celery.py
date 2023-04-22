@@ -27,5 +27,5 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "happyschool.settings")
 
 app = Celery(settings.CELERY_NAME, backend=settings.CELERY_BACKEND, broker=settings.CELERY_BROKER)
 
-app.config_from_object('django.conf:settings')
+app.config_from_object("django.conf:settings")
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)

@@ -27,7 +27,7 @@ from selenium.webdriver.common.keys import Keys
 
 
 class SeleniumTests(StaticLiveServerTestCase):
-    fixtures = ['test_functional.json']
+    fixtures = ["test_functional.json"]
 
     @classmethod
     def setUpClass(cls):
@@ -43,13 +43,13 @@ class SeleniumTests(StaticLiveServerTestCase):
         super().tearDownClass()
 
     def test_login(self):
-        self.selenium.get('%s%s' % (self.live_server_url, '/auth/'))
+        self.selenium.get("%s%s" % (self.live_server_url, "/auth/"))
         username_input = self.selenium.find_element(By.ID, "inputUser")
-        username_input.send_keys('admin')
+        username_input.send_keys("admin")
         password_input = self.selenium.find_element(By.ID, "inputPassword")
-        password_input.send_keys('password')
+        password_input.send_keys("password")
         self.selenium.find_element(By.XPATH, '//button[@type="submit"]').click()
-        self.selenium.get('%s%s' % (self.live_server_url, '/annuaire/'))
+        self.selenium.get("%s%s" % (self.live_server_url, "/annuaire/"))
 
         search_input = self.selenium.find_element(By.CLASS_NAME, "multiselect__input")
         search_input.send_keys("tutu")

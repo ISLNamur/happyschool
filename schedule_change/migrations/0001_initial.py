@@ -6,49 +6,88 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('auth', '0009_alter_user_last_name_max_length'),
-        ('core', '0001_initial'),
+        ("auth", "0009_alter_user_last_name_max_length"),
+        ("core", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ScheduleChangeModel',
+            name="ScheduleChangeModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('change', models.CharField(max_length=100)),
-                ('date_change', models.DateField(verbose_name='Date')),
-                ('time_start', models.TimeField(blank=True, null=True)),
-                ('time_end', models.TimeField(blank=True, null=True)),
-                ('classes', models.CharField(blank=True, default='', max_length=100)),
-                ('place', models.CharField(blank=True, default='', max_length=200)),
-                ('comment', models.CharField(blank=True, default='', max_length=500)),
-                ('datetime_created', models.DateTimeField(auto_now_add=True, verbose_name="date d'encodage")),
-                ('datetime_modified', models.DateTimeField(auto_now=True, verbose_name='Date de modification')),
-                ('user', models.CharField(blank=True, default='', max_length=100)),
-                ('created_by', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
-                ('teachers_replaced', models.ManyToManyField(related_name='teachers_replaced', to='core.ResponsibleModel')),
-                ('teachers_substitute', models.ManyToManyField(blank=True, related_name='teachers_substitute', to='core.ResponsibleModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("change", models.CharField(max_length=100)),
+                ("date_change", models.DateField(verbose_name="Date")),
+                ("time_start", models.TimeField(blank=True, null=True)),
+                ("time_end", models.TimeField(blank=True, null=True)),
+                ("classes", models.CharField(blank=True, default="", max_length=100)),
+                ("place", models.CharField(blank=True, default="", max_length=200)),
+                ("comment", models.CharField(blank=True, default="", max_length=500)),
+                (
+                    "datetime_created",
+                    models.DateTimeField(auto_now_add=True, verbose_name="date d'encodage"),
+                ),
+                (
+                    "datetime_modified",
+                    models.DateTimeField(auto_now=True, verbose_name="Date de modification"),
+                ),
+                ("user", models.CharField(blank=True, default="", max_length=100)),
+                (
+                    "created_by",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "teachers_replaced",
+                    models.ManyToManyField(
+                        related_name="teachers_replaced", to="core.ResponsibleModel"
+                    ),
+                ),
+                (
+                    "teachers_substitute",
+                    models.ManyToManyField(
+                        blank=True, related_name="teachers_substitute", to="core.ResponsibleModel"
+                    ),
+                ),
             ],
             options={
-                'permissions': (('access_schedule_change', 'Can access to schedule change data'),),
+                "permissions": (("access_schedule_change", "Can access to schedule change data"),),
             },
         ),
         migrations.CreateModel(
-            name='ScheduleChangeSettingsModel',
+            name="ScheduleChangeSettingsModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('responsible_phone', models.CharField(default='', max_length=30)),
-                ('responsible_name', models.CharField(default='', max_length=100)),
-                ('email_school', models.BooleanField(default=False)),
-                ('copy_to_remote', models.BooleanField(default=False, help_text='Copie toutes les entrées créées sur le serveur distant (remote).Le serveur distant doit êtreconfiguré dans CoreSettingsModel')),
-                ('all_access', models.ManyToManyField(blank=True, default=None, to='auth.Group')),
-                ('notify_by_email_to', models.ManyToManyField(to='core.EmailModel')),
-                ('teachings', models.ManyToManyField(default=None, to='core.TeachingModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("responsible_phone", models.CharField(default="", max_length=30)),
+                ("responsible_name", models.CharField(default="", max_length=100)),
+                ("email_school", models.BooleanField(default=False)),
+                (
+                    "copy_to_remote",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Copie toutes les entrées créées sur le serveur distant (remote).Le serveur distant doit êtreconfiguré dans CoreSettingsModel",
+                    ),
+                ),
+                ("all_access", models.ManyToManyField(blank=True, default=None, to="auth.Group")),
+                ("notify_by_email_to", models.ManyToManyField(to="core.EmailModel")),
+                ("teachings", models.ManyToManyField(default=None, to="core.TeachingModel")),
             ],
         ),
     ]

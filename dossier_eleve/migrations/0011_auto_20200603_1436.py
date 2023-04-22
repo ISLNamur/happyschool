@@ -4,14 +4,18 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('dossier_eleve', '0009_auto_20200512_1207'),
+        ("dossier_eleve", "0009_auto_20200512_1207"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='caseleve',
-            options={'permissions': (('set_sanction', 'Can set sanction'), ('ask_sanction', 'Can ask sanction'))},
+            name="caseleve",
+            options={
+                "permissions": (
+                    ("set_sanction", "Can set sanction"),
+                    ("ask_sanction", "Can ask sanction"),
+                )
+            },
         ),
     ]

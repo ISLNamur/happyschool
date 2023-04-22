@@ -6,31 +6,33 @@ from django.utils.timezone import utc
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pia', '0001_initial'),
+        ("pia", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='subgoalmodel',
-            name='datetime_creation',
-            field=models.DateTimeField(auto_now_add=True, default=datetime.datetime(2019, 12, 3, 13, 36, 31, 920157, tzinfo=utc)),
+            model_name="subgoalmodel",
+            name="datetime_creation",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                default=datetime.datetime(2019, 12, 3, 13, 36, 31, 920157, tzinfo=utc),
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='subgoalmodel',
-            name='datetime_update',
+            model_name="subgoalmodel",
+            name="datetime_update",
             field=models.DateTimeField(auto_now=True),
         ),
         migrations.AlterField(
-            model_name='assessmentmodel',
-            name='cross_goals',
-            field=models.ManyToManyField(blank=True, to='pia.CrossGoalModel'),
+            model_name="assessmentmodel",
+            name="cross_goals",
+            field=models.ManyToManyField(blank=True, to="pia.CrossGoalModel"),
         ),
         migrations.AlterField(
-            model_name='goalmodel',
-            name='responsible',
-            field=models.ManyToManyField(blank=True, to='core.ResponsibleModel'),
+            model_name="goalmodel",
+            name="responsible",
+            field=models.ManyToManyField(blank=True, to="core.ResponsibleModel"),
         ),
     ]

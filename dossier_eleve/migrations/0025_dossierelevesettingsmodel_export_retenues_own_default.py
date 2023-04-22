@@ -4,15 +4,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('dossier_eleve', '0024_rename_matricule_caseleve_student'),
+        ("dossier_eleve", "0024_rename_matricule_caseleve_student"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='dossierelevesettingsmodel',
-            name='export_retenues_own_classes_default',
-            field=models.BooleanField(default=False, help_text="Lors de l'export des retenues dans les demandes de sanction, la case pour\n        pour filter pour ses classes sera cochée par défaut."),
+            model_name="dossierelevesettingsmodel",
+            name="export_retenues_own_classes_default",
+            field=models.BooleanField(
+                default=False,
+                help_text="Lors de l'export des retenues dans les demandes de sanction, la case pour\n        pour filter pour ses classes sera cochée par défaut.",
+            ),
         ),
     ]

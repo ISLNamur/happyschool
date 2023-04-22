@@ -43,9 +43,8 @@ def use_tenure_visibility(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('dossier_eleve', '0015_auto_20210511_0955'),
+        ("dossier_eleve", "0015_auto_20210511_0955"),
     ]
 
     operations = [

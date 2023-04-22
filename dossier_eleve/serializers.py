@@ -29,72 +29,84 @@ from . import views
 class DossierEleveSettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = DossierEleveSettingsModel
-        fields = '__all__'
+        fields = "__all__"
 
 
 class InfoEleveSerializer(serializers.ModelSerializer):
     class Meta:
         model = InfoEleve
-        fields = '__all__'
+        fields = "__all__"
 
 
 class SanctionDecisionDisciplinaireSerializer(serializers.ModelSerializer):
     class Meta:
         model = SanctionDecisionDisciplinaire
-        fields = '__all__'
+        fields = "__all__"
 
 
 class CasEleveSerializer(serializers.ModelSerializer):
     send_to_teachers = serializers.BooleanField(write_only=True, required=False)
 
     student = StudentSerializer(read_only=True)
-    student_id = serializers.PrimaryKeyRelatedField(queryset=StudentModel.objects.all(),
-                                                      source='student', required=False,
-                                                      allow_null=True)
+    student_id = serializers.PrimaryKeyRelatedField(
+        queryset=StudentModel.objects.all(), source="student", required=False, allow_null=True
+    )
     info = InfoEleveSerializer(read_only=True)
-    info_id = serializers.PrimaryKeyRelatedField(queryset=InfoEleve.objects.all(),
-                                                      source='info', required=False,
-                                                      allow_null=True)
+    info_id = serializers.PrimaryKeyRelatedField(
+        queryset=InfoEleve.objects.all(), source="info", required=False, allow_null=True
+    )
 
     sanction_decision = SanctionDecisionDisciplinaireSerializer(read_only=True)
-    sanction_decision_id = serializers.PrimaryKeyRelatedField(queryset=SanctionDecisionDisciplinaire.objects.all(),
-                                                 source='sanction_decision', required=False,
-                                                 allow_null=True)
+    sanction_decision_id = serializers.PrimaryKeyRelatedField(
+        queryset=SanctionDecisionDisciplinaire.objects.all(),
+        source="sanction_decision",
+        required=False,
+        allow_null=True,
+    )
 
     def validate_sanction_decision_id(self, value):
         # If submit sanction is not enable, ignore validation.
         if not views.get_settings().enable_submit_sanctions:
             return value
-        if value and not self.context['request'].user.has_perm('dossier_eleve.ask_sanction'):
-            raise serializers.ValidationError("Vous n'avez pas les droits nécessaire pour ajouter/modifier une sanction")
+        if value and not self.context["request"].user.has_perm("dossier_eleve.ask_sanction"):
+            raise serializers.ValidationError(
+                "Vous n'avez pas les droits nécessaire pour ajouter/modifier une sanction"
+            )
         return value
 
     def validate_date_sanction(self, value):
-        if not self.context['request'].user.has_perm('dossier_eleve.set_sanction') and value:
-            raise serializers.ValidationError("Vous n'avez pas les droits nécessaire pour ajouter/modifier la date d'une sanction")
+        if not self.context["request"].user.has_perm("dossier_eleve.set_sanction") and value:
+            raise serializers.ValidationError(
+                "Vous n'avez pas les droits nécessaire pour ajouter/modifier la date d'une sanction"
+            )
         return value
 
     def validate_sanction_faite(self, value):
-        if not self.context['request'].user.has_perm('dossier_eleve.set_sanction') and value:
-            raise serializers.ValidationError("Vous n'avez pas les droits nécessaire pour mettre une sanction comme faite")
+        if not self.context["request"].user.has_perm("dossier_eleve.set_sanction") and value:
+            raise serializers.ValidationError(
+                "Vous n'avez pas les droits nécessaire pour mettre une sanction comme faite"
+            )
         return value
 
     def validate_student_id(self, value):
         if not check_access_to_student(
-            value,
-            self.context['request'].user,
-            tenure_class_only=False
+            value, self.context["request"].user, tenure_class_only=False
         ):
-            raise serializers.ValidationError("Vous n'avez pas les droits nécessaire pour ajouter cet élève")
+            raise serializers.ValidationError(
+                "Vous n'avez pas les droits nécessaire pour ajouter cet élève"
+            )
         return value
 
     class Meta:
         model = CasEleve
-        fields = '__all__'
-        read_only_fields = ('user', 'datetime_encodage',)
+        fields = "__all__"
+        read_only_fields = (
+            "user",
+            "datetime_encodage",
+        )
 
 
 class CasAttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = CasAttachment
-        fields = '__all__'
+        fields = "__all__"

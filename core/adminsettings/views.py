@@ -37,15 +37,13 @@ from core.tasks import task_import_people, task_update
 from io import StringIO
 
 
-class AdminView(LoginRequiredMixin,
-                PermissionRequiredMixin,
-                TemplateView):
-    permission_required = ('core.add_responsible_model',)
+class AdminView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
+    permission_required = ("core.add_responsible_model",)
     template_name = "core/admin/admin.html"
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
-        context['menu'] = json.dumps(get_menu(self.request))
+        context["menu"] = json.dumps(get_menu(self.request))
         return context
 
 
@@ -55,7 +53,7 @@ class TestFileAPIView(APIView):
 
     def post(self, request, format=None) -> Response:
         ignore_first_line = request.POST.get("ignore_first_line", "false") == "true"
-        file_obj = request.FILES['file']
+        file_obj = request.FILES["file"]
         buffer = StringIO(file_obj.read().decode("utf-8-sig"))
         file_obj.seek(0)
         dialect = csv.Sniffer().sniff(file_obj.read(8192).decode("utf-8-sig"))
@@ -65,7 +63,7 @@ class TestFileAPIView(APIView):
 
         rows = []
         for row in reader:
-            rows.append({'%i' % i: x for i, x in enumerate(row)})
+            rows.append({"%i" % i: x for i, x in enumerate(row)})
             if reader.line_num > 10:
                 break
 
@@ -81,10 +79,10 @@ class ImportPeopleAPIView(APIView):
         if not self.people:
             return Response(status=status.HTTP_400_BAD_REQUEST, data="No people type has been set.")
 
-        csv_text = request.FILES['file'].read().decode("utf-8-sig")
-        teaching = request.POST.get('teaching', None)
-        columns = request.POST.get('columns', '{}')
-        ignore_first_line = json.loads(request.POST.get('ignore_first_line'))
+        csv_text = request.FILES["file"].read().decode("utf-8-sig")
+        teaching = request.POST.get("teaching", None)
+        columns = request.POST.get("columns", "{}")
+        ignore_first_line = json.loads(request.POST.get("ignore_first_line"))
         if not teaching:
             return Response(status=status.HTTP_400_BAD_REQUEST, data="Teaching needed.")
 
@@ -125,8 +123,8 @@ class PhotoAPI(APIView):
     permission_classes = (IsAdminUser,)
 
     def post(self, request, format=None):
-        file_obj = request.FILES['file']
-        people = request.POST.get('people', 'student')
+        file_obj = request.FILES["file"]
+        people = request.POST.get("people", "student")
         static_dir = settings.STATICFILES_DIRS[0] if settings.DEBUG else settings.STATIC_ROOT
         photo_dir = "photos/" if people == "student" else "photos_prof"
         photo_path = os.path.join(static_dir, photo_dir + file_obj.name)
@@ -134,12 +132,13 @@ class PhotoAPI(APIView):
             f.write(file_obj.read())
         return Response(status=status.HTTP_201_CREATED)
 
+
 class LogoAPI(APIView):
     parser_classes = (MultiPartParser,)
     permission_classes = (IsAdminUser,)
 
     def post(self, request, format=None):
-        file_obj = request.FILES['file']
+        file_obj = request.FILES["file"]
         static_dir = settings.STATICFILES_DIRS[0] if settings.DEBUG else settings.STATIC_ROOT
         img_path = os.path.join(static_dir, "img/logo_school.png")
         with open(img_path, "w+b") as f:

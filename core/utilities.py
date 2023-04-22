@@ -28,21 +28,21 @@ from django.http import HttpRequest
 from core.models import MenuEntryModel
 
 EXCLUDED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.postgres',
-    'rest_framework',
-    'rest_framework.authtoken',
-    'django_filters',
-    'channels',
-    'crispy_forms',
-    'social_django',
-    'webpack_loader',
-    'proeco',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django.contrib.postgres",
+    "rest_framework",
+    "rest_framework.authtoken",
+    "django_filters",
+    "channels",
+    "crispy_forms",
+    "social_django",
+    "webpack_loader",
+    "proeco",
     "django_cas_ng",
     "debug_toolbar",
 ]
@@ -61,7 +61,10 @@ def get_scholar_year() -> int:
     core_settings = get_settings()
     if month < core_settings.month_scholar_year_start:
         return year - 1
-    elif month == core_settings.month_scholar_year_start and day < core_settings.day_scholar_year_start:
+    elif (
+        month == core_settings.month_scholar_year_start
+        and day < core_settings.day_scholar_year_start
+    ):
         return year - 1
 
     return year
@@ -79,13 +82,19 @@ def in_scholar_year(date) -> bool:
     if date.year == current_year:
         if date.month > core_settings.month_scholar_year_start:
             return True
-        if date.month == core_settings.month_scholar_year_start and date.day >= core_settings.day_scholar_year_start:
+        if (
+            date.month == core_settings.month_scholar_year_start
+            and date.day >= core_settings.day_scholar_year_start
+        ):
             return True
 
     if date.year == current_year + 1:
         if date.month < core_settings.month_scholar_year_start:
             return True
-        if date.month == core_settings.month_scholar_year_start and date.day < core_settings.day_scholar_year_start:
+        if (
+            date.month == core_settings.month_scholar_year_start
+            and date.day < core_settings.day_scholar_year_start
+        ):
             return True
 
     return False
@@ -100,7 +109,7 @@ def get_menu(request: HttpRequest, active_app: str = "") -> dict:
             continue
         module = importlib.import_module("%s.views" % app)
         try:
-            get_menu_entry = getattr(module, 'get_menu_entry')
+            get_menu_entry = getattr(module, "get_menu_entry")
             menu_entry = get_menu_entry(active_app, request)
             if menu_entry:
                 apps.append(menu_entry)
@@ -108,24 +117,17 @@ def get_menu(request: HttpRequest, active_app: str = "") -> dict:
             pass
 
     for entry in MenuEntryModel.objects.filter(forced_order=None):
-        apps.append({
-            "app": entry.id,
-            "display": entry.display,
-            "url": entry.link,
-            "active": False
-        })
+        apps.append({"app": entry.id, "display": entry.display, "url": entry.link, "active": False})
 
     for entry in MenuEntryModel.objects.filter(forced_order__isnull=False):
-        apps.insert(entry.forced_order, {
-            "app": entry.id,
-            "display": entry.display,
-            "url": entry.link,
-            "active": False
-        })
+        apps.insert(
+            entry.forced_order,
+            {"app": entry.id, "display": entry.display, "url": entry.link, "active": False},
+        )
 
     full_name = request.user.get_full_name() if not request.user.is_anonymous else "anonymous"
     menu = {"full_name": full_name, "apps": apps}
-    menu['admin_settings'] = request.user.has_perm('core.add_coresettingsmodel')
+    menu["admin_settings"] = request.user.has_perm("core.add_coresettingsmodel")
 
     return menu
 

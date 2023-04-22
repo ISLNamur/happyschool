@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('annuaire', '0004_annuairesettingsmodel_can_see_student_sensitive'),
+        ("annuaire", "0004_annuairesettingsmodel_can_see_student_sensitive"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='annuairesettingsmodel',
-            name='show_schedule',
+            model_name="annuairesettingsmodel",
+            name="show_schedule",
             field=models.BooleanField(default=True, help_text="Affiche l'horaire des cours."),
         ),
     ]

@@ -50,14 +50,36 @@ from django.core.exceptions import ObjectDoesNotExist, FieldError
 from django.views.generic import TemplateView
 from django.contrib.auth.models import Group, User
 
-from core.models import ResponsibleModel, TeachingModel, EmailModel, CoreSettingsModel, StudentModel,\
-    ImportCalendarModel, ClasseModel, CourseModel, GivenCourseModel
+from core.models import (
+    ResponsibleModel,
+    TeachingModel,
+    EmailModel,
+    CoreSettingsModel,
+    StudentModel,
+    ImportCalendarModel,
+    ClasseModel,
+    CourseModel,
+    GivenCourseModel,
+)
 from core.people import get_classes
 from core.permissions import IsSecretaryPermission
-from core.serializers import ResponsibleSensitiveSerializer, TeachingSerializer,\
-    EmailSerializer, ClasseSerializer, ResponsibleRemoteSerializer, StudentWriteSerializer, UserSerializer,\
-    GroupSerializer, CourseSerializer, GivenCourseFlatSerializer, CourseScheduleModel, PeriodCoreModel, \
-    PeriodCoreSerializer, CourseScheduleSerializer, GivenCourseSerializer
+from core.serializers import (
+    ResponsibleSensitiveSerializer,
+    TeachingSerializer,
+    EmailSerializer,
+    ClasseSerializer,
+    ResponsibleRemoteSerializer,
+    StudentWriteSerializer,
+    UserSerializer,
+    GroupSerializer,
+    CourseSerializer,
+    GivenCourseFlatSerializer,
+    CourseScheduleModel,
+    PeriodCoreModel,
+    PeriodCoreSerializer,
+    CourseScheduleSerializer,
+    GivenCourseSerializer,
+)
 from core.utilities import get_scholar_year, get_menu
 
 
@@ -78,8 +100,8 @@ class BaseFilters(filters.FilterSet):
     datetime_field = "datetime_encodage"
     student_field = "student"
 
-    unique = filters.CharFilter('unique_by', method='unique_by')
-    scholar_year = filters.CharFilter(method='scholar_year_by')
+    unique = filters.CharFilter("unique_by", method="unique_by")
+    scholar_year = filters.CharFilter(method="scholar_year_by")
 
     class Meta:
         fields_to_filter = set()
@@ -88,15 +110,17 @@ class BaseFilters(filters.FilterSet):
             filters = {}
             for f in fields:
                 is_date_or_time = f.startswith("date") or f.startswith("time")
-                filters[f] = ['exact'] if not is_date_or_time else ['lt', 'gt', 'lte', 'gte', 'exact']
+                filters[f] = (
+                    ["exact"] if not is_date_or_time else ["lt", "gt", "lte", "gte", "exact"]
+                )
             return filters
 
         fields = generate_filters(fields_to_filter)
         filter_overrides = {
             CharField: {
-                'filter_class': filters.CharFilter,
-                'extra': lambda f: {
-                    'lookup_expr': 'unaccent__icontains',
+                "filter_class": filters.CharFilter,
+                "extra": lambda f: {
+                    "lookup_expr": "unaccent__icontains",
                 },
             },
         }
@@ -114,10 +138,12 @@ class BaseFilters(filters.FilterSet):
         start = timezone.datetime(
             year=start_year,
             month=core_settings.month_scholar_year_start,
-            day=core_settings.day_scholar_year_start
+            day=core_settings.day_scholar_year_start,
         )
         end = start + timezone.timedelta(days=355)
-        return queryset.filter(**{self.datetime_field + "__gt": start, self.datetime_field + "__lte": end})
+        return queryset.filter(
+            **{self.datetime_field + "__gt": start, self.datetime_field + "__lte": end}
+        )
 
     def classe_by(self, queryset, field_name, value):
         if not value:
@@ -125,7 +151,7 @@ class BaseFilters(filters.FilterSet):
         if not value[0].isdigit():
             return queryset
 
-        classe = value.split(",") if "," in value else[value]
+        classe = value.split(",") if "," in value else [value]
         query_filter = Q()
         for c in classe:
             current_filter = Q(**{self.student_field + "__classe__year": c[0]})
@@ -143,17 +169,35 @@ class BaseFilters(filters.FilterSet):
         if len(tokens) > 1:
             # First check compound last name.
             people = queryset.filter(
-                Q(**{f"{self.student_field}__last_name__unaccent__istartswith": " ".join(tokens[:2])})
-                | Q(**{f"{self.student_field}__last_name__unaccent__istartswith": " ".join(tokens[-2:])}))
+                Q(
+                    **{
+                        f"{self.student_field}__last_name__unaccent__istartswith": " ".join(
+                            tokens[:2]
+                        )
+                    }
+                )
+                | Q(
+                    **{
+                        f"{self.student_field}__last_name__unaccent__istartswith": " ".join(
+                            tokens[-2:]
+                        )
+                    }
+                )
+            )
             if len(people) == 0:
                 people = queryset.filter(
-                    Q(**{
-                        f"{self.student_field}__first_name__unaccent__iexact": tokens[0],
-                        f"{self.student_field}__last_name__unaccent__istartswith": tokens[1]
-                    }) | Q(**{
-                        f"{self.student_field}__first_name__unaccent__istartswith": tokens[1],
-                        f"{self.student_field}__last_name__unaccent__iexact": tokens[0]
-                    })
+                    Q(
+                        **{
+                            f"{self.student_field}__first_name__unaccent__iexact": tokens[0],
+                            f"{self.student_field}__last_name__unaccent__istartswith": tokens[1],
+                        }
+                    )
+                    | Q(
+                        **{
+                            f"{self.student_field}__first_name__unaccent__istartswith": tokens[1],
+                            f"{self.student_field}__last_name__unaccent__iexact": tokens[0],
+                        }
+                    )
                 )
 
         if len(people) == 0:
@@ -170,6 +214,7 @@ class PageNumberSizePagination(PageNumberPagination):
     Offer a query parameter (page_size) to fix page size for pagination.
     Default is still 20 items.
     """
+
     page_size_query_param = "page_size"
     max_page_size = 5000
 
@@ -178,11 +223,15 @@ class LargePageSizePagination(PageNumberPagination):
     """
     Pagination with a default page size of 500 items and a query parameter (page_size).
     """
+
     page_size = 500
 
 
 class BaseModelViewSet(ModelViewSet):
-    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    )
     permission_classes = (DjangoModelPermissions,)
     pagination_class = PageNumberSizePagination
     user_field = None
@@ -202,29 +251,38 @@ class BaseModelViewSet(ModelViewSet):
                         list(map(lambda t: t.name, teachings)),
                         True,
                         self.request.user,
-                        tenure_class_only=self.is_only_tenure()
+                        tenure_class_only=self.is_only_tenure(),
                     ).values_list("id")
                     try:
                         queryset = self.queryset.filter(student__classe__id__in=classes)
                     except FieldError:
                         queryset = self.queryset.filter(matricule__classe__id__in=classes)
-                        warnings.warn("Use *student* as field name instead of matricule", DeprecationWarning)
+                        warnings.warn(
+                            "Use *student* as field name instead of matricule", DeprecationWarning
+                        )
                 elif stud_teach_rel == CoreSettingsModel.BY_COURSES:
                     try:
-                        queryset = self.queryset.filter(student__courses__in=responsible.courses.all())
+                        queryset = self.queryset.filter(
+                            student__courses__in=responsible.courses.all()
+                        )
                     except FieldError:
-                        queryset = self.queryset.filter(matricule__courses__in=responsible.courses.all())
-                        warnings.warn("Use *student* as field name instead of matricule", DeprecationWarning)
+                        queryset = self.queryset.filter(
+                            matricule__courses__in=responsible.courses.all()
+                        )
+                        warnings.warn(
+                            "Use *student* as field name instead of matricule", DeprecationWarning
+                        )
                 elif stud_teach_rel == CoreSettingsModel.BY_CLASSES_COURSES:
                     teachings = responsible.teaching.all()
                     classes = get_classes(
                         list(map(lambda t: t.name, teachings)),
                         True,
                         self.request.user,
-                        tenure_class_only=self.is_only_tenure()
+                        tenure_class_only=self.is_only_tenure(),
                     ).values_list("id")
                     queryset = self.queryset.filter(
-                        Q(matricule__classe__id__in=classes) | Q(matricule__courses__in=responsible.courses.all())
+                        Q(matricule__classe__id__in=classes)
+                        | Q(matricule__courses__in=responsible.courses.all())
                     )
             except ObjectDoesNotExist:
                 return self.queryset.none()
@@ -233,14 +291,17 @@ class BaseModelViewSet(ModelViewSet):
     def perform_create(self, serializer):
         serializer.save()
         if self.username_field:
-            serializer.save(**{
-                self.username_field: self.request.user.username,
+            serializer.save(
+                **{
+                    self.username_field: self.request.user.username,
                 }
             )
         if self.user_field:
-            serializer.save(**{
-                self.user_field: self.request.user,
-            })
+            serializer.save(
+                **{
+                    self.user_field: self.request.user,
+                }
+            )
 
     def get_group_all_access(self):
         return Group.objects.none()
@@ -249,15 +310,13 @@ class BaseModelViewSet(ModelViewSet):
         return True
 
 
-class MembersView(LoginRequiredMixin,
-                  PermissionRequiredMixin,
-                  TemplateView):
+class MembersView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = "core/members.html"
-    permission_required = ('core.add_responsiblemodel')
+    permission_required = "core.add_responsiblemodel"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu'] = json.dumps(get_menu(self.request))
+        context["menu"] = json.dumps(get_menu(self.request))
         return context
 
 
@@ -276,7 +335,7 @@ class BaseUploadFileView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
 
     def put(self, request, format=None):
-        file_obj = request.FILES['file']
+        file_obj = request.FILES["file"]
         attachment = self.file_model(attachment=file_obj)
         attachment.save()
         serializer = self.file_serializer(attachment)
@@ -296,20 +355,25 @@ class BaseUploadFileView(APIView):
 
 
 class ProfilView(LoginRequiredMixin, TemplateView):
-    template_name = 'core/profil.html'
+    template_name = "core/profil.html"
 
 
 class MembersAPI(ModelViewSet):
     queryset = ResponsibleModel.objects.filter(is_teacher=False, is_educator=False)
     serializer_class = ResponsibleSensitiveSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
 
     def get_queryset(self):
-        person_type = self.request.GET.get('person_type', None)
-        if person_type == 'secretary':
+        person_type = self.request.GET.get("person_type", None)
+        if person_type == "secretary":
             return ResponsibleModel.objects.filter(is_secretary=True)
-        elif person_type == 'others':
-            return ResponsibleModel.objects.filter(is_teacher=False, is_educator=False, is_secretary=False)
+        elif person_type == "others":
+            return ResponsibleModel.objects.filter(
+                is_teacher=False, is_educator=False, is_secretary=False
+            )
         else:
             return ResponsibleModel.objects.filter(is_teacher=False, is_educator=False)
 
@@ -341,25 +405,37 @@ class TeachingViewSet(ModelViewSet):
 class ClasseViewSet(ModelViewSet):
     queryset = ClasseModel.objects.all()
     serializer_class = ClasseSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
 
 
 class CourseViewSet(ModelViewSet):
     queryset = CourseModel.objects.all()
     serializer_class = CourseSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
 
 
 class GivenCourseViewSet(ModelViewSet):
     queryset = GivenCourseModel.objects.all()
     serializer_class = GivenCourseFlatSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
 
 
 class GivenCourseInfoViewSet(ReadOnlyModelViewSet):
     queryset = GivenCourseModel.objects.all()
     serializer_class = GivenCourseSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
     filter_backends = [filters.DjangoFilterBackend]
     filterset_fields = ["course"]
 
@@ -367,13 +443,19 @@ class GivenCourseInfoViewSet(ReadOnlyModelViewSet):
 class ResponsibleViewSet(ModelViewSet):
     queryset = ResponsibleModel.objects.all()
     serializer_class = ResponsibleRemoteSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
 
 
 class StudentViewSet(ModelViewSet):
     queryset = StudentModel.objects.all()
     serializer_class = StudentWriteSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
 
 
 class EmailViewSet(ReadOnlyModelViewSet):
@@ -386,13 +468,19 @@ class EmailViewSet(ReadOnlyModelViewSet):
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
 
 
 class GroupViewSet(ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
     pagination_class = LargePageSizePagination
 
 
@@ -424,11 +512,7 @@ class CourseScheduleFilter(filters.FilterSet):
         try:
             classe = ClasseModel.objects.get(id=value)
             related_students = StudentModel.objects.filter(classe=classe)
-            given_courses = [
-                gc.id
-                for student in related_students
-                for gc in student.courses.all()
-            ]
+            given_courses = [gc.id for student in related_students for gc in student.courses.all()]
             return queryset.filter(given_course__id__in=given_courses)
         except ObjectDoesNotExist:
             return queryset.none()
@@ -439,7 +523,10 @@ class CourseScheduleViewSet(ModelViewSet):
     serializer_class = CourseScheduleSerializer
     permission_classes = (IsAuthenticated,)
     pagination_class = LargePageSizePagination
-    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    )
     filter_class = CourseScheduleFilter
 
 
@@ -454,25 +541,29 @@ class BirthdayAPI(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, format=None):
-        people = self.request.GET.get('people', 'student')
+        people = self.request.GET.get("people", "student")
 
         birthday = []
         today = timezone.now()
-        if people == 'student':
-            students = StudentModel.objects.filter(additionalstudentinfo__birth_date__month=today.month,
-                                                   additionalstudentinfo__birth_date__day=today.day,
-                                                   classe__isnull=False).order_by('teaching')
-            students = students.values_list('last_name', 'first_name', 'classe__year', 'classe__letter')
-            birthday += [{'name': "%s %s %s%s" % (s[0], s[1], s[2], s[3].upper())} for s in students]
+        if people == "student":
+            students = StudentModel.objects.filter(
+                additionalstudentinfo__birth_date__month=today.month,
+                additionalstudentinfo__birth_date__day=today.day,
+                classe__isnull=False,
+            ).order_by("teaching")
+            students = students.values_list(
+                "last_name", "first_name", "classe__year", "classe__letter"
+            )
+            birthday += [
+                {"name": "%s %s %s%s" % (s[0], s[1], s[2], s[3].upper())} for s in students
+            ]
         elif people == "responsible":
             responsibles = ResponsibleModel.objects.filter(
-                birth_date__month=today.month,
-                birth_date__day=today.day,
-                inactive_from__isnull=True
+                birth_date__month=today.month, birth_date__day=today.day, inactive_from__isnull=True
             )
             responsibles = responsibles.values_list("last_name", "first_name")
-            birthday += [{'name': "%s %s" % (s[0], s[1])} for s in responsibles]
-        return Response({'results': birthday})
+            birthday += [{"name": "%s %s" % (s[0], s[1])} for s in responsibles]
+        return Response({"results": birthday})
 
 
 class ScholarCalendarAPI(APIView):
@@ -493,27 +584,32 @@ class ScholarCalendarAPI(APIView):
             6: "Di",
         }
         dates = [
-            d[:3] + (day_of_week[d[3]], "") if d[2] >= start_day else d[:3] + (day_of_week[d[3]], "×")
-            for d in cal.itermonthdays4(start_year, start_month) if d[1] == start_month
+            d[:3] + (day_of_week[d[3]], "")
+            if d[2] >= start_day
+            else d[:3] + (day_of_week[d[3]], "×")
+            for d in cal.itermonthdays4(start_year, start_month)
+            if d[1] == start_month
         ]
         for m in range(start_month + 1, 13):
             dates += [
                 d[:3] + (day_of_week[d[3]], "")
-                for d in cal.itermonthdays4(start_year, m) if d[1] == m
+                for d in cal.itermonthdays4(start_year, m)
+                if d[1] == m
             ]
         for m in range(1, start_month):
             dates += [
                 d[:3] + (day_of_week[d[3]], "")
-                for d in cal.itermonthdays4(start_year + 1, m) if d[1] == m
+                for d in cal.itermonthdays4(start_year + 1, m)
+                if d[1] == m
             ]
         dates += [
-            d[:3] + (day_of_week[d[3]], "") if d[2] < start_day else d[:3] + (day_of_week[d[3]], "×")
-            for d in cal.itermonthdays4(start_year + 1, start_month) if d[1] == start_month
+            d[:3] + (day_of_week[d[3]], "")
+            if d[2] < start_day
+            else d[:3] + (day_of_week[d[3]], "×")
+            for d in cal.itermonthdays4(start_year + 1, start_month)
+            if d[1] == start_month
         ]
-        dates = [
-            list(group)
-            for key, group in itertools.groupby(dates, lambda d: d[1])
-        ]
+        dates = [list(group) for key, group in itertools.groupby(dates, lambda d: d[1])]
         return Response(dates)
 
 
@@ -523,7 +619,7 @@ class CalendarAPI(APIView):
     @staticmethod
     def _today(event):
         now = timezone.now()
-        if type(event['DTSTART'].dt) == date:
+        if type(event["DTSTART"].dt) == date:
             return now.date()
         return now
 
@@ -544,15 +640,23 @@ class CalendarAPI(APIView):
         events = []
         for cal_ics in ImportCalendarModel.objects.all():
             cal = Calendar.from_ical(requests.get(cal_ics.url).text)
-            #for e in cal.walk('VEVENT'):
+            # for e in cal.walk('VEVENT'):
             #    if e['DTSTART'].dt > self._today(e) or e['DTSTART'].dt <= self._today(e) < e['DTEND'].dt:
             #        print(e['DTEND'].dt)
-            evts = [{"calendar": cal_ics.name,"name": str(event['SUMMARY']), "begin": self._format_date(event['DTSTART'].dt),
-                     "end": self._format_date(event['DTEND'].dt, True)} for event in cal.walk('VEVENT')
-                    if event['DTSTART'].dt > self._today(event) or event['DTSTART'].dt <= self._today(event) < event['DTEND'].dt]
+            evts = [
+                {
+                    "calendar": cal_ics.name,
+                    "name": str(event["SUMMARY"]),
+                    "begin": self._format_date(event["DTSTART"].dt),
+                    "end": self._format_date(event["DTEND"].dt, True),
+                }
+                for event in cal.walk("VEVENT")
+                if event["DTSTART"].dt > self._today(event)
+                or event["DTSTART"].dt <= self._today(event) < event["DTEND"].dt
+            ]
             events += evts
         events = sorted(events, key=lambda e: (e["begin"][6:], e["begin"][3:5], e["begin"][:2]))
-        return Response({'results': events})
+        return Response({"results": events})
 
 
 class PingAPI(APIView):
@@ -561,10 +665,10 @@ class PingAPI(APIView):
 
 
 class BinaryFileRenderer(BaseRenderer):
-    media_type = 'application/octet-stream'
+    media_type = "application/octet-stream"
     format = None
     charset = None
-    render_style = 'binary'
+    render_style = "binary"
 
     def render(self, data, media_type=None, renderer_context=None):
         return data

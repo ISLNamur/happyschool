@@ -21,6 +21,7 @@ from django.contrib import admin
 
 from .models import LatenessModel, LatenessSettingsModel, SanctionTriggerModel
 
+
 class TriggerAdmin(admin.ModelAdmin):
     filter_horizontal = ("classe",)
 

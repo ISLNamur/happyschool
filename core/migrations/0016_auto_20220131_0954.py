@@ -4,29 +4,28 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0015_responsiblemodel_is_sync'),
+        ("core", "0015_responsiblemodel_is_sync"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='courseschedulemodel',
-            name='course_name',
-            field=models.CharField(default='', max_length=10),
+            model_name="courseschedulemodel",
+            name="course_name",
+            field=models.CharField(default="", max_length=10),
         ),
         migrations.AddField(
-            model_name='courseschedulemodel',
-            name='is_sync',
+            model_name="courseschedulemodel",
+            name="is_sync",
             field=models.BooleanField(default=True),
         ),
         migrations.RemoveField(
-            model_name='courseschedulemodel',
-            name='given_course',
+            model_name="courseschedulemodel",
+            name="given_course",
         ),
         migrations.AddField(
-            model_name='courseschedulemodel',
-            name='given_course',
-            field=models.ManyToManyField(blank=True, default=None, to='core.GivenCourseModel'),
+            model_name="courseschedulemodel",
+            name="given_course",
+            field=models.ManyToManyField(blank=True, default=None, to="core.GivenCourseModel"),
         ),
     ]

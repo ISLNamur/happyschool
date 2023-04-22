@@ -19,7 +19,18 @@
 
 import json
 
-from django.db.models import IntegerField, Sum, Case, When, Q, Subquery, F, OuterRef, ObjectDoesNotExist, Count
+from django.db.models import (
+    IntegerField,
+    Sum,
+    Case,
+    When,
+    Q,
+    Subquery,
+    F,
+    OuterRef,
+    ObjectDoesNotExist,
+    Count,
+)
 from django.db.models.functions import Coalesce
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
@@ -40,20 +51,30 @@ from core.people import get_classes
 from core.models import ResponsibleModel, StudentModel
 from core.views import BaseFilters, PageNumberSizePagination, get_app_settings, get_core_settings
 
-from .models import StudentAbsenceModel, StudentAbsenceSettingsModel, JustificationModel, ClasseNoteModel,\
-    PeriodModel
-from .serializers import StudentAbsenceSettingsSerializer, StudentAbsenceSerializer, JustificationSerializer,\
-    ClasseNoteSerializer, PeriodSerializer
+from .models import (
+    StudentAbsenceModel,
+    StudentAbsenceSettingsModel,
+    JustificationModel,
+    ClasseNoteModel,
+    PeriodModel,
+)
+from .serializers import (
+    StudentAbsenceSettingsSerializer,
+    StudentAbsenceSerializer,
+    JustificationSerializer,
+    ClasseNoteSerializer,
+    PeriodSerializer,
+)
 
 
 def get_menu_entry(active_app: str, request) -> dict:
-    if not request.user.has_perm('student_absence.view_studentabsencemodel'):
+    if not request.user.has_perm("student_absence.view_studentabsencemodel"):
         return {}
     return {
-            "app": "student_absence",
-            "display": "Abs. Élèves",
-            "url": "/student_absence",
-            "active": active_app == "student_absence"
+        "app": "student_absence",
+        "display": "Abs. Élèves",
+        "url": "/student_absence",
+        "active": active_app == "student_absence",
     }
 
 
@@ -61,34 +82,32 @@ def get_settings():
     return get_app_settings(StudentAbsenceSettingsModel)
 
 
-class StudentAbsenceView(LoginRequiredMixin,
-                         PermissionRequiredMixin,
-                         TemplateView):
+class StudentAbsenceView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = "student_absence/student_absence.html"
-    permission_required = ('student_absence.view_studentabsencemodel')
+    permission_required = "student_absence.view_studentabsencemodel"
     filters = [
-        {'value': 'student__display', 'text': 'Nom'},
-        {'value': 'student__matricule', 'text': 'Matricule'},
-        {'value': 'classe', 'text': 'Classe'},
-        {'value': 'date_absence', 'text': 'Date'},
-        {'value': 'period__name', 'text': "Période"},
-        {'value': 'activate_is_absent', 'text': 'Absences uniquement'},
-        {'value': 'activate_last_absence', 'text': 'Mes absences du jour'},
+        {"value": "student__display", "text": "Nom"},
+        {"value": "student__matricule", "text": "Matricule"},
+        {"value": "classe", "text": "Classe"},
+        {"value": "date_absence", "text": "Date"},
+        {"value": "period__name", "text": "Période"},
+        {"value": "activate_is_absent", "text": "Absences uniquement"},
+        {"value": "activate_last_absence", "text": "Mes absences du jour"},
     ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['menu'] = json.dumps(get_menu(self.request, "student_absence"))
-        context['filters'] = json.dumps(self.filters)
-        context['settings'] = json.dumps((StudentAbsenceSettingsSerializer(get_settings()).data))
+        context["menu"] = json.dumps(get_menu(self.request, "student_absence"))
+        context["filters"] = json.dumps(self.filters)
+        context["settings"] = json.dumps((StudentAbsenceSettingsSerializer(get_settings()).data))
         context["proeco"] = json.dumps("proeco" in settings.INSTALLED_APPS)
 
         return context
 
 
 class StudentAbsenceFilter(BaseFilters):
-    student__display = filters.CharFilter(method='people_name_by')
-    classe = filters.CharFilter(method='classe_by')
+    student__display = filters.CharFilter(method="people_name_by")
+    classe = filters.CharFilter(method="classe_by")
     activate_is_absent = filters.BooleanFilter(method="activate_is_absent_by")
     activate_last_absence = filters.BooleanFilter(method="activate_last_absence_by")
     activate_today_absence = filters.BooleanFilter(method="activate_today_absence_by")
@@ -96,15 +115,17 @@ class StudentAbsenceFilter(BaseFilters):
 
     class Meta:
         fields_to_filter = [
-            'student', 'date_absence',
-            'student__matricule', 'is_absent',
+            "student",
+            "date_absence",
+            "student__matricule",
+            "is_absent",
             "student__classe",
             "period__name",
         ]
         model = StudentAbsenceModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
-        fields["period__start"] = ['lt', 'gt', 'lte', 'gte', 'exact']
-        fields["period__end"] = ['lt', 'gt', 'lte', 'gte', 'exact']
+        fields["period__start"] = ["lt", "gt", "lte", "gte", "exact"]
+        fields["period__end"] = ["lt", "gt", "lte", "gte", "exact"]
         filter_overrides = BaseFilters.Meta.filter_overrides
 
     def activate_is_absent_by(self, queryset, name, value):
@@ -129,25 +150,38 @@ class StudentAbsenceFilter(BaseFilters):
 class StudentAbsenceViewSet(ModelViewSet):
     queryset = StudentAbsenceModel.objects.filter(student__isnull=False)
     serializer_class = StudentAbsenceSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
-    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    )
     filter_class = StudentAbsenceFilter
     pagination_class = PageNumberSizePagination
     ordering_fields = [
-        'date_absence', 'datetime_update', 'datetime_creation',
-        "student__classe__year", "student__classe__letter", "student__last_name", "student__first_name",
+        "date_absence",
+        "datetime_update",
+        "datetime_creation",
+        "student__classe__year",
+        "student__classe__letter",
+        "student__last_name",
+        "student__first_name",
         "period__start",
     ]
     cursor = None
 
     def get_queryset(self):
         filtering = get_settings().filter_students_for_educ
-        force_all_access = self.request.query_params.get('forceAllAccess', "false")
+        force_all_access = self.request.query_params.get("forceAllAccess", "false")
         force_all_access = json.loads(force_all_access) if force_all_access else False
         if filtering == "none" or force_all_access:
             return self.queryset
 
-        classes = get_classes(check_access=True, user=self.request.user, educ_by_years=filtering == "year")
+        classes = get_classes(
+            check_access=True, user=self.request.user, educ_by_years=filtering == "year"
+        )
         return self.queryset.filter(student__classe__in=classes)
 
     def create(self, request, *args, **kwargs):
@@ -158,11 +192,12 @@ class StudentAbsenceViewSet(ModelViewSet):
             from libreschoolfdb import absences
 
             first_absence = request.data[0] if isinstance(request.data, list) else request.data
-            teaching_name = StudentModel.objects.get(matricule=first_absence.get("student_id")).teaching.name
+            teaching_name = StudentModel.objects.get(
+                matricule=first_absence.get("student_id")
+            ).teaching.name
 
             server = [
-                s['server'] for s in settings.SYNC_FDB_SERVER
-                if s['teaching_name'] == teaching_name
+                s["server"] for s in settings.SYNC_FDB_SERVER if s["teaching_name"] == teaching_name
             ]
             if len(server) == 0:
                 raise
@@ -197,12 +232,12 @@ class StudentAbsenceViewSet(ModelViewSet):
             period = [i for i, p in enumerate(periods) if p.id == data.get("period", None).id][0]
 
             return writer.set_student_absence(
-                matricule=data.get('student').matricule,
-                day=data.get('date_absence'),
+                matricule=data.get("student").matricule,
+                day=data.get("date_absence"),
                 period=period,
                 is_absent=data.get("is_absent", False),
                 cur=self.cursor,
-                commit=False
+                commit=False,
             )
         return False
 
@@ -212,9 +247,10 @@ if "proeco" in settings.INSTALLED_APPS:
 
     class ExportStudentAbsenceAPI(ExportStudentSelectionAPI):
         """Export in a file the current list view as a proeco selection."""
+
         def _get_student_list(self, request, kwargs):
-            view_set = StudentAbsenceViewSet.as_view({'get': 'list'})
-            absences = [a["student_id"] for a in view_set(request._request).data['results']]
+            view_set = StudentAbsenceViewSet.as_view({"get": "list"})
+            absences = [a["student_id"] for a in view_set(request._request).data["results"]]
             return absences
 
         def _format_file_name(self, request, **kwargs):
@@ -229,13 +265,21 @@ class AbsenceCountAPI(APIView):
         classes = get_classes(list(map(lambda t: t.name, teachings)), True, self.request.user)
         students = StudentModel.objects.filter(classe__in=classes)
         limit = self._get_scholar_year_limit()
-        absence_count = StudentAbsenceModel.objects.filter(
-            student__in=students, date_absence__gte=limit[0], date_absence__lt=limit[1]
-        ).annotate(Count("student")).order_by("-student__count")
+        absence_count = (
+            StudentAbsenceModel.objects.filter(
+                student__in=students, date_absence__gte=limit[0], date_absence__lt=limit[1]
+            )
+            .annotate(Count("student"))
+            .order_by("-student__count")
+        )
 
-        justif = JustificationModel.objects.filter(student__in=students).values('student').annotate(
-            total=Sum('half_days')
-        ).values('total').order_by("-total")
+        justif = (
+            JustificationModel.objects.filter(student__in=students)
+            .values("student")
+            .annotate(total=Sum("half_days"))
+            .values("total")
+            .order_by("-total")
+        )
 
         # half_days = students.annotate(half_day_miss=Subquery(absences), half_day_just=Coalesce(Subquery(justif), 0))\
         #     .exclude(half_day_miss__isnull=True).annotate(half_day_diff=F('half_day_miss') - F('half_day_just'))\
@@ -250,8 +294,16 @@ class AbsenceCountAPI(APIView):
         start_year = get_scholar_year()
         end_year = start_year + 1
         core_settings = get_core_settings()
-        start = timezone.datetime(year=start_year, month=core_settings.month_scholar_year_start, day=core_settings.day_scholar_year_start)
-        end = timezone.datetime(year=end_year, month=core_settings.month_scholar_year_start, day=core_settings.day_scholar_year_start)
+        start = timezone.datetime(
+            year=start_year,
+            month=core_settings.month_scholar_year_start,
+            day=core_settings.day_scholar_year_start,
+        )
+        end = timezone.datetime(
+            year=end_year,
+            month=core_settings.month_scholar_year_start,
+            day=core_settings.day_scholar_year_start,
+        )
         return (start, end)
 
 
@@ -263,17 +315,20 @@ class JustificationViewSet(ReadOnlyModelViewSet):
 class ClasseNoteViewSet(ModelViewSet):
     queryset = ClasseNoteModel.objects.all()
     serializer_class = ClasseNoteSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('classe',)
+    filterset_fields = ("classe",)
 
 
 class PeriodFilter(BaseFilters):
     class Meta:
         model = PeriodModel
         fields = {
-            "start": ['lt', 'gt', 'lte', 'gte', 'exact'],
-            "end": ['lt', 'gt', 'lte', 'gte', 'exact'],
+            "start": ["lt", "gt", "lte", "gte", "exact"],
+            "end": ["lt", "gt", "lte", "gte", "exact"],
         }
         filter_overrides = BaseFilters.Meta.filter_overrides
 

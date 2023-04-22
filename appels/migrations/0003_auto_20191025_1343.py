@@ -40,9 +40,8 @@ def migrate_access_permission(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('appels', '0002_auto_20190910_1415'),
+        ("appels", "0002_auto_20190910_1415"),
     ]
 
     operations = [

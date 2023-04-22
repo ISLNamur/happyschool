@@ -24,19 +24,19 @@ from django.contrib.auth.models import User
 
 
 class AccountTests(APITestCase):
-    fixtures = ['test_core.json']
+    fixtures = ["test_core.json"]
 
     def setUp(self):
         # Get a direction user.
-        self.dir_user = User.objects.get(username='director')
+        self.dir_user = User.objects.get(username="director")
         # Get a student user.
-        self.student_user = User.objects.get(username='student')
+        self.student_user = User.objects.get(username="student")
         # Get a teacher user.
-        self.teacher_user = User.objects.get(username='teacher')
+        self.teacher_user = User.objects.get(username="teacher")
         # Get an educator user.
-        self.educator_user = User.objects.get(username='educator')
+        self.educator_user = User.objects.get(username="educator")
         # Get a coordonator user.
-        self.coordonator_user = User.objects.get(username='coordonator')
+        self.coordonator_user = User.objects.get(username="coordonator")
 
     def test_search_people(self):
         """
@@ -45,13 +45,13 @@ class AccountTests(APITestCase):
         url = "/annuaire/api/people/"
         data = {
             "query": "t",
-            }
-        response = self.client.post(url, data, format='json')
+        }
+        response = self.client.post(url, data, format="json")
         # Without authentification, it should fail wih unauthorized.
         self.assertEqual(response.status_code, 403)
 
         self.client.force_authenticate(user=self.dir_user)
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, data, format="json")
         # It should respond successfully.
         self.assertEqual(response.status_code, 200)
         # It should have several responses.

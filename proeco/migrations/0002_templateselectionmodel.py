@@ -4,17 +4,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('proeco', '0001_initial'),
+        ("proeco", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='TemplateSelectionModel',
+            name="TemplateSelectionModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('template', models.TextField()),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("template", models.TextField()),
             ],
         ),
     ]

@@ -24,10 +24,10 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 urlpatterns = [
-    path('', views.PassageView.as_view(), name="infirmerie"),
+    path("", views.PassageView.as_view(), name="infirmerie"),
 ]
 
 router = DefaultRouter()
-router.register(r'api/passage', views.PassageViewSet)
+router.register(r"api/passage", views.PassageViewSet)
 
 urlpatterns += router.urls

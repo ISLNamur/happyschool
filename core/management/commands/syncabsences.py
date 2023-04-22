@@ -29,7 +29,7 @@ from student_absence.models import StudentAbsenceModel, JustificationModel
 
 
 class Command(BaseCommand):
-    help = 'Import a ProEco database into HappySchool.'
+    help = "Import a ProEco database into HappySchool."
 
     def handle(self, *args, **options):
         from libreschoolfdb import reader
@@ -47,8 +47,13 @@ class Command(BaseCommand):
                 continue
 
             # ProEco student list.
-            proeco_students = reader.get_students(year=current_year, fdb_server=proeco["server"],
-                                                  teaching=proeco["teaching_type"], med_info=False, parents_info=False)
+            proeco_students = reader.get_students(
+                year=current_year,
+                fdb_server=proeco["server"],
+                teaching=proeco["teaching_type"],
+                med_info=False,
+                parents_info=False,
+            )
             print("%s students found" % len(proeco_students))
             processed = 0
             for matricule, s in proeco_students.items():
@@ -62,30 +67,43 @@ class Command(BaseCommand):
                     continue
 
                 # Import absences.
-                absences = s['absences'] if 'absences' in s else None
+                absences = s["absences"] if "absences" in s else None
                 if not absences:
                     continue
                 absences_processed = set()
                 for a in absences:
                     try:
-                        absence = StudentAbsenceModel.objects.get(student=student, date_absence=a.date)
+                        absence = StudentAbsenceModel.objects.get(
+                            student=student, date_absence=a.date
+                        )
                         absence.morning = a.morning
                         absence.afternoon = a.afternoon
                         absence.save()
                     except:
-                        absence = StudentAbsenceModel.objects.create(student=student, date_absence=a.date,
-                                                                     morning=a.morning, afternoon=a.afternoon)
+                        absence = StudentAbsenceModel.objects.create(
+                            student=student,
+                            date_absence=a.date,
+                            morning=a.morning,
+                            afternoon=a.afternoon,
+                        )
                     absences_processed.add(absence.pk)
 
                 # Remove deleted absences.
-                StudentAbsenceModel.objects.filter(student=student).exclude(pk__in=absences_processed).delete()
+                StudentAbsenceModel.objects.filter(student=student).exclude(
+                    pk__in=absences_processed
+                ).delete()
 
                 # Import justifications.
-                justifications = s['absences_justifications']
+                justifications = s["absences_justifications"]
                 # Clean first.
                 JustificationModel.objects.filter(student=student).delete()
                 for j in justifications:
-                    JustificationModel.objects.create(student=student,
-                                                      date_just_start=j['start'][0], date_just_end=j['end'][0],
-                                                      half_day_start=j['start'][1], half_day_end=j['end'][1],
-                                                      short_name=j['code'], half_days=j['half_days'])
+                    JustificationModel.objects.create(
+                        student=student,
+                        date_just_start=j["start"][0],
+                        date_just_end=j["end"][0],
+                        half_day_start=j["start"][1],
+                        half_day_end=j["end"][1],
+                        short_name=j["code"],
+                        half_days=j["half_days"],
+                    )

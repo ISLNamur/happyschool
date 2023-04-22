@@ -22,15 +22,15 @@ from rest_framework.routers import DefaultRouter
 
 from . import views
 
-app_name = 'absence_prof'
+app_name = "absence_prof"
 
 urlpatterns = [
-    path('list/', views.ListPDF.as_view()),
-    path('', views.AbsenceProfView.as_view(), name="index"),
+    path("list/", views.ListPDF.as_view()),
+    path("", views.AbsenceProfView.as_view(), name="index"),
 ]
 
 router = DefaultRouter()
-router.register(r'api/absence', views.AbsenceProfViewSet)
-router.register(r'api/motif', views.MotifAbsenceViewSet)
+router.register(r"api/absence", views.AbsenceProfViewSet)
+router.register(r"api/motif", views.MotifAbsenceViewSet)
 
 urlpatterns += router.urls

@@ -6,79 +6,145 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('core', '0001_initial'),
-        ('auth', '0009_alter_user_last_name_max_length'),
+        ("core", "0001_initial"),
+        ("auth", "0009_alter_user_last_name_max_length"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Appel',
+            name="Appel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('is_student', models.BooleanField(default=True)),
-                ('user', models.CharField(default='', max_length=20)),
-                ('objet', models.CharField(max_length=300)),
-                ('motif', models.CharField(max_length=300)),
-                ('datetime_motif_start', models.DateTimeField(default=None, null=True, verbose_name="Début date d'appel")),
-                ('date_motif_start', models.DateField(null=True)),
-                ('time_motif_start', models.TimeField(default=None, null=True, verbose_name="Début heure d'appel")),
-                ('datetime_motif_end', models.DateTimeField(default=None, null=True, verbose_name="Fin date d'appel")),
-                ('date_motif_end', models.DateField(null=True)),
-                ('time_motif_end', models.TimeField(null=True)),
-                ('datetime_appel', models.DateTimeField(verbose_name="Date d'appel")),
-                ('commentaire', models.CharField(blank=True, max_length=2000)),
-                ('traitement', models.CharField(blank=True, max_length=2000, null=True)),
-                ('datetime_traitement', models.DateTimeField(blank=True, null=True, verbose_name='Date traitement')),
-                ('is_traiter', models.BooleanField()),
-                ('custom_email', models.EmailField(blank=True, default=None, max_length=254, null=True)),
-                ('datetime_encodage', models.DateTimeField(default=django.utils.timezone.now, verbose_name="Date d'encodage")),
-                ('emails', models.ManyToManyField(blank=True, to='core.EmailModel')),
-                ('matricule', models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, to='core.StudentModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("is_student", models.BooleanField(default=True)),
+                ("user", models.CharField(default="", max_length=20)),
+                ("objet", models.CharField(max_length=300)),
+                ("motif", models.CharField(max_length=300)),
+                (
+                    "datetime_motif_start",
+                    models.DateTimeField(
+                        default=None, null=True, verbose_name="Début date d'appel"
+                    ),
+                ),
+                ("date_motif_start", models.DateField(null=True)),
+                (
+                    "time_motif_start",
+                    models.TimeField(default=None, null=True, verbose_name="Début heure d'appel"),
+                ),
+                (
+                    "datetime_motif_end",
+                    models.DateTimeField(default=None, null=True, verbose_name="Fin date d'appel"),
+                ),
+                ("date_motif_end", models.DateField(null=True)),
+                ("time_motif_end", models.TimeField(null=True)),
+                ("datetime_appel", models.DateTimeField(verbose_name="Date d'appel")),
+                ("commentaire", models.CharField(blank=True, max_length=2000)),
+                ("traitement", models.CharField(blank=True, max_length=2000, null=True)),
+                (
+                    "datetime_traitement",
+                    models.DateTimeField(blank=True, null=True, verbose_name="Date traitement"),
+                ),
+                ("is_traiter", models.BooleanField()),
+                (
+                    "custom_email",
+                    models.EmailField(blank=True, default=None, max_length=254, null=True),
+                ),
+                (
+                    "datetime_encodage",
+                    models.DateTimeField(
+                        default=django.utils.timezone.now, verbose_name="Date d'encodage"
+                    ),
+                ),
+                ("emails", models.ManyToManyField(blank=True, to="core.EmailModel")),
+                (
+                    "matricule",
+                    models.ForeignKey(
+                        blank=True,
+                        default=None,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="core.StudentModel",
+                    ),
+                ),
             ],
             options={
-                'permissions': (('access_appel', 'Can access to appel data'),),
+                "permissions": (("access_appel", "Can access to appel data"),),
             },
         ),
         migrations.CreateModel(
-            name='AppelsSettingsModel',
+            name="AppelsSettingsModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('all_access', models.ManyToManyField(blank=True, default=None, to='auth.Group')),
-                ('teachings', models.ManyToManyField(default=None, to='core.TeachingModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("all_access", models.ManyToManyField(blank=True, default=None, to="auth.Group")),
+                ("teachings", models.ManyToManyField(default=None, to="core.TeachingModel")),
             ],
         ),
         migrations.CreateModel(
-            name='MotiveModel',
+            name="MotiveModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('display', models.CharField(max_length=200)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("display", models.CharField(max_length=200)),
             ],
         ),
         migrations.CreateModel(
-            name='ObjectModel',
+            name="ObjectModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('display', models.CharField(max_length=200)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("display", models.CharField(max_length=200)),
             ],
         ),
         migrations.AddField(
-            model_name='appel',
-            name='motive',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='appels.MotiveModel'),
+            model_name="appel",
+            name="motive",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="appels.MotiveModel",
+            ),
         ),
         migrations.AddField(
-            model_name='appel',
-            name='object',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='appels.ObjectModel'),
+            model_name="appel",
+            name="object",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="appels.ObjectModel",
+            ),
         ),
         migrations.AddField(
-            model_name='appel',
-            name='responsible',
-            field=models.ForeignKey(blank=True, default=None, null=True, on_delete=django.db.models.deletion.SET_NULL, to='core.ResponsibleModel'),
+            model_name="appel",
+            name="responsible",
+            field=models.ForeignKey(
+                blank=True,
+                default=None,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="core.ResponsibleModel",
+            ),
         ),
     ]

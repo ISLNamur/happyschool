@@ -30,13 +30,11 @@ class CoreSettingsModel(models.Model):
     RELATIONSHIP_CHOICES = [
         (BY_CLASSES, "by classes"),
         (BY_COURSES, "by courses"),
-        (BY_CLASSES_COURSES, "by courses and by classes")
+        (BY_CLASSES_COURSES, "by courses and by classes"),
     ]
     school_name = models.CharField(max_length=200, help_text="Nom complet de l'école.", default="")
     school_name_short = models.CharField(
-        max_length=10,
-        help_text="Nom court de l'école (abréviation, sigle,…).",
-        default=""
+        max_length=10, help_text="Nom court de l'école (abréviation, sigle,…).", default=""
     )
     school_street = models.CharField(max_length=200, default="", blank=True)
     school_postal_code = models.CharField(max_length=20, default="", blank=True)
@@ -49,14 +47,29 @@ class CoreSettingsModel(models.Model):
         max_length=2,
         choices=RELATIONSHIP_CHOICES,
         default=BY_CLASSES,
-        help_text="Comment la relation entre les professeurs et les élèves est établie."
+        help_text="Comment la relation entre les professeurs et les élèves est établie.",
     )
-    root = models.URLField("Root URL", help_text='URL vers le serveur HappySchool principal',
-                               blank=True, null=True, default=None)
-    remote = models.URLField("Remote URL", help_text='URL vers un serveur HappySchool distant',
-                             blank=True, null=True, default=None)
-    remote_token = models.CharField(max_length=50, help_text="Token généré sur le serveur distant",
-                                    blank=True, null=True, default=None)
+    root = models.URLField(
+        "Root URL",
+        help_text="URL vers le serveur HappySchool principal",
+        blank=True,
+        null=True,
+        default=None,
+    )
+    remote = models.URLField(
+        "Remote URL",
+        help_text="URL vers un serveur HappySchool distant",
+        blank=True,
+        null=True,
+        default=None,
+    )
+    remote_token = models.CharField(
+        max_length=50,
+        help_text="Token généré sur le serveur distant",
+        blank=True,
+        null=True,
+        default=None,
+    )
 
 
 class TeachingModel(models.Model):
@@ -121,6 +134,7 @@ class PeriodCoreModel(models.Model):
         end Ending time of the period.
         name Simple alias of the period.
     """
+
     start = models.TimeField()
     end = models.TimeField()
     name = models.CharField(max_length=200)
@@ -170,30 +184,30 @@ class StudentModel(models.Model):
     last_name = models.CharField(max_length=200)
     matricule = models.PositiveIntegerField(unique=True, primary_key=True)
     teaching = models.ForeignKey(TeachingModel, on_delete=models.CASCADE)
-    classe = models.ForeignKey(ClasseModel, on_delete=models.SET_NULL,
-                               null=True, blank=True)
+    classe = models.ForeignKey(ClasseModel, on_delete=models.SET_NULL, null=True, blank=True)
     courses = models.ManyToManyField(GivenCourseModel, default=None, blank=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.SET_NULL,
-                             null=True, blank=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
+    )
     inactive_from = models.DateTimeField(null=True, blank=True, default=None)
 
     def __str__(self):
         """Return the full name with the last name first."""
         if self.inactive_from:
-            return '%s %s (%s)' % (self.last_name, self.first_name, 'ancien')
+            return "%s %s (%s)" % (self.last_name, self.first_name, "ancien")
         else:
-            return '%s %s %s' % (self.last_name, self.first_name, str(self.classe))
+            return "%s %s %s" % (self.last_name, self.first_name, str(self.classe))
 
     @property
     def fullname(self):
-        return '%s %s' % (self.last_name, self.first_name)
+        return "%s %s" % (self.last_name, self.first_name)
 
     @property
     def fullname_classe(self):
-        return '%s %s %s' % (
-            self.last_name, self.first_name,
-            self.classe.compact_str if self.classe else "Ancien"
+        return "%s %s %s" % (
+            self.last_name,
+            self.first_name,
+            self.classe.compact_str if self.classe else "Ancien",
         )
 
     @property
@@ -258,17 +272,15 @@ class ResponsibleModel(models.Model):
     phone = models.CharField(max_length=200, blank=True)
     classe = models.ManyToManyField(ClasseModel, default=None, blank=True)
     courses = models.ManyToManyField(GivenCourseModel, default=None, blank=True)
-    tenure = models.ManyToManyField(ClasseModel,
-                               blank=True,
-                               default=None,
-                               related_name="tenure_classe")
+    tenure = models.ManyToManyField(
+        ClasseModel, blank=True, default=None, related_name="tenure_classe"
+    )
     is_teacher = models.BooleanField(default=False)
     is_educator = models.BooleanField(default=False)
     is_secretary = models.BooleanField(default=False)
-    user = models.OneToOneField(settings.AUTH_USER_MODEL,
-                                on_delete=models.CASCADE,
-                                null=True,
-                                blank=True)
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True
+    )
     is_sync = models.BooleanField(default=True)
     inactive_from = models.DateTimeField(null=True, blank=True, default=None)
     birth_date = models.DateField("birth date", null=True, blank=True)
@@ -279,7 +291,7 @@ class ResponsibleModel(models.Model):
 
     @property
     def fullname(self):
-        return '%s %s' % (self.last_name, self.first_name)
+        return "%s %s" % (self.last_name, self.first_name)
 
     @property
     def username(self) -> str:
@@ -288,7 +300,7 @@ class ResponsibleModel(models.Model):
     @property
     def password(self) -> str:
         if settings.USE_LDAP_INFO:
-            password = self._get_ldap_properties()[settings.AUTH_LDAP_USER_ATTR_MAP['password']]
+            password = self._get_ldap_properties()[settings.AUTH_LDAP_USER_ATTR_MAP["password"]]
             if type(password) == list:
                 password = password[0]
             return password
@@ -300,11 +312,12 @@ class ResponsibleModel(models.Model):
             connection = get_ldap_connection()
             base_dn = settings.AUTH_LDAP_USER_SEARCH.base_dn
             # Assume username is unique.
-            ldap_username_attr = settings.AUTH_LDAP_USER_ATTR_MAP['username']
-            connection.search(base_dn, "(%s=%s)" % (ldap_username_attr, self.user.username),
-                              attributes='*')
+            ldap_username_attr = settings.AUTH_LDAP_USER_ATTR_MAP["username"]
+            connection.search(
+                base_dn, "(%s=%s)" % (ldap_username_attr, self.user.username), attributes="*"
+            )
             if len(connection.response) > 0:
-                return connection.response[0]['attributes']
+                return connection.response[0]["attributes"]
 
             raise Exception("Teacher not found in the LDAP directory.")
         else:
@@ -345,8 +358,7 @@ class MenuEntryModel(models.Model):
     display = models.CharField(max_length=20, help_text="Nom qui sera affiché dans le menu.")
     link = models.URLField()
     forced_order = models.PositiveSmallIntegerField(
-        null=True, default=None, blank=True,
-        help_text="Forcer une position dans le menu."
+        null=True, default=None, blank=True, help_text="Forcer une position dans le menu."
     )
 
     def __str__(self) -> str:

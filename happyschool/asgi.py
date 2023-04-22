@@ -39,15 +39,14 @@ django.setup()
 
 routes = core.routing.websocket_urlpatterns
 
-if 'schedule_change' in settings.INSTALLED_APPS:
+if "schedule_change" in settings.INSTALLED_APPS:
     from schedule_change.routing import websocket_urlpatterns as patterns
+
     routes += patterns
 
-application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
-    "websocket": AllowedHostsOriginValidator(
-        AuthMiddlewareStack(
-            URLRouter(routes)
-        )
-    )
-})
+application = ProtocolTypeRouter(
+    {
+        "http": get_asgi_application(),
+        "websocket": AllowedHostsOriginValidator(AuthMiddlewareStack(URLRouter(routes))),
+    }
+)

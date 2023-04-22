@@ -52,7 +52,12 @@ from .serializers import LatenessSettingsSerializer, LatenessSerializer
 def get_menu_entry(active_app, request):
     if not request.user.has_perm("lateness.view_latenessmodel"):
         return {}
-    return {"app": "lateness", "display": "Retards", "url": "/lateness/", "active": active_app == "lateness"}
+    return {
+        "app": "lateness",
+        "display": "Retards",
+        "url": "/lateness/",
+        "active": active_app == "lateness",
+    }
 
 
 def get_settings():
@@ -105,7 +110,7 @@ class LatenessFilter(BaseFilters):
     date_lateness__lte = filters.DateFilter(method="date_lateness_by")
     count_lateness = filters.NumberFilter(method="count_lateness_by")
     activate_after_count = filters.BooleanFilter(method="activate_after_count_by")
-    classe = filters.CharFilter(method='classe_by')
+    classe = filters.CharFilter(method="classe_by")
 
     class Meta:
         fields_to_filter = [
@@ -127,15 +132,11 @@ class LatenessFilter(BaseFilters):
         return LatenessModel.objects.filter(student__in=counting, justified=False)
 
     def date_lateness_by(self, queryset, field_name, value):
-        if ("gte" in field_name):
-            return queryset.filter(
-                datetime_creation__gte=value
-            )
+        if "gte" in field_name:
+            return queryset.filter(datetime_creation__gte=value)
         else:
             midnight = datetime.datetime.combine(value, datetime.datetime.max.time())
-            return queryset.filter(
-                datetime_creation__lte=midnight
-            )
+            return queryset.filter(datetime_creation__lte=midnight)
 
     def activate_after_count_by(self, queryset, field_name, value):
         return queryset.filter(datetime_creation__gte=get_settings().date_count_start)
@@ -156,6 +157,7 @@ class LatenessViewSet(BaseModelViewSet):
     username_field = None
 
     if "student_absence_teacher" in settings.INSTALLED_APPS:
+
         def _get_student_absence_teacher(self, instance, time):
             from student_absence_teacher.models import StudentAbsenceTeacherModel, PeriodModel
 
@@ -189,7 +191,7 @@ class LatenessViewSet(BaseModelViewSet):
                     student=instance.student,
                     period=period,
                     status=StudentAbsenceTeacherModel.LATENESS,
-                    user=self.request.user
+                    user=self.request.user,
                 )
             student_lateness.comment = f"Retard à {time.time().strftime('%H:%M')} {'(justifié)' if instance.justified else ''}"
             student_lateness.user = self.request.user
@@ -198,7 +200,9 @@ class LatenessViewSet(BaseModelViewSet):
         def _remove_student_absence_teacher(self, instance):
             from student_absence_teacher.models import StudentAbsenceTeacherModel
 
-            student_lateness = self._get_student_absence_teacher(instance, instance.datetime_update.astimezone().time())
+            student_lateness = self._get_student_absence_teacher(
+                instance, instance.datetime_update.astimezone().time()
+            )
             if student_lateness:
                 student_lateness.delete()
 
@@ -230,7 +234,9 @@ class LatenessViewSet(BaseModelViewSet):
                 printer.set(align="LEFT")
                 absence_dt = lateness.datetime_creation.astimezone(timezone.get_default_timezone())
 
-                count_or_justified = "Retard justifié" if lateness.justified else "Nombre de retards: "
+                count_or_justified = (
+                    "Retard justifié" if lateness.justified else "Nombre de retards: "
+                )
                 if not lateness.justified:
                     count_or_justified += "%i" % lateness_count
 
@@ -253,23 +259,23 @@ class LatenessViewSet(BaseModelViewSet):
 
         now = timezone.localtime()
         # Trigger
-        for trigger in SanctionTriggerModel.objects.filter(
-            teaching=lateness.student.teaching
-        ).filter(
-            Q(year__year=lateness.student.classe.year)
-            | Q(classe=lateness.student.classe)
-        ).filter(
-            Q(
-                time_lateness_start__isnull=False,
-                time_lateness_stop__isnull=False,
-                time_lateness_start__lte=now,
-                time_lateness_stop__gt=now
+        for trigger in (
+            SanctionTriggerModel.objects.filter(teaching=lateness.student.teaching)
+            .filter(Q(year__year=lateness.student.classe.year) | Q(classe=lateness.student.classe))
+            .filter(
+                Q(
+                    time_lateness_start__isnull=False,
+                    time_lateness_stop__isnull=False,
+                    time_lateness_start__lte=now,
+                    time_lateness_stop__gt=now,
+                )
+                | Q(
+                    time_lateness_start__isnull=True,
+                    time_lateness_stop__isnull=True,
+                )
             )
-            | Q(
-                time_lateness_start__isnull=True,
-                time_lateness_stop__isnull=True,
-            )
-        ).distinct():
+            .distinct()
+        ):
             count_first = trigger.lateness_count_trigger_first
             count_trigger = trigger.lateness_count_trigger
             if lateness_count < count_first or (
@@ -288,7 +294,9 @@ class LatenessViewSet(BaseModelViewSet):
             # next_week_day == 7 is the same day
             if trigger.next_week_day < 7:
                 day_shift = 6 + trigger.next_week_day
-                day = today + datetime.timedelta(days=(day_shift - today.isoweekday()) % (6 + trigger.delay) + 1)
+                day = today + datetime.timedelta(
+                    days=(day_shift - today.isoweekday()) % (6 + trigger.delay) + 1
+                )
             else:
                 day = today
             day = day.replace(hour=trigger.sanction_time.hour, minute=trigger.sanction_time.minute)
@@ -370,7 +378,9 @@ if "proeco" in settings.INSTALLED_APPS:
                 datetime_creation__day=today.day,
                 justified=False,
             )
-            noon = timezone.make_aware(datetime.datetime(today.year, today.month, today.day, hour=12))
+            noon = timezone.make_aware(
+                datetime.datetime(today.year, today.month, today.day, hour=12)
+            )
             if part_of_day == "AM":
                 today_lateness = today_lateness.filter(datetime_creation__lte=noon)
             elif part_of_day == "PM":
@@ -395,22 +405,23 @@ class TopLatenessAPI(APIView):
         own_classes = request.GET.get("own_classes", False)
         if own_classes:
             classes = get_classes(
-                        check_access=True,
-                        user=self.request.user,
-                        tenure_class_only=True,
-                        educ_by_years=True
-                    ).values_list("id")
+                check_access=True,
+                user=self.request.user,
+                tenure_class_only=True,
+                educ_by_years=True,
+            ).values_list("id")
             latenesses = latenesses.filter(student__classe__id__in=classes)
-        top_list = latenesses \
-            .values("student") \
-            .annotate(count_lateness=Count("student")) \
-            .order_by("-count_lateness") \
+        top_list = (
+            latenesses.values("student")
+            .annotate(count_lateness=Count("student"))
+            .order_by("-count_lateness")
             .values_list("student", "count_lateness")[:50]
+        )
 
         top_list = [
             {
                 "student": StudentSerializer(StudentModel.objects.get(matricule=s[0])).data,
-                "count": s[1]
+                "count": s[1],
             }
             for s in top_list
         ]

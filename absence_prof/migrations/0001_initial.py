@@ -4,35 +4,49 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Absence',
+            name="Absence",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('id_person', models.BigIntegerField(blank=True, default=None, null=True)),
-                ('name', models.CharField(max_length=500)),
-                ('motif', models.CharField(max_length=500)),
-                ('datetime_absence_start', models.DateTimeField(verbose_name="date du début de l'absence")),
-                ('datetime_absence_end', models.DateTimeField(verbose_name="date de la fin de l'absence")),
-                ('datetime_encoding', models.DateTimeField(verbose_name="date de l'encodage")),
-                ('comment', models.CharField(max_length=10000)),
-                ('user', models.CharField(max_length=20)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("id_person", models.BigIntegerField(blank=True, default=None, null=True)),
+                ("name", models.CharField(max_length=500)),
+                ("motif", models.CharField(max_length=500)),
+                (
+                    "datetime_absence_start",
+                    models.DateTimeField(verbose_name="date du début de l'absence"),
+                ),
+                (
+                    "datetime_absence_end",
+                    models.DateTimeField(verbose_name="date de la fin de l'absence"),
+                ),
+                ("datetime_encoding", models.DateTimeField(verbose_name="date de l'encodage")),
+                ("comment", models.CharField(max_length=10000)),
+                ("user", models.CharField(max_length=20)),
             ],
             options={
-                'permissions': (('access_absences', 'Can access to absences data'),),
+                "permissions": (("access_absences", "Can access to absences data"),),
             },
         ),
         migrations.CreateModel(
-            name='MotifAbsence',
+            name="MotifAbsence",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('motif', models.CharField(max_length=200)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("motif", models.CharField(max_length=200)),
             ],
         ),
     ]

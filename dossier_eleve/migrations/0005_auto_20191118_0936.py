@@ -40,9 +40,8 @@ def migrate_set_sanctions(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('dossier_eleve', '0004_auto_20191118_0934'),
+        ("dossier_eleve", "0004_auto_20191118_0934"),
     ]
 
     operations = [

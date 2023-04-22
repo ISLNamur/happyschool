@@ -19,7 +19,12 @@
 
 from django.contrib import admin
 
-from .models import StudentAbsenceTeacherModel, StudentAbsenceTeacherSettingsModel, PeriodModel, LessonModel
+from .models import (
+    StudentAbsenceTeacherModel,
+    StudentAbsenceTeacherSettingsModel,
+    PeriodModel,
+    LessonModel,
+)
 
 
 admin.site.register(StudentAbsenceTeacherSettingsModel)

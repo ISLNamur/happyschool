@@ -35,10 +35,19 @@ from core.models import ClasseModel
 from core.utilities import get_menu
 
 from .serializers import *
-from .models import MailTemplateModel, MailAnswerModel, ChoiceModel, OptionModel, MailAnswerSettingsModel
+from .models import (
+    MailTemplateModel,
+    MailAnswerModel,
+    ChoiceModel,
+    OptionModel,
+    MailAnswerSettingsModel,
+)
 
 
-permissions = (IsAuthenticated, DjangoModelPermissions,)
+permissions = (
+    IsAuthenticated,
+    DjangoModelPermissions,
+)
 
 
 class OptionsViewSet(ModelViewSet):
@@ -59,8 +68,8 @@ class MailTemplateViewSet(ModelViewSet):
     permission_classes = permissions
 
     def get_queryset(self):
-        queryset = MailTemplateModel.objects.all().order_by('datetime_creation')
-        is_used = self.request.query_params.get('is_used', None)
+        queryset = MailTemplateModel.objects.all().order_by("datetime_creation")
+        is_used = self.request.query_params.get("is_used", None)
         if is_used:
             queryset = queryset.filter(is_used=False)
         return queryset
@@ -79,6 +88,7 @@ class MailAnswerUpdateViewSet(GenericViewSet, RetrieveModelMixin, UpdateModelMix
     """
     Access and update for anybody that has the uuid (no auth required).
     """
+
     queryset = MailAnswerModel.objects.all()
     serializer_class = MailAnswerSerializer
 
@@ -86,11 +96,9 @@ class MailAnswerUpdateViewSet(GenericViewSet, RetrieveModelMixin, UpdateModelMix
         serializer.save(is_answered=True)
 
 
-class MailAnswerView(LoginRequiredMixin,
-                     PermissionRequiredMixin,
-                     TemplateView):
+class MailAnswerView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = "mail_answer/mail_answer.html"
-    permission_required = ('mail_answer.add_mailanswermodel')
+    permission_required = "mail_answer.add_mailanswermodel"
 
     def get_context_data(self, **kwargs):
         # Get settings.
@@ -100,8 +108,8 @@ class MailAnswerView(LoginRequiredMixin,
             MailAnswerSettingsModel.objects.create().save()
         # Add to the current context.
         context = super().get_context_data(**kwargs)
-        context['settings'] = JSONRenderer().render(SettingsSerializer(settings).data).decode()
-        context['menu'] = json.dumps(get_menu(self.request, "mail_answer"))
+        context["settings"] = JSONRenderer().render(SettingsSerializer(settings).data).decode()
+        context["menu"] = json.dumps(get_menu(self.request, "mail_answer"))
         return context
 
 
@@ -132,9 +140,9 @@ class AnswersClassesAPI(APIView):
     permission_classes = permissions
 
     def get(self, request, *args, **kwargs):
-        template_id = kwargs.get('template', -1)
+        template_id = kwargs.get("template", -1)
         answers = MailAnswerModel.objects.filter(template__id=template_id)
-        classes_id = answers.distinct('student__classe').values_list('student__classe', flat=True)
+        classes_id = answers.distinct("student__classe").values_list("student__classe", flat=True)
         answers_classes = []
         for c in classes_id:
             classe = ClasseModel.objects.get(id=c)
@@ -143,10 +151,18 @@ class AnswersClassesAPI(APIView):
             answers_count = answers.filter(student__classe__id=c).count()
             answered_count = answers.filter(student__classe__id=c, is_answered=True).count()
             # Create the object to serialize.
-            answers_classes.append(AnswerClasse(classe_id=c, classe_name=name, classe_year=year,
-                                                answered_count=answered_count,
-                                                answers_count=answers_count))
-        serializer = AnswerClasseSerializer(sorted(answers_classes, key=lambda c: c.classe_name), many=True)
+            answers_classes.append(
+                AnswerClasse(
+                    classe_id=c,
+                    classe_name=name,
+                    classe_year=year,
+                    answered_count=answered_count,
+                    answers_count=answers_count,
+                )
+            )
+        serializer = AnswerClasseSerializer(
+            sorted(answers_classes, key=lambda c: c.classe_name), many=True
+        )
         return Response(serializer.data)
 
 
@@ -156,10 +172,11 @@ class AnswersAPI(APIView):
     permission_classes = permissions
 
     def get(self, request, *args, **kwargs):
-        template_id = kwargs.get('template', -1)
-        classe_id = kwargs.get('classe', -1)
-        queryset = MailAnswerModel.objects.filter(template__id=template_id,
-                                                  student__classe__id=classe_id)
+        template_id = kwargs.get("template", -1)
+        classe_id = kwargs.get("classe", -1)
+        queryset = MailAnswerModel.objects.filter(
+            template__id=template_id, student__classe__id=classe_id
+        )
         answers = map(self.answer_model_to_object, queryset)
         serializer = AnswerSerializer(answers, many=True)
         return Response(serializer.data)
@@ -168,6 +185,6 @@ class AnswersAPI(APIView):
     def answer_model_to_object(model):
         classe = str(model.student.classe)
         name = model.student.fullname
-        is_answered= len(model.answers) > 2
+        is_answered = len(model.answers) > 2
         answer = model.answers
         return Answer(classe=classe, student_name=name, is_answered=is_answered, answer=answer)

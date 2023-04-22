@@ -8,6 +8,7 @@ ipython = "*"
 flake8 = "*"
 seleniumbase = "*"
 sphinx = "*"
+black = "*"
 
 [packages]
 django-filter = "==21.1"

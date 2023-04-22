@@ -24,13 +24,12 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 urlpatterns = [
-    path('', views.AppelsView.as_view(), name='appels'),
-
+    path("", views.AppelsView.as_view(), name="appels"),
 ]
 
 router = DefaultRouter()
-router.register(r'api/appel', views.AppelViewSet)
-router.register(r'api/motive', views.MotiveViewSet)
-router.register(r'api/object', views.ObjectViewSet)
+router.register(r"api/appel", views.AppelViewSet)
+router.register(r"api/motive", views.MotiveViewSet)
+router.register(r"api/object", views.ObjectViewSet)
 
 urlpatterns += router.urls

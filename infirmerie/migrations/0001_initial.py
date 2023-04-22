@@ -5,37 +5,57 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('auth', '0009_alter_user_last_name_max_length'),
-        ('core', '0001_initial'),
+        ("auth", "0009_alter_user_last_name_max_length"),
+        ("core", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='InfirmerieSettingsModel',
+            name="InfirmerieSettingsModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('phone_number', models.CharField(blank=True, max_length=20, null=True)),
-                ('all_access', models.ManyToManyField(blank=True, default=None, to='auth.Group')),
-                ('teachings', models.ManyToManyField(default=None, to='core.TeachingModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("phone_number", models.CharField(blank=True, max_length=20, null=True)),
+                ("all_access", models.ManyToManyField(blank=True, default=None, to="auth.Group")),
+                ("teachings", models.ManyToManyField(default=None, to="core.TeachingModel")),
             ],
         ),
         migrations.CreateModel(
-            name='Passage',
+            name="Passage",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('datetime_arrive', models.DateTimeField(verbose_name="date d'arrivée")),
-                ('datetime_sortie', models.DateTimeField(blank=True, null=True, verbose_name='date de sortie')),
-                ('motifs_admission', models.CharField(max_length=2000)),
-                ('remarques_sortie', models.CharField(blank=True, max_length=2000)),
-                ('matricule', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='core.StudentModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("datetime_arrive", models.DateTimeField(verbose_name="date d'arrivée")),
+                (
+                    "datetime_sortie",
+                    models.DateTimeField(blank=True, null=True, verbose_name="date de sortie"),
+                ),
+                ("motifs_admission", models.CharField(max_length=2000)),
+                ("remarques_sortie", models.CharField(blank=True, max_length=2000)),
+                (
+                    "matricule",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="core.StudentModel",
+                    ),
+                ),
             ],
             options={
-                'permissions': (('access_infirmerie', 'Can access to infirmerie data'),),
+                "permissions": (("access_infirmerie", "Can access to infirmerie data"),),
             },
         ),
     ]

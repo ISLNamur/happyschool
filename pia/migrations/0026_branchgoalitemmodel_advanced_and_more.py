@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pia', '0025_crossgoalitemmodel_advanced_crossgoalitemmodel_basic_and_more'),
+        ("pia", "0025_crossgoalitemmodel_advanced_crossgoalitemmodel_basic_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='branchgoalitemmodel',
-            name='advanced',
+            model_name="branchgoalitemmodel",
+            name="advanced",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='branchgoalitemmodel',
-            name='basic',
+            model_name="branchgoalitemmodel",
+            name="basic",
             field=models.BooleanField(default=False),
         ),
     ]

@@ -4,20 +4,19 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('student_absence_teacher', '0002_studentabsenceteachersettingsmodel_can_see_list'),
+        ("student_absence_teacher", "0002_studentabsenceteachersettingsmodel_can_see_list"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='studentabsenceteachermodel',
-            old_name='date',
-            new_name='date_absence',
+            model_name="studentabsenceteachermodel",
+            old_name="date",
+            new_name="date_absence",
         ),
         migrations.RenameField(
-            model_name='studentlatenessteachermodel',
-            old_name='date',
-            new_name='date_lateness',
+            model_name="studentlatenessteachermodel",
+            old_name="date",
+            new_name="date_lateness",
         ),
     ]

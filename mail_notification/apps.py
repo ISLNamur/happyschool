@@ -21,4 +21,4 @@ from django.apps import AppConfig
 
 
 class MailNotificationConfig(AppConfig):
-    name = 'mail_notification'
+    name = "mail_notification"

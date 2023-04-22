@@ -27,7 +27,7 @@ from bootstrap3_datetime.widgets import DateTimePicker
 
 from .models import MotifAbsence
 
-motifs = [('default', 'Choisissez le motif')]
+motifs = [("default", "Choisissez le motif")]
 
 # Avoid error when no database has been built
 try:
@@ -40,14 +40,10 @@ except (OperationalError, ProgrammingError):
 
 
 class AbsenceForm(forms.Form):
-    name = forms.CharField(
-        label='Nom et prénom :',
-        max_length=300,
-        required=True
-    )
+    name = forms.CharField(label="Nom et prénom :", max_length=300, required=True)
 
     motif = forms.ChoiceField(
-        label='Motifs',
+        label="Motifs",
         choices=tuple(motifs),
         required=False,
     )
@@ -65,31 +61,31 @@ class AbsenceForm(forms.Form):
     )
 
     comment = forms.CharField(
-        label='Commentaire(s)',
+        label="Commentaire(s)",
         widget=forms.Textarea(),
         max_length=10000,
         required=False,
     )
 
     def __init__(self, *args, **kwargs):
-        self.abs_id = kwargs.pop('abs_id', -1)
-        self.id_person = kwargs.pop('person_id', -1)
-        self.type = 'new'
+        self.abs_id = kwargs.pop("abs_id", -1)
+        self.id_person = kwargs.pop("person_id", -1)
+        self.type = "new"
         if self.abs_id >= 0:
-            self.type = 'change'
+            self.type = "change"
         super(AbsenceForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.include_media = False
         self.helper.html5_required = True
-        self.helper.form_class = 'col-sm-8'
+        self.helper.form_class = "col-sm-8"
         self.helper.layout = Layout(
-            Field('name', id="nomForm", autocomplete='off'),
-            Field('motif', autocomplete='off'),
-            Field('datetime_absence_start'),
-            Field('datetime_absence_end'),
-            Field('comment'),
-            Hidden('id_person', self.id_person),
-            Hidden('abs_id', self.abs_id),
-            Hidden('type', self.type),
-            Submit('submit', 'Soumettre')
+            Field("name", id="nomForm", autocomplete="off"),
+            Field("motif", autocomplete="off"),
+            Field("datetime_absence_start"),
+            Field("datetime_absence_end"),
+            Field("comment"),
+            Hidden("id_person", self.id_person),
+            Hidden("abs_id", self.abs_id),
+            Hidden("type", self.type),
+            Submit("submit", "Soumettre"),
         )

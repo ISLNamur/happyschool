@@ -5,25 +5,30 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('absence_prof', '0003_absenceprofsettingsmodel_emails'),
+        ("absence_prof", "0003_absenceprofsettingsmodel_emails"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='absence',
-            name='date_absence_end',
-            field=models.DateField(default=datetime.datetime(2019, 9, 9, 14, 27, 37, 998519), verbose_name="Date de la fin de l'absence"),
+            model_name="absence",
+            name="date_absence_end",
+            field=models.DateField(
+                default=datetime.datetime(2019, 9, 9, 14, 27, 37, 998519),
+                verbose_name="Date de la fin de l'absence",
+            ),
         ),
         migrations.AddField(
-            model_name='absence',
-            name='date_absence_start',
-            field=models.DateField(default=datetime.datetime(2019, 9, 9, 14, 27, 37, 998433), verbose_name="Date du début de l'absence"),
+            model_name="absence",
+            name="date_absence_start",
+            field=models.DateField(
+                default=datetime.datetime(2019, 9, 9, 14, 27, 37, 998433),
+                verbose_name="Date du début de l'absence",
+            ),
         ),
         migrations.AlterField(
-            model_name='absenceprofsettingsmodel',
-            name='emails',
-            field=models.ManyToManyField(default=None, to='core.EmailModel'),
+            model_name="absenceprofsettingsmodel",
+            name="emails",
+            field=models.ManyToManyField(default=None, to="core.EmailModel"),
         ),
     ]

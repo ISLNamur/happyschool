@@ -37,17 +37,21 @@ from core.utilities import get_menu
 from core import email
 
 from .models import Absence, AbsenceProfSettingsModel, MotifAbsence
-from .serializers import AbsenceProfSettingsSerializer, AbsenceProfSerializer, MotifAbsenceSerializer
+from .serializers import (
+    AbsenceProfSettingsSerializer,
+    AbsenceProfSerializer,
+    MotifAbsenceSerializer,
+)
 
 
 def get_menu_entry(active_app, request):
-    if not request.user.has_perm('absence_prof.view_absence'):
+    if not request.user.has_perm("absence_prof.view_absence"):
         return {}
     return {
-            "app": "absence_prof",
-            "display": "Abs. Profs",
-            "url": "/absence_prof/",
-            "active": active_app == "absence_prof"
+        "app": "absence_prof",
+        "display": "Abs. Profs",
+        "url": "/absence_prof/",
+        "active": active_app == "absence_prof",
     }
 
 
@@ -55,23 +59,22 @@ def get_settings():
     return get_app_settings(AbsenceProfSettingsModel)
 
 
-class AbsenceProfView(LoginRequiredMixin,
-                      PermissionRequiredMixin,
-                      TemplateView):
+class AbsenceProfView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = "absence_prof/absence_prof.html"
-    permission_required = ('absence_prof.view_absence')
-    filters = [{'value': 'name', 'text': 'Nom'},
-               {'value': 'activate_ongoing', 'text': 'Absences courantes'},
-               {'value': 'date_range', 'text': 'Absences pendant une période'},
-               {'value': 'date_month', 'text': 'Absences par mois'},
-               # {'value': 'matricule_id', 'text': 'Matricule'},
-               ]
+    permission_required = "absence_prof.view_absence"
+    filters = [
+        {"value": "name", "text": "Nom"},
+        {"value": "activate_ongoing", "text": "Absences courantes"},
+        {"value": "date_range", "text": "Absences pendant une période"},
+        {"value": "date_month", "text": "Absences par mois"},
+        # {'value': 'matricule_id', 'text': 'Matricule'},
+    ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['menu'] = json.dumps(get_menu(self.request, "absence_prof"))
-        context['filters'] = json.dumps(self.filters)
-        context['settings'] = json.dumps((AbsenceProfSettingsSerializer(get_settings()).data))
+        context["menu"] = json.dumps(get_menu(self.request, "absence_prof"))
+        context["filters"] = json.dumps(self.filters)
+        context["settings"] = json.dumps((AbsenceProfSettingsSerializer(get_settings()).data))
 
         return context
 
@@ -84,7 +87,7 @@ class AbsenceProfFilter(BaseFilters):
     date_range__lte = filters.CharFilter(method="date_range__lte_by")
 
     class Meta:
-        fields_to_filter = ('name',)
+        fields_to_filter = ("name",)
         model = Absence
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
@@ -93,12 +96,15 @@ class AbsenceProfFilter(BaseFilters):
         return queryset.filter(date_absence_end__gt=timezone.now() - relativedelta(days=1))
 
     def date_month__gte_by(self, queryset, name, value):
-        return queryset.filter(date_absence_end__month__gte=int(value[5:]),
-                               date_absence_end__year__gte=int(value[:4]))
+        return queryset.filter(
+            date_absence_end__month__gte=int(value[5:]), date_absence_end__year__gte=int(value[:4])
+        )
 
     def date_month__lte_by(self, queryset, name, value):
-        return queryset.filter(date_absence_start__month__lte=int(value[5:]),
-                               date_absence_start__year__lte=int(value[:4]))
+        return queryset.filter(
+            date_absence_start__month__lte=int(value[5:]),
+            date_absence_start__year__lte=int(value[:4]),
+        )
 
     def date_range__gte_by(self, queryset, name, value):
         for a in queryset.filter(date_absence_end__lte=value):
@@ -112,9 +118,15 @@ class AbsenceProfFilter(BaseFilters):
 class AbsenceProfViewSet(ModelViewSet):
     queryset = Absence.objects.all()
     serializer_class = AbsenceProfSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
     filter_class = AbsenceProfFilter
-    filter_backends = (filters.DjangoFilterBackend, OrderingFilter,)
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    )
     pagination_class = PageNumberSizePagination
     # ordering_fields = ('',)
 
@@ -129,32 +141,43 @@ class AbsenceProfViewSet(ModelViewSet):
 
     def send_emails(self, instance, subject, is_new):
         """Send an email to notify new absence and change."""
-        context = {'absence': instance, 'new': is_new}
+        context = {"absence": instance, "new": is_new}
         emails = list(get_settings().emails.all())
         if emails:
             emails = [e.email for e in emails]
-            email.send_email(to=emails, subject=subject,
-                             email_template='absence_prof/email.html', context=context)
+            email.send_email(
+                to=emails,
+                subject=subject,
+                email_template="absence_prof/email.html",
+                context=context,
+            )
 
 
 class MotifAbsenceViewSet(ReadOnlyModelViewSet):
     queryset = MotifAbsence.objects.all()
     serializer_class = MotifAbsenceSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
 
 
-class ListPDF(LoginRequiredMixin,
-                        #    PermissionRequiredMixin,
-              WeasyTemplateView):
+class ListPDF(
+    LoginRequiredMixin,
+    #    PermissionRequiredMixin,
+    WeasyTemplateView,
+):
     # permission_required = ('absence_prof.access_dossier_eleve')
     template_name = "absence_prof/list.html"
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
-        view_set = AbsenceProfViewSet.as_view({'get': 'list'})
-        absences = view_set(self.request).data['results']
+        view_set = AbsenceProfViewSet.as_view({"get": "list"})
+        absences = view_set(self.request).data["results"]
         for a in absences:
-            a['date_absence_start'] = timezone.datetime.strptime(a['date_absence_start'], "%Y-%m-%d")
-            a['date_absence_end'] = timezone.datetime.strptime(a['date_absence_end'], "%Y-%m-%d")
-        context['absences'] = absences
+            a["date_absence_start"] = timezone.datetime.strptime(
+                a["date_absence_start"], "%Y-%m-%d"
+            )
+            a["date_absence_end"] = timezone.datetime.strptime(a["date_absence_end"], "%Y-%m-%d")
+        context["absences"] = absences
         return context

@@ -19,37 +19,44 @@
 
 from rest_framework import serializers
 
-from .models import ChoiceModel, OptionModel, MailTemplateModel, MailAnswerModel, MailAnswerSettingsModel
+from .models import (
+    ChoiceModel,
+    OptionModel,
+    MailTemplateModel,
+    MailAnswerModel,
+    MailAnswerSettingsModel,
+)
 
 
 class SettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = MailAnswerSettingsModel
-        fields = '__all__'
+        fields = "__all__"
+
 
 class ChoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChoiceModel
-        fields = '__all__'
+        fields = "__all__"
 
 
 class OptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = OptionModel
-        fields = '__all__'
+        fields = "__all__"
 
 
 class MailTemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = MailTemplateModel
-        exclude = ('datetime_creation',)
+        exclude = ("datetime_creation",)
 
 
 class MailAnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = MailAnswerModel
-        fields = '__all__'
-        read_only_fields = ('uuid', 'student', 'template')
+        fields = "__all__"
+        read_only_fields = ("uuid", "student", "template")
 
         depth = 2
 

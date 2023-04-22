@@ -36,7 +36,7 @@ from .models import CasEleve, DossierEleveSettingsModel
 def notify_sanction(self, instance_id):
     instance = CasEleve.objects.get(id=instance_id)
     student = instance.student
-    context = {'student': student, 'sanction': instance}
+    context = {"student": student, "sanction": instance}
     core_settings = get_core_settings()
 
     for notify in instance.sanction_decision.notify.all():
@@ -45,18 +45,18 @@ def notify_sanction(self, instance_id):
         scholar_year_start = date(
             year=get_scholar_year(),
             month=core_settings.month_scholar_year_start,
-            day=core_settings.day_scholar_year_start
+            day=core_settings.day_scholar_year_start,
         )
         scholar_year_end = date(
             year=get_scholar_year() + 1,
             month=core_settings.month_scholar_year_start,
-            day=core_settings.day_scholar_year_start
+            day=core_settings.day_scholar_year_start,
         )
         sanction_count = CasEleve.objects.filter(
             datetime_encodage__gte=scholar_year_start,
             datetime_encodage__lt=scholar_year_end,
             student=student,
-            sanction_decision=instance.sanction_decision
+            sanction_decision=instance.sanction_decision,
         ).count()
         if sanction_count % notify.frequency != 0:
             continue
@@ -70,17 +70,14 @@ def notify_sanction(self, instance_id):
             if student.additionalstudentinfo.resp_email:
                 recipient.append(student.additionalstudentinfo.resp_email)
         elif notify.recipient == "SR":
-            emails = EmailModel.objects.filter(
-                teaching=student.teaching,
-                years=student.classe.year
-            )
+            emails = EmailModel.objects.filter(teaching=student.teaching, years=student.classe.year)
             recipient += [e.email for e in emails]
 
         send_email(
             to=recipient,
             subject="Sanction concernant %s" % student.fullname,
             email_template="dossier_eleve/email_sanction.html",
-            context=context
+            context=context,
         )
 
 
@@ -91,38 +88,45 @@ def task_send_info_email(self, instance_id):
     teachers_obj = get_teachers_from_student(student)
     dossier_eleve_settings = DossierEleveSettingsModel.objects.first()
 
-    teachers = [t.email_school if dossier_eleve_settings.use_school_email else t.email for t in teachers_obj]
-    context = {'student': student, 'info': instance, 'info_type': instance.info.info}
+    teachers = [
+        t.email_school if dossier_eleve_settings.use_school_email else t.email for t in teachers_obj
+    ]
+    context = {"student": student, "info": instance, "info_type": instance.info.info}
 
     # Add coord and educs to email list
-    teachers += map(lambda e: e.email, EmailModel.objects.filter(teaching=student.teaching,
-                                                                 years=student.classe.year))
+    teachers += map(
+        lambda e: e.email,
+        EmailModel.objects.filter(teaching=student.teaching, years=student.classe.year),
+    )
     teachers += list(map(lambda e: e.email, EmailModel.objects.filter(is_pms=True)))
 
     if not settings.DEBUG:
         try:
-            send_email(to=teachers,
-                       subject='ISLN : À propos de ' + student.fullname,
-                       email_template="dossier_eleve/email_info.html",
-                       context=context,
-                       attachments=instance.attachments.all(),
-                       use_bcc=True,
-                       )
+            send_email(
+                to=teachers,
+                subject="ISLN : À propos de " + student.fullname,
+                email_template="dossier_eleve/email_info.html",
+                context=context,
+                attachments=instance.attachments.all(),
+                use_bcc=True,
+            )
         except Exception as err:
-            send_email(to=teachers,
-                       subject='ISLN : À propos de ' + student.fullname,
-                       email_template="dossier_eleve/email_info.html",
-                       context=context,
-                       attachments=instance.attachments.all(),
-                       use_bcc=True,
-                       )
+            send_email(
+                to=teachers,
+                subject="ISLN : À propos de " + student.fullname,
+                email_template="dossier_eleve/email_info.html",
+                context=context,
+                attachments=instance.attachments.all(),
+                use_bcc=True,
+            )
     else:
         print(teachers)
-        send_email(to=[settings.EMAIL_ADMIN],
-                   subject='ISLN : À propos de ' + student.fullname,
-                   email_template="dossier_eleve/email_info.html",
-                   context=context,
-                   attachments=instance.attachments.all(),
-                   )
+        send_email(
+            to=[settings.EMAIL_ADMIN],
+            subject="ISLN : À propos de " + student.fullname,
+            email_template="dossier_eleve/email_info.html",
+            context=context,
+            attachments=instance.attachments.all(),
+        )
         for t in teachers:
             print("Sending email to : " + t)

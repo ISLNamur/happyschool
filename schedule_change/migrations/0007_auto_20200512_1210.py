@@ -24,15 +24,14 @@ def migrate_access_permission(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('schedule_change', '0006_schedulechangemodel_hide_for_students'),
+        ("schedule_change", "0006_schedulechangemodel_hide_for_students"),
     ]
 
     operations = [
         migrations.RunPython(migrate_access_permission),
         migrations.AlterModelOptions(
-            name='schedulechangemodel',
+            name="schedulechangemodel",
             options={},
         ),
     ]

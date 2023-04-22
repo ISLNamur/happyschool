@@ -5,23 +5,19 @@ from core.adminsettings.importclass import ImportStudentLDAP, ImportResponsibleL
 
 
 class Command(BaseCommand):
-    help = 'Sync django database from a LDAP server.'
+    help = "Sync django database from a LDAP server."
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "-p",
-            '--people',
-            help='Sync only some people (responsible or student)'
-        )
+        parser.add_argument("-p", "--people", help="Sync only some people (responsible or student)")
 
     def handle(self, *args, **options):
         teachings = TeachingModel.objects.all()
-        if not options['people'] or options['people'] == "student":
+        if not options["people"] or options["people"] == "student":
             for t in teachings:
                 importation = ImportStudentLDAP(t)
                 importation.sync()
 
-        if not options['people'] or options['people'] == "responsible":
+        if not options["people"] or options["people"] == "responsible":
             for t in teachings:
                 importation = ImportResponsibleLDAP(t)
                 importation.sync()

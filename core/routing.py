@@ -22,6 +22,8 @@ from django.urls import path
 from .consumers import ImportPeopleStateConsumer, UpdateStateConsumer
 
 websocket_urlpatterns = [
-    path('ws/core/import_state/<str:people>/<slug:celery_id>/', ImportPeopleStateConsumer.as_asgi()),
-    path('ws/core/update/<slug:celery_id>/', UpdateStateConsumer.as_asgi()),
+    path(
+        "ws/core/import_state/<str:people>/<slug:celery_id>/", ImportPeopleStateConsumer.as_asgi()
+    ),
+    path("ws/core/update/<slug:celery_id>/", UpdateStateConsumer.as_asgi()),
 ]

@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0003_responsiblemodel_birth_date'),
+        ("core", "0003_responsiblemodel_birth_date"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='additionalstudentinfo',
-            name='password',
+            model_name="additionalstudentinfo",
+            name="password",
             field=models.CharField(blank=True, max_length=200),
         ),
     ]

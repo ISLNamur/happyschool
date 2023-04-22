@@ -42,12 +42,12 @@ class WSImportStudentCSV(ImportStudentCSV):
 
     def print_log(self, log: str) -> None:
         async_to_sync(self.channel_layer.group_send)(
-            'core_import_student_state_%s' % self.task_id,
+            "core_import_student_state_%s" % self.task_id,
             {
-                'type': 'core.import.state',
-                'task': self.task_id,
-                'status': log,
-            }
+                "type": "core.import.state",
+                "task": self.task_id,
+                "status": log,
+            },
         )
 
 
@@ -60,12 +60,12 @@ class WSImportTeacherCSV(ImportResponsibleCSV):
 
     def print_log(self, log: str) -> None:
         async_to_sync(self.channel_layer.group_send)(
-            'core_import_teacher_state_%s' % self.task_id,
+            "core_import_teacher_state_%s" % self.task_id,
             {
-                'type': 'core.import.state',
-                'task': self.task_id,
-                'status': log,
-            }
+                "type": "core.import.state",
+                "task": self.task_id,
+                "status": log,
+            },
         )
 
 
@@ -78,17 +78,20 @@ def task_import_people(self, csv_file, teaching, columns, ignore_first_line, peo
         teaching_model = TeachingModel.objects.get(id=int(teaching))
     except ObjectDoesNotExist:
         async_to_sync(channel_layer.group_send)(
-            'core_import_%s_state_%s' % (people, self.request.id),
+            "core_import_%s_state_%s" % (people, self.request.id),
             {
-                'type': 'core.import.state',
-                'task': self.request.id,
-                'status': 'Teaching model does not exist!',
-            }
+                "type": "core.import.state",
+                "task": self.request.id,
+                "status": "Teaching model does not exist!",
+            },
         )
         return
     column_index = {i: c for c, i in enumerate(json.loads(columns))}
-    import_csv = WSImportStudentCSV(teaching_model, self.request.id, column_index) if people == "student" \
+    import_csv = (
+        WSImportStudentCSV(teaching_model, self.request.id, column_index)
+        if people == "student"
         else WSImportTeacherCSV(teaching_model, self.request.id, column_index)
+    )
     import_csv.sync(io_text, ignore_first_line=ignore_first_line, has_header=False)
 
 
@@ -96,21 +99,23 @@ def task_import_people(self, csv_file, teaching, columns, ignore_first_line, peo
 def task_update(self):
     channel_layer = get_channel_layer()
     time.sleep(2)
-    with subprocess.Popen("./scripts/update.sh", shell=True, stdout=subprocess.PIPE, bufsize=1) as sp:
+    with subprocess.Popen(
+        "./scripts/update.sh", shell=True, stdout=subprocess.PIPE, bufsize=1
+    ) as sp:
         for line in sp.stdout:
             async_to_sync(channel_layer.group_send)(
-                'core_update_state_%s' % self.request.id,
+                "core_update_state_%s" % self.request.id,
                 {
-                    'type': 'core.update.state',
-                    'task': self.request.id,
-                    'status': line.decode("utf-8"),
-                }
+                    "type": "core.update.state",
+                    "task": self.request.id,
+                    "status": line.decode("utf-8"),
+                },
             )
     async_to_sync(channel_layer.group_send)(
-        'core_update_state_%s' % self.request.id,
+        "core_update_state_%s" % self.request.id,
         {
-            'type': 'core.update.state',
-            'task': self.request.id,
-            'status': "\nMise à jour terminé",
-        }
+            "type": "core.update.state",
+            "task": self.request.id,
+            "status": "\nMise à jour terminé",
+        },
     )

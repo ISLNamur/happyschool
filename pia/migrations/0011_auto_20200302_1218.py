@@ -20,7 +20,7 @@ def move_data(apps, schema_editor):
             assessment=gm.assessment,
             datetime_creation=gm.datetime_creation,
             datetime_update=gm.datetime_update,
-            cross_goals=gm.cross_goals
+            cross_goals=gm.cross_goals,
         )
         cgm.responsible.set(gm.responsible.all())
         cgm.save()
@@ -39,36 +39,35 @@ def move_data(apps, schema_editor):
                 datetime_update=gm.datetime_update,
                 branch=sgm.branch,
                 branch_goals=sgm.branch_goals,
-                parent_commitment=sgm.parent_commitment
+                parent_commitment=sgm.parent_commitment,
             )
             bgm.responsible.set(gm.responsible.all())
             bgm.save()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pia', '0010_branchgoalmodel_crossgoalmodel'),
+        ("pia", "0010_branchgoalmodel_crossgoalmodel"),
     ]
 
     operations = [
         migrations.RunPython(move_data),
         migrations.RemoveField(
-            model_name='subgoalmodel',
-            name='assessment',
+            model_name="subgoalmodel",
+            name="assessment",
         ),
         migrations.RemoveField(
-            model_name='subgoalmodel',
-            name='branch',
+            model_name="subgoalmodel",
+            name="branch",
         ),
         migrations.RemoveField(
-            model_name='subgoalmodel',
-            name='goal',
+            model_name="subgoalmodel",
+            name="goal",
         ),
         migrations.DeleteModel(
-            name='GoalModel',
+            name="GoalModel",
         ),
         migrations.DeleteModel(
-            name='SubGoalModel',
+            name="SubGoalModel",
         ),
     ]

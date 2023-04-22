@@ -19,38 +19,52 @@ def move_data(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0005_auto_20200119_2055'),
-        ('pia', '0008_auto_20191216_1340'),
+        ("core", "0005_auto_20200119_2055"),
+        ("pia", "0008_auto_20191216_1340"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='BranchGoalItemModel',
+            name="BranchGoalItemModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('goal', models.CharField(max_length=200)),
-                ('branch', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pia.BranchModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("goal", models.CharField(max_length=200)),
+                (
+                    "branch",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="pia.BranchModel"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='CrossGoalItemModel',
+            name="CrossGoalItemModel",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('goal', models.CharField(max_length=200)),
-                ('teachings', models.ManyToManyField(to='core.TeachingModel')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("goal", models.CharField(max_length=200)),
+                ("teachings", models.ManyToManyField(to="core.TeachingModel")),
             ],
         ),
         migrations.RunPython(move_data),
         migrations.RemoveField(
-            model_name='crossgoalmodel',
-            name='teachings',
+            model_name="crossgoalmodel",
+            name="teachings",
         ),
         migrations.DeleteModel(
-            name='BranchGoalModel',
+            name="BranchGoalModel",
         ),
         migrations.DeleteModel(
-            name='CrossGoalModel',
+            name="CrossGoalModel",
         ),
     ]

@@ -26,17 +26,17 @@ class PyramidVisibilityTests(APITestCase):
 
     def setUp(self):
         # Get a direction user.
-        self.dir_user = User.objects.get(username='director')
+        self.dir_user = User.objects.get(username="director")
         # Get a student user.
-        self.student_user = User.objects.get(username='student')
+        self.student_user = User.objects.get(username="student")
         # Get a teacher user.
-        self.teacher_user = User.objects.get(username='teacher')
+        self.teacher_user = User.objects.get(username="teacher")
         # Get an educator user.
-        self.educator_user = User.objects.get(username='educator')
+        self.educator_user = User.objects.get(username="educator")
         # Get a coordonator user.
-        self.coordonator_user = User.objects.get(username='coordonator')
+        self.coordonator_user = User.objects.get(username="coordonator")
         # Get a sysadmin user.
-        self.admin_user = User.objects.get(username='admin')
+        self.admin_user = User.objects.get(username="admin")
 
         self.coordonator_group = Group.objects.get(name="coordonateur")
         self.educator_group = Group.objects.get(name="educateur")
@@ -51,13 +51,23 @@ class PyramidVisibilityTests(APITestCase):
             Permission.objects.get(codename="ask_sanction"),
             Permission.objects.get(codename="set_sanction"),
         ]
-        for g in [self.director_group, self.coordonator_group, self.educator_group, self.teacher_group]:
+        for g in [
+            self.director_group,
+            self.coordonator_group,
+            self.educator_group,
+            self.teacher_group,
+        ]:
             for p in permissions:
                 g.permissions.add(p)
             g.save()
 
     def _create_cas_and_test_visibility(
-        self, creator, users_success, users_failure, visible_by_group_id, visible_by_tenure=False,
+        self,
+        creator,
+        users_success,
+        users_failure,
+        visible_by_group_id,
+        visible_by_tenure=False,
     ):
         self.client.force_authenticate(user=creator)
         url = "/dossier_eleve/api/cas_eleve/"
@@ -74,10 +84,10 @@ class PyramidVisibilityTests(APITestCase):
             "sanction_faite": None,
             "send_to_teachers": False,
             "attachments": [],
-            "visible_by_tenure": visible_by_tenure
+            "visible_by_tenure": visible_by_tenure,
         }
 
-        response = self.client.post(url, data, format='json')
+        response = self.client.post(url, data, format="json")
         post_response = response
         # It should respond successfully.
         self.assertEqual(response.status_code, 201)
@@ -111,7 +121,7 @@ class PyramidVisibilityTests(APITestCase):
             [self.admin_user, self.dir_user],
             [self.student_user, self.coordonator_user, self.teacher_user, self.educator_user],
             [],
-            False
+            False,
         )
         self.assertEqual(response.data["visible_by_tenure"], False)
 
@@ -121,7 +131,7 @@ class PyramidVisibilityTests(APITestCase):
             [self.admin_user, self.dir_user, self.coordonator_user],
             [self.student_user, self.teacher_user, self.educator_user],
             [],
-            False
+            False,
         )
         self.assertEqual(response.data["visible_by_tenure"], False)
 
@@ -138,9 +148,15 @@ class PyramidVisibilityTests(APITestCase):
         # Test visibility from a teacher's cas without setting visibility (test forced visibility).
         response = self._create_cas_and_test_visibility(
             self.teacher_user,
-            [self.admin_user, self.dir_user, self.coordonator_user, self.teacher_user, self.teacher_user],
+            [
+                self.admin_user,
+                self.dir_user,
+                self.coordonator_user,
+                self.teacher_user,
+                self.teacher_user,
+            ],
             [self.student_user],
-            []
+            [],
         )
 
         self.assertEqual(response.data["visible_by_tenure"], True)
@@ -149,12 +165,12 @@ class PyramidVisibilityTests(APITestCase):
         """
         Create a cas and test setting visibility for other groups.
         """
-        #Test visibility from a director's cas with visibility to coordonators.
+        # Test visibility from a director's cas with visibility to coordonators.
         self._create_cas_and_test_visibility(
             self.dir_user,
             [self.admin_user, self.dir_user, self.coordonator_user],
             [self.student_user, self.teacher_user, self.educator_user],
-            [self.coordonator_group.id]
+            [self.coordonator_group.id],
         )
 
         # Test visibility from a director's cas with visibility to educators.
@@ -162,7 +178,7 @@ class PyramidVisibilityTests(APITestCase):
             self.dir_user,
             [self.admin_user, self.dir_user, self.educator_user],
             [self.student_user, self.teacher_user, self.coordonator_user],
-            [self.educator_group.id]
+            [self.educator_group.id],
         )
 
         # Test visibility from a director's cas with visibility to teachers.
@@ -170,15 +186,21 @@ class PyramidVisibilityTests(APITestCase):
             self.dir_user,
             [self.admin_user, self.dir_user, self.teacher_user],
             [self.student_user, self.educator_user, self.coordonator_user],
-            [self.teacher_group.id]
+            [self.teacher_group.id],
         )
 
         # Test visibility from a director's cas with visibility to all.
         self._create_cas_and_test_visibility(
             self.dir_user,
-            [self.admin_user, self.dir_user, self.teacher_user, self.coordonator_user, self.educator_user],
+            [
+                self.admin_user,
+                self.dir_user,
+                self.teacher_user,
+                self.coordonator_user,
+                self.educator_user,
+            ],
             [self.student_user],
-            [self.teacher_group.id, self.educator_group.id, self.coordonator_group.id]
+            [self.teacher_group.id, self.educator_group.id, self.coordonator_group.id],
         )
 
         # Test tenure visibility (coordonator is the tenure).
@@ -187,5 +209,5 @@ class PyramidVisibilityTests(APITestCase):
             [self.admin_user, self.dir_user, self.coordonator_user],
             [self.student_user, self.teacher_user, self.educator_user],
             [],
-            True
+            True,
         )

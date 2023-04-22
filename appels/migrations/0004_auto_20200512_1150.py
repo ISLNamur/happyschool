@@ -14,15 +14,14 @@ def remove_access_permission(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('appels', '0003_auto_20191025_1343'),
+        ("appels", "0003_auto_20191025_1343"),
     ]
 
     operations = [
         migrations.RunPython(remove_access_permission),
         migrations.AlterModelOptions(
-            name='appel',
+            name="appel",
             options={},
         ),
     ]

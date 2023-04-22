@@ -5,20 +5,21 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0009_auto_20200818_1441'),
-        ('student_absence_teacher', '0004_auto_20190830_0848'),
+        ("core", "0009_auto_20200818_1441"),
+        ("student_absence_teacher", "0004_auto_20190830_0848"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='studentabsenceteachermodel',
-            name='lesson',
+            model_name="studentabsenceteachermodel",
+            name="lesson",
         ),
         migrations.AddField(
-            model_name='studentabsenceteachermodel',
-            name='given_course',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='core.GivenCourseModel'),
+            model_name="studentabsenceteachermodel",
+            name="given_course",
+            field=models.ForeignKey(
+                null=True, on_delete=django.db.models.deletion.SET_NULL, to="core.GivenCourseModel"
+            ),
         ),
     ]

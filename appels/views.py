@@ -39,17 +39,22 @@ from core.views import BaseFilters, BaseModelViewSet, get_app_settings
 from core.utilities import get_menu, check_student_photo
 
 from .models import Appel, ObjectModel, MotiveModel, AppelsSettingsModel
-from .serializers import AppelSerializer, ObjectSerializer, MotiveSerializer, AppelsSettingsSerializer
+from .serializers import (
+    AppelSerializer,
+    ObjectSerializer,
+    MotiveSerializer,
+    AppelsSettingsSerializer,
+)
 
 
 def get_menu_entry(active_app, request):
-    if not request.user.has_perm('appels.view_appel'):
+    if not request.user.has_perm("appels.view_appel"):
         return {}
     return {
-            "app": "appels",
-            "display": "Appels",
-            "url": "/appels/",
-            "active": active_app == "appels"
+        "app": "appels",
+        "display": "Appels",
+        "url": "/appels/",
+        "active": active_app == "appels",
     }
 
 
@@ -58,47 +63,57 @@ def get_settings():
 
 
 def send_emails(appel):
-    context = {'appel': appel}
+    context = {"appel": appel}
     image = []
     name = appel.name
     if appel.is_student:
         student = People().get_student_by_id(appel.matricule.matricule)
         name = str(student)
-        context['etudiant'] = student
+        context["etudiant"] = student
         if check_student_photo(student, copy=False):
             image = [static("/photos/" + str(appel.matricule.matricule) + ".jpg")]
         else:
             image = [static("/photos/unknown.jpg")]
 
     sent_to = list(
-        filter(lambda e: e != 'robot@isln.be', map(lambda e: e.email, appel.emails.all())))
+        filter(lambda e: e != "robot@isln.be", map(lambda e: e.email, appel.emails.all()))
+    )
     if appel.custom_email:
         sent_to.append(appel.custom_email)
     if not settings.DEBUG:
-        email.send_email(to=sent_to, subject="[Appel] %s" % name,
-                         email_template="appels/email.html", context=context, images=image)
+        email.send_email(
+            to=sent_to,
+            subject="[Appel] %s" % name,
+            email_template="appels/email.html",
+            context=context,
+            images=image,
+        )
     else:
         print(sent_to)
-        email.send_email(to=[settings.EMAIL_ADMIN], subject="[Appel] %s" % name,
-                         email_template="appels/email.html",
-                         context=context, images=image)
+        email.send_email(
+            to=[settings.EMAIL_ADMIN],
+            subject="[Appel] %s" % name,
+            email_template="appels/email.html",
+            context=context,
+            images=image,
+        )
 
 
-class AppelsView(LoginRequiredMixin,
-                 PermissionRequiredMixin,
-                 TemplateView):
+class AppelsView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = "appels/appels.html"
-    permission_required = ('appels.view_appel')
-    filters = [{'value': 'name', 'text': 'Nom'},
-               {'value': 'datetime_appel', 'text': "Date d'appel"},
-               {'value': 'matricule_id', 'text': 'Matricule'},
-               {'value': 'activate_ongoing', 'text': 'Appels non traités'},]
+    permission_required = "appels.view_appel"
+    filters = [
+        {"value": "name", "text": "Nom"},
+        {"value": "datetime_appel", "text": "Date d'appel"},
+        {"value": "matricule_id", "text": "Matricule"},
+        {"value": "activate_ongoing", "text": "Appels non traités"},
+    ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['menu'] = json.dumps(get_menu(self.request, "appels"))
-        context['filters'] = json.dumps(self.filters)
-        context['settings'] = json.dumps((AppelsSettingsSerializer(get_settings()).data))
+        context["menu"] = json.dumps(get_menu(self.request, "appels"))
+        context["filters"] = json.dumps(self.filters)
+        context["settings"] = json.dumps((AppelsSettingsSerializer(get_settings()).data))
 
         return context
 
@@ -107,10 +122,17 @@ class AppelFilter(BaseFilters):
     activate_ongoing = filters.BooleanFilter(method="activate_ongoing_by")
 
     class Meta:
-        fields_to_filter = ('name', 'matricule_id', 'object', 'motive',
-                            'datetime_motif_start', 'datetime_motif_end',
-                            'datetime_appel', 'datetime_traitement',
-                            'is_traiter',)
+        fields_to_filter = (
+            "name",
+            "matricule_id",
+            "object",
+            "motive",
+            "datetime_motif_start",
+            "datetime_motif_end",
+            "datetime_appel",
+            "datetime_traitement",
+            "is_traiter",
+        )
         model = Appel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
@@ -122,23 +144,26 @@ class AppelFilter(BaseFilters):
 class AppelViewSet(BaseModelViewSet):
     queryset = Appel.objects.filter(Q(is_student=False) | Q(matricule__isnull=False))
     serializer_class = AppelSerializer
-    permission_classes = (IsAuthenticated, DjangoModelPermissions,)
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
     filter_class = AppelFilter
-    ordering_fields = ('name', 'datetime_appel', 'datetime_traitement', 'is_traiter')
+    ordering_fields = ("name", "datetime_appel", "datetime_traitement", "is_traiter")
 
     def perform_create(self, serializer):
         super().perform_create(serializer)
         # Set full name.
-        if serializer.validated_data['is_student']:
-            name = serializer.validated_data['matricule'].fullname
+        if serializer.validated_data["is_student"]:
+            name = serializer.validated_data["matricule"].fullname
             serializer.save(name=name)
 
     def perform_update(self, serializer):
         super().perform_update(serializer)
-        if serializer.validated_data['emails']:
+        if serializer.validated_data["emails"]:
             appel = serializer.save(datetime_traitement=timezone.now(), is_traiter=True)
             send_emails(appel)
-        if serializer.validated_data['custom_email']:
+        if serializer.validated_data["custom_email"]:
             appel = serializer.save(datetime_traitement=timezone.now(), is_traiter=True)
             send_emails(appel)
 

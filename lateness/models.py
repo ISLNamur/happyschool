@@ -31,7 +31,7 @@ class LatenessSettingsModel(models.Model):
     printer = models.CharField(
         max_length=200,
         blank=True,
-        help_text="IP address of one or multiple printers. If multiple, it must be separated by a comma \",\""
+        help_text='IP address of one or multiple printers. If multiple, it must be separated by a comma ","',
     )
     date_count_start = models.DateField(default=date(year=2019, month=9, day=1))
     notify_responsible = models.BooleanField(default=False)
@@ -56,7 +56,9 @@ class SanctionTriggerModel(models.Model):
     year = models.ManyToManyField(YearModel, blank=True)
     classe = models.ManyToManyField(ClasseModel, blank=True)
     only_warn = models.BooleanField(default=False)
-    next_week_day = models.PositiveSmallIntegerField(choices=WEEK_DAY_CHOICES, null=True, blank=True)
+    next_week_day = models.PositiveSmallIntegerField(
+        choices=WEEK_DAY_CHOICES, null=True, blank=True
+    )
     delay = models.PositiveSmallIntegerField(
         default=1,
         help_text="""Le nombre de jour avant de postposer la sanction à la semaine d'après.
@@ -68,21 +70,17 @@ class SanctionTriggerModel(models.Model):
         blank=True,
     )
     time_lateness_start = models.TimeField(
-        null=True,
-        blank=True,
-        help_text="Début de l'interval du retard (facultatif)."
+        null=True, blank=True, help_text="Début de l'interval du retard (facultatif)."
     )
     time_lateness_stop = models.TimeField(
         null=True,
         blank=True,
-        help_text="Fin de l'interval du retard (facultatif si le début de l'interval n'est pas précisé)."
+        help_text="Fin de l'interval du retard (facultatif si le début de l'interval n'est pas précisé).",
     )
     sanction_time = models.TimeField(null=True, blank=True)
 
     def __str__(self):
-        return (
-            f"{self.WEEK_DAY_CHOICES[self.next_week_day][1]} tous les {self.lateness_count_trigger} retards ({self.id})"
-        )
+        return f"{self.WEEK_DAY_CHOICES[self.next_week_day][1]} tous les {self.lateness_count_trigger} retards ({self.id})"
 
 
 class LatenessModel(models.Model):
@@ -90,7 +88,9 @@ class LatenessModel(models.Model):
     has_sanction = models.BooleanField(default=False)
     sanction_id = models.PositiveIntegerField(null=True, blank=True)
     justified = models.BooleanField(default=False)
-    datetime_creation = models.DateTimeField("Date et heure de création du retard", auto_now_add=True)
+    datetime_creation = models.DateTimeField(
+        "Date et heure de création du retard", auto_now_add=True
+    )
     datetime_update = models.DateTimeField("Date et heure de mise à jour du retard", auto_now=True)
 
     @property

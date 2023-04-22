@@ -23,7 +23,11 @@ from . import models
 
 
 class OverwriteDataAdmin(admin.ModelAdmin):
-    list_display = ('uid', 'field', 'value',)
+    list_display = (
+        "uid",
+        "field",
+        "value",
+    )
 
 
 admin.site.register(models.OverwriteDataModel, OverwriteDataAdmin)
