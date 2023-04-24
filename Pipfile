@@ -5,7 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 ipython = "*"
-flake8 = "*"
+ruff = "*"
 seleniumbase = "*"
 sphinx = "*"
 black = "*"
