@@ -37,7 +37,7 @@ export default new VueRouter({
             component: ScheduleChange,
             props: (route) => {
                 const props = {...route.params };
-                props.currentPage = Number(props.currentPage)
+                props.currentPage = Number(props.currentPage);
                 return props;
             }
         },
