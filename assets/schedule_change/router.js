@@ -33,6 +33,15 @@ export default new VueRouter({
             component: ScheduleChange,
         },
         {
+            path: "/page/:currentPage/",
+            component: ScheduleChange,
+            props: (route) => {
+                const props = {...route.params };
+                props.currentPage = Number(props.currentPage)
+                return props;
+            }
+        },
+        {
             path: "/schedule_form/:id/",
             component: ScheduleForm,
             props: (route) => {

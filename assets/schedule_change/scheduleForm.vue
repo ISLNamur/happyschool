@@ -127,7 +127,9 @@
                         deselect-label="Cliquer dessus pour enlever"
                         v-model="form.classes"
                     >
-                        <template #noResult>Aucune classe trouvée.</template>
+                        <template #noResult>
+                            Aucune classe trouvée.
+                        </template>
                         <template #noOptions />
                     </multiselect>
                 </b-form-group>
@@ -182,7 +184,9 @@
                         label="display"
                         track-by="matricule"
                     >
-                        <template #noResult>Aucun professeur trouvé.</template>
+                        <template #noResult>
+                            Aucun professeur trouvé.
+                        </template>
                         <template #noOptions />
                     </multiselect>
                 </b-form-group>
@@ -522,7 +526,8 @@ export default {
             const send = isPut ? axios.put(path, data, token) : axios.post(path, data, token);
             send.then(() => {
                 this.errors = {};
-                this.$router.push("/",() => {
+                const nextPage = this.$store.state.lastPage ? `/page/${this.$store.state.lastPage}/` : "/";
+                this.$router.push(nextPage, () => {
                     this.$root.$bvToast.toast("Les données ont bien été envoyées.", {
                         variant: "success",
                         noCloseButton: true,
@@ -530,6 +535,7 @@ export default {
                 });
                 this.submitting = false;
             }).catch(function (error) {
+                console.log(error);
                 modal.submitting = false;
                 modal.errors = error.response.data;
             });

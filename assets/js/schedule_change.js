@@ -28,6 +28,7 @@ import AppMenu from "../common/menu_bar.vue";
 new Vue({
     el: "#vue-app",
     data: {
+        fullscreen: false,
         menuInfo: {},
         transitionName: "slide-left",
     },
@@ -35,7 +36,7 @@ new Vue({
     router,
     template: `
     <div>
-        <app-menu :menu-info="menuInfo" />
+        <app-menu v-if="!fullscreen" :menu-info="menuInfo" />
         <transition :name="transitionName" mode="out-in">
             <router-view></router-view>
         </transition>
@@ -47,6 +48,8 @@ new Vue({
 
         this.$store.dispatch("getChangeType");
         this.$store.dispatch("getChangeCategory");
+
+        this.fullscreen = window.location.href.includes("fullscreen");
     },
     watch: {
         "$route" (to, from) {

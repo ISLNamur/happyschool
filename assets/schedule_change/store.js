@@ -41,6 +41,7 @@ export default new Vuex.Store({
         // eslint-disable-next-line no-undef
         canAdd: can_add,
         ready: false,
+        lastPage: null,
     },
     actions: {
         getChangeType (context) {
@@ -67,9 +68,12 @@ export default new Vuex.Store({
                         });
                 }
             });
-        }
+        },
     },
     mutations: {
+        updatePage (state, page) {
+            state.lastPage = page;
+        },
         enableFullscreen: function (state) {
             state.canAdd = false;
             this.commit("addFilter", {filterType: "activate_has_classe", tag: "Activer", value: true});

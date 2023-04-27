@@ -86,85 +86,85 @@
                     />
                 </b-col>
             </b-row>
-            <b-pagination
-                v-if="!fullscreen"
-                class="mt-1"
-                :total-rows="entriesCount"
-                v-model="currentPage"
-                @change="changePage"
-                :per-page="30"
-            />
-            <div
-                v-for="(group, index) in entriesGrouped"
-                :key="index"
-            >
-                <hr><h5 class="day">
-                    {{ calendar(group.day) }}
-                </h5>
-                <b-card
-                    class="d-none d-md-block d-lg-block d-xl-block"
-                    no-body
-                >
-                    <b-row
-                        class="text-center"
-                        v-if="!fullscreen"
-                    >
-                        <b-col :cols="fullscreen ? 3 : 2">
-                            <strong>Changement</strong>
-                        </b-col>
-                        <b-col :cols="fullscreen ? 2 : 1">
-                            <strong>Classes</strong>
-                        </b-col>
-                        <b-col :cols="fullscreen ? '' : 3">
-                            <strong>Absent(s)/indisponible(s)</strong>
-                        </b-col>
-                    </b-row>
-                    <table
-                        v-else
-                        width="100%"
-                    >
-                        <tr>
-                            <td width="20%">
-                                <strong>Changement</strong>
-                            </td>
-                            <td width="20%">
-                                <strong>Classes</strong>
-                            </td>
-                            <td>
-                                <strong>Absent(s)/indisponible(s)</strong>
-                            </td>
-                            <td />
-                        </tr>
-                    </table>
-                </b-card>
+            <b-overlay :show="loading">
+                <b-pagination-nav
+                    v-if="!fullscreen"
+                    class="mt-1"
+                    :number-of-pages="numberOfPage"
+                    :link-gen="pageLink"
+                    use-router
+                />
                 <div
-                    v-for="(subGroup, idx) in group.sameDayEntries"
-                    :key="idx"
+                    v-for="(group, index) in entriesGrouped"
+                    :key="index"
                 >
-                    <hr class="smallhr"><strong>{{ time(subGroup) }}</strong>
-                    <hr class="smallhr">
-                    <b-overlay
-                        v-if="$store.state.ready"
-                        rounded="sm"
+                    <hr><h5 class="day">
+                        {{ calendar(group.day) }}
+                    </h5>
+                    <b-card
+                        class="d-none d-md-block d-lg-block d-xl-block"
+                        no-body
                     >
-                        <schedule-change-entry
-                            v-for="entry in subGroup.sameHourEntries"
-                            :key="entry.id"
-                            :row-data="entry"
-                            @delete="askDelete(entry)"
-                            :fullscreen="fullscreen"
-                        />
-                    </b-overlay>
+                        <b-row
+                            class="text-center"
+                            v-if="!fullscreen"
+                        >
+                            <b-col :cols="fullscreen ? 3 : 2">
+                                <strong>Changement</strong>
+                            </b-col>
+                            <b-col :cols="fullscreen ? 2 : 1">
+                                <strong>Classes</strong>
+                            </b-col>
+                            <b-col :cols="fullscreen ? '' : 3">
+                                <strong>Absent(s)/indisponible(s)</strong>
+                            </b-col>
+                        </b-row>
+                        <table
+                            v-else
+                            width="100%"
+                        >
+                            <tr>
+                                <td width="20%">
+                                    <strong>Changement</strong>
+                                </td>
+                                <td width="20%">
+                                    <strong>Classes</strong>
+                                </td>
+                                <td>
+                                    <strong>Absent(s)/indisponible(s)</strong>
+                                </td>
+                                <td />
+                            </tr>
+                        </table>
+                    </b-card>
+                    <div
+                        v-for="(subGroup, idx) in group.sameDayEntries"
+                        :key="idx"
+                    >
+                        <hr class="smallhr"><strong>{{ time(subGroup) }}</strong>
+                        <hr class="smallhr">
+                        <b-overlay
+                            v-if="$store.state.ready"
+                            rounded="sm"
+                        >
+                            <schedule-change-entry
+                                v-for="entry in subGroup.sameHourEntries"
+                                :key="entry.id"
+                                :row-data="entry"
+                                @delete="askDelete(entry)"
+                                :fullscreen="fullscreen"
+                            />
+                        </b-overlay>
+                    </div>
                 </div>
-            </div>
-            <b-pagination
-                v-if="!fullscreen"
-                class="mt-1"
-                :total-rows="entriesCount"
-                v-model="currentPage"
-                @change="changePage"
-                :per-page="30"
-            />
+                <b-pagination-nav
+                    v-if="!fullscreen"
+                    class="mt-1"
+                    :number-of-pages="numberOfPage"
+                    :link-gen="pageLink"
+                    use-router
+                />
+            </b-overlay>
         </b-container>
         <b-modal
             ref="deleteModal"
@@ -200,12 +200,18 @@ import ExportScheduleModal from "./exportScheduleModal.vue";
 import axios from "axios";
 
 export default {
+    props: {
+        currentPage: {
+            type: Number,
+            default: 1
+        }
+    },
     data: function () {
         return {
             menu: {},
             loaded: false,
+            loading: false,
             active: true,
-            currentPage: 1,
             entriesPerPage: 30,
             showFilters: false,
             filter: "",
@@ -219,7 +225,27 @@ export default {
             fullscreen: false,
         };
     },
+    watch: {
+        currentPage: function () {
+            this.loadEntries();
+        }
+    },
+    computed: {
+        numberOfPage: function () {
+            return Math.ceil(this.entriesCount/this.entriesPerPage);
+        }
+    },
     methods: {
+        /**
+         * Generate link to other pages.
+         * 
+         * @param {Number} pageNum The page number
+         */
+        pageLink: function (pageNum) {
+            return {
+                path: `/page/${pageNum}/`,
+            };
+        },
         calendar: function(date) {
             return Moment(date).calendar().split(" à")[0];
         },
@@ -248,10 +274,6 @@ export default {
 
             return result;
         },
-        changePage: function (page) {
-            this.currentPage = page;
-            this.loadEntries();
-        },
         openModal: function (modal) {
             if (modal === "export-schedule-modal") this.$refs.exportScheduleModal.show();
         },
@@ -268,7 +290,7 @@ export default {
                     this.filter += "&" + storeFilters[f].filterType + "=" + storeFilters[f].value;
                 }
             }
-            this.currentPage = 1;
+
             this.loadEntries();
         },
         askDelete: function (entry) {
@@ -285,6 +307,7 @@ export default {
             this.currentEntry = null;
         },
         loadEntries: function () {
+            this.loading = true;
             axios.get(
                 `/schedule_change/api/schedule_change/?page_size=${this.entriesPerPage}&page=${this.currentPage}${this.filter}${this.ordering}`
             )
@@ -292,9 +315,11 @@ export default {
                     this.entries = response.data.results;
                     // Set the first group of changes (group by dates).
                     this.entriesCount = response.data.count;
+                    this.$store.commit("updatePage", this.currentPage);
                     if (this.entriesCount == 0) {
                         this.entriesGrouped = [];
                         this.loaded = true;
+                        this.loading = false;
                         return;
                     }
 
@@ -306,6 +331,7 @@ export default {
                     ];
                     if (this.entriesCount == 1) {
                         this.loaded = true;
+                        this.loading = false;
                         return;
                     }
 
@@ -329,11 +355,17 @@ export default {
                         }
                     }
                     this.loaded = true;
+                    this.loading = false;
+                })
+                .catch((err) => {
+                    // Page not found go to first page.
+                    if (err.response.status === 404) {
+                        this.$router.push("/page/1/");
+                    }
                 });
         },
         checkFullscreenMode: function () {
             const fullscreen = window.location.href.includes("fullscreen");
-            // const fullscreen = url.searchParams.get("fullscreen");
             if (fullscreen) {
                 this.fullscreen = true;
                 this.$store.commit("enableFullscreen");
@@ -341,10 +373,12 @@ export default {
                     this.$store.commit("addFilter", {filterType: "activate_show_for_students", tag: "Activer", value: true});
                 }
                 this.entriesPerPage = 15;
-                setInterval(() => {
-                    this.currentPage = (this.currentPage + 1) % 4 === 0 ? 1 : this.currentPage + 1;
-                    this.loadEntries();
-                }, 12000);
+                if (this.numberOfPage > 1) {
+                    setInterval(() => {
+                        const newPage = (this.currentPage + 1) % 4 === 0 ? 1 : this.currentPage + 1;
+                        this.$router.push(`/page/${newPage}/`);
+                    }, 12000);
+                }
             }
         },
     },
