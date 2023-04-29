@@ -34,7 +34,11 @@ export default new VueRouter({
         {
             path: "/page/:currentPage/",
             component: PiaPage,
-            props: true,
+            props: (route) => {
+                const props = { ...route.params };
+                props.currentPage = Number(props.currentPage);
+                return props;
+            },
         },
         {
             path: "/edit/:id/:advanced/",
