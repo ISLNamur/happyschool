@@ -19,13 +19,13 @@
 
 import Vue from "vue";
 
-import Vuex from "vuex";
-Vue.use(Vuex);
+import { createPinia, PiniaVuePlugin } from "pinia";
+Vue.use(PiniaVuePlugin);
 
-import store from "../pia/store.js";
 import router from "../pia/router.js";
 import Menu from "../common/menu_bar.vue";
 
+const pinia = createPinia();
 
 new Vue({
     el: "#vue-app",
@@ -33,9 +33,9 @@ new Vue({
         menuInfo: {},
         transitionName: "slide-left",
     },
-    store,
+    pinia,
     router,
-    template:`
+    template: `
     <div>
         <app-menu :menu-info="menuInfo"></app-menu>
             <transition :name="transitionName" mode="out-in">
@@ -50,7 +50,7 @@ new Vue({
         "app-menu": Menu,
     },
     watch: {
-        "$route" (to, from) {
+        "$route"(to, from) {
             const toDepth = to.path.split("/").length;
             const fromDepth = from.path.split("/").length;
             this.transitionName = toDepth < fromDepth ? "slide-right" : "slide-left";

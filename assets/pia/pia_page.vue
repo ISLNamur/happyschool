@@ -69,7 +69,7 @@
                 <b-col>
                     <b-pagination-nav
                         class="mt-1"
-                        :number-of-pages="Math.ceil(entriesCount/20)"
+                        :number-of-pages="pagesCount"
                         :link-gen="pageLink"
                         use-router
                     />
@@ -96,6 +96,8 @@ import Vue from "vue";
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
+import { piaStore } from "./stores/index.js";
+
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 
@@ -111,8 +113,8 @@ const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 export default {
     props: {
         currentPage: {
-            type: String,
-            default: "1"
+            type: Number,
+            default: 1
         }
     },
     data: function () {
@@ -128,6 +130,13 @@ export default {
     watch: {
         currentPage: function () {
             this.loadEntries();
+        }
+    },
+    computed: {
+        pagesCount: function () {
+            if (this.entriesCount === 0) return 1;
+
+            return Math.ceil(this.entriesCount/20);
         }
     },
     methods: {
@@ -203,7 +212,7 @@ export default {
         // eslint-disable-next-line no-undef
         this.canAddPia = canAddPIA;
 
-        this.$store.dispatch("loadOptions");
+        piaStore().loadOptions();
     },
     components: {
         PiaEntry,

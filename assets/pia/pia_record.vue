@@ -178,7 +178,7 @@
                                 :state="inputStates.disorder"
                             >
                                 <multiselect
-                                    :options="$store.state.disorders"
+                                    :options="store.disorders"
                                     placeholder="Sélectionner le ou les différents troubles"
                                     select-label=""
                                     selected-label="Sélectionné"
@@ -333,7 +333,7 @@
                                 :state="inputStates.schedule_adjustment"
                             >
                                 <multiselect
-                                    :options="$store.state.scheduleAdjustments"
+                                    :options="store.scheduleAdjustments"
                                     placeholder="Sélectionner le ou les différents adaptations"
                                     select-label=""
                                     selected-label="Sélectionné"
@@ -381,7 +381,7 @@
                                         <b-td>
                                             <multiselect
                                                 :internal-search="false"
-                                                :options="$store.state.branches"
+                                                :options="store.branches"
                                                 placeholder="Choisir une matière"
                                                 select-label=""
                                                 selected-label="Sélectionné"
@@ -703,6 +703,8 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 import {getPeopleByName} from "../common/search.js";
 import FileUpload from "../common/file_upload.vue";
 
+import { piaStore } from "./stores/index.js";
+
 import StudentGoal from "./student_goal.vue";
 import ClassCouncil from "./class_council.vue";
 import PiaComment from "./pia_comment.vue";
@@ -777,7 +779,8 @@ export default {
                 },
                 placeholder: ""
             },
-            dayOfWeek: {1: "Lundi", 2: "Mardi", 3: "Mercredi", 4: "Jeudi", 5: "Vendredi", 6: "Samedi", 7: "Dimanche"}
+            dayOfWeek: {1: "Lundi", 2: "Mardi", 3: "Mercredi", 4: "Jeudi", 5: "Vendredi", 6: "Samedi", 7: "Dimanche"},
+            store: piaStore(),
         };
     },
     computed: {
@@ -792,7 +795,7 @@ export default {
          * A list of supported days from settings.
          */
         supportDays: function () {
-            const seqDays = this.$store.state.settings.weekday_support_activity.split(",");
+            const seqDays = this.store.settings.weekday_support_activity.split(",");
             const days = seqDays.filter(d => d.length === 1).map(d => Number(d.trim()));
             const ranges = seqDays.filter(d => d.length === 3).map(d => d.trim()).filter(d => d[1] === "-");
             ranges.forEach(r => {
@@ -833,7 +836,7 @@ export default {
     },
     methods: {
         disorderResponsesByCat: function (categoryId, showAll, selectionned) {
-            const respByCatAndDisorder = this.$store.state.disorderResponses.filter(
+            const respByCatAndDisorder = this.store.disorderResponses.filter(
                 dR => dR.categories.includes(categoryId)
                 && this.form.disorder.map(d => d.id).includes(dR.disorder)
             );
@@ -953,7 +956,7 @@ export default {
             this.searchId += 1;
             let currentSearch = this.searchId;
 
-            const teachings = this.$store.state.settings.teachings.filter(
+            const teachings = this.store.settings.teachings.filter(
                 // eslint-disable-next-line no-undef
                 value => user_properties.teaching.includes(value));
             getPeopleByName(searchQuery, teachings, person)
@@ -970,7 +973,7 @@ export default {
                 });
         },
         updateDisorderResponse: function (selected) {
-            this.disorderResponseOptions = this.$store.state.disorderResponses.filter(d => {
+            this.disorderResponseOptions = this.store.disorderResponses.filter(d => {
                 return this.form.disorder.map(x => x.id).includes(d.disorder);
             });
 
@@ -978,7 +981,7 @@ export default {
 
             // Append corresponding disorder response.
             const lastDisorder = selected[selected.length -1];
-            const newDisorderResponse = this.$store.state.disorderResponses.filter(d => {
+            const newDisorderResponse = this.store.disorderResponses.filter(d => {
                 const matchDisorder = d.disorder == lastDisorder.id;
                 const alreadySelected = this.form.disorder_response.map(dr => dr.id).includes(d.id);
                 return matchDisorder && !alreadySelected;
@@ -1106,9 +1109,9 @@ export default {
                         axios.get("/annuaire/api/responsible/" + s + "/")
                             .then(resp => this.form.sponsor.push(resp.data));
                     });
-                    this.form.disorder = this.$store.state.disorders.filter(d => resp.data.disorder.includes(d.id));
-                    this.form.disorder_response = this.$store.state.disorderResponses.filter(dr => resp.data.disorder_response.includes(dr.id));
-                    this.form.schedule_adjustment = this.$store.state.scheduleAdjustments.filter(sa => resp.data.schedule_adjustment.includes(sa.id));
+                    this.form.disorder = this.store.disorders.filter(d => resp.data.disorder.includes(d.id));
+                    this.form.disorder_response = this.store.disorderResponses.filter(dr => resp.data.disorder_response.includes(dr.id));
+                    this.form.schedule_adjustment = this.store.scheduleAdjustments.filter(sa => resp.data.schedule_adjustment.includes(sa.id));
                     this.form.other_adjustments = resp.data.other_adjustments;
                     this.form.support_activities = resp.data.support_activities;
 
@@ -1121,7 +1124,7 @@ export default {
                     
                     axios.get(`/annuaire/api/student/${resp.data.student.matricule}/`)
                         .then(resp => {
-                            this.$store.commit("setCourses", resp.data.courses);
+                            this.store.setCourses(resp.data.courses);
                         });
 
                     // Attachments
@@ -1140,7 +1143,7 @@ export default {
             this.supportDays.forEach(d => {
                 this.form.support_activities[d] = {branch: [], teachers: []};
             });
-            this.$store.dispatch("loadOptions")
+            this.store.loadOptions()
                 .then(() => {
                     if (this.id) {
                         this.loadingOthers = true;

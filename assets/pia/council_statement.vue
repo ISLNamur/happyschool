@@ -37,7 +37,7 @@
                             label-cols="2"
                         >
                             <multiselect
-                                :options="$store.state.branches"
+                                :options="store.branches"
                                 placeholder="Choisisser une branche"
                                 select-label=""
                                 selected-label="Sélectionné"
@@ -102,7 +102,7 @@
                     v-for="resDif in resourcesDifficulties"
                     :key="resDif.id"
                     :resource-difficulty="resDif"
-                    v-model="statements[$store.state.resourceDifficulty.findIndex(rD => rD.id === resDif.id)]"
+                    v-model="statements[store.resourceDifficulty.findIndex(rD => rD.id === resDif.id)]"
                     :edit-mode="editMode"
                 />
                 <b-list-group-item class="text-right">
@@ -157,6 +157,8 @@ import axios from "axios";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
+import { piaStore } from "./stores/index.js";
+
 import ResourceDifficulty from "./resource_difficulty.vue";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
@@ -204,23 +206,24 @@ export default {
                 },
                 placeholder: ""
             },
+            store: piaStore(),
         };
     },
     computed: {
         resourcesDifficulties: function () {
             if (this.editMode) {
-                return this.$store.state.resourceDifficulty.filter(rD => rD.advanced === this.advanced);
+                return this.store.resourceDifficulty.filter(rD => rD.advanced === this.advanced);
             }
 
-            return this.$store.state.resourceDifficulty.filter(
+            return this.store.resourceDifficulty.filter(
                 (_, idx) => this.statements[idx] !== null
             );
         },
         resources: function () {
-            return this.$store.state.resourceDifficulty.filter((_, idx) => this.statements[idx]);
+            return this.store.resourceDifficulty.filter((_, idx) => this.statements[idx]);
         },
         difficulties: function () {
-            return this.$store.state.resourceDifficulty.filter((_, idx) => this.statements[idx] === false);
+            return this.store.resourceDifficulty.filter((_, idx) => this.statements[idx] === false);
         }
     },
     methods: {
@@ -230,12 +233,12 @@ export default {
             if (!("id" in this.council_statement)) {
                 this.editMode = true;
             }
-            this.$store.dispatch("loadOptions")
+            this.store.loadOptions()
                 .then(() => {
-                    this.branch = this.$store.state.branches.find(b => b.id == this.council_statement.branch);
+                    this.branch = this.store.branches.find(b => b.id == this.council_statement.branch);
                     this.loading = false;
                 });
-            this.statements = this.$store.state.resourceDifficulty.filter(rD => rD.advanced === this.advanced)
+            this.statements = this.store.resourceDifficulty.filter(rD => rD.advanced === this.advanced)
                 .map(s => {
                     const isResource = this.council_statement.resources.includes(s.id);
                     if (isResource) return true;

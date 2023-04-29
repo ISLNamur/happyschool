@@ -100,7 +100,7 @@
                             :state="inputStates.branch"
                         >
                             <multiselect
-                                :options="$store.state.branches"
+                                :options="store.branches"
                                 placeholder="Choisisser une branche"
                                 select-label=""
                                 selected-label="Sélectionné"
@@ -146,7 +146,7 @@
                                 <template #option="props">
                                     {{ props.option.goal }}
                                     <span v-if="props.option.branch">
-                                        ({{ $store.state.branches.find(b => b.id === props.option.branch).branch }})
+                                        ({{ store.branches.find(b => b.id === props.option.branch).branch }})
                                     </span>
                                 </template>
                                 <template #noResult>
@@ -168,7 +168,7 @@
                             :state="inputStates.branches"
                         >
                             <multiselect
-                                :options="$store.state.branches"
+                                :options="store.branches"
                                 placeholder="Choisisser les branches concernées"
                                 select-label=""
                                 selected-label="Sélectionné"
@@ -256,7 +256,7 @@
                     <b-col>
                         <b-form-group label="Évaluation">
                             <multiselect
-                                :options="$store.state.assessments"
+                                :options="store.assessments"
                                 placeholder="Choisisser une ou des évaluations"
                                 tag-placeholder="Ajouter l'évaluation"
                                 select-label=""
@@ -332,6 +332,8 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 import {quillEditor} from "vue-quill-editor";
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
+
+import { piaStore } from "./stores/index.js";
 
 import {getPeopleByName} from "../common/search.js";
 import FileUpload from "../common/file_upload.vue";
@@ -410,6 +412,7 @@ export default {
                 "branches": null,
                 "responsible": null
             },
+            store: piaStore(),
         };
     },
     computed: {
@@ -473,7 +476,7 @@ export default {
             this.searchId += 1;
             let currentSearch = this.searchId;
 
-            const teachings = this.$store.state.settings.teachings.filter(
+            const teachings = this.store.settings.teachings.filter(
                 // eslint-disable-next-line no-undef
                 value => user_properties.teaching.includes(value));
             getPeopleByName(searchQuery, teachings, person)
@@ -496,7 +499,7 @@ export default {
                 this.indicatorAction = this.goalObject.indicator_action;
                 this.givenHelp = this.goalObject.given_help;
                 this.selfAssessment = this.goalObject.self_assessment;
-                this.assessment = this.$store.state.assessments.filter(a => a.id == this.goalObject.assessment)[0];
+                this.assessment = this.store.assessments.filter(a => a.id == this.goalObject.assessment)[0];
                 this.validated = this.goalObject.validated;
 
                 // Attachments
@@ -513,16 +516,16 @@ export default {
 
                 // Assign branch if necessary.
                 if (this.useBranch) {
-                    this.branch = this.$store.state.branches.find(b => b.id == this.goalObject.branch);
+                    this.branch = this.store.branches.find(b => b.id == this.goalObject.branch);
                 } else {
                     // For crossgoals
-                    this.branches = this.$store.state.branches.filter(b => this.goalObject.branches.includes(b.id));
+                    this.branches = this.store.branches.filter(b => this.goalObject.branches.includes(b.id));
                 }
 
                 // Assign goals
                 let specificGoals = this.useBranch ? this.goalObject.branch_goals : this.goalObject.cross_goals;
                 let goals = specificGoals.split(";");
-                const options = this.useBranch ? this.$store.state.branchGoalItems : this.$store.state.crossGoalItems;
+                const options = this.useBranch ? this.store.branchGoalItems : this.store.crossGoalItems;
                 this.goals = options.filter(cg => goals.includes(cg.goal));
                 let newGoals = goals.filter(g => !this.goalOptions.map(cg => cg.goal).includes(g));
                 newGoals.forEach(ng => this.addGoalTag(ng));
@@ -570,14 +573,14 @@ export default {
     mounted: function () {
         if (this.goalObject.id < 0) this.expanded = true;
 
-        this.$store.dispatch("loadOptions")
+        this.store.loadOptions()
             .then(() => {
                 if (this.useBranch) {
-                    this.goalOptions = this.$store.state.branchGoalItems.filter(
+                    this.goalOptions = this.store.branchGoalItems.filter(
                         bGI => this.advanced ? bGI.advanced : bGI.basic
                     );
                 } else {
-                    this.goalOptions = this.$store.state.crossGoalItems.filter(
+                    this.goalOptions = this.store.crossGoalItems.filter(
                         cGI => this.advanced ? cGI.advanced : cGI.basic
                     );
                 }

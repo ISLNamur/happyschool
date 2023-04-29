@@ -17,18 +17,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from "vue";
-import Vuex from "vuex";
 
 import axios from "axios";
 
-Vue.use(Vuex);
+import { defineStore } from "pinia";
 
-import {addFilter, removeFilter} from "../common/filters.js";
+import { addFilter, removeFilter } from "../../common/filters.js";
 
 
-export default new Vuex.Store({
-    state: {
+export const piaStore = defineStore("pia", {
+    state: () => ({
         // eslint-disable-next-line no-undef
         settings: settings,
         filters: [],
@@ -42,18 +40,16 @@ export default new Vuex.Store({
         assessments: [],
         studentCourses: [],
         resourceDifficulty: [],
-    },
-    mutations: {
-        addFilter: addFilter,
-        removeFilter: removeFilter,
-        setCourses: function (state, data) {
-            state.studentCourses = data;
-        }
-    },
+    }),
     actions: {
-        loadOptions: function (context) {
+        addFilter,
+        removeFilter,
+        setCourses: function (data) {
+            this.studentCourses = data;
+        },
+        loadOptions: function () {
             return new Promise(resolve => {
-                if (context.state.disorders.length == 0) {
+                if (this.disorders.length == 0) {
                     const promises = [
                         axios.get("/pia/api/disorder/"),
                         axios.get("/pia/api/schedule_adjustment/"),
@@ -65,13 +61,13 @@ export default new Vuex.Store({
                     ];
                     Promise.all(promises)
                         .then(resps => {
-                            context.state.disorders = resps[0].data.results;
-                            context.state.scheduleAdjustments = resps[1].data.results;
-                            context.state.branchGoalItems = resps[2].data.results;
-                            context.state.crossGoalItems = resps[3].data.results;
-                            context.state.assessments = resps[4].data.results;
-                            context.state.branches = resps[5].data.results;
-                            context.state.resourceDifficulty = resps[6].data.results;
+                            this.disorders = resps[0].data.results;
+                            this.scheduleAdjustments = resps[1].data.results;
+                            this.branchGoalItems = resps[2].data.results;
+                            this.crossGoalItems = resps[3].data.results;
+                            this.assessments = resps[4].data.results;
+                            this.branches = resps[5].data.results;
+                            this.resourceDifficulty = resps[6].data.results;
                             resolve();
                         });
                 } else {

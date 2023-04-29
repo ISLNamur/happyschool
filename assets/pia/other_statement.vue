@@ -81,7 +81,7 @@
                             label-cols="2"
                         >
                             <multiselect
-                                :options="$store.state.branches"
+                                :options="store.branches"
                                 placeholder="Choisisser une branche"
                                 select-label=""
                                 selected-label="Sélectionné"
@@ -147,6 +147,8 @@ import {quillEditor} from "vue-quill-editor";
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
 
+import { piaStore } from "./stores/index.js";
+
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 /**
@@ -184,13 +186,14 @@ export default {
                 },
                 placeholder: ""
             },
+            store: piaStore(),
         };
     },
     methods: {
         initCouncilStatement: function () {
-            this.$store.dispatch("loadOptions")
+            this.store.loadOptions()
                 .then(() => {
-                    this.councilStatement = this.$store.state.branches.filter(b => b.id == this.council_statement.branch)[0];
+                    this.councilStatement = this.store.branches.filter(b => b.id == this.council_statement.branch)[0];
                     this.loading = false;
                 });
             this.resources = this.council_statement.resources;
