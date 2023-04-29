@@ -19,8 +19,8 @@
 
 import Vue from "vue";
 
-import Vuex from "vuex";
-Vue.use(Vuex);
+import { createPinia, PiniaVuePlugin } from "pinia";
+Vue.use(PiniaVuePlugin);
 
 import routes from "../annuaire/routes.js";
 
@@ -31,18 +31,13 @@ const router = new VueRouter({
     routes: routes
 });
 
+const pinia = createPinia();
 
-const store = new Vuex.Store({
-    state: {
-        // eslint-disable-next-line no-undef
-        settings: settings
-    },
-});
 
 new Vue({
     el: "#vue-app",
     data: {},
     router,
-    store,
+    pinia,
     template: "<router-view></router-view>",
 });

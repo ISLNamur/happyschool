@@ -167,7 +167,7 @@
                     </dl>
                     <dl
                         class="row"
-                        v-if="$store.state.settings.show_credentials"
+                        v-if="store.settings.show_credentials"
                     >
                         <dt
                             v-if="username"
@@ -266,6 +266,8 @@ import axios from "axios";
 import Moment from "moment";
 Moment.locale("fr");
 
+import { annuaireStore } from "../annuaire/stores/index.js";
+
 export default {
     data: function () {
         return {
@@ -282,6 +284,7 @@ export default {
             courses: [],
             tenure: null,
             teachings: [],
+            store: annuaireStore(),
         };
     },
     computed: {

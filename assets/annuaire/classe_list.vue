@@ -32,7 +32,7 @@
                 >
                     Photos de classe
                 </b-button>
-                <span v-if="$store.state.settings.show_credentials">
+                <span v-if="store.settings.show_credentials">
                     <b-button
                         target="_blank"
                         rel="noopener noreferrer"
@@ -67,8 +67,10 @@
 </template>
 
 <script>
+import { annuaireStore } from "../annuaire/stores/index.js";
 
 import axios from "axios";
+
 
 export default {
     props: {
@@ -80,6 +82,7 @@ export default {
     data: function () {
         return {
             students: [],
+            store: annuaireStore(),
         };
     },
     watch: {
