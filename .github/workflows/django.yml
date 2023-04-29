@@ -64,7 +64,7 @@ jobs:
     - name: Run Tests
       run: |
         npx eslint --ext .js,.vue assets/
-        pipenv run black --check
+        pipenv run black --check .
         pipenv run coverage run --source='.' manage.py test
         pipenv run coverage report
       env:
