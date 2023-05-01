@@ -37,3 +37,14 @@ class Passage(models.Model):
     datetime_sortie = models.DateTimeField("date de sortie", null=True, blank=True)
     motifs_admission = models.CharField(max_length=2000)
     remarques_sortie = models.CharField(max_length=2000, blank=True)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=(
+                    models.Q(datetime_sortie__isnull=True)
+                    | models.Q(datetime_sortie__gte=models.F("datetime_arrive"))
+                ),
+                name="correct_datetime",
+            )
+        ]
