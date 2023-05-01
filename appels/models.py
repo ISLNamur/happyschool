@@ -80,3 +80,21 @@ class Appel(models.Model):
     emails = models.ManyToManyField(EmailModel, blank=True)
     custom_email = models.EmailField(default=None, blank=True, null=True)
     datetime_encodage = models.DateTimeField("Date d'encodage", default=timezone.now)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=(
+                    models.Q(date_motif_end__isnull=True)
+                    | models.Q(date_motif_end__gte=models.F("date_motif_start"))
+                ),
+                name="correct_date_range",
+            ),
+            models.CheckConstraint(
+                check=(
+                    models.Q(time_motif_end__isnull=True)
+                    | models.Q(time_motif_end__gte=models.F("time_motif_start"))
+                ),
+                name="correct_time_range",
+            ),
+        ]
