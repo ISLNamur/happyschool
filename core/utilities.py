@@ -28,6 +28,7 @@ from django.http import HttpRequest
 from core.models import MenuEntryModel
 
 EXCLUDED_APPS = [
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
