@@ -7,5 +7,5 @@ git pull
 rm Pipfile.lock
 pipenv install
 pipenv run ./manage.py migrate
-npm install
-./node_modules/.bin/webpack --config webpack.prod.js
+wget https://test.happyschool.be/static/bundles.tar.bz2 
+tar -xf bundles.tar.bz2
