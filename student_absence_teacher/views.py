@@ -144,7 +144,7 @@ class StudentAbsenceTeacherViewSet(ModelViewSet):
         filters.DjangoFilterBackend,
         OrderingFilter,
     )
-    filter_class = StudentAbsenceTeacherFilter
+    filterset_class = StudentAbsenceTeacherFilter
     ordering_fields = ["date_absence", "datetime_update", "datetime_creation", "period"]
     pagination_class = PageNumberSizePagination
 

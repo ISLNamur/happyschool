@@ -128,7 +128,7 @@ class PassageViewSet(BaseModelViewSet):
         IsAuthenticated,
         DjangoModelPermissions,
     )
-    filter_class = PassageFilter
+    filterset_class = PassageFilter
     ordering_fields = ("datetime_arrive",)
 
     def perform_create(self, serializer):

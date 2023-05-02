@@ -260,7 +260,7 @@ notre class ``StudentAbsenceViewSet(BaseModelViewSet)`` sont, le
 donnée ``queryset`` (qui servira également de cache), les permissions
 avec ``permission_classes``, les champs qui peuvent être ordonés
 ``ordering_fields`` et les filtres que nous pouvons appliquer sur nos
-données, ``filter_class``, objet que détaillerons par la suite.
+données, ``filterset_class``, objet que détaillerons par la suite.
 
 En ce qui concerne, ``permission_classes``, nous pouvons demander que
 l’utilisateur soit connecté avec ``IsAuthenticated`` et utilisé le
@@ -327,7 +327,7 @@ Nous obtenons alors le code suivant :
 
        serializer_class = StudentAbsenceSerializer
        permission_classes = (IsAuthenticated, DjangoModelPermissions,)
-       filter_class = StudentAbsenceFilter
+       filterset_class = StudentAbsenceFilter
        ordering_fields = ('datetime_creation',)
 
 Il ne nous reste plus qu’à exposer notre API par un accès http, une URL.

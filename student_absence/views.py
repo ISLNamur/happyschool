@@ -158,7 +158,7 @@ class StudentAbsenceViewSet(ModelViewSet):
         filters.DjangoFilterBackend,
         OrderingFilter,
     )
-    filter_class = StudentAbsenceFilter
+    filterset_class = StudentAbsenceFilter
     pagination_class = PageNumberSizePagination
     ordering_fields = [
         "date_absence",
@@ -337,4 +337,4 @@ class PeriodViewSet(ReadOnlyModelViewSet):
     queryset = PeriodModel.objects.all()
     serializer_class = PeriodSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_class = PeriodFilter
+    filterset_class = PeriodFilter

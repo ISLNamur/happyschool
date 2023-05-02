@@ -122,7 +122,7 @@ class AbsenceProfViewSet(ModelViewSet):
         IsAuthenticated,
         DjangoModelPermissions,
     )
-    filter_class = AbsenceProfFilter
+    filterset_class = AbsenceProfFilter
     filter_backends = (
         filters.DjangoFilterBackend,
         OrderingFilter,

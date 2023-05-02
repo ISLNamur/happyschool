@@ -153,7 +153,7 @@ class LatenessViewSet(BaseModelViewSet):
         "datetime_update",
         "datetime_creation",
     )
-    filter_class = LatenessFilter
+    filterset_class = LatenessFilter
     username_field = None
 
     if "student_absence_teacher" in settings.INSTALLED_APPS:

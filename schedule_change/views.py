@@ -178,7 +178,7 @@ class ScheduleChangeViewSet(BaseModelViewSet):
     )
     serializer_class = ScheduleChangeSerializer
     permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
-    filter_class = ScheduleChangeFilter
+    filterset_class = ScheduleChangeFilter
 
     def create(self, request, *args, **kwargs):
         is_many = isinstance(request.data, list)

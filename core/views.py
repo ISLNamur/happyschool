@@ -527,7 +527,7 @@ class CourseScheduleViewSet(ModelViewSet):
         filters.DjangoFilterBackend,
         OrderingFilter,
     )
-    filter_class = CourseScheduleFilter
+    filterset_class = CourseScheduleFilter
     ordering_fields = ["day_of_week", "period__start", "period__end"]
     ordering = ["day_of_week", "period__start", "period__end"]
 

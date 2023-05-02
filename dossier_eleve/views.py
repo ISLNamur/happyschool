@@ -230,7 +230,7 @@ class CasEleveViewSet(BaseModelViewSet):
         IsAuthenticated,
         DjangoModelPermissions,
     )
-    filter_class = CasEleveFilter
+    filterset_class = CasEleveFilter
     ordering_fields = ("datetime_encodage", "student__last_name", "datetime_modified")
     user_field = "created_by"
 
@@ -502,7 +502,7 @@ class AskSanctionsViewSet(BaseModelViewSet):
         IsAuthenticated,
         DjangoModelPermissions,
     )
-    filter_class = AskSanctionsFilter
+    filterset_class = AskSanctionsFilter
     ordering_fields = (
         "datetime_encodage",
         "date_sanction",

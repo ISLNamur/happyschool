@@ -148,7 +148,7 @@ class AppelViewSet(BaseModelViewSet):
         IsAuthenticated,
         DjangoModelPermissions,
     )
-    filter_class = AppelFilter
+    filterset_class = AppelFilter
     ordering_fields = ("name", "datetime_appel", "datetime_traitement", "is_traiter")
 
     def perform_create(self, serializer):

@@ -119,7 +119,7 @@ class PIAViewSet(BaseModelViewSet):
         "student__classe__letter",
         "datetime_updated",
     )
-    filter_class = PIAFilterSet
+    filterset_class = PIAFilterSet
 
     username_field = None
 
