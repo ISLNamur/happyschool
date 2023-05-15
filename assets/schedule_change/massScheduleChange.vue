@@ -318,7 +318,7 @@ export default {
                     while (currentDay.isSameOrBefore(endDay)) {
                         this.scheduleChanges = this.scheduleChanges.concat(
                             resp[0].data.results
-                                .filter(courseSchedule => courseSchedule.day_of_week === currentDay.day())
+                                .filter(courseSchedule => courseSchedule.day_of_week === currentDay.day() - 1)
                                 .map(courseSchedule => {
                                     return {
                                         change: this.defaultType,
