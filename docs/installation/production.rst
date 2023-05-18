@@ -98,7 +98,7 @@ Pour les installer :
 ::
 
    curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -                                                         
-   sudo apt install libldap2-dev libsasl2-dev python3-pip git python3-dateutil ttf-bitstream-vera redis-server build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python-openssl nodejs
+   sudo apt install libldap2-dev libsasl2-dev python3-pip git python3-dateutil ttf-bitstream-vera redis-server build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev python3-openssl libcairo2-dev nodejs
 
 
 .. _happyschool-1:
