@@ -125,9 +125,9 @@ sont utilisés. Pour les installer avec un shell bash :
 
    pip3 install --user pipenv
    curl https://pyenv.run | bash                                                                                            
-   echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> /.bashrc                                                                  
-   echo 'eval "$(pyenv init -)"' >> /.bashrc                                                                                
-   echo 'eval "$(pyenv virtualenv-init -)"' >> /bashrc
+   echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ./.bashrc                                                                  
+   echo 'eval "$(pyenv init -)"' >> ./.bashrc                                                                                
+   echo 'eval "$(pyenv virtualenv-init -)"' >> ./.bashrc
    cd happyschool
    PIPENV_YES=1 pipenv install
 
