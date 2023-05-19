@@ -20,14 +20,21 @@
 function countCurrentTeaching(app) {
     // eslint-disable-next-line no-undef
     let teachings = user_properties.teaching;
-    if ("settings" in app.$store.state) {
+    if (teachings.length === 1) {
+        return 1;
+    }
+    if ("$store" in app && "settings" in app.$store.state) {
         teachings = teachings.filter(value => app.$store.state.settings.teachings.includes(value));
+    }
+    // Pinia store needs to be in the data component.
+    if ("store" in app && "settings" in app.store) {
+        teachings = teachings.filter(value => app.store.settings.teachings.includes(value));
     }
     return teachings.length;
 }
 
 export function displayStudent(student, context) {
-    let app = context ? context : this; 
+    let app = context ? context : this;
     if (countCurrentTeaching(app) === 1) {
         const classeStr = student.classe ? `${student.classe.year}${student.classe.letter.toUpperCase()}` : "(Ancien)";
         return `${student.last_name} ${student.first_name} ${classeStr}`;
