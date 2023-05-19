@@ -72,6 +72,8 @@
 import Moment from "moment";
 Moment.locale("fr");
 
+import { piaStore } from "./stores/index.js";
+
 import {displayStudent} from "../common/utilities.js";
 
 export default {
@@ -83,6 +85,7 @@ export default {
     },
     data: function () {
         return {
+            store: piaStore(),
         };
     },
     computed: {
