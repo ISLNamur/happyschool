@@ -87,6 +87,7 @@ class ScheduleChangeView(LoginRequiredMixin, PermissionRequiredMixin, TemplateVi
     filters = [
         {"value": "activate_ongoing", "text": "Prochains changements"},
         {"value": "date_change", "text": "Date du changement"},
+        {"value": "classe", "text": "Classe"},
         {"value": "activate_has_classe", "text": "Concerne une classe"},
         {"value": "place", "text": "Lieu"},
     ]
@@ -128,6 +129,7 @@ class ScheduleChangeFilter(BaseFilters):
     activate_ongoing = filters.BooleanFilter(method="activate_ongoing_by")
     activate_has_classe = filters.BooleanFilter(method="activate_has_classe_by")
     activate_show_for_students = filters.BooleanFilter(method="activate_show_for_students_by")
+    classe = filters.CharFilter(method="classe_by")
 
     class Meta:
         fields_to_filter = ["date_change", "place"]
@@ -149,6 +151,15 @@ class ScheduleChangeFilter(BaseFilters):
 
     def activate_show_for_students_by(self, queryset, name, value):
         return queryset.exclude(hide_for_students=True)
+
+    def classe_by(self, queryset, name, value):
+        by_year = Q()
+        if value[0].isdigit():
+            if value[0] == 1:
+                by_year = Q(classes__contains="1ère année")
+            else:
+                by_year = Q(classes__contains=f"{value[0]}ème année")
+        return queryset.filter(Q(classes__icontains=value) | by_year)
 
 
 class ScheduleChangeTypeViewSet(ReadOnlyModelViewSet):
