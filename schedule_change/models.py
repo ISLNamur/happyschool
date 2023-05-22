@@ -101,5 +101,5 @@ class ScheduleChangeModel(models.Model):
             self.date_change,
             self.time_start.strftime("%H:%M") if self.time_start else "-",
             self.time_end.strftime("%H:%M") if self.time_end else "-",
-            self.change.name,
+            self.change.name if self.change else "",
         )
