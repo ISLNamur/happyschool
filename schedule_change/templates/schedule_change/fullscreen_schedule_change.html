@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/static/bundles/bootstrap.min.css">
+        <link rel="shortcut icon" href="/static/img/favicon.ico">
+    </head>
+
+    <body class="container-fluid">
+        {% for group in schedule_changes %}
+        <div>
+            <hr>
+            <h5 class="day">
+                {{ group.day }}
+            </h5>
+            <div
+                class="card d-none d-md-block d-lg-block d-xl-block"
+            >
+                <table
+                    v-else
+                    width="100%"
+                >
+                    <tr>
+                        <td width="20%">
+                            <strong>Changement</strong>
+                        </td>
+                        <td width="20%">
+                            <strong>Classes</strong>
+                        </td>
+                        <td>
+                            <strong>Absent(s)/indisponible(s)</strong>
+                        </td>
+                        <td />
+                    </tr>
+                </table>
+            </div>
+            {% for sub_group in group.same_day_entries %}
+            <div>
+                <hr class="smallhr">
+                <strong>
+                    {{ sub_group.time_start }}
+                    {% if sub_group.time_end %}
+                    à {{ sub_group.time_end }}
+                    {% endif %}
+                </strong>
+                <hr class="smallhr">
+                {% for schedule_change in sub_group.same_hour_entries %}
+                <div class="card">
+                    <table width="100%">
+                        <tr class="category-{{ schedule_change.category }}">
+                            <td width="20%">
+                                <em>{{ schedule_change.change }}</em>
+                            </td>
+                            <td width="20%">
+                                {{ schedule_change.classes }}
+                            </td>
+                            <td>
+                                {% if schedule_change.teachers_substitute %}
+                                <s>{{ schedule_change.teachers_replaced }}</s>
+                                {% else %}
+                                {{ schedule_change.teachers_replaced }}
+                                {% endif %}
+                                {% if schedule_change.teachers_substitute %}
+                                ->
+                                {{ schedule_change.teachers_substitute }}
+                                {% endif %}
+                            </td>
+                            <td align="right">
+                                {{ schedule_change.place }}
+                            </td>
+                            {% if not show_for_students %}
+                            <td
+                                align="right"
+                            >
+                                {{ schedule_change.comment }}
+                            </td>
+                            {% endif %}
+                        </tr>
+                    </table>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </body>
+    <style>
+        {% for cat in category %}
+        .category-{{ cat.id }} {
+            background-color: #{{ cat.color }}60
+        }
+        {% endfor %}
+    </style>
+</html>

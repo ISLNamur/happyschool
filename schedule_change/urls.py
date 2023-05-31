@@ -28,7 +28,14 @@ app_name = "schedule_change"
 urlpatterns = [
     path("", views.ScheduleChangeView.as_view(), name="schedule_change"),
     path(
-        "fullscreen/", views.ScheduleChangeViewReadOnly.as_view(), name="schedule_change_readonly"
+        "fullscreen/",
+        views.ScheduleChangeViewReadOnly.as_view(),
+        name="fullscreen_schedule_change",
+    ),
+    path(
+        "fullscreen_html/<str:show_for_students>/",
+        views.FullscreenScheduleChangeView.as_view(),
+        name="fullscreen_schedule_change_html",
     ),
     path("api/summary_pdf/", views.SummaryPDFAPI.as_view()),
 ]

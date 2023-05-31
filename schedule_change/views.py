@@ -434,3 +434,125 @@ class SummaryPDFAPI(APIView):
                 )
 
         return ClasseModel.objects.filter(pk__in=classes_ids)
+
+
+class DisplayScheduleChange:
+    def __init__(self, schedule_change):
+        self.schedule_change = schedule_change
+
+    def change(self):
+        return self.schedule_change.change
+
+    def classes(self):
+        return ", ".join(self.schedule_change.classes.split(";"))
+
+    def teachers_substitute(self):
+        if self.schedule_change.teachers_substitute.exists():
+            return ", ".join(
+                [str(teacher) for teacher in self.schedule_change.teachers_substitute.all()]
+            )
+        return None
+
+    def teachers_replaced(self):
+        if self.schedule_change.teachers_replaced.exists():
+            return ", ".join(
+                [str(teacher) for teacher in self.schedule_change.teachers_replaced.all()]
+            )
+        return None
+
+    def place(self):
+        return self.schedule_change.place
+
+    def comment(self):
+        return self.schedule_change.comment
+
+    def category(self):
+        return self.schedule_change.category.id if self.schedule_change.category else ""
+
+
+class FullscreenScheduleChangeView(TemplateView):
+    template_name = "schedule_change/fullscreen_schedule_change.html"
+    permission_required = "schedule_change.view_schedulechangemodel"
+
+    def dispatch(self, request, *args, **kwargs):
+        if not get_settings().enable_fullscreen:
+            return HttpResponse(status=403)
+        return super().dispatch(request, *args, *kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+
+        context["show_for_students"] = self.kwargs["show_for_students"] == "1"
+
+        # Add color scheme for categories.
+        context["category"] = [
+            {"category": category.category, "color": category.color, "id": category.id}
+            for category in ScheduleChangeCategoryModel.objects.all()
+        ]
+
+        now = timezone.now()
+
+        queryset = ScheduleChangeModel.objects.filter(
+            Q(date_change=now.date(), time_start=None, time_end=None)
+            | Q(date_change=now.date(), time_end__hour__gte=now.astimezone().hour)
+            | Q(date_change=now.date(), time_start__hour__gte=now.astimezone().hour, time_end=None)
+            | Q(date_change__gt=now)
+        ).order_by("date_change", "time_start", "time_end")
+        if self.request.GET.get("show_for_students", None):
+            queryset = queryset.exclude(hide_for_students=True)
+
+        if not queryset.exists():
+            context["schedule_changes"] = []
+            return context
+
+        first_entry = queryset.first()
+        schedule_changes = [
+            {
+                "same_day_entries": [
+                    {
+                        "same_hour_entries": [DisplayScheduleChange(first_entry)],
+                        "time_start": first_entry.time_start,
+                        "time_end": first_entry.time_end,
+                    },
+                ],
+                "day": first_entry.date_change,
+            }
+        ]
+        if queryset.count() == 1:
+            context["schedule_changes"] = schedule_changes
+            return context
+
+        schedule_list = list(queryset)
+        for sched in schedule_list[1:]:
+            if schedule_changes[-1]["day"] == sched.date_change:
+                if (
+                    schedule_changes[-1]["same_day_entries"][-1]["time_start"] == sched.time_start
+                    and schedule_changes[-1]["same_day_entries"][-1]["time_end"] == sched.time_end
+                ):
+                    schedule_changes[-1]["same_day_entries"][-1]["same_hour_entries"].append(
+                        DisplayScheduleChange(sched)
+                    )
+                else:
+                    schedule_changes[-1]["same_day_entries"].append(
+                        {
+                            "same_hour_entries": [DisplayScheduleChange(sched)],
+                            "time_start": sched.time_start,
+                            "time_end": sched.time_end,
+                        }
+                    )
+            else:
+                schedule_changes.append(
+                    {
+                        "same_day_entries": [
+                            {
+                                "same_hour_entries": [DisplayScheduleChange(sched)],
+                                "time_start": sched.time_start,
+                                "time_end": sched.time_end,
+                            },
+                        ],
+                        "day": sched.date_change,
+                    }
+                )
+
+        context["schedule_changes"] = schedule_changes
+        return context
