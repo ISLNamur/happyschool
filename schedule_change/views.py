@@ -498,7 +498,7 @@ class FullscreenScheduleChangeView(TemplateView):
             | Q(date_change=now.date(), time_start__hour__gte=now.astimezone().hour, time_end=None)
             | Q(date_change__gt=now)
         ).order_by("date_change", "time_start", "time_end")
-        if self.request.GET.get("show_for_students", None):
+        if context["show_for_students"]:
             queryset = queryset.exclude(hide_for_students=True)
 
         if not queryset.exists():
