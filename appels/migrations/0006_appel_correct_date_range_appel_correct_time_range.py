@@ -5,18 +5,35 @@ import django.db.models.expressions
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('appels', '0005_auto_20200512_1431'),
+        ("appels", "0005_auto_20200512_1431"),
     ]
 
     operations = [
         migrations.AddConstraint(
-            model_name='appel',
-            constraint=models.CheckConstraint(check=models.Q(('date_motif_end__isnull', True), ('date_motif_end__gte', django.db.models.expressions.F('date_motif_start')), _connector='OR'), name='correct_date_range'),
+            model_name="appel",
+            constraint=models.CheckConstraint(
+                check=models.Q(
+                    ("date_motif_end__isnull", True),
+                    ("date_motif_end__gte", django.db.models.expressions.F("date_motif_start")),
+                    _connector="OR",
+                ),
+                name="correct_date_range",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='appel',
-            constraint=models.CheckConstraint(check=models.Q(('time_motif_end__isnull', True), ('time_motif_end__gte', django.db.models.expressions.F('time_motif_start')), _connector='OR'), name='correct_time_range'),
+            model_name="appel",
+            constraint=models.CheckConstraint(
+                check=models.Q(
+                    ("time_motif_end__isnull", True),
+                    models.Q(
+                        ("time_motif_end__gte", models.F("time_motif_start")),
+                        ("date_motif_start", models.F("date_motif_end")),
+                    ),
+                    ("date_motif_start__lt", models.F("date_motif_end")),
+                    _connector="OR",
+                ),
+                name="correct_time_range",
+            ),
         ),
     ]
