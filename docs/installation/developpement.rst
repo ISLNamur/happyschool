@@ -43,7 +43,7 @@ dans le nouveau dossier ``happyschool`` et créer votre fichier de configuration
 
 ::
 
-   cp happyschool/setting.example.py happyschool/setting.py
+   cp happyschool/settings.example.py happyschool/settings.py
 
 Construire les images docker
 ----------------------------
