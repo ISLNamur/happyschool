@@ -101,7 +101,9 @@
                                             :show-no-options="false"
                                             :disabled="parseInt(id) >= 0"
                                         >
-                                            <template #noResult>Aucun élève trouvé.</template>
+                                            <template #noResult>
+                                                Aucun élève trouvé.
+                                            </template>
                                             <template #noOptions />
                                         </multiselect>
                                     </b-form-group>
@@ -128,10 +130,14 @@
                                             :show-no-options="false"
                                             multiple
                                         >
-                                            <template #noResult>Aucun responsable trouvé.</template>
+                                            <template #noResult>
+                                                Aucun responsable trouvé.
+                                            </template>
                                             <template #noOptions />
                                         </multiselect>
-                                        <template #invalid-feedback>{{ errorMsg('referent') }}</template>
+                                        <template #invalid-feedback>
+                                            {{ errorMsg('referent') }}
+                                        </template>
                                     </b-form-group>
                                 </b-col>
                             </b-form-row>
@@ -156,10 +162,14 @@
                                             :show-no-options="false"
                                             multiple
                                         >
-                                            <template #noResult>Aucun responsable trouvé.</template>
+                                            <template #noResult>
+                                                Aucun responsable trouvé.
+                                            </template>
                                             <template #noOptions />
                                         </multiselect>
-                                        <template #invalid-feedback>{{ errorMsg('sponsor') }}</template>
+                                        <template #invalid-feedback>
+                                            {{ errorMsg('sponsor') }}
+                                        </template>
                                     </b-form-group>
                                 </b-col>
                             </b-form-row>
@@ -190,10 +200,14 @@
                                     @input="updateDisorderResponse"
                                     multiple
                                 >
-                                    <template #noResult>Aucun trouble trouvé.</template>
+                                    <template #noResult>
+                                        Aucun trouble trouvé.
+                                    </template>
                                     <template #noOptions />
                                 </multiselect>
-                                <template #invalid-feedback>{{ errorMsg('disorder') }}</template>
+                                <template #invalid-feedback>
+                                    {{ errorMsg('disorder') }}
+                                </template>
                             </b-form-group>
                         </b-col>
                     </b-row>
@@ -202,133 +216,138 @@
                             <h4>Aménagements incontournables</h4>
                         </b-col>
                     </b-row>
-                    <b-row v-if="advanced && form.disorder.length > 0">
-                        <b-col
-                            v-for="category in this.disorderResponseCategories"
-                            :key="category.id"
-                        >
-                            <b-card no-body>
-                                <template #header>
-                                    <div class="d-flex justify-content-between">
-                                        <span>
-                                            <strong class="text-primary">{{ category.name }}</strong>
-                                            <b-badge variant="primary">
-                                                {{ disorderResponsesByCat(category.id, false, true).length }}
-                                            </b-badge>
-                                            <b-icon
-                                                v-if="category.explanation"
-                                                v-b-popover.hover.top="category.explanation"
-                                                icon="question-circle"
-                                                variant="primary"
-                                            />
-                                        </span>
-                                        <b-form-checkbox
-                                            v-model="editDisorderResponse"
-                                            switch
-                                        >
-                                            <span class="text-secondary">Modifier</span>
-                                        </b-form-checkbox>
-                                    </div>
-                                </template>
-                                <b-list-group
-                                    class="scrollable"
-                                    flush
-                                >
-                                    <b-list-group-item
-                                        v-for="disorderResponse in disorderResponsesByCat(category.id, editDisorderResponse, true)"
-                                        :key="disorderResponse.id"
-                                        class="d-flex justify-content-between"
-                                        :variant="form.disorder_response.map(dR => dR.id).includes(disorderResponse.id) ? '' : 'info'"
-                                    >
-                                        <span>
-                                            <b-icon icon="chevron-compact-right" />
-                                            {{ disorderResponse.response }}
-                                            (<em>{{ form.disorder.find(d => d.id === disorderResponse.disorder).disorder }}</em>)
-                                        </span>
-                                        <span
-                                            v-if="editDisorderResponse"
-                                            class="ml-2"
-                                        >
-                                            
-                                            <b-btn
-                                                size="sm"
-                                                variant="danger"
-                                                v-if="form.disorder_response.map(dR => dR.id).includes(disorderResponse.id)"
-                                                @click="removeDisorderResponse(disorderResponse, true, false)"
+                    <b-overlay :show="selectedResponseLoading">
+                        <b-row v-if="advanced && form.disorder.length > 0">
+                            <b-col
+                                v-for="category in this.disorderResponseCategories"
+                                :key="category.id"
+                            >
+                                <b-card no-body>
+                                    <template #header>
+                                        <div class="d-flex justify-content-between">
+                                            <span>
+                                                <strong class="text-primary">{{ category.name }}</strong>
+                                                <b-badge variant="primary">
+                                                    {{ disorderResponsesByCat(category.id, false, true).length }}
+                                                </b-badge>
+                                                <b-icon
+                                                    v-if="category.explanation"
+                                                    v-b-popover.hover.top="category.explanation"
+                                                    icon="question-circle"
+                                                    variant="primary"
+                                                />
+                                            </span>
+                                            <b-form-checkbox
+                                                v-model="editDisorderResponse"
+                                                @change="saveDisorderResponse"
+                                                switch
                                             >
-                                                <b-icon icon="x" />
-                                            </b-btn>
-                                            <b-btn
-                                                v-else
-                                                size="sm"
-                                                variant="success"
-                                                @click="form.disorder_response.push(disorderResponse)"
-                                            >
-                                                <b-icon icon="check" />
-                                            </b-btn>
-                                        </span>
-                                    </b-list-group-item>
-                                </b-list-group>
-                            </b-card>
-                        </b-col>
-                    </b-row>
-                    <b-row v-if="advanced && form.disorder.length > 0">
-                        <b-col>
-                            <h4 class="mt-4">
-                                Aménagements conseillés
-                            </h4>
-                        </b-col>
-                    </b-row>
-                    <b-row
-                        v-if="advanced && form.disorder.length > 0"
-                        class="mb-2"
-                    >
-                        <b-col
-                            v-for="category in this.disorderResponseCategories"
-                            :key="category.id"
-                        >
-                            <b-card no-body>
-                                <template #header>
-                                    <div class="d-flex justify-content-between">
-                                        <span>
-                                            <strong class="text-secondary">{{ category.name }}</strong>
-                                            <b-badge>
-                                                {{ disorderResponsesByCat(category.id, false, false).length }}
-                                            </b-badge>
-                                        </span>
-                                        <b-btn
-                                            size="sm"
-                                            variant="outline-info"
-                                            v-b-toggle="`adviced-response-cat-${category.id}`"
-                                        >
-                                            <b-icon icon="chevron-bar-expand" />
-                                        </b-btn>
-                                    </div>
-                                </template>
-                                <b-collapse :id="`adviced-response-cat-${category.id}`">
+                                                <span class="text-secondary">Modifier</span>
+                                            </b-form-checkbox>
+                                        </div>
+                                    </template>
                                     <b-list-group
-                                        flush
                                         class="scrollable"
+                                        flush
                                     >
                                         <b-list-group-item
-                                            v-for="disorderResponse in disorderResponsesByCat(category.id, false, false)"
+                                            v-for="disorderResponse in disorderResponsesByCat(category.id, editDisorderResponse, true)"
                                             :key="disorderResponse.id"
                                             class="d-flex justify-content-between"
+                                            :variant="disorderResponse.selected_disorder_response ? '' : 'info'"
                                         >
                                             <span>
                                                 <b-icon icon="chevron-compact-right" />
                                                 {{ disorderResponse.response }}
                                                 (<em>{{ form.disorder.find(d => d.id === disorderResponse.disorder).disorder }}</em>)
                                             </span>
+                                            <span
+                                                v-if="editDisorderResponse"
+                                                class="ml-2"
+                                            >
+                                                
+                                                <b-btn
+                                                    size="sm"
+                                                    variant="danger"
+                                                    v-if="disorderResponse.selected_disorder_response"
+                                                    @click="removeDisorderResponse(disorderResponse.id, category.id)"
+                                                >
+                                                    <b-icon icon="x" />
+                                                </b-btn>
+                                                <b-btn
+                                                    v-else
+                                                    size="sm"
+                                                    variant="success"
+                                                    @click="addDisorderResponse(disorderResponse, category.id)"
+                                                >
+                                                    <b-icon icon="check" />
+                                                </b-btn>
+                                            </span>
                                         </b-list-group-item>
                                     </b-list-group>
-                                </b-collapse>
-                            </b-card>
-                        </b-col>
-                    </b-row>
+                                </b-card>
+                            </b-col>
+                        </b-row>
+                        <b-row v-if="advanced && form.disorder.length > 0">
+                            <b-col>
+                                <h4 class="mt-4">
+                                    Aménagements conseillés
+                                </h4>
+                            </b-col>
+                        </b-row>
+                        <b-row
+                            v-if="advanced && form.disorder.length > 0"
+                            class="mb-2"
+                        >
+                            <b-col
+                                v-for="category in this.disorderResponseCategories"
+                                :key="category.id"
+                            >
+                                <b-card no-body>
+                                    <template #header>
+                                        <div class="d-flex justify-content-between">
+                                            <span>
+                                                <strong class="text-secondary">{{ category.name }}</strong>
+                                                <b-badge>
+                                                    {{ disorderResponsesByCat(category.id, false, false).length }}
+                                                </b-badge>
+                                            </span>
+                                            <b-btn
+                                                size="sm"
+                                                variant="outline-info"
+                                                v-b-toggle="`adviced-response-cat-${category.id}`"
+                                            >
+                                                <b-icon icon="chevron-bar-expand" />
+                                            </b-btn>
+                                        </div>
+                                    </template>
+                                    <b-collapse :id="`adviced-response-cat-${category.id}`">
+                                        <b-list-group
+                                            flush
+                                            class="scrollable"
+                                        >
+                                            <b-list-group-item
+                                                v-for="disorderResponse in disorderResponsesByCat(category.id, false, false)"
+                                                :key="disorderResponse.id"
+                                                class="d-flex justify-content-between"
+                                            >
+                                                <span>
+                                                    <b-icon icon="chevron-compact-right" />
+                                                    {{ disorderResponse.response }}
+                                                    (<em>{{ form.disorder.find(d => d.id === disorderResponse.disorder).disorder }}</em>)
+                                                </span>
+                                            </b-list-group-item>
+                                        </b-list-group>
+                                    </b-collapse>
+                                </b-card>
+                            </b-col>
+                        </b-row>
+                    </b-overlay>
                     <b-row v-if="advanced">
                         <b-col>
-                            <h4 class="mt-4">Aménagements d'horaire</h4>
+                            <h4 class="mt-4">
+                                Aménagements d'horaire
+                            </h4>
                             <b-form-group
                                 :state="inputStates.schedule_adjustment"
                             >
@@ -344,16 +363,22 @@
                                     :show-no-options="false"
                                     multiple
                                 >
-                                    <template #noResult>Aucun aménagements trouvé.</template>
+                                    <template #noResult>
+                                        Aucun aménagements trouvé.
+                                    </template>
                                     <template #noOptions />
                                 </multiselect>
-                                <template #invalid-feedback>{{ errorMsg('schedule_adjustment') }}</template>
+                                <template #invalid-feedback>
+                                    {{ errorMsg('schedule_adjustment') }}
+                                </template>
                             </b-form-group>
                         </b-col>
                     </b-row>
                     <b-row v-if="advanced">
                         <b-col>
-                            <h4 class="mt-4">Autres aménagements</h4>
+                            <h4 class="mt-4">
+                                Autres aménagements
+                            </h4>
                             <b-form-group>
                                 <quill-editor
                                     v-model="form.other_adjustments"
@@ -392,7 +417,9 @@
                                                 track-by="id"
                                                 multiple
                                             >
-                                                <template #noResult>Aucune branche trouvé.</template>
+                                                <template #noResult>
+                                                    Aucune branche trouvé.
+                                                </template>
                                                 <template #noOptions />
                                             </multiselect>
                                         </b-td>
@@ -412,7 +439,9 @@
                                                 :show-no-options="false"
                                                 multiple
                                             >
-                                                <template #noResult>Aucun responsable trouvé.</template>
+                                                <template #noResult>
+                                                    Aucun responsable trouvé.
+                                                </template>
                                                 <template #noOptions />
                                             </multiselect>
                                         </b-td>
@@ -729,6 +758,7 @@ export default {
             disorderResponseOptions: [],
             // eslint-disable-next-line no-undef
             disorderResponseCategories: disorderResponseCategories,
+            selected_disorder_response: [],
             editDisorderResponse: false,
             searchId: -1,
             sending: false,
@@ -836,24 +866,63 @@ export default {
     },
     methods: {
         disorderResponsesByCat: function (categoryId, showAll, selectionned) {
-            const respByCatAndDisorder = this.store.disorderResponses.filter(
+            const responses = this.store.disorderResponses.filter(
                 dR => dR.categories.includes(categoryId)
                 && this.form.disorder.map(d => d.id).includes(dR.disorder)
-            );
+            ).map(dR => {
+                dR.selected_disorder_response = this.selected_disorder_response.find(
+                    sDR => sDR.category === categoryId && sDR.disorder_response === dR.id
+                );
+                return dR;
+            });
+
+
 
             if (showAll) {
-                return respByCatAndDisorder;
+                return responses;
             } else {
                 if (selectionned) {
-                    return respByCatAndDisorder.filter(dR => this.form.disorder_response.map(dRF => dRF.id).includes(dR.id));
+                    return responses.filter(r => r.selected_disorder_response);
                 } else {
-                    return respByCatAndDisorder.filter(dR => !this.form.disorder_response.map(dRF => dRF.id).includes(dR.id));
+                    return responses.filter(r => !r.selected_disorder_response);
                 }
             }
         },
-        removeDisorderResponse: function (disorderResponse) {
-            const dRIndex = this.form.disorder_response.findIndex(dR => dR.id === disorderResponse.id);
-            this.form.disorder_response.splice(dRIndex, 1);
+        removeDisorderResponse: function (disorderResponseId, categoryId) {
+            const sDRIndex = this.selected_disorder_response.findIndex(
+                sDR => sDR.disorder_response === disorderResponseId && sDR.category === categoryId
+            );
+            this.selected_disorder_response.splice(sDRIndex, 1);
+        },
+        addDisorderResponse: function (disorderResponse, categoryId) {
+            this.selected_disorder_response.push({
+                disorder_response: disorderResponse.id, category: categoryId
+            });
+        },
+        saveDisorderResponse: function (edit) {
+            return new Promise(resolve => {
+                // Only save when editing is done.
+                if (edit) {
+                    resolve();
+                    return;
+                }
+
+                const unsavedDisorderResponses = this.selected_disorder_response.filter(sDR => !("id" in sDR));
+                Promise.all(
+                    unsavedDisorderResponses
+                        .map(sDR => axios.post("/pia/api/selected_disorder_response/", sDR, token))
+                )
+                    .then(resps => {
+                        resps.forEach(resp => {
+                            let newSelected = unsavedDisorderResponses.find(
+                                uDR => uDR.category === resp.data.category && uDR.disorder_response === resp.data.disorder_response
+                            );
+                            newSelected.id = resp.data.id;
+                        });
+                        this.editDisorderResponse = false;
+                        resolve();
+                    });
+            });
         },
         addFiles: function() {
             this.uploadedFiles = this.uploadedFiles.concat(this.form.attachments.map(a => { return {file: a, id: -1};}));
@@ -979,14 +1048,10 @@ export default {
 
             if (selected.length == 0) return;
 
-            // Append corresponding disorder response.
-            const lastDisorder = selected[selected.length -1];
-            const newDisorderResponse = this.store.disorderResponses.filter(d => {
-                const matchDisorder = d.disorder == lastDisorder.id;
-                const alreadySelected = this.form.disorder_response.map(dr => dr.id).includes(d.id);
-                return matchDisorder && !alreadySelected;
-            });
-            this.form.disorder_response = this.form.disorder_response.concat(newDisorderResponse);
+            // Keep disorder response related to only selected disorder.
+            this.selected_disorder_response = this.selected_disorder_response.filter(
+                sDR => this.disorderResponseOptions.includes(sDR.disorder_response)
+            );
         },
         showSuccess: function (recordId) {
             let app = this;
@@ -1017,78 +1082,81 @@ export default {
 
             let app = this;
             this.sending = true;
-            const data = Object.assign({}, this.form);
-            data.advanced = this.advanced;
-            data.student_id = data.student.matricule;
-            data.disorder = data.disorder.map(d => d.id);
-            data.disorder_response = data.disorder_response.map(dr => dr.id);
-            data.referent = data.referent.map(r => r.matricule);
-            data.sponsor = data.sponsor.map(s => s.matricule);
-            data.schedule_adjustment = data.schedule_adjustment.map(sa => sa.id);
-            data.attachments = this.uploadedFiles.map(uF => uF.id);
+            this.saveDisorderResponse()
+                .then(() => {
+                    const data = Object.assign({}, this.form);
+                    data.advanced = this.advanced;
+                    data.student_id = data.student.matricule;
+                    data.disorder = data.disorder.map(d => d.id);
+                    data.selected_disorder_response = this.selected_disorder_response.map(dr => dr.id);
+                    data.referent = data.referent.map(r => r.matricule);
+                    data.sponsor = data.sponsor.map(s => s.matricule);
+                    data.schedule_adjustment = data.schedule_adjustment.map(sa => sa.id);
+                    data.attachments = this.uploadedFiles.map(uF => uF.id);
 
-            let send = this.id ? axios.put : axios.post;
-            let url = "/pia/api/pia/";
-            if (this.id) url += this.id + "/";
-            send(url, data, token)
-                .then(resp => {
-                    const recordId = resp.data.id;
-                    // No goals, no promises.
-                    if (this.cross_goal.length == 0 && this.branch_goal.length == 0
-                        && this.class_council.length == 0 && this.student_project.length == 0
-                        && this.parents_opinion.length == 0) {
-                        this.showSuccess(recordId);
-                        return;
-                    }
-
-                    const crossGoalPromises = this.cross_goal.length != 0 ? this.$refs.crossgoals.map(g => g.submit(recordId)) : [];
-                    const branchGoalPromises = this.branch_goal.length != 0 && this.$refs.branchgoals ? this.$refs.branchgoals.map(g => g.submit(recordId)) : [];
-                    const sPPromises = this.student_project.length != 0 ? this.$refs.studentprojects.map(sP => sP.submit(recordId)) : [];
-                    const pOPromises = this.parents_opinion.length != 0 ? this.$refs.parentsopinions.map(pO => pO.submit(recordId)) : [];
-                    const classCouncilPromises = this.class_council.length != 0 ? this.$refs.councils.map(c => c.submit(recordId)) : [];
-                    Promise.all(crossGoalPromises.concat(branchGoalPromises, classCouncilPromises, sPPromises, pOPromises))
-                        .then(resps => {
-                            // Update new component with response.
-                            const components = ["cross_goal", "branch_goal", "student_project", "parents_opinion", "class_council"];
-                            components.forEach(comp => {
-                                const compResps = resps.filter(r =>r && r.config.url.includes(`pia/api/${comp}/`));
-                                app[comp] = compResps.map(r => r.data).sort((a, b) => a.datetime_creation < b.datetime_creation);
-                            });
-
-                            // Save class_council subcomponents.
-                            const subPromises = [];
-                            const councilResponses = resps.filter(r =>r && r.config.url.includes("/pia/api/class_council/"));
-
-                            if (councilResponses.length == 0) {
-                                app.showSuccess(recordId);
+                    let send = this.id ? axios.put : axios.post;
+                    let url = "/pia/api/pia/";
+                    if (this.id) url += this.id + "/";
+                    send(url, data, token)
+                        .then(resp => {
+                            const recordId = resp.data.id;
+                            // No goals, no promises.
+                            if (this.cross_goal.length == 0 && this.branch_goal.length == 0
+                                && this.class_council.length == 0 && this.student_project.length == 0
+                                && this.parents_opinion.length == 0) {
+                                this.showSuccess(recordId);
                                 return;
                             }
-                            // Get council statement promises.
-                            councilResponses.forEach((r, i) => {
-                                if (!("id" in app.$refs.councils[i])) {
-                                    app.class_council.splice(i, 1, r.data);
-                                    subPromises.concat(app.$refs.councils[i].submitCouncilStatement(app.class_council[i].id));
-                                }
-                            });
 
-                            Promise.all(subPromises)
-                                .then(() => {
-                                    app.showSuccess(recordId);
+                            const crossGoalPromises = this.cross_goal.length != 0 ? this.$refs.crossgoals.map(g => g.submit(recordId)) : [];
+                            const branchGoalPromises = this.branch_goal.length != 0 && this.$refs.branchgoals ? this.$refs.branchgoals.map(g => g.submit(recordId)) : [];
+                            const sPPromises = this.student_project.length != 0 ? this.$refs.studentprojects.map(sP => sP.submit(recordId)) : [];
+                            const pOPromises = this.parents_opinion.length != 0 ? this.$refs.parentsopinions.map(pO => pO.submit(recordId)) : [];
+                            const classCouncilPromises = this.class_council.length != 0 ? this.$refs.councils.map(c => c.submit(recordId)) : [];
+                            Promise.all(crossGoalPromises.concat(branchGoalPromises, classCouncilPromises, sPPromises, pOPromises))
+                                .then(resps => {
+                                    // Update new component with response.
+                                    const components = ["cross_goal", "branch_goal", "student_project", "parents_opinion", "class_council"];
+                                    components.forEach(comp => {
+                                        const compResps = resps.filter(r =>r && r.config.url.includes(`pia/api/${comp}/`));
+                                        app[comp] = compResps.map(r => r.data).sort((a, b) => a.datetime_creation < b.datetime_creation);
+                                    });
+
+                                    // Save class_council subcomponents.
+                                    const subPromises = [];
+                                    const councilResponses = resps.filter(r =>r && r.config.url.includes("/pia/api/class_council/"));
+
+                                    if (councilResponses.length == 0) {
+                                        app.showSuccess(recordId);
+                                        return;
+                                    }
+                                    // Get council statement promises.
+                                    councilResponses.forEach((r, i) => {
+                                        if (!("id" in app.$refs.councils[i])) {
+                                            app.class_council.splice(i, 1, r.data);
+                                            subPromises.concat(app.$refs.councils[i].submitCouncilStatement(app.class_council[i].id));
+                                        }
+                                    });
+
+                                    Promise.all(subPromises)
+                                        .then(() => {
+                                            app.showSuccess(recordId);
+                                        })
+                                        .catch(err => {
+                                            console.log(err);
+                                            app.showFailure();
+                                        });
                                 })
                                 .catch(err => {
                                     console.log(err);
                                     app.showFailure();
                                 });
-                        })
-                        .catch(err => {
-                            console.log(err);
-                            app.showFailure();
-                        });
 
-                }).catch(function (error) {
-                    console.log(error);
-                    app.showFailure();
-                    if ("response" in error) app.errors = error.response.data;
+                        }).catch(function (error) {
+                            console.log(error);
+                            app.showFailure();
+                            if ("response" in error) app.errors = error.response.data;
+                        });
                 });
         },
         /**
@@ -1110,7 +1178,7 @@ export default {
                             .then(resp => this.form.sponsor.push(resp.data));
                     });
                     this.form.disorder = this.store.disorders.filter(d => resp.data.disorder.includes(d.id));
-                    this.form.disorder_response = this.store.disorderResponses.filter(dr => resp.data.disorder_response.includes(dr.id));
+                    // this.form.disorder_response = this.store.disorderResponses.filter(dr => resp.data.disorder_response.includes(dr.id));
                     this.form.schedule_adjustment = this.store.scheduleAdjustments.filter(sa => resp.data.schedule_adjustment.includes(sa.id));
                     this.form.other_adjustments = resp.data.other_adjustments;
                     this.form.support_activities = resp.data.support_activities;
@@ -1125,6 +1193,14 @@ export default {
                     axios.get(`/annuaire/api/student/${resp.data.student.matricule}/`)
                         .then(resp => {
                             this.store.setCourses(resp.data.courses);
+                        });
+                    
+                    this.form.selected_disorder_response = resp.data.selected_disorder_response;
+                    this.selectedResponseLoading = true;
+                    Promise.all(resp.data.selected_disorder_response.map(id => axios.get(`/pia/api/selected_disorder_response/${id}/`)))
+                        .then(resps => {
+                            this.selected_disorder_response = resps.map(r => r.data);
+                            this.selectedResponseLoading = false;
                         });
 
                     // Attachments

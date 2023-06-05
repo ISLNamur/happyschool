@@ -221,6 +221,12 @@ class DisorderResponseViewSet(ReadOnlyModelViewSet):
     pagination_class = LargePageSizePagination
 
 
+class SelectedDisorderResponseViewSet(ModelViewSet):
+    queryset = models.SelectedDisorderResponseModel.objects.all()
+    serializer_class = serializers.SelectedDisorderResponseSerializer
+    pagination_class = LargePageSizePagination
+
+
 class ScheduleAdjustmentViewSet(ReadOnlyModelViewSet):
     """Read only view set for schedule adjustment model."""
 
@@ -320,6 +326,9 @@ class ReportPDFView(LoginRequiredMixin, PermissionRequiredMixin, WeasyTemplateVi
         context = super().get_context_data(**kwargs)
         try:
             context["pia"] = models.PIAModel.objects.get(id=int(kwargs["pia"]))
+            context[
+                "disorder_response_categories"
+            ] = models.DisorderResponseCategoryModel.objects.all()
             if not context["pia"].advanced:
                 context["support_activities"] = [
                     {

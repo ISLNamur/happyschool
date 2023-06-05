@@ -76,6 +76,12 @@ class DisorderResponseCategorySerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class SelectedDisorderResponseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.SelectedDisorderResponseModel
+        fields = "__all__"
+
+
 class ScheduleAdjustmentSerializer(serializers.ModelSerializer):
     """Serializer of a schedule adjustment.
 

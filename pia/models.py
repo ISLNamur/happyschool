@@ -83,6 +83,14 @@ class DisorderResponseModel(models.Model):
         return "%s (%s)" % (self.response, self.disorder)
 
 
+class SelectedDisorderResponseModel(models.Model):
+    category = models.ForeignKey(DisorderResponseCategoryModel, on_delete=models.CASCADE)
+    disorder_response = models.ForeignKey(DisorderResponseModel, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.disorder_response} ({self.category})"
+
+
 class ScheduleAdjustmentModel(models.Model):
     """Adjustment made in the student's schedule.
 
@@ -107,7 +115,7 @@ class PIAModel(models.Model):
     referent = models.ManyToManyField(ResponsibleModel, related_name="referent")
     sponsor = models.ManyToManyField(ResponsibleModel, related_name="sponsor")
     disorder = models.ManyToManyField(DisorderModel, blank=True)
-    disorder_response = models.ManyToManyField(DisorderResponseModel, blank=True)
+    selected_disorder_response = models.ManyToManyField(SelectedDisorderResponseModel, blank=True)
     schedule_adjustment = models.ManyToManyField(ScheduleAdjustmentModel, blank=True)
     other_adjustments = models.TextField(blank=True)
     attachments = models.ManyToManyField(AttachmentModel, blank=True)
