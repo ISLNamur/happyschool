@@ -361,6 +361,12 @@ export default {
             } else {
                 return "/unknown";
             }
+        },
+        datetime_motif_start: function () {
+            return `${this.form.date_motif_start} ${this.form.time_motif_start}`;
+        },
+        datetime_motif_end: function () {
+            return `${this.form.date_motif_end} ${this.form.time_motif_end}`;
         }
     },
     watch: {
@@ -382,6 +388,12 @@ export default {
                 } else {
                     this.form.responsible_pk = this.name.id;
                 }
+            }
+        },
+        datetime_motif_start: function () {
+            if(this.datetime_motif_end < this.datetime_motif_start) {
+                this.form.date_motif_end = this.form.date_motif_start;
+                this.form.time_motif_end = this.form.time_motif_start;
             }
         },
         errors: function (newErrors) {
