@@ -93,7 +93,11 @@ class Appel(models.Model):
             models.CheckConstraint(
                 check=(
                     models.Q(time_motif_end__isnull=True)
-                    | models.Q(time_motif_end__gte=models.F("time_motif_start"))
+                    | (
+                        models.Q(time_motif_end__gte=models.F("time_motif_start"))
+                        & models.Q(date_motif_start=models.F("date_motif_end"))
+                    )
+                    | (models.Q(date_motif_start__lt=models.F("date_motif_end")))
                 ),
                 name="correct_time_range",
             ),
