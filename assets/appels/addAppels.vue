@@ -396,6 +396,12 @@ export default {
                 this.form.time_motif_end = this.form.time_motif_start;
             }
         },
+        datetime_motif_end: function () {
+            if(this.datetime_motif_end < this.datetime_motif_start) {
+                this.form.date_motif_start = this.form.date_motif_end;
+                this.form.time_motif_start = this.form.time_motif_end;
+            }
+        },
         errors: function (newErrors) {
             const inputs = Object.keys(this.inputStates);
             for (let u in inputs) {
