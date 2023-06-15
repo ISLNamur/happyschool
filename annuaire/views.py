@@ -41,6 +41,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
 
+from django_weasyprint import WeasyTemplateView
 from z3c.rml import rml2pdf
 from unidecode import unidecode
 
@@ -551,13 +552,16 @@ class ClasseListPDFView(LoginRequiredMixin, View):
         return response
 
 
-class ClassePhotosView(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
+class ClassePhotosView(LoginRequiredMixin, WeasyTemplateView):
+    template_name = "annuaire/classe_photos.html"
+
+    def get_context_data(self, **kwargs) -> dict:
+        context = super().get_context_data(**kwargs)
         classe_id = kwargs["classe_id"]
         try:
             classe = ClasseModel.objects.get(id=classe_id)
         except ObjectDoesNotExist:
-            return render(request, "dossier_eleve/no_student.html")
+            return context
         students = StudentModel.objects.filter(classe=classe)
 
         students = sorted(students, key=lambda s: unidecode(s.last_name.lower()))
@@ -577,17 +581,4 @@ class ClassePhotosView(LoginRequiredMixin, View):
         tenures = ResponsibleModel.objects.filter(tenure=classe)
 
         context["tenures"] = tenures
-
-        context["absolute_path"] = settings.BASE_DIR
-        t = get_template("annuaire/classe.rml")
-        rml_str = t.render(context)
-
-        pdf = rml2pdf.parseString(rml_str)
-        if not pdf:
-            return render(request, "dossier_eleve/no_student.html")
-        pdf_name = "classes_%s%s.pdf" % (classe.year, classe.letter)
-
-        response = HttpResponse(content_type="application/pdf")
-        response["Content-Disposition"] = 'filename; filename="' + pdf_name + '"'
-        response.write(pdf.read())
-        return response
+        return context

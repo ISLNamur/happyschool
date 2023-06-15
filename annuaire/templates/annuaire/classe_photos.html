@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=A4, initial-scale=1.0">
+    <title>Photos</title>
+
+    <style>
+        @page {
+            size: a4;
+            margin-top: 10mm;
+            margin-bottom: 0;
+        }
+
+        section {
+            padding-top: 0cm;
+
+        }
+
+        h1 {
+            font-size: large;
+            text-align: center;
+            font-weight: 400;
+        }
+
+        td {
+            width: 16%;
+            text-align: center;
+            vertical-align: top;
+            font-size: small;
+        }
+
+        img {
+            max-width: 2.5cm;
+            max-height: 3.5cm;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>
+        <strong>PHOTOS {{ classe|upper }}</strong>
+        ({{ students_numb }} élèves)
+        {% if tenures %}
+        Titulaire(s) : {% for t in tenures %}{{ t.fullname }} {% endfor %}
+        {% endif %}
+    </h1>
+    <section>
+        <table>
+            {% for row in list %}
+            <tr>
+                {% for student in row %}
+                <td>
+                    <img src="/static/photos/{{ student.matricule }}.jpg" />
+                    <p>
+                        {{ student.fullname }}
+                    </p>
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </section>
+</body>
+
+</html>
