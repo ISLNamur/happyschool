@@ -11,8 +11,7 @@ until PGPASSWORD=$DB_PASSWORD psql -h "$DB_HOST" -U "$DB_USER" -c "\q"; do
     (( CPT == MAX_RETRIES )) && exit 1
 done
 
-if [[ ! -d "-A /opt/happyschool/static/bundles" ]]; then
-    npm install
+if [ ! -d "/opt/happyschool/static/bundles/" ]; then
     ./node_modules/.bin/webpack --config webpack.dev.js
     pipenv run ./manage.py migrate
     pipenv run ./manage.py creategroups;

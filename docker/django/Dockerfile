@@ -10,6 +10,7 @@ COPY docker/django/django_init /usr/local/bin
 WORKDIR /opt/happyschool
 COPY Pipfile .
 COPY package.json .
+RUN npm install
 RUN python3 -m pip install pipenv
 RUN pipenv install
 CMD ["/usr/local/bin/django_init"]
