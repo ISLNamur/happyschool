@@ -2,6 +2,7 @@
 
 from django.conf import settings
 from django.db import migrations, models
+from django.contrib.postgres.operations import UnaccentExtension
 import django.db.models.deletion
 
 
@@ -13,6 +14,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        UnaccentExtension(),
         migrations.CreateModel(
             name="ClasseModel",
             fields=[
