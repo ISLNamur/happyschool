@@ -12,8 +12,8 @@ et qui sera utilisé dans ce manuel.
 
 **Configuration minimale :**
 
--  Ubuntu Server 18.04 ou 20.04
--  2GO de mémoire vive
+-  Ubuntu Server 20.04 ou 22.04
+-  4GO de mémoire vive
 
 .. toctree::
    :maxdepth: 3
