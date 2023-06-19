@@ -79,6 +79,15 @@ conteneurs actifs à accéder).
    sudo docker exec -ti happyschool_django_1 bash
 
 
+Les commandes utiles à lancer dans le conteneur sont :
+
+::
+   # Regénère le code javascript au moindre changement.
+   ./node_modules/.bin/webpack --config webpack.dev.js --watch
+
+   # Démarre celery pour gérer les tâches asynchrones.
+   pipenv run celery -A happyschool worker -l info
+
 Installation manuelle
 =====================
 
