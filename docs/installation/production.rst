@@ -61,12 +61,6 @@ Pour l’installer :
 
    sudo apt install postgresql postgresql-contrib
 
-Pour activer l’extension pour toutes les futures base de données :
-
-::
-
-   sudo -u postgres bash -c "psql -U postgres -d 'template1' -c 'CREATE EXTENSION unaccent;'"
-
 Puis créer un utilisateur et une base de donnée. D’abord accéder au
 shell ``psql``:
 
