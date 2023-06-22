@@ -36,10 +36,6 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install system package
       run: sudo apt update && sudo apt install -y libldap2-dev libsasl2-dev zlib1g-dev make build-essential libssl-dev libbz2-dev libreadline-dev libsqlite3-dev wget llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev liblzma-dev libffi-dev git python3-dateutil ttf-bitstream-vera redis-server nodejs python3-pip libpangocairo-1.0-0
-    - name: Setup postgresql
-      run: |
-        psql "postgresql://happyschool:libreschool@localhost/template1" -c "CREATE EXTENSION unaccent;"
-        psql "postgresql://happyschool:libreschool@localhost/happyschool" -c "CREATE EXTENSION unaccent;"
     - name: Install python version
       uses: gabrielfalcao/pyenv-action@v8
       with:
