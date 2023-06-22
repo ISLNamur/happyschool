@@ -88,6 +88,15 @@ Les commandes utiles à lancer dans le conteneur sont :
    # Démarre celery pour gérer les tâches asynchrones.
    pipenv run celery -A happyschool worker -l info
 
+Mises à jour
+------------
+
+Pour mettre à jour les dépendances (python et js), il suffit de reconstruire
+l'image docker et de relancer :
+
+::
+   sudo docker-compose up --build
+
 Installation manuelle
 =====================
 
