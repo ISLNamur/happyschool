@@ -66,7 +66,7 @@ from .tasks import task_send_info_email, notify_sanction
 
 from z3c.rml import rml2pdf
 from io import BytesIO
-from PyPDF2 import PdfFileMerger
+from PyPDF2 import PdfWriter
 
 
 def get_menu_entry(active_app, request):
@@ -669,7 +669,7 @@ class CasElevePDFGenAPI(LoginRequiredMixin, PermissionRequiredMixin, WeasyTempla
                 return HttpResponse("Vous n'avez pas les accès nécessaire.", status=401)
 
             students = People().get_students_by_classe(classe)
-            merger = PdfFileMerger()
+            merger = PdfWriter()
             added = False
             for s in students:
                 request.GET = request.GET.copy()
@@ -690,6 +690,7 @@ class CasElevePDFGenAPI(LoginRequiredMixin, PermissionRequiredMixin, WeasyTempla
 
             output_stream = BytesIO()
             merger.write(output_stream)
+            merger.close()
             response = HttpResponse(content_type="application/pdf")
             response["Content-Disposition"] = 'filename; filename="' + classe.compact_str + '.pdf"'
             response.write(output_stream.getvalue())
