@@ -67,6 +67,20 @@ class AppelSerializer(serializers.ModelSerializer):
     object_id = serializers.PrimaryKeyRelatedField(
         queryset=ObjectModel.objects.all(), source="object", write_only=True
     )
+    date_motif_start = serializers.DateField()
+    date_motif_end = serializers.DateField()
+
+    def validate(self, data):
+        if data["date_motif_start"] > data["date_motif_end"] or (
+            data["date_motif_start"] == data["date_motif_end"]
+            and data["time_motif_start"] > data["time_motif_end"]
+        ):
+            raise serializers.ValidationError(
+                {
+                    "date_motif_end": "La date de fin du motif doit être plus grande ou égale à la date de début du motif"
+                }
+            )
+        return data
 
     class Meta:
         model = Appel
