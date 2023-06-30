@@ -133,6 +133,7 @@
                                             id="input-date-motif-start"
                                             type="date"
                                             v-model="form.date_motif_start"
+                                            :state="inputStates.date_motif_start"
                                         />
                                         <template #invalid-feedback>
                                             {{ errorMsg('date_motif_start') }}
@@ -148,6 +149,7 @@
                                             id="input-time-motif-start"
                                             type="time"
                                             v-model="form.time_motif_start"
+                                            :state="inputStates.time_motif_start"
                                         />
                                     </b-form-group>
                                 </b-col>
@@ -400,6 +402,8 @@ export default {
             if(this.datetime_motif_end < this.datetime_motif_start) {
                 this.form.date_motif_start = this.form.date_motif_end;
                 this.form.time_motif_start = this.form.time_motif_end;
+                this.inputStates.time_motif_start = true;
+                this.inputStates.date_motif_start = true;
             }
         },
         errors: function (newErrors) {
