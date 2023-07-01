@@ -12,5 +12,5 @@ COPY Pipfile .
 COPY package.json .
 RUN npm install
 RUN python3 -m pip install pipenv
-RUN pipenv install
+RUN pipenv install --dev
 CMD ["/usr/local/bin/django_init"]
