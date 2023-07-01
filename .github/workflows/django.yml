@@ -59,8 +59,11 @@ jobs:
         DB_PASSWORD: libreschool
     - name: Run Tests
       run: |
+        echo "\033[32m CHECK JS/VUE FORMATTING"
         npx eslint --ext .js,.vue assets/
-        pipenv run black --check .
+        echo "\033[32m CHECK PYTHON FORMATING"
+        pipenv run black --check --diff .
+        echo "\033[32m CHECK TEST CODE"
         pipenv run coverage run --source='.' manage.py test
         pipenv run coverage report
       env:
