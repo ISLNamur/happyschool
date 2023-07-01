@@ -82,6 +82,7 @@ conteneurs actifs à accéder).
 Les commandes utiles à lancer dans le conteneur sont :
 
 ::
+
    # Regénère le code javascript au moindre changement.
    ./node_modules/.bin/webpack --config webpack.dev.js --watch
 
