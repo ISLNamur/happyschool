@@ -141,6 +141,7 @@ class PIAViewSet(BaseModelViewSet):
             log=f"PIA from {str(instance.student)} is deleted by {self.request.user.username}"
         )
         delete_log.save()
+        super().perform_destroy(instance)
 
     def perform_update(self, serializer):
         instance = serializer.save()
@@ -224,6 +225,16 @@ class DisorderResponseViewSet(ReadOnlyModelViewSet):
 class SelectedDisorderResponseViewSet(ModelViewSet):
     queryset = models.SelectedDisorderResponseModel.objects.all()
     serializer_class = serializers.SelectedDisorderResponseSerializer
+    pagination_class = LargePageSizePagination
+
+
+class DisorderCareViewSet(ModelViewSet):
+    queryset = models.DisorderCareModel.objects.all()
+    serializer_class = serializers.DisorderCareSerializer
+    filter_backends = [
+        filters.DjangoFilterBackend,
+    ]
+    filterset_fields = ("pia_model",)
     pagination_class = LargePageSizePagination
 
 
