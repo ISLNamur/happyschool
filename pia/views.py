@@ -228,6 +228,17 @@ class SelectedDisorderResponseViewSet(ModelViewSet):
     pagination_class = LargePageSizePagination
 
 
+class SelectedDisorderResponseNewViewSet(ModelViewSet):
+    queryset = models.SelectedDisorderResponseNewModel.objects.all()
+    serializer_class = serializers.SelectedDisorderResponseNewSerializer
+    pagination_class = LargePageSizePagination
+
+    filter_backends = [
+        filters.DjangoFilterBackend,
+    ]
+    filterset_fields = ("disorder_care",)
+
+
 class DisorderCareViewSet(ModelViewSet):
     queryset = models.DisorderCareModel.objects.all()
     serializer_class = serializers.DisorderCareSerializer
