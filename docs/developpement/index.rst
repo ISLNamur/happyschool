@@ -12,4 +12,5 @@ l’utilisateur final ainsi que de la logique de l’interface.
 .. toctree::
    :maxdepth: 3
 
+   contribuer
    developpement
