@@ -13,9 +13,10 @@ done
 
 if [ ! -d "/opt/happyschool/static/bundles/" ]; then
     ./node_modules/.bin/webpack --config webpack.dev.js
-    pipenv run ./manage.py migrate
-    pipenv run ./manage.py creategroups;
-    pipenv run ./manage.py shell -c 'from django.contrib.auth import get_user_model; get_user_model().objects.create_superuser("admin", "admin@localhost", "admin")'
+    pipenv run python3 manage.py migrate
+    pipenv run python3 manage.py creategroups;
+    pipenv run python3 manage.py shell -c 'from django.contrib.auth import get_user_model; get_user_model().objects.create_superuser("admin", "admin@localhost", "admin")'
 fi
 
-exec pipenv run ./manage.py runserver 0.0.0.0:8000
+pipenv run python3 manage.py runserver 0.0.0.0:8000 
+
