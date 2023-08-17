@@ -118,12 +118,26 @@ def get_menu(request: HttpRequest, active_app: str = "") -> dict:
             pass
 
     for entry in MenuEntryModel.objects.filter(forced_order=None):
-        apps.append({"app": entry.id, "display": entry.display, "url": entry.link, "active": False})
+        apps.append(
+            {
+                "app": entry.id,
+                "display": entry.display,
+                "url": entry.link,
+                "active": False,
+                "new_tab": True,
+            }
+        )
 
     for entry in MenuEntryModel.objects.filter(forced_order__isnull=False):
         apps.insert(
             entry.forced_order,
-            {"app": entry.id, "display": entry.display, "url": entry.link, "active": False},
+            {
+                "app": entry.id,
+                "display": entry.display,
+                "url": entry.link,
+                "active": False,
+                "new_tab": True,
+            },
         )
 
     full_name = request.user.get_full_name() if not request.user.is_anonymous else "anonymous"
