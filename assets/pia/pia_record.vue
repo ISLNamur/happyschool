@@ -219,6 +219,10 @@
                             </b-form-group>
                         </b-col>
                     </b-row>
+                    <schedule-adjustments
+                        v-if="advanced"
+                        :pia="Number(id)"
+                    />
                     <b-row v-if="advanced">
                         <b-col>
                             <h4 class="mt-4">
@@ -583,6 +587,7 @@ import StudentGoal from "./student_goal.vue";
 import ClassCouncil from "./class_council.vue";
 import PiaComment from "./pia_comment.vue";
 import Disorder from "./disorder.vue";
+import ScheduleAdjustments from "./schedule_adjustments.vue";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
@@ -1044,6 +1049,7 @@ export default {
         ClassCouncil,
         PiaComment,
         Disorder,
+        ScheduleAdjustments,
         FileUpload,
         quillEditor,
     }

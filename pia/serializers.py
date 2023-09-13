@@ -105,6 +105,17 @@ class ScheduleAdjustmentSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ScheduleAdjustmentPlanSerializer(serializers.ModelSerializer):
+    """Serializer of a schedule adjustment plan.
+
+    Expose all field of the model.
+    """
+
+    class Meta:
+        model = models.ScheduleAdjustmentPlanModel
+        fields = "__all__"
+
+
 class CrossGoalSerializer(serializers.ModelSerializer):
     responsible = serializers.SlugRelatedField(
         many=True, slug_field="matricule", queryset=ResponsibleModel.objects.all()

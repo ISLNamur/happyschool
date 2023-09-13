@@ -41,6 +41,7 @@ router.register(r"api/selected_disorder_response", views.SelectedDisorderRespons
 router.register(r"api/selected_disorder_response_new", views.SelectedDisorderResponseNewViewSet)
 router.register(r"api/disorder_care", views.DisorderCareViewSet)
 router.register(r"api/schedule_adjustment", views.ScheduleAdjustmentViewSet)
+router.register(r"api/schedule_adjustment_plan", views.ScheduleAdjustmentPlanViewSet)
 router.register(r"api/cross_goal", views.CrossGoalViewSet)
 router.register(r"api/assessment", views.AssessmentViewSet)
 router.register(r"api/branch", views.BranchViewSet)
