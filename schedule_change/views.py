@@ -88,6 +88,8 @@ class ScheduleChangeView(LoginRequiredMixin, PermissionRequiredMixin, TemplateVi
         {"value": "activate_ongoing", "text": "Prochains changements"},
         {"value": "date_change", "text": "Date du changement"},
         {"value": "classe", "text": "Classe"},
+        {"value": "search_teacher", "text": "Personne"},
+        {"value": "activate_own_changes", "text": "Mes changements"},
         {"value": "activate_has_classe", "text": "Concerne une classe"},
         {"value": "place", "text": "Lieu"},
     ]
@@ -129,6 +131,8 @@ class ScheduleChangeFilter(BaseFilters):
     activate_ongoing = filters.BooleanFilter(method="activate_ongoing_by")
     activate_has_classe = filters.BooleanFilter(method="activate_has_classe_by")
     activate_show_for_students = filters.BooleanFilter(method="activate_show_for_students_by")
+    activate_own_changes = filters.BooleanFilter(method="activate_own_changes_by")
+    search_teacher = filters.CharFilter(method="search_teacher_by")
     classe = filters.CharFilter(method="classe_by")
 
     class Meta:
@@ -160,6 +164,23 @@ class ScheduleChangeFilter(BaseFilters):
             else:
                 by_year = Q(classes__contains=f"{value[0]}ème année")
         return queryset.filter(Q(classes__icontains=value) | by_year)
+
+    def search_teacher_by(self, queryset, name, value):
+        if value.isdigit():
+            return queryset.filter(
+                Q(teachers_replaced__id=value) | Q(teachers_substitute__id=value)
+            )
+        else:
+            return queryset.filter(
+                Q(teachers_replaced__last_name__unaccent__istartswith=value)
+                | Q(teachers_replaced__first_name__unaccent__istartswith=value)
+                | Q(teachers_substitute__last_name__unaccent__istartswith=value)
+                | Q(teachers_substitute__first_name__unaccent__istartswith=value)
+            )
+
+    def activate_own_changes_by(self, queryset, name, value):
+        resp = ResponsibleModel.objects.get(user=self.request.user)
+        return queryset.filter(Q(teachers_replaced=resp) | Q(teachers_substitute=resp))
 
 
 class ScheduleChangeTypeViewSet(ReadOnlyModelViewSet):
