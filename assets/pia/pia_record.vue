@@ -188,40 +188,10 @@
                             />
                         </b-col>
                     </b-row>
-                    <b-row v-if="advanced">
-                        <b-col>
-                            <h4 class="mt-4">
-                                Aménagements d'horaire
-                            </h4>
-                            <b-form-group
-                                :state="inputStates.schedule_adjustment"
-                            >
-                                <multiselect
-                                    :options="store.scheduleAdjustments"
-                                    placeholder="Sélectionner le ou les différents adaptations"
-                                    select-label=""
-                                    selected-label="Sélectionné"
-                                    deselect-label="Cliquer dessus pour enlever"
-                                    v-model="form.schedule_adjustment"
-                                    track-by="id"
-                                    label="schedule_adjustment"
-                                    :show-no-options="false"
-                                    multiple
-                                >
-                                    <template #noResult>
-                                        Aucun aménagements trouvé.
-                                    </template>
-                                    <template #noOptions />
-                                </multiselect>
-                                <template #invalid-feedback>
-                                    {{ errorMsg('schedule_adjustment') }}
-                                </template>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
                     <schedule-adjustments
                         v-if="advanced"
                         :pia="Number(id)"
+                        ref="adjustments"
                     />
                     <b-row v-if="advanced">
                         <b-col>
@@ -900,12 +870,15 @@ export default {
                     // }
 
                     const disorderPromise = [app.$refs.disorder.save(recordId)];
+                    const scheduleAdjustPromise = [app.$refs.adjustments.save(recordId)];
                     const crossGoalPromises = this.cross_goal.length != 0 ? this.$refs.crossgoals.map(g => g.submit(recordId)) : [];
                     const branchGoalPromises = this.branch_goal.length != 0 && this.$refs.branchgoals ? this.$refs.branchgoals.map(g => g.submit(recordId)) : [];
                     const sPPromises = this.student_project.length != 0 ? this.$refs.studentprojects.map(sP => sP.submit(recordId)) : [];
                     const pOPromises = this.parents_opinion.length != 0 ? this.$refs.parentsopinions.map(pO => pO.submit(recordId)) : [];
                     const classCouncilPromises = this.class_council.length != 0 ? this.$refs.councils.map(c => c.submit(recordId)) : [];
-                    Promise.all(crossGoalPromises.concat(disorderPromise, branchGoalPromises, classCouncilPromises, sPPromises, pOPromises))
+                    Promise.all(crossGoalPromises.concat(
+                        disorderPromise, scheduleAdjustPromise, branchGoalPromises, classCouncilPromises, sPPromises, pOPromises
+                    ))
                         .then(resps => {
                             // Update new component with response.
                             const components = ["cross_goal", "branch_goal", "student_project", "parents_opinion", "class_council"];

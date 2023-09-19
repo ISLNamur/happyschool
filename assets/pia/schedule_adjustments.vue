@@ -32,7 +32,7 @@
                     <b-select
                         :options="scheduleAdjustments"
                         value-field="id"
-                        v-model="currentSchedAdj"
+                        v-model="currentSchedAdj.id"
                     />
                 </b-form-group>
             </b-col>
@@ -40,6 +40,53 @@
         <b-row v-if="currentSchedAdj">
             <b-col>
                 <b-card>
+                    <b-row class="mb-1">
+                        <b-col>
+                            <strong>
+                                <b-form inline>
+                                    Du<b-form-input
+                                        type="date"
+                                        v-model="currentSchedAdj.date_start"
+                                        class="mr-sm-2 ml-2"
+                                    />
+                                    au<b-form-input
+                                        type="date"
+                                        v-model="currentSchedAdj.date_end"
+                                        class="ml-2"
+                                    />
+                                </b-form>
+                            </strong>
+                        </b-col>
+                        <b-col>
+                            <b-btn
+                                variant="outline-secondary"
+                                @click="copy"
+                            >
+                                <b-icon
+                                    icon="files"
+                                />
+                                Copier
+                            </b-btn>
+                            <b-btn
+                                variant="success"
+                                @click="add"
+                            >
+                                <b-icon
+                                    icon="plus"
+                                />
+                                Ajouter
+                            </b-btn>
+                            <b-btn
+                                variant="danger"
+                                @click="remove"
+                            >
+                                <b-icon
+                                    icon="trash"
+                                />
+                                Supprimer
+                            </b-btn>
+                        </b-col>
+                    </b-row>
                     <b-row>
                         <b-col>
                             <multiselect
@@ -89,26 +136,90 @@ export default {
         return {
             loading: false,
             scheduleAdjustments: [],
-            currentSchedAdj: null,
-            other: {},
+            currentSchedAdj: {schedule_adjustments: [], id: -1},
             store: piaStore(),
         };
+    },
+    methods: {
+        add: function () {
+            this.scheduleAdjustments.push(
+                {schedule_adjustments: [], id: -1, date_start: null, date_end: null, text: "Nouvel aménagement"}
+            );
+            this.currentSchedAdj = this.scheduleAdjustments[this.scheduleAdjustments.length - 1];
+        },
+        copy: function () {
+            let copy = Object.assign({}, this.currentSchedAdj);
+            copy.id = -1;
+            copy.text = `Copie de ${copy.text}`;
+            this.scheduleAdjustments.push(copy);
+            this.currentSchedAdj = this.scheduleAdjustments[this.scheduleAdjustments.length - 1];
+        },
+        remove: function () {
+            this.$bvModal.msgBoxConfirm(
+                "Êtes-vous sûr de vouloir supprimer l'élément ?",
+                {
+                    title: "Attention !",
+                    okVariant: "danger",
+                    okTitle: "Oui",
+                    cancelTitle: "Non",
+                },
+            ).then((confirm) => {
+                if (confirm) {
+                    const sAIndex = this.scheduleAdjustments.findIndex(
+                        sA => sA.id === this.currentSchedAdj.id && sA.date_start === this.currentSchedAdj.date_start
+                    );
+                    const removedObj = this.scheduleAdjustments.splice(sAIndex, 1)[0];
+                    this.currentSchedAdj = this.scheduleAdjustments[this.scheduleAdjustments.length - 1];
+                    axios.delete(`/pia/api/schedule_adjustment_plan/${removedObj.id}/`, token);
+                }
+            });
+        },
+        save: function (piaId) {
+            return new Promise((resolve, reject )=> {
+                this.loading = true;
+                Promise.all(
+                    this.scheduleAdjustments.map(sA => {
+                        const isNew = sA.id < 0;
+                        const send = isNew ? axios.post : axios.put;
+                        const url = `/pia/api/schedule_adjustment_plan/${isNew ? "" : sA.id + "/"}`;
+
+                        // Copy schedule adjustment for sending.
+                        let data = Object.assign({}, sA);
+                        data.pia_model = piaId;
+                        data.schedule_adjustment = data.schedule_adjustment.map(adjObj => adjObj.id);
+                        return send(url, data, token);
+                    })
+                ).then((resps) => {
+                    this.expandScheduleAdjustment(resps.map(r => r.data));
+                    this.loading = false;
+                    resolve();
+                }).catch((err) => {
+                    console.log(err);
+                    this.loading = false;
+                    reject(err);
+                });
+            });
+        },
+        expandScheduleAdjustment: function (scheduleAdjustments) {
+            this.scheduleAdjustments = scheduleAdjustments.sort((a, b) => a.date_start < b.date_start).map(sA => {
+                sA.text = `Du ${sA.date_start} au ${sA.date_end}`;
+                sA.schedule_adjustment = sA.schedule_adjustment
+                    .map(id => this.store.scheduleAdjustments.find(s => s.id === id));
+                return sA;
+            }); 
+
+            if (this.scheduleAdjustments.length > 0) {
+                this.currentSchedAdj = this.scheduleAdjustments[0];
+            }
+        }
     },
     components: {
         Multiselect
     },
     mounted: function () {
-        // this.currentSchedAdj = {schedule_adjustments: [], id: -1};
         axios.get(`/pia/api/schedule_adjustment_plan/?pia_model=${this.pia}`)
             .then((resp) => {
-                this.scheduleAdjustments = resp.data.results.map(sA => {
-                    sA.text = `Du ${sA.date_start} au ${sA.date_end}`;
-                    return sA;
-                }); 
-
-                if (this.scheduleAdjustments.length > 0) {
-                    this.currentSchedAdj = this.scheduleAdjustments[0];
-                }
+                this.expandScheduleAdjustment(resp.data.results);
             });
     }
 };

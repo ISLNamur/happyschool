@@ -152,10 +152,13 @@
     <div>
         <dl>
             <dt>Aménagements d'horaire</dt>
-            {% for s_a in pia.schedule_adjustment.all %}
+            {% for plan in pia.scheduleadjustmentplanmodel_set.all %}
+            <dd>Du <em>{{ plan.date_start }}</em> au <em>{{ plan.date_end }}</em></dd>
+            {% for s_a in plan.schedule_adjustment.all %}
             <dd>
                 <span class="chevron">> </span>{{ s_a }}
             </dd>
+            {% endfor %}
             {% endfor %}
         </dl>
     </div>
