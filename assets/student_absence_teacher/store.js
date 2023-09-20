@@ -41,13 +41,10 @@ export default new Vuex.Store({
             if (matricule in state.changes) delete state.changes[matricule];
         },
         resetChanges: function (state, resetExceptions) {
-            console.log(resetExceptions);
             if (resetExceptions) {
-                console.log(Object.entries(state.changes));
                 const keepChanges = Object.entries(state.changes).filter(
                     (change) => resetExceptions.includes(change[1].matricule)
                 );
-                console.log(keepChanges);
                 state.changes = Object.fromEntries(keepChanges);
                 return;
             }
