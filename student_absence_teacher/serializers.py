@@ -66,8 +66,8 @@ class StudentAbsenceTeacherSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StudentAbsenceTeacherModel
-        exclude = (
-            "datetime_creation",
+        exclude = ("datetime_creation",)
+        read_only_fields = (
+            "user",
             "datetime_update",
         )
-        read_only_fields = ("user",)

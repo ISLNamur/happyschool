@@ -114,6 +114,7 @@ class StudentAbsenceTeacherFilter(BaseFilters):
             "student__classe",
             "period",
             "period__name",
+            "datetime_update",
         ]
         model = StudentAbsenceTeacherModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
@@ -145,7 +146,12 @@ class StudentAbsenceTeacherViewSet(ModelViewSet):
         OrderingFilter,
     )
     filterset_class = StudentAbsenceTeacherFilter
-    ordering_fields = ["date_absence", "datetime_update", "datetime_creation", "period"]
+    ordering_fields = [
+        "date_absence",
+        "datetime_update",
+        "datetime_creation",
+        "period",
+    ]
     pagination_class = PageNumberSizePagination
 
     def perform_create(self, serializer):

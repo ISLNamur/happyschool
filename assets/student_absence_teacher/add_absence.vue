@@ -52,7 +52,9 @@
                     @input="getStudents('UND', true)"
                     class="mb-1"
                 >
-                    <template #noResult>Aucune période ne correspond à votre recherche.</template>
+                    <template #noResult>
+                        Aucune période ne correspond à votre recherche.
+                    </template>
                 </multiselect>
             </b-col>
             <b-col
@@ -74,7 +76,9 @@
                     @input="getStudents('GC')"
                     class="mb-1"
                 >
-                    <template #noResult>Aucun cours ne correspond à votre recherche.</template>
+                    <template #noResult>
+                        Aucun cours ne correspond à votre recherche.
+                    </template>
                 </multiselect>
             </b-col>
             <span v-if="$store.state.settings.select_student_by === 'CLGC'">ou</span>
@@ -94,7 +98,9 @@
                     @search-change="searchClasses"
                     class="mb-1"
                 >
-                    <template #noResult>Aucune classe ne correspond à votre recherche.</template>
+                    <template #noResult>
+                        Aucune classe ne correspond à votre recherche.
+                    </template>
                 </multiselect>
             </b-col>
         </b-row>
@@ -116,7 +122,9 @@
                         :show-no-options="false"
                         class="mb-1"
                     >
-                        <template #noResult>Aucune classe ne correspond à votre recherche.</template>
+                        <template #noResult>
+                            Aucune classe ne correspond à votre recherche.
+                        </template>
                     </multiselect>
                 </b-form-group>
             </b-col>
@@ -202,6 +210,7 @@ export default {
             currentDate: Moment().format("YYYY-MM-DD"),
             loadingStudent: false,
             studentGroup: null,
+            lastUpdate: null,
         };
     },
     computed: {
@@ -235,8 +244,6 @@ export default {
                 });
         },
         getAbsence: function (students, selectBy) {
-            // if (this.period.length > 1 || this.period.length == 0) return;
-
             const data = {
                 params: {
                     period: this.period[0].id,
@@ -245,6 +252,7 @@ export default {
                 }
             };
             if (selectBy === "GC") data.params.given_course = this.givenCourse.id;
+            if (selectBy === "CL") data.params.student__classe = this.classe.id;
             axios.get("/student_absence_teacher/api/absence/", data, token)
                 .then(resp => {
                     this.students = students.map(s => {
@@ -254,6 +262,15 @@ export default {
                         s.saved = savedAbsence;
                         return s;
                     });
+
+                    // Save last data update.
+                    resp.data.results.forEach(ab => {
+                        if (!this.lastUpdate) {
+                            this.lastUpdate = ab.datetime_update;
+                        } else if (this.lastUpdate < ab.datetime_update) {
+                            this.lastUpdate = ab.datetime_update;
+                        }
+                    });
                     this.loadingStudent = false;
                 })
                 .catch(err => {
@@ -261,7 +278,7 @@ export default {
                 });
         },
         getStudents: function (selectBy, periodChange=false) {
-            if (selectBy === "UND") {
+            if (selectBy === "UND" || selectBy === undefined) {
                 // If undefined, try givenCourse and then classe.
                 selectBy = this.givenCourse ? "GC" : "CL";
             } else {
@@ -309,45 +326,84 @@ export default {
         },
         sendChanges: function () {
             const changes = this.$store.state.changes;
-            const promises = [];
-            for (let period in this.period) {
-                for (let matricule in changes) {
-                    const change = changes[matricule];
-                    const send = change.is_new ? axios.post : axios.put;
-                    let url = "/student_absence_teacher/api/absence/";
-                    if (!change.is_new) url += change.id + "/";
-                    
-                    const data = {
-                        student_id: matricule,
-                        period_id: this.period[period].id,
-                        comment: change.comment,
-                        status: change.status,
-                        date_absence: this.currentDate
-                    };
-                    if (this.$store.state.settings.select_student_by === "GC") data.given_course_id = this.givenCourse.id;
-                    promises.push(send(url, data, token));
+
+            // Check if changes have been made in between.
+            const data = {
+                params: {
+                    period: this.period[0].id,
+                    date_absence: this.currentDate,
+                    page_size: 5000,
+                    datetime_update__gt: this.lastUpdate
                 }
+            };
+            if (this.givenCourse) {
+                data.params.given_course = this.givenCourse.id;
+            } else {
+                data.params.student__classe = this.classe.id;
             }
-            Promise.all(promises)
-                .then(resps => {
-                    for (let r in resps) {
-                        this.$store.commit("removeChange", resps[r].data.student_id);
+            axios.get("/student_absence_teacher/api/absence/", data, token)
+                .then((resp) => {
+                    if (resp.data.count > 0) {
+                        const baseSentence = "Des changements ont eu lieu depuis le chargement initial des données. ";
+                        const students = resp.data.results.map(ab => `${ab.student.last_name} ${ab.student.first_name}`).join(", ");
+                        const changes = `Les élèves suivants ont été modifiés : ${students}. `;
+                        const endSentence = "Tous les autres changements ont été sauvegardés.";
+                        this.$bvModal.msgBoxOk(`${baseSentence} ${changes}${endSentence}`);
                     }
-                    this.$bvToast.toast("Les changements ont été sauvés.", {
-                        variant: "success",
-                        noCloseButton: true,
-                    });
-                    if (this.period.length === 1) {
-                        this.getStudents();
-                    } else {
-                        this.students = [];
-                        this.period = [];
+
+                    const promises = [];
+                    for (let period in this.period) {
+                        for (let matricule in changes) {
+                            const change = changes[matricule];
+                            if (resp.data.results.find(r => r.student.matricule === matricule)) {
+                                continue;
+                            }
+                            const send = change.is_new ? axios.post : axios.put;
+                            let url = "/student_absence_teacher/api/absence/";
+                            if (!change.is_new) url += change.id + "/";
+                            
+                            const data = {
+                                student_id: matricule,
+                                period_id: this.period[period].id,
+                                comment: change.comment,
+                                status: change.status,
+                                date_absence: this.currentDate
+                            };
+                            if (this.$store.state.settings.select_student_by === "GC") data.given_course_id = this.givenCourse.id;
+                            promises.push(send(url, data, token));
+                        }
                     }
-                    
-                    this.computeAlert();
-                })
-                .catch(err => {
-                    alert(err);
+                    for (let matricule in changes) {
+                        this.$store.commit("removeChange", matricule);
+                    }
+                    Promise.all(promises)
+                        .then(resps => {
+                            for (let r in resps) {
+                                this.$store.commit("removeChange", resps[r].data.student_id);
+                            }
+                            resps.forEach(r => {
+                                if (!this.lastUpdate) {
+                                    this.lastUpdate = r.data.datetime_update;
+                                } else if (this.lastUpdate < r.data.datetime_update) {
+                                    this.lastUpdate = r.data.datetime_update;
+                                }
+                            });
+                            this.$bvToast.toast("Les changements ont été sauvés.", {
+                                variant: "success",
+                                noCloseButton: true,
+                            });
+                            if (this.period.length === 1) {
+                                this.getStudents();
+                            } else {
+                                this.students = [];
+                                this.period = [];
+                            }
+                            
+                            this.computeAlert();
+                        })
+                        .catch(err => {
+                            alert(err);
+                        });
                 });
         },
     },
