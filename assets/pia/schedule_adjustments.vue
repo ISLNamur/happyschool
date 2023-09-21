@@ -32,7 +32,8 @@
                     <b-select
                         :options="scheduleAdjustments"
                         value-field="id"
-                        v-model="currentSchedAdj.id"
+                        v-model="currentSchedAdjId"
+                        @change="updateCurrentSchedAdj"
                     />
                 </b-form-group>
             </b-col>
@@ -136,6 +137,7 @@ export default {
         return {
             loading: false,
             scheduleAdjustments: [],
+            currentSchedAdjId: null,
             currentSchedAdj: {schedule_adjustments: [], id: -1},
             store: piaStore(),
         };
@@ -200,6 +202,9 @@ export default {
                 });
             });
         },
+        updateCurrentSchedAdj: function (selected) {
+            this.currentSchedAdj = this.scheduleAdjustments.find(sA => sA.id === selected);
+        },
         expandScheduleAdjustment: function (scheduleAdjustments) {
             this.scheduleAdjustments = scheduleAdjustments.sort((a, b) => a.date_start < b.date_start).map(sA => {
                 sA.text = `Du ${sA.date_start} au ${sA.date_end}`;
@@ -210,6 +215,7 @@ export default {
 
             if (this.scheduleAdjustments.length > 0) {
                 this.currentSchedAdj = this.scheduleAdjustments[0];
+                this.currentSchedAdjId = this.scheduleAdjustments[0].id;
             }
         }
     },
@@ -217,9 +223,12 @@ export default {
         Multiselect
     },
     mounted: function () {
-        axios.get(`/pia/api/schedule_adjustment_plan/?pia_model=${this.pia}`)
-            .then((resp) => {
-                this.expandScheduleAdjustment(resp.data.results);
+        this.store.loadOptions()
+            .then(() => {          
+                axios.get(`/pia/api/schedule_adjustment_plan/?pia_model=${this.pia}`)
+                    .then((resp) => {
+                        this.expandScheduleAdjustment(resp.data.results);
+                    });
             });
     }
 };
