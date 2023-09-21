@@ -228,14 +228,27 @@ class SelectedDisorderResponseViewSet(ModelViewSet):
     pagination_class = LargePageSizePagination
 
 
+class SelectedDisorderResponseNewViewSet(ModelViewSet):
+    queryset = models.SelectedDisorderResponseNewModel.objects.all()
+    serializer_class = serializers.SelectedDisorderResponseNewSerializer
+    pagination_class = LargePageSizePagination
+
+    filter_backends = [
+        filters.DjangoFilterBackend,
+    ]
+    filterset_fields = ("disorder_care",)
+
+
 class DisorderCareViewSet(ModelViewSet):
     queryset = models.DisorderCareModel.objects.all()
     serializer_class = serializers.DisorderCareSerializer
     filter_backends = [
         filters.DjangoFilterBackend,
+        OrderingFilter,
     ]
     filterset_fields = ("pia_model",)
     pagination_class = LargePageSizePagination
+    ordering = ["-date_start"]
 
 
 class ScheduleAdjustmentViewSet(ReadOnlyModelViewSet):
@@ -244,6 +257,18 @@ class ScheduleAdjustmentViewSet(ReadOnlyModelViewSet):
     queryset = models.ScheduleAdjustmentModel.objects.all()
     serializer_class = serializers.ScheduleAdjustmentSerializer
     pagination_class = LargePageSizePagination
+
+
+class ScheduleAdjustmentPlanViewSet(ModelViewSet):
+    queryset = models.ScheduleAdjustmentPlanModel.objects.all()
+    serializer_class = serializers.ScheduleAdjustmentPlanSerializer
+    filter_backends = [
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    ]
+    filterset_fields = ("pia_model",)
+    pagination_class = LargePageSizePagination
+    ordering = ["-date_start"]
 
 
 class CrossGoalItemViewSet(ReadOnlyModelViewSet):

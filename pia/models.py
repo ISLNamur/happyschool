@@ -130,6 +130,55 @@ class PIAModel(models.Model):
         return str(self.student)
 
 
+class DisorderCareModel(models.Model):
+    pia_model = models.ForeignKey(PIAModel, on_delete=models.CASCADE)
+    date_start = models.DateField()
+    date_end = models.DateField()
+    disorder = models.ManyToManyField(DisorderModel, blank=True)
+
+    datetime_created = models.DateTimeField(auto_now_add=True)
+    datetime_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.pia_model.student} ({self.date_start} - {self.date_end})"
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=(models.Q(date_start__lte=models.F("date_end"))),
+                name="ensure_date_start_lte_date_end",
+            )
+        ]
+
+
+class SelectedDisorderResponseNewModel(models.Model):
+    disorder_care = models.ForeignKey(DisorderCareModel, on_delete=models.CASCADE)
+    category = models.ForeignKey(DisorderResponseCategoryModel, on_delete=models.CASCADE)
+    disorder_response = models.ForeignKey(DisorderResponseModel, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.disorder_response} ({self.category})"
+
+
+class ScheduleAdjustmentPlanModel(models.Model):
+    """Adjustment made in the student's schedule.
+
+    Attributes:
+        schedule_adjustment Description of the schedule adjustment.
+    """
+
+    pia_model = models.ForeignKey(PIAModel, on_delete=models.CASCADE)
+    date_start = models.DateField()
+    date_end = models.DateField()
+    schedule_adjustment = models.ManyToManyField(ScheduleAdjustmentModel, blank=True)
+
+    datetime_created = models.DateTimeField(auto_now_add=True)
+    datetime_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{', '.join([str(s_a) for s_a in self.schedule_adjustment.all()])} ({str(self.pia_model.student)})"
+
+
 class StudentProjectModel(models.Model):
     pia_model = models.ForeignKey(PIAModel, on_delete=models.CASCADE)
     student_project = models.TextField()

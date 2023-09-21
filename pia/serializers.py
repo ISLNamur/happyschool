@@ -82,6 +82,18 @@ class SelectedDisorderResponseSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class SelectedDisorderResponseNewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.SelectedDisorderResponseNewModel
+        fields = "__all__"
+
+
+class DisorderCareSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.DisorderCareModel
+        fields = "__all__"
+
+
 class ScheduleAdjustmentSerializer(serializers.ModelSerializer):
     """Serializer of a schedule adjustment.
 
@@ -90,6 +102,17 @@ class ScheduleAdjustmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.ScheduleAdjustmentModel
+        fields = "__all__"
+
+
+class ScheduleAdjustmentPlanSerializer(serializers.ModelSerializer):
+    """Serializer of a schedule adjustment plan.
+
+    Expose all field of the model.
+    """
+
+    class Meta:
+        model = models.ScheduleAdjustmentPlanModel
         fields = "__all__"
 
 
