@@ -81,7 +81,9 @@
                         :show-no-options="false"
                         multiple
                     >
-                        <template #noResult>Aucun responsable trouvé.</template>
+                        <template #noResult>
+                            Aucun responsable trouvé.
+                        </template>
                         <template #noOptions />
                     </multiselect>
                 </b-form-group>

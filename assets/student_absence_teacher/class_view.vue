@@ -43,7 +43,9 @@
                         :v-model="search"
                         @select="moveToClass"
                     >
-                        <template #noResult>Aucune classe trouvée.</template>
+                        <template #noResult>
+                            Aucune classe trouvée.
+                        </template>
                         <template #noOptions />
                     </multiselect>
                 </b-form-group>

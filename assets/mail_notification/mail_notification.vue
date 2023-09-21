@@ -88,7 +88,9 @@
                                 deselect-label="Cliquer dessus pour enlever"
                                 v-model="emailFrom"
                             >
-                                <template #noResult>Aucun expéditeur trouvé.</template>
+                                <template #noResult>
+                                    Aucun expéditeur trouvé.
+                                </template>
                                 <template #noOptions />
                             </multiselect>
                             <b-alert
@@ -116,7 +118,9 @@
                                 deselect-label="Cliquer dessus pour enlever"
                                 v-model="emailTo"
                             >
-                                <template #noResult>Aucun destinataire trouvé.</template>
+                                <template #noResult>
+                                    Aucun destinataire trouvé.
+                                </template>
                                 <template #noOptions />
                             </multiselect>
                             <b-alert
@@ -158,7 +162,9 @@
                                 deselect-label="Cliquer dessus pour enlever"
                                 v-model="tags"
                             >
-                                <template #noResult>Aucun tag trouvé.</template>
+                                <template #noResult>
+                                    Aucun tag trouvé.
+                                </template>
                                 <template #noOptions />
                             </multiselect>
                         </b-form-group>

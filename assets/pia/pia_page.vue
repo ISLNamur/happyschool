@@ -61,7 +61,9 @@
                         preserve-search
                         :clear-on-select="false"
                     >
-                        <template #noResult>Aucun responsable trouvé.</template>
+                        <template #noResult>
+                            Aucun responsable trouvé.
+                        </template>
                     </multiselect>
                 </b-col>
             </b-row>

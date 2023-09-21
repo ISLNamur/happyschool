@@ -114,10 +114,14 @@
                                 <template #singleLabel="props">
                                     <strong>{{ props.option.branch }}</strong>
                                 </template>
-                                <template #noResult>Aucune branche trouvée.</template>
+                                <template #noResult>
+                                    Aucune branche trouvée.
+                                </template>
                                 <template #noOptions />
                             </multiselect>
-                            <template #invalid-feedback>{{ errorMsg('branch') }}</template>
+                            <template #invalid-feedback>
+                                {{ errorMsg('branch') }}
+                            </template>
                         </b-form-group>
                     </b-col>
                 </b-form-row>
@@ -182,10 +186,14 @@
                                 <template #singleLabel="props">
                                     <strong>{{ props.option.branch }}</strong>
                                 </template>
-                                <template #noResult>Aucune branche trouvée.</template>
+                                <template #noResult>
+                                    Aucune branche trouvée.
+                                </template>
                                 <template #noOptions />
                             </multiselect>
-                            <template #invalid-feedback>{{ errorMsg('branches') }}</template>
+                            <template #invalid-feedback>
+                                {{ errorMsg('branches') }}
+                            </template>
                         </b-form-group>
                     </b-col>
                 </b-form-row>
@@ -211,10 +219,14 @@
                                 :show-no-options="false"
                                 multiple
                             >
-                                <template #noResult>Aucun intervenant trouvé.</template>
+                                <template #noResult>
+                                    Aucun intervenant trouvé.
+                                </template>
                                 <template #noOptions />
                             </multiselect>
-                            <template #invalid-feedback>{{ errorMsg('responsible') }}</template>
+                            <template #invalid-feedback>
+                                {{ errorMsg('responsible') }}
+                            </template>
                         </b-form-group>
                     </b-col>
                 </b-form-row>
@@ -267,7 +279,9 @@
                                 label="assessment"
                                 track-by="id"
                             >
-                                <template #noResult>Aucune évaluation trouvée.</template>
+                                <template #noResult>
+                                    Aucune évaluation trouvée.
+                                </template>
                                 <template #noOptions />
                             </multiselect>
                         </b-form-group>

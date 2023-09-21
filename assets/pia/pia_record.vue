@@ -182,7 +182,7 @@
                     </b-row>
                     <b-row>
                         <b-col>
-                            <disorder
+                            <disorder-selection
                                 :pia="Number(id)"
                                 ref="disorder"
                             />
@@ -556,7 +556,7 @@ import { piaStore } from "./stores/index.js";
 import StudentGoal from "./student_goal.vue";
 import ClassCouncil from "./class_council.vue";
 import PiaComment from "./pia_comment.vue";
-import Disorder from "./disorder.vue";
+import DisorderSelection from "./disorder_selection.vue";
 import ScheduleAdjustments from "./schedule_adjustments.vue";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
@@ -1021,7 +1021,7 @@ export default {
         StudentGoal,
         ClassCouncil,
         PiaComment,
-        Disorder,
+        DisorderSelection,
         ScheduleAdjustments,
         FileUpload,
         quillEditor,

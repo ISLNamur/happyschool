@@ -115,10 +115,14 @@
                                     track-by="display"
                                     v-model="demandeur"
                                 >
-                                    <template #noResult>Aucun responsable trouvée.</template>
+                                    <template #noResult>
+                                        Aucun responsable trouvée.
+                                    </template>
                                     <template #noOptions />
                                 </multiselect>
-                                <template #invalid-feedback>{{ errorMsg('demandeur') }}</template>
+                                <template #invalid-feedback>
+                                    {{ errorMsg('demandeur') }}
+                                </template>
                             </b-form-group>
                         </b-col>
                     </b-form-row>
@@ -176,7 +180,9 @@
                                             </option>
                                         </template>
                                     </b-form-select>
-                                    <template #invalid-feedback>{{ errorMsg('info_id') }}</template>
+                                    <template #invalid-feedback>
+                                        {{ errorMsg('info_id') }}
+                                    </template>
                                 </b-form-group>
                             </b-col>
                         </b-form-row>
@@ -203,7 +209,9 @@
                                             </option>
                                         </template>
                                     </b-form-select>
-                                    <template #invalid-feedback>{{ errorMsg('sanction_decision_id') }}</template>
+                                    <template #invalid-feedback>
+                                        {{ errorMsg('sanction_decision_id') }}
+                                    </template>
                                 </b-form-group>
                                 <b-form-group
                                     label="Date de la sanction"
@@ -215,7 +223,9 @@
                                         type="date"
                                         v-model="form.date_sanction"
                                     />
-                                    <template #invalid-feedback>{{ errorMsg('date_sanction') }}</template>
+                                    <template #invalid-feedback>
+                                        {{ errorMsg('date_sanction') }}
+                                    </template>
                                 </b-form-group>
                                 <b-form-group
                                     v-if="form.sanction_faite !== null"
@@ -253,7 +263,9 @@
                                     v-model="form.explication_commentaire"
                                     :options="editorOptions"
                                 />
-                                <template #invalid-feedback>{{ errorMsg('explication_commentaire') }}</template>
+                                <template #invalid-feedback>
+                                    {{ errorMsg('explication_commentaire') }}
+                                </template>
                             </b-form-group>
                             <b-form-group
                                 description="Ajouter un ou des fichiers. Accepte uniquement des fichiers images et pdf."

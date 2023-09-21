@@ -96,7 +96,9 @@
                                 >
                                     <strong>{{ props.option.branch }}</strong>
                                 </template>
-                                <template #noResult>Aucune branche trouvée.</template>
+                                <template #noResult>
+                                    Aucune branche trouvée.
+                                </template>
                                 <template #noOptions />
                             </multiselect>
                         </b-form-group>
