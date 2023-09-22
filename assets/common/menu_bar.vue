@@ -45,7 +45,7 @@
                     <b-nav-item
                         :active="app.active"
                         :href="app.url"
-			:target="app.new_tab ? '_blank' : ''"
+                        :target="app.new_tab ? '_blank' : ''"
                         :rel="app.new_tab ? 'noreferrer noopener' : ''"
                     >
                         {{ app.display }}
