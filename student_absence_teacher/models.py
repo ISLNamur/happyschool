@@ -63,12 +63,14 @@ class StudentAbsenceTeacherModel(models.Model):
     LATENESS = "lateness"
     ABSENCE = "absence"
     EXCLUDED = "excluded"
+    EXEMPTED = "exempted"
     INTERNSHIP = "internship"
     STATUS_CHOICES = [
         (PRESENCE, "Présence"),
         (LATENESS, "Retard"),
         (ABSENCE, "Absence"),
         (EXCLUDED, "Exclus"),
+        (EXEMPTED, "Dispensé"),
         (INTERNSHIP, "Stage"),
     ]
 

@@ -65,6 +65,7 @@ export default {
                 {value: "lateness", text: "Retard"},
                 {value: "absence", text: "Absence"},
                 {value: "excluded", text: "Exclus"},
+                {value: "exempted", text: "Dispensé"},
                 {value: "internship", text: "Stage"},
                 // {value: "other", text: "Autre remarque"}
             ],

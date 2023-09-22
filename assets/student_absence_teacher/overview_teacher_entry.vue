@@ -56,6 +56,7 @@ export default {
                 "presence": "P",
                 "lateness": "R",
                 "absence": "A",
+                "exempted": "D",
                 "excluded": "Exclus",
                 "internship": "Stage",
             };
