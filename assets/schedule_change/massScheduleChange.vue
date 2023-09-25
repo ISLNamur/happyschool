@@ -157,6 +157,21 @@
                                 v-model="scheduleChanges[data.index].time_end"
                             />
                         </template>
+                        <template #cell(place)="data">
+                            <multiselect
+                                v-model="scheduleChanges[data.index].place"
+                                tag-placeholder=""
+                                placeholder="Local/Lieu"
+                                :taggable="true"
+                                :options="placesOptions"
+                                @tag="addPlaces($event, data.index)"
+                                select-label=""
+                                selected-label=""
+                                deselect-label=""
+                            >
+                                <template #noOptions />
+                            </multiselect>
+                        </template>
                         <template #cell(remove)="data">
                             <b-btn
                                 size="sm"
@@ -202,6 +217,7 @@ export default {
             searchId: 0,
             teacher: null,
             teacherOptions: [],
+            placesOptions: [],
             defaultType: null,
             defaultCategory: null,
             scheduleChanges: [],
@@ -237,6 +253,10 @@ export default {
                     formatter: () => this.teacher.display
                 },
                 {
+                    key: "place",
+                    label: "Local",
+                },
+                {
                     key: "remove",
                     label: ""
                 }
@@ -256,6 +276,10 @@ export default {
         },
         removeChange: function (changeIndex) {
             this.scheduleChanges.splice(changeIndex, 1);
+        },
+        addPlaces: function (newPlace, schedIndex) {
+            this.placesOptions.push(newPlace);
+            this.scheduleChanges[schedIndex].place = newPlace;
         },
         getTeachers(query) {
             this.searchId += 1;
@@ -357,7 +381,10 @@ export default {
     },
     mounted: function () {
         this.$store.dispatch("getChangeType");
-        this.$store.dispatch("getchangeCategory");
+        this.$store.dispatch("getPlaces")
+            .then(() => {
+                this.placesOptions = this.$store.state.places;
+            });
     },
     components: {
         Multiselect
