@@ -19,6 +19,7 @@
 
 import json
 import requests
+from datetime import timedelta
 
 from z3c.rml import rml2pdf
 
@@ -512,12 +513,13 @@ class FullscreenScheduleChangeView(TemplateView):
         ]
 
         now = timezone.now()
+        tomorrow = now + timedelta(days=1)
 
         queryset = ScheduleChangeModel.objects.filter(
             Q(date_change=now.date(), time_start=None, time_end=None)
             | Q(date_change=now.date(), time_end__hour__gte=now.astimezone().hour)
             | Q(date_change=now.date(), time_start__hour__gte=now.astimezone().hour, time_end=None)
-            | Q(date_change__gt=now)
+            | Q(date_change__gt=now, date_change__lte=tomorrow)
         ).order_by("date_change", "time_start", "time_end")
         if context["show_for_students"]:
             queryset = queryset.exclude(hide_for_students=True)
