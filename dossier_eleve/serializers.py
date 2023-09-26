@@ -89,6 +89,10 @@ class CasEleveSerializer(serializers.ModelSerializer):
         return value
 
     def validate_student_id(self, value):
+        # Only dossier_eleve need to be checked.
+        if self.context["request"].path.startswith("/dossier_eleve/api/ask_sanctions/"):
+            return value
+
         if not check_access_to_student(
             value, self.context["request"].user, tenure_class_only=False
         ):

@@ -337,6 +337,7 @@ export default {
             entriesPerPage: 20,
             massActionsOverlay: false,
             massActionsProgress: 0,
+            lightDisplay: false,
         };
     },
     computed: {
@@ -353,21 +354,14 @@ export default {
                 return "&ordering=date_sanction,student__last_name";
             }
         },
-        lightDisplay: function () {
-            if (this.$store.state.filters.find(f => f.filterType === "activate_all_retenues")) {
-                return true;
-            } else {
-                return false;
-            }
-        }
     },
     watch: {
         retenues_mode: function (mode) {
             if (mode) {
-                this.addFilter("activate_all_retenues", "Activer", true);
-            } else {
-                this.$store.commit("removeFilter", "activate_all_retenues");
+                this.$store.commit("removeFilter", "activate_own_classes");
                 this.applyFilter();
+            } else {
+                this.addFilter("activate_own_classes", "Activer", true);
             }
         }
     },

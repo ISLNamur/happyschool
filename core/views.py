@@ -102,6 +102,7 @@ class BaseFilters(filters.FilterSet):
 
     unique = filters.CharFilter("unique_by", method="unique_by")
     scholar_year = filters.CharFilter(method="scholar_year_by")
+    activate_own_classes = filters.BooleanFilter(method="activate_own_classes_by")
 
     class Meta:
         fields_to_filter = set()
@@ -207,6 +208,21 @@ class BaseFilters(filters.FilterSet):
                     | Q(**{f"{self.student_field}__last_name__unaccent__istartswith": name_part})
                 )
         return people
+
+    def activate_own_classes_by(self, queryset, name, value):
+        if not value:
+            return queryset
+
+        resp = ResponsibleModel.objects.get(user=self.request.user)
+        classes = get_classes(
+            teaching=resp.teaching.all(),
+            check_access=True,
+            user=self.request.user,
+            tenure_class_only=False,
+            educ_by_years="both",
+        ).order_by("year", "letter")
+
+        return queryset.filter(**{f"{self.student_field}__classe__id__in": [c.id for c in classes]})
 
 
 class PageNumberSizePagination(PageNumberPagination):
