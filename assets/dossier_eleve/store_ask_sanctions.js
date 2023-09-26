@@ -31,13 +31,20 @@ export default new Vuex.Store({
     state: {
         // eslint-disable-next-line no-undef
         settings: settings,
-        filters: [{
-            filterType: "scholar_year",
-            // eslint-disable-next-line no-undef
-            tag: currentYear,
-            // eslint-disable-next-line no-undef
-            value: currentYear,
-        }],
+        filters: [
+            {
+                filterType: "scholar_year",
+                // eslint-disable-next-line no-undef
+                tag: currentYear,
+                // eslint-disable-next-line no-undef
+                value: currentYear,
+            },
+            {
+                filterType: "activate_own_classes",
+                tag: true,
+                value: true,
+            },
+        ],
         // eslint-disable-next-line no-undef
         canSetSanction: canSetSanction,
         // eslint-disable-next-line no-undef

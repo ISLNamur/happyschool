@@ -39,9 +39,10 @@ from django_filters import rest_framework as filters
 # from rest_framework import status
 from rest_framework.renderers import JSONRenderer
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions, BasePermission
+from rest_framework.filters import OrderingFilter
 
 # from rest_framework.parsers import MultiPartParser
-from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
@@ -421,10 +422,10 @@ class AskSanctionsView(BaseDossierEleveView):
         {"value": "datetime_encodage", "text": "Date encodage"},
         {"value": "student__matricule", "text": "Matricule"},
         {"value": "scholar_year", "text": "Année scolaire"},
-        {"value": "activate_all_retenues", "text": "Toutes les retenues"},
         {"value": "activate_today", "text": "Sanctions aujourdhui"},
         {"value": "activate_not_done", "text": "Sanctions non faites"},
         {"value": "activate_waiting", "text": "En attente de validation"},
+        {"value": "activate_own_classes", "text": "Ses classes"},
     ]
 
     def has_permission(self) -> bool:
@@ -441,7 +442,6 @@ class AskSanctionsFilter(BaseFilters):
     activate_waiting = filters.CharFilter(method="activate_waiting_by")
     activate_today = filters.CharFilter(method="activate_today_by")
     sanction_decision = filters.CharFilter(method="sanction_decision_by")
-    activate_own_classes = filters.CharFilter(method="activate_own_classes_by")
 
     class Meta:
         fields_to_filter = (
@@ -482,18 +482,8 @@ class AskSanctionsFilter(BaseFilters):
             )
         return queryset
 
-    def activate_own_classes_by(self, queryset, name, value):
-        classes = get_classes(
-            teaching=get_settings().teachings.all(),
-            check_access=True,
-            user=self.request.user,
-            tenure_class_only=False,
-            educ_by_years=False,
-        )
-        return queryset.filter(student__classe__in=list(classes))
 
-
-class AskSanctionsViewSet(BaseModelViewSet):
+class AskSanctionsViewSet(ModelViewSet):
     queryset = CasEleve.objects.filter(
         student__isnull=False, sanction_decision__isnull=False, sanction_faite=False
     )
@@ -501,6 +491,10 @@ class AskSanctionsViewSet(BaseModelViewSet):
     permission_classes = (
         IsAuthenticated,
         DjangoModelPermissions,
+    )
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        OrderingFilter,
     )
     filterset_class = AskSanctionsFilter
     ordering_fields = (
@@ -511,23 +505,18 @@ class AskSanctionsViewSet(BaseModelViewSet):
         "student__last_name",
         "sanction_decision__sanction_decision",
     )
-    user_field = "created_by"
 
     def get_queryset(self):
         sanctions = SanctionDecisionDisciplinaire.objects.filter(can_ask=True)
-        if self.request.GET.get("activate_all_retenues", None):
-            return CasEleve.objects.filter(
-                student__isnull=False,
-                sanction_decision__is_retenue=True,
-                sanction_faite=False,
-            )
 
         queryset = super().get_queryset().filter(sanction_decision__in=sanctions)
         return queryset
 
     def perform_create(self, serializer):
         super().perform_create(serializer)
-        serializer.save(sanction_faite=False)
+        serializer.save(
+            sanction_faite=False, user=self.request.user.username, created_by=self.request.user
+        )
         cas = serializer.save(visible_by_groups=get_generic_groups().values())
 
         if cas.sanction_decision:
