@@ -26,8 +26,38 @@
                         :options="disorderCares"
                         value-field="id"
                         v-model="currentDisorderCare"
+                        @change="saveBeforeChange"
                     />
                 </b-form-group>
+            </b-col>
+            <b-col>
+                <b-btn
+                    variant="outline-secondary"
+                    @click="copy"
+                >
+                    <b-icon
+                        icon="files"
+                    />
+                    Copier
+                </b-btn>
+                <b-btn
+                    variant="success"
+                    @click="add"
+                >
+                    <b-icon
+                        icon="plus"
+                    />
+                    Ajouter
+                </b-btn>
+                <b-btn
+                    variant="danger"
+                    @click="remove"
+                >
+                    <b-icon
+                        icon="trash"
+                    />
+                    Supprimer
+                </b-btn>
             </b-col>
         </b-row>
         <disorder-care
@@ -71,13 +101,65 @@ export default {
         }
     },
     methods: {
+        add: function () {
+            this.disorderCares.push({
+                id: -1,
+                date_start: null,
+                date_end: null,
+                disorder: [],
+                text: "Nouvel aménagement"
+            });
+            this.currentDisorderCare = -1;
+        },
+        copy: function () {
+            let copy = Object.assign({}, this.currentDisorderCareObj);
+            copy.id = -1;
+            copy.text = `Copie de ${copy.text}`;
+            this.disorderCares.push(copy);
+            this.currentDisorderCare = -1;
+        },
+        remove: function () {
+            this.$bvModal.msgBoxConfirm(
+                "Êtes-vous sûr de vouloir supprimer l'élément ?",
+                {
+                    title: "Attention !",
+                    okVariant: "danger",
+                    okTitle: "Oui",
+                    cancelTitle: "Non",
+                },
+            ).then((confirm) => {
+                if (confirm) {
+                    const dCIndex = this.disorderCares.findIndex(
+                        sA => sA.id === this.currentDisorderCare && sA.date_start === this.currentDisorderCareObj.date_start
+                    );
+                    const removedObj = this.disorderCares.splice(dCIndex, 1)[0];
+                    if (this.disorderCares.length > 0) {
+                        this.currentDisorderCare = this.disorderCares[0];
+                    } else {
+                        this.currentDisorderCare = null;
+                    }
+                    axios.delete(`/pia/api/disorder_care/${removedObj.id}/`, token);
+                }
+            });
+        },
+        saveBeforeChange: function (event) {
+            if (this.pia < 0) {
+                this.$bvModal.msgBoxOk("Sauvegarder avant de pouvoir créer un nouvel aménagement)");
+            } else {
+                this.save(this.pia)
+                    .then(() => {
+                        this.currentDisorderCare = event;
+                    });
+            }
+        },
         save: function (piaId) {
             return new Promise((resolve) => {
+                const currentDisorderIndex = this.disorderCares.findIndex(dC => dC.id === this.currentDisorderCare);
                 Promise.all(this.disorderCares.map(dC => {
                     let disorderCare = Object.assign({}, dC);
                     disorderCare.disorder = dC.disorder.map(d => d.id);
                     disorderCare.pia_model = piaId;
-                    if ("id" in dC) {
+                    if (dC.id > 0) {
                         return axios.put(`/pia/api/disorder_care/${dC.id}/`, disorderCare, token);
                     } else {
                         return axios.post("/pia/api/disorder_care/", disorderCare, token);
@@ -85,11 +167,12 @@ export default {
                 })).then((resps) => {
                     resps.forEach((r, i) => {
                         // Set id to disorder cares.
-                        if (!("id" in this.disorderCares[i])) {
+                        if (this.disorderCares[i].id < 0) {
                             this.disorderCares[i].id = r.data.id;
                         }
                     });
-                    this.$refs.disorderCare.save().then(() => {
+                    this.currentDisorderCare = this.disorderCares[currentDisorderIndex].id;
+                    this.$refs.disorderCare.save(this.currentDisorderCare).then(() => {
                         resolve();
                     });
                 });
@@ -100,16 +183,21 @@ export default {
         this.loading = true;
         this.store.loadOptions()
             .then( () => {
-                axios.get(`/pia/api/disorder_care/?pia_model=${this.pia}`)
-                    .then((resp) => {
-                        this.disorderCares = resp.data.results.map(dC => {
-                            dC.text = `Du ${dC.date_start} au ${dC.date_end}`;
-                            dC.disorder = dC.disorder.map(dis => this.store.disorders.find(d => d.id === dis));
-                            return dC;
+                if (this.pia) {
+                    axios.get(`/pia/api/disorder_care/?pia_model=${this.pia}`)
+                        .then((resp) => {
+                            this.disorderCares = resp.data.results.map(dC => {
+                                dC.text = `Du ${dC.date_start} au ${dC.date_end}`;
+                                dC.disorder = dC.disorder.map(dis => this.store.disorders.find(d => d.id === dis));
+                                return dC;
+                            });
+                            this.currentDisorderCare = this.lastDisorder ? this.lastDisorder.id : null;
+                            this.loading = false;
                         });
-                        this.currentDisorderCare = this.lastDisorder ? this.lastDisorder.id : {};
-                        this.loading = false;
-                    });
+                } else {
+                    this.currentDisorderCare = null;
+                    this.loading = false;
+                }
             });
     },
     components: {

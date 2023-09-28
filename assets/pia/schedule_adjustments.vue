@@ -224,11 +224,13 @@ export default {
     },
     mounted: function () {
         this.store.loadOptions()
-            .then(() => {          
-                axios.get(`/pia/api/schedule_adjustment_plan/?pia_model=${this.pia}`)
-                    .then((resp) => {
-                        this.expandScheduleAdjustment(resp.data.results);
-                    });
+            .then(() => {
+                if (this.pia) {
+                    axios.get(`/pia/api/schedule_adjustment_plan/?pia_model=${this.pia}`)
+                        .then((resp) => {
+                            this.expandScheduleAdjustment(resp.data.results);
+                        });
+                }
             });
     }
 };

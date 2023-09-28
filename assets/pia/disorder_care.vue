@@ -38,26 +38,6 @@
                     </b-form>
                 </strong>
             </b-col>
-            <b-col>
-                <b-btn
-                    variant="outline-secondary"
-                    disabled
-                >
-                    <b-icon
-                        icon="files"
-                    />
-                    Copier
-                </b-btn>
-                <b-btn
-                    variant="success"
-                    disabled
-                >
-                    <b-icon
-                        icon="plus"
-                    />
-                    Ajouter
-                </b-btn>
-            </b-col>
         </b-row>
         <b-row>
             <b-col>
@@ -255,6 +235,11 @@ export default {
             loading: true,
         };
     },
+    watch: {
+        disorderCareId: function () {
+            this.loadSelected();
+        }
+    },
     methods: {
         updateDisorderResponse: function ($event) {
             this.$emit("update:disorder", $event);
@@ -299,15 +284,15 @@ export default {
                 disorder_response: disorderResponse.id, category: categoryId
             });
         },
-        save: function () {
+        save: function (disorderCareId) {
             return new Promise(resolve => {
                 const baseUrl = "/pia/api/selected_disorder_response_new/";
                 Promise.all(
                     this.selected_disorder_response.map(dR => {
-                        const method = "id" in dR ? axios.put : axios.post;
-                        const url = "id" in dR ? `${baseUrl}${dR.id}/` : baseUrl;
+                        const method = dR.id > 0 ? axios.put : axios.post;
+                        const url = dR.id > 0 ? `${baseUrl}${dR.id}/` : baseUrl;
                         let data = Object.assign({}, dR);
-                        data.disorder_care = this.disorderCareId;
+                        data.disorder_care = disorderCareId;
                         return method(url, data, token);
                     }).concat(
                         this.deselected.map(desel => axios.delete(`${baseUrl}${desel.id}/`, token))
@@ -320,13 +305,20 @@ export default {
                 });
             });
         },
+        loadSelected: function () {
+            if (this.disorderCareId > 0) {
+                axios.get(`/pia/api/selected_disorder_response_new/?disorder_care=${this.disorderCareId}`)
+                    .then((resp) => {
+                        this.selected_disorder_response = resp.data.results;
+                        this.loading = false;
+                    });
+            } else {
+                this.loading = false;
+            }
+        }
     },
     mounted: function () {
-        axios.get(`/pia/api/selected_disorder_response_new/?disorder_care=${this.disorderCareId}`)
-            .then((resp) => {
-                this.selected_disorder_response = resp.data.results;
-                this.loading = false;
-            });
+        this.loadSelected();
     },
     components: {
         Multiselect
