@@ -512,7 +512,8 @@ export default {
                 query: query,
                 teachings: this.$store.state.settings.teachings,
                 people: people,
-                check_access: true,
+                check_access: this.$store.state.filters.find(f => f.filterType === "activate_own_classes") ? true : false,
+                educ_by_years: "both",
             };
             axios.post("/annuaire/api/people/", data, token)
                 .then(response => {
