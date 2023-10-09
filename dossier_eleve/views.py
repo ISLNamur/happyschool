@@ -54,6 +54,7 @@ from core.views import (
     BaseUploadFileView,
     get_core_settings,
     BinaryFileRenderer,
+    PageNumberSizePagination,
 )
 from core.utilities import get_menu
 from core.utilities import get_scholar_year, check_student_photo
@@ -488,6 +489,7 @@ class AskSanctionsViewSet(ModelViewSet):
         student__isnull=False, sanction_decision__isnull=False, sanction_faite=False
     )
     serializer_class = CasEleveSerializer
+    pagination_class = PageNumberSizePagination
     permission_classes = (
         IsAuthenticated,
         DjangoModelPermissions,
