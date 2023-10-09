@@ -353,7 +353,7 @@ export default {
                         this.form.comment = resp.data.comment;
                         if (this.sortie==1 || this.form.remarques_sortie){
                             this.dateSortie = Moment().format("YYYY-MM-DD");
-                            this.timeSortie = Moment().format("hh:mm");
+                            this.timeSortie = Moment().format("HH:mm");
                             this.form.datetime_sortie = this.dateSortie;
                         }
                     }
