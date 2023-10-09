@@ -6,9 +6,9 @@
 {% block content %}
 <script>
     const current_app = "appels";
-    const settings = "{teaching: [0,1]}";
-    const menu = {{ menu|safe }};
-    const filters = {{ filters|safe }};
+    const settings = {{ settings| safe }};
+    const menu = {{ menu| safe }};
+    const filters = {{ filters| safe }};
 </script>
 <div id="vue-app"></div>
 {% load render_bundle from webpack_loader %}
