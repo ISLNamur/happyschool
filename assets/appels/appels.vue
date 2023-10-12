@@ -95,18 +95,28 @@
         </b-modal>
         <b-modal
             :title="currentName"
-            size="lg"
+            size="xl"
             ref="infoModal"
             centered
             ok-only
             @hidden="currentEntry = null"
         >
-            <info
-                v-if="currentEntry"
-                :matricule="currentEntry.matricule_id"
-                type="student"
-                no-news
-            />
+            <b-tabs>
+                <b-tab title="Info">
+                    <person-info
+                        v-if="currentEntry"
+                        :custom-matricule="currentEntry.matricule_id"
+                        custom-person-type="student"
+                    />
+                </b-tab>
+                <b-tab title="Moyens de contacts">
+                    <person-contact
+                        v-if="currentEntry"
+                        :custom-matricule="currentEntry.matricule_id"
+                        custom-person-type="student"
+                    />
+                </b-tab>
+            </b-tabs>
         </b-modal>
     </div>
 </template>
@@ -117,6 +127,7 @@ import {BootstrapVue, BootstrapVueIcons} from "bootstrap-vue";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
 import PersonInfo from "../annuaire/person_info.vue";
+import PersonContact from "../annuaire/contact_info.vue";
 
 import Filters from "../common/filters_form.vue";
 import { piaStore } from "./stores/index.js";
@@ -227,7 +238,8 @@ export default {
     },
     components: {
         "filters": Filters,
-        "info": PersonInfo,
+        "person-info": PersonInfo,
+        "person-contact": PersonContact,
     },
 };
 </script>
