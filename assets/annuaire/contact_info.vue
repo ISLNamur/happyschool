@@ -136,14 +136,29 @@
 import axios from "axios";
 
 export default {
+    props: {
+        customMatricule: {
+            type: Number,
+            default: -1
+        },
+    },
     data: function () {
         return {
             contact: null,
             loading: true,
         };
     },
+    computed: {
+        matricule: function () {
+            if (this.customMatricule > 0) {
+                return Number(this.customMatricule);
+            }
+
+            return Number(this.$router.currentRoute.params.matricule);
+        },
+    },
     mounted: function () {
-        axios.get(`/annuaire/api/info_contact/${this.$route.params.matricule}/`)
+        axios.get(`/annuaire/api/info_contact/${this.matricule}/`)
             .then(response => {
                 this.contact = response.data;
                 this.loading = false;

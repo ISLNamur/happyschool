@@ -269,6 +269,16 @@ Moment.locale("fr");
 import { annuaireStore } from "../annuaire/stores/index.js";
 
 export default {
+    props: {
+        customMatricule: {
+            type: Number,
+            default: -1
+        },
+        customPersonType: {
+            type: String,
+            default: null
+        }
+    },
     data: function () {
         return {
             person: null,
@@ -289,12 +299,24 @@ export default {
     },
     computed: {
         personType: function () {
-            return this.$route.params.type;
+            if (this.customPersonType) {
+                return this.customPersonType;
+            }
+
+            return this.$router.currentRoute.params.type;
+        },
+        matricule: function () {
+            if (this.customMatricule > 0) {
+                return Number(this.customMatricule);
+            }
+
+            return Number(this.$router.currentRoute.params.matricule);
         },
         photoPath: function () {
-            const matricule = Number(this.$route.params.matricule);
+            const matricule = Number(this.matricule);
+            const personType = this.personType ? this.personType : this.$router.currentRoute.params.type;
 
-            return `/static/photos${this.personType === "responsible" ? "_prof" : ""}/${matricule}.jpg`;
+            return `/static/photos${personType === "responsible" ? "_prof" : ""}/${matricule}.jpg`;
         },
     },
     watch: {
@@ -318,13 +340,10 @@ export default {
 
             return Moment(date).format("HH:mm");
         },
-        loadInfo: function () {
-            const personType = this.$router.currentRoute.params.type;
-            const matricule = Number(this.$router.currentRoute.params.matricule);
-            
-            switch (personType) {
+        loadInfo: function () {            
+            switch (this.personType) {
             case "student":
-                axios.get(`/annuaire/api/student/${matricule}/`)
+                axios.get(`/annuaire/api/student/${this.matricule}/`)
                     .then(response => {
                         this.person = response.data;
                         this.person.courses = this.person.courses.sort((a, b) => a.course.name >= b.course.name);
@@ -333,7 +352,7 @@ export default {
                         this.loading = false;
                     });
 
-                axios.get(`/annuaire/api/info_general/${matricule}/`)
+                axios.get(`/annuaire/api/info_general/${this.matricule}/`)
                     .then(response => {
                         this.username = response.data.username;
                         this.password = response.data.password;
@@ -345,14 +364,14 @@ export default {
                     });
                 break;
             case "responsible":
-                axios.get(`/annuaire/api/responsible/${matricule}/`)
+                axios.get(`/annuaire/api/responsible/${this.matricule}/`)
                     .then(response => {
                         this.person = response.data;
                         this.person.courses = this.person.courses.sort((a, b) => a.course.name >= b.course.name);
                         this.person.classe = this.person.classe.sort((a, b) => a.year + a.letter >= b.year + b.letter);
                         this.loading = false;
                     });
-                axios.get(`/annuaire/api/responsible_sensitive/${matricule}/`)
+                axios.get(`/annuaire/api/responsible_sensitive/${this.matricule}/`)
                     .then(response => {
                         this.username = response.data.user.username;
                         this.password = response.data.password.length > 15 ? "Indisponible" : response.data.password;
