@@ -106,6 +106,7 @@
 </template>
 <script>
 import Moment from "moment";
+import { displayStudent } from "../common/utilities";
 Moment.locale("fr");
 
 export default {
@@ -122,11 +123,7 @@ export default {
         title: function () {
             if (this.rowData.matricule) {
                 let student = this.rowData.matricule;
-                let title = student.last_name;
-                title += " " + student.first_name;
-                title += " " + student.classe.year + student.classe.letter.toUpperCase();
-                title += " (" + student.teaching.display_name + ")";
-                return title;
+                return displayStudent(student, this);
             }
             // This is a responsible.
             return this.rowData.name;
