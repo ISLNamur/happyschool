@@ -160,6 +160,13 @@ export default {
         "showSearch": {
             type: Boolean,
             default: false,
+        },
+        /**
+         * Local store.
+        */
+        "store": {
+            type: Object,
+            default: () => null
         }
     },
     data: function () {
@@ -197,10 +204,20 @@ export default {
             return "text";
         },
         /**
+         * Access to state of the store.
+         */
+        storeState: function () {
+            if (this.store) {
+                return this.store;
+            }
+
+            return this.$store.state;
+        },
+        /**
          * Return the filters in use.
          */
         filtersValue: function () {
-            return this.$store.state.filters.filter(f => !f.filterType.startsWith("activate_"));
+            return this.storeState.filters.filter(f => !f.filterType.startsWith("activate_"));
         }
     },
     watch: {
@@ -219,6 +236,14 @@ export default {
     },
     methods: {
         displayStudent,
+        storeCommit: function (fct, payload) {
+            if (this.store) {
+                console.log(fct);
+                return this.store[`${fct}`](payload);
+            }
+
+            return this.$store.commit(fct, payload);
+        },
         setFocus: function () {
             if (this.filterType.startsWith("date")) {
                 return;
@@ -259,7 +284,7 @@ export default {
             if (this.filterType == "classe") {
                 let data = {
                     query: search,
-                    teachings: this.$store.state.settings.teachings,
+                    teachings: this.storeState.settings.teachings,
                     check_access: 1
                 };
                 axios.post("/annuaire/api/classes/", data, token)
@@ -298,7 +323,7 @@ export default {
                 const data = {
                     query: search,
                     people_type: "student",
-                    teachings: this.$store.state.settings.teachings,
+                    teachings: this.storeState.settings.teachings,
                     check_access: 0,
                 };
                 axios.post("/annuaire/api/people/", data, token)
@@ -392,10 +417,11 @@ export default {
          */
         updateActivateFilters: function (checkedFilters) {
             this.activateFilters.forEach(filter => {
-                this.$store.commit("removeFilter", filter.value);
+                this.storeCommit("removeFilter", filter.value);
             });
+            
             checkedFilters.forEach(filter => {
-                this.$store.commit("addFilter", {
+                this.storeCommit("addFilter", {
                     "tag": "Activer",
                     "filterType": filter,
                     "value": true,
@@ -409,7 +435,7 @@ export default {
          * @param {object} addedObject An object with the filter type, the tag and the value.
          */
         addFilter(addedObject) {
-            this.$store.commit("addFilter", addedObject);
+            this.storeCommit("addFilter", addedObject);
             this.updateFilters();
         },
         /**
@@ -419,9 +445,9 @@ export default {
          */
         removeFilter(removedObject) {
             if (removedObject == "current") {
-                this.$store.commit("removeFilter", this.filterType);
+                this.storeCommit("removeFilter", this.filterType);
             } else {
-                this.$store.commit("removeFilter", removedObject.filterType);
+                this.storeCommit("removeFilter", removedObject.filterType);
             }
             this.updateFilters();
         },
@@ -438,7 +464,7 @@ export default {
         this.filterTypeOptions = filters.filter(f => !f.value.startsWith("activate_"));
         // eslint-disable-next-line no-undef
         this.activateFilters = filters.filter(f => f.value.startsWith("activate_"));
-        this.activated = this.$store.state.filters.filter(f => f.filterType.startsWith("activate_")).map(f => f.filterType);
+        this.activated = this.storeState.filters.filter(f => f.filterType.startsWith("activate_")).map(f => f.filterType);
         if (this.showSearch) {
             setTimeout(() => {
                 // Check if filters is loaded.

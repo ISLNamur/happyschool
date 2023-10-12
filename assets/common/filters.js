@@ -37,10 +37,36 @@ function addFilter(state, filter) {
     state.filters.push(filter);
 }
 
+function addFilterPinia (filter) {
+    // If filter is a matricule, remove name filter to avoid conflict.
+    if (filter.filterType === "matricule_id") {
+        this.removeFilter("name");
+    }
+
+    // Overwrite same filter type except for specific cases.
+    switch (filter.filterType) {
+    case "classe":
+        break;
+    default:
+        this.removeFilter(filter.filterType);
+    }
+
+    this.filters.push(filter);
+}
+
 function removeFilter (state, key) {
     for (let f in state.filters) {
         if (state.filters[f].filterType === key) {
             state.filters.splice(f, 1);
+            break;
+        }
+    }
+}
+
+function removeFilterPinia (key) {
+    for (let f in this.filters) {
+        if (this.filters[f].filterType === key) {
+            this.filters.splice(f, 1);
             break;
         }
     }
@@ -82,4 +108,4 @@ function getFilters (filters) {
     return filter;
 }
 
-export {addFilter, removeFilter, getFilters};
+export {addFilter, addFilterPinia, removeFilter, removeFilterPinia, getFilters};
