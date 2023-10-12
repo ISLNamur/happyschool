@@ -17,43 +17,35 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from "vue";
+import axios from "axios";
 
-import { createPinia, PiniaVuePlugin } from "pinia";
-Vue.use(PiniaVuePlugin);
+import { defineStore } from "pinia";
 
-import router from "../appels/router.js";
-import Menu from "../common/menu_bar.vue";
+import { addFilterPinia as addFilter, removeFilterPinia as removeFilter } from "../../common/filters.js";
 
-const pinia = createPinia();
-
-new Vue({
-    el: "#vue-app",
-    data: {
-        menuInfo: {},
-        transitionName: "slide-left",
-    },
-    pinia,
-    router,
-    template: `
-    <div>
-      <app-menu :menu-info="menuInfo"></app-menu>
-      <transition :name="transitionName" mode="out-in">
-        <router-view></router-view>
-      </transition>
-    </div>`,
-    mounted: function() {
+export const piaStore = defineStore("appels", {
+    state: () => ({
         // eslint-disable-next-line no-undef
-        this.menuInfo = menu;
-    },
-    components: {
-        "app-menu": Menu,
-    },
-    watch: {
-        "$route" (to, from) {
-            const toDepth = to.path.split("/").length;
-            const fromDepth = from.path.split("/").length;
-            this.transitionName = toDepth < fromDepth ? "slide-right" : "slide-left";
+        settings: settings,
+        filters: [{
+            filterType: "activate_ongoing",
+            tag: "Activer",
+            value: true,
+        }],
+        emails: [],
+    }),
+    actions: {
+        addFilter,
+        removeFilter,
+        loadEmails: function () {
+            return new Promise(resolve => {
+                const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
+                axios.get("/core/api/email/", token)
+                    .then(response => {
+                        this.emails = response.data.results;
+                        resolve();
+                    });
+            });
         }
     }
 });

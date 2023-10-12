@@ -34,6 +34,7 @@
                         app="appels"
                         model="appel"
                         ref="filters"
+                        :store="store"
                         @update="applyFilter"
                         :show-search="showFilters"
                         @toggleSearch="showFilters = !showFilters"
@@ -118,10 +119,9 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 import PersonInfo from "../annuaire/person_info.vue";
 
 import Filters from "../common/filters_form.vue";
+import { piaStore } from "./stores/index.js";
 
 import axios from "axios";
-window.axios = axios;
-window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
 import AppelEntry from "./appelEntry.vue";
 
@@ -143,6 +143,7 @@ export default {
             loaded: false,
             processing: false,
             showFilters: false,
+            store: piaStore(),
         };
     },
     computed: {
@@ -163,14 +164,14 @@ export default {
         },
         filterStudent: function (matricule) {
             this.showFilters = true;
-            this.$store.commit("addFilter",
+            this.store.addFilter(
                 {filterType: "matricule_id", tag: matricule, value: matricule}
             );
             this.applyFilter();
         },
         applyFilter: function () {
             this.filter = "";
-            let storeFilters = this.$store.state.filters;
+            let storeFilters = this.store.filters;
             for (let f in storeFilters) {
                 if (storeFilters[f].filterType.startsWith("date")
                     || storeFilters[f].filterType.startsWith("time")) {
@@ -218,6 +219,7 @@ export default {
         },
     },
     mounted: function() {
+        this.store.loadEmails();
         // eslint-disable-next-line no-undef
         this.menuInfo = menu;
         this.applyFilter();
