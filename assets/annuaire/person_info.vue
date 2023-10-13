@@ -358,7 +358,7 @@ export default {
                         this.password = response.data.password;
                     });
 
-                axios.get(`/dossier_eleve/api/cas_eleve/?ordering=-datetime_encodage&activate_important=true&student__matricule=${matricule}`)
+                axios.get(`/dossier_eleve/api/cas_eleve/?ordering=-datetime_encodage&activate_important=true&student__matricule=${this.matricule}`)
                     .then(response => {
                         this.important = response.data.results;
                     });
