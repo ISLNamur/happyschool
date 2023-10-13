@@ -223,7 +223,7 @@
                                         id="emails"
                                         stacked
                                         v-model="form.emails"
-                                        :options="$store.state.emails"
+                                        :options="store.emails"
                                         value-field="id"
                                         text-field="display"
                                     />
@@ -294,6 +294,8 @@ import axios from "axios";
 window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
+import { piaStore } from "./stores/index.js";
+
 export default {
     props: { entry: {
         type: Object,
@@ -348,6 +350,7 @@ export default {
                 custom_email: null,
             },
             loading: false,
+            store: piaStore(),
         };
     },
     computed: {
@@ -455,7 +458,7 @@ export default {
                         // Precheck emails.
                             if (!this.processing && this.form.is_student) {
                                 
-                                this.form.emails = this.$store.state.emails.filter(email => {
+                                this.form.emails = this.store.emails.filter(email => {
                                     if (this.name.teaching.id == email.teaching
                                     && email.years.includes(this.name.classe.year)) {
                                         return true;
@@ -534,7 +537,7 @@ export default {
             const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             const data = {
                 query: query,
-                teachings: this.$store.state.settings.teachings,
+                teachings: this.store.settings.teachings,
                 people: "all",
                 check_access: false,
             };
