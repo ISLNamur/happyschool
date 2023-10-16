@@ -130,6 +130,27 @@ class PIAModel(models.Model):
         return str(self.student)
 
 
+class OtherAdjustmentsModel(models.Model):
+    pia_model = models.ForeignKey(PIAModel, on_delete=models.CASCADE)
+    date_start = models.DateField()
+    date_end = models.DateField()
+    other_adjustments = models.TextField(blank=True)
+
+    datetime_created = models.DateTimeField(auto_now_add=True)
+    datetime_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.pia_model.student} ({self.date_start} - {self.date_end})"
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=(models.Q(date_start__lte=models.F("date_end"))),
+                name="other_adj_ensure_date_start_lte_date_end",
+            )
+        ]
+
+
 class DisorderCareModel(models.Model):
     pia_model = models.ForeignKey(PIAModel, on_delete=models.CASCADE)
     date_start = models.DateField()

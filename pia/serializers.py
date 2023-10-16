@@ -64,6 +64,12 @@ class DisorderSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class OtherAdjustmentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.OtherAdjustmentsModel
+        fields = "__all__"
+
+
 class DisorderResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.DisorderResponseModel

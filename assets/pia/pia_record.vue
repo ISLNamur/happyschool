@@ -193,19 +193,11 @@
                         :pia="Number(id)"
                         ref="adjustments"
                     />
-                    <b-row v-if="advanced">
-                        <b-col>
-                            <h4 class="mt-4">
-                                Autres aménagements
-                            </h4>
-                            <b-form-group>
-                                <quill-editor
-                                    v-model="form.other_adjustments"
-                                    :options="editorOptions"
-                                />
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
+                    <other-adjustments
+                        v-if="advanced"
+                        :pia="Number(id)"
+                        ref="otheradjustments"
+                    />
                     <b-row v-else>
                         <b-col>
                             <b-table-simple v-if="!loading">
@@ -558,6 +550,7 @@ import ClassCouncil from "./class_council.vue";
 import PiaComment from "./pia_comment.vue";
 import DisorderSelection from "./disorder_selection.vue";
 import ScheduleAdjustments from "./schedule_adjustments.vue";
+import OtherAdjustments from "./other_adjustments.vue";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
@@ -871,13 +864,15 @@ export default {
 
                     const disorderPromise = [app.$refs.disorder.save(recordId)];
                     const scheduleAdjustPromise = [app.$refs.adjustments.save(recordId)];
+                    const otherAdjustPromise = [app.$refs.otheradjustments.save(recordId)];
                     const crossGoalPromises = this.cross_goal.length != 0 ? this.$refs.crossgoals.map(g => g.submit(recordId)) : [];
                     const branchGoalPromises = this.branch_goal.length != 0 && this.$refs.branchgoals ? this.$refs.branchgoals.map(g => g.submit(recordId)) : [];
                     const sPPromises = this.student_project.length != 0 ? this.$refs.studentprojects.map(sP => sP.submit(recordId)) : [];
                     const pOPromises = this.parents_opinion.length != 0 ? this.$refs.parentsopinions.map(pO => pO.submit(recordId)) : [];
                     const classCouncilPromises = this.class_council.length != 0 ? this.$refs.councils.map(c => c.submit(recordId)) : [];
                     Promise.all(crossGoalPromises.concat(
-                        disorderPromise, scheduleAdjustPromise, branchGoalPromises, classCouncilPromises, sPPromises, pOPromises
+                        disorderPromise, scheduleAdjustPromise, otherAdjustPromise,
+                        branchGoalPromises, classCouncilPromises, sPPromises, pOPromises
                     ))
                         .then(resps => {
                             // Update new component with response.
@@ -1023,6 +1018,7 @@ export default {
         PiaComment,
         DisorderSelection,
         ScheduleAdjustments,
+        OtherAdjustments,
         FileUpload,
         quillEditor,
     }

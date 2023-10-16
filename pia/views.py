@@ -251,6 +251,18 @@ class DisorderCareViewSet(ModelViewSet):
     ordering = ["-date_start"]
 
 
+class OtherAdjustmentsViewSet(ModelViewSet):
+    queryset = models.OtherAdjustmentsModel.objects.all()
+    serializer_class = serializers.OtherAdjustmentsSerializer
+    filter_backends = [
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    ]
+    filterset_fields = ("pia_model",)
+    pagination_class = LargePageSizePagination
+    ordering = ["-date_start"]
+
+
 class ScheduleAdjustmentViewSet(ReadOnlyModelViewSet):
     """Read only view set for schedule adjustment model."""
 
