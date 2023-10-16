@@ -284,6 +284,11 @@ export default {
                 disorder_response: disorderResponse.id, category: categoryId
             });
         },
+        resetSelectionId: function () {
+            this.selected_disorder_response.forEach(sDR => {
+                delete sDR["id"];
+            });
+        },
         save: function (disorderCareId) {
             return new Promise(resolve => {
                 const baseUrl = "/pia/api/selected_disorder_response_new/";

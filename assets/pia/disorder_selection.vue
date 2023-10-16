@@ -121,6 +121,7 @@ export default {
             copy.text = `Copie de ${copy.text}`;
             this.disorderCares.push(copy);
             this.currentDisorderCare = newId;
+            this.$refs.disorderCare.resetSelectionId();
         },
         remove: function () {
             this.$bvModal.msgBoxConfirm(
