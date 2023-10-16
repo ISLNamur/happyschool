@@ -34,6 +34,7 @@
                 <b-btn
                     variant="outline-secondary"
                     @click="copy"
+                    :disabled="disorderCares.length === 0"
                 >
                     <b-icon
                         icon="files"
@@ -52,6 +53,7 @@
                 <b-btn
                     variant="danger"
                     @click="remove"
+                    :disabled="disorderCares.length === 0"
                 >
                     <b-icon
                         icon="trash"
@@ -102,21 +104,23 @@ export default {
     },
     methods: {
         add: function () {
+            const newId = Math.min(Math.min(...this.disorderCares.map(dC => dC.id)), 0) - 1;
             this.disorderCares.push({
-                id: -1,
+                id: newId,
                 date_start: null,
                 date_end: null,
                 disorder: [],
                 text: "Nouvel aménagement"
             });
-            this.currentDisorderCare = -1;
+            this.currentDisorderCare = newId;
         },
         copy: function () {
             let copy = Object.assign({}, this.currentDisorderCareObj);
-            copy.id = -1;
+            const newId = Math.min(Math.min(...this.disorderCares.map(dC => dC.id)), 0) - 1;
+            copy.id = newId;
             copy.text = `Copie de ${copy.text}`;
             this.disorderCares.push(copy);
-            this.currentDisorderCare = -1;
+            this.currentDisorderCare = newId;
         },
         remove: function () {
             this.$bvModal.msgBoxConfirm(
