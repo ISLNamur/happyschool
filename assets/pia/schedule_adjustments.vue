@@ -144,14 +144,16 @@ export default {
     },
     methods: {
         add: function () {
+            const newId = Math.min(Math.min(...this.scheduleAdjustments.map(sA => sA.id)), 0) - 1;
             this.scheduleAdjustments.push(
-                {schedule_adjustments: [], id: -1, date_start: null, date_end: null, text: "Nouvel aménagement"}
+                {schedule_adjustments: [], id: newId, date_start: null, date_end: null, text: "Nouvel aménagement"}
             );
             this.currentSchedAdj = this.scheduleAdjustments[this.scheduleAdjustments.length - 1];
+            this.currentSchedAdjId = newId;
         },
         copy: function () {
             let copy = Object.assign({}, this.currentSchedAdj);
-            copy.id = -1;
+            copy.id = Math.min(Math.min(...this.scheduleAdjustments.map(sA => sA.id)), 0) - 1;
             copy.text = `Copie de ${copy.text}`;
             this.scheduleAdjustments.push(copy);
             this.currentSchedAdj = this.scheduleAdjustments[this.scheduleAdjustments.length - 1];
