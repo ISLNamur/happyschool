@@ -87,6 +87,11 @@
             margin-bottom: 0.8em;
             padding-bottom: 0.4em;
         }
+
+        .new-period {
+            margin-top: 0.7em;
+            margin-bottom: 0.5em;
+        }
     </style>
     <h1>PIA : {{ pia.student.fullname_classe }}</h1>
     <h2>Élève</h2>
@@ -137,14 +142,19 @@
     <div>
         <dl>
             <dt>Aménagements raisonnables liés au trouble</dt>
+            {% for disorder_response in pia.disordercaremodel_set.all %}
+            <dd class="new-period">
+                Du <em>{{ disorder_response.date_start }}</em> au <em>{{ disorder_response.date_end }}</em>
+            </dd>
             {% for cat in disorder_response_categories %}
             <dd><strong>{{ cat.name }}</strong></dd>
-            {% for disorder_response in pia.selected_disorder_response.all %}
-            {% if disorder_response.category.id == cat.id %}
+            {% for selected_disorder_response in disorder_response.selecteddisorderresponsenewmodel_set.all %}
+            {% if selected_disorder_response.category.id == cat.id %}
             <dd>
-                <span class="chevron">> </span>{{ disorder_response.disorder_response }}
+                <span class="chevron">> </span>{{ selected_disorder_response.disorder_response }}
             </dd>
             {% endif %}
+            {% endfor %}
             {% endfor %}
             {% endfor %}
         </dl>
@@ -153,7 +163,7 @@
         <dl>
             <dt>Aménagements d'horaire</dt>
             {% for plan in pia.scheduleadjustmentplanmodel_set.all %}
-            <dd>Du <em>{{ plan.date_start }}</em> au <em>{{ plan.date_end }}</em></dd>
+            <dd class="new-period">Du <em>{{ plan.date_start }}</em> au <em>{{ plan.date_end }}</em></dd>
             {% for s_a in plan.schedule_adjustment.all %}
             <dd>
                 <span class="chevron">> </span>{{ s_a }}
@@ -164,10 +174,13 @@
     </div>
     <div>
         <dl>
-            <dt>Autres aménagements</dt>
+            <dt>Aménagements spécifiques</dt>
+            {% for other in pia.otheradjustmentsmodel_set.all %}
+            <dd class="new-period">Du <em>{{ other.date_start }}</em> au <em>{{ other.date_end }}</em></dd>
             <dd>
-                {{ pia.other_adjustments|safe }}
+                {{ other.other_adjustments|safe }}
             </dd>
+            {% endfor %}
         </dl>
     </div>
     {% else %}
