@@ -180,7 +180,7 @@
                             <h3>{{ advanced ? "Aménagements" : "Activités de soutien" }}</h3>
                         </b-col>
                     </b-row>
-                    <b-row>
+                    <b-row v-if="advanced">
                         <b-col>
                             <disorder-selection
                                 :pia="Number(id)"
@@ -188,77 +188,22 @@
                             />
                         </b-col>
                     </b-row>
-                    <schedule-adjustments
-                        v-if="advanced"
-                        :pia="Number(id)"
-                        ref="adjustments"
-                    />
                     <other-adjustments
                         v-if="advanced"
                         :pia="Number(id)"
                         ref="otheradjustments"
                     />
+                    <schedule-adjustments
+                        v-if="advanced"
+                        :pia="Number(id)"
+                        ref="adjustments"
+                    />
                     <b-row v-else>
                         <b-col>
-                            <b-table-simple v-if="!loading">
-                                <b-thead>
-                                    <b-tr>
-                                        <b-th>Jour</b-th>
-                                        <b-th>Cours</b-th>
-                                        <b-th>Prof</b-th>
-                                    </b-tr>
-                                </b-thead>
-                                <b-tbody>
-                                    <b-tr
-                                        v-for="day in supportDays"
-                                        :key="day"
-                                    >
-                                        <b-td>{{ dayOfWeek[day] }}</b-td>
-                                        <b-td>
-                                            <multiselect
-                                                :internal-search="false"
-                                                :options="store.branches"
-                                                placeholder="Choisir une matière"
-                                                select-label=""
-                                                selected-label="Sélectionné"
-                                                deselect-label="Cliquer dessus pour enlever"
-                                                v-model="form.support_activities[day].branch"
-                                                :show-no-options="false"
-                                                label="branch"
-                                                track-by="id"
-                                                multiple
-                                            >
-                                                <template #noResult>
-                                                    Aucune branche trouvé.
-                                                </template>
-                                                <template #noOptions />
-                                            </multiselect>
-                                        </b-td>
-                                        <b-td>
-                                            <multiselect
-                                                :id="`responsible-support-${day}`"
-                                                :internal-search="false"
-                                                :options="responsibleOptions"
-                                                @search-change="getPeople"
-                                                placeholder="Choisir un ou plusieurs profs"
-                                                select-label=""
-                                                selected-label="Sélectionné"
-                                                deselect-label="Cliquer dessus pour enlever"
-                                                v-model="form.support_activities[day].teachers"
-                                                label="display"
-                                                track-by="matricule"
-                                                :show-no-options="false"
-                                                multiple
-                                            >
-                                                <template #noResult>
-                                                    Aucun responsable trouvé.
-                                                </template>
-                                                <template #noOptions />
-                                            </multiselect>
-                                        </b-td>
-                                    </b-tr>
-                                </b-tbody>
-                            </b-table-simple>
+                            <activity-support
+                                v-model="form.support_activities"
+                                :loading="loading"
+                            />
                         </b-col>
                     </b-row>
                     <b-row class="mt-4">
@@ -551,6 +496,8 @@ import PiaComment from "./pia_comment.vue";
 import DisorderSelection from "./disorder_selection.vue";
 import ScheduleAdjustments from "./schedule_adjustments.vue";
 import OtherAdjustments from "./other_adjustments.vue";
+
+import ActivitySupport from "./activity_support.vue";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
@@ -862,9 +809,9 @@ export default {
                     //     return;
                     // }
 
-                    const disorderPromise = [app.$refs.disorder.save(recordId)];
-                    const scheduleAdjustPromise = [app.$refs.adjustments.save(recordId)];
-                    const otherAdjustPromise = [app.$refs.otheradjustments.save(recordId)];
+                    const disorderPromise = this.advanced ? [app.$refs.disorder.save(recordId)] : [];
+                    const scheduleAdjustPromise = this.advanced ?  [app.$refs.adjustments.save(recordId)] : [];
+                    const otherAdjustPromise = this.advanced ?  [app.$refs.otheradjustments.save(recordId)] : [];
                     const crossGoalPromises = this.cross_goal.length != 0 ? this.$refs.crossgoals.map(g => g.submit(recordId)) : [];
                     const branchGoalPromises = this.branch_goal.length != 0 && this.$refs.branchgoals ? this.$refs.branchgoals.map(g => g.submit(recordId)) : [];
                     const sPPromises = this.student_project.length != 0 ? this.$refs.studentprojects.map(sP => sP.submit(recordId)) : [];
@@ -940,7 +887,13 @@ export default {
                     // this.form.disorder_response = this.store.disorderResponses.filter(dr => resp.data.disorder_response.includes(dr.id));
                     this.form.schedule_adjustment = this.store.scheduleAdjustments.filter(sa => resp.data.schedule_adjustment.includes(sa.id));
                     this.form.other_adjustments = resp.data.other_adjustments;
+
                     this.form.support_activities = resp.data.support_activities;
+                    // Object.keys(resp.data.support_activities).forEach(key => {
+                    //     this.form.support_activities[key].branch = resp.data.support_activities[key].branch;
+                    //     this.form.support_activities[key].teachers = resp.data.support_activities[key].teachers;
+                    // });
+                    
 
                     this.loading = false;
 
@@ -998,7 +951,6 @@ export default {
                                 this.parents_opinion = resps[3].data.results;
                                 this.class_council = resps[4].data.results;
 
-                                this.loading = false;
                                 this.loadingOthers = false;
                             });
                     } else {
@@ -1020,6 +972,7 @@ export default {
         ScheduleAdjustments,
         OtherAdjustments,
         FileUpload,
+        ActivitySupport,
         quillEditor,
     }
 };
