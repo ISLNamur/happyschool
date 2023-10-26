@@ -147,7 +147,7 @@ dossier racine (cela peut prendre un peu de temps):
 ::
 
    npm install
-   ./node_modules/.bin/webpack --config webpack.dev.js
+   ./node_modules/.bin/webpack --config webpack.prod.js
 
 Pour écrire les schémas dans la base de donnée :
 
@@ -177,7 +177,7 @@ votre fichier ``happyschool/settings.py`` et lancez la commande suivante
 
 ::
 
-   pipen run ./manage.py collectstatic
+   pipenv run ./manage.py collectstatic
 
 
 Supervisord
