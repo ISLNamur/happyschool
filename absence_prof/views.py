@@ -128,7 +128,7 @@ class AbsenceProfViewSet(ModelViewSet):
         OrderingFilter,
     )
     pagination_class = PageNumberSizePagination
-    ordering_fields = ["date_absence_start", "date_absence_end"]
+    ordering_fields = ["date_absence_start", "date_absence_end", "name"]
 
     def perform_create(self, serializer):
         # Override user save.
