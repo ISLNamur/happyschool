@@ -249,7 +249,13 @@ class People:
             StudentModel, name=name, teaching=teaching, active=active
         )[0]
         if type(classes) == QuerySet:
-            students = students.filter(classe__id__in=classes.values_list("id"))
+            if active:
+                students = students.filter(classe__id__in=classes.values_list("id"))
+            else:
+                # Inactive students have no class.
+                students = students.filter(
+                    Q(classe__id__in=classes.values_list("id")) | Q(classe__isnull=True)
+                )
 
         return students
 
