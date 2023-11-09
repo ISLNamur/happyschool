@@ -133,6 +133,7 @@ export default {
                 query: query,
                 teachings: this.teachings.length > 0 ? this.teachings : this.teachingsOptions.map(t => t.id),
                 people: "all",
+                active: false,
                 check_access: false,
             };
             axios.post("/annuaire/api/people_or_classes/", data, token)

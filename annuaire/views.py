@@ -172,6 +172,12 @@ def search_people(
 
     truncate_limit = 50
 
+    # Check if user can see inactive people. Otherwise revert boolean parameter.
+    if active == False:
+        annuaire_settings = get_settings()
+        if not annuaire_settings.can_see_inactives.all().intersection(user.groups.all()):
+            active = True
+
     people = []
     if people_type == "all":
         classe_years = (
