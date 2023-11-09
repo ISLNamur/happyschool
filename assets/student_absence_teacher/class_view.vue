@@ -169,7 +169,7 @@ export default {
             let data = {
                 query: query,
                 teachings: this.$store.state.settings.teachings,
-                check_access: 1
+                check_access: true
             };
             axios.post("/annuaire/api/classes/", data, token)
                 .then(response => {

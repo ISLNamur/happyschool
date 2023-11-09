@@ -172,6 +172,7 @@ def search_people(
 
     truncate_limit = 50
 
+    print(query, people_type, teachings, check_access, active)
     # Check if user can see inactive people. Otherwise revert boolean parameter.
     if active == False:
         annuaire_settings = get_settings()
@@ -260,7 +261,7 @@ class SearchPeopleAPI(APIView):
         query = request.GET.get("query", "")
         people_type = request.GET.get("people", "all")
         teachings = request.GET.get("teaching", "all")
-        check_access = request.GET.get("check_access", "0") == 1
+        check_access = request.GET.get("check_access", False)
 
         people = search_people(
             query=query,
@@ -275,8 +276,8 @@ class SearchPeopleAPI(APIView):
         query = request.data.get("query", "")
         people_type = request.data.get("people", "all")
         teachings = TeachingModel.objects.filter(id__in=request.data.get("teachings", []))
-        check_access = request.data.get("check_access", 0) == 1
-        active = request.data.get("active", 1) == 1
+        check_access = request.data.get("check_access", False)
+        active = request.data.get("active", True)
         tenure_class_only = request.data.get("tenure_class_only", True)
         educ_by_years = request.data.get("educ_by_years", True)
 
@@ -324,8 +325,8 @@ class SearchClassesOrPeopleAPI(APIView):
         query = request.data.get("query", "")
         people_type = request.data.get("people", "student")
         teachings = TeachingModel.objects.filter(id__in=request.data.get("teachings", []))
-        check_access = request.data.get("check_access", 0) == 1
-        active = request.data.get("active", 1) == 1
+        check_access = request.data.get("check_access", False)
+        active = request.data.get("active", True)
 
         if len(query) == 0:
             return Response([])

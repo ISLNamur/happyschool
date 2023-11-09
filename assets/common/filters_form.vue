@@ -285,7 +285,7 @@ export default {
                 let data = {
                     query: search,
                     teachings: this.storeState.settings.teachings,
-                    check_access: 1
+                    check_access: true
                 };
                 axios.post("/annuaire/api/classes/", data, token)
                     .then(response => {
@@ -324,7 +324,7 @@ export default {
                     query: search,
                     people_type: "student",
                     teachings: this.storeState.settings.teachings,
-                    check_access: 0,
+                    check_access: false,
                 };
                 axios.post("/annuaire/api/people/", data, token)
                     .then(resp => {
