@@ -109,6 +109,7 @@ import Moment from "moment";
 Moment.locale("fr");
 
 import {getFilters} from "../common/filters.js";
+import {displayStudent} from "../common/utilities.js";
 
 import axios from "axios";
 
@@ -163,6 +164,7 @@ export default {
                 teachings: this.$store.state.settings.teachings,
                 people: "student",
                 check_access: true,
+                active: false,
             };
             axios.post("/annuaire/api/people_or_classes/", data, token)
                 .then(response => {
@@ -172,8 +174,7 @@ export default {
                     const options = response.data.map(p => {
                         if (Number.isNaN(Number.parseInt(query[0]))) {
                         // It is a student.
-                            const classe = " " + p.classe.year + p.classe.letter.toUpperCase();
-                            return {display: p.last_name + " " + p.first_name + classe + " – " + p.teaching.display_name, id: p.matricule};
+                            return {display: displayStudent(p), id: p.matricule};
                         } else {
                         // It is a classe.
                             return p;
