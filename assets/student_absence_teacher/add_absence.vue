@@ -235,7 +235,7 @@ export default {
         searchClasses: function (query) {
             const data = {
                 query: query,
-                check_access: 0,
+                check_access: false,
                 teachings: this.$store.state.settings.teachings
             };
             axios.post("/annuaire/api/classes/", data, token)
