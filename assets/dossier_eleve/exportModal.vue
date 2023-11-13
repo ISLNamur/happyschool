@@ -166,6 +166,8 @@ export default {
                 check_access: true,
                 active: false,
             };
+
+            const app = this;
             axios.post("/annuaire/api/people_or_classes/", data, token)
                 .then(response => {
                     if (this.searchId !== currentSearch)
@@ -174,7 +176,7 @@ export default {
                     const options = response.data.map(p => {
                         if (Number.isNaN(Number.parseInt(query[0]))) {
                         // It is a student.
-                            return {display: displayStudent(p), id: p.matricule};
+                            return {display: displayStudent(p, app), id: p.matricule};
                         } else {
                         // It is a classe.
                             return p;
