@@ -281,6 +281,8 @@ export default {
     },
     data: function () {
         return {
+            matricule: -1,
+            personType: null,
             person: null,
             loading: true,
             username: "",
@@ -298,20 +300,6 @@ export default {
         };
     },
     computed: {
-        personType: function () {
-            if (this.customPersonType) {
-                return this.customPersonType;
-            }
-
-            return this.$router.currentRoute.params.type;
-        },
-        matricule: function () {
-            if (this.customMatricule > 0) {
-                return Number(this.customMatricule);
-            }
-
-            return Number(this.$router.currentRoute.params.matricule);
-        },
         photoPath: function () {
             const matricule = Number(this.matricule);
             const personType = this.personType ? this.personType : this.$router.currentRoute.params.type;
@@ -325,6 +313,8 @@ export default {
                 this.loading = true;
                 this.person = null;
 
+                this.personType = this.$router.currentRoute.params.type;
+                this.matricule = this.$route.params.matricule;
                 this.loadInfo();
             }
         }
@@ -384,6 +374,8 @@ export default {
         },
     },
     mounted: function () {
+        this.personType = this.$router.currentRoute.params.type ? this.$router.currentRoute.params.type : this.customPersonType;
+        this.matricule = this.$route.params.matricule ? this.$route.params.matricule : this.customMatricule;
         this.loadInfo();
     },
 };
