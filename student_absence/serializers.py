@@ -95,5 +95,5 @@ class StudentAbsenceSerializer(serializers.ModelSerializer):
                 period=period,
                 is_absent=is_absent,
                 fdb_server=server[0],
-            )
+            )[0]
         return False
