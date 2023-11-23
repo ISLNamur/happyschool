@@ -520,7 +520,7 @@ class CourseScheduleFilter(filters.FilterSet):
         try:
             resp = ResponsibleModel.objects.get(matricule=value)
             given_courses = [gc.id for gc in resp.courses.all()]
-            return queryset.filter(given_course__id__in=given_courses)
+            return queryset.filter(given_course__id__in=given_courses).distinct()
         except ObjectDoesNotExist:
             return queryset.none()
 
