@@ -64,14 +64,14 @@
                         to="medical"
                         exact
                     >
-                        Info médicals
+                        Infos médicales
                     </b-nav-item>
                     <b-nav-item
                         v-if="type === 'student' && !noNews"
                         to="other"
                         exact
                     >
-                        Info générales
+                        Infos générales
                         <b-badge>
                             {{ infoCount }}
                         </b-badge>
