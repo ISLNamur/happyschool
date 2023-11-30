@@ -113,6 +113,7 @@ def get_generic_groups() -> dict:
     educ_group = Group.objects.get(name=settings.EDUCATOR_GROUP)
     teacher_group = Group.objects.get(name=settings.TEACHER_GROUP)
     pms_group = Group.objects.get(name=settings.PMS_GROUP)
+    reception_group = Group.objects.get(name=settings.RECEPTION_GROUP)
     return {
         "sysadmin": sysadmin_group,
         "direction": direction_group,
@@ -120,6 +121,7 @@ def get_generic_groups() -> dict:
         "educator": educ_group,
         "teacher": teacher_group,
         "pms": pms_group,
+        "reception": reception_group,
     }
 
 
@@ -157,6 +159,7 @@ class BaseDossierEleveView(LoginRequiredMixin, PermissionRequiredMixin, Template
         groups["educator"] = {"id": groups["educator"].id, "text": "Educateur"}
         groups["teacher"] = {"id": groups["teacher"].id, "text": "Professeurs"}
         groups["pms"] = {"id": groups["pms"].id, "text": "PMS"}
+        groups["reception"] = {"id": groups["reception"].id, "text": "Accueil"}
         context["groups"] = groups
         context["proeco"] = json.dumps("proeco" in settings.INSTALLED_APPS)
 
