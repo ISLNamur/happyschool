@@ -77,6 +77,14 @@
     }
 },
 {
+    "model": "auth.group",
+    "pk": 11,
+    "fields": {
+        "name": "accueil",
+        "permissions": []
+    }
+},
+{
     "model": "auth.user",
     "pk": 2,
     "fields": {
