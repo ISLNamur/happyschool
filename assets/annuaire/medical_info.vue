@@ -53,18 +53,45 @@
                 </dd>
             </dl>
         </div>
+        <b-card v-if="other_medical_info.length > 0">
+            <b-row
+                v-for="cas in other_medical_info"
+                :key="cas.id"
+                class="mb-2"
+            >
+                <b-col
+                    cols="2"
+                >
+                    {{ niceDate(cas.datetime_encodage) }}
+                </b-col>
+                <b-col>
+                    <div v-html="cas.explication_commentaire" />
+                </b-col>
+            </b-row>
+        </b-card>
     </b-overlay>
 </template>
 
 <script>
 import axios from "axios";
 
+import Moment from "moment";
+Moment.locale("fr");
+
 export default {
     data: function () {
         return {
             medical: null,
+            other_medical_info: [],
             loading: true,
         };
+    },
+    methods: {
+        niceDate: function (date) {
+            if (!date) return "";
+
+            return Moment(date).calendar();
+        },
     },
     mounted: function () {
         axios.get(`/annuaire/api/info_medical/${this.$route.params.matricule}/`)
@@ -75,6 +102,10 @@ export default {
             .catch(err => {
                 console.log(err);
                 this.loading = false;
+            });
+        axios.get(`/dossier_eleve/api/cas_eleve/?ordering=-datetime_encodage&student__matricule=${this.$route.params.matricule}&no_sanctions=true`)
+            .then((resp) => {
+                this.other_medical_info = resp.data.results.filter(cas => cas.info.info.toLowerCase().includes("médical"));
             });
     }
 };
