@@ -89,7 +89,22 @@
                 </b-form-group>
             </b-col>
         </b-row>
-        <b-row v-if="sanction">
+        <b-row>
+            <b-col>
+                <b-btn
+                    variant="outline-secondary"
+                    @click="addAskPerson"
+                    size="sm"
+                >
+                    <b-icon icon="plus" />
+                    Ajouter le demandeur
+                </b-btn>
+            </b-col>
+        </b-row>
+        <b-row
+            v-if="sanction"
+            class="mt-2"
+        >
             <b-col>
                 <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 15px;">
                     {{ sanction.sanction_decision.sanction_decision }}
@@ -97,7 +112,10 @@
                 <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0px;">
                     Concerne : <strong>{{ sanction.student.last_name }} {{ sanction.student.first_name }}</strong>
                 </p>
-                <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0px;">
+                <p
+                    v-if="sanction.student.classe"
+                    style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0px;"
+                >
                     Classe : <strong>{{ sanction.student.classe.year }}{{ sanction.student.classe.letter.toUpperCase() }}</strong>
                 </p>
                 <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">
@@ -243,11 +261,21 @@ export default {
                 // this.searching = false;
                 });
         },
+        addAskPerson: function () {
+            const askPersonName = this.sanction.demandeur.split("—")[0].trim();
+            axios.get(`/annuaire/api/people/?query=${askPersonName}&people_type=responsible`)
+                .then((respSearch) => {
+                    if (respSearch.data.length === 1) {
+                        this.otherRecipients.push(respSearch.data[0]);
+                    }
+                });
+        }
     },
     mounted: function () {
         axios.get(`/dossier_eleve/api/ask_sanctions/${this.id}/`)
             .then(resp => {
                 this.sanction = resp.data;
+                
             });
         axios.get(`/dossier_eleve/api/template_sanction/${this.id}/`)
             .then(resp => {
