@@ -88,12 +88,13 @@ class StudentAbsenceSerializer(serializers.ModelSerializer):
         if len(server) != 0:
             periods = models.PeriodModel.objects.all().order_by("start")
             period = [i for i, p in enumerate(periods) if p.id == absence.period.id][0]
+            absence_status = "A" if is_absent else "P"
 
             return writer.set_student_absence(
                 matricule=absence.student.matricule,
                 day=absence.date_absence,
                 period=period,
-                is_absent=is_absent,
+                absence_status=absence_status,
                 fdb_server=server[0],
             )[0]
         return False

@@ -231,11 +231,14 @@ class StudentAbsenceViewSet(ModelViewSet):
             periods = PeriodModel.objects.all().order_by("start")
             period = [i for i, p in enumerate(periods) if p.id == data.get("period", None).id][0]
 
+            is_absent = data.get("is_absent", False)
+            absence_status = "A" if is_absent else "P"
+
             return writer.set_student_absence(
                 matricule=data.get("student").matricule,
                 day=data.get("date_absence"),
                 period=period,
-                is_absent=data.get("is_absent", False),
+                absence_status=absence_status,
                 cur=self.cursor,
                 commit=False,
             )
