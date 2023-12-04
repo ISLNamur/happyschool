@@ -172,6 +172,25 @@
                                 <template #noOptions />
                             </multiselect>
                         </template>
+                        <template #cell(classes)="data">
+                            <multiselect
+                                :internal-search="false"
+                                :options="classesOptions"
+                                @search-change="getStudentsClassesYears"
+                                :multiple="true"
+                                :show-no-options="false"
+                                placeholder="classe ou année"
+                                select-label=""
+                                selected-label="Sélectionné"
+                                deselect-label="Cliquer dessus pour enlever"
+                                v-model="scheduleChanges[data.index].classes"
+                            >
+                                <template #noResult>
+                                    Aucune classe trouvée.
+                                </template>
+                                <template #noOptions />
+                            </multiselect>
+                        </template>
                         <template #cell(remove)="data">
                             <b-btn
                                 size="sm"
@@ -218,6 +237,7 @@ export default {
             teacher: null,
             teacherOptions: [],
             placesOptions: [],
+            classesOptions: [],
             defaultType: null,
             defaultCategory: null,
             scheduleChanges: [],
@@ -303,6 +323,29 @@ export default {
                     console.log(error);
                 });
         },
+        getStudentsClassesYears(query) {
+            this.searchId += 1;
+            let currentSearch = this.searchId;
+            const data = {
+                query: query,
+                teachings: this.$store.state.settings.teachings,
+                check_access: false,
+                years: true,
+            };
+            axios.post("/annuaire/api/classes/", data, token)
+                .then(response => {
+                // Avoid that a previous search overwrites a faster following search results.
+                    if (this.searchId !== currentSearch)
+                        return;
+                    const options = response.data.map(p => {
+                        return p.display;
+                    });
+                    this.classesOptions = options;
+                })
+                .catch(function (error) {
+                    alert(error);
+                });
+        },
         prepareSchedule: function () {
             if (!this.teacher || !this.dateStart || !this.dateEnd) {
                 return;
@@ -350,7 +393,7 @@ export default {
                                         date_change: currentDay.format("YYYY-MM-DD"),
                                         time_start: periods.find(p => p.id === courseSchedule.period).start,
                                         time_end: periods.find(p => p.id === courseSchedule.period).end,
-                                        classes: courseSchedule.related_classes.split(", "),
+                                        classes: courseSchedule.related_classes ? courseSchedule.related_classes.split(", ") : [],
                                         teachers_replaced_id: [this.teacher.matricule],
                                     };
                                 })
