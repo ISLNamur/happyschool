@@ -235,14 +235,13 @@ export default {
     mounted: function () {
         // eslint-disable-next-line no-undef
         const app = menu.apps.find(a => a.app === "pia");
-        if (app && "new_items" in app) {
+        if (app && "new_items" in app && app.new_items > 0) {
             // If new_items is "20+", only keep 20.
             const new_items = isNaN(app.new_items) ? app.new_items.slice(0, 1) : app.new_items;
             axios.get(`/pia/api/pia/?ordering=-datetime_updated&page_size=${new_items}`)
                 .then((resp) => {
                     this.lastPias = resp.data.results;
                 });
-
         }
 
         this.loadEntries();
