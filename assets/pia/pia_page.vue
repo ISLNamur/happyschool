@@ -67,6 +67,26 @@
                     </multiselect>
                 </b-col>
             </b-row>
+            <b-row class="mt-2">
+                <b-col>
+                    <b-alert
+                        :show="lastPias.length > 0"
+                        dismissible
+                    >
+                        <p>Les PIA des élèves suivants ont été modifiés récemment :</p>
+                        <ul>
+                            <li
+                                v-for="pia in lastPias"
+                                :key="pia.id"
+                            >
+                                <a :href="`#/edit/${pia.id}/${pia.advanced}/`">
+                                    {{ displayStudent(pia.student) }}
+                                </a>
+                            </li>
+                        </ul>
+                    </b-alert>
+                </b-col>
+            </b-row>
             <b-row>
                 <b-col>
                     <b-pagination-nav
@@ -99,6 +119,7 @@ import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
 import { piaStore } from "./stores/index.js";
+import { displayStudent } from "../common/utilities.js";
 
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
@@ -123,6 +144,7 @@ export default {
         return {
             entries: [],
             entriesCount: 1,
+            lastPias: [],
             studentOptions: [],
             canAddPia: false,
             currentStudent: null,
@@ -142,6 +164,7 @@ export default {
         }
     },
     methods: {
+        displayStudent: displayStudent,
         /**
          * Generate link to other pages.
          * 
@@ -210,6 +233,18 @@ export default {
         },
     },
     mounted: function () {
+        // eslint-disable-next-line no-undef
+        const app = menu.apps.find(a => a.app === "pia");
+        if (app && "new_items" in app) {
+            // If new_items is "20+", only keep 20.
+            const new_items = isNaN(app.new_items) ? app.new_items.slice(0, 1) : app.new_items;
+            axios.get(`/pia/api/pia/?ordering=-datetime_updated&page_size=${new_items}`)
+                .then((resp) => {
+                    this.lastPias = resp.data.results;
+                });
+
+        }
+
         this.loadEntries();
         // eslint-disable-next-line no-undef
         this.canAddPia = canAddPIA;
