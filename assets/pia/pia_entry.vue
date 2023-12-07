@@ -24,7 +24,7 @@
             name="fade"
         >
             <b-card
-                class="px-4 mt-2"
+                :class="`px-4 mt-2 ${newEntry ? 'new' : ''}`"
                 no-body
             >
                 <b-row>
@@ -89,6 +89,10 @@ export default {
         };
     },
     computed: {
+        newEntry: function () {
+            // eslint-disable-next-line no-undef    
+            return Moment(this.rowData.datetime_updated) > Moment(lastAccess);
+        },
     },
     methods: {
         deleteEntry: function () {
@@ -98,3 +102,10 @@ export default {
     }
 };
 </script>
+
+<style>
+.new {
+        box-shadow: 0px 0px 5px #0069d9;
+        border-color: #0069d9;
+    }
+</style>
