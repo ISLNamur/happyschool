@@ -171,7 +171,6 @@ class LatenessViewSet(BaseModelViewSet):
                     date_absence=instance.datetime_creation,
                     student=instance.student,
                     period=period,
-                    status=StudentAbsenceTeacherModel.LATENESS,
                 )
             except ObjectDoesNotExist:
                 return None
