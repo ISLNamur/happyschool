@@ -21,10 +21,16 @@ from django.contrib import admin
 
 from . import models
 
+
+class DisorderResponseAdmin(admin.ModelAdmin):
+    search_fields = ["disorder__disorder", "response"]
+    list_filter = ["disorder"]
+
+
 admin.site.register(models.PIASettingsModel)
 admin.site.register(models.PIAModel)
 admin.site.register(models.DisorderModel)
-admin.site.register(models.DisorderResponseModel)
+admin.site.register(models.DisorderResponseModel, DisorderResponseAdmin)
 admin.site.register(models.DisorderResponseCategoryModel)
 admin.site.register(models.ScheduleAdjustmentModel)
 admin.site.register(models.CrossGoalModel)
