@@ -64,7 +64,7 @@ def send_email(
         for i in images:
             # email.headers()
             image_name = i.split("/")[-1]
-            fp = open(settings.BASE_DIR + i, "rb")
+            fp = open(str(settings.BASE_DIR) + i, "rb")
             msg_img = MIMEImage(fp.read())
             msg_img.add_header("Content-Id", "<" + image_name + ">")
             email.attach(msg_img)
