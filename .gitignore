@@ -13,7 +13,5 @@ static/photos/*jpg
 Pipfile.lock
 docs/_build/
 package-lock.json
-static/bundles/home-*
-static/bundles/lateness-*
-static/bundles/grandset-*
-static/bundles/*
+/static/
+.hotfile
