@@ -1,5 +1,7 @@
 {% extends "core/base_vue.html" %}
 
+{% load vite %}
+
 {% block header %}
 <title>HappySchool : Annuaire</title>
 <link rel="manifest" href="/static/manifest/happyschool.json">
@@ -8,6 +10,9 @@
 <meta name="apple-mobile-web-app-title" content="DC-Covers">
 <meta name="msapplication-TileImage" content="link to the image in static folder">
 <meta name="msapplication-TileColor" content="#000">
+{% vite %}
+{% vite "annuaire/js/annuaire.js" %}
+
 {% endblock %}
 {% block content %}
 <script>
@@ -16,7 +21,5 @@
     const menu = {{ menu|safe }};
 </script>
 <div id="vue-app"></div>
-{% load render_bundle from webpack_loader %}
-{% render_bundle 'annuaire' %}
 
 {% endblock %}
