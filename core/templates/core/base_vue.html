@@ -7,27 +7,11 @@
         <link rel="stylesheet" href="/static/bundles/bootstrap.min.css">
         <link rel="stylesheet" href="{% static 'css/common.css' %}">
         <link rel="shortcut icon" href="/static/img/favicon.ico">
-        {% load render_bundle from webpack_loader %}
         {% block header %}{% endblock %}
     </head>
 
     <body class="d-flex h-100 flex-column">
         <script>
-            {% load get_files from webpack_loader %}
-            {% get_files 'commons' 'js' as commons_file %}
-            {% for file in commons_file %}
-            const hash = '{{ file.name }}'.split("-")[1].split(".")[0];
-            {% endfor %}
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/static/bundles/root_sw.js?hash' + hash,
-                {scope: '/', updateViaCache: 'none',}).then(function(reg) {
-                    // registration worked.
-                    console.log('Registration succeeded. Scope is ' + reg.scope);
-                }).catch(function(error) {
-                    // registration failed.
-                    console.log('Registration failed with ' + error);
-                });
-            };
             {% load groups %}
             {% load user_properties %}
             {% load scholar_year %}
@@ -42,7 +26,6 @@
             const current_scholar_year = {% current_scholar_year %};
 
         </script>
-        {% render_bundle 'commons' %}
         <header></header>
         <main class="flex-shrink-0 mb-2">
             {% block content %}{% endblock %}

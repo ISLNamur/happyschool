@@ -46,6 +46,7 @@ EXCLUDED_APPS = [
     "proeco",
     "django_cas_ng",
     "debug_toolbar",
+    "django_vite_plugin",
 ]
 
 
