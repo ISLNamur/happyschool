@@ -180,7 +180,15 @@
                             <h3>{{ advanced ? "Aménagements" : "Activités de soutien" }}</h3>
                         </b-col>
                     </b-row>
-                    <b-row v-if="advanced">
+                    <other-adjustments
+                        v-if="advanced"
+                        :pia="Number(id)"
+                        ref="otheradjustments"
+                    />
+                    <b-row
+                        v-if="advanced"
+                        class="mt-3"
+                    >
                         <b-col>
                             <disorder-selection
                                 :pia="Number(id)"
@@ -188,11 +196,6 @@
                             />
                         </b-col>
                     </b-row>
-                    <other-adjustments
-                        v-if="advanced"
-                        :pia="Number(id)"
-                        ref="otheradjustments"
-                    />
                     <schedule-adjustments
                         v-if="advanced"
                         :pia="Number(id)"

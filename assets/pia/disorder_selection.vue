@@ -21,6 +21,13 @@
     <b-overlay :show="loading">
         <b-row>
             <b-col>
+                <h4>
+                    Aménagements raisonnables
+                </h4>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col>
                 <b-form-group>
                     <b-select
                         :options="disorderCares"
