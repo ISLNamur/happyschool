@@ -888,6 +888,7 @@ export default {
                     this.form.other_adjustments = resp.data.other_adjustments;
 
                     this.form.support_activities = resp.data.support_activities;
+                    this.checkSupportActivities();
                     // Object.keys(resp.data.support_activities).forEach(key => {
                     //     this.form.support_activities[key].branch = resp.data.support_activities[key].branch;
                     //     this.form.support_activities[key].teachers = resp.data.support_activities[key].teachers;
@@ -957,6 +958,28 @@ export default {
                         this.loadingOthers = false;
                     }
                 });
+        },
+        /**
+         * Check and update support activities days if anything has changed.
+         */
+        checkSupportActivities: function () {
+            // Add new support days.
+            this.supportDays.forEach(sD => {
+                // Check
+                if (sD in this.form.support_activities) {
+                    return;
+                }
+
+                this.form.support_activities[sD] = {branch: [], teachers: []};
+            });
+
+            // Remove deleted support days.
+            const removedDays = Object.keys(this.form.support_activities)
+                .filter(sA => !this.supportDays.includes(Number(sA)));
+ 
+            removedDays.forEach(rD => {
+                delete this.form.support_activities[rD];
+            });
         }
     },
     mounted: function () {
