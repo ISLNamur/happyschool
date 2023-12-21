@@ -58,6 +58,14 @@ class AttachmentModel(models.Model):
     attachment = models.FileField(upload_to=unique_file_name)
 
 
+class BranchModel(models.Model):
+    branch = models.CharField(max_length=200)
+    teachings = models.ManyToManyField(TeachingModel)
+
+    def __str__(self):
+        return self.branch
+
+
 class DisorderModel(models.Model):
     disorder = models.CharField(max_length=1000)
     teachings = models.ManyToManyField(TeachingModel)
@@ -200,6 +208,29 @@ class ScheduleAdjustmentPlanModel(models.Model):
         return f"{', '.join([str(s_a) for s_a in self.schedule_adjustment.all()])} ({str(self.pia_model.student)})"
 
 
+class ActivitySupportModel(models.Model):
+    pia_model = models.ForeignKey(PIAModel, on_delete=models.CASCADE)
+    date_start = models.DateField()
+    date_end = models.DateField()
+
+    support_activities = models.JSONField(default=dict)
+    directed_study = models.JSONField(default=dict)
+
+    datetime_created = models.DateTimeField(auto_now_add=True)
+    datetime_updated = models.DateTimeField(auto_now=True)
+
+
+class CourseReinforcementModel(models.Model):
+    pia_model = models.ForeignKey(PIAModel, on_delete=models.CASCADE)
+    date_start = models.DateField()
+    date_end = models.DateField()
+
+    branches = models.ManyToManyField(BranchModel, blank=True)
+
+    datetime_created = models.DateTimeField(auto_now_add=True)
+    datetime_updated = models.DateTimeField(auto_now=True)
+
+
 class StudentProjectModel(models.Model):
     pia_model = models.ForeignKey(PIAModel, on_delete=models.CASCADE)
     student_project = models.TextField()
@@ -224,14 +255,6 @@ class CrossGoalItemModel(models.Model):
 
     def __str__(self):
         return self.goal
-
-
-class BranchModel(models.Model):
-    branch = models.CharField(max_length=200)
-    teachings = models.ManyToManyField(TeachingModel)
-
-    def __str__(self):
-        return self.branch
 
 
 class BranchGoalItemModel(models.Model):

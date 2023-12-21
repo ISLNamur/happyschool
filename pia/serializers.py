@@ -122,6 +122,28 @@ class ScheduleAdjustmentPlanSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ActivitySupportSerializer(serializers.ModelSerializer):
+    """Serializer of activity support.
+
+    Expose all field of the model.
+    """
+
+    class Meta:
+        model = models.ActivitySupportModel
+        fields = "__all__"
+
+
+class CourseReinforcementSerializer(serializers.ModelSerializer):
+    """Serializer of course reinforcement.
+
+    Expose all field of the model.
+    """
+
+    class Meta:
+        model = models.CourseReinforcementModel
+        fields = "__all__"
+
+
 class CrossGoalSerializer(serializers.ModelSerializer):
     responsible = serializers.SlugRelatedField(
         many=True, slug_field="matricule", queryset=ResponsibleModel.objects.all()

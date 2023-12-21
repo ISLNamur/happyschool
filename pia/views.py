@@ -283,6 +283,30 @@ class ScheduleAdjustmentPlanViewSet(ModelViewSet):
     ordering = ["-date_start"]
 
 
+class ActivitySupportViewSet(ModelViewSet):
+    queryset = models.ActivitySupportModel.objects.all()
+    serializer_class = serializers.ActivitySupportSerializer
+    filter_backends = [
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    ]
+    filterset_fields = ("pia_model",)
+    pagination_class = LargePageSizePagination
+    ordering = ["-date_start"]
+
+
+class CourseReinforcementViewSet(ModelViewSet):
+    queryset = models.CourseReinforcementModel.objects.all()
+    serializer_class = serializers.CourseReinforcementSerializer
+    filter_backends = [
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    ]
+    filterset_fields = ("pia_model",)
+    pagination_class = LargePageSizePagination
+    ordering = ["-date_start"]
+
+
 class CrossGoalItemViewSet(ReadOnlyModelViewSet):
     queryset = models.CrossGoalItemModel.objects.all()
     serializer_class = serializers.CrossGoalItemSerializer

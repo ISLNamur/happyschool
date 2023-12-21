@@ -204,8 +204,8 @@
                     <b-row v-else>
                         <b-col>
                             <activity-support
-                                v-model="form.support_activities"
-                                :loading="loading"
+                                :pia="Number(id)"
+                                ref="activitysupport"
                             />
                         </b-col>
                     </b-row>
@@ -245,6 +245,24 @@
                                     />
                                 </b-list-group>
                             </b-form-group> 
+                        </b-col>
+                    </b-row>
+                </b-tab>
+                <b-tab
+                    v-if="advanced"
+                    title="Soutien"
+                >
+                    <b-row>
+                        <b-col>
+                            <h4>Activités de soutien</h4>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col>
+                            <activity-support
+                                :pia="Number(id)"
+                                ref="activitysupport"
+                            />
                         </b-col>
                     </b-row>
                 </b-tab>
@@ -581,23 +599,6 @@ export default {
             // eslint-disable-next-line no-undef
             return menu.apps.some(a => a.app === "dossier_eleve");
         },
-        /**
-         * A list of supported days from settings.
-         */
-        supportDays: function () {
-            const seqDays = this.store.settings.weekday_support_activity.split(",");
-            const days = seqDays.filter(d => d.length === 1).map(d => Number(d.trim()));
-            const ranges = seqDays.filter(d => d.length === 3).map(d => d.trim()).filter(d => d[1] === "-");
-            ranges.forEach(r => {
-                const start = Number(r[0]);
-                const end = Number(r[2]);
-                if (start <= end) {
-                    Array(end - start + 1).fill().map((_, i) => i + start).forEach(d => days.push(d));
-                }
-            });
-
-            return days.sort();
-        }
     },
     watch: {
         id: function (newVal) {
@@ -810,14 +811,15 @@ export default {
 
                     const disorderPromise = this.advanced ? [app.$refs.disorder.save(recordId)] : [];
                     const scheduleAdjustPromise = this.advanced ?  [app.$refs.adjustments.save(recordId)] : [];
-                    const otherAdjustPromise = this.advanced ?  [app.$refs.otheradjustments.save(recordId)] : [];
+                    const otherAdjustPromise = this.advanced ? [app.$refs.otheradjustments.save(recordId)] : [];
+                    const activitySupportPromise = [app.$refs.activitysupport.save(recordId)];
                     const crossGoalPromises = this.cross_goal.length != 0 ? this.$refs.crossgoals.map(g => g.submit(recordId)) : [];
                     const branchGoalPromises = this.branch_goal.length != 0 && this.$refs.branchgoals ? this.$refs.branchgoals.map(g => g.submit(recordId)) : [];
                     const sPPromises = this.student_project.length != 0 ? this.$refs.studentprojects.map(sP => sP.submit(recordId)) : [];
                     const pOPromises = this.parents_opinion.length != 0 ? this.$refs.parentsopinions.map(pO => pO.submit(recordId)) : [];
                     const classCouncilPromises = this.class_council.length != 0 ? this.$refs.councils.map(c => c.submit(recordId)) : [];
                     Promise.all(crossGoalPromises.concat(
-                        disorderPromise, scheduleAdjustPromise, otherAdjustPromise,
+                        disorderPromise, scheduleAdjustPromise, otherAdjustPromise, activitySupportPromise,
                         branchGoalPromises, classCouncilPromises, sPPromises, pOPromises
                     ))
                         .then(resps => {
@@ -887,14 +889,6 @@ export default {
                     this.form.schedule_adjustment = this.store.scheduleAdjustments.filter(sa => resp.data.schedule_adjustment.includes(sa.id));
                     this.form.other_adjustments = resp.data.other_adjustments;
 
-                    this.form.support_activities = resp.data.support_activities;
-                    this.checkSupportActivities();
-                    // Object.keys(resp.data.support_activities).forEach(key => {
-                    //     this.form.support_activities[key].branch = resp.data.support_activities[key].branch;
-                    //     this.form.support_activities[key].teachers = resp.data.support_activities[key].teachers;
-                    // });
-                    
-
                     this.loading = false;
 
                     axios.get(`/dossier_eleve/api/cas_eleve/?page_size=100&info__info=PIA&student__matricule=${resp.data.student.matricule}`)
@@ -928,9 +922,6 @@ export default {
          * the retrieval of the current data record (goals, comments and council included).
          */
         initApp: function () {
-            this.supportDays.forEach(d => {
-                this.form.support_activities[d] = {branch: [], teachers: []};
-            });
             this.store.loadOptions()
                 .then(() => {
                     if (this.id) {
@@ -959,28 +950,6 @@ export default {
                     }
                 });
         },
-        /**
-         * Check and update support activities days if anything has changed.
-         */
-        checkSupportActivities: function () {
-            // Add new support days.
-            this.supportDays.forEach(sD => {
-                // Check
-                if (sD in this.form.support_activities) {
-                    return;
-                }
-
-                this.form.support_activities[sD] = {branch: [], teachers: []};
-            });
-
-            // Remove deleted support days.
-            const removedDays = Object.keys(this.form.support_activities)
-                .filter(sA => !this.supportDays.includes(Number(sA)));
- 
-            removedDays.forEach(rD => {
-                delete this.form.support_activities[rD];
-            });
-        }
     },
     mounted: function () {
         this.initApp();
