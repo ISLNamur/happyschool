@@ -19,13 +19,17 @@
 
 import Vue from "vue";
 
-import store from "../student_absence_teacher/store.js";
+import { createPinia, PiniaVuePlugin } from "pinia";
+Vue.use(PiniaVuePlugin);
+
+const pinia = createPinia();
+
 import router from "../student_absence_teacher/router.js";
 
 new Vue({
     el: "#vue-app",
     data: {},
     router,
-    store,
+    pinia,
     template: "<router-view></router-view>",
 });

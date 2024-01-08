@@ -83,6 +83,8 @@
 <script>
 import axios from "axios";
 
+import { studentAbsenceTeacherStore } from "./stores/index.js";
+
 import {displayStudent} from "../common/utilities.js";
 
 const absenceLabel = {
@@ -106,11 +108,12 @@ export default {
             studentAbsenceState: null,
             relatedStudentAbsence: [],
             updating: false,
+            store: studentAbsenceTeacherStore(),
         };
     },
     computed: {
         useCourse: function () {
-            return this.$store.state.settings.select_student_by === "GC";
+            return this.store.settings.select_student_by === "GC";
         },
         status: function () {
             return absenceLabel[this.absence.status];

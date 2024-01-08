@@ -63,7 +63,7 @@
                 lg="3"
             >
                 <multiselect
-                    v-if="$store.state.settings.select_student_by === 'GC' || $store.state.settings.select_student_by === 'CLGC'"
+                    v-if="store.settings.select_student_by === 'GC' || store.settings.select_student_by === 'CLGC'"
                     :options="givenCourseOptions"
                     placeholder="Séléctionner votre cours"
                     select-label=""
@@ -81,10 +81,10 @@
                     </template>
                 </multiselect>
             </b-col>
-            <span v-if="$store.state.settings.select_student_by === 'CLGC'">ou</span>
+            <span v-if="store.settings.select_student_by === 'CLGC'">ou</span>
             <b-col>
                 <multiselect
-                    v-if="$store.state.settings.select_student_by === 'CL' || $store.state.settings.select_student_by === 'CLGC'"
+                    v-if="store.settings.select_student_by === 'CL' || store.settings.select_student_by === 'CLGC'"
                     :options="classesOptions"
                     placeholder="Chercher une classe"
                     select-label=""
@@ -192,6 +192,8 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 import axios from "axios";
 import Moment from "moment";
 
+import { studentAbsenceTeacherStore } from "./stores/index.js";
+
 import AddAbsenceEntry from "./add_absence_entry.vue";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
@@ -211,6 +213,7 @@ export default {
             loadingStudent: false,
             studentGroup: null,
             lastUpdate: null,
+            store: studentAbsenceTeacherStore()
         };
     },
     computed: {
@@ -218,7 +221,7 @@ export default {
             if (!this.studentGroup) return this.students;
 
             const students = this.students.filter(s => s.group == this.studentGroup);
-            this.$store.commit("resetChanges", students.map(s => s.matricule));
+            this.store.resetChanges(students.map(s => s.matricule));
             return students;
         },
         groups: function () {
@@ -230,13 +233,13 @@ export default {
     },
     methods: {
         computeAlert: function () {
-            this.showAlert = Object.keys(this.$store.state.changes).length > 0;
+            this.showAlert = Object.keys(this.store.changes).length > 0;
         },
         searchClasses: function (query) {
             const data = {
                 query: query,
                 check_access: false,
-                teachings: this.$store.state.settings.teachings
+                teachings: this.store.settings.teachings
             };
             axios.post("/annuaire/api/classes/", data, token)
                 .then(resp => {
@@ -290,7 +293,7 @@ export default {
                 if (!this.givenCourse || this.period.length === 0 || !this.currentDate) {
                     this.students = [];
                     this.showAlert = false;
-                    this.$store.commit("resetChanges");
+                    this.store.resetChanges();
                     return;
                 }
 
@@ -300,7 +303,7 @@ export default {
                 axios.get(`/annuaire/api/student_given_course/${this.givenCourse.id}/`)
                     .then(resp => {
                         this.showAlert = false;
-                        this.$store.commit("resetChanges");
+                        this.store.resetChanges();
                         this.getAbsence(resp.data, selectBy);
                     });
             } else if (selectBy === "CL") {
@@ -308,7 +311,7 @@ export default {
                 if (!this.classe || this.period.length === 0 || !this.currentDate) {
                     this.students = [];
                     this.showAlert = false;
-                    this.$store.commit("resetChanges");
+                    this.store.resetChanges();
                     return;
                 }
 
@@ -318,14 +321,14 @@ export default {
                 const data = {params: {classe: this.classe.id}};
                 axios.get("/annuaire/api/studentclasse", data)
                     .then(resp => {
-                        this.$store.commit("resetChanges");
+                        this.store.resetChanges();
                         this.showAlert = false;
                         this.getAbsence(resp.data, selectBy);
                     });
             }
         },
         sendChanges: function () {
-            const changes = this.$store.state.changes;
+            const changes = this.store.changes;
 
             // Check if changes have been made in between.
             const data = {
@@ -369,17 +372,17 @@ export default {
                                 status: change.status,
                                 date_absence: this.currentDate
                             };
-                            if (this.$store.state.settings.select_student_by === "GC") data.given_course_id = this.givenCourse.id;
+                            if (this.store.settings.select_student_by === "GC") data.given_course_id = this.givenCourse.id;
                             promises.push(send(url, data, token));
                         }
                     }
                     for (let matricule in changes) {
-                        this.$store.commit("removeChange", matricule);
+                        this.store.removeChange(matricule);
                     }
                     Promise.all(promises)
                         .then(resps => {
                             for (let r in resps) {
-                                this.$store.commit("removeChange", resps[r].data.student_id);
+                                this.store.removeChange(resps[r].data.student_id);
                             }
                             resps.forEach(r => {
                                 if (!this.lastUpdate) {

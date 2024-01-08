@@ -70,6 +70,8 @@
 <script>
 import axios from "axios";
 
+import { studentAbsenceTeacherStore } from "./stores/index.js";
+
 import AbsenceEntry from "./absence_entry.vue";
 import Filters from "../common/filters_form.vue";
 import {getFilters} from "../common/filters.js";
@@ -83,12 +85,13 @@ export default {
             filter: "",
             currentPage: 1,
             entriesCount: 0,
+            store: studentAbsenceTeacherStore()
         };
     },
     methods: {
         filterStudent: function (matricule) {
             this.showFilters = true;
-            this.$store.commit("addFilter",
+            this.store.addFilter(
                 {filterType: "student__matricule", tag: matricule, value: matricule}
             );
             this.applyFilter();
@@ -101,7 +104,7 @@ export default {
             return;
         },
         applyFilter: function () {
-            this.filter = getFilters(this.$store.state.filters);
+            this.filter = getFilters(this.store.filters);
             this.loadEntries();
         },
         loadEntries: function () {

@@ -75,11 +75,14 @@ Moment.locale("fr");
 
 import Menu from "../common/menu_bar.vue";
 
+import { studentAbsenceTeacherStore } from "./stores/index.js";
+
 export default {
     data: function () {
         return {
             menuInfo: {},
             loaded: false,
+            store: studentAbsenceTeacherStore()
         };
     },
     computed: {
@@ -87,8 +90,8 @@ export default {
             return Moment().format("YYYY-MM-DD");
         },
         can_access_list: function () {
-            const access_groups = this.$store.state.settings.can_see_list;
-            for (let ag in this.$store.state.settings.can_see_list) {
+            const access_groups = this.store.settings.can_see_list;
+            for (let ag in this.store.settings.can_see_list) {
                 // eslint-disable-next-line no-undef
                 for (let g in user_groups) {
                     // eslint-disable-next-line no-undef
@@ -98,8 +101,8 @@ export default {
             return false;
         },
         can_access_adding: function () {
-            const access_groups = this.$store.state.settings.can_see_adding;
-            for (let ag in this.$store.state.settings.can_see_adding) {
+            const access_groups = this.store.settings.can_see_adding;
+            for (let ag in this.store.settings.can_see_adding) {
                 // eslint-disable-next-line no-undef
                 for (let g in user_groups) {
                     // eslint-disable-next-line no-undef

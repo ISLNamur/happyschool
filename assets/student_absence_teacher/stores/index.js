@@ -17,38 +17,35 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from "vue";
-import Vuex from "vuex";
+import { defineStore } from "pinia";
 
-import {addFilter, removeFilter} from "../common/filters.js";
+import { addFilterPinia as addFilter, removeFilterPinia as removeFilter } from "../../common/filters.js";
 
-Vue.use(Vuex);
-
-export default new Vuex.Store({
-    state: {
+export const studentAbsenceTeacherStore = defineStore("studentAbsenceTeacher", {
+    state: () => ({
         // eslint-disable-next-line no-undef
         settings: settings,
         filters: [],
         changes: {},
-    },
-    mutations: {
+    }),
+    actions: {
         addFilter: addFilter,
         removeFilter: removeFilter,
-        setChange: function (state, change) {
-            state.changes[change.matricule] = change;
+        setChange: function (change) {
+            this.changes[change.matricule] = change;
         },
-        removeChange: function (state, matricule) {
-            if (matricule in state.changes) delete state.changes[matricule];
+        removeChange: function (matricule) {
+            if (matricule in this.changes) delete this.changes[matricule];
         },
-        resetChanges: function (state, resetExceptions) {
+        resetChanges: function (resetExceptions) {
             if (resetExceptions) {
-                const keepChanges = Object.entries(state.changes).filter(
+                const keepChanges = Object.entries(this.changes).filter(
                     (change) => resetExceptions.includes(change[1].matricule)
                 );
-                state.changes = Object.fromEntries(keepChanges);
+                this.changes = Object.fromEntries(keepChanges);
                 return;
             }
-            state.changes = {};
+            this.changes = {};
         }
     }
 });

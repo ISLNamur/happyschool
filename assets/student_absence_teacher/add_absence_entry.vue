@@ -51,6 +51,8 @@
 </template>
 
 <script>
+import { studentAbsenceTeacherStore } from "./stores/index.js";
+
 export default {
     props: {
         "student": {
@@ -70,7 +72,8 @@ export default {
                 // {value: "other", text: "Autre remarque"}
             ],
             status: "presence",
-            comment: ""
+            comment: "",
+            store: studentAbsenceTeacherStore(),
         };
     },
     computed: {
@@ -83,28 +86,28 @@ export default {
             // Check if there is some changes.
             if ("saved" in this.student) {
                 if (this.student.saved.status == status && this.comment == this.student.saved.comment) {
-                    this.$store.commit("removeChange", this.student.matricule);
+                    this.store.commit("removeChange", this.student.matricule);
                 } else {
                     const change = {
                         matricule: this.student.matricule, "status": status, old_status: this.student.saved.status,
                         comment: this.comment, id: this.student.saved.id
                     };
-                    this.$store.commit("setChange", change);
+                    this.store.setChange(change);
                 }
             } else {
                 const change = {
                     matricule: this.student.matricule, "status": status,
                     comment: this.comment, is_new: true
                 };
-                this.$store.commit("setChange", change);
+                this.store.setChange(change);
             }
             this.$emit("update");
         },
         updateComment: function () {
-            if (this.student.matricule in this.$store.state.changes) {
-                let change = this.$store.state.changes[this.student.matricule];
+            if (this.student.matricule in this.store.changes) {
+                let change = this.store.changes[this.student.matricule];
                 change.comment = this.comment;
-                this.$store.commit("setChange", change);
+                this.store.setChange(change);
             } else {
                 const change = {
                     matricule: this.student.matricule, "status": this.status,
@@ -113,7 +116,7 @@ export default {
                 if ("saved" in this.student) {
                     change.old_status = this.student.saved.status;
                 }
-                this.$store.commit("setChange", change);
+                this.store.setChange(change);
                 this.$emit("update");
             }
         }
@@ -127,7 +130,7 @@ export default {
                 matricule: this.student.matricule, "status": this.status,
                 comment: this.comment, is_new: true
             };
-            this.$store.commit("setChange", change);
+            this.store.setChange(change);
             this.$emit("update");
         }
     }

@@ -110,6 +110,9 @@ import axios from "axios";
 import Multiselect from "vue-multiselect";
 
 import {displayStudent, extractDayOfWeek} from "../common/utilities.js";
+
+import { studentAbsenceTeacherStore } from "./stores/index.js";
+
 import OverviewTeacherEntry from "./overview_teacher_entry.vue";
 import OverviewEducatorEntry from "./overview_educator_entry.vue";
 
@@ -145,6 +148,7 @@ export default {
             classOptions: [],
             search: "",
             searchId: 0,
+            store: studentAbsenceTeacherStore()
         };
     },
     methods: {
@@ -168,7 +172,7 @@ export default {
             const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             let data = {
                 query: query,
-                teachings: this.$store.state.settings.teachings,
+                teachings: this.store.settings.teachings,
                 check_access: true
             };
             axios.post("/annuaire/api/classes/", data, token)

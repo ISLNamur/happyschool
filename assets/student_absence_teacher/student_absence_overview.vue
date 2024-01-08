@@ -200,6 +200,8 @@ import {extractDayOfWeek} from "../common/utilities.js";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
+import { studentAbsenceTeacherStore } from "./stores/index.js";
+
 export default {
     props: {
         date: {
@@ -228,6 +230,7 @@ export default {
             searchOptions: [],
             search: "",
             searchId: -1,
+            store: studentAbsenceTeacherStore()
         };
     },
     computed: {
@@ -334,7 +337,7 @@ export default {
             const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             const data = {
                 query: query,
-                teachings: this.$store.state.settings.teachings,
+                teachings: this.store.settings.teachings,
                 people: "student",
                 check_access: this.classListType === "ownclass",
             };
