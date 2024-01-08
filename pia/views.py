@@ -401,17 +401,29 @@ class ReportPDFView(LoginRequiredMixin, PermissionRequiredMixin, WeasyTemplateVi
             context[
                 "disorder_response_categories"
             ] = models.DisorderResponseCategoryModel.objects.all()
-            if not context["pia"].advanced:
-                context["support_activities"] = [
-                    {
-                        "day": self.day_of_week[int(s_a[0])],
-                        "branch": " ".join([b["branch"] for b in s_a[1]["branch"]]),
-                        "teachers": " ".join(
-                            [f"{t['first_name']} {t['last_name']}" for t in s_a[1]["teachers"]]
-                        ),
-                    }
-                    for s_a in context["pia"].support_activities.items()
-                ]
+
+            context["support_activities"] = [
+                {
+                    "activities": [
+                        {
+                            "day": self.day_of_week[int(s_a[0])],
+                            "branch": " ".join([b["branch"] for b in s_a[1]["branch"]]),
+                            "teachers": ", ".join(
+                                [f"{t['first_name']} {t['last_name']}" for t in s_a[1]["teachers"]]
+                            ),
+                        }
+                        for s_a in activity_support.support_activities.items()
+                    ],
+                    "directed_study": ", ".join(
+                        [
+                            self.day_of_week[int(d_s_day)]
+                            for d_s_day in activity_support.directed_study["days"]
+                        ]
+                    ),
+                    "object": activity_support,
+                }
+                for activity_support in context["pia"].activitysupportmodel_set.all()
+            ]
         except ObjectDoesNotExist:
             pass
         return context

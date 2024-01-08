@@ -183,14 +183,31 @@
             {% endfor %}
         </dl>
     </div>
-    {% else %}
+    {% endif %}
+    {% if support_activities %}
     <h3>
         Activités de soutien
     </h3>
     <div>
-        {% for a_s in support_activities %}
-        <p><span class="chevron">> </span>{{ a_s.day }}: {{ a_s.branch }} avec {{ a_s.teachers }}</p>
-        {% endfor %}
+        <dl>
+            {% for activity_support in support_activities %}
+            <dd class="new-period">Du <em>{{ activity_support.object.date_start }}</em> au <em>{{ activity_support.object.date_end }}</em></dd>
+            {% for a_s in activity_support.activities %}
+            {% if a_s.branch or a_s.teachers %}
+            <p>
+                <span class="chevron">> </span>{{ a_s.day }}: <strong>{{ a_s.branch }}</strong>
+                {{ a_s.teachers }}
+            </p>
+            {% endif %}
+            {% endfor %}
+            {% if activity_support.directed_study %}
+            <p>
+                <strong>Études dirigées</strong> :
+                {{ activity_support.directed_study }}
+            </p>
+            {% endif %}
+            {% endfor %}
+        </dl>
     </div>
     {% endif %}
 
