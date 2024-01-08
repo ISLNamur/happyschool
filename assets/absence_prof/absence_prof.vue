@@ -63,6 +63,7 @@
                         app="absence_prof"
                         model="absence"
                         ref="filters"
+                        :store="store"
                         @update="applyFilter"
                         :show-search="showFilters"
                         @toggleSearch="showFilters = !showFilters"
@@ -113,6 +114,8 @@ window.axios.defaults.baseURL = window.location.origin; // In order to have http
 
 import Filters from "../common/filters_form.vue";
 
+import { absenceProfStore } from "./stores/index.js";
+
 import AbsenceProfEntry from "./absenceProfEntry.vue";
 
 Vue.use(BootstrapVue);
@@ -133,6 +136,7 @@ export default {
             filter: "",
             ordering: "&ordering=date_absence_start,date_absence_end",
             entries: [],
+            store: absenceProfStore(),
         };
     },
     computed: {
@@ -172,7 +176,7 @@ export default {
         },
         applyFilter: function () {
             this.filter = "";
-            let storeFilters = this.$store.state.filters;
+            let storeFilters = this.store.filters;
             for (let f in storeFilters) {
                 if (storeFilters[f].filterType.startsWith("date")
                     || storeFilters[f].filterType.startsWith("time")) {

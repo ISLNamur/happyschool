@@ -19,13 +19,13 @@
 
 import Vue from "vue";
 
-import Vuex from "vuex";
-Vue.use(Vuex);
+import { createPinia, PiniaVuePlugin } from "pinia";
+Vue.use(PiniaVuePlugin);
 
-import store from "../absence_prof/store.js";
 import router from "../absence_prof/router.js";
 import Menu from "../common/menu_bar.vue";
 
+const pinia = createPinia();
 
 new Vue({
     el: "#vue-app",
@@ -33,7 +33,7 @@ new Vue({
         menuInfo: {},
         transitionName: "slide-left",
     },
-    store,
+    pinia,
     router,
     template:`
     <div>

@@ -120,6 +120,7 @@ import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
 import {getPeopleByName} from "../common/search.js";
+import { absenceProfStore } from "./stores/index.js";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
@@ -168,7 +169,8 @@ export default {
             errors: {},
             inputStates: {
                 non_field_errors: null
-            }
+            },
+            store: absenceProfStore(),
         };
     },
     methods: {
@@ -242,7 +244,7 @@ export default {
             let currentSearch = this.searchId;
             this.searching = true;
 
-            getPeopleByName(query, this.$store.state.settings.teachings, "responsible")
+            getPeopleByName(query, this.store.settings.teachings, "responsible")
                 .then( (resp) => {
                 // Avoid that a previous search overwrites a faster following search results.
                     if (this.searchId !== currentSearch)
