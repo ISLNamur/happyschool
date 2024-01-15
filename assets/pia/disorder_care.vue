@@ -145,6 +145,15 @@
                     </b-card>
                 </b-col>
             </b-row>
+            <b-row class="mt-2">
+                <b-col>
+                    <quill-editor
+                        :value="other_adjustments"
+                        @input="$emit('update:other_adjustments', $event)"
+                        :options="editorOptions"
+                    />
+                </b-col>
+            </b-row>
             <b-row v-if="disorder.length > 0">
                 <b-col>
                     <h4 class="mt-4">
@@ -209,6 +218,10 @@ import axios from "axios";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
+import {quillEditor} from "vue-quill-editor";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+
 import { piaStore } from "./stores/index.js";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
@@ -218,7 +231,8 @@ export default {
         "disorderCareId",
         "date_start",
         "date_end",
-        "disorder"
+        "disorder",
+        "other_adjustments",
     ],
     data: function () {
         return {
@@ -228,6 +242,19 @@ export default {
             selected_disorder_response: [],
             deselected: [],
             editDisorderResponse: false,
+            editorOptions: {
+                modules: {
+                    toolbar: [
+                        ["bold", "italic", "underline", "strike"],
+                        ["blockquote"],
+                        [{ "list": "ordered"}, { "list": "bullet" }],
+                        [{ "indent": "-1"}, { "indent": "+1" }],
+                        [{ "align": [] }],
+                        ["clean"]
+                    ]
+                },
+                placeholder: ""
+            },
             inputStates: {
                 date_start: null,
                 date_end: null,
@@ -326,7 +353,8 @@ export default {
         this.loadSelected();
     },
     components: {
-        Multiselect
+        Multiselect,
+        quillEditor,
     }
 };
 </script>

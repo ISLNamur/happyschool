@@ -180,11 +180,6 @@
                             <h3>{{ advanced ? "Aménagements" : "Activités de soutien" }}</h3>
                         </b-col>
                     </b-row>
-                    <other-adjustments
-                        v-if="advanced"
-                        :pia="Number(id)"
-                        ref="otheradjustments"
-                    />
                     <b-row
                         v-if="advanced"
                         class="mt-3"
@@ -811,7 +806,6 @@ export default {
 
                     const disorderPromise = this.advanced ? [app.$refs.disorder.save(recordId)] : [];
                     const scheduleAdjustPromise = this.advanced ?  [app.$refs.adjustments.save(recordId)] : [];
-                    const otherAdjustPromise = this.advanced ? [app.$refs.otheradjustments.save(recordId)] : [];
                     const activitySupportPromise = [app.$refs.activitysupport.save(recordId)];
                     const crossGoalPromises = this.cross_goal.length != 0 ? this.$refs.crossgoals.map(g => g.submit(recordId)) : [];
                     const branchGoalPromises = this.branch_goal.length != 0 && this.$refs.branchgoals ? this.$refs.branchgoals.map(g => g.submit(recordId)) : [];
@@ -819,7 +813,7 @@ export default {
                     const pOPromises = this.parents_opinion.length != 0 ? this.$refs.parentsopinions.map(pO => pO.submit(recordId)) : [];
                     const classCouncilPromises = this.class_council.length != 0 ? this.$refs.councils.map(c => c.submit(recordId)) : [];
                     Promise.all(crossGoalPromises.concat(
-                        disorderPromise, scheduleAdjustPromise, otherAdjustPromise, activitySupportPromise,
+                        disorderPromise, scheduleAdjustPromise, activitySupportPromise,
                         branchGoalPromises, classCouncilPromises, sPPromises, pOPromises
                     ))
                         .then(resps => {
