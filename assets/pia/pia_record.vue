@@ -507,7 +507,6 @@ import ClassCouncil from "./class_council.vue";
 import PiaComment from "./pia_comment.vue";
 import DisorderSelection from "./disorder_selection.vue";
 import ScheduleAdjustments from "./schedule_adjustments.vue";
-import OtherAdjustments from "./other_adjustments.vue";
 
 import ActivitySupport from "./activity_support.vue";
 
@@ -955,7 +954,6 @@ export default {
         PiaComment,
         DisorderSelection,
         ScheduleAdjustments,
-        OtherAdjustments,
         FileUpload,
         ActivitySupport,
     }
