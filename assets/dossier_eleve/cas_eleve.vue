@@ -150,7 +150,7 @@
                                     </b-form-radio>
                                     <b-form-radio
                                         value="sanction-decision"
-                                        :disabled="!$store.state.canSetSanction"
+                                        :disabled="!store.canSetSanction"
                                     >
                                         Disciplinaire
                                     </b-form-radio>
@@ -319,7 +319,7 @@
                             </b-form-group>
                             <b-form-checkbox
                                 v-model="form.send_to_teachers"
-                                :disabled="!$store.state.canSetSanction"
+                                :disabled="!store.canSetSanction"
                             >
                                 Envoyer l'info par courriel aux professeurs de la classe de l'élève (les fichiers seront joints).
                             </b-form-checkbox>
@@ -355,6 +355,8 @@ window.axios = axios;
 window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
 
 import FileUpload from "../common/file_upload.vue";
+
+import { dossierEleveStore } from "./stores/dossier_eleve.js";
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
@@ -418,6 +420,7 @@ export default {
                 placeholder: ""
             },
             sending: false,
+            store: dossierEleveStore(),
         };
     },
     watch: {
@@ -579,10 +582,10 @@ export default {
 
             const data = {
                 query: query,
-                teachings: this.$store.state.settings.teachings,
+                teachings: this.store.settings.teachings,
                 people: people,
                 check_access: true,
-                tenure_class_only: this.$store.state.settings.filter_teacher_entries_by_tenure,
+                tenure_class_only: this.store.settings.filter_teacher_entries_by_tenure,
             };
             axios.post("/annuaire/api/people/", data, token)
                 .then(response => {
@@ -594,7 +597,7 @@ export default {
                         let entry = {display: p.last_name + " " + p.first_name, matricule: p.matricule};
                         // Append teachings if necessary.
                         if ("is_secretary" in p) {
-                            if (this.$store.state.settings.teachings.length > 1) {
+                            if (this.store.settings.teachings.length > 1) {
                                 // It's a responsible.
                                 let teachings = " —";
                                 for (let t in p.teaching) {
@@ -607,7 +610,7 @@ export default {
                             entry.fullname = entry.display;
                             entry.display += " " + p.classe.year + p.classe.letter.toUpperCase();
                             entry.classe = p.classe.id;
-                            if (this.$store.state.settings.teachings.length > 1) entry.display += " – " + p.teaching.display_name;
+                            if (this.store.settings.teachings.length > 1) entry.display += " – " + p.teaching.display_name;
                         }
                         return entry;
                     });
@@ -630,14 +633,14 @@ export default {
                 .then(response => {
                     this.sanctionDecisionOptions = response.data.results.map(m => {
                         let entry = {value: m.id, text: m.sanction_decision};
-                        if (this.$store.state.settings.enable_submit_sanctions) {
+                        if (this.store.settings.enable_submit_sanctions) {
                             entry["disabled"] = m.can_ask;
                         }
                         return entry;
                     });
 
                     // Keep sanction decision entry.
-                    if (this.$store.state.settings.enable_submit_sanctions) {
+                    if (this.store.settings.enable_submit_sanctions) {
                         this.sanctionDecisionOptions = this.sanctionDecisionOptions.filter(s => {
                             if (this.form.sanction_decision_id === s.value || !s.disabled) {
                                 return true;
@@ -652,7 +655,7 @@ export default {
                 });
         },
         setVisibilityGroups: function () {
-            let settings = this.$store.state.settings;
+            let settings = this.store.settings;
             // eslint-disable-next-line no-undef
             const groupSet = Object.assign({}, groups);
             groupSet.tenure = {
@@ -738,7 +741,7 @@ export default {
             axios.get(`/annuaire/api/responsible/${user_properties.matricule}`)
                 .then(resp => {
                     this.demandeur = resp.data;
-                    if (this.$store.state.settings.teachings.length > 1) {
+                    if (this.store.settings.teachings.length > 1) {
                         let teachings = " —";
                         for (let t in this.demandeur.teaching) {
                             teachings += " " + this.demandeur.teaching[t].display_name;

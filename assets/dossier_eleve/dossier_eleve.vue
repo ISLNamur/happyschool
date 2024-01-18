@@ -40,7 +40,7 @@
                     </b-nav-item>
                     <b-nav-item href="/dossier_eleve/ask_sanctions">
                         <span class="text-danger">Demandes de sanction</span>
-                        <span v-if="$store.state.canSetSanction">
+                        <span v-if="store.canSetSanction">
                             <b-badge>{{ askSanctionsCount }}</b-badge>
                             <b-badge variant="warning">{{ askSanctionsNotDoneCount }}</b-badge>
                         </span>
@@ -58,7 +58,7 @@
                                 variant="primary"
                                 to="/new/"
                                 class="w-100"
-                                v-if="$store.state.canAddCas"
+                                v-if="store.canAddCas"
                             >
                                 <b-icon icon="plus" />
                                 Nouveau cas
@@ -79,6 +79,7 @@
                         app="dossier_eleve"
                         model="cas_eleve"
                         ref="filters"
+                        :store="store"
                         @update="applyFilter"
                         :show-search="showFilters"
                         @toggleSearch="showFilters = !showFilters"
@@ -132,6 +133,8 @@ import {getFilters} from "../common/filters.js";
 import CasEleveEntry from "./casEleveEntry.vue";
 import ExportModal from "./exportModal.vue";
 
+import { dossierEleveStore } from "./stores/dossier_eleve.js";
+
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
@@ -149,6 +152,7 @@ export default {
             loaded: false,
             askSanctionsCount: 0,
             askSanctionsNotDoneCount: 0,
+            store: dossierEleveStore(),
         };
     },
     computed: {
@@ -159,8 +163,8 @@ export default {
             return "";
         },
         canAskSanction: function () {
-            const enable = this.$store.state.settings.enable_submit_sanctions;
-            const canAskSanction = this.$store.state.canAskSanction;
+            const enable = this.store.settings.enable_submit_sanctions;
+            const canAskSanction = this.store.canAskSanction;
             return enable && canAskSanction;
         }
     },
@@ -178,13 +182,13 @@ export default {
         },
         filterStudent: function (matricule) {
             this.showFilters = true;
-            this.$store.commit("addFilter",
+            this.store.addFilter(
                 {filterType: "student__matricule", tag: matricule, value: matricule}
             );
             this.applyFilter();
         },
         applyFilter: function () {
-            this.filter = getFilters(this.$store.state.filters);
+            this.filter = getFilters(this.store.filters);
             this.currentPage = 1;
             this.loadEntries();
         },
@@ -222,7 +226,7 @@ export default {
             // const fullscreen = window.location.href.includes("matricule");
             const matricule = (new URL(document.location)).searchParams.get("matricule");
             if (matricule) {
-                this.$store.commit("addFilter", {filterType: "student__matricule", value: matricule, tag: matricule});
+                this.store.addFilter({filterType: "student__matricule", value: matricule, tag: matricule});
                 this.showFilters = true;
             }
         }

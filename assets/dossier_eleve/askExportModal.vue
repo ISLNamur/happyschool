@@ -35,7 +35,7 @@
                         Créer PDF
                     </b-button>
                     <b-button
-                        v-if="$store.state.hasProEco"
+                        v-if="store.hasProEco"
                         variant="primary"
                         class="ml-1"
                         @click="exportProEco"
@@ -47,7 +47,7 @@
             </template>
             <b-tabs v-model="tabIndex">
                 <b-tab
-                    v-if="$store.state.settings.enable_disciplinary_council"
+                    v-if="store.settings.enable_disciplinary_council"
                     title="Conseil de discipline"
                     active
                 >
@@ -171,6 +171,8 @@ Moment.locale("fr");
 
 import axios from "axios";
 
+import { askSanctionsStore } from "./stores/ask_sanctions.js";
+
 export default {
     props: {
         "entriesCount": {
@@ -184,11 +186,12 @@ export default {
             date_from: null,
             date_to: null,
             sanction_not_done: false,
-            ownClass: this.$store.state.settings.export_retenues_own_classes_default,
-            sortByClasse: this.$store.state.settings.export_retenues_by_classe_default,
-            sortBySanction: this.$store.state.settings.export_retenues_by_sanction_default,
+            ownClass: false,
+            sortByClasse: false,
+            sortBySanction: false,
             selectedSanctions: [],
             optionsSanction: [],
+            store: askSanctionsStore(),
         };
     },
     watch: {
@@ -212,7 +215,7 @@ export default {
             evt.preventDefault();
 
             let path = "/dossier_eleve/get_pdf_";
-            if (this.tabIndex == 0 && this.$store.state.settings.enable_disciplinary_council) {
+            if (this.tabIndex == 0 && this.store.settings.enable_disciplinary_council) {
                 path += `council/?datetime_conseil__gte=${this.date_from} 00:00&datetime_conseil__lte=${this.date_to} 23:59`;
             } else {
                 path += `retenues/?${this.ownClass ? "activate_own_classes=true" : ""}`;
@@ -223,7 +226,7 @@ export default {
                 }
             }
             let orderingFields = [];
-            const isSanctionTab = this.$store.state.settings.enable_disciplinary_council ? this.tabIndex == 1 : true;
+            const isSanctionTab = this.store.settings.enable_disciplinary_council ? this.tabIndex == 1 : true;
             if (this.sortBySanction && isSanctionTab) orderingFields.push("sanction_decision__sanction_decision");
             if (this.sortByClasse && isSanctionTab) orderingFields.push("student__classe__year,student__classe__letter");
             orderingFields.push("student__last_name");
@@ -233,7 +236,7 @@ export default {
             window.open(path);
         },
         exportProEco: function () {
-            const export_type = this.tabIndex == 0 && this.$store.state.settings.enable_disciplinary_council ? "council" : "retenue";
+            const export_type = this.tabIndex == 0 && this.store.settings.enable_disciplinary_council ? "council" : "retenue";
             let url = `/dossier_eleve/get_proeco_sanction/${export_type}/${this.date_from}/${this.date_to}/${this.selectedSanctions.join()}/`;
             if (export_type === "retenue") {
                 url += `${this.ownClass}/`;
@@ -242,6 +245,9 @@ export default {
         }
     },
     mounted: function () {
+        this.ownClass = this.store.settings.export_retenues_own_classes_default;
+        this.sortByClasse = this.store.settings.export_retenues_by_classe_default;
+        this.sortBySanction = this.store.settings.export_retenues_by_sanction_default;
         axios.get("/dossier_eleve/api/sanction_decision/?only_sanction=1")
             .then(resp => {
                 this.optionsSanction = resp.data.results.filter(sanct => sanct.can_ask).map(sanct => {

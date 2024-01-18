@@ -52,7 +52,7 @@
                         md="4"
                     >
                         <div class="text-right">
-                            <span v-if="$store.state.canSetSanction">
+                            <span v-if="store.canSetSanction">
                                 <b-icon
                                     icon="question-circle"
                                     variant="primary"
@@ -145,7 +145,7 @@
                         {{ category }}
                     </b-col>
                     <b-col
-                        v-if="$store.state.settings.enable_disciplinary_council && !lightDisplay"
+                        v-if="store.settings.enable_disciplinary_council && !lightDisplay"
                         md="2"
                         class="text-center"
                     >
@@ -206,6 +206,8 @@ import axios from "axios";
 
 import {displayStudent} from "../common/utilities.js";
 
+import { askSanctionsStore } from "./stores/ask_sanctions.js";
+
 export default {
     props: {
         rowData : {
@@ -223,6 +225,7 @@ export default {
             nextDate: this.nextWeek(),
             nextSanction: null,
             sanctionOptions: [],
+            store: askSanctionsStore()
         };
     },
     computed: {
@@ -285,7 +288,7 @@ export default {
             }
         },
         canEditSanction: function () {
-            if (this.$store.state.canSetSanction)
+            if (this.store.canSetSanction)
                 return true;
 
             // eslint-disable-next-line no-undef
@@ -324,9 +327,9 @@ export default {
         displayStudent
     },
     mounted: function () {
-        this.$store.dispatch("getSanctions")
+        this.store.getSanctions()
             .then(() => {
-                this.sanctionOptions = this.$store.state.sanctions;
+                this.sanctionOptions = this.store.sanctions;
                 this.nextSanction = this.rowData.sanction_decision.id;
             });
     }

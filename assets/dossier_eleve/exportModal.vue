@@ -111,6 +111,8 @@ Moment.locale("fr");
 import {getFilters} from "../common/filters.js";
 import {displayStudent} from "../common/utilities.js";
 
+import { askSanctionsStore } from "./stores/ask_sanctions.js";
+
 import axios from "axios";
 
 export default {
@@ -130,6 +132,7 @@ export default {
             info: true,
             sanction: true,
             allYears: false,
+            store: askSanctionsStore(),
         };
     },
     computed: {
@@ -161,7 +164,7 @@ export default {
             const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             const data = {
                 query: query,
-                teachings: this.$store.state.settings.teachings,
+                teachings: this.store.settings.teachings,
                 people: "student",
                 check_access: true,
                 active: false,
@@ -202,7 +205,7 @@ export default {
 
                 window.open(path);
             } else if (this.tabIndex == 1) {
-                const path = `/dossier_eleve/get_pdf_list/?page_size=2000${getFilters(this.$store.state.filters)}`;
+                const path = `/dossier_eleve/get_pdf_list/?page_size=2000${getFilters(this.store.filters)}`;
                 window.open(path);
             }
         },

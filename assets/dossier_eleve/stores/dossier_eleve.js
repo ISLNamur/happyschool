@@ -19,15 +19,12 @@
 
 /* eslint-disable no-undef */
 
-import Vue from "vue";
-import Vuex from "vuex";
+import { defineStore } from "pinia";
 
-import {addFilter, removeFilter} from "../common/filters.js";
+import { addFilterPinia as addFilter, removeFilterPinia as removeFilter } from "../../common/filters.js";
 
-Vue.use(Vuex);
-
-export default new Vuex.Store({
-    state: {
+export const dossierEleveStore = defineStore("dossierEleveStore", {
+    state: () => ({
         settings: settings,
         filters: [{
             filterType: "scholar_year",
@@ -37,8 +34,8 @@ export default new Vuex.Store({
         canAddCas: canAddCas,
         canSetSanction: canSetSanction,
         canAskSanction: canAskSanction,
-    },
-    mutations: {
+    }),
+    actions: {
         addFilter: addFilter,
         removeFilter: removeFilter,
     }

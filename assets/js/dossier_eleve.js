@@ -19,10 +19,14 @@
 
 import Vue from "vue";
 
-import store from "../dossier_eleve/store.js";
+import { createPinia, PiniaVuePlugin } from "pinia";
+Vue.use(PiniaVuePlugin);
+
 import router from "../dossier_eleve/router_dossier_eleve.js";
 
 import Menu from "../common/menu_bar.vue";
+
+const pinia = createPinia();
 
 new Vue({
     el: "#vue-app",
@@ -30,7 +34,7 @@ new Vue({
         transitionName: "slide-left",
         menuInfo: {},
     },
-    store,
+    pinia,
     router,
     template: `
     <div>

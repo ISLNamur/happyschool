@@ -46,7 +46,7 @@
                         </h5>
                     </b-col>
                     <b-col
-                        v-if="$store.state.canAddCas"
+                        v-if="store.canAddCas"
                         sm="2"
                     >
                         <div class="text-right">
@@ -143,6 +143,8 @@ import axios from "axios";
 
 import {displayStudent} from "../common/utilities.js";
 
+import { dossierEleveStore } from "./stores/dossier_eleve.js";
+
 export default {
     props: {
         rowData : {
@@ -154,6 +156,7 @@ export default {
         return {
             expand: false,
             attachments: [],
+            store: dossierEleveStore(),
         };
     },
     computed: {

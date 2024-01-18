@@ -158,6 +158,8 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 
 import {getPeopleByName} from "../common/search.js";
 
+import { askSanctionsStore } from "./stores/ask_sanctions.js";
+
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 export default {
     props: {
@@ -194,6 +196,7 @@ export default {
                 placeholder: ""
             },
             sending: false,
+            store: askSanctionsStore(),
         };
     },
     methods: {
@@ -245,7 +248,7 @@ export default {
             this.searchId += 1;
             let currentSearch = this.searchId;
 
-            const teachings = this.$store.state.settings.teachings.filter(
+            const teachings = this.store.settings.teachings.filter(
                 // eslint-disable-next-line no-undef
                 value => user_properties.teaching.includes(value));
             getPeopleByName(searchQuery, teachings, "responsible")

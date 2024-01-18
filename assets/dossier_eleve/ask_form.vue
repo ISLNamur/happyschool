@@ -117,7 +117,7 @@
                                 </template>
                             </b-form-group>
                         </b-form-row>
-                        <b-form-row v-if="$store.state.canSetSanction">
+                        <b-form-row v-if="store.canSetSanction">
                             <b-form-checkbox v-model="form.important">
                                 Marquer comme important.
                             </b-form-checkbox>
@@ -147,9 +147,9 @@
                                         {{ errorMsg('sanction_decision_id') }}
                                     </template>
                                 </b-form-group>
-                                <div v-if="$store.state.canSetSanction">
+                                <div v-if="store.canSetSanction">
                                     <b-form-group
-                                        v-if="$store.state.settings.enable_disciplinary_council"
+                                        v-if="store.settings.enable_disciplinary_council"
                                         label="Date du conseil"
                                         label-for="input-date-conseil"
                                         :state="inputStates.datetime_conseil"
@@ -284,8 +284,8 @@ import Moment from "moment";
 Moment.locale("fr");
 
 import axios from "axios";
-window.axios = axios;
-window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
+
+import { askSanctionsStore } from "./stores/ask_sanctions.js";
 
 import FileUpload from "../common/file_upload.vue";
 
@@ -346,6 +346,7 @@ export default {
                 },
                 placeholder: ""
             },
+            store: askSanctionsStore(),
         };
     },
     watch: {
@@ -510,9 +511,9 @@ export default {
             const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             const data = {
                 query: query,
-                teachings: this.$store.state.settings.teachings,
+                teachings: this.store.settings.teachings,
                 people: people,
-                check_access: this.$store.state.filters.find(f => f.filterType === "activate_own_classes") ? true : false,
+                check_access: this.store.filters.find(f => f.filterType === "activate_own_classes") ? true : false,
                 educ_by_years: "both",
             };
             axios.post("/annuaire/api/people/", data, token)
@@ -553,9 +554,9 @@ export default {
     },
     mounted: function () {
         // Set sanctions and decisions options.
-        this.$store.dispatch("getSanctions")
+        this.store.getSanctions()
             .then(() => {
-                this.sanctionOptions = this.$store.state.sanctions.map(m => {
+                this.sanctionOptions = this.store.sanctions.map(m => {
                     return {value: m.id, text: m.sanction_decision};
                 });
             })

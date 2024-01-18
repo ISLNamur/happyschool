@@ -50,7 +50,7 @@
                     <b-form-group>
                         <div>
                             <b-btn
-                                v-if="$store.state.canAskSanction"
+                                v-if="store.canAskSanction"
                                 variant="primary"
                                 @click="openDynamicModal('ask-modal')"
                                 class="w-100 mb-1"
@@ -92,6 +92,7 @@
                         app="dossier_eleve"
                         model="ask_sanctions"
                         ref="filters"
+                        :store="store"
                         @update="applyFilter"
                         :show-search="showFilters"
                         @toggleSearch="showFilters = !showFilters"
@@ -99,7 +100,7 @@
                     />
                 </b-col>
             </b-row>
-            <b-row v-if="$store.state.canSetSanction">
+            <b-row v-if="store.canSetSanction">
                 <b-col>
                     <b-list-group>
                         <b-list-group-item>Demandes de sanction en attente : <b-badge>{{ entriesCount }}</b-badge></b-list-group-item>
@@ -173,7 +174,7 @@
                         <strong>Type de sanctions</strong>
                     </b-col>
                     <b-col
-                        v-if="$store.state.settings.enable_disciplinary_council"
+                        v-if="store.settings.enable_disciplinary_council"
                         cols="2"
                     >
                         <strong>Conseil de discipline</strong>
@@ -317,6 +318,8 @@ import MassActions from "./massActions.vue";
 import Filters from "../common/filters_form.vue";
 import Menu from "../common/menu_bar.vue";
 
+import { askSanctionsStore } from "./stores/ask_sanctions.js";
+
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
@@ -338,6 +341,7 @@ export default {
             massActionsOverlay: false,
             massActionsProgress: 0,
             lightDisplay: false,
+            store: askSanctionsStore(),
         };
     },
     computed: {
@@ -348,7 +352,7 @@ export default {
             return "";
         },
         ordering: function () {
-            if (this.$store.state.filters.find(f => f.filterType === "activate_today")) {
+            if (this.store.filters.find(f => f.filterType === "activate_today")) {
                 return "&ordering=student__last_name";
             } else {
                 return "&ordering=date_sanction,student__last_name";
@@ -358,7 +362,7 @@ export default {
     watch: {
         retenues_mode: function (mode) {
             if (mode) {
-                this.$store.commit("removeFilter", "activate_own_classes");
+                this.store.removeFilter("activate_own_classes");
                 this.applyFilter();
             } else {
                 this.addFilter("activate_own_classes", "Activer", true);
@@ -405,14 +409,14 @@ export default {
         },
         filterStudent: function (matricule) {
             this.showFilters = true;
-            this.$store.commit("addFilter",
+            this.store.addFilter(
                 {filterType: "student__matricule", tag: matricule, value: matricule}
             );
             this.applyFilter();
         },
         applyFilter: function () {
             this.filter = "";
-            let storeFilters = this.$store.state.filters;
+            let storeFilters = this.store.filters;
             for (let f in storeFilters) {
                 if (storeFilters[f].filterType.startsWith("date")
                     || storeFilters[f].filterType.startsWith("time")) {
@@ -444,7 +448,7 @@ export default {
         },
         addFilter: function(filterType, tag, value) {
             this.showFilters = true;
-            this.$store.commit("addFilter",
+            this.store.addFilter(
                 {"filterType": filterType, "tag": tag, "value": value}
             );
             this.applyFilter();

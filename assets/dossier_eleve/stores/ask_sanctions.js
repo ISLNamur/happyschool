@@ -20,15 +20,14 @@
 
 /* eslint-disable no-undef */
 
-import Vue from "vue";
-import Vuex from "vuex";
+import axios from "axios";
 
-import {addFilter, removeFilter} from "../common/filters.js";
+import { defineStore } from "pinia";
 
-Vue.use(Vuex);
+import { addFilterPinia as addFilter, removeFilterPinia as removeFilter } from "../../common/filters.js";
 
-export default new Vuex.Store({
-    state: {
+export const askSanctionsStore = defineStore("askSanctionsStore", {
+    state: () => ({
         // eslint-disable-next-line no-undef
         settings: settings,
         filters: [
@@ -52,18 +51,16 @@ export default new Vuex.Store({
         // eslint-disable-next-line no-undef
         hasProEco: proeco,
         sanctions: [],
-    },
-    mutations: {
+    }),
+    actions: {
         addFilter: addFilter,
         removeFilter: removeFilter,
-    },
-    actions: {
-        getSanctions: function (context) {
+        getSanctions: function () {
             return new Promise(resolve => {
-                if (context.state.sanctions.length == 0) {
+                if (this.sanctions.length == 0) {
                     axios.get("/dossier_eleve/api/sanction_decision/?only_sanctions=1")
                         .then(resp => {
-                            context.state.sanctions = resp.data.results;
+                            this.sanctions = resp.data.results;
                             resolve();
                         });
                 } else {
