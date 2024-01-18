@@ -53,6 +53,7 @@
                         app="infirmerie"
                         model="passage"
                         ref="filters"
+                        :store="store"
                         :show-search="showSearch"
                         @toggleSearch="showSearch = !showSearch"
                         @update="applyFilter"
@@ -109,6 +110,8 @@ Vue.component("InfirmerieEntry", InfirmerieEntry);
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 
+import { infirmerieStore } from "./stores/index.js";
+
 export default {
     data: function () {
         return {
@@ -124,6 +127,7 @@ export default {
                 "name": null,
             },
             showSearch: false,
+            store: infirmerieStore(),
         };
     },
     computed: {
@@ -145,14 +149,14 @@ export default {
         },
         filterStudent: function (matricule) {
             this.showSearch = true;
-            this.$store.commit("addFilter",
+            this.store.addFilter(
                 {filterType: "matricule_id", tag: matricule, value: matricule}
             );
             this.applyFilter();
         },
         applyFilter: function () {
             this.filter = "";
-            let storeFilters = this.$store.state.filters;
+            let storeFilters = this.store.filters;
             for (let f in storeFilters) {
                 if (storeFilters[f].filterType.startsWith("date")
                     || storeFilters[f].filterType.startsWith("time")) {

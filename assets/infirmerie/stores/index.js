@@ -17,38 +17,22 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from "vue";
+import { defineStore } from "pinia";
 
-import { createPinia, PiniaVuePlugin } from "pinia";
-Vue.use(PiniaVuePlugin);
+import { addFilterPinia as addFilter, removeFilterPinia as removeFilter } from "../../common/filters.js";
 
-import router from "../infirmerie/router.js";
-
-import Menu from "../common/menu_bar.vue";
-
-const pinia = createPinia();
-
-new Vue({
-    el: "#vue-app",
-    data: {
-        menuInfo: {},
-        transitionName: "slide-left",
-    },
-    pinia,
-    router,
-    template: `
-    <div>
-    <app-menu :menu-info="menuInfo"></app-menu>
-      <transition :name="transitionName" mode="out-in">
-        <router-view></router-view>
-      </transition>
-    </div>`,
-    mounted: function() {
+export const infirmerieStore = defineStore("infirmerieStore", {
+    state: () => ({
         // eslint-disable-next-line no-undef
-        this.menuInfo = menu;
+        settings: settings,
+        filters: [{
+            filterType: "activate_ongoing",
+            tag: "Activer",
+            value: true,
+        }],
+    }),
+    actions: {
+        addFilter,
+        removeFilter,
     },
-    components: {
-        "app-menu": Menu,
-    }
-
 });

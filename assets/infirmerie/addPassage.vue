@@ -220,6 +220,8 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 import Moment from "moment";
 Moment.locale("fr");
 
+import { infirmerieStore } from "./stores/index.js";
+
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
@@ -285,6 +287,7 @@ export default {
             name: null,
             searchId: -1,
             sending: false,
+            store: infirmerieStore(),
         };
     },
     computed: {
@@ -312,7 +315,7 @@ export default {
             const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             const data = {
                 query: query,
-                teachings: this.$store.state.settings.teachings,
+                teachings: this.store.settings.teachings,
                 people: "student",
                 check_access: false,
             };
