@@ -17,17 +17,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from "vue";
-import Vuex from "vuex";
-
-Vue.use(Vuex);
-
 import axios from "axios";
+
+import { defineStore } from "pinia";
+
+import { addFilterPinia as addFilter, removeFilterPinia as removeFilter } from "../../common/filters.js";
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
-export default new Vuex.Store({
-    state: {
+export const scheduleChangeStore = defineStore("scheduleChangeStore", {
+    state: () => ({
         // eslint-disable-next-line no-undef
         settings: settings,
         filters: [{
@@ -42,48 +41,48 @@ export default new Vuex.Store({
         canAdd: can_add,
         ready: false,
         lastPage: null,
-    },
+    }),
     actions: {
-        getChangeType (context) {
+        getChangeType () {
             axios.get("/schedule_change/api/schedule_change_type/", token)
                 .then(resp => {
-                    context.commit("setChangeType", resp.data.results);
+                    this.setChangeType(resp.data.results);
                 });
         },
-        getChangeCategory (context) {
+        getChangeCategory () {
             axios.get("/schedule_change/api/schedule_change_category/", token)
                 .then(resp => {
-                    context.commit("setChangeCategory", resp.data.results);
+                    this.setChangeCategory(resp.data.results);
                 });
         },
-        getPlaces (context) {
+        getPlaces () {
             return new Promise(resolve => {
-                if (context.state.places.length > 0) {
+                if (this.places.length > 0) {
                     resolve();
                 } else {
                     axios.get("/schedule_change/api/schedule_change_place/")
                         .then(resp => {
-                            context.state.places = resp.data.results.map(p => p.name);
+                            this.places = resp.data.results.map(p => p.name);
                             resolve();
                         });
                 }
             });
         },
-    },
-    mutations: {
-        updatePage (state, page) {
-            state.lastPage = page;
+        addFilter,
+        removeFilter,
+        updatePage (page) {
+            this.lastPage = page;
         },
-        enableFullscreen: function (state) {
-            state.canAdd = false;
+        enableFullscreen: function () {
+            this.canAdd = false;
             this.commit("addFilter", {filterType: "activate_has_classe", tag: "Activer", value: true});
         },
-        setChangeType: function (state, types) {
-            state.changeType = types;
+        setChangeType: function (types) {
+            this.changeType = types;
         },
-        setChangeCategory: function (state, categories) {
-            state.changeCategory = categories;
-            state.ready = true;
+        setChangeCategory: function (categories) {
+            this.changeCategory = categories;
+            this.ready = true;
 
             // Add style.
             var sheet = document.createElement("style");
@@ -91,25 +90,6 @@ export default new Vuex.Store({
                 sheet.innerHTML +=  ".category-" + categories[c].id + " {background-color: #" + categories[c].color + "60;} ";
             }
             document.body.appendChild(sheet);
-        },
-        addFilter: function (state, filter) {
-            // If filter is a matricule, remove name filter to avoid conflict.
-            if (filter.filterType === "matricule_id") {
-                this.commit("removeFilter", "name");
-            }
-
-            // Overwrite same filter type.
-            this.commit("removeFilter", filter.filterType);
-
-            state.filters.push(filter);
-        },
-        removeFilter: function (state, key) {
-            for (let f in state.filters) {
-                if (state.filters[f].filterType === key) {
-                    state.filters.splice(f, 1);
-                    break;
-                }
-            }
         },
     },
 });

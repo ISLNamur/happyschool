@@ -55,7 +55,7 @@
                 </b-col>
                 <b-col
                     cols="1"
-                    v-if="$store.state.canAdd"
+                    v-if="store.canAdd"
                 >
                     <a
                         :href="`#/schedule_form/${rowData.id}/`"
@@ -119,6 +119,8 @@
 import Moment from "moment";
 Moment.locale("fr");
 
+import { scheduleChangeStore } from "./stores/index.js";
+
 export default {
     props: {
         rowData : {
@@ -128,17 +130,20 @@ export default {
         deleting: {type: Boolean, default: false},
         fullscreen: {type: Boolean, default: false},
     },
+    data: () => ({
+        store: scheduleChangeStore(),
+    }),
     computed: {
         icon: function () {
-            if (this.rowData.category) return this.$store.state.changeCategory.filter(c => c.id === this.rowData.category)[0].icon;
+            if (this.rowData.category) return this.store.changeCategory.filter(c => c.id === this.rowData.category)[0].icon;
             return "";
         },
         category: function () {
-            if (this.rowData.category) return this.$store.state.changeCategory.filter(c => c.id === this.rowData.category)[0].category;
+            if (this.rowData.category) return this.store.changeCategory.filter(c => c.id === this.rowData.category)[0].category;
             return "";
         },
         hide_comment: function () {
-            return this.$store.state.filters.find(f => f.filterType == "activate_show_for_students") !== undefined;
+            return this.store.filters.find(f => f.filterType == "activate_show_for_students") !== undefined;
         }
     },
     methods: {
@@ -146,12 +151,12 @@ export default {
             return teachers.map(t => t.display).join(", ");
         },
         formatChange: function (change) {
-            for (var c = 0; c < this.$store.state.changeType.length; c++) {
-                if (this.$store.state.changeType[c].id == change) {
-                    return this.$store.state.changeType[c].name;
+            for (var c = 0; c < this.store.changeType.length; c++) {
+                if (this.store.changeType[c].id == change) {
+                    return this.store.changeType[c].name;
                 }
             }
-            // return this.$store.state.changeType.filter(c => c.id == change)[0].name;
+            // return this.store.changeType.filter(c => c.id == change)[0].name;
             return "";
         },
         setCardClass: function () {

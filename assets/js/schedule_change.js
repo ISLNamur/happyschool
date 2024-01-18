@@ -19,11 +19,14 @@
 
 import Vue from "vue";
 
-import store from "../schedule_change/store.js";
+import { createPinia, PiniaVuePlugin } from "pinia";
+Vue.use(PiniaVuePlugin);
+
 import router from "../schedule_change/router.js";
 
 import AppMenu from "../common/menu_bar.vue";
 
+const pinia = createPinia();
 
 new Vue({
     el: "#vue-app",
@@ -32,7 +35,7 @@ new Vue({
         menuInfo: {},
         transitionName: "slide-left",
     },
-    store,
+    pinia,
     router,
     template: `
     <div>
@@ -45,10 +48,6 @@ new Vue({
     mounted: function () {
         // eslint-disable-next-line no-undef
         this.menuInfo = menu;
-
-        this.$store.dispatch("getChangeType");
-        this.$store.dispatch("getChangeCategory");
-
         this.fullscreen = window.location.href.includes("fullscreen");
     },
     watch: {

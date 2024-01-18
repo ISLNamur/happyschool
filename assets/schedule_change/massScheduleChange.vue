@@ -91,7 +91,7 @@
                     >
                         <b-form-select
                             v-model="defaultType"
-                            :options="$store.state.changeType"
+                            :options="store.changeType"
                             value-field="id"
                             text-field="name"
                         />
@@ -105,7 +105,7 @@
                     >
                         <b-form-select
                             v-model="defaultCategory"
-                            :options="$store.state.changeCategory"
+                            :options="store.changeCategory"
                             value-field="id"
                             text-field="category"
                         />
@@ -132,7 +132,7 @@
                         <template #cell(change)="data">
                             <b-form-select
                                 v-model="scheduleChanges[data.index].change"
-                                :options="$store.state.changeType"
+                                :options="store.changeType"
                                 value-field="id"
                                 text-field="name"
                             />
@@ -140,7 +140,7 @@
                         <template #cell(category)="data">
                             <b-form-select
                                 v-model="scheduleChanges[data.index].category"
-                                :options="$store.state.changeCategory"
+                                :options="store.changeCategory"
                                 value-field="id"
                                 text-field="category"
                             />
@@ -226,6 +226,8 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 
 import axios from "axios";
 
+import { scheduleChangeStore } from "./stores/index.js";
+
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
@@ -282,6 +284,7 @@ export default {
                 }
             ],
             loading: false,
+            store: scheduleChangeStore(),
         };
     },
     methods: {
@@ -307,7 +310,7 @@ export default {
 
             const data = {
                 query: query,
-                teachings: this.$store.state.settings.teachings,
+                teachings: this.store.settings.teachings,
                 people: "responsible",
                 check_access: false,
                 active: false,
@@ -328,7 +331,7 @@ export default {
             let currentSearch = this.searchId;
             const data = {
                 query: query,
-                teachings: this.$store.state.settings.teachings,
+                teachings: this.store.settings.teachings,
                 check_access: false,
                 years: true,
             };
@@ -423,10 +426,10 @@ export default {
         }
     },
     mounted: function () {
-        this.$store.dispatch("getChangeType");
-        this.$store.dispatch("getPlaces")
+        this.store.getChangeType();
+        this.store.getPlaces()
             .then(() => {
-                this.placesOptions = this.$store.state.places;
+                this.placesOptions = this.store.places;
             });
     },
     components: {

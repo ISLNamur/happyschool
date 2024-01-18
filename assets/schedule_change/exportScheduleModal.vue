@@ -63,7 +63,7 @@
         </b-row>
         <b-row
             class="ml-2"
-            v-if="$store.state.canAdd"
+            v-if="store.canAdd"
         >
             <b-form-group>
                 <b-checkbox v-model="sendToTeachers">
@@ -87,6 +87,8 @@
 </template>
 
 <script>
+import { scheduleChangeStore } from "./stores/index.js";
+
 export default {
     data: function () {
         return {
@@ -97,6 +99,7 @@ export default {
             message: "",
             ws: null,
             processing: false,
+            store: scheduleChangeStore(),
         };
     },
     watch: {

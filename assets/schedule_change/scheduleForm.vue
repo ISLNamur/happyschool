@@ -34,7 +34,7 @@
                 >
                     <b-form-select
                         v-model="form.change"
-                        :options="$store.state.changeType"
+                        :options="store.changeType"
                         value-field="id"
                         text-field="name"
                     />
@@ -46,7 +46,7 @@
                 >
                     <b-form-select
                         v-model="form.category"
-                        :options="$store.state.changeCategory"
+                        :options="store.changeCategory"
                         value-field="id"
                         text-field="category"
                     >
@@ -231,7 +231,7 @@
                         Notifier par courriel les responsables des changements
                         <span
                             v-b-tooltip
-                            :title="$store.state.settings.responsible_name"
+                            :title="store.settings.responsible_name"
                         >
                             <b-icon
                                 icon="question-circle"
@@ -325,6 +325,8 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 
 import axios from "axios";
 
+import { scheduleChangeStore } from "./stores/index.js";
+
 export default {
     props: {
         id: {
@@ -369,6 +371,7 @@ export default {
                 time_start: null,
                 time_end: null,
             },
+            store: scheduleChangeStore(),
         };
     },
     watch: {
@@ -395,9 +398,9 @@ export default {
     },
     computed: {
         isReplacement: function () {
-            for (let ct in this.$store.state.changeType) {
-                if (this.$store.state.changeType[ct].name == "Remplacement"
-                    && this.$store.state.changeType[ct].id == this.form.change) return true;
+            for (let ct in this.store.changeType) {
+                if (this.store.changeType[ct].name == "Remplacement"
+                    && this.store.changeType[ct].id == this.form.change) return true;
             }
             return false;
         }
@@ -439,7 +442,7 @@ export default {
             const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             const data = {
                 query: query,
-                teachings: this.$store.state.settings.teachings,
+                teachings: this.store.settings.teachings,
                 check_access: false,
                 years: true,
             };
@@ -478,7 +481,7 @@ export default {
             const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             const data = {
                 query: query,
-                teachings: this.$store.state.settings.teachings,
+                teachings: this.store.settings.teachings,
                 people: "responsible",
                 check_access: false,
                 active: false,
@@ -526,7 +529,7 @@ export default {
             const send = isPut ? axios.put(path, data, token) : axios.post(path, data, token);
             send.then(() => {
                 this.errors = {};
-                const nextPage = this.$store.state.lastPage ? `/page/${this.$store.state.lastPage}/` : "/";
+                const nextPage = this.store.lastPage ? `/page/${this.store.lastPage}/` : "/";
                 this.$router.push(nextPage, () => {
                     this.$root.$bvToast.toast("Les données ont bien été envoyées.", {
                         variant: "success",
@@ -555,9 +558,9 @@ export default {
     components: {Multiselect},
     mounted: function () {
         this.loadEntry();
-        this.$store.dispatch("getPlaces")
+        this.store.getPlaces()
             .then(() => {
-                this.placesOptions = this.$store.state.places;
+                this.placesOptions = this.store.places;
             });
     }
 };

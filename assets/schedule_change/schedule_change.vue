@@ -38,7 +38,7 @@
                     <b-form-group>
                         <div>
                             <b-dropdown
-                                v-if="$store.state.canAdd"
+                                v-if="store.canAdd"
                                 split
                                 split-to="/schedule_form/-1/"
                                 variant="success"
@@ -80,6 +80,7 @@
                         app="schedule_change"
                         model="schedule_change"
                         ref="filters"
+                        :store="store"
                         @update="applyFilter"
                         :show-search="showFilters"
                         @toggleSearch="showFilters = !showFilters"
@@ -144,7 +145,7 @@
                         <hr class="smallhr"><strong>{{ time(subGroup) }}</strong>
                         <hr class="smallhr">
                         <b-overlay
-                            v-if="$store.state.ready"
+                            v-if="store.ready"
                             rounded="sm"
                         >
                             <schedule-change-entry
@@ -192,6 +193,8 @@ Vue.use(BootstrapVueIcons);
 import Moment from "moment";
 Moment.locale("fr");
 
+import { scheduleChangeStore } from "./stores/index.js";
+
 import Filters from "../common/filters_form.vue";
 
 import ScheduleChangeEntry from "./scheduleChangeEntry.vue";
@@ -223,6 +226,7 @@ export default {
             inputStates: {
             },
             fullscreen: false,
+            store: scheduleChangeStore(),
         };
     },
     watch: {
@@ -279,7 +283,7 @@ export default {
         },
         applyFilter: function () {
             this.filter = "";
-            let storeFilters = this.$store.state.filters;
+            let storeFilters = this.store.filters;
             for (let f in storeFilters) {
                 if (storeFilters[f].filterType.startsWith("date")
                     || storeFilters[f].filterType.startsWith("time")) {
@@ -315,7 +319,7 @@ export default {
                     this.entries = response.data.results;
                     // Set the first group of changes (group by dates).
                     this.entriesCount = response.data.count;
-                    this.$store.commit("updatePage", this.currentPage);
+                    this.store.updatePage(this.currentPage);
                     if (this.entriesCount == 0) {
                         this.entriesGrouped = [];
                         this.loaded = true;
@@ -368,9 +372,9 @@ export default {
             const fullscreen = window.location.href.includes("fullscreen");
             if (fullscreen) {
                 this.fullscreen = true;
-                this.$store.commit("enableFullscreen");
+                this.store.enableFullscreen();
                 if (window.location.href.includes("show_for_students")) {
-                    this.$store.commit("addFilter", {filterType: "activate_show_for_students", tag: "Activer", value: true});
+                    this.store.addFilter({filterType: "activate_show_for_students", tag: "Activer", value: true});
                 }
                 this.entriesPerPage = 15;
                 if (this.numberOfPage > 1) {
@@ -383,6 +387,9 @@ export default {
         },
     },
     mounted: function () {
+        this.store.getChangeType();
+        this.store.getChangeCategory();
+
         this.checkFullscreenMode();
         this.applyFilter();
     },
