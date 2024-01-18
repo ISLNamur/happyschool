@@ -125,9 +125,8 @@
         </b-row>
         <b-row>
             <b-col>
-                <quill-editor
+                <text-editor
                     v-model="text"
-                    :options="editorOptions"
                 />
             </b-col>
         </b-row>
@@ -147,9 +146,7 @@
 </template>
 
 <script>
-import {quillEditor} from "vue-quill-editor";
-import "quill/dist/quill.core.css";
-import "quill/dist/quill.snow.css";
+import TextEditor from "assets/common/text_editor.vue";
 
 import axios from "axios";
 
@@ -182,19 +179,6 @@ export default {
             responsibleOptions: [],
             searchId: 0,
             text: "",
-            editorOptions: {
-                modules: {
-                    toolbar: [
-                        ["bold", "italic", "underline", "strike"],
-                        ["blockquote"],
-                        [{ "list": "ordered"}, { "list": "bullet" }],
-                        [{ "indent": "-1"}, { "indent": "+1" }],
-                        [{ "align": [] }],
-                        ["clean"]
-                    ]
-                },
-                placeholder: ""
-            },
             sending: false,
             store: askSanctionsStore(),
         };
@@ -286,7 +270,7 @@ export default {
             });
     },
     components: {
-        quillEditor,
+        TextEditor,
         Multiselect,
     }
 };

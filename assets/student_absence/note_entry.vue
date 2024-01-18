@@ -41,9 +41,8 @@
                 >
             </multiselect>
             <b-form-group>
-                <quill-editor
+                <text-editor
                     v-model="currentNote"
-                    :options="editorOptions"
                 />
             </b-form-group>
             <b-btn
@@ -62,9 +61,7 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 
 import axios from "axios";
 
-import {quillEditor} from "vue-quill-editor";
-import "quill/dist/quill.core.css";
-import "quill/dist/quill.snow.css";
+import TextEditor from "assets/common/text_editor.vue";
 
 export default {
     data: function () {
@@ -98,22 +95,6 @@ export default {
              * State if the is currently submitted.
              */
             sending: false,
-            /**
-             * Options for the rich text editor.
-             */
-            editorOptions: {
-                modules: {
-                    toolbar: [
-                        ["bold", "italic", "underline", "strike"],
-                        ["blockquote"],
-                        [{ "list": "ordered"}, { "list": "bullet" }],
-                        [{ "indent": "-1"}, { "indent": "+1" }],
-                        [{ "align": [] }],
-                        ["clean"]
-                    ]
-                },
-                placeholder: ""
-            },
         };
     },
     computed: {
@@ -145,7 +126,6 @@ export default {
                 .catch(err => {
                     alert(err);
                 });
-
         },
         /**
          * Look for classes from user query.
@@ -198,6 +178,6 @@ export default {
                 });
         }
     },
-    components: {Multiselect, quillEditor},
+    components: {Multiselect, TextEditor},
 };
 </script>

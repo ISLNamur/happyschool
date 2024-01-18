@@ -211,10 +211,11 @@
                             :description="explanation_mail"
                             label="Email : "
                         >
-                            <quill-editor
-                                :content="emailContent"
-                                :options="editorOptions"
-                                @change="onEditorChange($event)"
+                            <text-editor
+                                v-model="emailContent"
+                                placeholder="Écrire le mail ici."
+                                advanced
+                                div-block
                             />
                             <div
                                 class="html ql-editor"
@@ -265,13 +266,7 @@ import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
 Vue.use(BootstrapVue);
 
-import {quillEditor} from "vue-quill-editor";
-import "quill/dist/quill.core.css";
-import "quill/dist/quill.snow.css";
-import Quill from "quill";
-var Block = Quill.import("blots/block");
-Block.tagName = "DIV";
-Quill.register(Block, true);
+import TextEditor from "assets/common/text_editor.vue";
 
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import "vue-multiselect/dist/vue-multiselect.min.css";
@@ -313,30 +308,6 @@ export default {
             showModal: false,
             sending: false,
             hasError: false,
-            editorOptions: {
-                modules: {
-                    toolbar: [
-                        ["bold", "italic", "underline", "strike"],        // toggled buttons
-                        ["blockquote"],
-                        ["link", "image"],
-
-                        [{ "header": 1 }, { "header": 2 }],               // custom button values
-                        [{ "list": "ordered"}, { "list": "bullet" }],
-                        [{ "script": "sub"}, { "script": "super" }],      // superscript/subscript
-                        [{ "indent": "-1"}, { "indent": "+1" }],          // outdent/indent
-                        [{ "direction": "rtl" }],                         // text direction
-
-                        [{ "size": ["small", false, "large", "huge"] }],  // custom dropdown
-
-                        [{ "color": [] }, { "background": [] }],          // dropdown with defaults from theme
-                        [{ "font": [] }],
-                        [{ "align": [] }],
-
-                        ["clean"]
-                    ]
-                },
-                placeholder: "Ecrivez le mail ici."
-            },
             preshow: ""
         };
     },
@@ -467,7 +438,7 @@ export default {
             });
         }
     },
-    components: {Multiselect, quillEditor, FileUpload, AppMenu},
+    components: {Multiselect, TextEditor, FileUpload, AppMenu},
     mounted: function () {
         // eslint-disable-next-line no-undef
         this.menuInfo = menu;

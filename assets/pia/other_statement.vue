@@ -107,9 +107,8 @@
                 <b-form-row>
                     <b-col>
                         <b-form-group label="Ressources">
-                            <quill-editor
+                            <text-editor
                                 v-model="resources"
-                                :options="editorOptions"
                             />
                         </b-form-group>
                     </b-col>
@@ -117,9 +116,8 @@
                 <b-form-row>
                     <b-col>
                         <b-form-group label="Difficultés">
-                            <quill-editor
+                            <text-editor
                                 v-model="difficulties"
-                                :options="editorOptions"
                             />
                         </b-form-group>
                     </b-col>
@@ -127,9 +125,8 @@
                 <b-form-row>
                     <b-col>
                         <b-form-group label="Autres">
-                            <quill-editor
+                            <text-editor
                                 v-model="others"
-                                :options="editorOptions"
                             />
                         </b-form-group>
                     </b-col>
@@ -145,9 +142,7 @@ import axios from "axios";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import {quillEditor} from "vue-quill-editor";
-import "quill/dist/quill.core.css";
-import "quill/dist/quill.snow.css";
+import TextEditor from "assets/common/text_editor.vue";
 
 import { piaStore } from "./stores/index.js";
 
@@ -174,20 +169,6 @@ export default {
             /** State if the editing modal is open. */
             loading: true,
             editing: false,
-            /** Configuration of the quill editor. */
-            editorOptions: {
-                modules: {
-                    toolbar: [
-                        ["bold", "italic", "underline", "strike"],
-                        ["blockquote"],
-                        [{ "list": "ordered"}, { "list": "bullet" }],
-                        [{ "indent": "-1"}, { "indent": "+1" }],
-                        [{ "align": [] }],
-                        ["clean"]
-                    ]
-                },
-                placeholder: ""
-            },
             store: piaStore(),
         };
     },
@@ -226,7 +207,7 @@ export default {
         this.initCouncilStatement();
     },
     components: {
-        quillEditor,
+        TextEditor,
         Multiselect,
     }
 };

@@ -54,9 +54,8 @@
             </b-form-row>
             <b-form-row class="mt-2">
                 <b-col>
-                    <quill-editor
+                    <text-editor
                         v-model="comment"
-                        :options="editorOptions"
                     />
                 </b-col>
             </b-form-row>
@@ -67,9 +66,7 @@
 <script>
 import axios from "axios";
 
-import {quillEditor} from "vue-quill-editor";
-import "quill/dist/quill.core.css";
-import "quill/dist/quill.snow.css";
+import TextEditor from "assets/common/text_editor.vue";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
@@ -98,20 +95,6 @@ export default {
             /** States of the input. */
             inputStates: {
                 date_comment: null
-            },
-            /** Options for the text editor. */
-            editorOptions: {
-                modules: {
-                    toolbar: [
-                        ["bold", "italic", "underline", "strike"],
-                        ["blockquote"],
-                        [{ "list": "ordered"}, { "list": "bullet" }],
-                        [{ "indent": "-1"}, { "indent": "+1" }],
-                        [{ "align": [] }],
-                        ["clean"]
-                    ]
-                },
-                placeholder: ""
             },
             errors: {}
         };
@@ -174,7 +157,7 @@ export default {
         }
     },
     components: {
-        quillEditor,
+        TextEditor,
     },
     mounted: function () {
         this.assignComment();

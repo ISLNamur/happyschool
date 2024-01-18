@@ -194,20 +194,6 @@ export default {
             /** The related branch if any. */
             branch: null,
             statements: [],
-            /** Configuration of the quill editor. */
-            editorOptions: {
-                modules: {
-                    toolbar: [
-                        ["bold", "italic", "underline", "strike"],
-                        ["blockquote"],
-                        [{ "list": "ordered"}, { "list": "bullet" }],
-                        [{ "indent": "-1"}, { "indent": "+1" }],
-                        [{ "align": [] }],
-                        ["clean"]
-                    ]
-                },
-                placeholder: ""
-            },
             store: piaStore(),
         };
     },

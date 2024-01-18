@@ -236,9 +236,8 @@
                             label="Indicateur(s)/Action(s)"
                             label-cols="2"
                         >
-                            <quill-editor
+                            <text-editor
                                 v-model="indicatorAction"
-                                :options="editorOptions"
                             />
                         </b-form-group>
                     </b-col>
@@ -249,9 +248,8 @@
                             label="Aide(s)"
                             label-cols="2"
                         >
-                            <quill-editor
+                            <text-editor
                                 v-model="givenHelp"
-                                :options="editorOptions"
                             />
                         </b-form-group>
                     </b-col>
@@ -259,9 +257,8 @@
                 <b-form-row v-if="advanced">
                     <b-col>
                         <b-form-group label="Auto-évaluation">
-                            <quill-editor
+                            <text-editor
                                 v-model="selfAssessment"
-                                :options="editorOptions"
                             />
                         </b-form-group>
                     </b-col>
@@ -343,9 +340,7 @@ import axios from "axios";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import {quillEditor} from "vue-quill-editor";
-import "quill/dist/quill.core.css";
-import "quill/dist/quill.snow.css";
+import TextEditor from "assets/common/text_editor.vue";
 
 import { piaStore } from "./stores/index.js";
 
@@ -402,19 +397,6 @@ export default {
             validated: false,
             attachments: [],
             uploadedFiles: [],
-            editorOptions: {
-                modules: {
-                    toolbar: [
-                        ["bold", "italic", "underline", "strike"],
-                        ["blockquote"],
-                        [{ "list": "ordered"}, { "list": "bullet" }],
-                        [{ "indent": "-1"}, { "indent": "+1" }],
-                        [{ "align": [] }],
-                        ["clean"]
-                    ]
-                },
-                placeholder: ""
-            },
             expanded: false,
             searchId: -1,
             errors: {},
@@ -603,7 +585,7 @@ export default {
     },
     components: {
         Multiselect,
-        quillEditor,
+        TextEditor,
         FileUpload,
     }
 };

@@ -92,9 +92,8 @@
                     </b-row>
                     <b-row>
                         <b-col>
-                            <quill-editor
+                            <text-editor
                                 v-model="currentOtherAdj.other_adjustments"
-                                :options="editorOptions"
                             />
                         </b-col>
                     </b-row>
@@ -111,9 +110,7 @@ import { piaStore } from "./stores/index.js";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
-import {quillEditor} from "vue-quill-editor";
-import "quill/dist/quill.core.css";
-import "quill/dist/quill.snow.css";
+import TextEditor from "assets/common/text_editor.vue";
 
 
 export default {
@@ -129,19 +126,6 @@ export default {
             otherAdjustments: [],
             currentOtherAdjId: null,
             currentOtherAdj: {other_adjustments: "", id: -1},
-            editorOptions: {
-                modules: {
-                    toolbar: [
-                        ["bold", "italic", "underline", "strike"],
-                        ["blockquote"],
-                        [{ "list": "ordered"}, { "list": "bullet" }],
-                        [{ "indent": "-1"}, { "indent": "+1" }],
-                        [{ "align": [] }],
-                        ["clean"]
-                    ]
-                },
-                placeholder: ""
-            },
             store: piaStore(),
         };
     },
@@ -223,7 +207,7 @@ export default {
         }
     },
     components: {
-        quillEditor
+        TextEditor
     },
     mounted: function () {
         this.store.loadOptions()

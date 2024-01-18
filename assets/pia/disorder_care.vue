@@ -147,10 +147,9 @@
             </b-row>
             <b-row class="mt-2">
                 <b-col>
-                    <quill-editor
+                    <text-editor
                         :value="other_adjustments"
                         @input="$emit('update:other_adjustments', $event)"
-                        :options="editorOptions"
                     />
                 </b-col>
             </b-row>
@@ -218,9 +217,7 @@ import axios from "axios";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import {quillEditor} from "vue-quill-editor";
-import "quill/dist/quill.core.css";
-import "quill/dist/quill.snow.css";
+import TextEditor from "assets/common/text_editor.vue";
 
 import { piaStore } from "./stores/index.js";
 
@@ -242,19 +239,6 @@ export default {
             selected_disorder_response: [],
             deselected: [],
             editDisorderResponse: false,
-            editorOptions: {
-                modules: {
-                    toolbar: [
-                        ["bold", "italic", "underline", "strike"],
-                        ["blockquote"],
-                        [{ "list": "ordered"}, { "list": "bullet" }],
-                        [{ "indent": "-1"}, { "indent": "+1" }],
-                        [{ "align": [] }],
-                        ["clean"]
-                    ]
-                },
-                placeholder: ""
-            },
             inputStates: {
                 date_start: null,
                 date_end: null,
@@ -354,7 +338,7 @@ export default {
     },
     components: {
         Multiselect,
-        quillEditor,
+        TextEditor,
     }
 };
 </script>

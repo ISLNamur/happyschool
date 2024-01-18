@@ -259,9 +259,8 @@
                                 label-for="input-comment"
                                 :state="inputStates.explication_commentaire"
                             >
-                                <quill-editor
+                                <text-editor
                                     v-model="form.explication_commentaire"
-                                    :options="editorOptions"
                                 />
                                 <template #invalid-feedback>
                                     {{ errorMsg('explication_commentaire') }}
@@ -343,9 +342,7 @@
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import {quillEditor} from "vue-quill-editor";
-import "quill/dist/quill.core.css";
-import "quill/dist/quill.snow.css";
+import TextEditor from "assets/common/text_editor.vue";
 
 import Moment from "moment";
 Moment.locale("fr");
@@ -406,19 +403,6 @@ export default {
                 explication_commentaire: null,
             },
             visibilityOptions: [],
-            editorOptions: {
-                modules: {
-                    toolbar: [
-                        ["bold", "italic", "underline", "strike"],
-                        ["blockquote"],
-                        [{ "list": "ordered"}, { "list": "bullet" }],
-                        [{ "indent": "-1"}, { "indent": "+1" }],
-                        [{ "align": [] }],
-                        ["clean"]
-                    ]
-                },
-                placeholder: ""
-            },
             sending: false,
             store: dossierEleveStore(),
         };
@@ -727,7 +711,7 @@ export default {
             });
         },
     },
-    components: {Multiselect, quillEditor, FileUpload},
+    components: {Multiselect, TextEditor, FileUpload},
     mounted: function () {
         if (this.id >= 0) {
             axios.get(`/dossier_eleve/api/cas_eleve/${this.id}`)

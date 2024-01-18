@@ -225,10 +225,9 @@
                                     label-for="input-comment"
                                     :state="inputStates.explication_commentaire"
                                 >
-                                    <quill-editor
+                                    <text-editor
                                         id="input-comment"
                                         v-model="form.explication_commentaire"
-                                        :options="editorOptions"
                                     />
                                     <template #invalid-feedback>
                                         {{ errorMsg('explication_commentaire') }}
@@ -276,9 +275,7 @@
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import {quillEditor} from "vue-quill-editor";
-import "quill/dist/quill.core.css";
-import "quill/dist/quill.snow.css";
+import TextEditor from "assets/common/text_editor.vue";
 
 import Moment from "moment";
 Moment.locale("fr");
@@ -332,19 +329,6 @@ export default {
                 explication_commentaire: null,
                 time_sanction_start: null,
                 time_sanction_end: null,
-            },
-            editorOptions: {
-                modules: {
-                    toolbar: [
-                        ["bold", "italic", "underline", "strike"],
-                        ["blockquote"],
-                        [{ "list": "ordered"}, { "list": "bullet" }],
-                        [{ "indent": "-1"}, { "indent": "+1" }],
-                        [{ "align": [] }],
-                        ["clean"]
-                    ]
-                },
-                placeholder: ""
             },
             store: askSanctionsStore(),
         };
@@ -564,7 +548,7 @@ export default {
                 alert(error);
             });
     },
-    components: {Multiselect, quillEditor, FileUpload},
+    components: {Multiselect, TextEditor, FileUpload},
 };
 </script>
 
