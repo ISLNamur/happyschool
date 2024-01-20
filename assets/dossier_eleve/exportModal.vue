@@ -111,7 +111,7 @@ Moment.locale("fr");
 import {getFilters} from "../common/filters.js";
 import {displayStudent} from "../common/utilities.js";
 
-import { askSanctionsStore } from "./stores/ask_sanctions.js";
+import { dossierEleveStore } from "./stores/dossier_eleve.js";
 
 import axios from "axios";
 
@@ -132,7 +132,7 @@ export default {
             info: true,
             sanction: true,
             allYears: false,
-            store: askSanctionsStore(),
+            store: dossierEleveStore(),
         };
     },
     computed: {
