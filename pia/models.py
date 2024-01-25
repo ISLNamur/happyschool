@@ -164,6 +164,7 @@ class DisorderCareModel(models.Model):
     date_start = models.DateField()
     date_end = models.DateField()
     disorder = models.ManyToManyField(DisorderModel, blank=True)
+    other_adjustments = models.TextField(blank=True)
 
     datetime_created = models.DateTimeField(auto_now_add=True)
     datetime_updated = models.DateTimeField(auto_now=True)
@@ -183,7 +184,10 @@ class DisorderCareModel(models.Model):
 class SelectedDisorderResponseNewModel(models.Model):
     disorder_care = models.ForeignKey(DisorderCareModel, on_delete=models.CASCADE)
     category = models.ForeignKey(DisorderResponseCategoryModel, on_delete=models.CASCADE)
-    disorder_response = models.ForeignKey(DisorderResponseModel, on_delete=models.CASCADE)
+    disorder_response = models.ForeignKey(
+        DisorderResponseModel, on_delete=models.CASCADE, null=True, blank=True
+    )
+    custom_response = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
         return f"{self.disorder_response} ({self.category})"
