@@ -129,23 +129,19 @@
     </div>
     {% if pia.advanced %}
     <h3>Aménagements</h3>
-    <div>
+    <div style="border-bottom: 1px solid black; ">
         <dl>
-            <dt>Trouble d'apprentissage</dt>
-            {% for d in pia.disorder.all %}
+            {% for disorder_response in pia.disordercaremodel_set.all %}
+            <div class="new-period" style="border-top: 1px solid black; border-bottom: 1px solid black">
+                Du <em>{{ disorder_response.date_start }}</em> au <em>{{ disorder_response.date_end }}</em>
+            </div>
+            <dt>Trouble(s) d'apprentissage</dt>
+            {% for d in disorder_response.disorder.all %}
             <dd>
                 <span class="chevron">> </span>{{ d }}
             </dd>
             {% endfor %}
-        </dl>
-    </div>
-    <div>
-        <dl>
-            <dt>Aménagements raisonnables liés au trouble</dt>
-            {% for disorder_response in pia.disordercaremodel_set.all %}
-            <dd class="new-period">
-                Du <em>{{ disorder_response.date_start }}</em> au <em>{{ disorder_response.date_end }}</em>
-            </dd>
+            <dt>Aménagements raisonnables liés au(x) trouble(s)</dt>
             {% for cat in disorder_response_categories %}
             <dd><strong>{{ cat.name }}</strong></dd>
             {% for selected_disorder_response in disorder_response.selecteddisorderresponsenewmodel_set.all %}
@@ -161,7 +157,7 @@
     </div>
     <div>
         <dl>
-            <dt>Aménagements d'horaire</dt>
+            <dt style="margin-top: 2em">Aménagements d'horaire</dt>
             {% for plan in pia.scheduleadjustmentplanmodel_set.all %}
             <dd class="new-period">Du <em>{{ plan.date_start }}</em> au <em>{{ plan.date_end }}</em></dd>
             {% for s_a in plan.schedule_adjustment.all %}
