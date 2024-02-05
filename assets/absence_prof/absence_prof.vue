@@ -134,7 +134,7 @@ export default {
             currentEntry: null,
             entriesCount: 0,
             filter: "",
-            ordering: "&ordering=date_absence_start,date_absence_end",
+            ordering: "&ordering=date_absence_start,date_absence_end,name",
             entries: [],
             store: absenceProfStore(),
         };
