@@ -625,9 +625,9 @@ class AttachmentView(APIView):
             return HttpResponse(status=404)
 
         response = HttpResponse(attachment.attachment, content_type="application/pdf")
-        response[
-            "Content-Disposition"
-        ] = f'attachment; filename="{file if file else attachment.attachment.name}"'
+        response["Content-Disposition"] = (
+            f'attachment; filename="{file if file else attachment.attachment.name}"'
+        )
 
         return response
 

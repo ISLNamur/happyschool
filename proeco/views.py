@@ -36,9 +36,9 @@ class ExportStudentSelectionAPI(APIView):
         matricules_text = ["MATRICS%i=%i=" % (i + 1, a) for (i, a) in enumerate(matricules)]
         text = template_model.template.replace("{matricules}", "\n".join(matricules_text))
         response = HttpResponse(text, content_type="text/plain")
-        response[
-            "Content-Disposition"
-        ] = f'attachment; filename="{self._format_file_name(request, **kwargs)}"'
+        response["Content-Disposition"] = (
+            f'attachment; filename="{self._format_file_name(request, **kwargs)}"'
+        )
         return response
 
     def _get_student_list(self, request, **kwargs):

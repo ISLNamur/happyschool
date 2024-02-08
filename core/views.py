@@ -602,9 +602,11 @@ class ScholarCalendarAPI(APIView):
             6: "Di",
         }
         dates = [
-            d[:3] + (day_of_week[d[3]], "")
-            if d[2] >= start_day
-            else d[:3] + (day_of_week[d[3]], "×")
+            (
+                d[:3] + (day_of_week[d[3]], "")
+                if d[2] >= start_day
+                else d[:3] + (day_of_week[d[3]], "×")
+            )
             for d in cal.itermonthdays4(start_year, start_month)
             if d[1] == start_month
         ]
@@ -621,9 +623,11 @@ class ScholarCalendarAPI(APIView):
                 if d[1] == m
             ]
         dates += [
-            d[:3] + (day_of_week[d[3]], "")
-            if d[2] < start_day
-            else d[:3] + (day_of_week[d[3]], "×")
+            (
+                d[:3] + (day_of_week[d[3]], "")
+                if d[2] < start_day
+                else d[:3] + (day_of_week[d[3]], "×")
+            )
             for d in cal.itermonthdays4(start_year + 1, start_month)
             if d[1] == start_month
         ]
