@@ -145,7 +145,7 @@ Pour les installer :
 
    sudo apt install curl
    curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-   sudo apt install libldap2-dev libsasl2-dev python3-pip git python3-dateutil ttf-bitstream-vera redis-server build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev nodejs
+   sudo apt install libldap2-dev libsasl2-dev python3-pip git python3-dateutil ttf-bitstream-vera redis-server build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev libffi-dev liblzma-dev nodejs libcairo2-dev
    
 
 HappySchool
@@ -172,7 +172,7 @@ sont utilisés. Pour les installer avec un shell bash:
    curl https://pyenv.run | bash
    echo 'export PATH="$HOME/.pyenv/bin:$HOME/.local/bin:$PATH"' >> ~/.bashrc
    echo 'eval "$(pyenv init -)"' >> ~/.bashrc
-   echo 'eval "$(pyenv virtualenv-init -)"' >> ~/bashrc
+   echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
    cd happyschool
    PIPENV_YES=1 pipenv install
 
