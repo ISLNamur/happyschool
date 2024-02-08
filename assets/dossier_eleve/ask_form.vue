@@ -341,7 +341,7 @@ export default {
                 this.form.name = this.name.display;
                 this.form.student_id = this.name.matricule;
                 // Get statistics.
-                axios.get("dossier_eleve/api/statistics/" + this.name.matricule + "/")
+                axios.get("/dossier_eleve/api/statistics/" + this.name.matricule + "/")
                     .then(response => {
                         this.stats = JSON.parse(response.data);
                     })
