@@ -398,9 +398,9 @@ class ReportPDFView(LoginRequiredMixin, PermissionRequiredMixin, WeasyTemplateVi
         context = super().get_context_data(**kwargs)
         try:
             context["pia"] = models.PIAModel.objects.get(id=int(kwargs["pia"]))
-            context[
-                "disorder_response_categories"
-            ] = models.DisorderResponseCategoryModel.objects.all()
+            context["disorder_response_categories"] = (
+                models.DisorderResponseCategoryModel.objects.all()
+            )
 
             context["support_activities"] = [
                 {
