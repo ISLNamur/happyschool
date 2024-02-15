@@ -407,7 +407,7 @@ class TopLatenessAPI(APIView):
                 check_access=True,
                 user=self.request.user,
                 tenure_class_only=True,
-                educ_by_years=True,
+                educ_by_years="both",
             ).values_list("id")
             latenesses = latenesses.filter(student__classe__id__in=classes)
         top_list = (
