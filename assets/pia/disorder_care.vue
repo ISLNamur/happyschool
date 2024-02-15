@@ -68,7 +68,17 @@
         </b-row>
         <b-row>
             <b-col>
-                <h4>Aménagements incontournables</h4>
+                <h4>
+                    Aménagements incontournables
+                </h4>
+            </b-col>
+            <b-col class="text-right">
+                <b-form-checkbox
+                    v-model="editDisorderResponse"
+                    switch
+                >
+                    <span class="text-secondary">Modifier</span>
+                </b-form-checkbox>
             </b-col>
         </b-row>
         <b-overlay
@@ -95,12 +105,16 @@
                                         variant="primary"
                                     />
                                 </span>
-                                <b-form-checkbox
-                                    v-model="editDisorderResponse"
-                                    switch
-                                >
-                                    <span class="text-secondary">Modifier</span>
-                                </b-form-checkbox>
+                                <span v-if="editDisorderResponse">
+                                    <b-btn
+                                        size="sm"
+                                        variant="outline-success"
+                                        @click="showAddCustomResponse(category)"
+                                    >
+                                        <b-icon icon="plus" />
+                                        Ajouter
+                                    </b-btn>
+                                </span>
                             </div>
                         </template>
                         <b-list-group
@@ -109,7 +123,7 @@
                         >
                             <b-list-group-item
                                 v-for="disorderResponse in disorderResponsesByCat(category.id, editDisorderResponse, true)"
-                                :key="disorderResponse.id"
+                                :key="`${disorderResponse.id}-${disorderResponse.response}`"
                                 class="d-flex justify-content-between"
                                 :variant="disorderResponse.selected_disorder_response ? '' : 'info'"
                             >
@@ -127,7 +141,7 @@
                                         size="sm"
                                         variant="danger"
                                         v-if="disorderResponse.selected_disorder_response"
-                                        @click="removeDisorderResponse(disorderResponse.id, category.id)"
+                                        @click="removeDisorderResponse(disorderResponse, category.id)"
                                     >
                                         <b-icon icon="x" />
                                     </b-btn>
@@ -147,9 +161,10 @@
             </b-row>
             <b-row class="mt-2">
                 <b-col>
-                    <text-editor
+                    <quill-editor
                         :value="other_adjustments"
                         @input="$emit('update:other_adjustments', $event)"
+                        :options="editorOptions"
                     />
                 </b-col>
             </b-row>
@@ -208,6 +223,18 @@
                 </b-col>
             </b-row>
         </b-overlay>
+        <b-modal
+            id="add-custom-response"
+            title="Ajouter une réponse personnalisée"
+            ok-title="Ajouter"
+            ok-variant="success"
+            cancel-title="Annuler"
+            @ok="addCustomResponse"
+        >
+            <b-form-group label="Réponse personnalisée">
+                <b-input v-model="customResponse.text" />
+            </b-form-group>
+        </b-modal>
     </b-card>
 </template>
 
@@ -217,7 +244,9 @@ import axios from "axios";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
 
-import TextEditor from "assets/common/text_editor.vue";
+import {quillEditor} from "vue-quill-editor";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
 
 import { piaStore } from "./stores/index.js";
 
@@ -238,7 +267,22 @@ export default {
             disorderResponseCategories: disorderResponseCategories,
             selected_disorder_response: [],
             deselected: [],
+            customResponse: {text: ""},
+            customResponseCategory: null,
             editDisorderResponse: false,
+            editorOptions: {
+                modules: {
+                    toolbar: [
+                        ["bold", "italic", "underline", "strike"],
+                        ["blockquote"],
+                        [{ "list": "ordered"}, { "list": "bullet" }],
+                        [{ "indent": "-1"}, { "indent": "+1" }],
+                        [{ "align": [] }],
+                        ["clean"]
+                    ]
+                },
+                placeholder: ""
+            },
             inputStates: {
                 date_start: null,
                 date_end: null,
@@ -265,20 +309,32 @@ export default {
                 );
                 return dR;
             });
+            
+            const customResponses = this.selected_disorder_response
+                .filter(s => s.custom_response.length > 0 && s.category === categoryId)
+                .map(cS => {
+                    return {
+                        id: null,
+                        disorder: this.disorder[0].id,
+                        selected_disorder_response: cS,
+                        response: cS.custom_response,
+                    };
+                });
 
+            
             if (showAll) {
-                return responses;
+                return customResponses.concat(responses);
             } else {
                 if (selectionned) {
-                    return responses.filter(r => r.selected_disorder_response);
+                    return customResponses.concat(responses.filter(r => r.selected_disorder_response));
                 } else {
                     return responses.filter(r => !r.selected_disorder_response);
                 }
             }
         },
-        removeDisorderResponse: function (disorderResponseId, categoryId) {
+        removeDisorderResponse: function (disorderResponse, categoryId) {
             const sDRIndex = this.selected_disorder_response.findIndex(
-                sDR => sDR.disorder_response === disorderResponseId && sDR.category === categoryId
+                sDR => sDR.disorder_response === disorderResponse.id && sDR.category === categoryId
             );
             const removedResponse = this.selected_disorder_response.splice(sDRIndex, 1);
             if ("id" in removedResponse[0]) {
@@ -294,6 +350,26 @@ export default {
             this.selected_disorder_response.push({
                 disorder_response: disorderResponse.id, category: categoryId
             });
+        },
+        showAddCustomResponse: function (category) {
+            this.customResponseCategory = category;
+            this.$bvModal.show("add-custom-response");
+        },
+        addCustomResponse: function (event) {
+            if (this.customResponse.text.length === 0) {
+                event.preventDefault();
+                return;
+            }
+
+            const customResponse = {
+                disorder_care: this.disorderCareId,
+                category: this.customResponseCategory.id,
+                disorder_response: null,
+                custom_response: this.customResponse.text,
+            };
+
+            this.selected_disorder_response.push(customResponse);
+            this.customResponse = {text: ""};
         },
         resetSelectionId: function () {
             this.selected_disorder_response.forEach(sDR => {
@@ -338,7 +414,7 @@ export default {
     },
     components: {
         Multiselect,
-        TextEditor,
+        quillEditor,
     }
 };
 </script>
