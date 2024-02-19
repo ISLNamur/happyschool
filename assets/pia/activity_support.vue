@@ -179,6 +179,14 @@
                 </b-card>
             </b-col>
         </b-row>
+        <b-row class="mt-2">
+            <b-col>
+                <course-reinforcement
+                    :pia="pia"
+                    ref="reinforcement"
+                />
+            </b-col>
+        </b-row>
     </b-overlay>
 </template>
 
@@ -188,6 +196,8 @@ import axios from "axios";
 import {getPeopleByName} from "../common/search.js";
 
 import { piaStore } from "./stores/index.js";
+
+import CourseReinforcement from "./course_reinforcement.vue";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
@@ -285,19 +295,22 @@ export default {
         save: function (piaId) {
             return new Promise((resolve, reject )=> {
                 this.loading = true;
-                Promise.all(
-                    this.activitySupports.map(sA => {
-                        const isNew = sA.id < 0;
-                        const send = isNew ? axios.post : axios.put;
-                        const url = `/pia/api/activity_support/${isNew ? "" : sA.id + "/"}`;
+                const activitySupportProms = this.activitySupports.map(sA => {
+                    const isNew = sA.id < 0;
+                    const send = isNew ? axios.post : axios.put;
+                    const url = `/pia/api/activity_support/${isNew ? "" : sA.id + "/"}`;
 
-                        // Copy activity support for sending.
-                        let data = Object.assign({}, sA);
-                        data.pia_model = piaId;
-                        return send(url, data, token);
-                    })
-                ).then((resps) => {
-                    this.expandActivitySupport(resps.map(r => r.data));
+                    // Copy activity support for sending.
+                    let data = Object.assign({}, sA);
+                    data.pia_model = piaId;
+                    return send(url, data, token);
+                });
+                const reinforcementProm = this.$refs.reinforcement.save(piaId);
+
+                Promise.all(activitySupportProms.concat([reinforcementProm])).then((resps) => {
+                    // Reinforcement prom return nothing, discard them.
+                    const activitySupportResponses = resps.filter(r => r);
+                    this.expandActivitySupport(activitySupportResponses.map(r => r.data));
                     this.loading = false;
                     resolve();
                 }).catch((err) => {
@@ -387,7 +400,8 @@ export default {
         }
     },
     components: {
-        Multiselect
+        Multiselect,
+        CourseReinforcement,
     },
     mounted: function () {
         this.store.loadOptions()

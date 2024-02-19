@@ -207,6 +207,21 @@
             {% endfor %}
         </dl>
     </div>
+
+    {% if pia.coursereinforcementmodel_set.all %}
+    <h4>Renforcement/Méthodo</h4>
+    <div>
+        <dl>
+            {% for course_reinforcement in pia.coursereinforcementmodel_set.all %}
+            <dd class="new-period">Du <em>{{ course_reinforcement.date_start }}</em> au <em>{{ course_reinforcement.date_end }}</em></dd>
+            {% for branch in course_reinforcement.branches.all %}
+            <span class=chevron>> </span> {{ branch }}<br>
+            {% endfor %}
+            {% endfor %}
+        </dl>
+    </div>
+   {% endif %} 
+
     {% endif %}
 
     {% if pia.classcouncilpiamodel_set.all %}
