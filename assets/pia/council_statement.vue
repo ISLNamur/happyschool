@@ -106,7 +106,6 @@
                                 v-model="filter"
                             />
                         </b-input-group>
-                        </b-input-group>
                     </b-col>
                 </b-row>
             </b-card-header>

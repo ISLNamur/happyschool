@@ -88,8 +88,6 @@
 
 <script>
 import axios from "axios";
-import Moment from "moment";
-
 
 import ClassCouncil from "./class_council.vue";
 import moment from "moment";
