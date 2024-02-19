@@ -147,7 +147,9 @@
             {% for selected_disorder_response in disorder_response.selecteddisorderresponsenewmodel_set.all %}
             {% if selected_disorder_response.category.id == cat.id %}
             <dd>
-                <span class="chevron">> </span>{{ selected_disorder_response.disorder_response }}
+                <span class="chevron">> </span>
+                {% if selected_disorder_response.disorder_response %}{{ selected_disorder_response.disorder_response }}{% endif %}
+                {% if selected_disorder_response.custom_response %}{{ selected_disorder_response.custom_response }}{% endif %}
             </dd>
             {% endif %}
             {% endfor %}
