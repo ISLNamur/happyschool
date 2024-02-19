@@ -95,6 +95,20 @@
                         </p>
                     </b-col>
                 </b-row>
+                <b-row v-if="editMode">
+                    <b-col>
+                        <b-input-group>
+                            <b-input-group-prepend is-text>
+                                <b-icon icon="search" />
+                            </b-input-group-prepend>
+                            <b-form-input
+                                placeholder="Filtrer les ressources et difficultés"
+                                v-model="filter"
+                            />
+                        </b-input-group>
+                        </b-input-group>
+                    </b-col>
+                </b-row>
             </b-card-header>
             <b-list-group
                 flush
@@ -194,13 +208,16 @@ export default {
             /** The related branch if any. */
             branch: null,
             statements: [],
+            filter: "",
             store: piaStore(),
         };
     },
     computed: {
         resourcesDifficulties: function () {
             if (this.editMode) {
-                return this.store.resourceDifficulty.filter(rD => rD.advanced === this.advanced);
+                return this.store.resourceDifficulty
+                    .filter(rD => rD.advanced === this.advanced)
+                    .filter(rD => rD.difficulty.includes(this.filter) || rD.resource.includes(this.filter));
             }
 
             return this.store.resourceDifficulty.filter(
