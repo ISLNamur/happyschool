@@ -205,7 +205,7 @@ class ClassCouncilPIAViewSet(ModelViewSet):
         OrderingFilter,
     )
     filterset_fields = ("pia_model",)
-    ordering = ["-datetime_creation"]
+    ordering = ["-datetime_creation", "-date_council"]
     pagination_class = LargePageSizePagination
     permission_classes = (DjangoModelPermissions,)
 

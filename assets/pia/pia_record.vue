@@ -265,42 +265,16 @@
                     <template #title>
                         <b-overlay :show="loadingOthers">
                             {{ advanced ? "Conseils de classe" : "Auto-évaluation" }}
-                            <b-badge>{{ class_council.length }}</b-badge>
+                            <b-badge>{{ classCouncilCount }}</b-badge>
                         </b-overlay>
                     </template>
-                    <b-row>
-                        <h4 v-if="advanced">
-                            Conseil de classe
-                        </h4>
-                        <h4 v-else>
-                            Auto-évaluation
-                        </h4>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            <b-btn
-                                @click="class_council.unshift({id: -1})"
-                                variant="outline-secondary"
-                            >
-                                <b-icon icon="plus" />
-                                Ajouter
-                            </b-btn>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            <class-council
-                                v-for="(council, index) in class_council"
-                                :key="council.id"
-                                :class_council="council"
-                                :advanced="advanced"
-                                ref="councils"
-                                class="mt-2"
-                                @remove="removeClassCouncil(index)"
-                                @save="submit"
-                            />
-                        </b-col>
-                    </b-row>
+                    <class-council-list
+                        ref="councils"
+                        :advanced="advanced"
+                        :pia="Number(id)"
+                        @save="submit"
+                        @count="classCouncilCount = $event"
+                    />
                 </b-tab>
                 <b-tab>
                     <template #title>
@@ -503,7 +477,7 @@ import FileUpload from "../common/file_upload.vue";
 import { piaStore } from "./stores/index.js";
 
 import StudentGoal from "./student_goal.vue";
-import ClassCouncil from "./class_council.vue";
+import ClassCouncilList from "./class_council_list.vue";
 import PiaComment from "./pia_comment.vue";
 import DisorderSelection from "./disorder_selection.vue";
 import ScheduleAdjustments from "./schedule_adjustments.vue";
@@ -556,7 +530,7 @@ export default {
             parents_opinion: [],
             dossier: [],
             /** List of class council related to this PIA. */
-            class_council: [],
+            classCouncilCount: [],
             errors: {},
             /** List of input error states. */
             inputStates: {
@@ -679,29 +653,6 @@ export default {
                 }
             });
         },
-        /**
-         * Remove a class council.
-         * 
-         * @param: {String} councilIndex The index of the class council.
-         */
-        removeClassCouncil: function (councilIndex) {
-            let app = this;
-            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer ce conseil de classe ?", {
-                okTitle: "Oui",
-                cancelTitle: "Non",
-                centered: true,
-            }).then(resp => {
-                if (resp) {
-                    if (app.class_council[councilIndex].id >= 0) {
-                        axios.delete("/pia/api/class_council/" + app.class_council[councilIndex].id + "/", token)
-                            .then(() => app.class_council.splice(councilIndex, 1))
-                            .catch(err => alert(err));
-                    } else {
-                        app.class_council.splice(councilIndex, 1);
-                    }
-                }
-            });
-        },
         getPeople: function (searchQuery, person) {
             person = person.split("-")[0];
             this.searchId += 1;
@@ -781,14 +732,6 @@ export default {
                 .then(resp => {
                     const recordId = resp.data.id;
 
-                    // No goals, no promises.
-                    // if (this.cross_goal.length == 0 && this.branch_goal.length == 0
-                    //     && this.class_council.length == 0 && this.student_project.length == 0
-                    //     && this.parents_opinion.length == 0) {
-                    //     this.showSuccess(recordId);
-                    //     return;
-                    // }
-
                     const disorderPromise = this.advanced ? [app.$refs.disorder.save(recordId)] : [];
                     const scheduleAdjustPromise = this.advanced ?  [app.$refs.adjustments.save(recordId)] : [];
                     const activitySupportPromise = [app.$refs.activitysupport.save(recordId)];
@@ -796,43 +739,20 @@ export default {
                     const branchGoalPromises = this.branch_goal.length != 0 && this.$refs.branchgoals ? this.$refs.branchgoals.map(g => g.submit(recordId)) : [];
                     const sPPromises = this.student_project.length != 0 ? this.$refs.studentprojects.map(sP => sP.submit(recordId)) : [];
                     const pOPromises = this.parents_opinion.length != 0 ? this.$refs.parentsopinions.map(pO => pO.submit(recordId)) : [];
-                    const classCouncilPromises = this.class_council.length != 0 ? this.$refs.councils.map(c => c.submit(recordId)) : [];
+                    const classCouncilPromises = this.$refs.councils.save(recordId);
                     Promise.all(crossGoalPromises.concat(
                         disorderPromise, scheduleAdjustPromise, activitySupportPromise,
                         branchGoalPromises, classCouncilPromises, sPPromises, pOPromises
                     ))
                         .then(resps => {
                             // Update new component with response.
-                            const components = ["cross_goal", "branch_goal", "student_project", "parents_opinion", "class_council"];
+                            const components = ["cross_goal", "branch_goal", "student_project", "parents_opinion"];
                             components.forEach(comp => {
                                 const compResps = resps.filter(r =>r && r.config.url.includes(`pia/api/${comp}/`));
                                 app[comp] = compResps.map(r => r.data).sort((a, b) => a.datetime_creation < b.datetime_creation);
                             });
 
-                            // Save class_council subcomponents.
-                            const subPromises = [];
-                            const councilResponses = resps.filter(r =>r && r.config.url.includes("/pia/api/class_council/"));
-
-                            if (councilResponses.length == 0) {
-                                app.showSuccess(recordId);
-                                return;
-                            }
-                            // Get council statement promises.
-                            councilResponses.forEach((r, i) => {
-                                if (!("id" in app.$refs.councils[i])) {
-                                    app.class_council.splice(i, 1, r.data);
-                                    subPromises.concat(app.$refs.councils[i].submitCouncilStatement(app.class_council[i].id));
-                                }
-                            });
-
-                            Promise.all(subPromises)
-                                .then(() => {
-                                    app.showSuccess(recordId);
-                                })
-                                .catch(err => {
-                                    console.log(err);
-                                    app.showFailure();
-                                });
+                            app.showSuccess(recordId);
                         })
                         .catch(err => {
                             console.log(err);
@@ -911,7 +831,6 @@ export default {
                             axios.get("/pia/api/branch_goal/?pia_model=" + this.id),
                             axios.get("/pia/api/student_project/?pia_model=" + this.id),
                             axios.get("/pia/api/parents_opinion/?pia_model=" + this.id),
-                            axios.get("/pia/api/class_council/?pia_model=" + this.id),
                         ];
                         Promise.all(getAllData)
                             .then(resps => {
@@ -919,7 +838,6 @@ export default {
                                 this.branch_goal = resps[1].data.results;
                                 this.student_project = resps[2].data.results;
                                 this.parents_opinion = resps[3].data.results;
-                                this.class_council = resps[4].data.results;
 
                                 this.loadingOthers = false;
                             });
@@ -936,7 +854,7 @@ export default {
     components: {
         Multiselect,
         StudentGoal,
-        ClassCouncil,
+        ClassCouncilList,
         PiaComment,
         DisorderSelection,
         ScheduleAdjustments,
