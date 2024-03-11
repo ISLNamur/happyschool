@@ -19,7 +19,7 @@
 
 <template>
     <div>
-        <b-card :class="isOld ? 'old-goal' : ''">
+        <b-card>
             <b-form-row>
                 <b-col>
                     <strong>
@@ -51,14 +51,19 @@
                     class="text-right"
                 >
                     <b-icon
-                        v-if="validated"
+                        v-if="goalState === 'OK'"
                         icon="check-circle-fill"
                         variant="success"
                     />
                     <b-icon
-                        v-if="!validated && isOld"
+                        v-if="goalState === 'NOK'"
                         icon="x-circle-fill"
                         variant="error"
+                    />
+                    <b-icon
+                        v-if="goalState === 'IP'"
+                        icon="slash-circle"
+                        variant="warning"
                     />
                     <b-btn
                         @click="toggleExpand"
@@ -164,72 +169,6 @@
                         </b-form-group>
                     </b-col>
                 </b-form-row>
-                <b-form-row v-if="!useBranch && advanced">
-                    <b-col>
-                        <b-form-group
-                            label="Branches concernées"
-                            label-cols="3"
-                            :state="inputStates.branches"
-                        >
-                            <multiselect
-                                :options="store.branches"
-                                placeholder="Choisisser les branches concernées"
-                                select-label=""
-                                selected-label="Sélectionné"
-                                deselect-label="Cliquer dessus pour enlever"
-                                v-model="branches"
-                                :show-no-options="false"
-                                label="branch"
-                                track-by="id"
-                                multiple
-                            >
-                                <template #singleLabel="props">
-                                    <strong>{{ props.option.branch }}</strong>
-                                </template>
-                                <template #noResult>
-                                    Aucune branche trouvée.
-                                </template>
-                                <template #noOptions />
-                            </multiselect>
-                            <template #invalid-feedback>
-                                {{ errorMsg('branches') }}
-                            </template>
-                        </b-form-group>
-                    </b-col>
-                </b-form-row>
-                <b-form-row v-if="advanced">
-                    <b-col>
-                        <b-form-group
-                            label="Intervenant(s)"
-                            label-cols="2"
-                            :state="inputStates.responsible"
-                        >
-                            <multiselect
-                                id="responsible"
-                                :internal-search="false"
-                                :options="responsibleOptions"
-                                @search-change="getPeople"
-                                placeholder="Rechercher un intervenants"
-                                select-label=""
-                                selected-label="Sélectionné"
-                                deselect-label="Cliquer dessus pour enlever"
-                                v-model="responsible"
-                                label="display"
-                                track-by="matricule"
-                                :show-no-options="false"
-                                multiple
-                            >
-                                <template #noResult>
-                                    Aucun intervenant trouvé.
-                                </template>
-                                <template #noOptions />
-                            </multiselect>
-                            <template #invalid-feedback>
-                                {{ errorMsg('responsible') }}
-                            </template>
-                        </b-form-group>
-                    </b-col>
-                </b-form-row>
                 <b-form-row v-if="advanced">
                     <b-col>
                         <b-form-group
@@ -263,7 +202,7 @@
                         </b-form-group>
                     </b-col>
                     <b-col>
-                        <b-form-group label="Évaluation">
+                        <b-form-group label="Évaluation du CCL">
                             <multiselect
                                 :options="store.assessments"
                                 placeholder="Choisisser une ou des évaluations"
@@ -281,18 +220,6 @@
                                 </template>
                                 <template #noOptions />
                             </multiselect>
-                        </b-form-group>
-                    </b-col>
-                </b-form-row>
-                <b-form-row v-if="advanced">
-                    <b-col>
-                        <b-form-group label="Validation">
-                            <b-form-checkbox
-                                v-model="validated"
-                                switch
-                            >
-                                Mettre l'objectif comme atteint
-                            </b-form-checkbox>
                         </b-form-group>
                     </b-col>
                 </b-form-row>
@@ -394,7 +321,6 @@ export default {
             indicatorAction: "",
             selfAssessment: "",
             assessment: null,
-            validated: false,
             attachments: [],
             uploadedFiles: [],
             expanded: false,
@@ -412,10 +338,10 @@ export default {
         };
     },
     computed: {
-        isOld: function () {
-            if (this.date_end && this.date_end < (new Date()).toISOString()) return true;
+        goalState: function () {
+            if (!this.assessment) return null;
 
-            return false;
+            return this.assessment.state;
         }
     },
     watch: {
@@ -496,7 +422,6 @@ export default {
                 this.givenHelp = this.goalObject.given_help;
                 this.selfAssessment = this.goalObject.self_assessment;
                 this.assessment = this.store.assessments.filter(a => a.id == this.goalObject.assessment)[0];
-                this.validated = this.goalObject.validated;
 
                 // Attachments
                 this.uploadedFiles = this.goalObject.attachments.map(a => {
@@ -550,7 +475,6 @@ export default {
                     [goalField]: this.goals.length > 0 ? goals.slice(1) : null,
                     responsible: this.responsible.map(r => r.matricule),
                     attachments: Array.from(this.uploadedFiles.map(u => u.id)),
-                    validated: this.validated,
                 };
 
                 if (this.useBranch && this.branch) data["branch"] = this.branch.id;
@@ -590,9 +514,3 @@ export default {
     }
 };
 </script>
-
-<style>
-.old-goal {
-    opacity: 0.6;
-}
-</style>

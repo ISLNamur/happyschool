@@ -278,7 +278,14 @@ class AssessmentModel(models.Model):
         assessment Description of the assessment.
     """
 
+    STATE_CHOICES = [
+        ("OK", "Objectif atteint"),
+        ("NOK", "Objectif non-atteint"),
+        ("IP", "En cours"),
+    ]
+
     assessment = models.CharField(max_length=200, help_text="Description de l'évaluation.")
+    state = models.CharField(max_length=4, default="OK", choices=STATE_CHOICES)
 
     """String representation of the AssessmentModel, return the description of
     the assessment."""
@@ -298,7 +305,6 @@ class BaseGoal(models.Model):
     assessment = models.ForeignKey(
         AssessmentModel, on_delete=models.SET_NULL, null=True, blank=True
     )
-    validated = models.BooleanField(default=False)
     attachments = models.ManyToManyField(AttachmentModel, blank=True)
     datetime_creation = models.DateTimeField(auto_now_add=True)
     datetime_update = models.DateTimeField(auto_now=True)

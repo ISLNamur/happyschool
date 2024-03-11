@@ -284,7 +284,7 @@
                         </b-overlay>
                     </template>
                     <b-row class="mt-2">
-                        <h4>Objectifs {{ advanced ? "transversaux" : "du CCL" }}</h4>
+                        <h4>Objectifs du CCL</h4>
                     </b-row>
                     <b-row>
                         <b-col>
