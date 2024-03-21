@@ -48,21 +48,6 @@ class ClasseNoteModel(models.Model):
     datetime_update = models.DateTimeField("Date et heure de mise à jour de la note", auto_now=True)
 
 
-class JustificationModel(models.Model):
-    student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)
-    short_name = models.CharField("Nom court de la justification", max_length=20)
-    name = models.CharField("Nom de la justification", max_length=200)
-    date_just_start = models.DateField("Date de début de la justification")
-    date_just_end = models.DateField("Date de fin de la justification")
-    half_day_start = models.PositiveSmallIntegerField(
-        "Début demi-jour de la justification", default=0
-    )
-    half_day_end = models.PositiveSmallIntegerField(
-        "Fin de demi-jour de la justification", default=1
-    )
-    half_days = models.PositiveIntegerField("Nombre de demi-jour", default=0)
-
-
 class PeriodModel(models.Model):
     """Model that describes a period of a day.
 

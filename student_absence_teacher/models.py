@@ -22,6 +22,8 @@ from django.contrib.auth.models import User, Group
 
 from core.models import StudentModel, TeachingModel, ClasseModel, GivenCourseModel
 
+from student_absence.models import StudentAbsenceModel
+
 
 class StudentAbsenceTeacherSettingsModel(models.Model):
     CLASS = "CL"
@@ -92,3 +94,20 @@ class StudentAbsenceTeacherModel(models.Model):
 
     def __str__(self):
         return f"{self.date_absence} ({self.period.name}): {self.student} ({self.status})"
+
+
+class JustificationModel(models.Model):
+    student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)
+    short_name = models.CharField("Short name", max_length=20)
+    name = models.CharField("Name", max_length=200)
+    comment = models.TextField("Comment", blank=True)
+    date_just_start = models.DateField("Start date")
+    date_just_end = models.DateField("End date")
+    half_day_start = models.PositiveSmallIntegerField(
+        "Half day start (morning or afternoon)", default=0
+    )
+    half_day_end = models.PositiveSmallIntegerField(
+        "Half day end (morning or afternoon)", default=1
+    )
+    half_days = models.PositiveIntegerField("Half days count", default=1)
+    absences = models.ManyToManyField(StudentAbsenceModel, blank=True)

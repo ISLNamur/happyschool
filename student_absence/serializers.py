@@ -37,12 +37,6 @@ class ClasseNoteSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class JustificationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.JustificationModel
-        fields = "__all__"
-
-
 class PeriodSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.PeriodModel

@@ -25,7 +25,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from core.utilities import get_scholar_year
 from core.models import TeachingModel, StudentModel
-from student_absence.models import StudentAbsenceModel, JustificationModel
+from student_absence.models import StudentAbsenceModel
+from student_absence_teacher import JustificationModel
 
 
 class Command(BaseCommand):

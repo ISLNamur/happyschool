@@ -54,14 +54,12 @@ from core.views import BaseFilters, PageNumberSizePagination, get_app_settings, 
 from .models import (
     StudentAbsenceModel,
     StudentAbsenceSettingsModel,
-    JustificationModel,
     ClasseNoteModel,
     PeriodModel,
 )
 from .serializers import (
     StudentAbsenceSettingsSerializer,
     StudentAbsenceSerializer,
-    JustificationSerializer,
     ClasseNoteSerializer,
     PeriodSerializer,
 )
@@ -308,11 +306,6 @@ class AbsenceCountAPI(APIView):
             day=core_settings.day_scholar_year_start,
         )
         return (start, end)
-
-
-class JustificationViewSet(ReadOnlyModelViewSet):
-    queryset = JustificationModel.objects.all()
-    serializer_class = JustificationSerializer
 
 
 class ClasseNoteViewSet(ModelViewSet):

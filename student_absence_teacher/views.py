@@ -49,11 +49,13 @@ from .models import (
     StudentAbsenceTeacherModel,
     PeriodModel,
     LessonModel,
+    JustificationModel,
 )
 from .serializers import (
     StudentAbsenceTeacherSettingsSerializer,
     PeriodSerializer,
     StudentAbsenceTeacherSerializer,
+    JustificationSerializer,
 )
 
 
@@ -412,3 +414,8 @@ class ExportAbsencesAPI(APIView):
             response["Content-Disposition"] = 'attachment; filename="export.pdf"'
             HTML(string=html_render).write_pdf(response)
             return response
+
+
+class JustificationViewSet(ReadOnlyModelViewSet):
+    queryset = JustificationModel.objects.all()
+    serializer_class = JustificationSerializer
