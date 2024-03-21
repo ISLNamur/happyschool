@@ -193,8 +193,76 @@
                         </b-form-group>
                     </b-col>
                 </b-form-row>
-                <b-form-row v-if="advanced">
+
+                <b-form-row v-if="advanced && useBranch">
                     <b-col>
+                        <b-form-group label="Évaluation intermédiaire">
+                            <b-table-simple>
+                                <b-thead>
+                                    <b-tr>
+                                        <b-th>Date</b-th>
+                                        <b-th>Évaluation intermédiaire</b-th>
+                                        <b-th />
+                                    </b-tr>
+                                </b-thead>
+                                <b-tbody>
+                                    <b-tr
+                                        v-for="(intEval, index) in intermediateEvaluation"
+                                        :key="intEval.id"
+                                    >
+                                        <b-td>
+                                            <b-input
+                                                type="date"
+                                                v-model="intEval.date_evaluation"
+                                            />
+                                        </b-td>
+                                        <b-td>
+                                            <multiselect
+                                                :options="store.assessments"
+                                                placeholder="Choisisser une évaluation"
+                                                tag-placeholder="Ajouter l'évaluation"
+                                                select-label=""
+                                                selected-label="Sélectionné"
+                                                deselect-label="Cliquer dessus pour enlever"
+                                                :show-no-options="false"
+                                                label="assessment"
+                                                track-by="id"
+                                                v-model="evaluations[index]"
+                                            >
+                                                <template #noResult>
+                                                    Aucune évaluation trouvée.
+                                                </template>
+                                                <template #noOptions />
+                                            </multiselect>
+                                        </b-td>
+                                        <b-td>
+                                            <b-btn
+                                                size="sm"
+                                                variant="danger"
+                                                @click="removeIntermediateEval(index)"
+                                            >
+                                                <b-icon icon="trash" />
+                                            </b-btn>
+                                        </b-td>
+                                    </b-tr>
+                                    <b-tr>
+                                        <b-td>
+                                            <b-btn
+                                                variant="success"
+                                                @click="addIntermediateEval"
+                                            >
+                                                <b-icon icon="plus" />
+                                                Ajouter
+                                            </b-btn>
+                                        </b-td>
+                                    </b-tr>
+                                </b-tbody>
+                            </b-table-simple>
+                        </b-form-group>
+                    </b-col>
+                </b-form-row>
+                <b-form-row v-if="advanced">
+                    <b-col v-if="!useBranch">
                         <b-form-group label="Auto-évaluation">
                             <text-editor
                                 v-model="selfAssessment"
@@ -321,6 +389,8 @@ export default {
             indicatorAction: "",
             selfAssessment: "",
             assessment: null,
+            intermediateEvaluation: [],
+            evaluations: [],
             attachments: [],
             uploadedFiles: [],
             expanded: false,
@@ -423,6 +493,15 @@ export default {
                 this.selfAssessment = this.goalObject.self_assessment;
                 this.assessment = this.store.assessments.filter(a => a.id == this.goalObject.assessment)[0];
 
+                // Get intermediate evaluations.
+                if (this.useBranch) {
+                    axios.get(`/pia/api/intermediate_evaluation/?branch_goal=${this.goalObject.id}`)
+                        .then((resp) => {
+                            this.intermediateEvaluation = resp.data.results;
+                            this.evaluations = resp.data.results.map(intEval => this.store.assessments.find(a => intEval.evaluation === a.id));
+                        });
+                }
+
                 // Attachments
                 this.uploadedFiles = this.goalObject.attachments.map(a => {
                     return {id: a, file: null};
@@ -455,6 +534,25 @@ export default {
         addGoalTag: function (tag) {
             this.goals.push({id: -1, goal: tag});
         },
+        addIntermediateEval: function () {
+            this.evaluations.push(null);
+            this.intermediateEvaluation.push({branch_goal: this.goalObject.id, date_evaluation: null, evaluation: null});
+        },
+        removeIntermediateEval: function (index) {
+            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer cet élèment ?", {
+                title: "Confirmation",
+                okVariant: "danger",
+                okTitle: "Oui",
+                cancelTitle: "Non",
+            }).then((response) => {
+                if (response && "id" in this.intermediateEvaluation[index]) {
+                    axios.delete(`/pia/api/intermediate_evaluation/${this.intermediateEvaluation[index].id}/`, token);
+                }
+
+                this.evaluations.splice(index, 1);
+                this.intermediateEvaluation.splice(index, 1);
+            });            
+        },
         submit: function (piaId) {
             if (this.goals) {
                 // Reset errors.
@@ -482,11 +580,22 @@ export default {
                 const isNew = this.goalObject.id < 0;
                 const url =  !isNew ? `/pia/api/${goalPath}/` + this.goalObject.id + "/" : `/pia/api/${goalPath}/`;
                 const putOrPost = !isNew ? axios.put : axios.post;
-                return putOrPost(url, data, token)
-                    .catch(error => {
-                        this.errors = error.response.data;
-                        throw "Erreur lors de l'envoi des données.";
+                const goalsPromise = putOrPost(url, data, token);
+                if (this.evaluations) {
+                    goalsPromise.then((resp) => {
+                        const branchGoalId = resp.data.id;
+                        Promise.all(
+                            this.intermediateEvaluation.map((iE, index) => {
+                                const alreadyExists = "id" in iE;
+                                iE.evaluation = this.evaluations[index].id;
+                                iE.branch_goal = branchGoalId;
+                                const send = alreadyExists ? axios.put : axios.post;
+                                return send(`/pia/api/intermediate_evaluation/${alreadyExists ? iE.id + "/" : ""}`, iE, token);
+                            })
+                        );
                     });
+                }
+                return goalsPromise;
             }
         },
     },

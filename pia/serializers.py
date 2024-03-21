@@ -182,6 +182,12 @@ class BranchGoalSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class IntermediateEvaluationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.IntermediateEvaluationModel
+        fields = "__all__"
+
+
 class CrossGoalItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.CrossGoalItemModel

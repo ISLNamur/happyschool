@@ -751,6 +751,7 @@ export default {
                                 const compResps = resps.filter(r =>r && r.config.url.includes(`pia/api/${comp}/`));
                                 app[comp] = compResps.map(r => r.data).sort((a, b) => a.datetime_creation < b.datetime_creation);
                             });
+                            console.log(resps);
 
                             app.showSuccess(recordId);
                         })

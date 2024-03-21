@@ -334,6 +334,15 @@ class BranchGoalModel(BaseGoal):
         return self.branch_goals.split(";")
 
 
+class IntermediateEvaluationModel(models.Model):
+    branch_goal = models.ForeignKey(BranchGoalModel, on_delete=models.CASCADE)
+    date_evaluation = models.DateField()
+    evaluation = models.ForeignKey(AssessmentModel, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ["date_evaluation"]
+
+
 class ClassCouncilPIAModel(models.Model):
     """Class council model. A class council happens at a specific
     date and makes a statement for each branch of the progress and

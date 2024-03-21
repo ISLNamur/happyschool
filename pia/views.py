@@ -185,6 +185,19 @@ class BranchGoalViewSet(ModelViewSet):
     permission_classes = (DjangoModelPermissions,)
 
 
+class IntermediateEvaluationViewSet(ModelViewSet):
+    queryset = models.IntermediateEvaluationModel.objects.all()
+    serializer_class = serializers.IntermediateEvaluationSerializer
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    )
+    filterset_fields = ("branch_goal",)
+    ordering_fields = ["date_evaluation"]
+    pagination_class = LargePageSizePagination
+    permission_classes = (DjangoModelPermissions,)
+
+
 class OtherStatementViewSet(ModelViewSet):
     queryset = models.OtherStatementModel.objects.all()
     serializer_class = serializers.OtherStatementSerializer
