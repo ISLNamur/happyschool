@@ -24,7 +24,11 @@
                 <h2>Plan Individuel d'Apprentissage</h2>
             </b-row>
             <b-row>
-                <b-col v-if="canAddPia">
+                <b-col
+                    v-if="canAddPia"
+                    cols="12"
+                    sm="3"
+                >
                     <b-dropdown
                         variant="success"
                     >
@@ -42,6 +46,19 @@
                             Aide élève
                         </b-dropdown-item>
                     </b-dropdown>
+                </b-col>
+                <b-col>
+                    <b-form-group
+                        label="Filtrer PIA/Aide"
+                        label-cols="12"
+                        label-cols-md="5"
+                    >
+                        <b-form-select
+                            v-model="filterAdvanced"
+                            :options="filterOptions"
+                            @change="loadEntries"
+                        />
+                    </b-form-group>
                 </b-col>
                 <b-col>
                     <multiselect
@@ -62,7 +79,7 @@
                         :clear-on-select="false"
                     >
                         <template #noResult>
-                            Aucun responsable trouvé.
+                            Aucun élève trouvé.
                         </template>
                     </multiselect>
                 </b-col>
@@ -144,6 +161,12 @@ export default {
         return {
             entries: [],
             entriesCount: 1,
+            filterAdvanced: null,
+            filterOptions: [
+                { value: null, text: "Tous" },
+                { value: false, text: "Aide élève" },
+                { value: true, text: "PIA" },
+            ],
             lastPias: [],
             studentOptions: [],
             canAddPia: false,
@@ -224,8 +247,9 @@ export default {
         },
         /** Load or reload PIA entries. */
         loadEntries: function () {
-            const ordering = "ordering=student__classe__year,student__classe__letter";
-            axios.get("/pia/api/pia/?" + ordering + "&page=" + this.currentPage)
+            const ordering = "ordering=student__classe__year,student__classe__letter,student__last_name";
+            const advanced = this.filterAdvanced === null ? "" : `&advanced=${this.filterAdvanced}`;
+            axios.get("/pia/api/pia/?" + ordering + "&page=" + this.currentPage + advanced)
                 .then(resp => {
                     this.entries = resp.data.results;
                     this.entriesCount = resp.data.count;

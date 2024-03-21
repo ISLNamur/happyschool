@@ -108,7 +108,7 @@ class PIAView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
 
 class PIAFilterSet(BaseFilters):
     class Meta:
-        fields_to_filter = ["student__matricule", "student__last_name"]
+        fields_to_filter = ["student__matricule", "student__last_name", "advanced"]
         model = models.PIAModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
@@ -120,6 +120,7 @@ class PIAViewSet(BaseModelViewSet):
     ordering_fields = (
         "student__classe__year",
         "student__classe__letter",
+        "student__last_name",
         "datetime_updated",
     )
     filterset_class = PIAFilterSet
