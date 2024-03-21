@@ -288,9 +288,18 @@
                     </b-row>
                     <b-row>
                         <b-col>
+                            <b-form-checkbox
+                                v-model="currentCrossGoal"
+                                switch
+                                @change="reloadCrossGoal"
+                            >
+                                Année scolaire en cours
+                            </b-form-checkbox>
+                        </b-col>
+                        <b-col class="text-right">
                             <b-btn
                                 @click="cross_goal.unshift({id: -1})"
-                                variant="outline-secondary"
+                                variant="outline-success"
                             >
                                 <b-icon icon="plus" />
                                 Ajouter
@@ -320,9 +329,18 @@
                     </b-row>
                     <b-row>
                         <b-col>
+                            <b-form-checkbox
+                                v-model="currentBranchGoal"
+                                switch
+                                @change="reloadBranchGoal"
+                            >
+                                Année scolaire en cours
+                            </b-form-checkbox>
+                        </b-col>
+                        <b-col class="text-right">
                             <b-btn
                                 @click="branch_goal.unshift({id: -1})"
-                                variant="outline-secondary"
+                                variant="outline-success"
                             >
                                 <b-icon icon="plus" />
                                 Ajouter
@@ -525,7 +543,9 @@ export default {
             },
             uploadedFiles: [],
             cross_goal: [],
+            currentCrossGoal: true,
             branch_goal: [],
+            currentBranchGoal: true,
             student_project: [],
             parents_opinion: [],
             dossier: [],
@@ -766,6 +786,18 @@ export default {
                     if ("response" in error) app.errors = error.response.data;
                 });
         },
+        reloadCrossGoal: function () {
+            axios.get(`/pia/api/cross_goal/?pia_model=${this.id}&current_scholar_year=${this.currentCrossGoal}`)
+                .then((resp) => {
+                    this.cross_goal = resp.data.results;
+                });
+        },
+        reloadBranchGoal: function () {
+            axios.get(`/pia/api/branch_goal/?pia_model=${this.id}&current_scholar_year=${this.currentBranchGoal}`)
+                .then((resp) => {
+                    this.branch_goal = resp.data.results;
+                });
+        },
         /**
         * Assign record data from a request.
         * 
@@ -828,8 +860,8 @@ export default {
                         this.loadingOthers = true;
                         this.loadPIA(this.id);
                         const getAllData = [
-                            axios.get("/pia/api/cross_goal/?pia_model=" + this.id),
-                            axios.get("/pia/api/branch_goal/?pia_model=" + this.id),
+                            axios.get(`/pia/api/cross_goal/?pia_model=${this.id}&current_scholar_year=${this.currentCrossGoal}`),
+                            axios.get(`/pia/api/branch_goal/?pia_model=${this.id}&current_scholar_year=${this.currentBranchGoal}`),
                             axios.get("/pia/api/student_project/?pia_model=" + this.id),
                             axios.get("/pia/api/parents_opinion/?pia_model=" + this.id),
                         ];

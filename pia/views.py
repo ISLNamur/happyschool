@@ -19,6 +19,8 @@
 
 import json
 
+from datetime import date
+
 from django_weasyprint import WeasyTemplateView
 
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
@@ -33,10 +35,11 @@ from rest_framework.permissions import DjangoModelPermissions
 
 from django_filters import rest_framework as filters
 
-from core.utilities import get_menu
+from core.utilities import get_menu, get_scholar_year
 from core.views import (
     BaseModelViewSet,
     get_app_settings,
+    get_core_settings,
     BaseUploadFileView,
     LargePageSizePagination,
     BaseFilters,
@@ -151,6 +154,25 @@ class PIAViewSet(BaseModelViewSet):
         update_log.save()
 
 
+class BaseGoalFilters(filters.FilterSet):
+    current_scholar_year = filters.BooleanFilter(method="current_scholar_year_by")
+
+    def current_scholar_year_by(self, queryset, name, value):
+        if not value:
+            return queryset
+
+        core_settings = get_core_settings()
+        date_start = f"{get_scholar_year()}-{core_settings.month_scholar_year_start}-{core_settings.day_scholar_year_start}"
+
+        return queryset.filter(date_start__gte=date_start)
+
+
+class CrossGoalFilters(BaseGoalFilters):
+    class Meta:
+        model = models.CrossGoalModel
+        fields = ["pia_model", "current_scholar_year"]
+
+
 class CrossGoalViewSet(ModelViewSet):
     queryset = models.CrossGoalModel.objects.all()
     serializer_class = serializers.CrossGoalSerializer
@@ -158,7 +180,7 @@ class CrossGoalViewSet(ModelViewSet):
         filters.DjangoFilterBackend,
         OrderingFilter,
     )
-    filterset_fields = ("pia_model",)
+    filterset_class = CrossGoalFilters
     ordering_fields = ["date_start", "date_end", "datetime_creation"]
     ordering = [
         "-date_end",
@@ -168,6 +190,12 @@ class CrossGoalViewSet(ModelViewSet):
     permission_classes = (DjangoModelPermissions,)
 
 
+class BranchGoalFilters(BaseGoalFilters):
+    class Meta:
+        model = models.BranchGoalModel
+        fields = ["pia_model", "current_scholar_year", "branch"]
+
+
 class BranchGoalViewSet(ModelViewSet):
     queryset = models.BranchGoalModel.objects.all()
     serializer_class = serializers.BranchGoalSerializer
@@ -175,7 +203,7 @@ class BranchGoalViewSet(ModelViewSet):
         filters.DjangoFilterBackend,
         OrderingFilter,
     )
-    filterset_fields = ("branch", "pia_model")
+    filterset_class = BranchGoalFilters
     ordering_fields = ["datetime_creation"]
     ordering = [
         "-date_end",
