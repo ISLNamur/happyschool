@@ -438,6 +438,15 @@ class ReportPDFView(LoginRequiredMixin, PermissionRequiredMixin, WeasyTemplateVi
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
+        filter_date_from = ""
+        if "current_year" in kwargs and kwargs["current_year"]:
+            year = get_scholar_year()
+            month = get_core_settings().month_scholar_year_start
+            day = get_core_settings().day_scholar_year_start
+            filter_date_from = f"{year}-{month:02d}-{day:02d}"
+
+        context["date_filter"] = filter_date_from
+
         try:
             context["pia"] = models.PIAModel.objects.get(id=int(kwargs["pia"]))
             context["disorder_response_categories"] = (

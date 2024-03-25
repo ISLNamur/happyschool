@@ -33,11 +33,30 @@
                 align-self="end"
                 class="text-left"
             >
-                <b-btn
-                    :href="`/pia/report/${id}/`"
+                <b-dropdown
+                    variant="outline-primary"
                 >
-                    PDF
-                </b-btn>
+                    <template #button-content>
+                        <b-icon
+                            icon="file-earmark-pdf"
+                        />
+                        PDF
+                    </template>
+                    <b-dropdown-item
+                        :href="`/pia/report/${id}/1/`"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Année scolaire en cours
+                    </b-dropdown-item>
+                    <b-dropdown-item
+                        :href="`/pia/report/${id}/0/`"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Toutes années confondues
+                    </b-dropdown-item>
+                </b-dropdown>
                 <b-overlay
                     :show="sending"
                     rounded="sm"

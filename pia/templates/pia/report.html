@@ -132,6 +132,9 @@
     <div style="border-bottom: 1px solid black; ">
         <dl>
             {% for disorder_response in pia.disordercaremodel_set.all %}
+            {{ disorder_response.date_start|date:"c" }}
+            {{ date_filter }}
+            {% if disorder_response.date_start|date:"c" >= date_filter %}
             <div class="new-period" style="border-top: 1px solid black; border-bottom: 1px solid black">
                 Du <em>{{ disorder_response.date_start }}</em> au <em>{{ disorder_response.date_end }}</em>
             </div>
@@ -154,6 +157,9 @@
             {% endif %}
             {% endfor %}
             {% endfor %}
+            {% else %}
+            <dd>Aucun aménagement</dd>
+            {% endif %}
             {% endfor %}
         </dl>
     </div>
@@ -161,12 +167,16 @@
         <dl>
             <dt style="margin-top: 2em">Aménagements d'horaire</dt>
             {% for plan in pia.scheduleadjustmentplanmodel_set.all %}
+            {% if plan.date_start|date:"c" >= date_filter %}
             <dd class="new-period">Du <em>{{ plan.date_start }}</em> au <em>{{ plan.date_end }}</em></dd>
             {% for s_a in plan.schedule_adjustment.all %}
             <dd>
                 <span class="chevron">> </span>{{ s_a }}
             </dd>
             {% endfor %}
+            {% else %}
+            <dd>Aucun aménagement d'horaire</dd>
+            {% endif %}
             {% endfor %}
         </dl>
     </div>
@@ -174,10 +184,14 @@
         <dl>
             <dt>Aménagements spécifiques</dt>
             {% for other in pia.otheradjustmentsmodel_set.all %}
+            {% if other.date_start|date:"c" >= date_filter %}
             <dd class="new-period">Du <em>{{ other.date_start }}</em> au <em>{{ other.date_end }}</em></dd>
             <dd>
                 {{ other.other_adjustments|safe }}
             </dd>
+            {% else %}
+            <dd>Aucun aménagement spécifique</dd>
+            {% endif %}
             {% endfor %}
         </dl>
     </div>
@@ -189,6 +203,7 @@
     <div>
         <dl>
             {% for activity_support in support_activities %}
+            {% if activity_support.object.date_start|date:"c" >= date_filter %}
             <dd class="new-period">Du <em>{{ activity_support.object.date_start }}</em> au <em>{{ activity_support.object.date_end }}</em></dd>
             {% for a_s in activity_support.activities %}
             {% if a_s.branch or a_s.teachers %}
@@ -204,6 +219,9 @@
                 {{ activity_support.directed_study }}
             </p>
             {% endif %}
+            {% else %}
+            <p>Pas d'activité de soutien</p>
+            {% endif %}
             {% endfor %}
         </dl>
     </div>
@@ -213,10 +231,14 @@
     <div>
         <dl>
             {% for course_reinforcement in pia.coursereinforcementmodel_set.all %}
+            {% if course_reinforcement.date_start|date:"c" >= date_filter %}
             <dd class="new-period">Du <em>{{ course_reinforcement.date_start }}</em> au <em>{{ course_reinforcement.date_end }}</em></dd>
             {% for branch in course_reinforcement.branches.all %}
             <span class=chevron>> </span> {{ branch }}<br>
             {% endfor %}
+            {% else %}
+            <dd>Pas de renforcement/méthodo</dd>
+            {% endif %}
             {% endfor %}
         </dl>
     </div>
@@ -227,6 +249,7 @@
     {% if pia.classcouncilpiamodel_set.all %}
     <h2>{% if pia.advanced %}Conseils de classe{% else %}Auto-évaluation{% endif %}</h2>
     {% for council in pia.classcouncilpiamodel_set.all %}
+    {% if council.date_council|date:"c" >= date_filter %}
     <div>
         <h3>DATE : {{ council.date_council }}</h3>
         {% for student_state in council.studentstatemodel_set.all %}
@@ -298,6 +321,7 @@
         </table>
         {% endfor %}
     </div>
+    {% endif %}
     {% endfor %}
     {% endif %}
 
@@ -306,6 +330,7 @@
     {% if pia.advanced %}
     <h3>Objectifs transversaux</h3>
     {% for obj in pia.crossgoalmodel_set.all %}
+    {% if obj.date_start|date:"c" >= date_filter %}
     <div style="margin-left:0.5em" class="border-bottom">
         <strong>Du {{ obj.date_start }} au {{ obj.date_end }} :</strong>
         <dl style="margin-left:0.5em">
@@ -361,10 +386,12 @@
             {% endif %}
         </dl>
     </div>
+    {% endif %}
     {% endfor %}
     <div class="nopagebreak">
         <h3>Objectifs de branche</h3>
         {% for obj in pia.branchgoalmodel_set.all %}
+        {% if obj.date_start|date:"c" >= date_filter %}
         <div class="border-bottom" style="margin-left: 0.5em;">
             <strong>{{ obj.branch }}, du {{ obj.date_start }} au {{ obj.date_end }} :</strong>
             <dl>
@@ -420,10 +447,12 @@
                 {% endif %}
             </dl>
         </div>
+        {% endif %}
         {% endfor %}
     </div>
     {% else %}
     {% for obj in pia.crossgoalmodel_set.all %}
+    {% if obj.date_start|date:"c" >= date_filter %}
     <div class="border-bottom">
         <h3>Du {{ obj.date_start }} au {{ obj.date_end }}</h3>
         <dl>
@@ -435,8 +464,10 @@
             {% endfor %}
         </dl>
     </div>
+    {% endif %}
     {% endfor %}
     {% for obj in pia.branchgoalmodel_set.all %}
+    {% if obj.date_start|date:"c" >= date_filter %}
     <div class="border-bottom">
         <h3>Du {{ obj.date_start }} au {{ obj.date_end }}</h3>
         <dl>
@@ -448,6 +479,7 @@
             {% endfor %}
         </dl>
     </div>
+    {% endif %}
     {% endfor %}
     {% endif %}
     {% endif %}
@@ -455,17 +487,21 @@
     <h2>Projet et avis</h2>
     <h3>Projet de l'élève</h3>
     {% for p in pia.studentprojectmodel_set.all %}
+    {% if p.date_student_project|date:"c" >= date_filter %}
     <div class="nexttoimg">
         <strong>{{ p.date_student_project }}</strong>
         {{ p.student_project|safe }}
     </div>
+    {% endif %}
     {% endfor %}
     <h3>Avis des parents</h3>
     {% for p in pia.parentsopinionmodel_set.all %}
+    {% if p.date_parents_opinion|date:"c" >= date_filter %}
     <div class="nexttoimg">
         <strong>{{ p.date_parents_opinion }}</strong>
         {{ p.parents_opinion|safe }}
     </div>
+    {% endif %}
     {% endfor %}
     {% endif %}
 </body>
