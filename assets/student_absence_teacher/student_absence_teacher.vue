@@ -113,8 +113,12 @@ export default {
         }
     },
     beforeMount: function () {
-        if (!this.can_access_adding) {
-            if (this.$router.currentRoute.fullPath.includes("add_absence")) {
+        // Move to overview if not having adding access.
+        if (!this.can_access_adding && this.can_access_list) {
+            if (
+                this.$router.currentRoute.fullPath.includes("add_absence")
+                || this.$router.currentRoute.path === "/"
+            ) {
                 this.$router.push(`/overview/${this.today}`);
             }
             
