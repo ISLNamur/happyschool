@@ -25,7 +25,7 @@ from itertools import groupby
 from weasyprint import HTML
 
 from django.template.loader import get_template
-from django.db.models import Count, ObjectDoesNotExist
+from django.db.models import Count, ObjectDoesNotExist, Q
 from django.conf import settings
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
@@ -197,34 +197,45 @@ class OverviewAPI(APIView):
         return counts
 
     def _extract_count_from_teacher(self, classe, absences, periods, date):
-        counts = {"classe": classe.compact_str, "classe__id": classe.id}
-
         use_student_absence = "student_absence" in settings.INSTALLED_APPS
         if use_student_absence:
             from student_absence.models import StudentAbsenceModel
-        not_teacher_abs = StudentAbsenceModel.objects.filter(
-            student__classe=classe, date_absence=date
+
+        counts = {"classe": classe.compact_str, "classe__id": classe.id}
+
+        teacher_attendance = StudentAbsenceTeacherModel.objects.filter(
+            date_absence=date, student__classe=classe
+        )
+        educ_attendance_day = StudentAbsenceModel.objects.filter(
+            date_absence=date, student__classe=classe
         )
 
-        for period in periods:
-            if use_student_absence:
-                not_teacher_period = not_teacher_abs.filter(
-                    period__start__lt=period.end, period__end__gt=period.start
-                )
-                if not_teacher_period.count() > 0:
-                    not_teacher_count = not_teacher_period.filter(is_absent=True).count()
-                else:
-                    not_teacher_count = -1
-                counts[f"period-{period.id}"] = {"not_teacher_count": not_teacher_count}
-            counts[f"period-{period.id}"]["teacher_count"] = next(
-                (
-                    x["id__count"]
-                    for x in absences
-                    if x["period"] == period.id
-                    and x["status"] == StudentAbsenceTeacherModel.ABSENCE
-                ),
-                next((0 for y in absences if y["period"] == period.id), -1),
+        for period in PeriodModel.objects.all():
+            educ_attendance_period = educ_attendance_day.filter(
+                period__start__lt=period.end, period__end__gt=period.start
             )
+
+            # -1 count means no attendance have been taken.
+            teacher_count = (
+                -1
+                if not teacher_attendance.filter(
+                    Q(status=StudentAbsenceTeacherModel.ABSENCE)
+                    | Q(status=StudentAbsenceTeacherModel.PRESENCE)
+                ).exists()
+                else teacher_attendance.filter(
+                    period=period, status=StudentAbsenceTeacherModel.ABSENCE
+                ).count()
+            )
+
+            educ_count = (
+                -1
+                if not educ_attendance_period.exists()
+                else educ_attendance_period.filter(is_absent=True).count()
+            )
+            counts[f"period-{period.id}"] = {
+                "not_teacher_count": educ_count,
+                "teacher_count": teacher_count,
+            }
 
         return counts
 
