@@ -59,6 +59,9 @@ class PeriodModel(models.Model):
     def display(self):
         return "%s (%s-%s)" % (self.name, str(self.start)[:5], str(self.end)[:5])
 
+    def __str__(self):
+        return self.display
+
 
 class StudentAbsenceTeacherModel(models.Model):
     PRESENCE = "presence"
@@ -94,6 +97,9 @@ class StudentAbsenceTeacherModel(models.Model):
 
     def __str__(self):
         return f"{self.date_absence} ({self.period.name}): {self.student} ({self.status})"
+
+    class Meta:
+        indexes = [models.Index(fields=["-date_absence", "student", "status"])]
 
 
 class JustificationModel(models.Model):
