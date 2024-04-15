@@ -85,3 +85,6 @@ class StudentAbsenceModel(models.Model):
     datetime_update = models.DateTimeField(
         "Date et heure de mise à jour de l'absence", auto_now=True
     )
+
+    class Meta:
+        indexes = [models.Index(fields=["-date_absence", "student", "is_absent"])]
