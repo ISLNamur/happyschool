@@ -46,7 +46,7 @@ router = DefaultRouter()
 router.register(r"api/cas_eleve", views.CasEleveViewSet)
 router.register(r"api/info", views.InfoViewSet)
 router.register(r"api/sanction_decision", views.SanctionDecisionViewSet)
-router.register(r"api/ask_sanctions", views.AskSanctionsViewSet)
+router.register(r"api/ask_sanctions", views.AskSanctionsViewSet, "ask-sanctions")
 
 urlpatterns += router.urls
 

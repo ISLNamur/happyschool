@@ -46,7 +46,7 @@ urlpatterns = [
 ]
 
 router = DefaultRouter()
-router.register(r"api/members", views.MembersAPI)
+router.register(r"api/members", views.MembersAPI, "members")
 router.register(r"api/teaching", views.TeachingViewSet)
 router.register(r"api/email", views.EmailViewSet)
 router.register(r"api/classe", views.ClasseViewSet)
@@ -56,7 +56,7 @@ router.register(r"api/user", views.UserViewSet)
 router.register(r"api/group", views.GroupViewSet)
 router.register(r"api/course", views.CourseViewSet)
 router.register(r"api/given_course", views.GivenCourseViewSet)
-router.register(r"api/given_course_info", views.GivenCourseInfoViewSet)
+router.register(r"api/given_course_info", views.GivenCourseInfoViewSet, "given-course-info")
 router.register(r"api/course_schedule", views.CourseScheduleViewSet)
 router.register(r"api/period", views.PeriodCoreViewSet)
 

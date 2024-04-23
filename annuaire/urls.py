@@ -40,10 +40,12 @@ router = DefaultRouter()
 router.register(r"api/settings", views.AnnuaireSettingsViewSet)
 router.register(r"api/student", views.StudentInfoViewSet)
 router.register(r"api/responsible", views.ResponsibleInfoViewSet)
-router.register(r"api/responsible_sensitive", views.ResponsibleSensitiveViewSet)
-router.register(r"api/student_sensitive", views.StudentSensitiveInfoViewSet)
-router.register(r"api/info_general", views.StudentGeneralInfoViewSet)
-router.register(r"api/info_contact", views.StudentContactInfoViewSet)
-router.register(r"api/info_medical", views.StudentMedicalInfoViewSet)
+router.register(
+    r"api/responsible_sensitive", views.ResponsibleSensitiveViewSet, "responsible-sensitive"
+)
+router.register(r"api/student_sensitive", views.StudentSensitiveInfoViewSet, "student-sensitive")
+router.register(r"api/info_general", views.StudentGeneralInfoViewSet, "info-general")
+router.register(r"api/info_contact", views.StudentContactInfoViewSet, "info-contact")
+router.register(r"api/info_medical", views.StudentMedicalInfoViewSet, "info-medical")
 
 urlpatterns += router.urls
