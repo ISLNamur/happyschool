@@ -174,12 +174,12 @@
                     <b-dropdown-item
                         v-for="p in educatorPeriods"
                         :key="p.id"
-                        :href="`/student_absence/api/export_selection/?page_size=2000&date_absence=${date}&period__name=${p.name}&is_absent=true${exportOwnClasses}`"
+                        :href="`/student_absence_teacher/api/export_selection/?page_size=2000&date_absence=${date}&period__name=${p.name}&status=A${exportOwnClasses}`"
                     >
                         {{ p.name }}
                     </b-dropdown-item>
                     <b-dropdown-item
-                        :href="`/student_absence/api/export_selection/?page_size=2000&date_absence=${date}&is_absent=true${exportOwnClasses}`"
+                        :href="`/student_absence_teacher/api/export_selection/?page_size=2000&date_absence=${date}&status=A${exportOwnClasses}`"
                     >
                         Toute la journée
                     </b-dropdown-item>
@@ -287,7 +287,7 @@ export default {
             const currentDay = (new Date(this.date)).getDay();
 
             if (this.pointOfView === "teacher") {
-                axios.get("/student_absence_teacher/api/period/")
+                axios.get("/student_absence_teacher/api/period_teacher/")
                     .then(resp => {
                         this.fields = this.fields.concat(
                             resp.data.results
@@ -303,7 +303,7 @@ export default {
                     });
             }
 
-            axios.get("/student_absence/api/period/")
+            axios.get("/student_absence_teacher/api/period_educ/")
                 .then(resp => {
                     this.educatorPeriods = resp.data.results
                         .filter(p => extractDayOfWeek(p.day_of_week).includes(currentDay));

@@ -148,10 +148,10 @@ export default {
         getStudentAbsences: function () {
             const promises = [
                 axios.get(`/annuaire/api/student/${this.studentId}/`),
-                axios.get("/student_absence_teacher/api/period/"),
-                axios.get("/student_absence/api/period/"),
-                axios.get(`/student_absence_teacher/api/absence/?student__matricule=${this.studentId}&date_absence=${this.date}&page_size=500`),
-                axios.get(`/student_absence/api/student_absence/?student__matricule=${this.studentId}&date_absence=${this.date}&page_size=500`)
+                axios.get("/student_absence_teacher/api/period_teacher/"),
+                axios.get("/student_absence_teacher/api/period_educ/"),
+                axios.get(`/student_absence_teacher/api/absence_teacher/?student__matricule=${this.studentId}&date_absence=${this.date}&page_size=500`),
+                axios.get(`/student_absence_teacher/api/absence_educ/?student__matricule=${this.studentId}&date_absence=${this.date}&page_size=500`)
             ];
             Promise.all(promises).then(resp => {
                 const teachersAbsences = resp[3].data.results;
@@ -166,7 +166,7 @@ export default {
                 });
                 this.student.absence_educators = this.educatorsPeriod.map(p => {
                     const absence = educatorsAbsences.find(a => a.period === p.id);
-                    return absence ? absence : {is_absent: null, student_id: this.student.matricule, period: p.id, date_absence: this.date};
+                    return absence ? absence : {status: null, student_id: this.student.matricule, period: p.id, date_absence: this.date};
                 });
 
             });

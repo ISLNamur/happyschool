@@ -21,13 +21,24 @@ from django.contrib import admin
 
 from .models import (
     StudentAbsenceTeacherModel,
+    StudentAbsenceEducModel,
     StudentAbsenceTeacherSettingsModel,
     PeriodModel,
     LessonModel,
 )
 
 
+class StudentEducAbsenceAdmin(admin.ModelAdmin):
+    list_display = (
+        "student",
+        "date_absence",
+        "period",
+        "status",
+    )
+
+
 admin.site.register(StudentAbsenceTeacherSettingsModel)
 admin.site.register(PeriodModel)
 admin.site.register(LessonModel)
 admin.site.register(StudentAbsenceTeacherModel)
+admin.site.register(StudentAbsenceEducModel, StudentEducAbsenceAdmin)

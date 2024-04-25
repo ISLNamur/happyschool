@@ -18,6 +18,7 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.urls import path
+from django.conf import settings
 
 from rest_framework.routers import DefaultRouter
 
@@ -32,8 +33,13 @@ urlpatterns = [
 ]
 
 router = DefaultRouter()
-router.register(r"api/period", views.PeriodViewSet)
-router.register(r"api/absence", views.StudentAbsenceTeacherViewSet)
+router.register(r"api/period_teacher", views.PeriodTeacherViewSet)
+router.register(r"api/period_educ", views.PeriodEducViewSet)
+router.register(r"api/absence_teacher", views.StudentAbsenceTeacherViewSet)
+router.register(r"api/absence_educ", views.StudentAbsenceEducViewSet)
 router.register(r"api/justification", views.JustificationViewSet)
 
 urlpatterns += router.urls
+
+if "proeco" in settings.INSTALLED_APPS:
+    urlpatterns.append(path("api/export_selection/", views.ExportStudentAbsenceAPI.as_view()))

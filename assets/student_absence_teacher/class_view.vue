@@ -185,14 +185,15 @@ export default {
         validateEducatorAbsences: function () {
             this.loading = true;
             const absencesProm = this.educatorsPeriod.map((period, idx) => {
+                // Consider "P" status if null.
                 const absences = this.students
                     .map(s => s.absence_educators[idx])
-                    .filter(a => a.is_absent === null)
+                    .filter(a => a.status === null)
                     .map(a => {
-                        a.is_absent = false;
+                        a.status = "P";
                         return a;
                     });
-                return axios.post("/student_absence/api/student_absence/", absences, token);
+                return axios.post("/student_absence_teacher/api/absence_educ/", absences, token);
             });
             
             Promise.all(absencesProm)
@@ -213,10 +214,10 @@ export default {
             this.students = [];
             const promises = [
                 axios.get(`/annuaire/api/studentclasse/?classe=${classId}`),
-                axios.get("/student_absence_teacher/api/period/"),
-                axios.get("/student_absence/api/period/"),
-                axios.get(`/student_absence_teacher/api/absence/?student__classe=${classId}&date_absence=${date}&page_size=500`),
-                axios.get(`/student_absence/api/student_absence/?student__classe=${classId}&date_absence=${date}&page_size=500`)
+                axios.get("/student_absence_teacher/api/period_teacher/"),
+                axios.get("/student_absence_teacher/api/period_educ/"),
+                axios.get(`/student_absence_teacher/api/absence_teacher/?student__classe=${classId}&date_absence=${date}&page_size=500`),
+                axios.get(`/student_absence_teacher/api/absence_educ/?student__classe=${classId}&date_absence=${date}&page_size=500`)
             ];
             Promise.all(promises).then(resp => {
                 const currentDay = (new Date(date)).getDay();
@@ -236,7 +237,7 @@ export default {
 
                     s.absence_educators = this.educatorsPeriod.map(p => {
                         const absence = educatorsAbsences.find(a => a.period === p.id && a.student_id === s.matricule);
-                        return absence ? absence : {is_absent: null, student_id: s.matricule, period: p.id, date_absence: date};
+                        return absence ? absence : {status: null, student_id: s.matricule, period: p.id, date_absence: date};
                     });
                     return s;
                 });

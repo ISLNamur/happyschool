@@ -120,7 +120,7 @@ export default {
         const to = `${currentYear + 1}-08-01`;
         Promise.all([
             axios.get("/core/api/scholar_calendar/"),
-            axios.get(`/student_absence/api/student_absence/?student__matricule=${this.studentId}&date_absence__gte=${from}&date_absence__lt=${to}&page_size=1000&ordering=period__start`),
+            axios.get(`/student_absence_teacher/api/absence_educ/?student__matricule=${this.studentId}&date_absence__gte=${from}&date_absence__lt=${to}&page_size=1000&ordering=period__start`),
         ])
             .then(resps => {
                 const firstDate = resps[0].data[0][0];
@@ -129,7 +129,7 @@ export default {
                 resps[1].data.results.forEach(abs => {
                     const rowIndex = ((11 - this.firstDate.getMonth()) + parseInt(abs.date_absence.slice(5,7))) % 12;
                     const columnIndex = parseInt(abs.date_absence.slice(8, 10)) - 1;
-                    this.calendar[rowIndex][columnIndex][4] += abs.is_absent ? "A" : "P";
+                    this.calendar[rowIndex][columnIndex][4] += abs.status;
                 });
             });
     }

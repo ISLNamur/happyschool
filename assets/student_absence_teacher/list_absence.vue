@@ -108,7 +108,7 @@ export default {
             this.loadEntries();
         },
         loadEntries: function () {
-            axios.get("/student_absence_teacher/api/absence/?ordering=-date" + this.filter + "&page=" + this.currentPage)
+            axios.get("/student_absence_teacher/api/absence_teacher/?ordering=-date" + this.filter + "&page=" + this.currentPage)
                 .then(resp => {
                     this.absences = resp.data.results;
                     this.entriesCount = resp.data.count;

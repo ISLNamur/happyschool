@@ -20,18 +20,20 @@
 <template>
     <b-row>
         <b-col
-            v-for="(a, index) in is_absent"
+            v-for="(a, index) in status"
             :key="index"
         >
             <b-overlay :show="updating">
                 <b-checkbox
                     switch
-                    v-model="is_absent[index]"
+                    value="A"
+                    unchecked-value="P"
+                    v-model="status[index]"
                     @change="updateRecord(index, $event)"
                 >
                     <template #default="">
                         <span>
-                            {{ is_absent[index] ? "A" : "P" }}
+                            {{ status[index] ? status[index] : "P" }}
                         </span>
                         <b-iconstack>
                             <b-icon
@@ -41,7 +43,7 @@
                             />
                             <b-icon
                                 stacked
-                                v-if="is_absent[index] !== null"
+                                v-if="status[index] !== null"
                                 icon="check"
                                 variant="success"
                             />
@@ -67,7 +69,7 @@ export default {
     },
     data: function () {
         return {
-            is_absent: [],
+            status: [],
             updating: false,
         };
     },
@@ -75,21 +77,21 @@ export default {
         updateRecord: function (index, $event) {
             this.updating = true;
             let data = {
-                is_absent: $event,
+                status: $event,
                 student_id: this.absences[index].student_id,
                 period: this.absences[index].period,
                 date_absence: this.absences[index].date_absence,
             };
 
             const isNew = !("id" in this.absences[index]);
-            const url = `/student_absence/api/student_absence/${ !isNew ? this.absences[index].id + "/" : ""}`;
+            const url = `/student_absence_teacher/api/absence_educ/${ !isNew ? this.absences[index].id + "/" : ""}`;
             const method = isNew ? axios.post(url, [data], token) : axios.put(url, data, token);
             method.then(resp => {
                 this.$emit("change", [isNew ? resp.data[0] : resp.data, index]);
                 this.updating = false;
             })
                 .catch(() => {
-                    this.is_absent[index] = this.absences[index].is_absent;
+                    this.status[index] = this.absences[index].status;
                     this.updating = false;
                     this.$bvToast.toast("Une erreur est survenue lors de la mise à jour des données.", {
                         title: "Erreur",
@@ -100,7 +102,7 @@ export default {
         }
     },
     mounted: function () {
-        this.is_absent = this.absences.map(a => a.is_absent);
+        this.status = this.absences.map(a => a.status);
     }
 };
 </script>

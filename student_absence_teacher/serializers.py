@@ -27,8 +27,9 @@ from core.models import StudentModel, GivenCourseModel
 from .models import (
     StudentAbsenceTeacherSettingsModel,
     StudentAbsenceTeacherModel,
+    StudentAbsenceEducModel,
     PeriodModel,
-    LessonModel,
+    PeriodEducModel,
     JustificationModel,
 )
 
@@ -39,10 +40,16 @@ class StudentAbsenceTeacherSettingsSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class PeriodSerializer(serializers.ModelSerializer):
+class PeriodTeacherSerializer(serializers.ModelSerializer):
     class Meta:
         model = PeriodModel
         fields = ("id", "name", "start", "end", "display", "day_of_week")
+
+
+class PeriodEducSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PeriodEducModel
+        fields = "__all__"
 
 
 class JustificationSerializer(serializers.ModelSerializer):
@@ -66,7 +73,7 @@ class StudentAbsenceTeacherSerializer(serializers.ModelSerializer):
         allow_null=True,
     )
 
-    period = PeriodSerializer(read_only=True)
+    period = PeriodTeacherSerializer(read_only=True)
     period_id = serializers.PrimaryKeyRelatedField(
         queryset=PeriodModel.objects.all(), source="period", required=False, allow_null=True
     )
@@ -78,3 +85,50 @@ class StudentAbsenceTeacherSerializer(serializers.ModelSerializer):
             "user",
             "datetime_update",
         )
+
+
+class StudentAbsenceEducSerializer(serializers.ModelSerializer):
+    # In order to write with the id and read the entire object, it uses two fields field + field_id.
+    student = StudentSerializer(read_only=True)
+    student_id = serializers.PrimaryKeyRelatedField(
+        queryset=StudentModel.objects.all(), source="student", required=False, allow_null=True
+    )
+
+    class Meta:
+        model = StudentAbsenceEducModel
+        exclude = (
+            "datetime_creation",
+            "datetime_update",
+        )
+        read_only_fields = ("user",)
+
+    def update(self, instance, validated_data):
+        if (
+            StudentAbsenceTeacherSettingsModel.objects.first().sync_with_proeco
+            and "status" in validated_data
+        ):
+            if not self.sync_proeco(instance, validated_data["status"]):
+                raise
+        return super(StudentAbsenceEducSerializer, self).update(instance, validated_data)
+
+    @staticmethod
+    def sync_proeco(absence: StudentAbsenceEducModel, absence_status):
+        from libreschoolfdb import writer
+
+        server = [
+            s["server"]
+            for s in settings.SYNC_FDB_SERVER
+            if s["teaching_name"] == absence.student.teaching.name
+        ]
+        if len(server) != 0:
+            periods = PeriodEducModel.objects.all().order_by("start")
+            period = [i for i, p in enumerate(periods) if p.id == absence.period.id][0]
+
+            return writer.set_student_absence(
+                matricule=absence.student.matricule,
+                day=absence.date_absence,
+                period=period,
+                absence_status=absence_status,
+                fdb_server=server[0],
+            )[0]
+        return False

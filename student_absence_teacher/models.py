@@ -42,6 +42,7 @@ class StudentAbsenceTeacherSettingsModel(models.Model):
         Group, default=None, blank=True, related_name="can_see_adding"
     )
     select_student_by = models.CharField(choices=SELECT_STUDENT, max_length=4, default=CLASS)
+    sync_with_proeco = models.BooleanField("Synchronise les absences avec ProEco", default=False)
 
 
 class LessonModel(models.Model):
@@ -117,3 +118,51 @@ class JustificationModel(models.Model):
     )
     half_days = models.PositiveIntegerField("Half days count", default=1)
     absences = models.ManyToManyField(StudentAbsenceModel, blank=True)
+
+
+class PeriodEducModel(models.Model):
+    """Model that describes a period of a day.
+
+    Attributes:
+        start Starting time of the period.
+        end Ending time of the period.
+        name Simple alias of the period.
+    """
+
+    start = models.TimeField()
+    end = models.TimeField()
+    name = models.CharField(max_length=200)
+    day_of_week = models.CharField(max_length=10, default="1-5")
+
+    @property
+    def display(self):
+        """Describe the period."""
+        return "%s (%s-%s)" % (self.name, str(self.start)[:5], str(self.end)[:5])
+
+    def __str__(self):
+        return self.display
+
+
+class StudentAbsenceEducModel(models.Model):
+    PRESENCE = "P"
+    LATENESS = "R"
+    ABSENCE = "A"
+    EARLY_LEAVING = "Q"
+    STATUS_CHOICES = [
+        (PRESENCE, "Présence"),
+        (LATENESS, "Retard"),
+        (ABSENCE, "Absence"),
+        (EARLY_LEAVING, "Départ anticipé"),
+    ]
+
+    student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)
+    date_absence = models.DateField("Absence date")
+    period = models.ForeignKey(PeriodEducModel, on_delete=models.SET_NULL, null=True)
+    status = models.CharField("Student status", choices=STATUS_CHOICES, max_length=2)
+    is_processed = models.BooleanField(default=False)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    datetime_creation = models.DateTimeField(auto_now_add=True)
+    datetime_update = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [models.Index(fields=["-date_absence", "student", "status"])]

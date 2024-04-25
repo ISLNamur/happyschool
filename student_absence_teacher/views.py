@@ -30,6 +30,7 @@ from django.conf import settings
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.http import HttpResponse
+from django.utils import timezone
 
 from django_filters import rest_framework as filters
 
@@ -38,22 +39,26 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.filters import OrderingFilter
+from rest_framework import status
 
 from core.models import ClasseModel, StudentModel, ResponsibleModel
-from core.utilities import get_menu, get_scholar_year
+from core.utilities import get_menu
 from core.people import get_classes
-from core.views import BaseFilters, PageNumberSizePagination
+from core.views import BaseFilters, PageNumberSizePagination, DjangoModelWithAccessPermissions
 
 from .models import (
     StudentAbsenceTeacherSettingsModel,
     StudentAbsenceTeacherModel,
+    StudentAbsenceEducModel,
     PeriodModel,
-    LessonModel,
+    PeriodEducModel,
     JustificationModel,
 )
 from .serializers import (
     StudentAbsenceTeacherSettingsSerializer,
-    PeriodSerializer,
+    StudentAbsenceEducSerializer,
+    PeriodTeacherSerializer,
+    PeriodEducSerializer,
     StudentAbsenceTeacherSerializer,
     JustificationSerializer,
 )
@@ -160,9 +165,152 @@ class StudentAbsenceTeacherViewSet(ModelViewSet):
         serializer.save(user=self.request.user)
 
 
-class PeriodViewSet(ReadOnlyModelViewSet):
+class StudentAbsenceEducFilter(BaseFilters):
+    student__display = filters.CharFilter(method="people_name_by")
+    classe = filters.CharFilter(method="classe_by")
+    activate_last_absence = filters.BooleanFilter(method="activate_last_absence_by")
+    activate_today_absence = filters.BooleanFilter(method="activate_today_absence_by")
+    activate_own_classes = filters.BooleanFilter(method="activate_own_classes_by")
+
+    class Meta:
+        fields_to_filter = [
+            "student",
+            "date_absence",
+            "student__matricule",
+            "status",
+            "student__classe",
+            "period__name",
+        ]
+        model = StudentAbsenceEducModel
+        fields = BaseFilters.Meta.generate_filters(fields_to_filter)
+        fields["period__start"] = ["lt", "gt", "lte", "gte", "exact"]
+        fields["period__end"] = ["lt", "gt", "lte", "gte", "exact"]
+        filter_overrides = BaseFilters.Meta.filter_overrides
+
+    def activate_last_absence_by(self, queryset, name, value):
+        current_date = timezone.now().date()
+        return queryset.filter(
+            user=self.request.user,
+            date_absence=current_date,
+            status=StudentAbsenceEducModel.ABSENCE,
+        )
+
+    def activate_today_absence_by(self, queryset, name, value):
+        current_date = timezone.now().date()
+        return queryset.filter(
+            date_absence=current_date, status=StudentAbsenceEducModel.ABSENCE
+        ).distinct("student")
+
+    def activate_own_classes_by(self, queryset, name, value):
+        if not value:
+            return queryset
+
+        classes = get_classes(
+            check_access=True,
+            user=self.request.user,
+        )
+        return queryset.filter(student__classe__in=classes)
+
+
+class StudentAbsenceEducViewSet(ModelViewSet):
+    queryset = StudentAbsenceEducModel.objects.all()
+    serializer_class = StudentAbsenceEducSerializer
+    permission_classes = [DjangoModelWithAccessPermissions]
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    )
+    filterset_class = StudentAbsenceEducFilter
+    pagination_class = PageNumberSizePagination
+    ordering_fields = [
+        "date_absence",
+        "datetime_update",
+        "datetime_creation",
+        "student__classe__year",
+        "student__classe__letter",
+        "student__last_name",
+        "student__first_name",
+        "period__start",
+    ]
+    cursor = None
+
+    def create(self, request, *args, **kwargs):
+        if isinstance(request.data, list) and len(request.data) == 0:
+            return Response(status=status.HTTP_201_CREATED)
+
+        if get_settings().sync_with_proeco:
+            from libreschoolfdb import absences
+
+            first_absence = request.data[0] if isinstance(request.data, list) else request.data
+            teaching_name = StudentModel.objects.get(
+                matricule=first_absence.get("student_id")
+            ).teaching.name
+
+            server = [
+                s["server"] for s in settings.SYNC_FDB_SERVER if s["teaching_name"] == teaching_name
+            ]
+            if len(server) == 0:
+                raise
+            self.cursor = absences._get_absence_cursor(fdb_server=server[0])
+
+        # if isinstance(request.data, list) and len(request.data) > 0:
+        absences_done = []
+        for absence in request.data:
+            serializer = self.get_serializer(data=absence)
+            serializer.is_valid(raise_exception=True)
+            if get_settings().sync_with_proeco:
+                if not self.sync_proeco(serializer.validated_data):
+                    continue
+
+            # Save object and add user/username.
+            abs_object = serializer.save()
+            abs_object.user = request.user
+            abs_object.save()
+
+            absences_done.append(serializer.data)
+        if get_settings().sync_with_proeco:
+            self.cursor.connection.commit()
+            self.cursor.connection.close()
+        return Response(absences_done, status=status.HTTP_201_CREATED)
+
+    def sync_proeco(self, data: dict):
+        from libreschoolfdb import writer
+
+        if self.cursor:
+            periods = PeriodEducModel.objects.all().order_by("start")
+            period = [i for i, p in enumerate(periods) if p.id == data.get("period", None).id][0]
+
+            return writer.set_student_absence(
+                matricule=data.get("student").matricule,
+                day=data.get("date_absence"),
+                period=period,
+                absence_status=data.get("status"),
+                cur=self.cursor,
+                commit=False,
+            )
+        return False
+
+
+class PeriodTeacherViewSet(ReadOnlyModelViewSet):
     queryset = PeriodModel.objects.all().order_by("start")
-    serializer_class = PeriodSerializer
+    serializer_class = PeriodTeacherSerializer
+
+
+class PeriodEducFilter(BaseFilters):
+    class Meta:
+        model = PeriodEducModel
+        fields = {
+            "start": ["lt", "gt", "lte", "gte", "exact"],
+            "end": ["lt", "gt", "lte", "gte", "exact"],
+        }
+        filter_overrides = BaseFilters.Meta.filter_overrides
+
+
+class PeriodEducViewSet(ReadOnlyModelViewSet):
+    queryset = PeriodEducModel.objects.all()
+    serializer_class = PeriodEducSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = PeriodEducFilter
 
 
 class OverviewAPI(APIView):
@@ -197,16 +345,12 @@ class OverviewAPI(APIView):
         return counts
 
     def _extract_count_from_teacher(self, classe, absences, periods, date):
-        use_student_absence = "student_absence" in settings.INSTALLED_APPS
-        if use_student_absence:
-            from student_absence.models import StudentAbsenceModel
-
         counts = {"classe": classe.compact_str, "classe__id": classe.id}
 
         teacher_attendance = StudentAbsenceTeacherModel.objects.filter(
             date_absence=date, student__classe=classe
         )
-        educ_attendance_day = StudentAbsenceModel.objects.filter(
+        educ_attendance_day = StudentAbsenceEducModel.objects.filter(
             date_absence=date, student__classe=classe
         )
 
@@ -230,7 +374,7 @@ class OverviewAPI(APIView):
             educ_count = (
                 -1
                 if not educ_attendance_period.exists()
-                else educ_attendance_period.filter(is_absent=True).count()
+                else educ_attendance_period.filter(status=StudentAbsenceEducModel.ABSENCE).count()
             )
             counts[f"period-{period.id}"] = {
                 "not_teacher_count": educ_count,
@@ -272,19 +416,12 @@ class OverviewAPI(APIView):
 
             return Response(json.dumps(count_by_classe_by_period))
         elif point_of_view == "educator":
-            if "student_absence" not in settings.INSTALLED_APPS:
-                return Response(json.dumps({}))
 
-            from student_absence.models import (
-                StudentAbsenceModel,
-                PeriodModel as PeriodModelEducator,
-            )
-
-            periods = PeriodModelEducator.objects.order_by("start")
+            periods = PeriodEducModel.objects.order_by("start")
             count_by_classe_by_period = [
                 self._extract_count_from_educator(
                     c,
-                    StudentAbsenceModel.objects.filter(date_absence=date, student__classe=c)
+                    StudentAbsenceEducModel.objects.filter(date_absence=date, student__classe=c)
                     .values("period", "is_absent")
                     .annotate(Count("id")),
                     periods,
@@ -425,6 +562,21 @@ class ExportAbsencesAPI(APIView):
             response["Content-Disposition"] = 'attachment; filename="export.pdf"'
             HTML(string=html_render).write_pdf(response)
             return response
+
+
+if "proeco" in settings.INSTALLED_APPS:
+    from proeco.views import ExportStudentSelectionAPI
+
+    class ExportStudentAbsenceAPI(ExportStudentSelectionAPI):
+        """Export in a file the current list view as a proeco selection."""
+
+        def _get_student_list(self, request, kwargs):
+            view_set = StudentAbsenceEducViewSet.as_view({"get": "list"})
+            absences = [a["student_id"] for a in view_set(request._request).data["results"]]
+            return absences
+
+        def _format_file_name(self, request, **kwargs):
+            return "Pref_NOMS_absences.TXT"
 
 
 class JustificationViewSet(ReadOnlyModelViewSet):

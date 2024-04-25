@@ -256,7 +256,7 @@ export default {
             };
             if (selectBy === "GC") data.params.given_course = this.givenCourse.id;
             if (selectBy === "CL") data.params.student__classe = this.classe.id;
-            axios.get("/student_absence_teacher/api/absence/", data, token)
+            axios.get("/student_absence_teacher/api/absence_teacher/", data, token)
                 .then(resp => {
                     this.students = students.map(s => {
                         const savedAbsence = resp.data.results.find(r => r.student_id === s.matricule);
@@ -344,7 +344,7 @@ export default {
             } else {
                 data.params.student__classe = this.classe.id;
             }
-            axios.get("/student_absence_teacher/api/absence/", data, token)
+            axios.get("/student_absence_teacher/api/absence_teacher/", data, token)
                 .then((resp) => {
                     if (resp.data.count > 0) {
                         const baseSentence = "Des changements ont eu lieu depuis le chargement initial des données. ";
@@ -362,7 +362,7 @@ export default {
                                 continue;
                             }
                             const send = change.is_new ? axios.post : axios.put;
-                            let url = "/student_absence_teacher/api/absence/";
+                            let url = "/student_absence_teacher/api/absence_teacher/";
                             if (!change.is_new) url += change.id + "/";
                             
                             const data = {
@@ -411,7 +411,7 @@ export default {
         },
     },
     mounted: function () {
-        axios.get("/student_absence_teacher/api/period/")
+        axios.get("/student_absence_teacher/api/period_teacher/")
             .then(resp => {
                 this.periodOptions = resp.data.results;
             });
