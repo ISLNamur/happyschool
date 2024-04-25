@@ -25,8 +25,11 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from core.utilities import get_scholar_year
 from core.models import TeachingModel, StudentModel
-from student_absence.models import StudentAbsenceModel
-from student_absence_teacher import JustificationModel
+from student_absence_teacher.models import (
+    JustificationModel,
+    StudentAbsenceEducModel,
+    PeriodEducModel,
+)
 
 
 class Command(BaseCommand):
@@ -34,18 +37,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from libreschoolfdb import reader
-        from libreschoolfdb.absences import Absence
 
         proecos = settings.SYNC_FDB_SERVER
         current_year = get_scholar_year()
 
-        student_synced = set()
         for proeco in proecos:
-            try:
-                teaching_model = TeachingModel.objects.get(name=proeco["teaching_name"])
-            except ObjectDoesNotExist:
-                print("teaching__name: %s, not found" % proeco["teaching_name"])
-                continue
 
             # ProEco student list.
             proeco_students = reader.get_students(
@@ -74,23 +70,22 @@ class Command(BaseCommand):
                 absences_processed = set()
                 for a in absences:
                     try:
-                        absence = StudentAbsenceModel.objects.get(
-                            student=student, date_absence=a.date
+                        period = PeriodEducModel.objects.all().order_by("start")[a.period]
+                        absence = StudentAbsenceEducModel.objects.get(
+                            student=student, date_absence=a.date, period=period
                         )
-                        absence.morning = a.morning
-                        absence.afternoon = a.afternoon
+                        absence.status = a.status
                         absence.save()
-                    except:
-                        absence = StudentAbsenceModel.objects.create(
+                    except ObjectDoesNotExist:
+                        absence = StudentAbsenceEducModel.objects.create(
                             student=student,
                             date_absence=a.date,
-                            morning=a.morning,
-                            afternoon=a.afternoon,
+                            status=a.status,
                         )
                     absences_processed.add(absence.pk)
 
                 # Remove deleted absences.
-                StudentAbsenceModel.objects.filter(student=student).exclude(
+                StudentAbsenceEducModel.objects.filter(student=student).exclude(
                     pk__in=absences_processed
                 ).delete()
 
