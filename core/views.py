@@ -23,6 +23,7 @@ import requests
 import os
 import calendar
 import itertools
+import copy
 
 from datetime import date, timedelta
 
@@ -243,12 +244,18 @@ class LargePageSizePagination(PageNumberPagination):
     page_size = 500
 
 
+class DjangoModelWithAccessPermissions(DjangoModelPermissions):
+    def __init__(self):
+        self.perms_map = copy.deepcopy(self.perms_map)
+        self.perms_map["GET"] = ["%(app_label)s.view_%(model_name)s"]
+
+
 class BaseModelViewSet(ModelViewSet):
     filter_backends = (
         filters.DjangoFilterBackend,
         OrderingFilter,
     )
-    permission_classes = (DjangoModelPermissions,)
+    permission_classes = (DjangoModelWithAccessPermissions,)
     pagination_class = PageNumberSizePagination
     user_field = None
     username_field = "user"
