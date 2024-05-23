@@ -90,6 +90,9 @@
                         </template>
                         <template #cell(studentName)="data">
                             <a :href="`#/student_view/${data.item.matricule}/${date}/`">{{ data.value }}</a>
+                            <a :href="`/annuaire/#/person/student/${data.item.matricule}/`">
+                                <b-icon icon="file-earmark-richtext" />
+                            </a>
                         </template>
                         <template #cell(absence)="data">
                             <overview-teacher-entry :absences="data.item.absence_teachers" />

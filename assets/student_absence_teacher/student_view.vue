@@ -60,6 +60,12 @@
                                 </b-col>
                             </b-row>
                         </template>
+                        <template #cell(studentName)="data">
+                            {{ data.value }}
+                            <a :href="`/annuaire/#/person/student/${data.item.matricule}/`">
+                                <b-icon icon="file-earmark-richtext" />
+                            </a>
+                        </template>
                         <template #cell(absence)="data">
                             <overview-teacher-entry :absences="data.item.absence_teachers" />
                             <overview-educator-entry
@@ -86,6 +92,8 @@
 import axios from "axios";
 
 import {displayStudent} from "../common/utilities.js";
+
+import { studentAbsenceTeacherStore } from "./stores/index.js";
 
 import OverviewTeacherEntry from "./overview_teacher_entry.vue";
 import OverviewEducatorEntry from "./overview_educator_entry.vue";
@@ -119,6 +127,7 @@ export default {
                     label: ""
                 }
             ],
+            store: studentAbsenceTeacherStore(),
         };
     },
     watch: {
