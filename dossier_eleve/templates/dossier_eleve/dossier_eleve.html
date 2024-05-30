@@ -1,7 +1,14 @@
 {% extends "core/base_vue.html" %}
 
+{% load vite %}
+
 {% block header %}
+
 <title>HappySchool : Dossier des élèves</title>
+
+{% vite %}
+{% vite "dossier_eleve/js/dossier_eleve.js" %}
+
 {% endblock %}
 {% block content %}
 <script>
@@ -17,7 +24,5 @@
     var groups = {{ groups|safe }};
 </script>
 <div id="vue-app"></div>
-{% load render_bundle from webpack_loader %}
-{% render_bundle 'dossier_eleve' %}
 
 {% endblock %}
