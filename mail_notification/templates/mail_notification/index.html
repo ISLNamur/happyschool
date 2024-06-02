@@ -1,7 +1,11 @@
 {% extends "core/base_vue.html" %}
 
+{% load vite %}
+
 {% block header %}
 <title>HappySchool : Envoi d'email</title>
+{% vite %}
+{% vite "mail_notification/js/mail_notification.js" %}
 {% endblock %}
 {% block content %}
 <script>
@@ -9,7 +13,4 @@
     const menu = {{ menu|safe }};
 </script>
 <div id="vue-app"></div>
-{% load render_bundle from webpack_loader %}
-{% render_bundle 'mail_notification' %}
-
 {% endblock %}
