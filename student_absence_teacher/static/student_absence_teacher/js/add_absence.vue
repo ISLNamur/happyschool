@@ -20,27 +20,62 @@
 <template>
     <div>
         <b-row>
-            <b-col cols="12" md="4" lg="3">
+            <b-col
+                cols="12"
+                md="4"
+                lg="3"
+            >
                 <b-form-group>
-                    <b-input v-model="currentDate" type="date" @change="getStudents('UND')" />
+                    <b-input
+                        v-model="currentDate"
+                        type="date"
+                        @change="getStudents('UND')"
+                    />
                 </b-form-group>
             </b-col>
-            <b-col cols="12" md="6" lg="3">
-                <multiselect :options="periodOptions" placeholder="Séléctionner une période" select-label=""
-                    selected-label="Sélectionné" deselect-label="Déselectionner" label="display" track-by="id"
-                    v-model="period" :show-no-options="false" :multiple="true" @input="getStudents('UND', true)"
-                    class="mb-1">
+            <b-col
+                cols="12"
+                md="6"
+                lg="3"
+            >
+                <multiselect
+                    :options="periodOptions"
+                    placeholder="Séléctionner une période"
+                    select-label=""
+                    selected-label="Sélectionné"
+                    deselect-label="Déselectionner"
+                    label="display"
+                    track-by="id"
+                    v-model="period"
+                    :show-no-options="false"
+                    :multiple="true"
+                    @input="getStudents('UND', true)"
+                    class="mb-1"
+                >
                     <template #noResult>
                         Aucune période ne correspond à votre recherche.
                     </template>
                 </multiselect>
             </b-col>
-            <b-col cols="12" md="6" lg="3">
+            <b-col
+                cols="12"
+                md="6"
+                lg="3"
+            >
                 <multiselect
                     v-if="store.settings.select_student_by === 'GC' || store.settings.select_student_by === 'CLGC'"
-                    :options="givenCourseOptions" placeholder="Séléctionner votre cours" select-label=""
-                    selected-label="Sélectionné" deselect-label="" label="display" track-by="id" v-model="givenCourse"
-                    :show-no-options="false" @input="getStudents('GC')" class="mb-1">
+                    :options="givenCourseOptions"
+                    placeholder="Séléctionner votre cours"
+                    select-label=""
+                    selected-label="Sélectionné"
+                    deselect-label=""
+                    label="display"
+                    track-by="id"
+                    v-model="givenCourse"
+                    :show-no-options="false"
+                    @input="getStudents('GC')"
+                    class="mb-1"
+                >
                     <template #noResult>
                         Aucun cours ne correspond à votre recherche.
                     </template>
@@ -50,9 +85,19 @@
             <b-col>
                 <multiselect
                     v-if="store.settings.select_student_by === 'CL' || store.settings.select_student_by === 'CLGC'"
-                    :options="classesOptions" placeholder="Chercher une classe" select-label=""
-                    selected-label="Sélectionné" deselect-label="" label="display" track-by="id" v-model="classe"
-                    :show-no-options="false" @input="getStudents('CL')" @search-change="searchClasses" class="mb-1">
+                    :options="classesOptions"
+                    placeholder="Chercher une classe"
+                    select-label=""
+                    selected-label="Sélectionné"
+                    deselect-label=""
+                    label="display"
+                    track-by="id"
+                    v-model="classe"
+                    :show-no-options="false"
+                    @input="getStudents('CL')"
+                    @search-change="searchClasses"
+                    class="mb-1"
+                >
                     <template #noResult>
                         Aucune classe ne correspond à votre recherche.
                     </template>
@@ -61,10 +106,22 @@
         </b-row>
         <b-row v-if="groups.length > 0">
             <b-col md="6">
-                <b-form-group label="Groupe" label-cols="2" label-class="font-weight-bold">
-                    <multiselect :options="groups" placeholder="Choisir un groupe" select-label=""
-                        selected-label="Sélectionné" deselect-label="Ne plus filtrer" :searchable="false"
-                        v-model="studentGroup" :show-no-options="false" class="mb-1">
+                <b-form-group
+                    label="Groupe"
+                    label-cols="2"
+                    label-class="font-weight-bold"
+                >
+                    <multiselect
+                        :options="groups"
+                        placeholder="Choisir un groupe"
+                        select-label=""
+                        selected-label="Sélectionné"
+                        deselect-label="Ne plus filtrer"
+                        :searchable="false"
+                        v-model="studentGroup"
+                        :show-no-options="false"
+                        class="mb-1"
+                    >
                         <template #noResult>
                             Aucune classe ne correspond à votre recherche.
                         </template>
@@ -74,12 +131,18 @@
         </b-row>
         <b-row class="mt-2">
             <b-col cols="4">
-                <b-btn @click="sendChanges" :disabled="!showAlert">
+                <b-btn
+                    @click="sendChanges"
+                    :disabled="!showAlert"
+                >
                     Valider les changements
                 </b-btn>
             </b-col>
             <b-col>
-                <b-alert :show="showAlert" variant="warning">
+                <b-alert
+                    :show="showAlert"
+                    variant="warning"
+                >
                     Changements non-validés !
                 </b-alert>
             </b-col>
@@ -88,20 +151,33 @@
             <b-col>
                 <b-overlay :show="loadingStudent">
                     <b-list-group>
-                        <add-absence-entry v-for="s in filteredStudent" :key="s.matricule" :student="s"
-                            @update="computeAlert" />
+                        <add-absence-entry
+                            v-for="s in filteredStudent"
+                            :key="s.matricule"
+                            :student="s"
+                            @update="computeAlert"
+                        />
                     </b-list-group>
                 </b-overlay>
             </b-col>
         </b-row>
-        <b-row v-if="students.length > 5" class="mt-2">
+        <b-row
+            v-if="students.length > 5"
+            class="mt-2"
+        >
             <b-col cols="3">
-                <b-btn @click="sendChanges" :disabled="!showAlert">
+                <b-btn
+                    @click="sendChanges"
+                    :disabled="!showAlert"
+                >
                     Valider les changements
                 </b-btn>
             </b-col>
             <b-col>
-                <b-alert :show="showAlert" variant="warning">
+                <b-alert
+                    :show="showAlert"
+                    variant="warning"
+                >
                     Il y a des changements non-validés !
                 </b-alert>
             </b-col>

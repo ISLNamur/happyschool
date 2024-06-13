@@ -24,7 +24,10 @@
                 <p><strong>Reporter les sanctions sélectionnées</strong></p>
                 <p>Les sanctions sélectionnées seront reportées d'une semaine</p>
             </b-tab>
-            <b-tab title="Changer de sanction" disabled>
+            <b-tab
+                title="Changer de sanction"
+                disabled
+            >
                 <strong>Changer de type de sanctions</strong>
                 <b-form-group label="Choississez vers quelle sanction changer">
                     En cours de construction…
@@ -35,8 +38,11 @@
             <b-list-group>
                 Nombre de sanctions sélectionnées : {{ selected.length }}
                 <b-form-checkbox-group v-model="selected">
-                    <b-list-group-item class="d-flex justify-content-between align-items-center"
-                        v-for="sanction in sanctions" :key="sanction.id">
+                    <b-list-group-item
+                        class="d-flex justify-content-between align-items-center"
+                        v-for="sanction in sanctions"
+                        :key="sanction.id"
+                    >
                         <span>
                             <em>
                                 {{ sanction.date_sanction }}
@@ -47,11 +53,17 @@
                         </span>
                         <span>
                             {{ sanction.sanction_decision.sanction_decision }}
-                            <b-form-checkbox class="" :value="sanction.id" />
+                            <b-form-checkbox
+                                class=""
+                                :value="sanction.id"
+                            />
                         </span>
                     </b-list-group-item>
                 </b-form-checkbox-group>
-                <b-btn variant="success" @click="reportSanctions">
+                <b-btn
+                    variant="success"
+                    @click="reportSanctions"
+                >
                     {{ tabIndex ? "Changer" : "Reporter" }}
                 </b-btn>
             </b-list-group>

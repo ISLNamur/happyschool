@@ -28,14 +28,14 @@ import { addFilterPinia as addFilter, removeFilterPinia as removeFilter } from "
 
 export const askSanctionsStore = defineStore("askSanctionsStore", {
     state: () => ({
-        // eslint-disable-next-line no-undef
+         
         settings: settings,
         filters: [
             {
                 filterType: "scholar_year",
-                // eslint-disable-next-line no-undef
+                 
                 tag: currentYear,
-                // eslint-disable-next-line no-undef
+                 
                 value: currentYear,
             },
             {
@@ -44,11 +44,11 @@ export const askSanctionsStore = defineStore("askSanctionsStore", {
                 value: true,
             },
         ],
-        // eslint-disable-next-line no-undef
+         
         canSetSanction: canSetSanction,
-        // eslint-disable-next-line no-undef
+         
         canAskSanction: canAskSanction,
-        // eslint-disable-next-line no-undef
+         
         hasProEco: proeco,
         sanctions: [],
     }),

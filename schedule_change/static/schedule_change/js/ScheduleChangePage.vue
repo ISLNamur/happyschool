@@ -42,7 +42,7 @@ export default {
             fullscreen: false,
         };
     },
-     mounted: function() {
+    mounted: function() {
         this.fullscreen = window.location.href.includes("fullscreen");
                 
         // eslint-disable-next-line no-undef
@@ -51,5 +51,5 @@ export default {
     components: {
         "app-menu": Menu,
     }
-}
+};
 </script>

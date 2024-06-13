@@ -24,12 +24,31 @@
                 <b-col>
                     <strong>{{ councilStatement ? councilStatement.branch : "" }}</strong>
                 </b-col>
-                <b-col cols="2" class="text-right">
-                    <b-btn variant="light" size="sm" @click="editing = true" class="card-link mb-1">
-                        <b-icon icon="pencil-square" variant="success" />
+                <b-col
+                    cols="2"
+                    class="text-right"
+                >
+                    <b-btn
+                        variant="light"
+                        size="sm"
+                        @click="editing = true"
+                        class="card-link mb-1"
+                    >
+                        <b-icon
+                            icon="pencil-square"
+                            variant="success"
+                        />
                     </b-btn>
-                    <b-btn variant="light" size="sm" @click="$emit('remove')" class="card-link">
-                        <b-icon variant="danger" icon="trash-fill" />
+                    <b-btn
+                        variant="light"
+                        size="sm"
+                        @click="$emit('remove')"
+                        class="card-link"
+                    >
+                        <b-icon
+                            variant="danger"
+                            icon="trash-fill"
+                        />
                     </b-btn>
                 </b-col>
             </b-row>
@@ -47,13 +66,29 @@
                     <div v-html="others" />
                 </b-col>
             </b-row>
-            <b-modal v-model="editing" size="xl" title="Éditer" ok-only>
+            <b-modal
+                v-model="editing"
+                size="xl"
+                title="Éditer"
+                ok-only
+            >
                 <b-form-row>
                     <b-col>
-                        <b-form-group label="Branche" label-cols="2">
-                            <multiselect :options="store.branches" placeholder="Choisisser une branche" select-label=""
-                                selected-label="Sélectionné" deselect-label="Cliquer dessus pour enlever"
-                                v-model="councilStatement" :show-no-options="false" label="branch" track-by="id">
+                        <b-form-group
+                            label="Branche"
+                            label-cols="2"
+                        >
+                            <multiselect
+                                :options="store.branches"
+                                placeholder="Choisisser une branche"
+                                select-label=""
+                                selected-label="Sélectionné"
+                                deselect-label="Cliquer dessus pour enlever"
+                                v-model="councilStatement"
+                                :show-no-options="false"
+                                label="branch"
+                                track-by="id"
+                            >
                                 <template #singleLabel="props">
                                     <strong>{{ props.option.branch }}</strong>
                                 </template>

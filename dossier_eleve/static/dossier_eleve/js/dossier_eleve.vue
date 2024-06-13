@@ -82,7 +82,7 @@
                         :store="store"
                         @update="applyFilter"
                         :show-search="showFilters"
-                        @toggleSearch="showFilters = !showFilters"
+                        @toggle-search="showFilters = !showFilters"
                     />
                 </b-col>
             </b-row>
@@ -98,7 +98,7 @@
                 :key="entry.id"
                 :row-data="entry"
                 @delete="askDelete(entry)"
-                @filterStudent="filterStudent($event)"
+                @filter-student="filterStudent($event)"
             />
             <component
                 :is="currentModal"

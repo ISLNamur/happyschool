@@ -24,38 +24,98 @@
                 <b-col>
                     <strong>
                         <b-form inline>
-                            Du<b-form-input type="date" v-model="date_start" class="mr-sm-2 ml-2"
-                                :state="inputStates.date_start" />
-                            au<b-form-input type="date" v-model="date_end" class="ml-2" :state="inputStates.date_end" />
+                            Du<b-form-input
+                                type="date"
+                                v-model="date_start"
+                                class="mr-sm-2 ml-2"
+                                :state="inputStates.date_start"
+                            />
+                            au<b-form-input
+                                type="date"
+                                v-model="date_end"
+                                class="ml-2"
+                                :state="inputStates.date_end"
+                            />
                         </b-form>
                     </strong>
                 </b-col>
-                <b-col v-if="branch" class="text-right form-inline">
+                <b-col
+                    v-if="branch"
+                    class="text-right form-inline"
+                >
                     <strong>{{ branch.branch }}</strong>
                 </b-col>
-                <b-col cols="3" align-self="end" class="text-right">
-                    <b-icon v-if="goalState === 'OK'" icon="check-circle-fill" variant="success" />
-                    <b-icon v-if="goalState === 'NOK'" icon="x-circle-fill" variant="error" />
-                    <b-icon v-if="goalState === 'IP'" icon="slash-circle" variant="warning" />
-                    <b-btn @click="toggleExpand" variant="light">
+                <b-col
+                    cols="3"
+                    align-self="end"
+                    class="text-right"
+                >
+                    <b-icon
+                        v-if="goalState === 'OK'"
+                        icon="check-circle-fill"
+                        variant="success"
+                    />
+                    <b-icon
+                        v-if="goalState === 'NOK'"
+                        icon="x-circle-fill"
+                        variant="error"
+                    />
+                    <b-icon
+                        v-if="goalState === 'IP'"
+                        icon="slash-circle"
+                        variant="warning"
+                    />
+                    <b-btn
+                        @click="toggleExpand"
+                        variant="light"
+                    >
                         {{ expanded ? "Cacher" : "Voir" }}
                     </b-btn>
-                    <b-btn @click="$emit('clone')" size="sm" v-b-tooltip.hover title="Cloner">
+                    <b-btn
+                        @click="$emit('clone')"
+                        size="sm"
+                        v-b-tooltip.hover
+                        title="Cloner"
+                    >
                         <b-icon icon="files" />
                     </b-btn>
-                    <b-btn @click="$emit('remove')" variant="danger" size="sm" v-b-tooltip.hover title="Supprimer">
+                    <b-btn
+                        @click="$emit('remove')"
+                        variant="danger"
+                        size="sm"
+                        v-b-tooltip.hover
+                        title="Supprimer"
+                    >
                         <b-icon icon="trash" />
                     </b-btn>
                 </b-col>
             </b-form-row>
-            <b-collapse v-model="expanded" :id="Math.random().toString(36).substring(7)">
-                <b-form-row v-if="useBranch" class="mt-2">
+            <b-collapse
+                v-model="expanded"
+                :id="Math.random().toString(36).substring(7)"
+            >
+                <b-form-row
+                    v-if="useBranch"
+                    class="mt-2"
+                >
                     <b-col>
-                        <b-form-group label="Branche" label-cols="3" :state="inputStates.branch">
-                            <multiselect :options="store.branches" placeholder="Choisisser une branche" select-label=""
-                                selected-label="Sélectionné" deselect-label="Cliquer dessus pour enlever"
-                                v-model="branch" :show-no-options="false" @input="updateBranchGoal" label="branch"
-                                track-by="id">
+                        <b-form-group
+                            label="Branche"
+                            label-cols="3"
+                            :state="inputStates.branch"
+                        >
+                            <multiselect
+                                :options="store.branches"
+                                placeholder="Choisisser une branche"
+                                select-label=""
+                                selected-label="Sélectionné"
+                                deselect-label="Cliquer dessus pour enlever"
+                                v-model="branch"
+                                :show-no-options="false"
+                                @input="updateBranchGoal"
+                                label="branch"
+                                track-by="id"
+                            >
                                 <template #singleLabel="props">
                                     <strong>{{ props.option.branch }}</strong>
                                 </template>
@@ -72,12 +132,26 @@
                 </b-form-row>
                 <b-form-row :class="useBranch ? '' : 'mt-2'">
                     <b-col>
-                        <b-form-group :label="goalLabel" label-cols="3" :state="inputStates.goals">
-                            <multiselect :options="goalOptions" placeholder="Choisisser un ou des objectifs"
-                                tag-placeholder="Ajouter un nouvel objectif" select-label=""
-                                selected-label="Sélectionné" deselect-label="Cliquer dessus pour enlever"
-                                v-model="goals" :show-no-options="false" @tag="addGoalTag" label="goal" track-by="goal"
-                                multiple taggable>
+                        <b-form-group
+                            :label="goalLabel"
+                            label-cols="3"
+                            :state="inputStates.goals"
+                        >
+                            <multiselect
+                                :options="goalOptions"
+                                placeholder="Choisisser un ou des objectifs"
+                                tag-placeholder="Ajouter un nouvel objectif"
+                                select-label=""
+                                selected-label="Sélectionné"
+                                deselect-label="Cliquer dessus pour enlever"
+                                v-model="goals"
+                                :show-no-options="false"
+                                @tag="addGoalTag"
+                                label="goal"
+                                track-by="goal"
+                                multiple
+                                taggable
+                            >
                                 <template #option="props">
                                     {{ props.option.goal }}
                                     <span v-if="props.option.branch">
@@ -97,14 +171,20 @@
                 </b-form-row>
                 <b-form-row v-if="advanced">
                     <b-col>
-                        <b-form-group label="Indicateur(s)/Action(s)" label-cols="2">
+                        <b-form-group
+                            label="Indicateur(s)/Action(s)"
+                            label-cols="2"
+                        >
                             <text-editor v-model="indicatorAction" />
                         </b-form-group>
                     </b-col>
                 </b-form-row>
                 <b-form-row v-if="advanced">
                     <b-col>
-                        <b-form-group label="Aide(s)" label-cols="2">
+                        <b-form-group
+                            label="Aide(s)"
+                            label-cols="2"
+                        >
                             <text-editor v-model="givenHelp" />
                         </b-form-group>
                     </b-col>
@@ -122,17 +202,29 @@
                                     </b-tr>
                                 </b-thead>
                                 <b-tbody>
-                                    <b-tr v-for="(intEval, index) in intermediateEvaluation" :key="intEval.id">
+                                    <b-tr
+                                        v-for="(intEval, index) in intermediateEvaluation"
+                                        :key="intEval.id"
+                                    >
                                         <b-td>
-                                            <b-input type="date" v-model="intEval.date_evaluation" />
+                                            <b-input
+                                                type="date"
+                                                v-model="intEval.date_evaluation"
+                                            />
                                         </b-td>
                                         <b-td>
-                                            <multiselect :options="store.assessments"
+                                            <multiselect
+                                                :options="store.assessments"
                                                 placeholder="Choisisser une évaluation"
-                                                tag-placeholder="Ajouter l'évaluation" select-label=""
+                                                tag-placeholder="Ajouter l'évaluation"
+                                                select-label=""
                                                 selected-label="Sélectionné"
-                                                deselect-label="Cliquer dessus pour enlever" :show-no-options="false"
-                                                label="assessment" track-by="id" v-model="evaluations[index]">
+                                                deselect-label="Cliquer dessus pour enlever"
+                                                :show-no-options="false"
+                                                label="assessment"
+                                                track-by="id"
+                                                v-model="evaluations[index]"
+                                            >
                                                 <template #noResult>
                                                     Aucune évaluation trouvée.
                                                 </template>
@@ -140,14 +232,21 @@
                                             </multiselect>
                                         </b-td>
                                         <b-td>
-                                            <b-btn size="sm" variant="danger" @click="removeIntermediateEval(index)">
+                                            <b-btn
+                                                size="sm"
+                                                variant="danger"
+                                                @click="removeIntermediateEval(index)"
+                                            >
                                                 <b-icon icon="trash" />
                                             </b-btn>
                                         </b-td>
                                     </b-tr>
                                     <b-tr>
                                         <b-td>
-                                            <b-btn variant="success" @click="addIntermediateEval">
+                                            <b-btn
+                                                variant="success"
+                                                @click="addIntermediateEval"
+                                            >
                                                 <b-icon icon="plus" />
                                                 Ajouter
                                             </b-btn>
@@ -166,10 +265,18 @@
                     </b-col>
                     <b-col>
                         <b-form-group label="Évaluation du CCL">
-                            <multiselect :options="store.assessments" placeholder="Choisisser une ou des évaluations"
-                                tag-placeholder="Ajouter l'évaluation" select-label="" selected-label="Sélectionné"
-                                deselect-label="Cliquer dessus pour enlever" v-model="assessment"
-                                :show-no-options="false" label="assessment" track-by="id">
+                            <multiselect
+                                :options="store.assessments"
+                                placeholder="Choisisser une ou des évaluations"
+                                tag-placeholder="Ajouter l'évaluation"
+                                select-label=""
+                                selected-label="Sélectionné"
+                                deselect-label="Cliquer dessus pour enlever"
+                                v-model="assessment"
+                                :show-no-options="false"
+                                label="assessment"
+                                track-by="id"
+                            >
                                 <template #noResult>
                                     Aucune évaluation trouvée.
                                 </template>
@@ -182,14 +289,31 @@
                     <b-col>
                         <b-form-group
                             description="Ajouter un ou des fichiers. Accepte uniquement des fichiers images et pdf."
-                            label="Fichier(s)">
-                            <b-form-file multiple accept=".pdf, .jpg, .png, jpeg" v-model="attachments"
-                                ref="attachments" placeholder="Attacher un ou des fichiers."
-                                choose-label="Attacher un ou des fichiers" drop-label="Déposer des fichiers ici" plain
-                                @input="addFiles" />
-                            <b-list-group v-for="(item, index) in uploadedFiles" :key="index">
-                                <file-upload :id="item.id" :file="item.file" path="/pia/upload_file/" removestr="4"
-                                    @delete="deleteFile(index)" @setdata="setFileData(index, $event)" />
+                            label="Fichier(s)"
+                        >
+                            <b-form-file
+                                multiple
+                                accept=".pdf, .jpg, .png, jpeg"
+                                v-model="attachments"
+                                ref="attachments"
+                                placeholder="Attacher un ou des fichiers."
+                                choose-label="Attacher un ou des fichiers"
+                                drop-label="Déposer des fichiers ici"
+                                plain
+                                @input="addFiles"
+                            />
+                            <b-list-group
+                                v-for="(item, index) in uploadedFiles"
+                                :key="index"
+                            >
+                                <file-upload
+                                    :id="item.id"
+                                    :file="item.file"
+                                    path="/pia/upload_file/"
+                                    removestr="4"
+                                    @delete="deleteFile(index)"
+                                    @setdata="setFileData(index, $event)"
+                                />
                             </b-list-group>
                         </b-form-group>
                     </b-col>

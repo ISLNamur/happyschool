@@ -29,20 +29,35 @@
         <b-row>
             <b-col>
                 <b-form-group>
-                    <b-select :options="scheduleAdjustments" value-field="id" v-model="currentSchedAdjId"
-                        @change="updateCurrentSchedAdj" />
+                    <b-select
+                        :options="scheduleAdjustments"
+                        value-field="id"
+                        v-model="currentSchedAdjId"
+                        @change="updateCurrentSchedAdj"
+                    />
                 </b-form-group>
             </b-col>
             <b-col>
-                <b-btn variant="outline-secondary" @click="copy" :disabled="scheduleAdjustments.length === 0">
+                <b-btn
+                    variant="outline-secondary"
+                    @click="copy"
+                    :disabled="scheduleAdjustments.length === 0"
+                >
                     <b-icon icon="files" />
                     Copier
                 </b-btn>
-                <b-btn variant="success" @click="add">
+                <b-btn
+                    variant="success"
+                    @click="add"
+                >
                     <b-icon icon="plus" />
                     Ajouter
                 </b-btn>
-                <b-btn variant="danger" @click="remove" :disabled="scheduleAdjustments.length === 0">
+                <b-btn
+                    variant="danger"
+                    @click="remove"
+                    :disabled="scheduleAdjustments.length === 0"
+                >
                     <b-icon icon="trash" />
                     Supprimer
                 </b-btn>
@@ -55,20 +70,34 @@
                         <b-col>
                             <strong>
                                 <b-form inline>
-                                    Du<b-form-input type="date" v-model="currentSchedAdj.date_start"
-                                        class="mr-sm-2 ml-2" />
-                                    au<b-form-input type="date" v-model="currentSchedAdj.date_end" class="ml-2" />
+                                    Du<b-form-input
+                                        type="date"
+                                        v-model="currentSchedAdj.date_start"
+                                        class="mr-sm-2 ml-2"
+                                    />
+                                    au<b-form-input
+                                        type="date"
+                                        v-model="currentSchedAdj.date_end"
+                                        class="ml-2"
+                                    />
                                 </b-form>
                             </strong>
                         </b-col>
                     </b-row>
                     <b-row>
                         <b-col>
-                            <multiselect :options="store.scheduleAdjustments"
-                                placeholder="Sélectionner le ou les différents adaptations" select-label=""
-                                selected-label="Sélectionné" deselect-label="Cliquer dessus pour enlever"
-                                v-model="currentSchedAdj.schedule_adjustment" track-by="id" label="schedule_adjustment"
-                                :show-no-options="false" multiple>
+                            <multiselect
+                                :options="store.scheduleAdjustments"
+                                placeholder="Sélectionner le ou les différents adaptations"
+                                select-label=""
+                                selected-label="Sélectionné"
+                                deselect-label="Cliquer dessus pour enlever"
+                                v-model="currentSchedAdj.schedule_adjustment"
+                                track-by="id"
+                                label="schedule_adjustment"
+                                :show-no-options="false"
+                                multiple
+                            >
                                 <template #noResult>
                                     Aucun aménagements trouvé.
                                 </template>

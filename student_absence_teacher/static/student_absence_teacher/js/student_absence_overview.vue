@@ -20,18 +20,45 @@
 <template>
     <div>
         <b-row class="mb-1">
-            <b-col cols="12" md="8">
-                <b-form inline class="mb-1">
-                    <b-form-group label="Date" class="mr-2">
-                        <b-overlay :show="loading" rounded="sm">
-                            <b-input type="date" :value="date" @input="changeDate" />
+            <b-col
+                cols="12"
+                md="8"
+            >
+                <b-form
+                    inline
+                    class="mb-1"
+                >
+                    <b-form-group
+                        label="Date"
+                        class="mr-2"
+                    >
+                        <b-overlay
+                            :show="loading"
+                            rounded="sm"
+                        >
+                            <b-input
+                                type="date"
+                                :value="date"
+                                @input="changeDate"
+                            />
                         </b-overlay>
                     </b-form-group>
                     <b-form-group label="Rechercher">
-                        <multiselect ref="input" :show-no-options="false" :internal-search="false"
-                            :options="searchOptions" @search-change="getSearchOptions"
-                            placeholder="Une classe, un élève,…" select-label="" selected-label="Sélectionné"
-                            deselect-label="" label="display" track-by="id" v-model="search" @select="selected">
+                        <multiselect
+                            ref="input"
+                            :show-no-options="false"
+                            :internal-search="false"
+                            :options="searchOptions"
+                            @search-change="getSearchOptions"
+                            placeholder="Une classe, un élève,…"
+                            select-label=""
+                            selected-label="Sélectionné"
+                            deselect-label=""
+                            label="display"
+                            track-by="id"
+                            v-model="search"
+                            @select="selected"
+                        >
                             <template #noResult>
                                 Aucune personne trouvée.
                             </template>
@@ -41,7 +68,10 @@
                 </b-form>
             </b-col>
             <b-col>
-                <b-button v-b-toggle.other-options variant="primary">
+                <b-button
+                    v-b-toggle.other-options
+                    variant="primary"
+                >
                     <b-icon icon="grid1x2" />
                     Autres vues
                 </b-button>
@@ -49,12 +79,22 @@
         </b-row>
         <b-row>
             <b-col>
-                <b-table hover bordered :items="absence_count" :fields="fields" :filter="filter"
-                    :filter-included-fields="['classe']">
+                <b-table
+                    hover
+                    bordered
+                    :items="absence_count"
+                    :fields="fields"
+                    :filter="filter"
+                    :filter-included-fields="['classe']"
+                >
                     <template #head(classe)="">
                         <b-form-group label-for="filterInput">
-                            <b-form-input v-model="filter" type="search" id="filterInput"
-                                placeholder="Filtrer par classe" />
+                            <b-form-input
+                                v-model="filter"
+                                type="search"
+                                id="filterInput"
+                                placeholder="Filtrer par classe"
+                            />
                         </b-form-group>
                     </template>
                     <template #cell(classe)="data">
@@ -78,25 +118,63 @@
                 </b-table>
             </b-col>
         </b-row>
-        <b-sidebar id="other-options" title="Options de visualisation" right shadow>
-            <b-form-group label="Vue horaire" v-slot="{ ariaDescribedby }" class="ml-1">
-                <b-form-radio-group id="point-of-view-radio" v-model="pointOfView" :options="optionsPointOfView"
-                    :aria-describedby="ariaDescribedby" button-variant="outline-primary" name="point-of-view-radio"
-                    @change="get_absence_count()" buttons />
+        <b-sidebar
+            id="other-options"
+            title="Options de visualisation"
+            right
+            shadow
+        >
+            <b-form-group
+                label="Vue horaire"
+                v-slot="{ ariaDescribedby }"
+                class="ml-1"
+            >
+                <b-form-radio-group
+                    id="point-of-view-radio"
+                    v-model="pointOfView"
+                    :options="optionsPointOfView"
+                    :aria-describedby="ariaDescribedby"
+                    button-variant="outline-primary"
+                    name="point-of-view-radio"
+                    @change="get_absence_count()"
+                    buttons
+                />
             </b-form-group>
-            <b-form-group label="Liste des classes" v-slot="{ ariaDescribedby }" class="ml-1">
-                <b-form-radio-group id="class-list-type-radio" v-model="classListType" :options="optionsClassListType"
-                    :aria-describedby="ariaDescribedby" button-variant="outline-primary" name="class-list-type-radio"
-                    @change="get_absence_count()" buttons />
+            <b-form-group
+                label="Liste des classes"
+                v-slot="{ ariaDescribedby }"
+                class="ml-1"
+            >
+                <b-form-radio-group
+                    id="class-list-type-radio"
+                    v-model="classListType"
+                    :options="optionsClassListType"
+                    :aria-describedby="ariaDescribedby"
+                    button-variant="outline-primary"
+                    name="class-list-type-radio"
+                    @change="get_absence_count()"
+                    buttons
+                />
             </b-form-group>
-            <b-form-group v-if="isProecoActivated" label="Export vers ProEco" class="ml-1">
-                <b-dropdown text="Export" variant="outline-secondary">
-                    <b-dropdown-item v-for="p in educatorPeriods" :key="p.id"
-                        :href="`/student_absence_teacher/api/export_selection/?page_size=2000&date_absence=${date}&period__name=${p.name}&status=A${exportOwnClasses}`">
+            <b-form-group
+                v-if="isProecoActivated"
+                label="Export vers ProEco"
+                class="ml-1"
+            >
+                <b-dropdown
+                    text="Export"
+                    variant="outline-secondary"
+                >
+                    <b-dropdown-item
+                        v-for="p in educatorPeriods"
+                        :key="p.id"
+                        :href="`/student_absence_teacher/api/export_selection/?page_size=2000&date_absence=${date}&period__name=${p.name}&status=A${exportOwnClasses}`"
+                    >
                         {{ p.name }}
                     </b-dropdown-item>
                     <b-dropdown-item
-                        :href="`/student_absence_teacher/api/export_selection/?page_size=2000&date_absence=${date}&status=A${exportOwnClasses}`">
+                        :href="`/student_absence_teacher/api/export_selection/?page_size=2000&date_absence=${date}&status=A${exportOwnClasses}`"
+                    >
                         Toute la journée
                     </b-dropdown-item>
                 </b-dropdown>

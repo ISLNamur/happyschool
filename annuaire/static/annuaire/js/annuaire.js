@@ -18,19 +18,19 @@
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
 import Vue from "vue";
-import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue';
+import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-vue/dist/bootstrap-vue.css";
 
-Vue.use(BootstrapVue)
-Vue.use(BootstrapVueIcons)
+Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
 
 import { createPinia } from "pinia";
 
 import routes from "./routes/index.js";
 
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from "vue-router";
 
 const router = createRouter({
     routes: routes,
@@ -39,12 +39,12 @@ const router = createRouter({
 
 const pinia = createPinia();
 
-import { createApp } from 'vue'
-import AnnuairePage from "./annuaire_page.vue"
+import { createApp } from "vue";
+import AnnuairePage from "./annuaire_page.vue";
 
-const app = createApp(AnnuairePage)
+const app = createApp(AnnuairePage);
 
 app.use(router);
 app.use(pinia);
 
-app.mount('#vue-app')
+app.mount("#vue-app");

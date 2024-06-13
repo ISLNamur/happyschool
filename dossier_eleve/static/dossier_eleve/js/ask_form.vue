@@ -19,25 +19,50 @@
 
 <template>
     <div>
-        <b-modal size="xl" title="Nouvelle demande" ok-title="Soumettre" cancel-title="Annuler"
-            :ok-disabled="!form.sanction_decision_id" ref="askModal" @ok="askSanction" @hidden="resetModal">
+        <b-modal
+            size="xl"
+            title="Nouvelle demande"
+            ok-title="Soumettre"
+            cancel-title="Annuler"
+            :ok-disabled="!form.sanction_decision_id"
+            ref="askModal"
+            @ok="askSanction"
+            @hidden="resetModal"
+        >
             <b-row>
                 <b-col sm="4">
                     <div>
-                        <b-img rounded :src="'/static/photos/' + name.matricule + '.jpg'" fluid
-                            alt="Photo de l'élève" />
+                        <b-img
+                            rounded
+                            :src="'/static/photos/' + name.matricule + '.jpg'"
+                            fluid
+                            alt="Photo de l'élève"
+                        />
                     </div>
                 </b-col>
                 <b-col>
                     <b-form>
                         <b-form-row>
                             <b-col sm="8">
-                                <b-form-group label="Nom" label-for="input-name" :state="inputStates.name">
-                                    <multiselect id="input-name" :internal-search="false" :options="nameOptions"
-                                        @search-change="getNameOptions" :loading="nameLoading"
-                                        placeholder="Rechercher un étudiant…" select-label=""
-                                        selected-label="Sélectionné" deselect-label="" label="display"
-                                        track-by="matricule" v-model="name">
+                                <b-form-group
+                                    label="Nom"
+                                    label-for="input-name"
+                                    :state="inputStates.name"
+                                >
+                                    <multiselect
+                                        id="input-name"
+                                        :internal-search="false"
+                                        :options="nameOptions"
+                                        @search-change="getNameOptions"
+                                        :loading="nameLoading"
+                                        placeholder="Rechercher un étudiant…"
+                                        select-label=""
+                                        selected-label="Sélectionné"
+                                        deselect-label=""
+                                        label="display"
+                                        track-by="matricule"
+                                        v-model="name"
+                                    >
                                         <template #noResult>
                                             Aucune personne trouvée.
                                         </template>
@@ -49,18 +74,39 @@
                                 </b-form-group>
                             </b-col>
                             <b-col sm="4">
-                                <b-form-group label="Matricule" label-for="input-matricule">
-                                    <b-form-input id="input-matricule" type="text" v-model="name.matricule" readonly />
+                                <b-form-group
+                                    label="Matricule"
+                                    label-for="input-matricule"
+                                >
+                                    <b-form-input
+                                        id="input-matricule"
+                                        type="text"
+                                        v-model="name.matricule"
+                                        readonly
+                                    />
                                 </b-form-group>
                             </b-col>
                         </b-form-row>
                         <b-form-row>
-                            <b-form-group label="Demandeur" label-for="input-demandeur" :state="inputStates.demandeur">
-                                <multiselect id="input-demandeur" :internal-search="false" :options="demandeurOptions"
-                                    @search-change="getDemandeurOptions" :loading="demandeurLoading"
-                                    placeholder="Rechercher un responsable…" select-label=""
-                                    selected-label="Sélectionné" deselect-label="" label="display" track-by="display"
-                                    v-model="demandeur">
+                            <b-form-group
+                                label="Demandeur"
+                                label-for="input-demandeur"
+                                :state="inputStates.demandeur"
+                            >
+                                <multiselect
+                                    id="input-demandeur"
+                                    :internal-search="false"
+                                    :options="demandeurOptions"
+                                    @search-change="getDemandeurOptions"
+                                    :loading="demandeurLoading"
+                                    placeholder="Rechercher un responsable…"
+                                    select-label=""
+                                    selected-label="Sélectionné"
+                                    deselect-label=""
+                                    label="display"
+                                    track-by="display"
+                                    v-model="demandeur"
+                                >
                                     <template #noResult>
                                         Aucun responsable trouvée.
                                     </template>
@@ -78,12 +124,21 @@
                         </b-form-row>
                         <b-form-row class="mt-2">
                             <b-col sm="7">
-                                <b-form-group label="Sanction disciplinaire" label-for="input-info"
-                                    :state="inputStates.sanction_decision_id">
-                                    <b-form-select id="input-info" v-model="form.sanction_decision_id"
-                                        :options="sanctionOptions">
+                                <b-form-group
+                                    label="Sanction disciplinaire"
+                                    label-for="input-info"
+                                    :state="inputStates.sanction_decision_id"
+                                >
+                                    <b-form-select
+                                        id="input-info"
+                                        v-model="form.sanction_decision_id"
+                                        :options="sanctionOptions"
+                                    >
                                         <template #first>
-                                            <option :value="null" disabled>
+                                            <option
+                                                :value="null"
+                                                disabled
+                                            >
                                                 Choisissez un type de sanction
                                             </option>
                                         </template>
@@ -93,35 +148,58 @@
                                     </template>
                                 </b-form-group>
                                 <div v-if="store.canSetSanction">
-                                    <b-form-group v-if="store.settings.enable_disciplinary_council"
-                                        label="Date du conseil" label-for="input-date-conseil"
-                                        :state="inputStates.datetime_conseil">
-                                        <b-form-input id="input-date-conseil" type="date"
-                                            v-model="form.datetime_conseil" />
+                                    <b-form-group
+                                        v-if="store.settings.enable_disciplinary_council"
+                                        label="Date du conseil"
+                                        label-for="input-date-conseil"
+                                        :state="inputStates.datetime_conseil"
+                                    >
+                                        <b-form-input
+                                            id="input-date-conseil"
+                                            type="date"
+                                            v-model="form.datetime_conseil"
+                                        />
                                         <template #invalid-feedback>
                                             {{ errorMsg('datetime_conseil') }}
                                         </template>
                                     </b-form-group>
-                                    <b-form-group label="Date de la sanction" label-for="input-date-sanction"
-                                        :state="inputStates.date_sanction">
-                                        <b-form-input id="input-date-sanction" type="date"
-                                            v-model="form.date_sanction" />
+                                    <b-form-group
+                                        label="Date de la sanction"
+                                        label-for="input-date-sanction"
+                                        :state="inputStates.date_sanction"
+                                    >
+                                        <b-form-input
+                                            id="input-date-sanction"
+                                            type="date"
+                                            v-model="form.date_sanction"
+                                        />
                                         <template #invalid-feedback>
                                             {{ errorMsg('date_sanction') }}
                                         </template>
                                     </b-form-group>
-                                    <b-form-group label="Heure de début de la sanction"
-                                        label-for="input-time-sanction-start">
-                                        <b-form-input id="input-time-sanction-start" type="time"
-                                            v-model="form.time_sanction_start" />
+                                    <b-form-group
+                                        label="Heure de début de la sanction"
+                                        label-for="input-time-sanction-start"
+                                    >
+                                        <b-form-input
+                                            id="input-time-sanction-start"
+                                            type="time"
+                                            v-model="form.time_sanction_start"
+                                        />
                                         <template #invalid-feedback>
                                             {{ errorMsg('time_sanction_start') }}
                                         </template>
                                     </b-form-group>
-                                    <b-form-group label="Heure de fin de la sanction"
-                                        label-for="input-time-sanction-end" :state="inputStates.time_sanction_end">
-                                        <b-form-input id="input-time-sanction-end" type="time"
-                                            v-model="form.time_sanction_end" />
+                                    <b-form-group
+                                        label="Heure de fin de la sanction"
+                                        label-for="input-time-sanction-end"
+                                        :state="inputStates.time_sanction_end"
+                                    >
+                                        <b-form-input
+                                            id="input-time-sanction-end"
+                                            type="time"
+                                            v-model="form.time_sanction_end"
+                                        />
                                         <template #invalid-feedback>
                                             {{ errorMsg('time_sanction_end') }}
                                         </template>
@@ -130,8 +208,11 @@
                             </b-col>
                             <b-col sm="5">
                                 <b-list-group>
-                                    <b-list-group-item class="d-flex justify-content-between align-items-center"
-                                        v-for="(val, index) in stats" :key="index">
+                                    <b-list-group-item
+                                        class="d-flex justify-content-between align-items-center"
+                                        v-for="(val, index) in stats"
+                                        :key="index"
+                                    >
                                         <strong>{{ val.display }} :</strong> {{ val.value }}
                                     </b-list-group-item>
                                 </b-list-group>
@@ -139,8 +220,11 @@
                         </b-form-row>
                         <b-form-row>
                             <b-col>
-                                <b-form-group label="Commentaires" label-for="input-comment"
-                                    :state="inputStates.explication_commentaire">
+                                <b-form-group
+                                    label="Commentaires"
+                                    label-for="input-comment"
+                                    :state="inputStates.explication_commentaire"
+                                >
                                     <text-editor v-model="form.explication_commentaire" />
                                     <template #invalid-feedback>
                                         {{ errorMsg('explication_commentaire') }}
@@ -148,15 +232,31 @@
                                 </b-form-group>
                                 <b-form-group
                                     description="Ajouter un ou des fichiers. Accepte uniquement des fichiers pdf."
-                                    label="Fichier(s)">
-                                    <b-form-file multiple accept=".pdf" v-model="attachments" ref="attachments"
+                                    label="Fichier(s)"
+                                >
+                                    <b-form-file
+                                        multiple
+                                        accept=".pdf"
+                                        v-model="attachments"
+                                        ref="attachments"
                                         placeholder="Attacher un ou des fichiers."
-                                        choose-label="Attacher un ou des fichiers" drop-label="Déposer des fichiers ici"
-                                        plain @input="addFiles" />
-                                    <b-list-group v-for="(item, index) in uploadedFiles" :key="index">
-                                        <file-upload :id="item.id" :file="item.file" path="/dossier_eleve/upload_file/"
-                                            :removestr="5" @delete="deleteFile(index)"
-                                            @setdata="setFileData(index, $event)" />
+                                        choose-label="Attacher un ou des fichiers"
+                                        drop-label="Déposer des fichiers ici"
+                                        plain
+                                        @input="addFiles"
+                                    />
+                                    <b-list-group
+                                        v-for="(item, index) in uploadedFiles"
+                                        :key="index"
+                                    >
+                                        <file-upload
+                                            :id="item.id"
+                                            :file="item.file"
+                                            path="/dossier_eleve/upload_file/"
+                                            :removestr="5"
+                                            @delete="deleteFile(index)"
+                                            @setdata="setFileData(index, $event)"
+                                        />
                                     </b-list-group>
                                 </b-form-group>
                             </b-col>

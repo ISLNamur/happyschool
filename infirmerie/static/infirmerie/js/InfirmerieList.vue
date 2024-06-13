@@ -51,7 +51,7 @@
                         ref="filters"
                         :store="store"
                         :show-search="showSearch"
-                        @toggleSearch="showSearch = !showSearch"
+                        @toggle-search="showSearch = !showSearch"
                         @update="applyFilter"
                         class="mt-1 mt-lg-0"
                     />
@@ -71,8 +71,8 @@
                 @delete="askDelete(entry)"
                 @edit="editEntry(index, false)"
                 @sortie="editEntry(index, true)"
-                @filterStudent="filterStudent($event)"
-                @showInfo="showInfo(entry)"
+                @filter-student="filterStudent($event)"
+                @show-info="showInfo(entry)"
             />
         </b-container>
         <b-modal

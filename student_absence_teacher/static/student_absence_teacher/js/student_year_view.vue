@@ -19,12 +19,25 @@
 
 <template>
     <div>
-        <b-table-lite :items="calendar" sticky-header="650px" :fields="fields" striped small class="small-text" bordered
-            hover foot-clone stacked="sm" head-variant="dark">
+        <b-table-lite
+            :items="calendar"
+            sticky-header="650px"
+            :fields="fields"
+            striped
+            small
+            class="small-text"
+            bordered
+            hover
+            foot-clone
+            stacked="sm"
+            head-variant="dark"
+        >
             <template #cell()="data">
                 {{ data.value[3] }}
-                <a v-if="data.value[3]"
-                    :href="`#/student_view/${$route.params.studentId}/${data.value[0]}-${String(data.value[1]).padStart(2, '0')}-${String(data.value[2]).padStart(2, '0')}`">
+                <a
+                    v-if="data.value[3]"
+                    :href="`#/student_view/${$route.params.studentId}/${data.value[0]}-${String(data.value[1]).padStart(2, '0')}-${String(data.value[2]).padStart(2, '0')}`"
+                >
                     <span v-if="data.value[4]">
                         {{ data.value[4] }}
                     </span>

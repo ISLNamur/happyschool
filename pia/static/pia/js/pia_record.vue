@@ -28,48 +28,92 @@
                     Retour à la liste des élèves
                 </b-btn>
             </b-col>
-            <b-col cols="4" align-self="end" class="text-left">
+            <b-col
+                cols="4"
+                align-self="end"
+                class="text-left"
+            >
                 <b-dropdown variant="outline-primary">
                     <template #button-content>
                         <b-icon icon="file-earmark-pdf" />
                         PDF
                     </template>
-                    <b-dropdown-item :href="`/pia/report/${id}/1/`" target="_blank" rel="noopener noreferrer">
+                    <b-dropdown-item
+                        :href="`/pia/report/${id}/1/`"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
                         Année scolaire en cours
                     </b-dropdown-item>
-                    <b-dropdown-item :href="`/pia/report/${id}/0/`" target="_blank" rel="noopener noreferrer">
+                    <b-dropdown-item
+                        :href="`/pia/report/${id}/0/`"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
                         Toutes années confondues
                     </b-dropdown-item>
                 </b-dropdown>
-                <b-overlay :show="sending" rounded="sm" class="d-inline-block">
-                    <b-btn @click="submit" variant="primary" :disabled="!form.student">
+                <b-overlay
+                    :show="sending"
+                    rounded="sm"
+                    class="d-inline-block"
+                >
+                    <b-btn
+                        @click="submit"
+                        variant="primary"
+                        :disabled="!form.student"
+                    >
                         Sauver
                     </b-btn>
                 </b-overlay>
             </b-col>
         </b-row>
         <b-overlay :show="loading">
-            <b-tabs content-class="mt-3" justified class="mt-2">
-                <b-tab title="Élève et aménagements" active>
+            <b-tabs
+                content-class="mt-3"
+                justified
+                class="mt-2"
+            >
+                <b-tab
+                    title="Élève et aménagements"
+                    active
+                >
                     <b-row>
                         <b-col>
                             <h3>Référents {{ advanced ? "PIA" : "" }}</h3>
                         </b-col>
                     </b-row>
                     <b-row>
-                        <b-col v-if="form.student" md="3">
-                            <b-img :src="`/static/photos/${form.student.matricule}.jpg`" alt="Photo de l'élève" rounded
-                                fluid />
+                        <b-col
+                            v-if="form.student"
+                            md="3"
+                        >
+                            <b-img
+                                :src="`/static/photos/${form.student.matricule}.jpg`"
+                                alt="Photo de l'élève"
+                                rounded
+                                fluid
+                            />
                         </b-col>
                         <b-col>
                             <b-form-row>
                                 <b-col md="4">
                                     <b-form-group label="Élève">
-                                        <multiselect id="student-0" :internal-search="false" :options="studentOptions"
-                                            @search-change="getPeople" placeholder="Rechercher un élève" select-label=""
-                                            selected-label="Sélectionné" deselect-label="Cliquer dessus pour enlever"
-                                            v-model="form.student" label="display" track-by="matricule"
-                                            :show-no-options="false" :disabled="parseInt(id) >= 0">
+                                        <multiselect
+                                            id="student-0"
+                                            :internal-search="false"
+                                            :options="studentOptions"
+                                            @search-change="getPeople"
+                                            placeholder="Rechercher un élève"
+                                            select-label=""
+                                            selected-label="Sélectionné"
+                                            deselect-label="Cliquer dessus pour enlever"
+                                            v-model="form.student"
+                                            label="display"
+                                            track-by="matricule"
+                                            :show-no-options="false"
+                                            :disabled="parseInt(id) >= 0"
+                                        >
                                             <template #noResult>
                                                 Aucun élève trouvé.
                                             </template>
@@ -80,13 +124,25 @@
                             </b-form-row>
                             <b-form-row>
                                 <b-col>
-                                    <b-form-group label="Référent(s)" :state="inputStates.referent">
-                                        <multiselect id="responsible-0" :internal-search="false"
-                                            :options="responsibleOptions" @search-change="getPeople"
-                                            placeholder="Choisir un ou plusieurs référents" select-label=""
-                                            selected-label="Sélectionné" deselect-label="Cliquer dessus pour enlever"
-                                            v-model="form.referent" label="display" track-by="matricule"
-                                            :show-no-options="false" multiple>
+                                    <b-form-group
+                                        label="Référent(s)"
+                                        :state="inputStates.referent"
+                                    >
+                                        <multiselect
+                                            id="responsible-0"
+                                            :internal-search="false"
+                                            :options="responsibleOptions"
+                                            @search-change="getPeople"
+                                            placeholder="Choisir un ou plusieurs référents"
+                                            select-label=""
+                                            selected-label="Sélectionné"
+                                            deselect-label="Cliquer dessus pour enlever"
+                                            v-model="form.referent"
+                                            label="display"
+                                            track-by="matricule"
+                                            :show-no-options="false"
+                                            multiple
+                                        >
                                             <template #noResult>
                                                 Aucun responsable trouvé.
                                             </template>
@@ -100,13 +156,25 @@
                             </b-form-row>
                             <b-form-row>
                                 <b-col>
-                                    <b-form-group label="Parrain(s)/Marraine(s)" :state="inputStates.referent">
-                                        <multiselect id="responsible-1" :internal-search="false"
-                                            :options="responsibleOptions" @search-change="getPeople"
-                                            placeholder="Choisir un ou plusieurs parrains/marraines" select-label=""
-                                            selected-label="Sélectionné" deselect-label="Cliquer dessus pour enlever"
-                                            v-model="form.sponsor" label="display" track-by="matricule"
-                                            :show-no-options="false" multiple>
+                                    <b-form-group
+                                        label="Parrain(s)/Marraine(s)"
+                                        :state="inputStates.referent"
+                                    >
+                                        <multiselect
+                                            id="responsible-1"
+                                            :internal-search="false"
+                                            :options="responsibleOptions"
+                                            @search-change="getPeople"
+                                            placeholder="Choisir un ou plusieurs parrains/marraines"
+                                            select-label=""
+                                            selected-label="Sélectionné"
+                                            deselect-label="Cliquer dessus pour enlever"
+                                            v-model="form.sponsor"
+                                            label="display"
+                                            track-by="matricule"
+                                            :show-no-options="false"
+                                            multiple
+                                        >
                                             <template #noResult>
                                                 Aucun responsable trouvé.
                                             </template>
@@ -125,15 +193,28 @@
                             <h3>{{ advanced ? "Aménagements" : "Activités de soutien" }}</h3>
                         </b-col>
                     </b-row>
-                    <b-row v-if="advanced" class="mt-3">
+                    <b-row
+                        v-if="advanced"
+                        class="mt-3"
+                    >
                         <b-col>
-                            <disorder-selection :pia="Number(id)" ref="disorder" />
+                            <disorder-selection
+                                :pia="Number(id)"
+                                ref="disorder"
+                            />
                         </b-col>
                     </b-row>
-                    <schedule-adjustments v-if="advanced" :pia="Number(id)" ref="adjustments" />
+                    <schedule-adjustments
+                        v-if="advanced"
+                        :pia="Number(id)"
+                        ref="adjustments"
+                    />
                     <b-row v-else>
                         <b-col>
-                            <activity-support :pia="Number(id)" ref="activitysupport" />
+                            <activity-support
+                                :pia="Number(id)"
+                                ref="activitysupport"
+                            />
                         </b-col>
                     </b-row>
                     <b-row class="mt-4">
@@ -145,20 +226,40 @@
                         <b-col>
                             <b-form-group
                                 description="Ajouter un ou des fichiers. Accepte uniquement des fichiers images et pdf."
-                                label="Fichier(s)">
-                                <b-form-file multiple accept=".pdf, .jpg, .png, jpeg" v-model="form.attachments"
-                                    ref="attachments" placeholder="Attacher un ou des fichiers."
-                                    choose-label="Attacher un ou des fichiers" drop-label="Déposer des fichiers ici"
-                                    plain @input="addFiles" />
-                                <b-list-group v-for="(item, index) in uploadedFiles" :key="index">
-                                    <file-upload :id="item.id" :file="item.file" path="/pia/upload_file/" removestr="4"
-                                        @delete="deleteFile(index)" @setdata="setFileData(index, $event)" />
+                                label="Fichier(s)"
+                            >
+                                <b-form-file
+                                    multiple
+                                    accept=".pdf, .jpg, .png, jpeg"
+                                    v-model="form.attachments"
+                                    ref="attachments"
+                                    placeholder="Attacher un ou des fichiers."
+                                    choose-label="Attacher un ou des fichiers"
+                                    drop-label="Déposer des fichiers ici"
+                                    plain
+                                    @input="addFiles"
+                                />
+                                <b-list-group
+                                    v-for="(item, index) in uploadedFiles"
+                                    :key="index"
+                                >
+                                    <file-upload
+                                        :id="item.id"
+                                        :file="item.file"
+                                        path="/pia/upload_file/"
+                                        removestr="4"
+                                        @delete="deleteFile(index)"
+                                        @setdata="setFileData(index, $event)"
+                                    />
                                 </b-list-group>
                             </b-form-group>
                         </b-col>
                     </b-row>
                 </b-tab>
-                <b-tab v-if="advanced" title="Soutien">
+                <b-tab
+                    v-if="advanced"
+                    title="Soutien"
+                >
                     <b-row>
                         <b-col>
                             <h4>Activités de soutien</h4>
@@ -166,7 +267,10 @@
                     </b-row>
                     <b-row>
                         <b-col>
-                            <activity-support :pia="Number(id)" ref="activitysupport" />
+                            <activity-support
+                                :pia="Number(id)"
+                                ref="activitysupport"
+                            />
                         </b-col>
                     </b-row>
                 </b-tab>
@@ -177,8 +281,13 @@
                             <b-badge>{{ classCouncilCount }}</b-badge>
                         </b-overlay>
                     </template>
-                    <class-council-list ref="councils" :advanced="advanced" :pia="Number(id)" @save="submit"
-                        @count="classCouncilCount = $event" />
+                    <class-council-list
+                        ref="councils"
+                        :advanced="advanced"
+                        :pia="Number(id)"
+                        @save="submit"
+                        @count="classCouncilCount = $event"
+                    />
                 </b-tab>
                 <b-tab>
                     <template #title>
@@ -192,12 +301,19 @@
                     </b-row>
                     <b-row>
                         <b-col>
-                            <b-form-checkbox v-model="currentCrossGoal" switch @change="reloadCrossGoal">
+                            <b-form-checkbox
+                                v-model="currentCrossGoal"
+                                switch
+                                @change="reloadCrossGoal"
+                            >
                                 Année scolaire en cours
                             </b-form-checkbox>
                         </b-col>
                         <b-col class="text-right">
-                            <b-btn @click="cross_goal.unshift({ id: -1 })" variant="outline-success">
+                            <b-btn
+                                @click="cross_goal.unshift({ id: -1 })"
+                                variant="outline-success"
+                            >
                                 <b-icon icon="plus" />
                                 Ajouter
                             </b-btn>
@@ -205,10 +321,18 @@
                     </b-row>
                     <b-row>
                         <b-col>
-                            <student-goal class="mt-2" v-for="(goal, index) in cross_goal" :key="'cg-' + goal.id"
-                                :goal-object="goal" :advanced="advanced" ref="crossgoals"
-                                @remove="removeObject('cross_goal', index)" @clone="cloneObject('cross_goal', index)"
-                                goal-label="Objectifs transversaux" item-model="cross_goal_item" />
+                            <student-goal
+                                class="mt-2"
+                                v-for="(goal, index) in cross_goal"
+                                :key="'cg-' + goal.id"
+                                :goal-object="goal"
+                                :advanced="advanced"
+                                ref="crossgoals"
+                                @remove="removeObject('cross_goal', index)"
+                                @clone="cloneObject('cross_goal', index)"
+                                goal-label="Objectifs transversaux"
+                                item-model="cross_goal_item"
+                            />
                         </b-col>
                     </b-row>
                     <b-row class="mt-2">
@@ -216,12 +340,19 @@
                     </b-row>
                     <b-row>
                         <b-col>
-                            <b-form-checkbox v-model="currentBranchGoal" switch @change="reloadBranchGoal">
+                            <b-form-checkbox
+                                v-model="currentBranchGoal"
+                                switch
+                                @change="reloadBranchGoal"
+                            >
                                 Année scolaire en cours
                             </b-form-checkbox>
                         </b-col>
                         <b-col class="text-right">
-                            <b-btn @click="branch_goal.unshift({ id: -1 })" variant="outline-success">
+                            <b-btn
+                                @click="branch_goal.unshift({ id: -1 })"
+                                variant="outline-success"
+                            >
                                 <b-icon icon="plus" />
                                 Ajouter
                             </b-btn>
@@ -229,10 +360,19 @@
                     </b-row>
                     <b-row>
                         <b-col>
-                            <student-goal class="mt-2" v-for="(goal, index) in branch_goal" :key="'bg-' + goal.id"
-                                :goal-object="goal" :advanced="advanced" ref="branchgoals"
-                                @remove="removeObject('branch_goal', index)" @clone="cloneObject('branch_goal', index)"
-                                goal-label="Objectifs de branche" item-model="branch_goal_item" use-branch />
+                            <student-goal
+                                class="mt-2"
+                                v-for="(goal, index) in branch_goal"
+                                :key="'bg-' + goal.id"
+                                :goal-object="goal"
+                                :advanced="advanced"
+                                ref="branchgoals"
+                                @remove="removeObject('branch_goal', index)"
+                                @clone="cloneObject('branch_goal', index)"
+                                goal-label="Objectifs de branche"
+                                item-model="branch_goal_item"
+                                use-branch
+                            />
                         </b-col>
                     </b-row>
                     <b-row />
@@ -249,7 +389,10 @@
                     </b-row>
                     <b-row>
                         <b-col>
-                            <b-btn @click="student_project.unshift({ id: -1 })" variant="outline-secondary">
+                            <b-btn
+                                @click="student_project.unshift({ id: -1 })"
+                                variant="outline-secondary"
+                            >
                                 <b-icon icon="plus" />
                                 Ajouter
                             </b-btn>
@@ -257,9 +400,15 @@
                     </b-row>
                     <b-row>
                         <b-col>
-                            <pia-comment class="mt-2" v-for="(sP, index) in student_project" :key="sP.id"
-                                @remove="removeObject('student_project', index)" comment-type="student_project"
-                                :comment-object="sP" ref="studentprojects" />
+                            <pia-comment
+                                class="mt-2"
+                                v-for="(sP, index) in student_project"
+                                :key="sP.id"
+                                @remove="removeObject('student_project', index)"
+                                comment-type="student_project"
+                                :comment-object="sP"
+                                ref="studentprojects"
+                            />
                         </b-col>
                     </b-row>
                     <b-row>
@@ -267,7 +416,10 @@
                     </b-row>
                     <b-row>
                         <b-col>
-                            <b-btn @click="parents_opinion.unshift({ id: -1 })" variant="outline-secondary">
+                            <b-btn
+                                @click="parents_opinion.unshift({ id: -1 })"
+                                variant="outline-secondary"
+                            >
                                 <b-icon icon="plus" />
                                 Ajouter
                             </b-btn>
@@ -275,9 +427,15 @@
                     </b-row>
                     <b-row>
                         <b-col>
-                            <pia-comment class="mt-2" v-for="(pO, index) in parents_opinion" :key="pO.id"
-                                @remove="removeObject('parents_opinion', index)" comment-type="parents_opinion"
-                                :comment-object="pO" ref="parentsopinions" />
+                            <pia-comment
+                                class="mt-2"
+                                v-for="(pO, index) in parents_opinion"
+                                :key="pO.id"
+                                @remove="removeObject('parents_opinion', index)"
+                                comment-type="parents_opinion"
+                                :comment-object="pO"
+                                ref="parentsopinions"
+                            />
                         </b-col>
                     </b-row>
                 </b-tab>
@@ -295,8 +453,10 @@
                     </b-row>
                     <b-row class="mb-1">
                         <b-col>
-                            <b-btn v-if="this.form.student"
-                                :href="`/dossier_eleve/?matricule=${this.form.student.matricule}`">
+                            <b-btn
+                                v-if="this.form.student"
+                                :href="`/dossier_eleve/?matricule=${this.form.student.matricule}`"
+                            >
                                 <b-icon icon="arrow-right" />
                                 Vers le dossier de l'élève
                             </b-btn>
@@ -304,7 +464,12 @@
                     </b-row>
                     <b-row>
                         <b-col>
-                            <b-card v-for="cas in dossier" :key="cas.id" no-body class="mb-1">
+                            <b-card
+                                v-for="cas in dossier"
+                                :key="cas.id"
+                                no-body
+                                class="mb-1"
+                            >
                                 <b-card-sub-title class="mt-1 pl-1">
                                     {{ cas.datetime_modified.slice(0, 10) }}
                                 </b-card-sub-title>
@@ -312,7 +477,10 @@
                                     <span v-html="cas.explication_commentaire" />
                                 </b-card-body>
                                 <b-card-footer class="text-right">
-                                    <b-btn variant="warning" :href="`/dossier_eleve/#/edit/${cas.id}/`">
+                                    <b-btn
+                                        variant="warning"
+                                        :href="`/dossier_eleve/#/edit/${cas.id}/`"
+                                    >
                                         <b-icon icon="pencil-square" />
                                         Modifier
                                     </b-btn>

@@ -18,15 +18,15 @@
 // along with Appyschool.  If not, see <http://www.gnu.org/licenses/>.
 
 import Vue from "vue";
-import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue';
+import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-vue/dist/bootstrap-vue.css";
 
-Vue.use(BootstrapVue)
-Vue.use(BootstrapVueIcons)
+Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
 
-import { createApp } from 'vue';
+import { createApp } from "vue";
 import MailNotification from "./mail_notification.vue";
 
 const app = createApp(MailNotification);

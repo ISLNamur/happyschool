@@ -44,5 +44,5 @@ export default {
     components: {
         "app-menu": Menu,
     }
-}
+};
 </script>

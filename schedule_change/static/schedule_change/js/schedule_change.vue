@@ -83,7 +83,7 @@
                         :store="store"
                         @update="applyFilter"
                         :show-search="showFilters"
-                        @toggleSearch="showFilters = !showFilters"
+                        @toggle-search="showFilters = !showFilters"
                     />
                 </b-col>
             </b-row>

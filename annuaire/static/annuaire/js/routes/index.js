@@ -41,26 +41,26 @@ export default [
                 path: "",
                 component: PersonInfo,
             },
-                    {
-                        path: "schedule",
-                        component: PersonSchedule,
-                    },
-                    {
-                        path: "sensitive",
-                        component: SensitiveInfo,
-                    },
-                    {
-                        path: "contact",
-                        component: ContactInfo,
-                    },
-                    {
-                        path: "medical",
-                        component: MedicalInfo,
-                    },
-                    {
-                        path: "other",
-                        component: OtherInfo,
-                    },
+            {
+                path: "schedule",
+                component: PersonSchedule,
+            },
+            {
+                path: "sensitive",
+                component: SensitiveInfo,
+            },
+            {
+                path: "contact",
+                component: ContactInfo,
+            },
+            {
+                path: "medical",
+                component: MedicalInfo,
+            },
+            {
+                path: "other",
+                component: OtherInfo,
+            },
         ]
     },
     {

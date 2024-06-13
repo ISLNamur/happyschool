@@ -22,7 +22,8 @@
         <b-row>
             <b-col>
                 <h2>
-                    {{ id < 0 ? "Ajouter un cas" : "Modifier un cas" }} </h2>
+                    {{ id < 0 ? "Ajouter un cas" : "Modifier un cas" }}
+                </h2>
             </b-col>
         </b-row>
         <b-row>
@@ -35,19 +36,38 @@
         <b-row class="mt-2">
             <b-col sm="3">
                 <div class="text-center">
-                    <b-img v-if="name.matricule" rounded :src="'/static/photos/' + name.matricule + '.jpg'" fluid
-                        alt="Photo de l'élève" />
+                    <b-img
+                        v-if="name.matricule"
+                        rounded
+                        :src="'/static/photos/' + name.matricule + '.jpg'"
+                        fluid
+                        alt="Photo de l'élève"
+                    />
                 </div>
             </b-col>
             <b-col>
                 <b-form @submit="submit">
                     <b-form-row>
                         <b-col sm="8">
-                            <b-form-group label="Nom" label-for="input-name" :state="inputStates.name">
-                                <multiselect id="input-name" :internal-search="false" :options="nameOptions"
-                                    @search-change="getNameOptions" :loading="nameLoading"
-                                    placeholder="Rechercher un étudiant…" select-label="" selected-label="Sélectionné"
-                                    deselect-label="" label="display" track-by="matricule" v-model="name">
+                            <b-form-group
+                                label="Nom"
+                                label-for="input-name"
+                                :state="inputStates.name"
+                            >
+                                <multiselect
+                                    id="input-name"
+                                    :internal-search="false"
+                                    :options="nameOptions"
+                                    @search-change="getNameOptions"
+                                    :loading="nameLoading"
+                                    placeholder="Rechercher un étudiant…"
+                                    select-label=""
+                                    selected-label="Sélectionné"
+                                    deselect-label=""
+                                    label="display"
+                                    track-by="matricule"
+                                    v-model="name"
+                                >
                                     <template #noResult>
                                         Aucune personne trouvée.
                                     </template>
@@ -59,19 +79,40 @@
                             </b-form-group>
                         </b-col>
                         <b-col sm="4">
-                            <b-form-group label="Matricule" label-for="input-matricule">
-                                <b-form-input id="input-matricule" type="text" v-model="name.matricule" readonly />
+                            <b-form-group
+                                label="Matricule"
+                                label-for="input-matricule"
+                            >
+                                <b-form-input
+                                    id="input-matricule"
+                                    type="text"
+                                    v-model="name.matricule"
+                                    readonly
+                                />
                             </b-form-group>
                         </b-col>
                     </b-form-row>
                     <b-form-row>
                         <b-col>
-                            <b-form-group label="Demandeur" label-for="input-demandeur" :state="inputStates.demandeur">
-                                <multiselect id="input-demandeur" :internal-search="false" :options="demandeurOptions"
-                                    @search-change="getDemandeurOptions" :loading="demandeurLoading"
-                                    placeholder="Rechercher un responsable…" select-label=""
-                                    selected-label="Sélectionné" deselect-label="" label="display" track-by="display"
-                                    v-model="demandeur">
+                            <b-form-group
+                                label="Demandeur"
+                                label-for="input-demandeur"
+                                :state="inputStates.demandeur"
+                            >
+                                <multiselect
+                                    id="input-demandeur"
+                                    :internal-search="false"
+                                    :options="demandeurOptions"
+                                    @search-change="getDemandeurOptions"
+                                    :loading="demandeurLoading"
+                                    placeholder="Rechercher un responsable…"
+                                    select-label=""
+                                    selected-label="Sélectionné"
+                                    deselect-label=""
+                                    label="display"
+                                    track-by="display"
+                                    v-model="demandeur"
+                                >
                                     <template #noResult>
                                         Aucun responsable trouvée.
                                     </template>
@@ -86,7 +127,8 @@
                     <b-form-row class="mb-2">
                         <b-col>
                             <b-form-group
-                                description="Mettre en évidence les informations importantes sur le long terme (décès d'un parent, dyslexie, anorexie, idées noires...).">
+                                description="Mettre en évidence les informations importantes sur le long terme (décès d'un parent, dyslexie, anorexie, idées noires...)."
+                            >
                                 <b-form-checkbox v-model="form.important">
                                     Marquer comme important.
                                 </b-form-checkbox>
@@ -96,12 +138,18 @@
                     <b-form-row>
                         <b-col>
                             <b-form-group label="Type d'info">
-                                <b-form-radio-group id="info-or-sanction" v-model="infoOrSanction"
-                                    :disabled="id >= 0 ? true : false">
+                                <b-form-radio-group
+                                    id="info-or-sanction"
+                                    v-model="infoOrSanction"
+                                    :disabled="id >= 0 ? true : false"
+                                >
                                     <b-form-radio value="info">
                                         Non disciplinaire
                                     </b-form-radio>
-                                    <b-form-radio value="sanction-decision" :disabled="!store.canSetSanction">
+                                    <b-form-radio
+                                        value="sanction-decision"
+                                        :disabled="!store.canSetSanction"
+                                    >
                                         Disciplinaire
                                     </b-form-radio>
                                 </b-form-radio-group>
@@ -111,10 +159,21 @@
                     <div v-if="infoOrSanction == 'info'">
                         <b-form-row>
                             <b-col>
-                                <b-form-group label="Info" label-for="input-info" :state="inputStates.info_id">
-                                    <b-form-select id="input-info" v-model="form.info_id" :options="infoOptions">
+                                <b-form-group
+                                    label="Info"
+                                    label-for="input-info"
+                                    :state="inputStates.info_id"
+                                >
+                                    <b-form-select
+                                        id="input-info"
+                                        v-model="form.info_id"
+                                        :options="infoOptions"
+                                    >
                                         <template #first>
-                                            <option :value="null" disabled>
+                                            <option
+                                                :value="null"
+                                                disabled
+                                            >
                                                 Choisissez un type d'info
                                             </option>
                                         </template>
@@ -129,12 +188,21 @@
                     <div v-if="infoOrSanction == 'sanction-decision'">
                         <b-form-row>
                             <b-col sm="7">
-                                <b-form-group label="Info disciplinaire" label-for="input-info"
-                                    :state="inputStates.sanction_decision_id">
-                                    <b-form-select id="input-info" v-model="form.sanction_decision_id"
-                                        :options="sanctionDecisionOptions">
+                                <b-form-group
+                                    label="Info disciplinaire"
+                                    label-for="input-info"
+                                    :state="inputStates.sanction_decision_id"
+                                >
+                                    <b-form-select
+                                        id="input-info"
+                                        v-model="form.sanction_decision_id"
+                                        :options="sanctionDecisionOptions"
+                                    >
                                         <template #first>
-                                            <option :value="null" disabled>
+                                            <option
+                                                :value="null"
+                                                disabled
+                                            >
                                                 Choisissez dans la liste
                                             </option>
                                         </template>
@@ -143,23 +211,39 @@
                                         {{ errorMsg('sanction_decision_id') }}
                                     </template>
                                 </b-form-group>
-                                <b-form-group label="Date de la sanction" label-for="input-date-sanction"
-                                    :state="inputStates.date_sanction">
-                                    <b-form-input id="input-date-sanction" type="date" v-model="form.date_sanction" />
+                                <b-form-group
+                                    label="Date de la sanction"
+                                    label-for="input-date-sanction"
+                                    :state="inputStates.date_sanction"
+                                >
+                                    <b-form-input
+                                        id="input-date-sanction"
+                                        type="date"
+                                        v-model="form.date_sanction"
+                                    />
                                     <template #invalid-feedback>
                                         {{ errorMsg('date_sanction') }}
                                     </template>
                                 </b-form-group>
-                                <b-form-group v-if="form.sanction_faite !== null" label-for="input-sanction-faite">
-                                    <b-form-checkbox id="input-sanction-faite" v-model="form.sanction_faite">
+                                <b-form-group
+                                    v-if="form.sanction_faite !== null"
+                                    label-for="input-sanction-faite"
+                                >
+                                    <b-form-checkbox
+                                        id="input-sanction-faite"
+                                        v-model="form.sanction_faite"
+                                    >
                                         Sanction faite ?
                                     </b-form-checkbox>
                                 </b-form-group>
                             </b-col>
                             <b-col sm="5">
                                 <b-list-group>
-                                    <b-list-group-item class="d-flex justify-content-between align-items-center"
-                                        v-for="(val, index) in stats" :key="index">
+                                    <b-list-group-item
+                                        class="d-flex justify-content-between align-items-center"
+                                        v-for="(val, index) in stats"
+                                        :key="index"
+                                    >
                                         <strong>{{ val.display }} :</strong> {{ val.value }}
                                     </b-list-group-item>
                                 </b-list-group>
@@ -168,42 +252,84 @@
                     </div>
                     <b-form-row v-if="infoOrSanction">
                         <b-col>
-                            <b-form-group label="Commentaires" label-for="input-comment"
-                                :state="inputStates.explication_commentaire">
-                                <text-editor v-model="form.explication_commentaire" div-block />
+                            <b-form-group
+                                label="Commentaires"
+                                label-for="input-comment"
+                                :state="inputStates.explication_commentaire"
+                            >
+                                <text-editor
+                                    v-model="form.explication_commentaire"
+                                    div-block
+                                />
                                 <template #invalid-feedback>
                                     {{ errorMsg('explication_commentaire') }}
                                 </template>
                             </b-form-group>
                             <b-form-group
                                 description="Ajouter un ou des fichiers. Accepte uniquement des fichiers images et pdf."
-                                label="Fichier(s)">
-                                <b-form-file multiple accept=".pdf, .jpg, .png, jpeg" v-model="attachments"
-                                    ref="attachments" placeholder="Attacher un ou des fichiers."
-                                    choose-label="Attacher un ou des fichiers" drop-label="Déposer des fichiers ici"
-                                    plain @input="addFiles" />
-                                <b-list-group v-for="(item, index) in uploadedFiles" :key="index">
-                                    <file-upload :id="item.id" :file="item.file" path="/dossier_eleve/upload_file/"
-                                        :removestr="5" @delete="deleteFile(index)" @setdata="setFileData(index, $event)"
-                                        remove-media />
+                                label="Fichier(s)"
+                            >
+                                <b-form-file
+                                    multiple
+                                    accept=".pdf, .jpg, .png, jpeg"
+                                    v-model="attachments"
+                                    ref="attachments"
+                                    placeholder="Attacher un ou des fichiers."
+                                    choose-label="Attacher un ou des fichiers"
+                                    drop-label="Déposer des fichiers ici"
+                                    plain
+                                    @input="addFiles"
+                                />
+                                <b-list-group
+                                    v-for="(item, index) in uploadedFiles"
+                                    :key="index"
+                                >
+                                    <file-upload
+                                        :id="item.id"
+                                        :file="item.file"
+                                        path="/dossier_eleve/upload_file/"
+                                        :removestr="5"
+                                        @delete="deleteFile(index)"
+                                        @setdata="setFileData(index, $event)"
+                                        remove-media
+                                    />
                                 </b-list-group>
                             </b-form-group>
                         </b-col>
                     </b-form-row>
-                    <b-form-row v-if="infoOrSanction == 'info'" class="mb-2">
+                    <b-form-row
+                        v-if="infoOrSanction == 'info'"
+                        class="mb-2"
+                    >
                         <b-col>
-                            <b-form-group v-if="visibilityOptions.length > 0" label="Donner la visibilité à :">
-                                <b-form-checkbox-group stacked v-model="form.visible_by_groups" name="visible_by_groups"
-                                    :options="visibilityOptions" value-field="id" text-field="text" />
+                            <b-form-group
+                                v-if="visibilityOptions.length > 0"
+                                label="Donner la visibilité à :"
+                            >
+                                <b-form-checkbox-group
+                                    stacked
+                                    v-model="form.visible_by_groups"
+                                    name="visible_by_groups"
+                                    :options="visibilityOptions"
+                                    value-field="id"
+                                    text-field="text"
+                                />
                             </b-form-group>
-                            <b-form-checkbox v-model="form.send_to_teachers" :disabled="!store.canSetSanction">
+                            <b-form-checkbox
+                                v-model="form.send_to_teachers"
+                                :disabled="!store.canSetSanction"
+                            >
                                 Envoyer l'info par courriel aux professeurs de la classe de l'élève (les fichiers seront
                                 joints).
                             </b-form-checkbox>
                         </b-col>
                     </b-form-row>
-                    <b-btn variant="primary" v-if="form.info_id || form.sanction_decision_id" type="submit"
-                        :disabled="sending">
+                    <b-btn
+                        variant="primary"
+                        v-if="form.info_id || form.sanction_decision_id"
+                        type="submit"
+                        :disabled="sending"
+                    >
                         Soumettre
                     </b-btn>
                 </b-form>

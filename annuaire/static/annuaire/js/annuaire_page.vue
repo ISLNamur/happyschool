@@ -76,7 +76,10 @@
                 </b-col>
             </b-row>
             <router-view v-slot="{ Component }">
-                <transition name="slide-right" mode="out-in">
+                <transition
+                    name="slide-right"
+                    mode="out-in"
+                >
                     <component :is="Component" />
                 </transition>
             </router-view>

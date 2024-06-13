@@ -23,9 +23,13 @@
             <b-row>
                 <b-col>
                     <b-form-group>
-                        <b-form-radio-group v-model="reinforcement"
+                        <b-form-radio-group
+                            v-model="reinforcement"
                             :options="[{ text: 'Oui', value: true }, { text: 'Non', value: false }]"
-                            name="has-reinforcement" button-variant="outline-primary" buttons />
+                            name="has-reinforcement"
+                            button-variant="outline-primary"
+                            buttons
+                        />
                         <template #label>
                             <strong>Renforcement/Méthodo cours CE1D</strong>
                         </template>
@@ -35,20 +39,35 @@
             <b-row v-if="reinforcement">
                 <b-col>
                     <b-form-group>
-                        <b-select :options="courseReinforcements" value-field="id" v-model="currentCourseReinforId"
-                            @change="updateCourseReinforcement" />
+                        <b-select
+                            :options="courseReinforcements"
+                            value-field="id"
+                            v-model="currentCourseReinforId"
+                            @change="updateCourseReinforcement"
+                        />
                     </b-form-group>
                 </b-col>
                 <b-col>
-                    <b-btn variant="outline-secondary" @click="copy" :disabled="courseReinforcements.length === 0">
+                    <b-btn
+                        variant="outline-secondary"
+                        @click="copy"
+                        :disabled="courseReinforcements.length === 0"
+                    >
                         <b-icon icon="files" />
                         Copier
                     </b-btn>
-                    <b-btn variant="success" @click="add">
+                    <b-btn
+                        variant="success"
+                        @click="add"
+                    >
                         <b-icon icon="plus" />
                         Ajouter
                     </b-btn>
-                    <b-btn variant="danger" @click="remove" :disabled="courseReinforcements.length === 0">
+                    <b-btn
+                        variant="danger"
+                        @click="remove"
+                        :disabled="courseReinforcements.length === 0"
+                    >
                         <b-icon icon="trash" />
                         Supprimer
                     </b-btn>
@@ -58,18 +77,37 @@
                 <b-col>
                     <strong>
                         <b-form inline>
-                            Du<b-form-input type="date" v-model="currentCourseReinfor.date_start"
-                                class="mr-sm-2 ml-2" />
-                            au<b-form-input type="date" v-model="currentCourseReinfor.date_end" class="ml-2" />
+                            Du<b-form-input
+                                type="date"
+                                v-model="currentCourseReinfor.date_start"
+                                class="mr-sm-2 ml-2"
+                            />
+                            au<b-form-input
+                                type="date"
+                                v-model="currentCourseReinfor.date_end"
+                                class="ml-2"
+                            />
                         </b-form>
                     </strong>
                 </b-col>
             </b-row>
-            <b-row v-if="currentCourseReinfor" class="mt-1">
-                <multiselect :internal-search="false" :options="store.branches" placeholder="Choisir une matière"
-                    select-label="" selected-label="Sélectionné" deselect-label="Cliquer dessus pour enlever"
-                    v-model="currentCourseReinfor.branches" :show-no-options="false" label="branch" track-by="id"
-                    multiple>
+            <b-row
+                v-if="currentCourseReinfor"
+                class="mt-1"
+            >
+                <multiselect
+                    :internal-search="false"
+                    :options="store.branches"
+                    placeholder="Choisir une matière"
+                    select-label=""
+                    selected-label="Sélectionné"
+                    deselect-label="Cliquer dessus pour enlever"
+                    v-model="currentCourseReinfor.branches"
+                    :show-no-options="false"
+                    label="branch"
+                    track-by="id"
+                    multiple
+                >
                     <template #noResult>
                         Aucune branche trouvé.
                     </template>

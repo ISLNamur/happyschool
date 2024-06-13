@@ -40,12 +40,12 @@ export default {
             menuInfo: {},
         };
     },
-     mounted: function() {
+    mounted: function() {
         // eslint-disable-next-line no-undef
         this.menuInfo = menu;
     },
     components: {
         "app-menu": Menu,
     }
-}
+};
 </script>

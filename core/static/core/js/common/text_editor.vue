@@ -19,14 +19,18 @@
 
 <template>
     <div>
-        <ckeditor :config="editorOptions" :editor="editor" :modelValue="value"
-            @update:model-value="$emit('input', $event)" />
+        <ckeditor
+            :config="editorOptions"
+            :editor="editor"
+            :model-value="value"
+            @update:model-value="$emit('input', $event)"
+        />
     </div>
 </template>
 
 <script>
-import CKEditor from '@ckeditor/ckeditor5-vue';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import CKEditor from "@ckeditor/ckeditor5-vue";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 export default {
     props: {
