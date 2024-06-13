@@ -21,14 +21,28 @@
     <div>
         <b-row>
             <b-col md="4">
-                <b-input :value="date" type="date" @change="moveToDate" />
+                <b-input
+                    :value="date"
+                    type="date"
+                    @change="moveToDate"
+                />
             </b-col>
             <b-col md="4">
                 <b-form-group>
-                    <multiselect :show-no-options="false" :internal-search="false" :options="classOptions"
-                        @search-change="getSearchOptions" placeholder="Rechercher classe" select-label=""
-                        selected-label="Sélectionné" deselect-label="" label="display" track-by="id" :v-model="search"
-                        @select="moveToClass">
+                    <multiselect
+                        :show-no-options="false"
+                        :internal-search="false"
+                        :options="classOptions"
+                        @search-change="getSearchOptions"
+                        placeholder="Rechercher classe"
+                        select-label=""
+                        selected-label="Sélectionné"
+                        deselect-label=""
+                        label="display"
+                        track-by="id"
+                        :v-model="search"
+                        @select="moveToClass"
+                    >
                         <template #noResult>
                             Aucune classe trouvée.
                         </template>
@@ -37,7 +51,10 @@
                 </b-form-group>
             </b-col>
             <b-col class="text-right mb-1">
-                <b-btn variant="primary" @click="validateEducatorAbsences">
+                <b-btn
+                    variant="primary"
+                    @click="validateEducatorAbsences"
+                >
                     Valider toutes les présences
                 </b-btn>
             </b-col>
@@ -45,15 +62,28 @@
         <b-row>
             <b-col>
                 <b-overlay :show="loading">
-                    <b-table id="classoverview" :items="students" :fields="fields" class="text-center" small>
+                    <b-table
+                        id="classoverview"
+                        :items="students"
+                        :fields="fields"
+                        class="text-center"
+                        small
+                    >
                         <template #head(absence)="">
                             <b-row>
-                                <b-col v-for="p in teachersPeriod" :key="p.id" class="pr-1 pl-1">
+                                <b-col
+                                    v-for="p in teachersPeriod"
+                                    :key="p.id"
+                                    class="pr-1 pl-1"
+                                >
                                     {{ p.start.slice(0, 5) }}
                                 </b-col>
                             </b-row>
                             <b-row>
-                                <b-col v-for="p in educatorsPeriod" :key="p.id">
+                                <b-col
+                                    v-for="p in educatorsPeriod"
+                                    :key="p.id"
+                                >
                                     {{ p.name }}
                                 </b-col>
                             </b-row>
@@ -66,8 +96,10 @@
                         </template>
                         <template #cell(absence)="data">
                             <overview-teacher-entry :absences="data.item.absence_teachers" />
-                            <overview-educator-entry :absences="data.item.absence_educators"
-                                @change="updateEducatorAbsence($event, data.index)" />
+                            <overview-educator-entry
+                                :absences="data.item.absence_educators"
+                                @change="updateEducatorAbsence($event, data.index)"
+                            />
                         </template>
                     </b-table>
                 </b-overlay>

@@ -29,29 +29,49 @@
         <b-row>
             <b-col>
                 <b-form-group>
-                    <b-select :options="disorderCares" value-field="id" v-model="currentDisorderCare"
-                        @change="saveBeforeChange" />
+                    <b-select
+                        :options="disorderCares"
+                        value-field="id"
+                        v-model="currentDisorderCare"
+                        @change="saveBeforeChange"
+                    />
                 </b-form-group>
             </b-col>
             <b-col>
-                <b-btn variant="outline-secondary" @click="copy" :disabled="disorderCares.length === 0">
+                <b-btn
+                    variant="outline-secondary"
+                    @click="copy"
+                    :disabled="disorderCares.length === 0"
+                >
                     <b-icon icon="files" />
                     Copier
                 </b-btn>
-                <b-btn variant="success" @click="add">
+                <b-btn
+                    variant="success"
+                    @click="add"
+                >
                     <b-icon icon="plus" />
                     Ajouter
                 </b-btn>
-                <b-btn variant="danger" @click="remove" :disabled="disorderCares.length === 0">
+                <b-btn
+                    variant="danger"
+                    @click="remove"
+                    :disabled="disorderCares.length === 0"
+                >
                     <b-icon icon="trash" />
                     Supprimer
                 </b-btn>
             </b-col>
         </b-row>
-        <disorder-care v-if="currentDisorderCare" v-model:date_start="currentDisorderCareObj.date_start"
-            v-model:date_end="currentDisorderCareObj.date_end" v-model:disorder="currentDisorderCareObj.disorder"
-            v-model:other_adjustments="currentDisorderCareObj.other_adjustments" :disorder-care-id="currentDisorderCare"
-            ref="disorderCare" />
+        <disorder-care
+            v-if="currentDisorderCare"
+            v-model:date_start="currentDisorderCareObj.date_start"
+            v-model:date_end="currentDisorderCareObj.date_end"
+            v-model:disorder="currentDisorderCareObj.disorder"
+            v-model:other_adjustments="currentDisorderCareObj.other_adjustments"
+            :disorder-care-id="currentDisorderCare"
+            ref="disorderCare"
+        />
     </b-overlay>
 </template>
 

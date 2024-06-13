@@ -19,20 +19,40 @@
 
 <template>
     <div>
-        <div class="loading" v-if="!loaded" />
-        <app-menu v-if="loaded" :menu-info="menuInfo" />
+        <div
+            class="loading"
+            v-if="!loaded"
+        />
+        <app-menu
+            v-if="loaded"
+            :menu-info="menuInfo"
+        />
         <b-container v-if="loaded">
             <h1>Absence des élèves</h1>
             <b-row class="mb-1">
                 <b-nav tabs>
-                    <b-nav-item to="/add_absence" v-if="can_access_adding">
-                        <b-icon icon="plus" color="green" scale="1.5" class="border" />
+                    <b-nav-item
+                        to="/add_absence"
+                        v-if="can_access_adding"
+                    >
+                        <b-icon
+                            icon="plus"
+                            color="green"
+                            scale="1.5"
+                            class="border"
+                        />
                         Ajouter absenses/retards
                     </b-nav-item>
-                    <b-nav-item v-if="can_access_list" :to="`/overview/${today}/`">
+                    <b-nav-item
+                        v-if="can_access_list"
+                        :to="`/overview/${today}/`"
+                    >
                         Vue d'ensemble
                     </b-nav-item>
-                    <b-nav-item v-if="can_access_adding" to="/export">
+                    <b-nav-item
+                        v-if="can_access_adding"
+                        to="/export"
+                    >
                         Export
                     </b-nav-item>
                 </b-nav>

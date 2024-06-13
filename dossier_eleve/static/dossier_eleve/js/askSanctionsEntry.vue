@@ -19,82 +19,180 @@
 
 <template>
     <div>
-        <transition appear name="fade">
-            <b-card :class="'px-4 mt-2 current-card '" no-body>
+        <transition
+            appear
+            name="fade"
+        >
+            <b-card
+                :class="'px-4 mt-2 current-card '"
+                no-body
+            >
                 <b-row :class="lightDisplay ? '' : 'entry-title'">
                     <b-col>
                         <span :class="lightDisplay ? '' : 'h5'">
-                            <a class="clickable" :href="urlToStudentInfo" target="_blank" rel="noopener noreferrer">{{
+                            <a
+                                class="clickable"
+                                :href="urlToStudentInfo"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >{{
                                 title }}</a>
-                            <b-btn variant="link" size="sm" @click="filterStudent">
+                            <b-btn
+                                variant="link"
+                                size="sm"
+                                @click="filterStudent"
+                            >
                                 <b-icon icon="funnel" />
                             </b-btn>
                         </span>
                     </b-col>
-                    <b-col sm="12" md="4">
+                    <b-col
+                        sm="12"
+                        md="4"
+                    >
                         <div class="text-right">
                             <span v-if="store.canSetSanction">
-                                <b-icon icon="question-circle" variant="primary" v-if="!canSetSanctionDone"
+                                <b-icon
+                                    icon="question-circle"
+                                    variant="primary"
+                                    v-if="!canSetSanctionDone"
                                     v-b-tooltip.hover
-                                    title="La date de sanction doit être antérieure ou égale à aujourd'hui." />
-                                <b-form-checkbox :disabled="!canSetSanctionDone" @change="setSanctionDone">
+                                    title="La date de sanction doit être antérieure ou égale à aujourd'hui."
+                                />
+                                <b-form-checkbox
+                                    :disabled="!canSetSanctionDone"
+                                    @change="setSanctionDone"
+                                >
                                     Sanction faite ?
                                 </b-form-checkbox>
                             </span>
                         </div>
                     </b-col>
-                    <b-col sm="12" md="5">
+                    <b-col
+                        sm="12"
+                        md="5"
+                    >
                         <div class="text-right">
                             <span v-if="canEditSanction">
-                                <b-btn v-if="outdated" variant="light" size="sm" class="card-link"
-                                    v-b-modal="`move-sanction-date-${rowData.id}`" v-b-tooltip.hover
-                                    title="Déplacer la sanction (date et/ou type de sanction)">
+                                <b-btn
+                                    v-if="outdated"
+                                    variant="light"
+                                    size="sm"
+                                    class="card-link"
+                                    v-b-modal="`move-sanction-date-${rowData.id}`"
+                                    v-b-tooltip.hover
+                                    title="Déplacer la sanction (date et/ou type de sanction)"
+                                >
                                     <b-icon icon="arrow-right-square" />
                                 </b-btn>
-                                <b-btn v-if="rowData.date_sanction" variant="light" size="sm" class="card-link"
-                                    :to="`/warn/${rowData.id}/`">
+                                <b-btn
+                                    v-if="rowData.date_sanction"
+                                    variant="light"
+                                    size="sm"
+                                    class="card-link"
+                                    :to="`/warn/${rowData.id}/`"
+                                >
                                     <b-iconstack>
-                                        <b-icon icon="file-earmark-post-fill" stacked />
-                                        <b-icon v-if="rowData.notified" icon="check" color="green" scale="1.8"
-                                            stacked />
+                                        <b-icon
+                                            icon="file-earmark-post-fill"
+                                            stacked
+                                        />
+                                        <b-icon
+                                            v-if="rowData.notified"
+                                            icon="check"
+                                            color="green"
+                                            scale="1.8"
+                                            stacked
+                                        />
                                     </b-iconstack>
                                 </b-btn>
-                                <b-btn variant="light" size="sm" @click="editEntry" class="card-link"><b-icon
-                                        icon="pencil-square" color="green" class="align-text-bottom" /></b-btn>
-                                <b-btn variant="light" size="sm" @click="deleteEntry" class="card-link"><b-icon
-                                        icon="trash-fill" color="red" class="align-text-bottom" /></b-btn>
+                                <b-btn
+                                    variant="light"
+                                    size="sm"
+                                    @click="editEntry"
+                                    class="card-link"
+                                ><b-icon
+                                    icon="pencil-square"
+                                    color="green"
+                                    class="align-text-bottom"
+                                /></b-btn>
+                                <b-btn
+                                    variant="light"
+                                    size="sm"
+                                    @click="deleteEntry"
+                                    class="card-link"
+                                ><b-icon
+                                    icon="trash-fill"
+                                    color="red"
+                                    class="align-text-bottom"
+                                /></b-btn>
                             </span>
                         </div>
                     </b-col>
                 </b-row>
-                <b-row v-if="!lightDisplay" class="entry-subtitle">
+                <b-row
+                    v-if="!lightDisplay"
+                    class="entry-subtitle"
+                >
                     <em>{{ subtitle }}</em>
                 </b-row>
                 <b-row>
-                    <b-col :md="lightDisplay ? '6' : '2'" class="category">
+                    <b-col
+                        :md="lightDisplay ? '6' : '2'"
+                        class="category"
+                    >
                         {{ category }}
                     </b-col>
-                    <b-col v-if="store.settings.enable_disciplinary_council && !lightDisplay" md="2"
-                        class="text-center">
+                    <b-col
+                        v-if="store.settings.enable_disciplinary_council && !lightDisplay"
+                        md="2"
+                        class="text-center"
+                    >
                         {{ date_council }}
                     </b-col>
-                    <b-col md="2" class="text-center">
+                    <b-col
+                        md="2"
+                        class="text-center"
+                    >
                         {{ date_sanction }}
                     </b-col>
-                    <b-col v-if="!lightDisplay" class="current-data mb-1 mr-1">
+                    <b-col
+                        v-if="!lightDisplay"
+                        class="current-data mb-1 mr-1"
+                    >
                         <span v-html="comment" />
-                        <b-btn class="move-up" size="sm" variant="light" v-if="comment.length > 100"
-                            @click="expand = !expand">
-                            <b-icon class="align-text-top"
-                                :icon="expand ? 'chevron-double-up' : 'chevron-double-down'" />
+                        <b-btn
+                            class="move-up"
+                            size="sm"
+                            variant="light"
+                            v-if="comment.length > 100"
+                            @click="expand = !expand"
+                        >
+                            <b-icon
+                                class="align-text-top"
+                                :icon="expand ? 'chevron-double-up' : 'chevron-double-down'"
+                            />
                         </b-btn>
                     </b-col>
                 </b-row>
-                <b-modal :id="`move-sanction-date-${rowData.id}`" size="sm" centered title="Date de la sanction"
-                    cancel-title="Annuler" @ok="$emit('update-sanction', nextSanctionData)">
-                    <b-form-input type="date" v-model="nextDate" />
-                    <b-select :options="sanctionOptions" text-field="sanction_decision" value-field="id"
-                        v-model="nextSanction" />
+                <b-modal
+                    :id="`move-sanction-date-${rowData.id}`"
+                    size="sm"
+                    centered
+                    title="Date de la sanction"
+                    cancel-title="Annuler"
+                    @ok="$emit('update-sanction', nextSanctionData)"
+                >
+                    <b-form-input
+                        type="date"
+                        v-model="nextDate"
+                    />
+                    <b-select
+                        :options="sanctionOptions"
+                        text-field="sanction_decision"
+                        value-field="id"
+                        v-model="nextSanction"
+                    />
                 </b-modal>
             </b-card>
         </transition>

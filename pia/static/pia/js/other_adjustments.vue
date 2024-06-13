@@ -29,20 +29,35 @@
         <b-row>
             <b-col>
                 <b-form-group>
-                    <b-select :options="otherAdjustments" value-field="id" v-model="currentOtherAdjId"
-                        @change="updatecurrentOtherAdj" />
+                    <b-select
+                        :options="otherAdjustments"
+                        value-field="id"
+                        v-model="currentOtherAdjId"
+                        @change="updatecurrentOtherAdj"
+                    />
                 </b-form-group>
             </b-col>
             <b-col>
-                <b-btn variant="outline-secondary" @click="copy" :disabled="otherAdjustments.length === 0">
+                <b-btn
+                    variant="outline-secondary"
+                    @click="copy"
+                    :disabled="otherAdjustments.length === 0"
+                >
                     <b-icon icon="files" />
                     Copier
                 </b-btn>
-                <b-btn variant="success" @click="add">
+                <b-btn
+                    variant="success"
+                    @click="add"
+                >
                     <b-icon icon="plus" />
                     Ajouter
                 </b-btn>
-                <b-btn variant="danger" @click="remove" :disabled="otherAdjustments.length === 0">
+                <b-btn
+                    variant="danger"
+                    @click="remove"
+                    :disabled="otherAdjustments.length === 0"
+                >
                     <b-icon icon="trash" />
                     Supprimer
                 </b-btn>
@@ -55,9 +70,16 @@
                         <b-col>
                             <strong>
                                 <b-form inline>
-                                    Du<b-form-input type="date" v-model="currentOtherAdj.date_start"
-                                        class="mr-sm-2 ml-2" />
-                                    au<b-form-input type="date" v-model="currentOtherAdj.date_end" class="ml-2" />
+                                    Du<b-form-input
+                                        type="date"
+                                        v-model="currentOtherAdj.date_start"
+                                        class="mr-sm-2 ml-2"
+                                    />
+                                    au<b-form-input
+                                        type="date"
+                                        v-model="currentOtherAdj.date_end"
+                                        class="ml-2"
+                                    />
                                 </b-form>
                             </strong>
                         </b-col>

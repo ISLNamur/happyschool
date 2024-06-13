@@ -18,13 +18,13 @@
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
 import Vue from "vue";
-import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue';
+import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-vue/dist/bootstrap-vue.css";
 
-Vue.use(BootstrapVue)
-Vue.use(BootstrapVueIcons)
+Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
 
 import { createPinia } from "pinia";
 
@@ -32,7 +32,7 @@ const pinia = createPinia();
 
 import router from "./router/ask_sanctions.js";
 
-import { createApp } from 'vue';
+import { createApp } from "vue";
 import AskSanctionsPage from "./AskSanctionsPage.vue";
 
 const app = createApp(AskSanctionsPage);

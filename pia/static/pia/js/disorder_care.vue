@@ -23,21 +23,41 @@
             <b-col>
                 <strong>
                     <b-form inline>
-                        Du<b-form-input type="date" :value="date_start" @input="$emit('update:date_start', $event)"
-                            class="mr-sm-2 ml-2" />
-                        au<b-form-input type="date" :value="date_end" @input="$emit('update:date_end', $event)"
-                            class="ml-2" />
+                        Du<b-form-input
+                            type="date"
+                            :value="date_start"
+                            @input="$emit('update:date_start', $event)"
+                            class="mr-sm-2 ml-2"
+                        />
+                        au<b-form-input
+                            type="date"
+                            :value="date_end"
+                            @input="$emit('update:date_end', $event)"
+                            class="ml-2"
+                        />
                     </b-form>
                 </strong>
             </b-col>
         </b-row>
         <b-row>
             <b-col>
-                <b-form-group label="Trouble d'apprentissage" label-cols="3">
-                    <multiselect :options="store.disorders" placeholder="Sélectionner le ou les différents troubles"
-                        select-label="" selected-label="Sélectionné" deselect-label="Cliquer dessus pour enlever"
-                        :modelValue="disorder" :show-no-options="false" track-by="id" label="disorder"
-                        @update:modelValue="updateDisorderResponse" multiple>
+                <b-form-group
+                    label="Trouble d'apprentissage"
+                    label-cols="3"
+                >
+                    <multiselect
+                        :options="store.disorders"
+                        placeholder="Sélectionner le ou les différents troubles"
+                        select-label=""
+                        selected-label="Sélectionné"
+                        deselect-label="Cliquer dessus pour enlever"
+                        :model-value="disorder"
+                        :show-no-options="false"
+                        track-by="id"
+                        label="disorder"
+                        @update:model-value="updateDisorderResponse"
+                        multiple
+                    >
                         <template #noResult>
                             Aucun trouble trouvé.
                         </template>
@@ -53,14 +73,23 @@
                 </h4>
             </b-col>
             <b-col class="text-right">
-                <b-form-checkbox v-model="editDisorderResponse" switch>
+                <b-form-checkbox
+                    v-model="editDisorderResponse"
+                    switch
+                >
                     <span class="text-secondary">Modifier</span>
                 </b-form-checkbox>
             </b-col>
         </b-row>
-        <b-overlay v-if="disorder.length > 0" :show="loading">
+        <b-overlay
+            v-if="disorder.length > 0"
+            :show="loading"
+        >
             <b-row>
-                <b-col v-for="category, index in this.disorderResponseCategories" :key="category.id">
+                <b-col
+                    v-for="category, index in this.disorderResponseCategories"
+                    :key="category.id"
+                >
                     <b-card no-body>
                         <template #header>
                             <div class="d-flex justify-content-between">
@@ -69,37 +98,59 @@
                                     <b-badge variant="primary">
                                         {{ selectedRespList[index].length }}
                                     </b-badge>
-                                    <b-icon v-if="category.explanation" v-b-popover.hover.top="category.explanation"
-                                        icon="question-circle" variant="primary" />
+                                    <b-icon
+                                        v-if="category.explanation"
+                                        v-b-popover.hover.top="category.explanation"
+                                        icon="question-circle"
+                                        variant="primary"
+                                    />
                                 </span>
                                 <span v-if="editDisorderResponse">
-                                    <b-btn size="sm" variant="outline-success" @click="showAddCustomResponse(category)">
+                                    <b-btn
+                                        size="sm"
+                                        variant="outline-success"
+                                        @click="showAddCustomResponse(category)"
+                                    >
                                         <b-icon icon="plus" />
                                         Ajouter
                                     </b-btn>
                                 </span>
                             </div>
                         </template>
-                        <b-list-group class="scrollable" flush>
+                        <b-list-group
+                            class="scrollable"
+                            flush
+                        >
                             <b-list-group-item
                                 v-for="disorderResponse in editDisorderResponse ? allDisorderRespList[index] : selectedRespList[index]"
                                 :key="`${disorderResponse.id}-${disorderResponse.response}`"
                                 class="d-flex justify-content-between"
-                                :variant="selectedRespList[index].find(selResp => disorderResponse.id === selResp.id) ? '' : 'info'">
+                                :variant="selectedRespList[index].find(selResp => disorderResponse.id === selResp.id) ? '' : 'info'"
+                            >
                                 <span>
                                     <b-icon icon="chevron-compact-right" />
                                     {{ disorderResponse.response }}
                                     (<em>{{ disorder.find(d => d.id === disorderResponse.disorder).disorder }}</em>)
                                 </span>
-                                <span v-if="editDisorderResponse" class="ml-2">
+                                <span
+                                    v-if="editDisorderResponse"
+                                    class="ml-2"
+                                >
 
-                                    <b-btn size="sm" variant="danger"
+                                    <b-btn
+                                        size="sm"
+                                        variant="danger"
                                         v-if="selectedRespList[index].find(selResp => disorderResponse.id === selResp.id)"
-                                        @click="removeDisorderResponse(disorderResponse, category.id)">
+                                        @click="removeDisorderResponse(disorderResponse, category.id)"
+                                    >
                                         <b-icon icon="x" />
                                     </b-btn>
-                                    <b-btn v-else size="sm" variant="success"
-                                        @click="addDisorderResponse(disorderResponse, category.id)">
+                                    <b-btn
+                                        v-else
+                                        size="sm"
+                                        variant="success"
+                                        @click="addDisorderResponse(disorderResponse, category.id)"
+                                    >
                                         <b-icon icon="check" />
                                     </b-btn>
                                 </span>
@@ -110,7 +161,10 @@
             </b-row>
             <b-row class="mt-2">
                 <b-col>
-                    <text-editor :value="other_adjustments" @input="$emit('update:other_adjustments', $event)" />
+                    <text-editor
+                        :value="other_adjustments"
+                        @input="$emit('update:other_adjustments', $event)"
+                    />
                 </b-col>
             </b-row>
             <b-row v-if="disorder.length > 0">
@@ -120,8 +174,14 @@
                     </h4>
                 </b-col>
             </b-row>
-            <b-row v-if="disorder.length > 0" class="mb-2">
-                <b-col v-for="category, index in this.disorderResponseCategories" :key="category.id">
+            <b-row
+                v-if="disorder.length > 0"
+                class="mb-2"
+            >
+                <b-col
+                    v-for="category, index in this.disorderResponseCategories"
+                    :key="category.id"
+                >
                     <b-card no-body>
                         <template #header>
                             <div class="d-flex justify-content-between">
@@ -131,16 +191,25 @@
                                         {{ notSelectedRespList[index].length }}
                                     </b-badge>
                                 </span>
-                                <b-btn size="sm" variant="outline-info"
-                                    v-b-toggle="`adviced-response-cat-${category.id}`">
+                                <b-btn
+                                    size="sm"
+                                    variant="outline-info"
+                                    v-b-toggle="`adviced-response-cat-${category.id}`"
+                                >
                                     <b-icon icon="chevron-bar-expand" />
                                 </b-btn>
                             </div>
                         </template>
                         <b-collapse :id="`adviced-response-cat-${category.id}`">
-                            <b-list-group flush class="scrollable">
-                                <b-list-group-item v-for="disorderResponse in notSelectedRespList[index]"
-                                    :key="disorderResponse.id" class="d-flex justify-content-between">
+                            <b-list-group
+                                flush
+                                class="scrollable"
+                            >
+                                <b-list-group-item
+                                    v-for="disorderResponse in notSelectedRespList[index]"
+                                    :key="disorderResponse.id"
+                                    class="d-flex justify-content-between"
+                                >
                                     <span>
                                         <b-icon icon="chevron-compact-right" />
                                         {{ disorderResponse.response }}
@@ -153,8 +222,14 @@
                 </b-col>
             </b-row>
         </b-overlay>
-        <b-modal id="add-custom-response" title="Ajouter une réponse personnalisée" ok-title="Ajouter"
-            ok-variant="success" cancel-title="Annuler" @ok="addCustomResponse">
+        <b-modal
+            id="add-custom-response"
+            title="Ajouter une réponse personnalisée"
+            ok-title="Ajouter"
+            ok-variant="success"
+            cancel-title="Annuler"
+            @ok="addCustomResponse"
+        >
             <b-form-group label="Réponse personnalisée">
                 <b-input v-model="customResponse.text" />
             </b-form-group>
@@ -263,7 +338,7 @@ export default {
                         const selected = this.selected_disorder_response
                             .find(sDR => sDR.disorder_response === r.id && sDR.category === category.id);
                         return selected === undefined;
-                    })
+                    });
             });
         },
         allDisorderRespList: function () {

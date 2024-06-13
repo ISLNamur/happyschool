@@ -29,7 +29,10 @@
                 <b-btn to="/">
                     Retour
                 </b-btn>
-                <b-btn @click="getPDF" variant="outline-primary">
+                <b-btn
+                    @click="getPDF"
+                    variant="outline-primary"
+                >
                     <b-icon icon="file-text" />
                     Télécharger PDF
                 </b-btn>
@@ -37,27 +40,45 @@
         </b-row>
         <b-row v-if="sanction && sanction.notified">
             <b-col>
-                <b-alert show variant="warning">
+                <b-alert
+                    show
+                    variant="warning"
+                >
                     La sanction a déjà été notifié.
                 </b-alert>
             </b-col>
         </b-row>
         <b-row>
             <b-col>
-                <b-form-group label="Destinataires"
-                    description="Si deux destinataires sont les mêmes, un seul courriel sera envoyé.">
-                    <b-form-checkbox-group v-model="recipient" :options="recipientOptions" />
+                <b-form-group
+                    label="Destinataires"
+                    description="Si deux destinataires sont les mêmes, un seul courriel sera envoyé."
+                >
+                    <b-form-checkbox-group
+                        v-model="recipient"
+                        :options="recipientOptions"
+                    />
                 </b-form-group>
             </b-col>
         </b-row>
         <b-row>
             <b-col>
                 <b-form-group label="Autres personnes de l'école">
-                    <multiselect id="responsible-0" :internal-search="false" :options="responsibleOptions"
-                        @search-change="getResponsible" placeholder="Ajouter une autre personne de l'école"
-                        select-label="" selected-label="Sélectionné" deselect-label="Cliquer dessus pour enlever"
-                        v-model="otherRecipients" label="display" track-by="matricule" :show-no-options="false"
-                        multiple>
+                    <multiselect
+                        id="responsible-0"
+                        :internal-search="false"
+                        :options="responsibleOptions"
+                        @search-change="getResponsible"
+                        placeholder="Ajouter une autre personne de l'école"
+                        select-label=""
+                        selected-label="Sélectionné"
+                        deselect-label="Cliquer dessus pour enlever"
+                        v-model="otherRecipients"
+                        label="display"
+                        track-by="matricule"
+                        :show-no-options="false"
+                        multiple
+                    >
                         <template #noResult>
                             Aucun responsable trouvé.
                         </template>
@@ -68,28 +89,39 @@
         </b-row>
         <b-row>
             <b-col>
-                <b-btn variant="outline-secondary" @click="addAskPerson" size="sm">
+                <b-btn
+                    variant="outline-secondary"
+                    @click="addAskPerson"
+                    size="sm"
+                >
                     <b-icon icon="plus" />
                     Ajouter le demandeur
                 </b-btn>
             </b-col>
         </b-row>
-        <b-row v-if="sanction" class="mt-2">
+        <b-row
+            v-if="sanction"
+            class="mt-2"
+        >
             <b-col>
                 <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 15px;">
                     {{ sanction.sanction_decision.sanction_decision }}
                 </p>
                 <p
-                    style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0px;">
+                    style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0px;"
+                >
                     Concerne : <strong>{{ sanction.student.last_name }} {{ sanction.student.first_name }}</strong>
                 </p>
-                <p v-if="sanction.student.classe"
-                    style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0px;">
+                <p
+                    v-if="sanction.student.classe"
+                    style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0px;"
+                >
                     Classe : <strong>{{ sanction.student.classe.year }}{{ sanction.student.classe.letter.toUpperCase()
-                        }}</strong>
+                    }}</strong>
                 </p>
                 <p
-                    style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">
+                    style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"
+                >
                     Objet : <strong>Mesure disciplinaire</strong>
                 </p>
             </b-col>
@@ -102,7 +134,10 @@
         <b-row class="mt-2">
             <b-col>
                 <b-overlay :show="sending">
-                    <b-btn variant="primary" @click="send">
+                    <b-btn
+                        variant="primary"
+                        @click="send"
+                    >
                         Envoyer
                     </b-btn>
                 </b-overlay>

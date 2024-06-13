@@ -5,7 +5,10 @@
             <b-row>
                 <b-col>
                     <b-nav tabs>
-                        <b-nav-item active href="/mail_notification/">
+                        <b-nav-item
+                            active
+                            href="/mail_notification/"
+                        >
                             Envoyer un email
                         </b-nav-item>
                         <b-nav-item href="/mail_notification/list/">
@@ -25,7 +28,10 @@
                     <b-form @submit="onSubmit">
                         <div>
                             <b-form-group label="Choisissez d'abord l'enseignement : ">
-                                <b-form-radio-group v-model="teaching" name="teaching">
+                                <b-form-radio-group
+                                    v-model="teaching"
+                                    name="teaching"
+                                >
                                     <b-form-radio value="secondaire">
                                         Secondaire
                                     </b-form-radio>
@@ -38,7 +44,11 @@
                         <div v-if="teaching">
                             <h3>Enseignement : {{ teaching.toUpperCase() }}</h3>
                             <b-form-group label="Le type de destinataires : ">
-                                <b-form-radio-group v-model="toType" name="toType" @change="warnChoice">
+                                <b-form-radio-group
+                                    v-model="toType"
+                                    name="toType"
+                                    @change="warnChoice"
+                                >
                                     <b-form-radio value="teachers">
                                         Professeurs
                                     </b-form-radio>
@@ -47,10 +57,15 @@
                                     </b-form-radio>
                                 </b-form-radio-group>
                             </b-form-group>
-                            <b-form-group v-if="toType == 'parents'"
+                            <b-form-group
+                                v-if="toType == 'parents'"
                                 description="Si «Par parent» est choisi, un parent ayant plusieurs enfants ne recevra qu'un seul email. À contrario, si «Par élève» est choisi, un parent ayant plusieurs élèves recevra un email par élève."
-                                label="Type d'envoi : ">
-                                <b-form-radio-group v-model="sendType" name="sendType">
+                                label="Type d'envoi : "
+                            >
+                                <b-form-radio-group
+                                    v-model="sendType"
+                                    name="sendType"
+                                >
                                     <b-form-radio value="parents">
                                         Par parent
                                     </b-form-radio>
@@ -59,34 +74,58 @@
                                     </b-form-radio>
                                 </b-form-radio-group>
                             </b-form-group>
-                            <b-form-group description="Sélectionner à partir de quelle adresse l'email sera envoyé."
-                                label="Expéditeur* : " :state="emailFromState">
-                                <multiselect :options="emailFromOptions" placeholder="Sélectionner un expéditeur"
-                                    select-label="Cliquer dessus pour sélectionner" selected-label="Sélectionné"
-                                    deselect-label="Cliquer dessus pour enlever" v-model="emailFrom">
+                            <b-form-group
+                                description="Sélectionner à partir de quelle adresse l'email sera envoyé."
+                                label="Expéditeur* : "
+                                :state="emailFromState"
+                            >
+                                <multiselect
+                                    :options="emailFromOptions"
+                                    placeholder="Sélectionner un expéditeur"
+                                    select-label="Cliquer dessus pour sélectionner"
+                                    selected-label="Sélectionné"
+                                    deselect-label="Cliquer dessus pour enlever"
+                                    v-model="emailFrom"
+                                >
                                     <template #noResult>
                                         Aucun expéditeur trouvé.
                                     </template>
                                     <template #noOptions />
                                 </multiselect>
-                                <b-alert variant="danger" :show="!emailFromState">
+                                <b-alert
+                                    variant="danger"
+                                    :show="!emailFromState"
+                                >
                                     Merci de choisir un expéditeur.
                                 </b-alert>
                             </b-form-group>
 
-                            <b-form-group description="Ajouter un cycle et/ou un degré, une année, une classe…"
-                                label="Destinataires* : " :state="emailToState">
-                                <multiselect :internal-search="false" :options="emailToOptions"
-                                    @search-change="getEmailToOptions" :multiple="true" :loading="emailToLoading"
+                            <b-form-group
+                                description="Ajouter un cycle et/ou un degré, une année, une classe…"
+                                label="Destinataires* : "
+                                :state="emailToState"
+                            >
+                                <multiselect
+                                    :internal-search="false"
+                                    :options="emailToOptions"
+                                    @search-change="getEmailToOptions"
+                                    :multiple="true"
+                                    :loading="emailToLoading"
                                     placeholder="Ajouter un destinataire"
-                                    select-label="Cliquer dessus pour sélectionner" selected-label="Sélectionné"
-                                    deselect-label="Cliquer dessus pour enlever" v-model="emailTo">
+                                    select-label="Cliquer dessus pour sélectionner"
+                                    selected-label="Sélectionné"
+                                    deselect-label="Cliquer dessus pour enlever"
+                                    v-model="emailTo"
+                                >
                                     <template #noResult>
                                         Aucun destinataire trouvé.
                                     </template>
                                     <template #noOptions />
                                 </multiselect>
-                                <b-alert variant="danger" :show="!emailToState">
+                                <b-alert
+                                    variant="danger"
+                                    :show="!emailToState"
+                                >
                                     Merci de choisir au moins un destinataire.
                                 </b-alert>
                             </b-form-group>
@@ -96,18 +135,32 @@
                                 </b-form-checkbox>
                             </b-form-group>
                             <b-form-group v-if="sendType == 'students'">
-                                <multiselect v-model="template" :options="templateOptions" track-by="id" label="name"
-                                    placeholder="Ajouter un formulaire à remplir">
+                                <multiselect
+                                    v-model="template"
+                                    :options="templateOptions"
+                                    track-by="id"
+                                    label="name"
+                                    placeholder="Ajouter un formulaire à remplir"
+                                >
                                     <template #noOptions />
                                 </multiselect>
                             </b-form-group>
-                            <b-form-group label="Tag(s) : "
-                                description="Permet de facilement identifier l'email (CPE, CGQ,…)">
-                                <multiselect :internal-search="false" :options="tagsOptions"
-                                    @search-change="getTagsOptions" :multiple="true" :loading="tagsLoading"
+                            <b-form-group
+                                label="Tag(s) : "
+                                description="Permet de facilement identifier l'email (CPE, CGQ,…)"
+                            >
+                                <multiselect
+                                    :internal-search="false"
+                                    :options="tagsOptions"
+                                    @search-change="getTagsOptions"
+                                    :multiple="true"
+                                    :loading="tagsLoading"
                                     placeholder="Ajouter un tag si besoin."
-                                    select-label="Cliquer dessus pour sélectionner" selected-label="Sélectionné"
-                                    deselect-label="Cliquer dessus pour enlever" v-model="tags">
+                                    select-label="Cliquer dessus pour sélectionner"
+                                    selected-label="Sélectionné"
+                                    deselect-label="Cliquer dessus pour enlever"
+                                    v-model="tags"
+                                >
                                     <template #noResult>
                                         Aucun tag trouvé.
                                     </template>
@@ -116,27 +169,60 @@
                             </b-form-group>
 
                             <b-form-group label="Sujet* : ">
-                                <b-form-input v-model="subject" type="text" placeholder="Sujet de l'email" />
+                                <b-form-input
+                                    v-model="subject"
+                                    type="text"
+                                    placeholder="Sujet de l'email"
+                                />
                             </b-form-group>
 
                             <b-form-group
                                 description="Ajouter une ou des pièces jointes à l'email. Accepte uniquement des fichiers pdf."
-                                label="Pièce(s) jointe(s) : ">
-                                <b-form-file multiple accept=".pdf" v-model="attachments" ref="attachments"
+                                label="Pièce(s) jointe(s) : "
+                            >
+                                <b-form-file
+                                    multiple
+                                    accept=".pdf"
+                                    v-model="attachments"
+                                    ref="attachments"
                                     placeholder="Attacher un ou des fichiers."
-                                    choose-label="Attacher un ou des fichiers" drop-label="Déposer des fichiers ici"
-                                    plain @input="addFiles" />
-                                <b-list-group v-for="(item, index) in uploadedFiles" :key="index">
-                                    <file-upload :id="item.id" :file="item.file" path="/mail_notification/upload_file/"
-                                        @delete="deleteFile(index)" @setdata="setFileData(index, $event)" />
+                                    choose-label="Attacher un ou des fichiers"
+                                    drop-label="Déposer des fichiers ici"
+                                    plain
+                                    @input="addFiles"
+                                />
+                                <b-list-group
+                                    v-for="(item, index) in uploadedFiles"
+                                    :key="index"
+                                >
+                                    <file-upload
+                                        :id="item.id"
+                                        :file="item.file"
+                                        path="/mail_notification/upload_file/"
+                                        @delete="deleteFile(index)"
+                                        @setdata="setFileData(index, $event)"
+                                    />
                                 </b-list-group>
                             </b-form-group>
-                            <b-form-group :description="explanation_mail" label="Email : ">
-                                <text-editor v-model="emailContent" advanced div-block
-                                    placeholder="Écrire le mail ici." />
-                                <div class="html ql-editor" v-html="replaceContent()" />
+                            <b-form-group
+                                :description="explanation_mail"
+                                label="Email : "
+                            >
+                                <text-editor
+                                    v-model="emailContent"
+                                    advanced
+                                    div-block
+                                    placeholder="Écrire le mail ici."
+                                />
+                                <div
+                                    class="html ql-editor"
+                                    v-html="replaceContent()"
+                                />
                             </b-form-group>
-                            <b-button type="submit" variant="primary">
+                            <b-button
+                                type="submit"
+                                variant="primary"
+                            >
                                 Envoyer
                             </b-button>
                         </div>
@@ -144,7 +230,10 @@
                 </b-col>
             </b-row>
         </b-container>
-        <b-modal v-model="showModal" centered>
+        <b-modal
+            v-model="showModal"
+            centered
+        >
             <p v-if="sending">
                 <b-spinner small />
                 Envoi des emails en cours…
@@ -159,7 +248,12 @@
             </p>
             <p />
             <template #modal-footer>
-                <b-btn size="sm" class="float-right" variant="primary" @click="showModal = false">
+                <b-btn
+                    size="sm"
+                    class="float-right"
+                    variant="primary"
+                    @click="showModal = false"
+                >
                     OK
                 </b-btn>
             </template>

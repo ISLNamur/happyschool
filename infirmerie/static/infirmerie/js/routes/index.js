@@ -17,21 +17,21 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Infirmerie from "../infirmerie.vue";
+import Infirmerie from "../InfirmerieList.vue";
 import AddPassage from "../addPassage.vue";
 
 export default [{
-        path: "/",
-        component: Infirmerie,
-    },
-    {
-        path: "/edit/:id/:sortie",
-        component: AddPassage,
-        props: true
-    },
-    {
-        path: "/new/",
-        component: AddPassage,
-        props: true
-    },
+    path: "/",
+    component: Infirmerie,
+},
+{
+    path: "/edit/:id/:sortie",
+    component: AddPassage,
+    props: true
+},
+{
+    path: "/new/",
+    component: AddPassage,
+    props: true
+},
 ];

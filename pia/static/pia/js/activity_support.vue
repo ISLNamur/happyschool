@@ -22,20 +22,35 @@
         <b-row>
             <b-col>
                 <b-form-group>
-                    <b-select :options="activitySupports" value-field="id" v-model="currentActSuppId"
-                        @change="updateCurrentActSupp" />
+                    <b-select
+                        :options="activitySupports"
+                        value-field="id"
+                        v-model="currentActSuppId"
+                        @change="updateCurrentActSupp"
+                    />
                 </b-form-group>
             </b-col>
             <b-col>
-                <b-btn variant="outline-secondary" @click="copy" :disabled="activitySupports.length === 0">
+                <b-btn
+                    variant="outline-secondary"
+                    @click="copy"
+                    :disabled="activitySupports.length === 0"
+                >
                     <b-icon icon="files" />
                     Copier
                 </b-btn>
-                <b-btn variant="success" @click="add">
+                <b-btn
+                    variant="success"
+                    @click="add"
+                >
                     <b-icon icon="plus" />
                     Ajouter
                 </b-btn>
-                <b-btn variant="danger" @click="remove" :disabled="activitySupports.length === 0">
+                <b-btn
+                    variant="danger"
+                    @click="remove"
+                    :disabled="activitySupports.length === 0"
+                >
                     <b-icon icon="trash" />
                     Supprimer
                 </b-btn>
@@ -48,9 +63,16 @@
                         <b-col>
                             <strong>
                                 <b-form inline>
-                                    Du<b-form-input type="date" v-model="currentActSupp.date_start"
-                                        class="mr-sm-2 ml-2" />
-                                    au<b-form-input type="date" v-model="currentActSupp.date_end" class="ml-2" />
+                                    Du<b-form-input
+                                        type="date"
+                                        v-model="currentActSupp.date_start"
+                                        class="mr-sm-2 ml-2"
+                                    />
+                                    au<b-form-input
+                                        type="date"
+                                        v-model="currentActSupp.date_end"
+                                        class="ml-2"
+                                    />
                                 </b-form>
                             </strong>
                         </b-col>
@@ -65,14 +87,25 @@
                                 </b-tr>
                             </b-thead>
                             <b-tbody>
-                                <b-tr v-for="day in supportDays" :key="day">
+                                <b-tr
+                                    v-for="day in supportDays"
+                                    :key="day"
+                                >
                                     <b-td>{{ dayOfWeek[day] }}</b-td>
                                     <b-td>
-                                        <multiselect :internal-search="false" :options="store.branches"
-                                            placeholder="Choisir une matière" select-label=""
-                                            selected-label="Sélectionné" deselect-label="Cliquer dessus pour enlever"
+                                        <multiselect
+                                            :internal-search="false"
+                                            :options="store.branches"
+                                            placeholder="Choisir une matière"
+                                            select-label=""
+                                            selected-label="Sélectionné"
+                                            deselect-label="Cliquer dessus pour enlever"
                                             v-model="currentActSupp.support_activities[day].branch"
-                                            :show-no-options="false" label="branch" track-by="id" multiple>
+                                            :show-no-options="false"
+                                            label="branch"
+                                            track-by="id"
+                                            multiple
+                                        >
                                             <template #noResult>
                                                 Aucune branche trouvé.
                                             </template>
@@ -80,12 +113,21 @@
                                         </multiselect>
                                     </b-td>
                                     <b-td>
-                                        <multiselect :id="`responsible-support-${day}`" :internal-search="false"
-                                            :options="responsibleOptions" @search-change="getPeople"
-                                            placeholder="Choisir un ou plusieurs profs" select-label=""
-                                            selected-label="Sélectionné" deselect-label="Cliquer dessus pour enlever"
-                                            v-model="currentActSupp.support_activities[day].teachers" label="display"
-                                            track-by="matricule" :show-no-options="false" multiple>
+                                        <multiselect
+                                            :id="`responsible-support-${day}`"
+                                            :internal-search="false"
+                                            :options="responsibleOptions"
+                                            @search-change="getPeople"
+                                            placeholder="Choisir un ou plusieurs profs"
+                                            select-label=""
+                                            selected-label="Sélectionné"
+                                            deselect-label="Cliquer dessus pour enlever"
+                                            v-model="currentActSupp.support_activities[day].teachers"
+                                            label="display"
+                                            track-by="matricule"
+                                            :show-no-options="false"
+                                            multiple
+                                        >
                                             <template #noResult>
                                                 Aucun responsable trouvé.
                                             </template>
@@ -99,27 +141,44 @@
                 </b-card>
             </b-col>
         </b-row>
-        <b-row v-if="currentActSupp" class="mt-3">
+        <b-row
+            v-if="currentActSupp"
+            class="mt-3"
+        >
             <b-col>
                 <b-card>
                     <b-form-group>
-                        <b-form-radio-group v-model="directedStudy"
+                        <b-form-radio-group
+                            v-model="directedStudy"
                             :options="[{ text: 'Oui', value: true }, { text: 'Non', value: false }]"
-                            name="has-directed-study" button-variant="outline-primary" buttons />
+                            name="has-directed-study"
+                            button-variant="outline-primary"
+                            buttons
+                        />
                         <template #label>
                             <strong>Étude dirigée</strong>
                         </template>
                     </b-form-group>
-                    <b-form-group v-slot="{ ariaDescribedby }" v-if="directedStudy">
-                        <b-form-checkbox-group v-model="currentActSupp.directed_study.days" :options="studyDays"
-                            :aria-describedby="ariaDescribedby" name="directed-study" />
+                    <b-form-group
+                        v-slot="{ ariaDescribedby }"
+                        v-if="directedStudy"
+                    >
+                        <b-form-checkbox-group
+                            v-model="currentActSupp.directed_study.days"
+                            :options="studyDays"
+                            :aria-describedby="ariaDescribedby"
+                            name="directed-study"
+                        />
                     </b-form-group>
                 </b-card>
             </b-col>
         </b-row>
         <b-row class="mt-2">
             <b-col>
-                <course-reinforcement :pia="pia" ref="reinforcement" />
+                <course-reinforcement
+                    :pia="pia"
+                    ref="reinforcement"
+                />
             </b-col>
         </b-row>
     </b-overlay>

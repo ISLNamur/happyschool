@@ -24,16 +24,30 @@
                 <b-col>
                     <strong>
                         <b-form inline>
-                            Date<b-form-input type="date" v-model="date_comment" class="mr-sm-2 ml-2"
-                                :state="inputStates.date_comment" />
+                            Date<b-form-input
+                                type="date"
+                                v-model="date_comment"
+                                class="mr-sm-2 ml-2"
+                                :state="inputStates.date_comment"
+                            />
                             <b-form-invalid-feedback :state="inputStates.date_comment">
                                 {{ errorMsg('date_student_project') }}{{ errorMsg('date_parents_opinion') }}
                             </b-form-invalid-feedback>
                         </b-form>
                     </strong>
                 </b-col>
-                <b-col cols="1" align-self="end" class="text-right">
-                    <b-btn @click="$emit('remove')" variant="danger" size="sm" v-b-tooltip.hover title="Supprimer">
+                <b-col
+                    cols="1"
+                    align-self="end"
+                    class="text-right"
+                >
+                    <b-btn
+                        @click="$emit('remove')"
+                        variant="danger"
+                        size="sm"
+                        v-b-tooltip.hover
+                        title="Supprimer"
+                    >
                         <b-icon icon="trash" />
                     </b-btn>
                 </b-col>

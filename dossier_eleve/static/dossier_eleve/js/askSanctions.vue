@@ -19,7 +19,10 @@
 
 <template>
     <div>
-        <div class="loading" v-if="!loaded" />
+        <div
+            class="loading"
+            v-if="!loaded"
+        />
         <b-container v-if="loaded">
             <b-row>
                 <h2>Demandes de sanction</h2>
@@ -30,50 +33,91 @@
                         <b-nav-item href="/dossier_eleve/">
                             Dossier des élèves
                         </b-nav-item>
-                        <b-nav-item active href="/dossier_eleve/ask_sanctions">
+                        <b-nav-item
+                            active
+                            href="/dossier_eleve/ask_sanctions"
+                        >
                             Demandes de sanction
                         </b-nav-item>
                     </template>
                 </b-tabs>
             </b-row>
             <b-row>
-                <b-col cols="12" lg="3">
+                <b-col
+                    cols="12"
+                    lg="3"
+                >
                     <b-form-group>
                         <div>
-                            <b-btn v-if="store.canAskSanction" variant="primary" @click="openDynamicModal('ask-modal')"
-                                class="w-100 mb-1">
-                                <b-icon icon="plus" scale="1.5" />
+                            <b-btn
+                                v-if="store.canAskSanction"
+                                variant="primary"
+                                @click="openDynamicModal('ask-modal')"
+                                class="w-100 mb-1"
+                            >
+                                <b-icon
+                                    icon="plus"
+                                    scale="1.5"
+                                />
                                 Nouvelle demande
                             </b-btn>
-                            <b-btn variant="secondary" @click="openDynamicModal('ask-export-modal')" class="w-100">
+                            <b-btn
+                                variant="secondary"
+                                @click="openDynamicModal('ask-export-modal')"
+                                class="w-100"
+                            >
                                 <b-icon icon="file-earmark" />
                                 Export
                             </b-btn>
-                            <b-btn variant="secondary" @click="openMassActions" class="w-100 mt-1">
+                            <b-btn
+                                variant="secondary"
+                                @click="openMassActions"
+                                class="w-100 mt-1"
+                            >
                                 <b-icon icon="list-check" />
                                 Actions de masse
                             </b-btn>
                         </div>
                     </b-form-group>
                 </b-col>
-                <b-col cols="12" lg="9">
-                    <filters app="dossier_eleve" model="ask_sanctions" ref="filters" :store="store"
-                        @update="applyFilter" :show-search="showFilters" @toggleSearch="showFilters = !showFilters"
-                        class="mb-1" />
+                <b-col
+                    cols="12"
+                    lg="9"
+                >
+                    <filters
+                        app="dossier_eleve"
+                        model="ask_sanctions"
+                        ref="filters"
+                        :store="store"
+                        @update="applyFilter"
+                        :show-search="showFilters"
+                        @toggle-search="showFilters = !showFilters"
+                        class="mb-1"
+                    />
                 </b-col>
             </b-row>
             <b-row v-if="store.canSetSanction">
                 <b-col>
                     <b-list-group>
-                        <b-list-group-item>Demandes de sanction en attente : <b-badge>{{ entriesCount
-                                }}</b-badge></b-list-group-item>
-                        <b-list-group-item button @click="addFilter('activate_not_done', 'Activer', true)">
+                        <b-list-group-item>
+                            Demandes de sanction en attente : <b-badge>
+                                {{ entriesCount
+                                }}
+                            </b-badge>
+                        </b-list-group-item>
+                        <b-list-group-item
+                            button
+                            @click="addFilter('activate_not_done', 'Activer', true)"
+                        >
                             Sanctions non faites <strong>à traiter</strong> : <b-badge variant="danger">
                                 {{ entriesNotDone }}
                             </b-badge>
                         </b-list-group-item>
-                        <b-list-group-item button v-if="entriesWaiting > 0"
-                            @click="addFilter('activate_waiting', 'Activer', true)">
+                        <b-list-group-item
+                            button
+                            v-if="entriesWaiting > 0"
+                            @click="addFilter('activate_waiting', 'Activer', true)"
+                        >
                             En attentes de validations : <b-badge variant="warning">
                                 {{ entriesWaiting }}
                             </b-badge>
@@ -83,12 +127,26 @@
             </b-row>
             <b-row>
                 <b-col>
-                    <b-pagination class="mt-1" :total-rows="entriesCount" v-model="currentPage" @change="changePage"
-                        :per-page="entriesPerPage" />
+                    <b-pagination
+                        class="mt-1"
+                        :total-rows="entriesCount"
+                        v-model="currentPage"
+                        @change="changePage"
+                        :per-page="entriesPerPage"
+                    />
                 </b-col>
                 <b-col>
-                    <b-form-group label="Sanctions par page" label-cols label-align-sm="right">
-                        <b-select class="mt-1" v-model="entriesPerPage" @input="loadEntries" size="sm">
+                    <b-form-group
+                        label="Sanctions par page"
+                        label-cols
+                        label-align-sm="right"
+                    >
+                        <b-select
+                            class="mt-1"
+                            v-model="entriesPerPage"
+                            @input="loadEntries"
+                            size="sm"
+                        >
                             <option :value="2">
                                 2
                             </option>
@@ -108,12 +166,18 @@
                     </b-form-group>
                 </b-col>
             </b-row>
-            <b-card no-body class="current-card d-none d-md-block d-lg-block d-xl-block">
+            <b-card
+                no-body
+                class="current-card d-none d-md-block d-lg-block d-xl-block"
+            >
                 <b-row class="text-center">
                     <b-col cols="2">
                         <strong>Type de sanctions</strong>
                     </b-col>
-                    <b-col v-if="store.settings.enable_disciplinary_council" cols="2">
+                    <b-col
+                        v-if="store.settings.enable_disciplinary_council"
+                        cols="2"
+                    >
                         <strong>Conseil de discipline</strong>
                     </b-col>
                     <b-col cols="2">
@@ -122,18 +186,39 @@
                     <b-col><strong>Commentaire(s)</strong></b-col>
                 </b-row>
             </b-card>
-            <ask-sanctions-entry v-for="(entry, index) in entries" :key="entry.id" :row-data="entry"
-                :light-display="lightDisplay" @delete="askDelete(entry)" @edit="editEntry(index)"
-                @filterStudent="filterStudent($event)" @done="loadEntries"
-                @update-sanction="updateSanction(entry, $event)" />
+            <ask-sanctions-entry
+                v-for="(entry, index) in entries"
+                :key="entry.id"
+                :row-data="entry"
+                :light-display="lightDisplay"
+                @delete="askDelete(entry)"
+                @edit="editEntry(index)"
+                @filter-student="filterStudent($event)"
+                @done="loadEntries"
+                @update-sanction="updateSanction(entry, $event)"
+            />
             <b-row>
                 <b-col>
-                    <b-pagination class="mt-1" :total-rows="entriesCount" v-model="currentPage" @change="changePage"
-                        :per-page="entriesPerPage" />
+                    <b-pagination
+                        class="mt-1"
+                        :total-rows="entriesCount"
+                        v-model="currentPage"
+                        @change="changePage"
+                        :per-page="entriesPerPage"
+                    />
                 </b-col>
                 <b-col>
-                    <b-form-group label="Sanctions par page" label-cols label-align-sm="right">
-                        <b-select class="mt-1" v-model="entriesPerPage" @input="loadEntries" size="sm">
+                    <b-form-group
+                        label="Sanctions par page"
+                        label-cols
+                        label-align-sm="right"
+                    >
+                        <b-select
+                            class="mt-1"
+                            v-model="entriesPerPage"
+                            @input="loadEntries"
+                            size="sm"
+                        >
                             <option :value="20">
                                 20
                             </option>
@@ -150,29 +235,70 @@
                     </b-form-group>
                 </b-col>
             </b-row>
-            <b-modal ref="deleteModal" cancel-title="Annuler" hide-header centered @ok="deleteEntry"
-                @cancel="currentEntry = null" :no-close-on-backdrop="true" :no-close-on-esc="true">
+            <b-modal
+                ref="deleteModal"
+                cancel-title="Annuler"
+                hide-header
+                centered
+                @ok="deleteEntry"
+                @cancel="currentEntry = null"
+                :no-close-on-backdrop="true"
+                :no-close-on-esc="true"
+            >
                 Êtes-vous sûr de vouloir supprimer définitivement cette entrée ?
             </b-modal>
-            <b-modal :title="currentName" size="xl" ref="infoModal" centered ok-only @hidden="currentEntry = null"
-                ok-title="Fermer">
-                <info v-if="currentEntry" :matricule="currentEntry.student_id" type="student" />
+            <b-modal
+                :title="currentName"
+                size="xl"
+                ref="infoModal"
+                centered
+                ok-only
+                @hidden="currentEntry = null"
+                ok-title="Fermer"
+            >
+                <info
+                    v-if="currentEntry"
+                    :matricule="currentEntry.student_id"
+                    type="student"
+                />
             </b-modal>
-            <b-modal ref="massActions" scrollable size="xl" ok-only @hide="entriesPerPage = 20; loadEntries()"
-                body-class="position-static" :busy="massActionsOverlay" :hide-header-close="massActionsOverlay"
-                :no-close-on-esc="massActionsOverlay" :no-close-on-backdrop="massActionsOverlay">
+            <b-modal
+                ref="massActions"
+                scrollable
+                size="xl"
+                ok-only
+                @hide="entriesPerPage = 20; loadEntries()"
+                body-class="position-static"
+                :busy="massActionsOverlay"
+                :hide-header-close="massActionsOverlay"
+                :no-close-on-esc="massActionsOverlay"
+                :no-close-on-backdrop="massActionsOverlay"
+            >
                 <b-overlay :show="massActionsOverlay">
                     <template #overlay>
                         <div class="text-center">
                             <p>Modification en cours…</p>
-                            <b-progress :value="massActionsProgress" :max="1" show-progress animated />
+                            <b-progress
+                                :value="massActionsProgress"
+                                :max="1"
+                                show-progress
+                                animated
+                            />
                         </div>
                     </template>
-                    <mass-actions :sanctions="entries" @loading="updateMassActionsLoading" />
+                    <mass-actions
+                        :sanctions="entries"
+                        @loading="updateMassActionsLoading"
+                    />
                 </b-overlay>
             </b-modal>
-            <component :is="currentModal" ref="dynamicModal" @update="loadEntries" @reset="currentEntry = null"
-                :entry="currentEntry" />
+            <component
+                :is="currentModal"
+                ref="dynamicModal"
+                @update="loadEntries"
+                @reset="currentEntry = null"
+                :entry="currentEntry"
+            />
         </b-container>
     </div>
 </template>

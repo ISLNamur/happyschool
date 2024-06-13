@@ -19,17 +19,32 @@
 
 <template>
     <b-overlay :show="loading">
-        <b-card no-body class="mt-1" border-variant="info">
+        <b-card
+            no-body
+            class="mt-1"
+            border-variant="info"
+        >
             <b-card-header>
                 <b-row>
                     <b-col v-if="!editMode && advanced">
                         <strong>{{ branch ? branch.branch : "Ne concerne pas une branche en particulier" }}</strong>
                     </b-col>
                     <b-col v-else-if="advanced">
-                        <b-form-group label="Branche" label-cols="2">
-                            <multiselect :options="store.branches" placeholder="Choisisser une branche" select-label=""
-                                selected-label="Sélectionné" deselect-label="Cliquer dessus pour enlever"
-                                v-model="branch" :show-no-options="false" label="branch" track-by="id">
+                        <b-form-group
+                            label="Branche"
+                            label-cols="2"
+                        >
+                            <multiselect
+                                :options="store.branches"
+                                placeholder="Choisisser une branche"
+                                select-label=""
+                                selected-label="Sélectionné"
+                                deselect-label="Cliquer dessus pour enlever"
+                                v-model="branch"
+                                :show-no-options="false"
+                                label="branch"
+                                track-by="id"
+                            >
                                 <template #singleLabel="props">
                                     <strong>{{ props.option.branch }}</strong>
                                 </template>
@@ -40,13 +55,31 @@
                             </multiselect>
                         </b-form-group>
                     </b-col>
-                    <b-col cols="2" class="text-right">
-                        <b-btn variant="light" size="sm" @click="editMode = !editMode; if (!editMode) $emit('save')"
-                            class="card-link mb-1">
-                            <b-icon :icon="editMode ? 'check2-square' : 'pencil-square'" variant="success" />
+                    <b-col
+                        cols="2"
+                        class="text-right"
+                    >
+                        <b-btn
+                            variant="light"
+                            size="sm"
+                            @click="editMode = !editMode; if (!editMode) $emit('save')"
+                            class="card-link mb-1"
+                        >
+                            <b-icon
+                                :icon="editMode ? 'check2-square' : 'pencil-square'"
+                                variant="success"
+                            />
                         </b-btn>
-                        <b-btn variant="light" size="sm" @click="$emit('remove')" class="card-link">
-                            <b-icon variant="danger" icon="trash-fill" />
+                        <b-btn
+                            variant="light"
+                            size="sm"
+                            @click="$emit('remove')"
+                            class="card-link"
+                        >
+                            <b-icon
+                                variant="danger"
+                                icon="trash-fill"
+                            />
                         </b-btn>
                     </b-col>
                 </b-row>
@@ -65,18 +98,30 @@
                             <b-input-group-prepend is-text>
                                 <b-icon icon="search" />
                             </b-input-group-prepend>
-                            <b-form-input placeholder="Filtrer les ressources et difficultés" v-model="filter" />
+                            <b-form-input
+                                placeholder="Filtrer les ressources et difficultés"
+                                v-model="filter"
+                            />
                         </b-input-group>
                     </b-col>
                 </b-row>
             </b-card-header>
-            <b-list-group flush v-if="editMode">
-                <resource-difficulty v-for="resDif in resourcesDifficulties" :key="resDif.id"
+            <b-list-group
+                flush
+                v-if="editMode"
+            >
+                <resource-difficulty
+                    v-for="resDif in resourcesDifficulties"
+                    :key="resDif.id"
                     :resource-difficulty="resDif"
                     v-model="statements[store.resourceDifficulty.findIndex(rD => rD.id === resDif.id)]"
-                    :edit-mode="editMode" />
+                    :edit-mode="editMode"
+                />
                 <b-list-group-item class="text-right">
-                    <b-btn @click="editMode = false; $emit('save')" variant="outline-primary">
+                    <b-btn
+                        @click="editMode = false; $emit('save')"
+                        variant="outline-primary"
+                    >
                         <b-icon icon="box-arrow-in-right" />
                         Sauver
                     </b-btn>
@@ -89,8 +134,13 @@
                             <b-list-group-item>
                                 <strong>Ressources</strong>
                             </b-list-group-item>
-                            <resource-difficulty v-for="res in resources" :key="res.id" :resource-difficulty="res"
-                                :edit-mode="editMode" :value="true" />
+                            <resource-difficulty
+                                v-for="res in resources"
+                                :key="res.id"
+                                :resource-difficulty="res"
+                                :edit-mode="editMode"
+                                :value="true"
+                            />
                         </b-list-group>
                     </b-col>
                     <b-col>
@@ -98,8 +148,13 @@
                             <b-list-group-item>
                                 <strong>Difficultés</strong>
                             </b-list-group-item>
-                            <resource-difficulty v-for="res in difficulties" :key="res.id" :resource-difficulty="res"
-                                :edit-mode="editMode" :value="false" />
+                            <resource-difficulty
+                                v-for="res in difficulties"
+                                :key="res.id"
+                                :resource-difficulty="res"
+                                :edit-mode="editMode"
+                                :value="false"
+                            />
                         </b-list-group>
                     </b-col>
                 </b-row>

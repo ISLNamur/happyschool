@@ -71,7 +71,7 @@
                                 selected-label="Sélectionné"
                                 deselect-label="Cliquer dessus pour enlever"
                                 placeholder="Faire une recherche"
-                                :modelValue="filtersValue"
+                                :model-value="filtersValue"
                                 :options="filterSearchOptions"
                                 track-by="value"
                                 :multiple="true"

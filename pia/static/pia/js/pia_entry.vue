@@ -19,8 +19,14 @@
 
 <template>
     <div>
-        <transition appear name="fade">
-            <b-card :class="`px-4 mt-2 ${newEntry ? 'new' : ''}`" no-body>
+        <transition
+            appear
+            name="fade"
+        >
+            <b-card
+                :class="`px-4 mt-2 ${newEntry ? 'new' : ''}`"
+                no-body
+            >
                 <b-row>
                     <b-col>
                         <h5>
@@ -32,12 +38,27 @@
                     </b-col>
                     <b-col sm="2">
                         <div class="text-right">
-                            <b-btn variant="light" size="sm" :to="`/edit/${rowData.id}/${rowData.advanced}/`"
-                                class="card-link">
-                                <b-icon icon="pencil-square" variant="success" />
+                            <b-btn
+                                variant="light"
+                                size="sm"
+                                :to="`/edit/${rowData.id}/${rowData.advanced}/`"
+                                class="card-link"
+                            >
+                                <b-icon
+                                    icon="pencil-square"
+                                    variant="success"
+                                />
                             </b-btn>
-                            <b-btn variant="light" size="sm" @click="deleteEntry" class="card-link">
-                                <b-icon icon="trash-fill" variant="danger" />
+                            <b-btn
+                                variant="light"
+                                size="sm"
+                                @click="deleteEntry"
+                                class="card-link"
+                            >
+                                <b-icon
+                                    icon="trash-fill"
+                                    variant="danger"
+                                />
                             </b-btn>
                         </div>
                     </b-col>

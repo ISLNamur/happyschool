@@ -24,7 +24,10 @@
             :menu-info="menuInfo"
         />
         <router-view v-slot="{ Component }">
-            <transition name="slide-left" mode="out-in">
+            <transition
+                name="slide-left"
+                mode="out-in"
+            >
                 <component :is="Component" />
             </transition>
         </router-view>
@@ -40,12 +43,12 @@ export default {
             menuInfo: {},    
         };
     },
-     mounted: function() {
+    mounted: function() {
         // eslint-disable-next-line no-undef
         this.menuInfo = menu;
-     },
+    },
     components: {
         "app-menu": Menu,
     }
-}
+};
 </script>

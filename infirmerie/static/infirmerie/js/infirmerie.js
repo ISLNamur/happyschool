@@ -18,27 +18,27 @@
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
 import Vue from "vue";
-import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue';
+import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
+import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap-vue/dist/bootstrap-vue.css";
 
-Vue.use(BootstrapVue)
-Vue.use(BootstrapVueIcons)
+Vue.use(BootstrapVue);
+Vue.use(BootstrapVueIcons);
 
 import { createPinia } from "pinia";
 
 const pinia = createPinia();
 
 import routes from "./routes/index.js";
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from "vue-router";
 
 const router = createRouter({
     routes: routes,
     history: createWebHashHistory(),
 });
 
-import { createApp } from 'vue';
+import { createApp } from "vue";
 import InfirmeriePage from "./infirmerie_page.vue";
 
 const app = createApp(InfirmeriePage);

@@ -24,10 +24,17 @@
                 <h2>Plan Individuel d'Apprentissage</h2>
             </b-row>
             <b-row>
-                <b-col v-if="canAddPia" cols="12" sm="3">
+                <b-col
+                    v-if="canAddPia"
+                    cols="12"
+                    sm="3"
+                >
                     <b-dropdown variant="success">
                         <template #button-content>
-                            <b-icon icon="plus" scale="1.5" />
+                            <b-icon
+                                icon="plus"
+                                scale="1.5"
+                            />
                             Ajouter
                         </template>
                         <b-dropdown-item to="/new/true/">
@@ -39,16 +46,36 @@
                     </b-dropdown>
                 </b-col>
                 <b-col>
-                    <b-form-group label="Filtrer PIA/Aide" label-cols="12" label-cols-md="5">
-                        <b-form-select v-model="filterAdvanced" :options="filterOptions" @change="loadEntries" />
+                    <b-form-group
+                        label="Filtrer PIA/Aide"
+                        label-cols="12"
+                        label-cols-md="5"
+                    >
+                        <b-form-select
+                            v-model="filterAdvanced"
+                            :options="filterOptions"
+                            @change="loadEntries"
+                        />
                     </b-form-group>
                 </b-col>
                 <b-col>
-                    <multiselect id="search" :internal-search="false" :options="studentOptions"
-                        placeholder="Rechercher un étudiant" @search-change="searchStudent" @select="goToRecord"
-                        select-label="" selected-label="Sélectionné" deselect-label="Cliquer dessus pour enlever"
-                        label="display" track-by="matricule" :show-no-options="false" v-model="currentStudent"
-                        preserve-search :clear-on-select="false">
+                    <multiselect
+                        id="search"
+                        :internal-search="false"
+                        :options="studentOptions"
+                        placeholder="Rechercher un étudiant"
+                        @search-change="searchStudent"
+                        @select="goToRecord"
+                        select-label=""
+                        selected-label="Sélectionné"
+                        deselect-label="Cliquer dessus pour enlever"
+                        label="display"
+                        track-by="matricule"
+                        :show-no-options="false"
+                        v-model="currentStudent"
+                        preserve-search
+                        :clear-on-select="false"
+                    >
                         <template #noResult>
                             Aucun élève trouvé.
                         </template>
@@ -57,10 +84,16 @@
             </b-row>
             <b-row class="mt-2">
                 <b-col>
-                    <b-alert :show="lastPias.length > 0" dismissible>
+                    <b-alert
+                        :show="lastPias.length > 0"
+                        dismissible
+                    >
                         <p>Les PIA des élèves suivants ont été modifiés récemment :</p>
                         <ul>
-                            <li v-for="pia in lastPias" :key="pia.id">
+                            <li
+                                v-for="pia in lastPias"
+                                :key="pia.id"
+                            >
                                 <a :href="`#/edit/${pia.id}/${pia.advanced}/`">
                                     {{ displayStudent(pia.student) }}
                                 </a>
@@ -71,13 +104,22 @@
             </b-row>
             <b-row>
                 <b-col>
-                    <b-pagination-nav class="mt-1" :number-of-pages="pagesCount" :link-gen="pageLink" use-router />
+                    <b-pagination-nav
+                        class="mt-1"
+                        :number-of-pages="pagesCount"
+                        :link-gen="pageLink"
+                        use-router
+                    />
                 </b-col>
             </b-row>
             <b-row>
                 <b-col>
-                    <pia-entry v-for="(entry, index) in entries" :key="entry.id" :row-data="entry"
-                        @delete="deleteRecord(index)" />
+                    <pia-entry
+                        v-for="(entry, index) in entries"
+                        :key="entry.id"
+                        :row-data="entry"
+                        @delete="deleteRecord(index)"
+                    />
                 </b-col>
             </b-row>
         </b-container>

@@ -37,7 +37,7 @@
                         :store="store"
                         @update="applyFilter"
                         :show-search="showFilters"
-                        @toggleSearch="showFilters = !showFilters"
+                        @toggle-search="showFilters = !showFilters"
                         class="mt-1 mt-lg-0"
                     />
                 </b-col>
@@ -77,8 +77,8 @@
                 @delete="askDelete(entry)"
                 @edit="editEntry(index)"
                 @processing="processEntry(index)"
-                @filterStudent="filterStudent($event)"
-                @showInfo="showInfo(entry)"
+                @filter-student="filterStudent($event)"
+                @show-info="showInfo(entry)"
             />
         </b-container>
         <b-modal

@@ -21,7 +21,12 @@
     <div>
         <b-row>
             <b-col>
-                <b-input :value="date" type="date" @change="moveToDate" class="w-50" />
+                <b-input
+                    :value="date"
+                    type="date"
+                    @change="moveToDate"
+                    class="w-50"
+                />
             </b-col>
             <b-btn @click="$router.go(-1)">
                 Retour
@@ -30,15 +35,27 @@
         <b-row class="mt-1">
             <b-col>
                 <b-overlay :show="loading">
-                    <b-table id="classoverview" :items="studentAsList" :fields="fields" class="text-center">
+                    <b-table
+                        id="classoverview"
+                        :items="studentAsList"
+                        :fields="fields"
+                        class="text-center"
+                    >
                         <template #head(absence)="">
                             <b-row>
-                                <b-col v-for="p in teachersPeriod" :key="p.id" class="pr-1 pl-1">
+                                <b-col
+                                    v-for="p in teachersPeriod"
+                                    :key="p.id"
+                                    class="pr-1 pl-1"
+                                >
                                     {{ p.start.slice(0, 5) }}
                                 </b-col>
                             </b-row>
                             <b-row>
-                                <b-col v-for="p in educatorsPeriod" :key="p.id">
+                                <b-col
+                                    v-for="p in educatorsPeriod"
+                                    :key="p.id"
+                                >
                                     {{ p.name }}
                                 </b-col>
                             </b-row>
@@ -51,8 +68,10 @@
                         </template>
                         <template #cell(absence)="data">
                             <overview-teacher-entry :absences="data.item.absence_teachers" />
-                            <overview-educator-entry :absences="data.item.absence_educators"
-                                @change="updateEducatorAbsence($event)" />
+                            <overview-educator-entry
+                                :absences="data.item.absence_educators"
+                                @change="updateEducatorAbsence($event)"
+                            />
                         </template>
                     </b-table>
                 </b-overlay>
@@ -60,7 +79,10 @@
         </b-row>
         <b-row>
             <b-col>
-                <student-year-view :student-id="parseInt(studentId)" :current-date="date" />
+                <student-year-view
+                    :student-id="parseInt(studentId)"
+                    :current-date="date"
+                />
             </b-col>
         </b-row>
     </div>
