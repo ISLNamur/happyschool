@@ -1,11 +1,15 @@
 {% extends "core/base_vue.html" %}
 
+{% load vite %}
+
 {% block header %}
 <title>HappySchool : Absences Élèves</title>
 
+{% vite %}
+{% vite 'student_absence_teacher/js/student_absence_teacher.js' %}
+
 {% endblock %}
 {% block content %}
-{% load render_bundle from webpack_loader %}
 
 <script>
     const current_app = "student_absence_teacher";
@@ -15,7 +19,5 @@
     const proeco = {{ proeco|safe }};
 </script>
 <div id="vue-app"></div>
-
-{% render_bundle 'student_absence_teacher' %}
 
 {% endblock %}
