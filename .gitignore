@@ -15,3 +15,6 @@ docs/_build/
 package-lock.json
 /static/
 .hotfile
+.directory
+.vscode/
+libreschoolfdb
