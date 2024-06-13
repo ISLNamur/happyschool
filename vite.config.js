@@ -28,4 +28,7 @@ export default defineConfig({
         }),
         djangoVitePlugin(appPathTruncate),
     ],
+    // build: {
+    //     cssCodeSplit: false,
+    // },
 });
