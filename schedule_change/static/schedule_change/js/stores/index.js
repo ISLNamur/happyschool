@@ -75,7 +75,7 @@ export const scheduleChangeStore = defineStore("scheduleChangeStore", {
         },
         enableFullscreen: function () {
             this.canAdd = false;
-            this.commit("addFilter", {filterType: "activate_has_classe", tag: "Activer", value: true});
+            this.addFilter({filterType: "activate_has_classe", tag: "Activer", value: true});
         },
         setChangeType: function (types) {
             this.changeType = types;
