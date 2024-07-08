@@ -17,11 +17,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
+import sys
 from datetime import date, timedelta
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.db.models import Q
 
 from core.utilities import get_scholar_year
 from core.models import TeachingModel, StudentModel
@@ -29,34 +31,22 @@ from student_absence_teacher.models import (
     JustificationModel,
     StudentAbsenceEducModel,
     PeriodEducModel,
+    JustMotiveModel,
 )
-
 
 class Command(BaseCommand):
     help = "Import a ProEco database into HappySchool."
 
     def handle(self, *args, **options):
-        from libreschoolfdb import reader
+        from libreschoolfdb.absences import get_all_absences, get_all_justifications
 
         proecos = settings.SYNC_FDB_SERVER
         current_year = get_scholar_year()
 
         for proeco in proecos:
+            absences = get_all_absences(23, fdb_server=proeco["server"])
 
-            # ProEco student list.
-            proeco_students = reader.get_students(
-                year=current_year,
-                fdb_server=proeco["server"],
-                teaching=proeco["teaching_type"],
-                med_info=False,
-                parents_info=False,
-            )
-            print("%s students found" % len(proeco_students))
-            processed = 0
-            for matricule, s in proeco_students.items():
-                processed += 1
-                if processed % 50 == 1:
-                    print(processed - 1)
+            for matricule, absences_stud in absences.items():
                 try:
                     student = StudentModel.objects.get(matricule=matricule)
                 except ObjectDoesNotExist:
@@ -64,13 +54,10 @@ class Command(BaseCommand):
                     continue
 
                 # Import absences.
-                absences = s["absences"] if "absences" in s else None
-                if not absences:
-                    continue
                 absences_processed = set()
-                for a in absences:
+                for a in absences_stud:
+                    period = PeriodEducModel.objects.all().order_by("start")[a.period]
                     try:
-                        period = PeriodEducModel.objects.all().order_by("start")[a.period]
                         absence = StudentAbsenceEducModel.objects.get(
                             student=student, date_absence=a.date, period=period
                         )
@@ -80,8 +67,16 @@ class Command(BaseCommand):
                         absence = StudentAbsenceEducModel.objects.create(
                             student=student,
                             date_absence=a.date,
+                            period=period,
                             status=a.status,
                         )
+                    except MultipleObjectsReturned:
+                        print(student, a.date, period)
+                        multiple = StudentAbsenceEducModel.objects.filter(
+                            student=student, date_absence=a.date, period=period
+                        )
+                        print(multiple)
+                        continue
                     absences_processed.add(absence.pk)
 
                 # Remove deleted absences.
@@ -89,17 +84,49 @@ class Command(BaseCommand):
                     pk__in=absences_processed
                 ).delete()
 
-                # Import justifications.
-                justifications = s["absences_justifications"]
+
+            justifications = get_all_justifications(23, fdb_server=proeco["server"])
+            for matricule, just in justifications.items():
+                try:
+                    student = StudentModel.objects.get(matricule=matricule)
+                except ObjectDoesNotExist:
+                    # No student found, ignoring.
+                    continue
+
                 # Clean first.
                 JustificationModel.objects.filter(student=student).delete()
-                for j in justifications:
-                    JustificationModel.objects.create(
+
+                periods = list(enumerate(PeriodEducModel.objects.all().order_by("start")))
+
+                for j in just:
+                    motive = JustMotiveModel.objects.get(short_name=j["motive"])
+                    just = JustificationModel.objects.create(
                         student=student,
-                        date_just_start=j["start"][0],
-                        date_just_end=j["end"][0],
-                        half_day_start=j["start"][1],
-                        half_day_end=j["end"][1],
-                        short_name=j["code"],
-                        half_days=j["half_days"],
+                        date_just_start=j["start_date"],
+                        date_just_end=j["end_date"],
+                        half_day_start=j["start_period"],
+                        half_day_end=j["end_period"],
+                        motive=motive,
+                        comment=j["comment"],
                     )
+
+                    # ProEco periods are listed by indices. Find the associated period model.
+                    start_periods = [
+                        p
+                        for i, p in periods
+                        if i >= just.half_day_start
+                    ]
+                    end_periods = [
+                        p
+                        for i, p in periods
+                        if i <= just.half_day_end
+                    ]
+
+                    related_absences = StudentAbsenceEducModel.objects.filter(status="A", student=student).filter(
+                        Q(date_absence__gt=just.date_just_start, date_absence__lt=just.date_just_end)
+                        | Q(date_absence=just.date_just_start, period__in=start_periods)
+                        | Q(date_absence=just.date_just_end, period__in=end_periods)
+                    )
+
+                    just.absences.set(related_absences)
+                    
