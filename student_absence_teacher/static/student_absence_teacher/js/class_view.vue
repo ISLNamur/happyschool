@@ -20,36 +20,6 @@
 <template>
     <div>
         <b-row>
-            <b-col md="4">
-                <b-input
-                    :value="date"
-                    type="date"
-                    @change="moveToDate"
-                />
-            </b-col>
-            <b-col md="4">
-                <b-form-group>
-                    <multiselect
-                        :show-no-options="false"
-                        :internal-search="false"
-                        :options="classOptions"
-                        @search-change="getSearchOptions"
-                        placeholder="Rechercher classe"
-                        select-label=""
-                        selected-label="Sélectionné"
-                        deselect-label=""
-                        label="display"
-                        track-by="id"
-                        :v-model="search"
-                        @select="moveToClass"
-                    >
-                        <template #noResult>
-                            Aucune classe trouvée.
-                        </template>
-                        <template #noOptions />
-                    </multiselect>
-                </b-form-group>
-            </b-col>
             <b-col class="text-right mb-1">
                 <b-btn
                     variant="primary"
@@ -89,7 +59,7 @@
                             </b-row>
                         </template>
                         <template #cell(studentName)="data">
-                            <a :href="`#/student_view/${data.item.matricule}/${date}/`">{{ data.value }}</a>
+                            <a :href="`#/overview/${date}/student_view/${data.item.matricule}/`">{{ data.value }}</a>
                             <a :href="`/annuaire/#/person/student/${data.item.matricule}/`">
                                 <b-icon icon="file-earmark-richtext" />
                             </a>
@@ -101,6 +71,19 @@
                                 @change="updateEducatorAbsence($event, data.index)"
                             />
                         </template>
+                        <template #cell(appel)="data">
+                            <b-icon
+                                v-if="data.value"
+                                :id="`call-${data.value.id}`"
+                                icon="telephone"
+                            />
+                            <b-tooltip
+                                :target="`call-${data.value.id}`"
+                                triggers="hover"
+                            >
+                                {{ data.value.object.display }} - {{ data.value.motive.display }}: {{ data.value.commentaire }}
+                            </b-tooltip>
+                        </template>
                     </b-table>
                 </b-overlay>
             </b-col>
@@ -110,7 +93,6 @@
 
 <script>
 import axios from "axios";
-import Multiselect from "vue-multiselect";
 
 import { displayStudent, extractDayOfWeek } from "@s:core/js/common/utilities.js";
 
@@ -154,18 +136,18 @@ export default {
             store: studentAbsenceTeacherStore()
         };
     },
-    methods: {
-        moveToDate: function (newDate) {
-            this.$router.push(`/class_view/${this.classId}/${newDate}/`, () => {
-                this.loading = true;
-                this.getStudentsAbsences(this.classId, newDate);
-            });
+    watch: {
+        date: function () {
+            this.updateStudentList();
         },
-        moveToClass: function (newClass) {
-            this.$router.push(`/class_view/${newClass.id}/${this.date}/`, () => {
-                this.loading = true;
-                this.getStudentsAbsences(newClass.id, this.date);
-            });
+        classId: function () {
+            this.updateStudentList();
+        }
+    },
+    methods: {
+        updateStudentList: function () {
+            this.loading = true;
+            this.getStudentsAbsences(this.classId, this.date);
         },
         getSearchOptions: function (query) {
             // Ensure the last search is the first response.
@@ -220,8 +202,16 @@ export default {
                 axios.get("/student_absence_teacher/api/period_teacher/"),
                 axios.get("/student_absence_teacher/api/period_educ/"),
                 axios.get(`/student_absence_teacher/api/absence_teacher/?student__classe=${classId}&date_absence=${date}&page_size=500`),
-                axios.get(`/student_absence_teacher/api/absence_educ/?student__classe=${classId}&date_absence=${date}&page_size=500`)
+                axios.get(`/student_absence_teacher/api/absence_educ/?student__classe=${classId}&date_absence=${date}&page_size=500`),
             ];
+
+            // eslint-disable-next-line no-undef
+            if (menu.apps.find(a => a.app === "appels")) {
+                promises.push(
+                    axios.get(`/appels/api/appel/?matricule__classe=${this.classId}&date_motif_start__gte=${this.date}&date_motif_end__lte=${this.date}`)
+                );
+            }
+
             Promise.all(promises).then(resp => {
                 const currentDay = (new Date(date)).getDay();
                 const teachersAbsences = resp[3].data.results;
@@ -250,6 +240,20 @@ export default {
                         this.fields.splice(1, 0, { key: "group", label: "Groupe" });
                     }
                 }
+                // Check if there are appels.
+                if (resp.length === 6) {
+                    this.fields.push(
+                        {
+                            key: "appel",
+                            label: ""
+                        }
+                    );
+
+                    this.students.forEach(student => {
+                        student.appel = resp[5].data.results.find(a => a.matricule_id === student.matricule);
+                    });
+                }
+
                 this.loading = false;
             });
         },
@@ -261,7 +265,6 @@ export default {
     components: {
         OverviewTeacherEntry,
         OverviewEducatorEntry,
-        Multiselect
     }
 };
 </script>

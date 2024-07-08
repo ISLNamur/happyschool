@@ -25,6 +25,7 @@ from itertools import groupby
 from weasyprint import HTML
 
 from django.template.loader import get_template
+from django.template import Template, Context
 from django.db.models import Count, ObjectDoesNotExist, Q
 from django.conf import settings
 from django.views.generic import TemplateView
@@ -42,9 +43,17 @@ from rest_framework.filters import OrderingFilter
 from rest_framework import status
 
 from core.models import ClasseModel, StudentModel, ResponsibleModel
-from core.utilities import get_menu
+from core.utilities import get_menu, get_scholar_year
 from core.people import get_classes
-from core.views import BaseFilters, PageNumberSizePagination, DjangoModelWithAccessPermissions
+from core.email import send_email, get_resp_emails
+from core.views import (
+    BaseFilters,
+    PageNumberSizePagination,
+    DjangoModelWithAccessPermissions,
+    get_core_settings,
+    LargePageSizePagination,
+    BinaryFileRenderer
+)
 
 from .models import (
     StudentAbsenceTeacherSettingsModel,
@@ -53,6 +62,8 @@ from .models import (
     PeriodModel,
     PeriodEducModel,
     JustificationModel,
+    JustMotiveModel,
+    MailTemplateModel,
 )
 from .serializers import (
     StudentAbsenceTeacherSettingsSerializer,
@@ -61,6 +72,7 @@ from .serializers import (
     PeriodEducSerializer,
     StudentAbsenceTeacherSerializer,
     JustificationSerializer,
+    JustMotiveSerializer
 )
 
 
@@ -166,11 +178,14 @@ class StudentAbsenceTeacherViewSet(ModelViewSet):
 
 
 class StudentAbsenceEducFilter(BaseFilters):
+    datetime_field = "date_absence"
+
     student__display = filters.CharFilter(method="people_name_by")
     classe = filters.CharFilter(method="classe_by")
     activate_last_absence = filters.BooleanFilter(method="activate_last_absence_by")
     activate_today_absence = filters.BooleanFilter(method="activate_today_absence_by")
     activate_own_classes = filters.BooleanFilter(method="activate_own_classes_by")
+    activate_no_justification = filters.BooleanFilter(method="activate_no_justification_by")
 
     class Meta:
         fields_to_filter = [
@@ -180,6 +195,7 @@ class StudentAbsenceEducFilter(BaseFilters):
             "status",
             "student__classe",
             "period__name",
+            "mail_warning",
         ]
         model = StudentAbsenceEducModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
@@ -210,6 +226,12 @@ class StudentAbsenceEducFilter(BaseFilters):
             user=self.request.user,
         )
         return queryset.filter(student__classe__in=classes)
+    
+    def activate_no_justification_by(self, queryset, name, value):
+        if not value:
+            return queryset
+
+        return queryset.filter(justificationmodel__isnull=True)
 
 
 class StudentAbsenceEducViewSet(ModelViewSet):
@@ -579,6 +601,234 @@ if "proeco" in settings.INSTALLED_APPS:
             return "Pref_NOMS_absences.TXT"
 
 
-class JustificationViewSet(ReadOnlyModelViewSet):
+class NoJustificationCountAPI(APIView):
+    permission_classes = [IsAuthenticated]
+    permission_required = [
+        "student_absence_teacher.view_justificationmodel",
+    ]
+
+    def get(self, request, student=None, format=None):
+        if not student:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        core_settings = get_core_settings()
+        start = timezone.datetime(
+            year=get_scholar_year(),
+            month=core_settings.month_scholar_year_start,
+            day=core_settings.day_scholar_year_start,
+        )
+        count = StudentAbsenceEducModel.objects.filter(
+            justificationmodel__isnull=True, student__matricule=student, status="A", date_absence__gte=start
+        ).count()
+        return Response(data={"count": count, "student": int(student)})
+
+
+class JustificationCountAPI(APIView):
+    permission_classes = [IsAuthenticated]
+    permission_required = [
+        "student_absence_teacher.view_justificationmodel",
+    ]
+
+    def get(self, request, student=None, format=None):
+        if not student:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        core_settings = get_core_settings()
+        start = timezone.datetime(
+            year=get_scholar_year(),
+            month=core_settings.month_scholar_year_start,
+            day=core_settings.day_scholar_year_start,
+        )
+        total_absences_with_just = StudentAbsenceEducModel.objects.filter(
+            justificationmodel__isnull=False, student__matricule=student, status="A", date_absence__gte=start
+        )
+
+        justified = (total_absences_with_just
+            .filter(justificationmodel__motive__admissible_up_to__gt=0)
+            .values(
+                "justificationmodel__motive",
+                "justificationmodel__motive__short_name",
+                "justificationmodel__motive__name",
+                "justificationmodel__motive__admissible_up_to",
+            )
+            .annotate(Count("justificationmodel__motive"))
+        )
+        unjustified = (total_absences_with_just.filter(justificationmodel__motive__admissible_up_to=0)
+            .values(
+                "justificationmodel__motive",
+                "justificationmodel__motive__short_name",
+                "justificationmodel__motive__name",
+            )
+            .annotate(Count("justificationmodel__motive"))
+        )
+    
+        return Response(data={
+            "justified": justified,
+            "unjustified": unjustified,
+            "student": int(student)
+        })
+
+
+class JustificationFilter(BaseFilters):
+    datetime_field = "date_just_start"
+
+    class Meta:
+        fields_to_filter = [
+            "student__matricule",
+            "date_just_start",
+            "date_just_end",
+            "half_day_start",
+            "half_day_end",
+            "motive"
+        ]
+        fields = BaseFilters.Meta.generate_filters(fields_to_filter)
+        model = JustificationModel
+
+class JustificationViewSet(ModelViewSet):
     queryset = JustificationModel.objects.all()
     serializer_class = JustificationSerializer
+    permission_classes = [DjangoModelWithAccessPermissions]
+    filter_backends = (
+        filters.DjangoFilterBackend,
+        OrderingFilter,
+    )
+    filterset_class = JustificationFilter
+    pagination_class = PageNumberSizePagination
+    ordering_fields = [
+        "date_just_start",
+    ]
+
+    def create(self, request, *args, **kwargs):
+        # student_id = request.data.get("student")
+        
+        serializer = self.get_serializer(data=self.request.data)
+        serializer.is_valid(raise_exception=True)
+
+        just = serializer.save()
+
+        if get_settings().sync_with_proeco:
+            from libreschoolfdb.writer import set_absence_justification
+
+            teaching_name = StudentModel.objects.get(matricule=just.student.matricule).teaching.name
+
+            server = [
+                s["server"] for s in settings.SYNC_FDB_SERVER if s["teaching_name"] == teaching_name
+            ]
+            if len(server) == 0:
+                raise
+
+            set_absence_justification(
+                matricule=just.student.matricule,
+                just_date_start=just.date_just_start,
+                just_date_end=just.date_just_end,
+                just_period_start=just.half_day_start,
+                just_period_end=just.half_day_end,
+                motive=just.motive.short_name,
+                comment=just.comment,
+                justification="",
+                fdb_server=server[0],
+            )
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED)       
+
+
+class JustMotiveViewSet(ReadOnlyModelViewSet):
+    queryset = JustMotiveModel.objects.all()
+    serializer_class = JustMotiveSerializer
+    pagination_class = LargePageSizePagination
+
+
+class MailWarningTemplateAPI(APIView):
+    permission_required = [
+        "student_absence_teacher.add_justificationmodel",
+    ]
+
+    def get(self, request, student_id, date_start, date_end, format=None):
+        try:
+            student = StudentModel.objects.get(matricule=student_id)
+        except ObjectDoesNotExist:
+            return Response(None)
+
+        template = MailTemplateModel.objects.get_or_create(name="mail_warning")[0]
+        t = Template(template.template)
+
+        c = Context({"student": student, "date_start": date_start, "date_end": date_end})
+        return Response(t.render(context=c))
+
+
+class MailWarningAPI(APIView):
+    permission_required = [
+        "student_absence_teacher.add_studentabsenceeducmodel",
+    ]
+
+    def post(self, request, format=None):
+        try:
+            student = StudentModel.objects.get(matricule=request.data.get("student_id", 0))
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        recipients = request.data.get("recipients", [])
+        context = {
+            "student": student,
+            "text": request.data.get("msg"),
+            "core_settings": get_core_settings(),
+        }
+
+        resp_school = get_resp_emails(student)
+
+        # Get recipients.
+        recipient_email = set()
+        if "mother" in recipients:
+            recipient_email.add(student.additionalstudentinfo.mother_email)
+        if "father" in recipients:
+            recipient_email.add(student.additionalstudentinfo.father_email)
+        if "resp" in recipients:
+            recipient_email.add(student.additionalstudentinfo.resp_email)
+        if "resp_school" in recipients:
+            recipient_email = recipient_email.union(resp_school)
+
+        other_responsibles = ResponsibleModel.objects.filter(
+            pk__in=request.data.get("other_recipients")
+        )
+        recipient_email = recipient_email.union(
+            {
+                r.email_school if r.email_school else r.email
+                for r in other_responsibles if r.email_school or r.email
+            }
+        )
+
+        for r in recipient_email:
+            send_email(
+                [r],
+                subject=f"Absence concernant {student.fullname}",
+                email_template="student_absence_teacher/email_warning_parents.html",
+                context=context,
+                reply_to=list(resp_school),
+            )
+
+        absences_id = request.data.get("absences")
+        for absence in StudentAbsenceEducModel.objects.filter(id__in=absences_id):
+            absence.mail_warning = True
+            absence.save()
+
+        return Response(status=201)
+
+
+class WarningPDF(APIView):
+    permission_required = ["student_absence_teacher.add_studentabsenceeducmodel",]
+    renderer_classes = [BinaryFileRenderer]
+
+    def post(self, request, format=None):
+        template = get_template("student_absence_teacher/warning_pdf.html")
+        context = {
+            "student": StudentModel.objects.get(matricule=request.data.get("student_id")),
+            "text": request.data.get("text"),
+            "core_settings": get_core_settings(),
+        }
+        html_render = template.render(context)
+        pdf_file = HTML(string=html_render).write_pdf()
+        return Response(
+            pdf_file,
+            headers={"Content-Disposition": 'attachment; filename="file.pdf"'},
+            content_type="application/pdf",
+        )

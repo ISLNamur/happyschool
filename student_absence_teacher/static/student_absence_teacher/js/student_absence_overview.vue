@@ -67,119 +67,8 @@
                     </b-form-group>
                 </b-form>
             </b-col>
-            <b-col>
-                <b-button
-                    v-b-toggle.other-options
-                    variant="primary"
-                >
-                    <b-icon icon="grid1x2" />
-                    Autres vues
-                </b-button>
-            </b-col>
         </b-row>
-        <b-row>
-            <b-col>
-                <b-table
-                    hover
-                    bordered
-                    :items="absence_count"
-                    :fields="fields"
-                    :filter="filter"
-                    :filter-included-fields="['classe']"
-                >
-                    <template #head(classe)="">
-                        <b-form-group label-for="filterInput">
-                            <b-form-input
-                                v-model="filter"
-                                type="search"
-                                id="filterInput"
-                                placeholder="Filtrer par classe"
-                            />
-                        </b-form-group>
-                    </template>
-                    <template #cell(classe)="data">
-                        <b-link :to="`/class_view/${data.item.classe__id}/${date}/`">
-                            {{ data.value }}
-                        </b-link>
-                    </template>
-                    <template #cell()="data">
-                        <span v-if="data.value.teacher_count >= 0">
-                            {{ data.value.teacher_count }}
-                        </span>
-                        <span v-else>-</span>
-                        <span v-if="'not_teacher_count' in data.value">
-                            /
-                            <span v-if="data.value.not_teacher_count >= 0">
-                                {{ data.value.not_teacher_count }}
-                            </span>
-                            <span v-else>-</span>
-                        </span>
-                    </template>
-                </b-table>
-            </b-col>
-        </b-row>
-        <b-sidebar
-            id="other-options"
-            title="Options de visualisation"
-            right
-            shadow
-        >
-            <b-form-group
-                label="Vue horaire"
-                v-slot="{ ariaDescribedby }"
-                class="ml-1"
-            >
-                <b-form-radio-group
-                    id="point-of-view-radio"
-                    v-model="pointOfView"
-                    :options="optionsPointOfView"
-                    :aria-describedby="ariaDescribedby"
-                    button-variant="outline-primary"
-                    name="point-of-view-radio"
-                    @change="get_absence_count()"
-                    buttons
-                />
-            </b-form-group>
-            <b-form-group
-                label="Liste des classes"
-                v-slot="{ ariaDescribedby }"
-                class="ml-1"
-            >
-                <b-form-radio-group
-                    id="class-list-type-radio"
-                    v-model="classListType"
-                    :options="optionsClassListType"
-                    :aria-describedby="ariaDescribedby"
-                    button-variant="outline-primary"
-                    name="class-list-type-radio"
-                    @change="get_absence_count()"
-                    buttons
-                />
-            </b-form-group>
-            <b-form-group
-                v-if="isProecoActivated"
-                label="Export vers ProEco"
-                class="ml-1"
-            >
-                <b-dropdown
-                    text="Export"
-                    variant="outline-secondary"
-                >
-                    <b-dropdown-item
-                        v-for="p in educatorPeriods"
-                        :key="p.id"
-                        :href="`/student_absence_teacher/api/export_selection/?page_size=2000&date_absence=${date}&period__name=${p.name}&status=A${exportOwnClasses}`"
-                    >
-                        {{ p.name }}
-                    </b-dropdown-item>
-                    <b-dropdown-item
-                        :href="`/student_absence_teacher/api/export_selection/?page_size=2000&date_absence=${date}&status=A${exportOwnClasses}`"
-                    >
-                        Toute la journée
-                    </b-dropdown-item>
-                </b-dropdown>
-            </b-form-group>
-        </b-sidebar>
+        <router-view :date="date" />
     </div>
 </template>
 
@@ -188,8 +77,6 @@ import axios from "axios";
 
 import Moment from "moment";
 Moment.locale("fr");
-
-import { extractDayOfWeek } from "@s:core/js/common/utilities.js";
 
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
@@ -220,7 +107,7 @@ export default {
             ],
             educatorPeriods: [],
             filter: "",
-            loading: true,
+            loading: false,
             searchOptions: [],
             search: "",
             searchId: -1,
@@ -232,95 +119,27 @@ export default {
             // eslint-disable-next-line no-undef
             return proeco;
         },
-        exportOwnClasses: function () {
-            return this.classListType === "ownclass" ? "&activate_own_classes=true" : "";
-        }
-    },
-    watch: {
-        date: function () {
-            this.get_absence_count();
-        }
     },
     methods: {
         changeDate: function (evt) {
-            this.$router.push(`/overview/${evt}/`);
-        },
-        get_absence_count: function () {
-            this.loading = true;
-            this.getPeriods();
-            axios.get(`/student_absence_teacher/api/count_absence/${this.date}/${this.pointOfView}/${this.classListType}/`)
-                .then(resp => {
-                    this.absence_count = JSON.parse(resp.data).map(row => {
-                        const periods = Object.entries(row).filter(c => c[0].startsWith("period"));
-                        const emptyPeriods = periods.filter(p => p[1]["teacher_count"] < 0);
-                        row._cellVariants = emptyPeriods.reduce((acc, v) => {
-                            acc[v[0]] = "warning";
-                            return acc;
-                        }, {});
-                        if (periods.length > 0 && "not_teacher_count" in periods[0][1]) {
-                            const mismatchPeriods = periods.filter(p => {
-                                if (p[1]["not_teacher_count"] < 0 || p[1]["teacher_count"] < 0) {
-                                    return false;
-                                }
-                                if (p[1]["not_teacher_count"] != p[1]["teacher_count"]) {
-                                    return true;
-                                }
-                                return false;
-                            });
-                            mismatchPeriods.forEach(p => {
-                                row._cellVariants[p[0]] = "danger";
-                            });
-                        }
-                        return row;
-                    });
-                    this.loading = false;
-                });
-        },
-        getPeriods: function () {
-            this.fields = [{ key: "classe", }];
-            const currentDay = (new Date(this.date)).getDay();
+            let newPath = `/overview/${evt}/`;
 
-            if (this.pointOfView === "teacher") {
-                axios.get("/student_absence_teacher/api/period_teacher/")
-                    .then(resp => {
-                        this.fields = this.fields.concat(
-                            resp.data.results
-                                .filter(p => extractDayOfWeek(p.day_of_week).includes(currentDay))
-                                .map(p => {
-                                    return {
-                                        key: `period-${p.id}`,
-                                        label: `${p.start.slice(0, 5)} ${p.end.slice(0, 5)}`,
-                                        name: p.name
-                                    };
-                                })
-                        );
-                    });
+            if ("classId" in this.$route.params) {
+                this.$router.push(`${newPath}class_view/${this.$route.params.classId}/`);
             }
-
-            axios.get("/student_absence_teacher/api/period_educ/")
-                .then(resp => {
-                    this.educatorPeriods = resp.data.results
-                        .filter(p => extractDayOfWeek(p.day_of_week).includes(currentDay));
-                    if (this.pointOfView === "educator") {
-                        this.fields = this.fields.concat(
-                            this.educatorPeriods.map(p => {
-                                return {
-                                    key: `period-${p.id}`,
-                                    label: `${p.start.slice(0, 5)} ${p.end.slice(0, 5)}`,
-                                    name: p.name
-                                };
-                            })
-                        );
-                    }
-                });
+            else if ("studentId" in this.$route.params) {
+                this.$router.push(`${newPath}student_view/${this.$route.params.studentId}/`);
+            } else {
+                this.$router.push(newPath);
+            }
         },
         selected: function (option) {
             if (option.type == "classe") {
                 // reroute to classe
-                this.$router.push(`/class_view/${option.id}/${this.date}/`);
+                this.$router.push(`/overview/${this.date}/class_view/${option.id}/`);
                 return;
             } else {
-                this.$router.push(`/student_view/${option.id}/${this.date}/`);
+                this.$router.push(`overview/${this.date}/student_view/${option.id}/`);
             }
         },
         getSearchOptions: function (query) {
@@ -358,9 +177,6 @@ export default {
                     this.searchOptions = options;
                 });
         },
-    },
-    mounted: function () {
-        this.get_absence_count();
     },
     components: {
         Multiselect

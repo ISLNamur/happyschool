@@ -34,9 +34,9 @@
         >
             <template #cell()="data">
                 {{ data.value[3] }}
-                <a
+                <b-link
                     v-if="data.value[3]"
-                    :href="`#/student_view/${$route.params.studentId}/${data.value[0]}-${String(data.value[1]).padStart(2, '0')}-${String(data.value[2]).padStart(2, '0')}`"
+                    :to="`/overview/${data.value[0]}-${String(data.value[1]).padStart(2, '0')}-${String(data.value[2]).padStart(2, '0')}/student_view/${$route.params.studentId}/`"
                 >
                     <span v-if="data.value[4]">
                         {{ data.value[4] }}
@@ -44,7 +44,7 @@
                     <span v-else>
                         _
                     </span>
-                </a>
+                </b-link>
             </template>
             <template #cell(Mois)="data">
                 <strong>{{ month[(firstDate.getMonth() + data.index) % 12] }}</strong>
@@ -121,6 +121,7 @@ export default {
         Promise.all([
             axios.get("/core/api/scholar_calendar/"),
             axios.get(`/student_absence_teacher/api/absence_educ/?student__matricule=${this.studentId}&date_absence__gte=${from}&date_absence__lt=${to}&page_size=1000&ordering=period__start`),
+            axios.get(`/student_absence_teacher/api/justification/?student__matricule=${this.studentId}&scholar_year=${currentYear}-${currentYear + 1}`)
         ])
             .then(resps => {
                 const firstDate = resps[0].data[0][0];
@@ -129,7 +130,8 @@ export default {
                 resps[1].data.results.forEach(abs => {
                     const rowIndex = ((11 - this.firstDate.getMonth()) + parseInt(abs.date_absence.slice(5, 7))) % 12;
                     const columnIndex = parseInt(abs.date_absence.slice(8, 10)) - 1;
-                    this.calendar[rowIndex][columnIndex][4] += abs.status;
+                    const hasJustification = resps[2].data.results.find(just => just.absences.includes(abs.id));
+                    this.calendar[rowIndex][columnIndex][4] += hasJustification ? abs.status.toLowerCase() : abs.status;
                 });
             });
     }

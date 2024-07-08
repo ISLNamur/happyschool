@@ -19,9 +19,13 @@
 
 import AddAbsence from "../add_absence.vue";
 import StudentAbsenceOverview from "../student_absence_overview.vue";
+import ListView from "../ListView.vue";
 import ClassView from "../class_view.vue";
 import StudentView from "../student_view.vue";
 import ExportStatus from "../export_status.vue";
+import JustificationList from "../JustificationList.vue";
+import JustificationEdit from "../JustificationEdit.vue";
+import MailWarning from "../MailWarning.vue";
 
 import { createRouter, createWebHashHistory } from "vue-router";
 
@@ -39,20 +43,46 @@ const router = createRouter({
             path: "/overview/:date/",
             component: StudentAbsenceOverview,
             props: true,
+            children: [
+                {
+                    path: "",
+                    component: ListView,
+                    props: true,
+                },
+                {
+                    path: "class_view/:classId/",
+                    component: ClassView,
+                    props: true,
+                },
+                {
+                    path: "student_view/:studentId/",
+                    component: StudentView,
+                    props: true,
+                },
+            ]
+        },
+        {
+            path: "/justification/",
+            component: JustificationList
+        },
+        {
+            path: "/justification/:justId/",
+            component: JustificationEdit,
+            props: true,
+        },
+        {
+            path: "/justification/:justId/:studentId/",
+            component: JustificationEdit,
+            props: true,
+        },
+        {
+            path: "/mail_warning/:studentId/",
+            component: MailWarning,
+            props: true,
         },
         {
             path: "/export",
             component: ExportStatus,
-        },
-        {
-            path: "/class_view/:classId/:date/",
-            component: ClassView,
-            props: true,
-        },
-        {
-            path: "/student_view/:studentId/:date/",
-            component: StudentView,
-            props: true,
         },
     ],
     history: createWebHashHistory(),

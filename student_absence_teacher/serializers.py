@@ -30,6 +30,7 @@ from .models import (
     StudentAbsenceEducModel,
     PeriodModel,
     PeriodEducModel,
+    JustMotiveModel,
     JustificationModel,
 )
 
@@ -55,6 +56,12 @@ class PeriodEducSerializer(serializers.ModelSerializer):
 class JustificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = JustificationModel
+        fields = "__all__"
+
+
+class JustMotiveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JustMotiveModel
         fields = "__all__"
 
 

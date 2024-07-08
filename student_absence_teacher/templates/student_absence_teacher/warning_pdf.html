@@ -1,0 +1,98 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Absences non motivées</title>
+    </head>
+    <body>
+        <style>
+        @charset "UTF-8";
+        @page {
+            margin: 1cm;
+            counter-increment: page;
+            @bottom-right {
+                content: "Page " counter(page) "/" counter(pages);
+                border-top: .25pt solid #666;
+                width: 50%;
+            }
+        }
+
+        html {
+            font-size: 0.9em;
+        }
+
+        p {
+            text-align: justify;
+        }
+
+        html aside {
+            display: flex;
+            margin: 1em 0 4em;
+        }
+        html aside address {
+            font-style: normal;
+            white-space: pre-line;
+        }
+        html aside address#from {
+            color: #a9a;
+            flex: 1;
+        }
+        html aside address#to {
+            margin-top: 5em;
+            padding: 1em;
+            text-align: right;
+        }
+        #date {
+            text-align: right;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+        html dl dt, html dl dd {
+            display: inline;
+            margin: 0;
+        }
+        html dl dt::before {
+            content: '';
+            display: block;
+        }
+        html dl dt::after {
+            content: ' :';
+        }
+        html dl dd {
+            font-weight: bold;
+        }
+        html #motive {
+            border: 1px solid black;
+            padding: 1em;
+        }
+        </style>
+        <p id="date">{{ core_settings.school_city }}, le {% now "j F Y" %}</p>
+        <aside>
+            <address id="from">
+                <img src="/static/img/logo_school.png">
+                <strong>{{ core_settings.school_name }}</strong>
+                {{ core_settings.school_street }}
+                {{ core_settings.school_postal_code }} {{ core_settings.school_city }}
+                {% if core_settings.school_phone %}Tél : {{ core_settings.school_phone }}{% endif %}
+                {% if core_settings.school_fax %}Fax : {{ core_settings.school_fax }}{% endif %}
+            </address>
+
+            <address id="to">
+            Au(x) responsable(s) des études de l'élève concerné.
+            </address>
+        </aside>
+        <h2>Absences non motivées</h2>
+        <dl id="informations">
+            <dt>Concerne</dt>
+            <dd>{{ student.last_name }} {{ student.first_name }}</dd>
+            {% if student.additionalstudentinfo.birth_date %}
+            <dt>Né(e) le</dt>
+            <dd>{{ student.additionalstudentinfo.birth_date }}</dd>
+            {% endif %}
+            <dt>Classe</dt>
+            <dd>{{ student.classe.compact_str }}</dd>
+        {% autoescape off %}
+        {{ text }}
+        {% endautoescape %}
+    </body>
+</html>

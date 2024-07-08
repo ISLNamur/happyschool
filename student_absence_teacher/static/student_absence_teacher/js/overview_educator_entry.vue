@@ -73,6 +73,11 @@ export default {
             updating: false,
         };
     },
+    watch: {
+        absences: function () {
+            this.status = this.absences.map(a => a.status); 
+        }
+    },
     methods: {
         updateRecord: function (index, $event) {
             this.updating = true;

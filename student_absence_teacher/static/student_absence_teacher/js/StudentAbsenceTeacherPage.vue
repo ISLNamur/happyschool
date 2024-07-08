@@ -45,9 +45,15 @@
                     </b-nav-item>
                     <b-nav-item
                         v-if="can_access_list"
-                        :to="`/overview/${today}/`"
+                        :to="`/overview/${date}/`"
                     >
                         Vue d'ensemble
+                    </b-nav-item>
+                    <b-nav-item
+                        v-if="can_access_list"
+                        :to="`/justification/`"
+                    >
+                        Justificatifs
                     </b-nav-item>
                     <b-nav-item
                         v-if="can_access_adding"
@@ -86,7 +92,11 @@ export default {
         };
     },
     computed: {
-        today: function () {
+        date: function () {
+            if ("date" in this.$route.params) {
+                return this.$route.params.date;
+            }
+
             return Moment().format("YYYY-MM-DD");
         },
         can_access_list: function () {
@@ -116,10 +126,10 @@ export default {
         // Move to overview if not having adding access.
         if (!this.can_access_adding && this.can_access_list) {
             if (
-                this.$router.currentRoute.fullPath.includes("add_absence")
-                || this.$router.currentRoute.path === "/"
+                this.$router.currentRoute.value.fullPath.includes("add_absence")
+                || this.$router.currentRoute.value.path === "/"
             ) {
-                this.$router.push(`/overview/${this.today}`);
+                this.$router.push(`/overview/${this.date}`);
             }
 
         }
