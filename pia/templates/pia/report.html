@@ -157,6 +157,8 @@
             {% endif %}
             {% endfor %}
             {% endfor %}
+            <dt>Aménagements spécifiques</dt>
+            <dd>{{ disorder_response.other_adjustments|safe }}</dd>
             {% else %}
             <dd>Aucun aménagement</dd>
             {% endif %}
@@ -176,21 +178,6 @@
             {% endfor %}
             {% else %}
             <dd>Aucun aménagement d'horaire</dd>
-            {% endif %}
-            {% endfor %}
-        </dl>
-    </div>
-    <div>
-        <dl>
-            <dt>Aménagements spécifiques</dt>
-            {% for other in pia.otheradjustmentsmodel_set.all %}
-            {% if other.date_start|date:"c" >= date_filter %}
-            <dd class="new-period">Du <em>{{ other.date_start }}</em> au <em>{{ other.date_end }}</em></dd>
-            <dd>
-                {{ other.other_adjustments|safe }}
-            </dd>
-            {% else %}
-            <dd>Aucun aménagement spécifique</dd>
             {% endif %}
             {% endfor %}
         </dl>
