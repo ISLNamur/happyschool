@@ -25,6 +25,9 @@ from .models import (
     StudentAbsenceTeacherSettingsModel,
     PeriodModel,
     LessonModel,
+    JustificationModel,
+    JustMotiveModel,
+    MailTemplateModel,
 )
 
 
@@ -42,3 +45,6 @@ admin.site.register(PeriodModel)
 admin.site.register(LessonModel)
 admin.site.register(StudentAbsenceTeacherModel)
 admin.site.register(StudentAbsenceEducModel, StudentEducAbsenceAdmin)
+admin.site.register(JustificationModel)
+admin.site.register(JustMotiveModel)
+admin.site.register(MailTemplateModel)

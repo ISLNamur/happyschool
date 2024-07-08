@@ -17,6 +17,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
+import axios from "axios";
+
 import { defineStore } from "pinia";
 
 import { addFilterPinia as addFilter, removeFilterPinia as removeFilter } from "@s:core/js/common/filters.js";
@@ -27,6 +29,8 @@ export const studentAbsenceTeacherStore = defineStore("studentAbsenceTeacher", {
         settings: settings,
         filters: [],
         changes: {},
+        periodEduc: [],
+        motives: [],
     }),
     actions: {
         addFilter: addFilter,
@@ -46,6 +50,20 @@ export const studentAbsenceTeacherStore = defineStore("studentAbsenceTeacher", {
                 return;
             }
             this.changes = {};
+        },
+        getOptions: function () {
+            axios.get("/student_absence_teacher/api/period_educ/")
+                .then((resp) => {
+                    this.periodEduc = resp.data.results;
+                    this.periodEduc.forEach((v, i) => {
+                        v.index = i;
+                    });
+                });
+
+            axios.get("/student_absence_teacher/api/just_motive/")
+                .then((resp) => {
+                    this.motives = resp.data.results;
+                });
         }
     }
 });

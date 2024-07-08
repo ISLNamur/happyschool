@@ -21,6 +21,7 @@ from django.db import models
 from django.contrib.auth.models import User, Group
 
 from core.models import StudentModel, TeachingModel, ClasseModel, GivenCourseModel
+from core.utilities import extract_day_of_week
 
 
 class StudentAbsenceTeacherSettingsModel(models.Model):
@@ -41,6 +42,11 @@ class StudentAbsenceTeacherSettingsModel(models.Model):
     )
     select_student_by = models.CharField(choices=SELECT_STUDENT, max_length=4, default=CLASS)
     sync_with_proeco = models.BooleanField("Synchronise les absences avec ProEco", default=False)
+
+
+class MailTemplateModel(models.Model):
+    name = models.CharField(max_length=100)
+    template = models.TextField()
 
 
 class LessonModel(models.Model):
@@ -115,6 +121,9 @@ class PeriodEducModel(models.Model):
     name = models.CharField(max_length=200)
     day_of_week = models.CharField(max_length=10, default="1-5")
 
+    class Meta:
+        ordering = ["start"]
+
     @property
     def display(self):
         """Describe the period."""
@@ -141,6 +150,7 @@ class StudentAbsenceEducModel(models.Model):
     period = models.ForeignKey(PeriodEducModel, on_delete=models.SET_NULL, null=True)
     status = models.CharField("Student status", choices=STATUS_CHOICES, max_length=2)
     is_processed = models.BooleanField(default=False)
+    mail_warning = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     datetime_creation = models.DateTimeField(auto_now_add=True)
     datetime_update = models.DateTimeField(auto_now=True)
@@ -149,10 +159,18 @@ class StudentAbsenceEducModel(models.Model):
         indexes = [models.Index(fields=["-date_absence", "student", "status"])]
 
 
-class JustificationModel(models.Model):
-    student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)
+class JustMotiveModel(models.Model):
     short_name = models.CharField("Short name", max_length=20)
     name = models.CharField("Name", max_length=200)
+    admissible_up_to = models.PositiveSmallIntegerField(default=1000)
+
+    def __str__(self):
+        return f"{self.short_name}: {self.name}"
+
+
+class JustificationModel(models.Model):
+    student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)
+    motive = models.ForeignKey(JustMotiveModel, on_delete=models.CASCADE)
     comment = models.TextField("Comment", blank=True)
     date_just_start = models.DateField("Start date")
     date_just_end = models.DateField("End date")
