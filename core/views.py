@@ -50,6 +50,9 @@ from django.db.models import CharField, Q
 from django.core.exceptions import ObjectDoesNotExist, FieldError
 from django.views.generic import TemplateView
 from django.contrib.auth.models import Group, User
+from django.contrib.auth.views import LoginView as DjangoLoginView
+from django.middleware.csrf import get_token
+from django.conf import settings
 
 from core.models import (
     ResponsibleModel,
@@ -248,6 +251,19 @@ class DjangoModelWithAccessPermissions(DjangoModelPermissions):
     def __init__(self):
         self.perms_map = copy.deepcopy(self.perms_map)
         self.perms_map["GET"] = ["%(app_label)s.view_%(model_name)s"]
+
+
+class LoginView(DjangoLoginView):
+    template_name = "core/auth.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["csrf_token"] = get_token(self.request)
+        context["google"] = "social_core.backends.google.GoogleOAuth2" in settings.AUTHENTICATION_BACKENDS
+        context["microsoft"] = "social_core.backends.microsoft.MicrosoftOAuth2" in settings.AUTHENTICATION_BACKENDS
+        context["model"] = "django.contrib.auth.backends.ModelBackend" in settings.AUTHENTICATION_BACKENDS
+
+        return context
 
 
 class BaseModelViewSet(ModelViewSet):
