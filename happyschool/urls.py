@@ -24,9 +24,10 @@ from django.conf import settings
 from django.views.generic import RedirectView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
-from django.contrib.auth.views import LoginView, LogoutView, TemplateView
+from django.contrib.auth.views import LogoutView, TemplateView
 
 from core.utilities import EXCLUDED_APPS
+from core.views import LoginView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -44,41 +45,9 @@ if "django_cas_ng" in settings.INSTALLED_APPS:
     urlpatterns.append(
         path("logout/", django_cas_ng.views.LogoutView.as_view(), name="cas_ng_logout")
     )
-    urlpatterns.append(
-        path(
-            "login/",
-            LoginView.as_view(
-                template_name="core/auth.html",
-                extra_context={
-                    "google": "social_core.backends.google.GoogleOAuth2"
-                    in settings.AUTHENTICATION_BACKENDS,
-                    "microsoft": "social_core.backends.microsoft.MicrosoftOAuth2"
-                    in settings.AUTHENTICATION_BACKENDS,
-                    "model": "django.contrib.auth.backends.ModelBackend"
-                    in settings.AUTHENTICATION_BACKENDS,
-                },
-            ),
-            name="auth",
-        )
-    )
+    urlpatterns.append(path("login/", LoginView.as_view(), name="auth"))
 else:
-    urlpatterns.append(
-        path(
-            "auth/",
-            LoginView.as_view(
-                template_name="core/auth.html",
-                extra_context={
-                    "google": "social_core.backends.google.GoogleOAuth2"
-                    in settings.AUTHENTICATION_BACKENDS,
-                    "microsoft": "social_core.backends.microsoft.MicrosoftOAuth2"
-                    in settings.AUTHENTICATION_BACKENDS,
-                    "model": "django.contrib.auth.backends.ModelBackend"
-                    in settings.AUTHENTICATION_BACKENDS,
-                },
-            ),
-            name="auth",
-        )
-    )
+    urlpatterns.append(path("auth/", LoginView.as_view(), name="auth"))
     urlpatterns.append(path("logout/", LogoutView.as_view(next_page="auth"), name="logout"))
 
 for app in settings.INSTALLED_APPS:

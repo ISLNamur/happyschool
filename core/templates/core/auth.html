@@ -1,55 +1,50 @@
-{% extends "core/base.html" %}
+<!doctype html>
+<html>
+    <head>
+        {% load vite %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        {% vite %}
+        {% vite "core/js/auth.js" %}
+        <style>
+            #sticky-footer {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+            }
+        </style>
+    </head>
 
-{% block content %}
-<div class="container">
-    {% if not user.is_authenticated %}
-    <div style="max-width: 330px;margin: 0 auto; text-align:center">
-        <h2 class="form-signin-heading">Connexion</h2>
-        {% if microsoft %}
-        <div class="panel panel-default" style="margin-bottom:20px;">
-            <strong class="panel-body"><a href="{% url "social:begin" "microsoft-graph" %}">Se connecter avec un compte Microsoft</a></strong>
-        </div>
-        {% endif %}
-        {% if google %}
-        <div class="panel panel-default" style="margin-bottom:20px;">
-            <strong class="panel-body"><a href="{% url "social:begin" "google-oauth2" %}">Se connecter avec un compte Google</a></strong>
-        </div>
-        {% endif %}
-        {% if google and model or microsoft and model %}
-        <a data-toggle="collapse" href="#customaccount" role="button" aria-expanded="false" aria-controls="collapseExample">
-            Autre compte :
-        </a>
-        {% endif %}
-        {% if model %}
-        <form 
-            class="form-signin panel panel-default collapse {% if not google and not microsoft %}show{% endif %}"
-            id="customaccount"
-            method="post"
-        >
-            <div class="panel-body">
-                {% csrf_token %}
-                <div class="{% if has_try %} has-error {% endif %} has-feedback">
-                    <label for="inputUser" class="sr-only">Nom d'utilisateur</label>
-                    <input name="username" value="" type="text" id="inputUser" class="form-control" placeholder="Nom d'utilisateur" required autofocus>
-                    {% if has_try %} <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span> {% endif %}
-                </div>
-                <div class="{% if has_try %} has-error {% endif %} has-feedback">
-                    <label for="inputPassword" class="sr-only">Password</label>
-                    <input name="password" value="" type="password" id="inputPassword" class="form-control" placeholder="Mot de passe" required>
-                    {% if has_try %} <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span> {% endif %}
-                </div>
-                <button class="btn btn-lg btn-primary btn-block" type="submit" style="margin-top:10px">Se connecter</button>
+    <body>
+        {% if not user.is_authenticated %}
+        <script type="text/javascript">
+            {% if microsoft %}
+            const microsoftURL = "{% url "social:begin" "microsoft-graph" %}";
+            {% endif %} 
+            {% if google %}
+            const googleURL = "{% url "social:begin" "google-oauth2" %}";
+            {% endif %}
+            {% if model %}
+            const hasModelLogin = true;
+            const csrfToken = "{{ csrf_token }}";
+            {% endif %}
+        </script>
+        <main class="flex-shrink-0 mb-2">
+            <div id="vue-app" />
+        </main>
+        <footer id="sticky-footer" class="py-3 bg-secondary mt-auto text-white">
+            <div class="container text-center">
+              <small><a class="text-info" href="https://github.com/ISLNamur/happyschool" >HappySchool</a> est un logiciel libre sous licence
+                <a class="text-info" href="https://fr.wikipedia.org/wiki/GNU_Affero_General_Public_License">AGPL</a>.</small>
             </div>
-        </form>
+        </footer>
+        {% else %}
+        <h3>Vous êtes déjà connecté·e</h3>
+        <script type="text/javascript">
+            setTimeout(function () {
+                document.location.href = "/";
+            }, 1000)
+        </script>
         {% endif %}
-    </div>
-    {% else %}
-    <h3> Vous êtes déjà connecté.</h3>
-    <script type="text/javascript">
-        setTimeout(function () {
-            document.location.href = "/";
-        }, 1000)
-    </script>
-    {% endif %}
-</div>
-{% endblock %}
+    </body>
+</html>
