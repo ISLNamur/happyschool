@@ -17,6 +17,7 @@
     "@fullcalendar/vue3": "^6.1.13",
     "@vue/compat": "^3.3.11",
     "axios": "^1.6.2",
+    "bootstrap": "^4.6.2",
     "bootstrap-vue": "^2.23.1",
     "moment": "^2.29.4",
     "pinia": "^2.1.7",
