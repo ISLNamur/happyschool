@@ -13,7 +13,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        os: [ubuntu-22.04, ubuntu-20.04]
+        os: [ubuntu-22.04, ubuntu-24.04]
 
     services:
       postgres:
@@ -52,18 +52,18 @@ jobs:
         cp happyschool/settings.example.py happyschool/settings.py
         sed -i 's/DEBUG = False/DEBUG = True/g' happyschool/settings.py
         pipenv run ./manage.py makemigrations && pipenv run ./manage.py migrate
-        ./node_modules/.bin/webpack --config webpack.prod.js
+        pipenv run npm run build
       env:
         DB_NAME: happyschool
         DB_USER: happyschool
         DB_PASSWORD: libreschool
     - name: Run Tests
       run: |
-        echo "\033[32m CHECK JS/VUE FORMATTING"
+        echo "CHECK JS/VUE FORMATTING"
         npx eslint --ext .js,.vue assets/
-        echo "\033[32m CHECK PYTHON FORMATING"
+        echo "CHECK PYTHON FORMATING"
         pipenv run black --check --diff .
-        echo "\033[32m CHECK TEST CODE"
+        echo "CHECK TEST CODE"
         pipenv run coverage run --source='.' manage.py test
         pipenv run coverage report
       env:
