@@ -13,7 +13,7 @@ black = "*"
 [packages]
 django-filter = "==22.1"
 redis = "*"
-channels-redis = "==4.1.0"
+channels-redis = "==4.2.0"
 channels = "==4.0.0"
 daphne = ">=4.0.0"
 django-auth-ldap = ">=1.7"
