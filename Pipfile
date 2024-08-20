@@ -11,7 +11,7 @@ sphinx = "*"
 black = "*"
 
 [packages]
-django-filter = "==22.1"
+django-filter = "==24.3"
 redis = "*"
 channels-redis = "==4.1.0"
 channels = "==4.0.0"
