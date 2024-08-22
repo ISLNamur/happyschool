@@ -220,7 +220,8 @@ export default {
         },
         loadEntries: function () {
             this.loading = true;
-            const weekAgo = Moment().subtract(7, "days").toISOString().slice(0, 10);
+            const daysBefore = 1;
+            const dateBefore = Moment().subtract(daysBefore, "days").toISOString().slice(0, 10);
 
             // Check current search.
             let searchFilter = "";
@@ -236,7 +237,7 @@ export default {
                 "/student_absence_teacher/api/absence_educ/?status=A" +
                 `&activate_own_classes=${!this.allClasses}` +
                 "&activate_no_justification=true" +
-                `&date_absence__lt=${weekAgo}` +
+                `&date_absence__lte=${dateBefore}` +
                 `&mail_warning=${!this.noProcessedEntries}` +
                 searchFilter +
                 "&ordering=-date_absence,datetime_creation" +
