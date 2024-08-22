@@ -25,7 +25,7 @@ import ContactInfo from "../contact_info.vue";
 import MedicalInfo from "../medical_info.vue";
 import OtherInfo from "../other_info.vue";
 import ClassList from "../classe_list.vue";
-// import CourseInfo from "../course_info.vue";
+import CourseInfo from "../course_info.vue";
 
 export default [
     {
@@ -68,10 +68,10 @@ export default [
         component: ClassList,
         props: true
     },
-    // {
-    //     path: "/course/:course/",
-    //     component: CourseInfo,
-    //     props: true,
-    // }
+    {
+        path: "/course/:course/",
+        component: CourseInfo,
+        props: true,
+    }
     // ]
 ];
