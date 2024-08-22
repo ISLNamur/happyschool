@@ -139,7 +139,7 @@ export default {
                 this.$router.push(`/overview/${this.date}/class_view/${option.id}/`);
                 return;
             } else {
-                this.$router.push(`overview/${this.date}/student_view/${option.id}/`);
+                this.$router.push(`/overview/${this.date}/student_view/${option.id}/`);
             }
         },
         getSearchOptions: function (query) {
