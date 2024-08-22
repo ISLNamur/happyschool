@@ -1,5 +1,7 @@
 {% extends "core/base_vue.html" %}
 
+{% load vite %}
+
 {% block header %}
 <title>HappySchool : Retards</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -8,9 +10,11 @@
 <meta name="msapplication-TileImage" content="link to the image in static folder">
 <meta name="msapplication-TileColor" content="#000">
 
+{% vite %}
+{% vite "lateness/js/lateness.js" %}
+
 {% endblock %}
 {% block content %}
-{% load render_bundle from webpack_loader %}
 
 <script>
     const current_app = "lateness";
@@ -20,7 +24,5 @@
     const filters = {{ filters|safe }};
 </script>
 <div id="vue-app"></div>
-
-{% render_bundle 'lateness' %}
 
 {% endblock %}
