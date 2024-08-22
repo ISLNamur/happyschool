@@ -237,6 +237,13 @@ export default {
                 });
         },
         getRelatedAbsences: function () {
+            // Auto-complete date end.
+            if (this.justification.date_just_start && !this.justification.date_just_end
+                || this.justification.date_just_start > this.justification.date_just_end
+            ) {
+                this.justification.date_just_end = this.justification.date_just_start;
+            }
+
             // Range must be set.
             if (
                 !this.justification.date_just_start
