@@ -72,93 +72,7 @@
         </b-row>
         <b-row>
             <b-col>
-                <b-card no-body>
-                    <template
-                        #header
-                    >
-                        <div class="d-flex justify-content-between align-items-center">
-                            <strong>Absences</strong>
-                        </div>
-                    </template>
-                    <b-list-group>
-                        <b-list-group-item class="d-flex justify-content-between align-items-center">
-                            Absences en attentes de justificatifs
-                            <b-badge :variant="pendingAbsences > 0 ? 'warning' : ''">
-                                {{ pendingAbsences }}
-                            </b-badge>
-                        </b-list-group-item>
-
-                        <b-list-group-item
-                            variant="secondary"
-                        >
-                            <strong>Absences motivées:</strong>
-                        </b-list-group-item>
-                        <b-list-group-item
-                            v-for="justCount in justifiedAbsences"
-                            :key="justCount.justificationmodel__motive__short_name"
-                            class="d-flex justify-content-between align-items-center"
-                        >
-                            <span>
-                                <strong>{{ justCount.justificationmodel__motive__short_name }}</strong>:
-                                {{ justCount.justificationmodel__motive__name.slice(0, 50) }}
-                                <span v-if="justCount.justificationmodel__motive__name.length > 50">…</span>
-                            </span>
-                            <b-badge
-                                :id="`just-count-badge-${justCount.justificationmodel__motive__short_name}`"
-                                :variant="justCount.justificationmodel__motive__count > justCount.justificationmodel__motive__admissible_up_to ? 'danger' : ''"
-                            >
-                                {{ justCount.justificationmodel__motive__count }}
-                            </b-badge>
-                            <b-tooltip
-                                v-if="justCount.justificationmodel__motive__count > justCount.justificationmodel__motive__admissible_up_to"
-                                :target="`just-count-badge-${justCount.justificationmodel__motive__short_name}`"
-                                triggers="hover"
-                            >
-                                Max. {{ justCount.justificationmodel__motive__admissible_up_to }}
-                            </b-tooltip>
-                        </b-list-group-item>
-                        <b-list-group-item
-                            class="d-flex justify-content-between align-items-center"
-                        >
-                            <strong>Total justifiées / motivées:</strong>
-                            <span>
-                                <b-badge variant="primary">
-                                    {{ totalAdmissibleCount }}
-                                </b-badge>
-                                /
-                                <b-badge variant="primary">
-                                    {{ totalJustCount }}
-                                </b-badge>
-                            </span>
-                        </b-list-group-item>
-                        <b-list-group-item
-                            variant="danger"
-                        >
-                            <strong>Absences non justifiées:</strong>
-                        </b-list-group-item>
-                        <b-list-group-item
-                            v-for="justCount in unjustifiedAbsences"
-                            :key="justCount.justificationmodel__motive__short_name"
-                            class="d-flex justify-content-between align-items-center"
-                        >
-                            <span>
-                                <strong>{{ justCount.justificationmodel__motive__short_name }}</strong>:
-                                {{ justCount.justificationmodel__motive__name.slice(0, 50) }}
-                            </span>
-                            <b-badge>
-                                {{ justCount.justificationmodel__motive__count }}
-                            </b-badge>
-                        </b-list-group-item>
-                        <b-list-group-item
-                            class="d-flex justify-content-between align-items-center"
-                        >
-                            <strong>Total :</strong>
-                            <b-badge variant="danger">
-                                {{ totalUnjustCount }}
-                            </b-badge>
-                        </b-list-group-item>
-                    </b-list-group>
-                </b-card>
+                <absences-stat :student-id="studentId" />
             </b-col>
             <b-col>
                 <b-card
@@ -241,6 +155,7 @@ import { studentAbsenceTeacherStore } from "./stores/index.js";
 import OverviewTeacherEntry from "./overview_teacher_entry.vue";
 import OverviewEducatorEntry from "./overview_educator_entry.vue";
 import StudentYearView from "./student_year_view.vue";
+import AbsencesStat from "./AbsencesStat.vue";
 
 
 export default {
@@ -260,9 +175,6 @@ export default {
             student: null,
             teachersPeriod: [],
             educatorsPeriod: [],
-            pendingAbsences: 0,
-            justifiedAbsences: [],
-            unjustifiedAbsences: [],
             justifications: [],
             fields: [
                 {
@@ -288,20 +200,6 @@ export default {
 
             return [];
         },
-        totalJustCount: function () {
-            return this.justifiedAbsences.reduce((p, c) => p + c.justificationmodel__motive__count, 0);
-        },
-        totalAdmissibleCount: function () {
-            return this.justifiedAbsences.reduce((p, c) => {
-                if (c.justificationmodel__motive__count > c.justificationmodel__motive__admissible_up_to) {
-                    return p + c.justificationmodel__motive__admissible_up_to;
-                }
-                return p + c.justificationmodel__motive__count;
-            }, 0);
-        },
-        totalUnjustCount: function () {
-            return this.unjustifiedAbsences.reduce((p, c) => p + c.justificationmodel__motive__count, 0);
-        }
     },
     methods: {
         displayStudent,
@@ -348,18 +246,8 @@ export default {
                     const absence = educatorsAbsences.find(a => a.period === p.id);
                     return absence ? absence : { status: null, student_id: this.student.matricule, period: p.id, date_absence: this.date };
                 });
-                
-            });
 
-            axios.get(`/student_absence_teacher/api/count_no_justification/${this.studentId}/`)
-                .then((resp) => {
-                    this.pendingAbsences = resp.data.count;
-                });
-            axios.get(`/student_absence_teacher/api/count_justification/${this.studentId}/`)
-                .then((resp) => {
-                    this.justifiedAbsences = resp.data.justified;
-                    this.unjustifiedAbsences = resp.data.unjustified;
-                });
+            });
         },
     },
     mounted: function () {
@@ -369,6 +257,7 @@ export default {
         OverviewTeacherEntry,
         OverviewEducatorEntry,
         StudentYearView,
+        AbsencesStat,
     }
 };
 </script>

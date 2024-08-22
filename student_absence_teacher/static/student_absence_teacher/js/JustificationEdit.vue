@@ -152,6 +152,11 @@
                 </b-btn>
             </b-col>
         </b-row>
+        <b-row class="mt-2">
+            <b-col>
+                <absences-stat :student-id="studentId" />
+            </b-col>
+        </b-row>
     </b-overlay>
 </template>
 
@@ -162,6 +167,7 @@ import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
 import { studentAbsenceTeacherStore } from "./stores/index.js";
+import AbsencesStat from "./AbsencesStat.vue";
 
 import TextEditor from "@s:core/js/common/text_editor.vue";
 import {getPeopleByName} from "@s:core/js/common/search.js";
@@ -320,6 +326,7 @@ export default {
     components: {
         TextEditor,
         Multiselect,
+        AbsencesStat,
     }
 };
 </script>
