@@ -81,7 +81,7 @@ def get_menu_entry(active_app: str, request) -> dict:
         return {}
     return {
         "app": "student_absence_teacher",
-        "display": "Abs. Élèves (prof)",
+        "display": "Abs. Élèves",
         "url": "/student_absence_teacher",
         "active": active_app == "student_absence_teacher",
     }
