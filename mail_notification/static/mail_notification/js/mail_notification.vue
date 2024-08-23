@@ -1,6 +1,5 @@
 <template>
     <div v-cloak>
-        <app-menu :menu-info="menuInfo" />
         <b-container v-cloak>
             <b-row>
                 <b-col>
@@ -11,7 +10,7 @@
                         >
                             Envoyer un email
                         </b-nav-item>
-                        <b-nav-item href="/mail_notification/list/">
+                        <b-nav-item to="/list/">
                             Liste des emails envoyés
                         </b-nav-item>
                         <b-nav-item href="/mail_answer/">
@@ -275,7 +274,6 @@ import axios from "axios";
 import Multiselect from "vue-multiselect";
 
 import FileUpload from "@s:core/js/common/file_upload.vue";
-import AppMenu from "@s:core/js/common/menu_bar.vue";
 
 export default {
     data: function () {
@@ -438,10 +436,8 @@ export default {
             });
         }
     },
-    components: { Multiselect, TextEditor, FileUpload, AppMenu },
+    components: { Multiselect, TextEditor, FileUpload },
     mounted: function () {
-        // eslint-disable-next-line no-undef
-        this.menuInfo = menu;
         this.getTagsOptions("");
 
         // Get templates.

@@ -26,8 +26,13 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 
-import { createApp } from "vue";
-import MailNotification from "./mail_notification.vue";
+import router from "./router/index.js";
 
-const app = createApp(MailNotification);
+import { createApp } from "vue";
+import MailNotificationPage from "./MailNotificationPage.vue";
+
+const app = createApp(MailNotificationPage);
+
+app.use(router);
+
 app.mount("#vue-app");
