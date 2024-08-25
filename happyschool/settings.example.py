@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "django_filters",
     "channels",
+    "django_vite_plugin",
     #'social_django',
     # "django_cas_ng",
     "core",
