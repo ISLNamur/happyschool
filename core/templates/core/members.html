@@ -1,7 +1,10 @@
 {% extends "core/base_vue.html" %}
 
 {% block header %}
+{% load vite %}
 <title>HappySchool : Membres</title>
+    {% vite %}
+    {% vite "core/js/members.js" %}
 {% endblock %}
 {% block content %}
 <script>
@@ -9,7 +12,6 @@
     const menu = {{ menu|safe }};
 </script>
 <div id="vue-app"></div>
-{% load render_bundle from webpack_loader %}
-{% render_bundle 'members' %}
+
 
 {% endblock %}
