@@ -106,6 +106,7 @@
                 <b-col>
                     <b-pagination-nav
                         class="mt-1"
+                        :value="currentPage"
                         :number-of-pages="pagesCount"
                         :link-gen="pageLink"
                         use-router
