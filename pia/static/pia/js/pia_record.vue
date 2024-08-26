@@ -103,7 +103,7 @@
                                             id="student-0"
                                             :internal-search="false"
                                             :options="studentOptions"
-                                            @search-change="getPeople"
+                                            @search-change="getPeople($event, 'student')"
                                             placeholder="Rechercher un élève"
                                             select-label=""
                                             selected-label="Sélectionné"
@@ -132,7 +132,7 @@
                                             id="responsible-0"
                                             :internal-search="false"
                                             :options="responsibleOptions"
-                                            @search-change="getPeople"
+                                            @search-change="getPeople($event, 'responsible')"
                                             placeholder="Choisir un ou plusieurs référents"
                                             select-label=""
                                             selected-label="Sélectionné"
@@ -685,6 +685,7 @@ export default {
             });
         },
         getPeople: function (searchQuery, person) {
+            console.log(searchQuery, person);
             person = person.split("-")[0];
             this.searchId += 1;
             let currentSearch = this.searchId;
