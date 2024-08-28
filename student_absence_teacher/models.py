@@ -182,3 +182,6 @@ class JustificationModel(models.Model):
     )
     half_days = models.PositiveIntegerField("Half days count", default=1)
     absences = models.ManyToManyField(StudentAbsenceEducModel, blank=True)
+
+    def __str__(self):
+        return f"{self.student.fullname_classe}: {self.motive.short_name} ({self.date_just_start} - {self.date_just_end})"
