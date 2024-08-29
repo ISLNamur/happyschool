@@ -23,6 +23,7 @@ import datetime
 from itertools import groupby
 
 from weasyprint import HTML
+from escpos.printer import Network
 
 from django.template.loader import get_template
 from django.template import Template, Context
@@ -232,6 +233,58 @@ class StudentAbsenceEducFilter(BaseFilters):
             return queryset
 
         return queryset.filter(justificationmodel__isnull=True)
+
+
+class ExcludeStudentAPI(APIView):
+
+    def post(self, request, format=None):
+        student_id = request.data.get("student_id", None)
+        try:
+            student = StudentModel.objects.get(matricule=student_id)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        period_id = request.data.get("period_id", None)
+        try:
+            period = PeriodModel.objects.get(id=period_id)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        # Check permission.
+        app_settings = get_settings()
+        if not self.request.user.groups.all().intersection(app_settings.can_see_exclusion.all()).exists():
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        today = timezone.now()
+
+        exclusion = StudentAbsenceTeacherModel(
+            student=student,
+            date_absence=today,
+            status=StudentAbsenceTeacherModel.EXCLUDED,
+            period=period,
+            user=request.user
+        )
+        exclusion.save()
+
+        if "lateness" in settings.INSTALLED_APPS:
+            from lateness.models import LatenessSettingsModel
+
+            try:
+                printer_ip = LatenessSettingsModel.objects.first().printer
+                printer = Network(printer_ip)
+                printer.charcode("AUTO")
+                printer.set(align="center")
+                printer.text("EXCLUSION\n")
+                printer.set(align="left")
+                printer.text(f" {student.fullname_classe}\n")
+                printer.text(f" Exclusion de la periode :\n")
+                printer.text(f" {period.display}\n\n")
+                printer.cut()
+                printer.close()
+            except OSError:
+                pass
+
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class StudentAbsenceEducViewSet(ModelViewSet):

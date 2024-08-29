@@ -18,6 +18,7 @@
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
 import AddAbsence from "../add_absence.vue";
+import AddExclusion from "../AddExclusion.vue";
 import StudentAbsenceOverview from "../student_absence_overview.vue";
 import ListView from "../ListView.vue";
 import ClassView from "../class_view.vue";
@@ -38,6 +39,10 @@ const router = createRouter({
         {
             path: "/add_absence",
             component: AddAbsence,
+        },
+        {
+            path: "/add_exclusion",
+            component: AddExclusion,
         },
         {
             path: "/overview/:date/",

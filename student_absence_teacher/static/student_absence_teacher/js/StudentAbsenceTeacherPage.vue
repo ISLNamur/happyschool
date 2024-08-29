@@ -44,6 +44,18 @@
                         Ajouter absenses/retards
                     </b-nav-item>
                     <b-nav-item
+                        to="/add_exclusion"
+                        v-if="can_access_exclusion"
+                    >
+                        <b-icon
+                            icon="plus"
+                            color="green"
+                            scale="1.5"
+                            class="border"
+                        />
+                        Ajouter exclusion
+                    </b-nav-item>
+                    <b-nav-item
                         v-if="can_access_list"
                         :to="`/overview/${date}/`"
                     >
@@ -113,6 +125,17 @@ export default {
         can_access_adding: function () {
             const access_groups = this.store.settings.can_see_adding;
             for (let ag in this.store.settings.can_see_adding) {
+                // eslint-disable-next-line no-undef
+                for (let g in user_groups) {
+                    // eslint-disable-next-line no-undef
+                    if (user_groups[g].id == access_groups[ag]) return true;
+                }
+            }
+            return false;
+        },
+        can_access_exclusion: function () {
+            const access_groups = this.store.settings.can_see_adding;
+            for (let ag in this.store.settings.can_see_exclusion) {
                 // eslint-disable-next-line no-undef
                 for (let g in user_groups) {
                     // eslint-disable-next-line no-undef
