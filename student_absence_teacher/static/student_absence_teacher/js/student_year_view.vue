@@ -92,6 +92,11 @@ export default {
             ],
         };
     },
+    watch: {
+        studentId: function () {
+            this.initData();
+        }
+    },
     methods: {
         isToday: function (data) {
             const today = new Date();
@@ -99,41 +104,44 @@ export default {
         },
         isCurrentDate: function (data) {
             return data[0] === parseInt(this.currentDate.slice(0, 4)) && data[1] === parseInt(this.currentDate.slice(5, 7)) && data[2] === parseInt(this.currentDate.slice(8, 10));
+        },
+        initData: function () {
+            let app = this;
+            for (let d = 0; d < 31; d++) {
+                this.fields.push(
+                    {
+                        key: String(d),
+                        label: String(d + 1),
+                        tdClass: function (value) {
+                            return [app.isToday(value) ? "today" : "", app.isCurrentDate(value) ? "currentdate" : ""];
+                        }
+                    }
+                );
+            }
+
+            const currentYear = getCurrentScholarYear();
+            const from = `${currentYear}-08-02`;
+            const to = `${currentYear + 1}-08-01`;
+            Promise.all([
+                axios.get("/core/api/scholar_calendar/"),
+                axios.get(`/student_absence_teacher/api/absence_educ/?student__matricule=${this.studentId}&date_absence__gte=${from}&date_absence__lt=${to}&page_size=1000&ordering=period__start`),
+                axios.get(`/student_absence_teacher/api/justification/?student__matricule=${this.studentId}&scholar_year=${currentYear}-${currentYear + 1}`)
+            ])
+                .then(resps => {
+                    const firstDate = resps[0].data[0][0];
+                    this.firstDate = new Date(firstDate[0], firstDate[1] - 1, firstDate[2]);
+                    this.calendar = resps[0].data;
+                    resps[1].data.results.forEach(abs => {
+                        const rowIndex = ((11 - this.firstDate.getMonth()) + parseInt(abs.date_absence.slice(5, 7))) % 12;
+                        const columnIndex = parseInt(abs.date_absence.slice(8, 10)) - 1;
+                        const hasJustification = resps[2].data.results.find(just => just.absences.includes(abs.id));
+                        this.calendar[rowIndex][columnIndex][4] += hasJustification ? abs.status.toLowerCase() : abs.status;
+                    });
+                });
         }
     },
     mounted: function () {
-        let app = this;
-        for (let d = 0; d < 31; d++) {
-            this.fields.push(
-                {
-                    key: String(d),
-                    label: String(d + 1),
-                    tdClass: function (value) {
-                        return [app.isToday(value) ? "today" : "", app.isCurrentDate(value) ? "currentdate" : ""];
-                    }
-                }
-            );
-        }
-
-        const currentYear = getCurrentScholarYear();
-        const from = `${currentYear}-08-02`;
-        const to = `${currentYear + 1}-08-01`;
-        Promise.all([
-            axios.get("/core/api/scholar_calendar/"),
-            axios.get(`/student_absence_teacher/api/absence_educ/?student__matricule=${this.studentId}&date_absence__gte=${from}&date_absence__lt=${to}&page_size=1000&ordering=period__start`),
-            axios.get(`/student_absence_teacher/api/justification/?student__matricule=${this.studentId}&scholar_year=${currentYear}-${currentYear + 1}`)
-        ])
-            .then(resps => {
-                const firstDate = resps[0].data[0][0];
-                this.firstDate = new Date(firstDate[0], firstDate[1] - 1, firstDate[2]);
-                this.calendar = resps[0].data;
-                resps[1].data.results.forEach(abs => {
-                    const rowIndex = ((11 - this.firstDate.getMonth()) + parseInt(abs.date_absence.slice(5, 7))) % 12;
-                    const columnIndex = parseInt(abs.date_absence.slice(8, 10)) - 1;
-                    const hasJustification = resps[2].data.results.find(just => just.absences.includes(abs.id));
-                    this.calendar[rowIndex][columnIndex][4] += hasJustification ? abs.status.toLowerCase() : abs.status;
-                });
-            });
+        this.initData();
     }
 };
 </script>

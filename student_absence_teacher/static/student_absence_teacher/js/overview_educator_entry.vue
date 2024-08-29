@@ -73,7 +73,7 @@ export default {
     },
     watch: {
         absences: function () {
-            this.status = this.absences.map(a => a.status); 
+            this.status = this.absences.map(a => a.status == "A");
         }
     },
     methods: {

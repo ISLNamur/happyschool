@@ -124,6 +124,11 @@ export default {
             unjustifiedAbsences: [],
         };
     },
+    watch: {
+        studentId: function () {
+            this.initData();
+        }
+    },
     computed: {
         totalJustCount: function () {
             return this.justifiedAbsences.reduce((p, c) => p + c.justificationmodel__motive__count, 0);
@@ -140,20 +145,25 @@ export default {
             return this.unjustifiedAbsences.reduce((p, c) => p + c.justificationmodel__motive__count, 0);
         }
     },
-    mounted: function () {
-        if (parseInt(this.studentId) < 1) {
-            return;
-        }
+    methods: {
+        initData: function () {
+            if (parseInt(this.studentId) < 1) {
+                return;
+            }
 
-        axios.get(`/student_absence_teacher/api/count_no_justification/${this.studentId}/`)
-            .then((resp) => {
-                this.pendingAbsences = resp.data.count;
-            });
-        axios.get(`/student_absence_teacher/api/count_justification/${this.studentId}/`)
-            .then((resp) => {
-                this.justifiedAbsences = resp.data.justified;
-                this.unjustifiedAbsences = resp.data.unjustified;
-            });
+            axios.get(`/student_absence_teacher/api/count_no_justification/${this.studentId}/`)
+                .then((resp) => {
+                    this.pendingAbsences = resp.data.count;
+                });
+            axios.get(`/student_absence_teacher/api/count_justification/${this.studentId}/`)
+                .then((resp) => {
+                    this.justifiedAbsences = resp.data.justified;
+                    this.unjustifiedAbsences = resp.data.unjustified;
+                });
+        }
+    },
+    mounted: function () {
+        this.initData();
     }
 };
 </script>

@@ -192,6 +192,9 @@ export default {
     watch: {
         date: function () {
             this.getStudentAbsences();
+        },
+        studentId: function () {
+            this.getStudentAbsences();
         }
     },
     computed: {
