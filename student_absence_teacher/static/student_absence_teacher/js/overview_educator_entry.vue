@@ -26,14 +26,12 @@
             <b-overlay :show="updating">
                 <b-checkbox
                     switch
-                    value="A"
-                    unchecked-value="P"
                     v-model="status[index]"
                     @change="updateRecord(index, $event)"
                 >
                     <template #default="">
                         <span>
-                            {{ status[index] ? status[index] : "P" }}
+                            {{ status[index] ? "A" : "P" }}
                         </span>
                         <b-iconstack>
                             <b-icon
@@ -43,7 +41,7 @@
                             />
                             <b-icon
                                 stacked
-                                v-if="status[index] !== null"
+                                v-if="absences[index].status !== null"
                                 icon="check"
                                 variant="success"
                             />
@@ -69,7 +67,7 @@ export default {
     },
     data: function () {
         return {
-            status: [],
+            status: [false, false],
             updating: false,
         };
     },
@@ -107,7 +105,7 @@ export default {
         }
     },
     mounted: function () {
-        this.status = this.absences.map(a => a.status);
+        this.status = this.absences.map(a => a.status == "A");
     }
 };
 </script>
