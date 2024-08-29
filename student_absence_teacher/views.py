@@ -255,6 +255,7 @@ class StudentAbsenceEducViewSet(ModelViewSet):
         "period__start",
     ]
     cursor = None
+    fdb_server = None
 
     def create(self, request, *args, **kwargs):
         if isinstance(request.data, list) and len(request.data) == 0:
@@ -273,7 +274,9 @@ class StudentAbsenceEducViewSet(ModelViewSet):
             ]
             if len(server) == 0:
                 raise
-            self.cursor = absences._get_absence_cursor(fdb_server=server[0])
+
+            self.fdb_server = server[0]
+            self.cursor = absences._get_absence_cursor(fdb_server=self.fdb_server)
 
         # if isinstance(request.data, list) and len(request.data) > 0:
         absences_done = []
@@ -308,6 +311,7 @@ class StudentAbsenceEducViewSet(ModelViewSet):
                 period=period,
                 absence_status=data.get("status"),
                 cur=self.cursor,
+                fdb_server=self.fdb_server,
                 commit=False,
             )
         return False
