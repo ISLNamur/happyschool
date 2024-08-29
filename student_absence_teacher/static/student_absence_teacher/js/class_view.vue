@@ -78,6 +78,7 @@
                                 icon="telephone"
                             />
                             <b-tooltip
+                                v-if="data.value"
                                 :target="`call-${data.value.id}`"
                                 triggers="hover"
                             >
