@@ -68,7 +68,10 @@
                 </b-form>
             </b-col>
         </b-row>
-        <router-view :date="date" />
+        <router-view
+            :date="date"
+            @clear-search="search = null"
+        />
     </div>
 </template>
 

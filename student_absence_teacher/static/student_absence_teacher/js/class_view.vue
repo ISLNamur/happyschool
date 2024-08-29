@@ -59,7 +59,12 @@
                             </b-row>
                         </template>
                         <template #cell(studentName)="data">
-                            <a :href="`#/overview/${date}/student_view/${data.item.matricule}/`">{{ data.value }}</a>
+                            <b-link
+                                :to="`/overview/${date}/student_view/${data.item.matricule}/`"
+                                @click="$emit('clearSearch')"
+                            >
+                                {{ data.value }}
+                            </b-link>
                             <a :href="`/annuaire/#/person/student/${data.item.matricule}/`">
                                 <b-icon icon="file-earmark-richtext" />
                             </a>
