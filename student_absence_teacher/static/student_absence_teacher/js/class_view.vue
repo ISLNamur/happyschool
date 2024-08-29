@@ -169,19 +169,18 @@ export default {
         },
         validateEducatorAbsences: function () {
             this.loading = true;
-            const absencesProm = this.educatorsPeriod.map((period, idx) => {
+            const absencesData = this.educatorsPeriod.map((period, idx) => {
                 // Consider "P" status if null.
-                const absences = this.students
+                return this.students
                     .map(s => s.absence_educators[idx])
                     .filter(a => a.status === null)
                     .map(a => {
                         a.status = "P";
                         return a;
                     });
-                return axios.post("/student_absence_teacher/api/absence_educ/", absences, token);
             });
 
-            Promise.all(absencesProm)
+            axios.post("/student_absence_teacher/api/absence_educ/", absencesData.flat(), token)
                 .then(() => {
                     document.location.reload();
                 })
