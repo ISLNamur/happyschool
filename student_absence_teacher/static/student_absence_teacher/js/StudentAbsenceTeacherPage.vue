@@ -134,7 +134,7 @@ export default {
             return false;
         },
         can_access_exclusion: function () {
-            const access_groups = this.store.settings.can_see_adding;
+            const access_groups = this.store.settings.can_see_exclusion;
             for (let ag in this.store.settings.can_see_exclusion) {
                 // eslint-disable-next-line no-undef
                 for (let g in user_groups) {
