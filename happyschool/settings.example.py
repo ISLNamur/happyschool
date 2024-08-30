@@ -57,13 +57,14 @@ INSTALLED_APPS = [
     "annuaire",
     "infirmerie",
     "appels",
-    # 'absence_prof',
+    "absence_prof",
     "dossier_eleve",
-    # 'mail_notification',
-    # 'mail_answer',
-    # 'schedule_change',
-    # 'student_absence',
-    # "lateness",
+    "mail_notification",
+    'mail_answer',
+    "schedule_change",
+    "lateness",
+    "student_absence_teacher",
+    "pia",
 ]
 
 MIDDLEWARE = [
