@@ -80,7 +80,7 @@ export default {
         updateRecord: function (index, $event) {
             this.updating = true;
             let data = {
-                status: $event,
+                status: $event ? "A" : "P",
                 student_id: this.absences[index].student_id,
                 period: this.absences[index].period,
                 date_absence: this.absences[index].date_absence,
