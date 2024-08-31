@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     "absence_prof",
     "dossier_eleve",
     "mail_notification",
-    'mail_answer',
+    "mail_answer",
     "schedule_change",
     "lateness",
     "student_absence_teacher",

@@ -259,9 +259,15 @@ class LoginView(DjangoLoginView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["csrf_token"] = get_token(self.request)
-        context["google"] = "social_core.backends.google.GoogleOAuth2" in settings.AUTHENTICATION_BACKENDS
-        context["microsoft"] = "social_core.backends.microsoft.MicrosoftOAuth2" in settings.AUTHENTICATION_BACKENDS
-        context["model"] = "django.contrib.auth.backends.ModelBackend" in settings.AUTHENTICATION_BACKENDS
+        context["google"] = (
+            "social_core.backends.google.GoogleOAuth2" in settings.AUTHENTICATION_BACKENDS
+        )
+        context["microsoft"] = (
+            "social_core.backends.microsoft.MicrosoftOAuth2" in settings.AUTHENTICATION_BACKENDS
+        )
+        context["model"] = (
+            "django.contrib.auth.backends.ModelBackend" in settings.AUTHENTICATION_BACKENDS
+        )
 
         return context
 
