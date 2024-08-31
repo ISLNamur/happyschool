@@ -19,13 +19,13 @@
 
 import { createRouter, createWebHashHistory } from "vue-router";
 
-import Lateness from "../Lateness.vue";
+import LatenessList from "../LatenessList.vue";
 
 const router = createRouter({
     routes: [
         {
             path: "",
-            component: Lateness,
+            component: LatenessList,
         }
     ],
     history: createWebHashHistory(),
