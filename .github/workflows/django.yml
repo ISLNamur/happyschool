@@ -60,7 +60,7 @@ jobs:
     - name: Run Tests
       run: |
         echo "CHECK JS/VUE FORMATTING"
-        npx eslint --ext .js,.vue assets/
+        npx eslint */static/
         echo "CHECK PYTHON FORMATING"
         pipenv run black --check --diff .
         echo "CHECK TEST CODE"
