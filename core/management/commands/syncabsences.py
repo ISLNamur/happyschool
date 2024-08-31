@@ -34,6 +34,7 @@ from student_absence_teacher.models import (
     JustMotiveModel,
 )
 
+
 class Command(BaseCommand):
     help = "Import a ProEco database into HappySchool."
 
@@ -84,7 +85,6 @@ class Command(BaseCommand):
                     pk__in=absences_processed
                 ).delete()
 
-
             justifications = get_all_justifications(23, fdb_server=proeco["server"])
             for matricule, just in justifications.items():
                 try:
@@ -111,22 +111,18 @@ class Command(BaseCommand):
                     )
 
                     # ProEco periods are listed by indices. Find the associated period model.
-                    start_periods = [
-                        p
-                        for i, p in periods
-                        if i >= just.half_day_start
-                    ]
-                    end_periods = [
-                        p
-                        for i, p in periods
-                        if i <= just.half_day_end
-                    ]
+                    start_periods = [p for i, p in periods if i >= just.half_day_start]
+                    end_periods = [p for i, p in periods if i <= just.half_day_end]
 
-                    related_absences = StudentAbsenceEducModel.objects.filter(status="A", student=student).filter(
-                        Q(date_absence__gt=just.date_just_start, date_absence__lt=just.date_just_end)
+                    related_absences = StudentAbsenceEducModel.objects.filter(
+                        status="A", student=student
+                    ).filter(
+                        Q(
+                            date_absence__gt=just.date_just_start,
+                            date_absence__lt=just.date_just_end,
+                        )
                         | Q(date_absence=just.date_just_start, period__in=start_periods)
                         | Q(date_absence=just.date_just_end, period__in=end_periods)
                     )
 
                     just.absences.set(related_absences)
-                    

@@ -32,7 +32,10 @@ urlpatterns = [
     path("api/count_absence/<date>/<point_of_view>/<class_list>/", views.OverviewAPI.as_view()),
     path("api/count_no_justification/<student>/", views.NoJustificationCountAPI.as_view()),
     path("api/count_justification/<student>/", views.JustificationCountAPI.as_view()),
-    path("api/mail_warning_template/<student_id>/<date_start>/<date_end>/", views.MailWarningTemplateAPI.as_view()),
+    path(
+        "api/mail_warning_template/<student_id>/<date_start>/<date_end>/",
+        views.MailWarningTemplateAPI.as_view(),
+    ),
     path("api/mail_warning/", views.MailWarningAPI.as_view()),
     path("get_pdf_warning/", views.WarningPDF.as_view()),
 ]
