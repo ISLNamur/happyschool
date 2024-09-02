@@ -87,11 +87,11 @@
                             <template
                                 v-for="(c, i) in studentColumnHeads.slice(0, fields_number)"
                                 #[c]="data"
+                                :key="i"
                             >
                                 <b-select
                                     v-model="student_columns[i]"
                                     :options="student_column_names"
-                                    :key="i"
                                 >
                                     <template #first>
                                         <option
@@ -186,11 +186,11 @@
                             <template
                                 v-for="(c, i) in teacherColumnHeads.slice(0, fields_number)"
                                 #[c]="data"
+                                :key="i"
                             >
                                 <b-select
                                     v-model="teacher_columns[i]"
                                     :options="teacher_column_names"
-                                    :key="i"
                                 >
                                     <template #first>
                                         <option
