@@ -90,8 +90,11 @@
 import axios from "axios";
 
 import ClassCouncil from "./class_council.vue";
+
 import Moment from "moment";
 import "moment/dist/locale/fr";
+Moment.locale("fr");
+
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
@@ -113,7 +116,7 @@ export default {
     },
     computed: {
         threeWeeksFromNow: function () {
-            return moment().subtract(21, "days").format();
+            return Moment().subtract(21, "days").format();
         },
         nextCouncils: function () {
             return this.councils.filter(council => council.date_council >= this.threeWeeksFromNow || !council.date_council);
