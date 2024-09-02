@@ -53,7 +53,7 @@ from core.views import (
     DjangoModelWithAccessPermissions,
     get_core_settings,
     LargePageSizePagination,
-    BinaryFileRenderer
+    BinaryFileRenderer,
 )
 
 from .models import (
@@ -73,7 +73,7 @@ from .serializers import (
     PeriodEducSerializer,
     StudentAbsenceTeacherSerializer,
     JustificationSerializer,
-    JustMotiveSerializer
+    JustMotiveSerializer,
 )
 
 
@@ -227,7 +227,7 @@ class StudentAbsenceEducFilter(BaseFilters):
             user=self.request.user,
         )
         return queryset.filter(student__classe__in=classes)
-    
+
     def activate_no_justification_by(self, queryset, name, value):
         if not value:
             return queryset
@@ -252,7 +252,11 @@ class ExcludeStudentAPI(APIView):
 
         # Check permission.
         app_settings = get_settings()
-        if not self.request.user.groups.all().intersection(app_settings.can_see_exclusion.all()).exists():
+        if (
+            not self.request.user.groups.all()
+            .intersection(app_settings.can_see_exclusion.all())
+            .exists()
+        ):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         today = timezone.now()
@@ -262,7 +266,7 @@ class ExcludeStudentAPI(APIView):
             date_absence=today,
             status=StudentAbsenceTeacherModel.EXCLUDED,
             period=period,
-            user=request.user
+            user=request.user,
         )
         exclusion.save()
 
@@ -675,7 +679,10 @@ class NoJustificationCountAPI(APIView):
             day=core_settings.day_scholar_year_start,
         )
         count = StudentAbsenceEducModel.objects.filter(
-            justificationmodel__isnull=True, student__matricule=student, status="A", date_absence__gte=start
+            justificationmodel__isnull=True,
+            student__matricule=student,
+            status="A",
+            date_absence__gte=start,
         ).count()
         return Response(data={"count": count, "student": int(student)})
 
@@ -689,7 +696,7 @@ class JustificationCountAPI(APIView):
     def get(self, request, student=None, format=None):
         if not student:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        
+
         core_settings = get_core_settings()
         start = timezone.datetime(
             year=get_scholar_year(),
@@ -697,11 +704,14 @@ class JustificationCountAPI(APIView):
             day=core_settings.day_scholar_year_start,
         )
         total_absences_with_just = StudentAbsenceEducModel.objects.filter(
-            justificationmodel__isnull=False, student__matricule=student, status="A", date_absence__gte=start
+            justificationmodel__isnull=False,
+            student__matricule=student,
+            status="A",
+            date_absence__gte=start,
         )
 
-        justified = (total_absences_with_just
-            .filter(justificationmodel__motive__admissible_up_to__gt=0)
+        justified = (
+            total_absences_with_just.filter(justificationmodel__motive__admissible_up_to__gt=0)
             .values(
                 "justificationmodel__motive",
                 "justificationmodel__motive__short_name",
@@ -710,7 +720,8 @@ class JustificationCountAPI(APIView):
             )
             .annotate(Count("justificationmodel__motive"))
         )
-        unjustified = (total_absences_with_just.filter(justificationmodel__motive__admissible_up_to=0)
+        unjustified = (
+            total_absences_with_just.filter(justificationmodel__motive__admissible_up_to=0)
             .values(
                 "justificationmodel__motive",
                 "justificationmodel__motive__short_name",
@@ -718,12 +729,10 @@ class JustificationCountAPI(APIView):
             )
             .annotate(Count("justificationmodel__motive"))
         )
-    
-        return Response(data={
-            "justified": justified,
-            "unjustified": unjustified,
-            "student": int(student)
-        })
+
+        return Response(
+            data={"justified": justified, "unjustified": unjustified, "student": int(student)}
+        )
 
 
 class JustificationFilter(BaseFilters):
@@ -736,10 +745,11 @@ class JustificationFilter(BaseFilters):
             "date_just_end",
             "half_day_start",
             "half_day_end",
-            "motive"
+            "motive",
         ]
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         model = JustificationModel
+
 
 class JustificationViewSet(ModelViewSet):
     queryset = JustificationModel.objects.all()
@@ -757,7 +767,7 @@ class JustificationViewSet(ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         # student_id = request.data.get("student")
-        
+
         serializer = self.get_serializer(data=self.request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -785,8 +795,8 @@ class JustificationViewSet(ModelViewSet):
                 justification="",
                 fdb_server=server[0],
             )
-        
-        return Response(serializer.data, status=status.HTTP_201_CREATED)       
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class JustMotiveViewSet(ReadOnlyModelViewSet):
@@ -850,7 +860,8 @@ class MailWarningAPI(APIView):
         recipient_email = recipient_email.union(
             {
                 r.email_school if r.email_school else r.email
-                for r in other_responsibles if r.email_school or r.email
+                for r in other_responsibles
+                if r.email_school or r.email
             }
         )
 
@@ -872,7 +883,9 @@ class MailWarningAPI(APIView):
 
 
 class WarningPDF(APIView):
-    permission_required = ["student_absence_teacher.add_studentabsenceeducmodel",]
+    permission_required = [
+        "student_absence_teacher.add_studentabsenceeducmodel",
+    ]
     renderer_classes = [BinaryFileRenderer]
 
     def post(self, request, format=None):
