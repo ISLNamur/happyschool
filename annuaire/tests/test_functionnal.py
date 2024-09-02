@@ -33,7 +33,7 @@ class SeleniumTests(StaticLiveServerTestCase):
     def setUpClass(cls):
         super().setUpClass()
         options = Options()
-        options.headless = True
+        options.headless = False
         cls.selenium = WebDriver(options=options)
         cls.selenium.implicitly_wait(10)
 
@@ -44,9 +44,9 @@ class SeleniumTests(StaticLiveServerTestCase):
 
     def test_login(self):
         self.selenium.get("%s%s" % (self.live_server_url, "/auth/"))
-        username_input = self.selenium.find_element(By.ID, "inputUser")
+        username_input = self.selenium.find_element(By.ID, "username")
         username_input.send_keys("admin")
-        password_input = self.selenium.find_element(By.ID, "inputPassword")
+        password_input = self.selenium.find_element(By.ID, "password")
         password_input.send_keys("password")
         self.selenium.find_element(By.XPATH, '//button[@type="submit"]').click()
         self.selenium.get("%s%s" % (self.live_server_url, "/annuaire/"))
