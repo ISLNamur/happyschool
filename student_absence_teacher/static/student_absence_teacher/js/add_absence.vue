@@ -191,6 +191,7 @@ import "vue-multiselect/dist/vue-multiselect.css";
 
 import axios from "axios";
 import Moment from "moment";
+import "moment/dist/locale/fr";
 
 import { studentAbsenceTeacherStore } from "./stores/index.js";
 

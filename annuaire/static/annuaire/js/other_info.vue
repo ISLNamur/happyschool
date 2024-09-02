@@ -176,6 +176,7 @@
 import axios from "axios";
 
 import Moment from "moment";
+import "moment/dist/locale/fr";
 Moment.locale("fr");
 
 import {getCurrentScholarYear} from "@s:core/js/common/utilities.js";

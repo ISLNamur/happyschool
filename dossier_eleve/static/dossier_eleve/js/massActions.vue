@@ -73,6 +73,7 @@
 
 <script>
 import Moment from "moment";
+import "moment/dist/locale/fr";
 import axios from "axios";
 
 import { displayStudent } from "@s:core/js/common/utilities.js";

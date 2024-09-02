@@ -89,6 +89,7 @@ Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 
 import Moment from "moment";
+import "moment/dist/locale/fr";
 Moment.locale("fr");
 
 import Menu from "@s:core/js/common/menu_bar.vue";

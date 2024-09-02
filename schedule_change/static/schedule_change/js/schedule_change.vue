@@ -191,6 +191,7 @@ Vue.use(BootstrapVue);
 Vue.use(BootstrapVueIcons);
 
 import Moment from "moment";
+import "moment/dist/locale/fr";
 Moment.locale("fr");
 
 import { scheduleChangeStore } from "./stores/index.js";

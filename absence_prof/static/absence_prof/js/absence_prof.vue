@@ -106,6 +106,7 @@ import {BootstrapVue, BootstrapVueIcons} from "bootstrap-vue";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
 import Moment from "moment";
+import "moment/dist/locale/fr";
 Moment.locale("fr");
 
 import axios from "axios";

@@ -200,6 +200,7 @@
 </template>
 <script>
 import Moment from "moment";
+import "moment/dist/locale/fr";
 
 import axios from "axios";
 

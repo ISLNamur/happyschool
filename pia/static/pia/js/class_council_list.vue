@@ -90,7 +90,8 @@
 import axios from "axios";
 
 import ClassCouncil from "./class_council.vue";
-import moment from "moment";
+import Moment from "moment";
+import "moment/dist/locale/fr";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 

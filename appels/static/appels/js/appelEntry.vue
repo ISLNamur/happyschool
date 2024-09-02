@@ -106,6 +106,7 @@
 </template>
 <script>
 import Moment from "moment";
+import "moment/dist/locale/fr";
 import { displayStudent } from "@s:core/js/common/utilities";
 Moment.locale("fr");
 

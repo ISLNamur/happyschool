@@ -106,6 +106,7 @@ import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
 import Moment from "moment";
+import "moment/dist/locale/fr";
 Moment.locale("fr");
 
 import {getFilters} from "@s:core/js/common/filters.js";

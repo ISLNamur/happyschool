@@ -48,6 +48,7 @@
 import axios from "axios";
 
 import Moment from "moment";
+import "moment/dist/locale/fr";
 Moment.locale("fr");
 
 import FullCalendar from "@fullcalendar/vue3";
