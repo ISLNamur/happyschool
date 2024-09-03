@@ -13,7 +13,10 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        os: [ubuntu-22.04, ubuntu-24.04]
+        include:
+            # - os: ubuntu-22.04
+            - os: ubuntu-24.04
+              FIREFOX_PATH: /snap/firefox/current/firefox.launcher
 
     services:
       postgres:
@@ -33,6 +36,8 @@ jobs:
           - 5432:5432
 
     steps:
+    - run: FIREFOX_PATH=${{matrix.FIREFOX_PATH}}
+    - run: echo "$FIREFOX_PATH"
     - uses: actions/checkout@v2
     - name: Install system package
       run: sudo apt update && sudo apt install -y libldap2-dev libsasl2-dev zlib1g-dev make build-essential libssl-dev libbz2-dev libreadline-dev libsqlite3-dev wget llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev liblzma-dev libffi-dev git python3-dateutil ttf-bitstream-vera redis-server nodejs python3-pip libpangocairo-1.0-0 libcairo2-dev
@@ -64,7 +69,7 @@ jobs:
         echo "CHECK PYTHON FORMATING"
         pipenv run black --check --diff .
         echo "CHECK TEST CODE"
-        pipenv run coverage run --source='.' manage.py test
+        FIREFOX_PATH=/snap/bin/firefox pipenv run coverage run --source='.' manage.py test
         pipenv run coverage report
       env:
         DB_NAME: happyschool

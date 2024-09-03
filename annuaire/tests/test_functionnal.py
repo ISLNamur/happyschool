@@ -18,6 +18,7 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
+import os
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.firefox.webdriver import WebDriver
@@ -34,6 +35,9 @@ class SeleniumTests(StaticLiveServerTestCase):
         super().setUpClass()
         options = Options()
         options.headless = True
+        # if os.getenv("FIREFOX_PATH", None):
+        print("ff_path", os.getenv("FIREFOX_PATH", None))
+        options.binary_location = "/snap/bin/firefox"
         cls.selenium = WebDriver(options=options)
         cls.selenium.implicitly_wait(10)
 
