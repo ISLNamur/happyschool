@@ -152,9 +152,12 @@
                 </b-btn>
             </b-col>
         </b-row>
-        <b-row class="mt-2">
+        <b-row
+            class="mt-2"
+            v-if="student"
+        >
             <b-col>
-                <absences-stat :student-id="studentId" />
+                <absences-stat :student-id="student.matricule" />
             </b-col>
         </b-row>
     </b-overlay>
@@ -182,7 +185,7 @@ export default {
         },
         "studentId": {
             type: String,
-            default: null
+            default: -1
         },
     },
     data: function () {
@@ -293,8 +296,8 @@ export default {
 
             send(url, data, token)
                 .then(() => {
-                    this.submitting = false;
-                    this.$router.push("/justification/",() => {
+                    this.$router.push(`/overview/${data.date_just_start}/student_view/${data.student}/`,() => {
+                        this.submitting = false;
                         this.$root.$bvToast.toast("Les données ont bien été envoyées", {
                             variant: "success",
                             noCloseButton: true,
@@ -310,7 +313,7 @@ export default {
     mounted: function () {
         this.store.getOptions();
 
-        if (this.studentId) {
+        if (parseInt(this.studentId) > 0) {
             this.justification.student = this.studentId;
             axios.get(`/annuaire/api/student/${this.studentId}/`)
                 .then((resp) => {
@@ -326,6 +329,10 @@ export default {
         axios.get(`/student_absence_teacher/api/justification/${this.justId}`)
             .then((resp) => {
                 this.justification = resp.data;
+                axios.get(`/annuaire/api/student/${this.justification.student}`)
+                    .then((resp) => {
+                        this.student = resp.data;
+                    });
                 this.getRelatedAbsences();
                 this.loading = false;
             });
