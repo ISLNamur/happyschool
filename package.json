@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ckeditor/ckeditor5-build-classic": "^41.4.2",
+    "@ckeditor/ckeditor5-build-classic": "^43.1.0",
     "@ckeditor/ckeditor5-vue": "^5.1.0",
     "@fullcalendar/core": "^6.1.13",
     "@fullcalendar/interaction": "^6.1.13",
