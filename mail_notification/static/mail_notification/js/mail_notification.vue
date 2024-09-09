@@ -215,7 +215,7 @@
                                 />
                                 <div
                                     class="html ql-editor"
-                                    v-html="replaceContent()"
+                                    v-html="replaceContent"
                                 />
                             </b-form-group>
                             <b-button
@@ -323,6 +323,20 @@ export default {
                 });
         }
     },
+    computed: {
+        replaceContent: function () {
+            let attachmentsHtml = "<ul>";
+            for (let a in this.uploadedFiles) {
+                attachmentsHtml += `<li><a href="#" >${this.attachments[a].name}</a></li>\n`;
+            }
+            attachmentsHtml += "</ul>";
+
+            return this.emailContent
+                .replace(/\{\{ nom \}\}/g, "Toto Tutu")
+                .replace(/\{\{ classe \}\}/g, "3B")
+                .replace(/\{\{ fichiers \}\}/g, attachmentsHtml);
+        },
+    },
     methods: {
         warnChoice: function () {
             if (this.toType === "teachers") alert("Vous avez choisi d'envoyer aux parents.");
@@ -341,11 +355,10 @@ export default {
             this.hasError = false;
             this.responsibles = true;
         },
-        addFiles: function () {
-            for (let a in this.attachments) {
-                this.uploadedFiles.push({ file: this.attachments[a], id: -1 });
+        addFiles: function (files) {
+            for (let a in files) {
+                this.uploadedFiles.push({ file: files[a], id: -1 });
             }
-            this.attachments.splice(0, this.attachments.length);
         },
         setFileData: function (index, data) {
             this.uploadedFiles[index].id = data.id;
@@ -354,18 +367,6 @@ export default {
         deleteFile: function (index) {
             this.uploadedFiles.splice(index, 1);
             this.$refs.attachments.reset();
-        },
-        replaceContent: function () {
-            let attachmentsHtml = "<ul>";
-            for (let a in this.attachments) {
-                attachmentsHtml += `<li><a href="#" >${this.attachments[a].name}</a></li>\n`;
-            }
-            attachmentsHtml += "</ul>";
-
-            return this.emailContent
-                .replace(/\{\{ nom \}\}/g, "Toto Tutu")
-                .replace(/\{\{ classe \}\}/g, "3B")
-                .replace(/\{\{ fichiers \}\}/g, attachmentsHtml);
         },
         getEmailToOptions: function (search) {
             this.emailToLoading = true;
