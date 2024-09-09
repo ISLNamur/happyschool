@@ -798,6 +798,49 @@ class JustificationViewSet(ModelViewSet):
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    def update(self, request, pk=None):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=False)
+        serializer.is_valid(raise_exception=True)
+        if get_settings().sync_with_proeco:
+            from libreschoolfdb.writer import set_absence_justification
+
+            teaching_name = StudentModel.objects.get(matricule=instance.student.matricule).teaching.name
+
+            server = [
+                s["server"] for s in settings.SYNC_FDB_SERVER if s["teaching_name"] == teaching_name
+            ]
+            if len(server) == 0:
+                raise
+
+            # Check if dates have changed.
+            if (
+                serializer.instance.date_just_start != serializer.validated_data["date_just_start"]
+                or serializer.instance.date_just_end != serializer.validated_data["date_just_end"]
+            ):
+                raise
+
+            result = set_absence_justification(
+                matricule=serializer.validated_data["student"].matricule,
+                just_date_start=serializer.validated_data["date_just_start"],
+                just_date_end=serializer.validated_data["date_just_end"],
+                just_period_start=serializer.validated_data["half_day_start"],
+                just_period_end=serializer.validated_data["half_day_end"],
+                motive=serializer.validated_data["motive"].short_name,
+                comment=serializer.validated_data["comment"],
+                justification="",
+                fdb_server=server[0],
+            )
+            if not result[0]:
+                raise
+
+        self.perform_update(serializer)
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # From UpdateMixin class
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+        return Response(serializer.data)
 
 class JustMotiveViewSet(ReadOnlyModelViewSet):
     queryset = JustMotiveModel.objects.all()
