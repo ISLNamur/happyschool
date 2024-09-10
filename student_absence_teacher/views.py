@@ -805,7 +805,9 @@ class JustificationViewSet(ModelViewSet):
         if get_settings().sync_with_proeco:
             from libreschoolfdb.writer import set_absence_justification
 
-            teaching_name = StudentModel.objects.get(matricule=instance.student.matricule).teaching.name
+            teaching_name = StudentModel.objects.get(
+                matricule=instance.student.matricule
+            ).teaching.name
 
             server = [
                 s["server"] for s in settings.SYNC_FDB_SERVER if s["teaching_name"] == teaching_name
@@ -835,12 +837,13 @@ class JustificationViewSet(ModelViewSet):
                 raise
 
         self.perform_update(serializer)
-        if getattr(instance, '_prefetched_objects_cache', None):
+        if getattr(instance, "_prefetched_objects_cache", None):
             # From UpdateMixin class
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
         return Response(serializer.data)
+
 
 class JustMotiveViewSet(ReadOnlyModelViewSet):
     queryset = JustMotiveModel.objects.all()
