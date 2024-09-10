@@ -803,7 +803,10 @@ class JustificationViewSet(ModelViewSet):
         serializer = self.get_serializer(instance, data=request.data, partial=False)
         serializer.is_valid(raise_exception=True)
         if get_settings().sync_with_proeco:
-            from libreschoolfdb.writer import set_absence_justification
+            from libreschoolfdb.writer import (
+                set_absence_justification,
+                change_time_range_absence_justification,
+            )
 
             teaching_name = StudentModel.objects.get(
                 matricule=instance.student.matricule
@@ -819,22 +822,37 @@ class JustificationViewSet(ModelViewSet):
             if (
                 serializer.instance.date_just_start != serializer.validated_data["date_just_start"]
                 or serializer.instance.date_just_end != serializer.validated_data["date_just_end"]
+                or serializer.instance.half_day_start != serializer.validated_data["half_day_start"]
+                or serializer.instance.half_day_end != serializer.validated_data["half_day_end"]
             ):
-                raise
-
-            result = set_absence_justification(
-                matricule=serializer.validated_data["student"].matricule,
-                just_date_start=serializer.validated_data["date_just_start"],
-                just_date_end=serializer.validated_data["date_just_end"],
-                just_period_start=serializer.validated_data["half_day_start"],
-                just_period_end=serializer.validated_data["half_day_end"],
-                motive=serializer.validated_data["motive"].short_name,
-                comment=serializer.validated_data["comment"],
-                justification="",
-                fdb_server=server[0],
-            )
-            if not result[0]:
-                raise
+                result = change_time_range_absence_justification(
+                    matricule=serializer.validated_data["student"].matricule,
+                    old_just_date_start=serializer.instance.date_just_start,
+                    old_just_period_start=serializer.instance.half_day_start,
+                    old_just_date_end=serializer.instance.date_just_end,
+                    old_just_period_end=serializer.instance.half_day_end,
+                    just_date_start=serializer.validated_data["date_just_start"],
+                    just_period_start=serializer.validated_data["half_day_start"],
+                    just_date_end=serializer.validated_data["date_just_end"],
+                    just_period_end=serializer.validated_data["half_day_end"],
+                    fdb_server=server[0],
+                )
+                if not result:
+                    raise
+            else:
+                result = set_absence_justification(
+                    matricule=serializer.validated_data["student"].matricule,
+                    just_date_start=serializer.validated_data["date_just_start"],
+                    just_date_end=serializer.validated_data["date_just_end"],
+                    just_period_start=serializer.validated_data["half_day_start"],
+                    just_period_end=serializer.validated_data["half_day_end"],
+                    motive=serializer.validated_data["motive"].short_name,
+                    comment=serializer.validated_data["comment"],
+                    justification="",
+                    fdb_server=server[0],
+                )
+                if not result[0]:
+                    raise
 
         self.perform_update(serializer)
         if getattr(instance, "_prefetched_objects_cache", None):
@@ -843,6 +861,34 @@ class JustificationViewSet(ModelViewSet):
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
         return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if get_settings().sync_with_proeco:
+            from libreschoolfdb.writer import remove_absence_justification
+
+            teaching_name = StudentModel.objects.get(
+                matricule=instance.student.matricule
+            ).teaching.name
+
+            server = [
+                s["server"] for s in settings.SYNC_FDB_SERVER if s["teaching_name"] == teaching_name
+            ]
+            if len(server) == 0:
+                raise
+
+            result = remove_absence_justification(
+                matricule=instance.student.matricule,
+                just_date_start=instance.date_just_start,
+                just_date_end=instance.date_just_end,
+                just_period_start=instance.half_day_start,
+                just_period_end=instance.half_day_end,
+            )
+            if not result:
+                raise
+
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class JustMotiveViewSet(ReadOnlyModelViewSet):
