@@ -147,7 +147,10 @@
                 v-if="justId !== '-1'"
                 class="text-right"
             >
-                <b-btn variant="danger">
+                <b-btn
+                    @click="remove"
+                    variant="danger"
+                >
                     Supprimer
                 </b-btn>
             </b-col>
@@ -308,6 +311,31 @@ export default {
                     this.submitting = false;
                 });
 
+        },
+        remove: function () {
+            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer cette justification",{
+                centered: true,
+                buttonSize: "sm",
+                okVariant: "danger",
+                okTitle: "Oui",
+                cancelTitle: "Annuler",
+            })
+                .then(remove => {
+                    if (!remove) return;
+
+                    const dateJustStart = this.justification.date_just_start;
+                    const studentMatricule = this.justification.student;
+                    axios.delete(`/student_absence_teacher/api/justification/${this.justId}/`, token)
+                        .then(() => {
+                            this.$router.push(`/overview/${dateJustStart}/student_view/${studentMatricule}/`,() => {
+                                this.submitting = false;
+                                this.$root.$bvToast.toast("Les données ont bien été supprimées", {
+                                    variant: "success",
+                                    noCloseButton: true,
+                                });
+                            });
+                        });
+                });
         }
     },
     mounted: function () {
