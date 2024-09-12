@@ -1004,6 +1004,7 @@ class JustListPDF(LoginRequiredMixin, PermissionRequiredMixin, WeasyTemplateView
     template_name = "student_absence_teacher/export_to_just_list.html"
 
     def get_context_data(self, **kwargs) -> dict:
+        context = {}
         view_set = StudentAbsenceEducViewSet.as_view({"get": "list"})
         results = view_set(self.request).data["results"]
         matricules = set(map(lambda ab: ab["student"]["matricule"], results))
