@@ -19,14 +19,27 @@
 
 <template>
     <b-row>
-        <b-col>
-            <b-btn
-                variant="success"
-                :to="`/justification/-1/`"
-            >
-                <b-icon icon="plus" />
-                Ajouter un justificatif
-            </b-btn>
+        <b-col
+            cols="12"
+            md="4"
+        >
+            <b-button-group>
+                <b-btn
+                    variant="success"
+                    :to="`/justification/-1/`"
+                >
+                    <b-icon icon="plus" />
+                    Ajouter un justificatif
+                </b-btn>
+                <b-btn
+                    :href="`/student_absence_teacher/get_pdf_just/?${urlData}&page_size=1000`"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <b-icon icon="file-earmark-pdf" />
+                    Export
+                </b-btn>
+            </b-button-group>
         </b-col>
         <b-col>
             <b-form-checkbox
@@ -46,7 +59,10 @@
                 Non Traitées
             </b-form-checkbox>
         </b-col>
-        <b-col>
+        <b-col
+            cols="12"
+            md="4"
+        >
             <b-form-group>
                 <multiselect
                     ref="input"
@@ -197,6 +213,32 @@ export default {
             store: studentAbsenceTeacherStore()
         };
     },
+    computed: {
+        urlData: function () {
+            const daysBefore = 1;
+            const dateBefore = Moment().subtract(daysBefore, "days").toISOString().slice(0, 10);
+
+            // Check current search.
+            let searchFilter = "";
+            if (this.search) {
+                if (this.search.type === "student") {
+                    searchFilter = `&student__matricule=${this.search.id}`;
+                } else {
+                    searchFilter = `&student__classe=${this.search.id}`;
+                }
+            }
+            let url = "status=A" +
+                `&activate_own_classes=${!this.allClasses}` +
+                "&activate_no_justification=true" +
+                `&date_absence__lte=${dateBefore}` +
+                `&mail_warning=${!this.noProcessedEntries}` +
+                searchFilter +
+                "&ordering=-date_absence,datetime_creation" +
+                // eslint-disable-next-line no-undef
+                `&scholar_year=${current_scholar_year}-${current_scholar_year + 1}`;
+            return url;
+        }
+    },
     methods: {
         displayStudent,
         sortAbsences: function (a, b) {
@@ -221,30 +263,8 @@ export default {
         },
         loadEntries: function () {
             this.loading = true;
-            const daysBefore = 1;
-            const dateBefore = Moment().subtract(daysBefore, "days").toISOString().slice(0, 10);
-
-            // Check current search.
-            let searchFilter = "";
-            if (this.search) {
-                if (this.search.type === "student") {
-                    searchFilter = `&student__matricule=${this.search.id}`;
-                } else {
-                    searchFilter = `&student__classe=${this.search.id}`;
-                }
-            }
              
-            axios.get(
-                "/student_absence_teacher/api/absence_educ/?status=A" +
-                `&activate_own_classes=${!this.allClasses}` +
-                "&activate_no_justification=true" +
-                `&date_absence__lte=${dateBefore}` +
-                `&mail_warning=${!this.noProcessedEntries}` +
-                searchFilter +
-                "&ordering=-date_absence,datetime_creation" +
-                // eslint-disable-next-line no-undef
-                `&scholar_year=${current_scholar_year}-${current_scholar_year + 1}` +
-                `&page=${this.currentPage}`)
+            axios.get(`/student_absence_teacher/api/absence_educ/?${this.urlData}&page=${this.currentPage}`)
                 .then((resp) => {
                     this.entriesCount = resp.data.count;
                     const groupByStudent = Object.groupBy(resp.data.results, ({ student }) => student.matricule);

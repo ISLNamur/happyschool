@@ -38,6 +38,7 @@ urlpatterns = [
     ),
     path("api/mail_warning/", views.MailWarningAPI.as_view()),
     path("get_pdf_warning/", views.WarningPDF.as_view()),
+    path("get_pdf_just/", views.JustListPDF.as_view()),
     path("api/exclude_student/", views.ExcludeStudentAPI.as_view()),
 ]
 

@@ -1,0 +1,50 @@
+<html>
+    <style>
+        table {
+            border: 1px solid black;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .student {
+            border-top: 1px solid lightgrey;
+        }
+        .name {
+            border-right: 1px solid black;
+        }
+        .day {
+            text-align: center;
+        }
+        .classe {
+            border-top: 1px solid black;
+        }
+    </style>
+    <body>
+        <table>
+            <thead>
+                <tr>
+                    <th>Élève</th>
+                    <th class="day">Absences</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for class in absences %}
+                <tr class="classe">
+                    <td>
+                        <strong>{{ class.className }}</strong>
+                    </td>
+                </tr>
+                {% for student in class.students %}
+                <tr class="student">
+                    <td class="name">
+                        {{ student.studentName }}
+                    </td>
+                    <td class="day">
+                        {{ student.absences }}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </body>
+</html>

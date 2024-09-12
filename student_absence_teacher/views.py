@@ -25,6 +25,8 @@ from itertools import groupby
 from weasyprint import HTML
 from escpos.printer import Network
 
+from django_weasyprint import WeasyTemplateView
+
 from django.template.loader import get_template
 from django.template import Template, Context
 from django.db.models import Count, ObjectDoesNotExist, Q
@@ -995,3 +997,60 @@ class WarningPDF(APIView):
             headers={"Content-Disposition": 'attachment; filename="file.pdf"'},
             content_type="application/pdf",
         )
+
+
+class JustListPDF(LoginRequiredMixin, PermissionRequiredMixin, WeasyTemplateView):
+    permission_required = ["student_absence_teacher.view_justificationmodel"]
+    template_name = "student_absence_teacher/export_to_just_list.html"
+
+    def get_context_data(self, **kwargs) -> dict:
+        view_set = StudentAbsenceEducViewSet.as_view({"get": "list"})
+        results = view_set(self.request).data["results"]
+        matricules = set(map(lambda ab: ab["student"]["matricule"], results))
+
+        group_by_student = [
+            [ab for ab in results if ab["student"]["matricule"] == m] for m in matricules
+        ]
+
+        classes = set(map(lambda st: st[0]["student"]["classe"]["id"], group_by_student))
+        group_by_class = [
+            [st for st in group_by_student if st[0]["student"]["classe"]["id"] == c]
+            for c in classes
+        ]
+        group_by_class.sort(
+            key=lambda c: (
+                c[0][0]["student"]["classe"]["year"],
+                c[0][0]["student"]["classe"]["letter"],
+            )
+        )
+
+        period_dict = {
+            p["id"]: p["name"] for p in PeriodEducModel.objects.all().values("id", "name")
+        }
+
+        context["absences"] = [
+            {
+                "className": f"{studentClass[0][0]['student']['classe']['year']}{studentClass[0][0]['student']['classe']['letter'].upper()}",
+                "students": sorted(
+                    [
+                        {
+                            "studentName": f"{absences_by_student[0]['student']['last_name']} {absences_by_student[0]['student']['first_name']}",
+                            "absences": f"Du {self.get_oldest(absences_by_student, period_dict)} au {self.get_youngest(absences_by_student, period_dict)}",
+                        }
+                        for absences_by_student in studentClass
+                    ],
+                    key=lambda st: st["studentName"].upper(),
+                ),
+            }
+            for studentClass in group_by_class
+        ]
+
+        return context
+
+    def get_oldest(self, absences, period_dict) -> str:
+        oldest = min(absences, key=lambda a: a["date_absence"])
+        return f"{oldest['date_absence'][8:10]}/{oldest['date_absence'][5:7]}/{oldest['date_absence'][2:4]} ({period_dict[oldest['period']]})"
+
+    def get_youngest(self, absences, period_dict) -> str:
+        youngest = max(absences, key=lambda a: a["date_absence"])
+        return f"{youngest['date_absence'][8:10]}/{youngest['date_absence'][5:7]}/{youngest['date_absence'][2:4]} ({period_dict[youngest['period']]})"
