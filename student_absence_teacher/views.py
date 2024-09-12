@@ -883,7 +883,7 @@ class JustificationViewSet(ModelViewSet):
                 just_date_end=instance.date_just_end,
                 just_period_start=instance.half_day_start,
                 just_period_end=instance.half_day_end,
-                fdb_server=server[0]
+                fdb_server=server[0],
             )
             if not result:
                 raise
