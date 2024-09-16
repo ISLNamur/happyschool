@@ -147,7 +147,7 @@ class BaseFilters(filters.FilterSet):
         )
         end = start + timezone.timedelta(days=355)
         return queryset.filter(
-            **{self.datetime_field + "__gt": start, self.datetime_field + "__lte": end}
+            **{self.datetime_field + "__gte": start, self.datetime_field + "__lte": end}
         )
 
     def classe_by(self, queryset, field_name, value):
