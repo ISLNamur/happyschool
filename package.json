@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ckeditor/ckeditor5-build-classic": "^41.4.2",
-    "@ckeditor/ckeditor5-vue": "^5.1.0",
+    "@ckeditor/ckeditor5-build-classic": "^43.1.0",
+    "@ckeditor/ckeditor5-vue": "^6.0.0",
     "@fullcalendar/core": "^6.1.13",
     "@fullcalendar/interaction": "^6.1.13",
     "@fullcalendar/timegrid": "^6.1.13",
@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.4.0",
-    "@vitejs/plugin-vue": "^4.5.2",
+    "@vitejs/plugin-vue": "^5.1.4",
     "django-vite-plugin": "^4.0.0",
     "eslint": "^9.4.0",
     "eslint-plugin-vue": "^9.26.0",
