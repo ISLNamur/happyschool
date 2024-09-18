@@ -50,7 +50,7 @@
                         deselect-label=""
                         label="display"
                         track-by="matricule"
-                        :disabled="studentId"
+                        :disabled="studentId > 0"
                         v-model="student"
                     >
                         <template #noResult>
