@@ -177,6 +177,7 @@ import AbsencesStat from "./AbsencesStat.vue";
 
 import TextEditor from "@s:core/js/common/text_editor.vue";
 import {getPeopleByName} from "@s:core/js/common/search.js";
+import moment from "moment";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
@@ -190,6 +191,14 @@ export default {
             type: String,
             default: -1
         },
+        "endDate": {
+            type: String,
+            default: "",
+        },
+        "absencesCount": {
+            type: Number,
+            default: 0,
+        }
     },
     data: function () {
         return {
@@ -347,6 +356,19 @@ export default {
                 .then((resp) => {
                     this.student = resp.data;
                 });
+
+            if (this.endDate) {
+                this.justification.date_just_end = this.endDate;
+                // Estimate from unjustified count (with a margin of two days).
+                const startDate = moment(this.endDate).subtract(Math.round(this.absencesCount / this.store.periodEduc.length) + 2, "days").format("YYYY-MM-DD");
+                axios.get(
+                    `/student_absence_teacher/api/absence_educ/?student__matricule=${this.studentId}&status=A&date_absence__lte=${this.endDate}&date_absence__gte=${startDate}&ordering=date_absence,period__start`
+                ).then((resp) => {
+                    this.justification.date_just_start = resp.data.results[0].date_absence;
+                    this.justification.half_day_start = this.store.periodEduc.find(p => p.id === resp.data.results[0].period).index;
+                    this.justification.half_day_end = this.store.periodEduc.find(p => p.id === resp.data.results[resp.data.count - 1].period).index;
+                });
+            }
         }
 
         if (!this.justId || parseInt(this.justId) < 0) {

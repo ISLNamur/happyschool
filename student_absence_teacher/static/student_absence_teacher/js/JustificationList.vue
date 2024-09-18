@@ -120,7 +120,7 @@
                         <b-btn
                             size="sm"
                             variant="outline-success"
-                            :to="`/justification/-1/${data.item.student.matricule}/`"
+                            :to="`/justification/-1/${data.item.student.matricule}/${data.item.endDate}/${data.item.countNoJustification}/`"
                         >
                             <b-icon icon="plus" />
                             Justifier
@@ -263,7 +263,7 @@ export default {
         },
         loadEntries: function () {
             this.loading = true;
-             
+
             axios.get(`/student_absence_teacher/api/absence_educ/?${this.urlData}&page=${this.currentPage}`)
                 .then((resp) => {
                     this.entriesCount = resp.data.count;
@@ -274,8 +274,9 @@ export default {
                             student: student[0].student,
                             studentLabel: this.displayStudent(student[0].student),
                             date_absence: date_absence,
+                            endDate: student.map(s => s.date_absence).toSorted().toReversed()[0],
                             mail_warning: student.some(s => s.mail_warning),
-                            countNoJustification: 0,
+                            countNoJustification: this.countNoJustification,
                         };
                     }).sort(this.sortAbsences);
 

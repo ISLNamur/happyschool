@@ -76,7 +76,7 @@ const router = createRouter({
             props: true,
         },
         {
-            path: "/justification/:justId/:studentId/",
+            path: "/justification/:justId/:studentId/:endDate/:absencesCount/",
             component: JustificationEdit,
             props: true,
         },
