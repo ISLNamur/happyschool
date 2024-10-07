@@ -137,6 +137,7 @@ class StudentAbsenceTeacherFilter(BaseFilters):
             "period",
             "period__name",
             "datetime_update",
+            "status",
         ]
         model = StudentAbsenceTeacherModel
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)

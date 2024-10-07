@@ -76,6 +76,14 @@
             </b-button>
         </b-col>
     </b-row>
+    <b-row>
+        <b-table
+            stripped
+            hover
+            :items="exclusions"
+            :fields="exclusionFields"
+        />
+    </b-row>
 </template>
 
 <script>
@@ -100,6 +108,7 @@ export default {
         return {
             periods: [],
             period: null,
+            exclusions: [],
             search: "",
             searchOptions: [],
             searchId: 0,
@@ -148,6 +157,19 @@ export default {
             )
                 .then(() => {
                     this.search = null;
+                    this.getExclusions();
+                });
+        },
+        getExclusions: function () {
+            axios.get("/student_absence_teacher/api/absence_teacher/?status=excluded")
+                .then((resp) => {
+                    this.exclusions = resp.data.results.map(e => {
+                        return {
+                            dateExclusion: e.date_absence,
+                            studentName: `${e.student.last_name} ${e.student.first_name}`,
+                            period: `${e.period.start.slice(0, 5)} - ${e.period.end.slice(0, 5)}`,
+                        };
+                    });
                 });
         },
         overloadInput: function () {
@@ -175,6 +197,7 @@ export default {
     },
     mounted: function () {
         this.overloadInput();
+        this.getExclusions();
         axios.get("/student_absence_teacher/api/period_teacher/")
             .then((resp) => {
                 this.periods = resp.data.results;
