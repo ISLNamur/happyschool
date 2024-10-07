@@ -19,7 +19,9 @@
 
 import json
 import xlsxwriter
+from datetime import date, timedelta
 
+from PyPDF2 import PdfWriter
 from io import BytesIO
 
 from django.conf import settings
@@ -27,10 +29,11 @@ from django.shortcuts import render
 
 from django.http import HttpResponse
 from django.template.loader import get_template
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import TemplateView
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 
 from rest_framework.views import APIView, Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
@@ -45,7 +48,7 @@ from django_weasyprint import WeasyTemplateView
 from z3c.rml import rml2pdf
 from unidecode import unidecode
 
-from core.utilities import get_menu, check_student_photo
+from core.utilities import get_menu, check_student_photo, get_scholar_year
 from core.people import People, get_classes
 from core.models import (
     StudentModel,
@@ -66,7 +69,7 @@ from core.serializers import (
     StudentSensitiveInfoSerializer,
     GivenCourseModel,
 )
-from core.views import get_app_settings
+from core.views import get_app_settings, get_core_settings
 
 from .models import AnnuaireSettingsModel
 from .serializers import AnnuaireSettingsSerializer
@@ -588,4 +591,165 @@ class ClassePhotosView(LoginRequiredMixin, WeasyTemplateView):
         tenures = ResponsibleModel.objects.filter(tenure=classe)
 
         context["tenures"] = tenures
+        return context
+
+
+class SummaryPDF(WeasyTemplateView, PermissionRequiredMixin):
+    template_name = "core/summary.html"
+
+    def get_permission_required():
+        permission_required = []
+
+        if "dossier_eleve" in settings.INSTALLED_APPS:
+            permission_required.append("dossier_eleve.view_caseleve")
+
+        if "lateness" in settings.INSTALLED_APPS:
+            permission_required.append("lateness.view_latenessmodel")
+
+        if "student_absence_teacher" in settings.INSTALLED_APPS:
+            permission_required += [
+                "student_absence_teacher.view_studentabsenceteachermodel",
+                "student_absence_teacher.view_studentabsenceeducmodel",
+                "student_absence_teacher.view_justificationmodel",
+            ]
+
+    def get(self, request, *args, **kwargs):
+        annuaire_settings = get_settings()
+        if (
+            not annuaire_settings.can_see_summary.all()
+            .intersection(request.user.groups.all())
+            .exists()
+        ):
+            return HttpResponse("Pas d'accès autorisé")
+
+        if kwargs["category"] == "student":
+            return self.render_to_response(self.get_student_context(**kwargs))
+
+        elif kwargs["category"] == "class":
+            classModel = ClasseModel.objects.get(id=kwargs["id"])
+            students = People().get_students_by_classe(classModel)
+            if not students:
+                return render(request, "dossier_eleve/no_student.html")
+
+            merger = PdfWriter()
+            for s in students:
+                kwargs["id"] = s.matricule
+                student_context = self.get_student_context(**kwargs)
+                if not student_context:
+                    continue
+                student_response = self.render_to_response(student_context)
+                pdf = BytesIO(student_response.rendered_content)
+                if not pdf:
+                    continue
+
+                merger.append(pdf)
+
+            output_stream = BytesIO()
+            merger.write(output_stream)
+            merger.close()
+            response = HttpResponse(content_type="application/pdf")
+            response["Content-Disposition"] = (
+                'filename; filename="' + classModel.compact_str + '.pdf"'
+            )
+            response.write(output_stream.getvalue())
+            return response
+
+    def get_student_context(self, **kwargs) -> dict:
+        context = {}
+
+        date_from = date(
+            int(kwargs["date_from"][:4]),
+            int(kwargs["date_from"][5:7]),
+            int(kwargs["date_from"][8:]),
+        )
+        date_to = date(
+            int(kwargs["date_to"][:4]), int(kwargs["date_to"][5:7]), int(kwargs["date_to"][8:])
+        )
+
+        context["date_from"] = date_from
+        context["date_to"] = date_to
+
+        core_settings = get_core_settings()
+        scholar_year_start = timezone.datetime(
+            year=get_scholar_year(),
+            month=core_settings.month_scholar_year_start,
+            day=core_settings.day_scholar_year_start,
+        )
+        scholar_year_end = scholar_year_start + timezone.timedelta(days=350)
+
+        try:
+            student = StudentModel.objects.get(matricule=kwargs["id"])
+            context["student"] = student
+        except ObjectDoesNotExist:
+            return {}
+
+        if "dossier_eleve" in settings.INSTALLED_APPS:
+            from dossier_eleve.views import StatisticAPI
+            from dossier_eleve.models import CasEleve
+
+            context["dossier_eleve"] = {
+                "statistics": StatisticAPI().gen_stats(
+                    self.request.user, student, only_sanctions=True
+                ),
+                "last_entries": CasEleve.objects.filter(
+                    student=student,
+                    date_sanction__gte=date_from,
+                    date_sanction__lte=date_to,
+                    sanction_decision__isnull=False,
+                ).order_by("date_sanction"),
+            }
+
+        if "lateness" in settings.INSTALLED_APPS:
+            from lateness.models import LatenessModel
+
+            context["lateness"] = {
+                "scholar_year": {
+                    "justified": LatenessModel.objects.filter(
+                        student=student,
+                        justified=True,
+                        datetime_creation__gte=scholar_year_start,
+                        datetime_creation__lte=scholar_year_end,
+                    ).count(),
+                    "unjustified": LatenessModel.objects.filter(
+                        student=student,
+                        justified=False,
+                        datetime_creation__gte=scholar_year_start,
+                        datetime_creation__lte=scholar_year_end,
+                    ).count(),
+                },
+                "last_entries": LatenessModel.objects.filter(
+                    student=student,
+                    datetime_creation__gte=date_from,
+                    datetime_creation__lte=date_to,
+                ).order_by("datetime_creation"),
+            }
+
+        if "student_absence_teacher" in settings.INSTALLED_APPS:
+            from student_absence_teacher.views import JustificationCountAPI
+            from student_absence_teacher.models import (
+                JustificationModel,
+                StudentAbsenceTeacherModel,
+            )
+
+            context["student_absence_teacher"] = {
+                "absences": JustificationCountAPI.as_view()(
+                    request=self.request, student=student.matricule
+                ).data,
+                "last_just": JustificationModel.objects.filter(
+                    student=student, date_just_start__gte=date_from, date_just_end__lte=date_to
+                ),
+                "exclusions": StudentAbsenceTeacherModel.objects.filter(
+                    student=student,
+                    date_absence__gte=scholar_year_start,
+                    date_absence__lte=scholar_year_end,
+                    status=StudentAbsenceTeacherModel.EXCLUDED,
+                ).count(),
+                "last_exclusions": StudentAbsenceTeacherModel.objects.filter(
+                    student=student,
+                    date_absence__gte=date_from,
+                    date_absence__lte=date_to,
+                    status=StudentAbsenceTeacherModel.EXCLUDED,
+                ),
+            }
+
         return context

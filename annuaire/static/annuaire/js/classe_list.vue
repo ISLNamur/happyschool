@@ -22,32 +22,46 @@
         <b-col>
             <div
                 v-if="students.length > 0"
-                class="mb-2"
+                class="mb-2 text-right"
             >
-                Téléchargements :
-                <b-button
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    :href="getClassePhoto"
-                >
-                    Photos de classe
-                </b-button>
-                <span v-if="store.settings.show_credentials">
+                <b-button-group>
                     <b-button
+                        variant="outline-primary"
                         target="_blank"
                         rel="noopener noreferrer"
-                        :href="getClasseListExcel"
+                        :href="getClassePhoto"
                     >
-                        Liste des étudiants avec identifiants (excel)
+                        <b-icon icon="image" />
+                        Photos
                     </b-button>
                     <b-button
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        :href="getClasseListPDF"
+                        variant="outline-secondary"
+                        v-b-modal.summaryclass
                     >
-                        Liste des étudiants avec identifiants (PDF)
+                        <b-icon icon="file-pdf" />
+                        Récapitulatifs
                     </b-button>
-                </span>
+                    <b-dropdown
+                        v-if="store.settings.show_credentials"
+                        text="Liste identifiants"
+                        variant="outline-secondary"
+                    >
+                        <b-dropdown-item
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            :href="getClasseListExcel"
+                        >
+                            Fichier Excel
+                        </b-dropdown-item>
+                        <b-dropdown-item
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            :href="getClasseListPDF"
+                        >
+                            Fichier PDF
+                        </b-dropdown-item>
+                    </b-dropdown>
+                </b-button-group>
             </div>
             <p v-else>
                 Il n'y a pas d'élèves dans cette classe.
@@ -63,6 +77,40 @@
                 </b-list-group-item>
             </b-list-group>
         </b-col>
+        <b-modal
+            id="summaryclass"
+            ok-only
+        >
+            <b-row>
+                <b-col>
+                    <b-form-group label="À partir de ">
+                        <b-input
+                            type="date"
+                            v-model="date_from"
+                        />
+                    </b-form-group>
+                    <b-form-group label="Jusqu'à ">
+                        <b-input
+                            type="date"
+                            v-model="date_to"
+                        />
+                    </b-form-group>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col class="text-center">
+                    <b-btn
+                        :href="`/annuaire/summary/class/${classe}/${date_from}/${date_to}/`"
+                        target="_blank"
+                        variant="primary"
+                        :disabled="!date_from || !date_to"
+                    >
+                        <b-icon icon="file-pdf" />
+                        Télécharger
+                    </b-btn>
+                </b-col>
+            </b-row>
+        </b-modal>
     </b-row>
 </template>
 
@@ -82,6 +130,8 @@ export default {
     data: function () {
         return {
             students: [],
+            date_from: null,
+            date_to: null,
             store: annuaireStore(),
         };
     },
@@ -109,6 +159,12 @@ export default {
 
             return "/annuaire/get_class_list_pdf/" + this.classe + "/";
         },
+        // canSeeSummary: function () {
+        //     const canSeeGroups = new Set(this.store.settings.can_see_summary);
+        //     // eslint-disable-next-line no-undef
+        //     const userGroups = new Set(user_groups.map(g => g.id));
+        //     return canSeeGroups.intersection(userGroups).size > 0;
+        // }
     },
     methods: {
         selectStudent: function (matricule) {

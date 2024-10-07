@@ -19,6 +19,17 @@
 
 <template>
     <b-overlay :show="loading">
+        <b-row v-if="canSeeSummary">
+            <b-col class="text-right">
+                <b-btn
+                    variant="outline-primary"
+                    v-b-modal.summary
+                >
+                    <b-icon icon="file-pdf" />
+                    Récapitulatif
+                </b-btn>
+            </b-col>
+        </b-row>
         <b-card
             :header="`Derniers messages du dossier des élèves (${dossier_eleve.count} au total)`"
             class="mt-2"
@@ -168,6 +179,40 @@
         <p v-if="infoCount == 0">
             <em>Aucune donnée concernant l'élève n'est présente.</em>
         </p>
+        <b-modal
+            id="summary"
+            ok-only
+        >
+            <b-row>
+                <b-col>
+                    <b-form-group label="À partir de ">
+                        <b-input
+                            type="date"
+                            v-model="date_from"
+                        />
+                    </b-form-group>
+                    <b-form-group label="Jusqu'à ">
+                        <b-input
+                            type="date"
+                            v-model="date_to"
+                        />
+                    </b-form-group>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col class="text-center">
+                    <b-btn
+                        :href="`/annuaire/summary/student/${$route.params.matricule}/${date_from}/${date_to}/`"
+                        target="_blank"
+                        variant="primary"
+                        :disabled="!date_from || !date_to"
+                    >
+                        <b-icon icon="file-pdf" />
+                        Télécharger
+                    </b-btn>
+                </b-col>
+            </b-row>
+        </b-modal>
     </b-overlay>
 </template>
 
@@ -180,6 +225,7 @@ import "moment/dist/locale/fr";
 Moment.locale("fr");
 
 import {getCurrentScholarYear} from "@s:core/js/common/utilities.js";
+import { annuaireStore } from "./stores/index.js";
 
 export default {
     data: function () {
@@ -190,7 +236,18 @@ export default {
             infirmerie: [],
             lateness: [],
             infoCount: 0,
+            date_from: null,
+            date_to: null,
+            store: annuaireStore(),
         };
+    },
+    computed: {
+        canSeeSummary: function () {
+            const canSeeGroups = new Set(this.store.settings.can_see_summary);
+            // eslint-disable-next-line no-undef
+            const userGroups = new Set(user_groups.map(g => g.id));
+            return canSeeGroups.intersection(userGroups).size > 0;
+        }
     },
     methods: {
         niceDate: function (date) {

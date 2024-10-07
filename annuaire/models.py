@@ -49,6 +49,9 @@ class AnnuaireSettingsModel(models.Model):
     can_see_inactives = models.ManyToManyField(
         Group, default=None, blank=True, related_name="can_see_inactives"
     )
+    can_see_summary = models.ManyToManyField(
+        Group, default=None, blank=True, related_name="can_see_summary"
+    )
     show_credentials = models.BooleanField(
         default=True,
         help_text="""Permet d'afficher/cacher les champs utilisateur/mot de passe dans la fiche info

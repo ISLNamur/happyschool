@@ -34,6 +34,11 @@ urlpatterns = [
     path("api/studentclasse/", views.StudentClasseAPI.as_view()),
     path("api/student_given_course/<int:given_course_id>/", views.StudentGivenCourseAPI.as_view()),
     path("api/course_to_classes/<int:given_course_id>/", views.CourseToClassesAPI.as_view()),
+    path(
+        "summary/<str:category>/<int:id>/<str:date_from>/<str:date_to>/",
+        views.SummaryPDF.as_view(),
+        name="summary",
+    ),
 ]
 
 router = DefaultRouter()
