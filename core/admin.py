@@ -47,6 +47,7 @@ class StudentCoreAdmin(admin.ModelAdmin):
     list_filter = ["classe"]
     list_select_related = True
     ordering = ["classe__year", "classe__letter", "last_name", "first_name"]
+    raw_id_fields = ["courses"]
 
 
 class AdditionalStudentInfoCoreAdmin(admin.ModelAdmin):
@@ -59,6 +60,7 @@ class AdditionalStudentInfoCoreAdmin(admin.ModelAdmin):
         "student__last_name",
         "student__first_name",
     ]
+    raw_id_fields = ["student"]
 
 
 class InactivesListFilter(admin.SimpleListFilter):
@@ -105,6 +107,7 @@ class ResponsibleCoreAdmin(admin.ModelAdmin):
         InactivesListFilter,
     ]
     autocomplete_fields = ["user"]
+    raw_id_fields = ["courses"]
 
 
 class ClassCoreAdmin(admin.ModelAdmin):
