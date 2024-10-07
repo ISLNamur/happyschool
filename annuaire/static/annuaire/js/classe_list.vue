@@ -35,6 +35,7 @@
                         Photos
                     </b-button>
                     <b-button
+                        v-if="canSeeSummary"
                         variant="outline-secondary"
                         v-b-modal.summaryclass
                     >
@@ -159,12 +160,12 @@ export default {
 
             return "/annuaire/get_class_list_pdf/" + this.classe + "/";
         },
-        // canSeeSummary: function () {
-        //     const canSeeGroups = new Set(this.store.settings.can_see_summary);
-        //     // eslint-disable-next-line no-undef
-        //     const userGroups = new Set(user_groups.map(g => g.id));
-        //     return canSeeGroups.intersection(userGroups).size > 0;
-        // }
+        canSeeSummary: function () {
+            const canSeeGroups = new Set(this.store.settings.can_see_summary);
+            // eslint-disable-next-line no-undef
+            const userGroups = new Set(user_groups.map(g => g.id));
+            return canSeeGroups.intersection(userGroups).size > 0;
+        }
     },
     methods: {
         selectStudent: function (matricule) {
