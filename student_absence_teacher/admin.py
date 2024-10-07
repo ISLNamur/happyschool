@@ -32,6 +32,7 @@ from .models import (
 
 
 class StudentEducAbsenceAdmin(admin.ModelAdmin):
+    raw_id_fields = ["student"]
     list_display = (
         "student",
         "date_absence",
@@ -40,11 +41,19 @@ class StudentEducAbsenceAdmin(admin.ModelAdmin):
     )
 
 
+class StudentAbsenceTeacherAdmin(admin.ModelAdmin):
+    raw_id_fields = ["student", "given_course"]
+
+
+class JustificationAdmin(admin.ModelAdmin):
+    raw_id_fields = ["student", "absences"]
+
+
 admin.site.register(StudentAbsenceTeacherSettingsModel)
 admin.site.register(PeriodModel)
 admin.site.register(LessonModel)
-admin.site.register(StudentAbsenceTeacherModel)
+admin.site.register(StudentAbsenceTeacherModel, StudentAbsenceTeacherAdmin)
 admin.site.register(StudentAbsenceEducModel, StudentEducAbsenceAdmin)
-admin.site.register(JustificationModel)
+admin.site.register(JustificationModel, JustificationAdmin)
 admin.site.register(JustMotiveModel)
 admin.site.register(MailTemplateModel)
