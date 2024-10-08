@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Récapitulatif de l'élève</title>
+    <style>
+        @page {
+            margin-top: 0px;
+            margin-left: 1cm;
+            margin-right: 1cm;
+
+            @top-left {
+                background: none;
+                content: none
+            }
+
+            @top-center {
+                content: none
+            }
+
+            @top-right {
+                content: none
+            }
+        }
+
+        h1 {
+            font-size: medium;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: medium;
+            text-decoration: overline underline;
+            margin-bottom: 0cm;
+            margin-top: 0.7cm;
+        }
+
+        h3 {
+            font-size: small;
+            text-decoration: underline;
+            margin-top: 0.1cm;
+        }
+
+        table {
+            font-size: 0.85em;
+        }
+
+        th,
+        td {
+            border-bottom: 2px solid gray;
+        }
+
+        th {
+            text-align: center;
+        }
+
+        table p {
+            margin: 0px 5px;
+        }
+
+        .data {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            font-size: 0.8em;
+        }
+
+        .headline {
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Récapitulatif de {{ student.fullname_classe }}</h1>
+    <p class="headline">Détails de la période du {{ date_from|date:'d/m/Y' }} au {{ date_to|date:'d/m/Y' }}.</p>
+
+    {% if dossier_eleve %}
+
+    <h2>DISCIPLINE</h2>
+    <div class="data">
+        <div width="35%">
+            <h3>Résumé année scolaire</h3>
+            <table>
+                {% for s in dossier_eleve.statistics %}
+                <tr>
+                    <td style="min-width: 6cm;">{{ s.display }}</td>
+                    <td>{{ s.value }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% if dossier_eleve.last_entries %}
+        <div>
+            <h3>Sanctions et mesures disciplinaire de la période</h3>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Catégorie</th>
+                </tr>
+                {% for c in dossier_eleve.last_entries %}
+                <tr>
+                    <td>
+                        {{ c.date_sanction|date:'d/m/Y' }}
+                    </td>
+                    <td style="min-width: 6cm; text-align: right;">
+                        {{ c.sanction_decision.sanction_decision }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if student_absence_teacher %}
+    <h2>ABSENCES</h2>
+    <div class="data">
+        <div width="40%">
+            {% if student_absence_teacher.absences.justified or student_absence_teacher.absences.unjustified %}
+            <h3>Résumé année scolaire</h3>
+            {% else %}
+            Aucune absence cette année.
+            {% endif %}
+            <table style="min-width: 9cm;">
+                {% if student_absence_teacher.absences.justified %}
+                <tr>
+                    <th></th>
+                    <th>Absences motivées</th>
+                </tr>
+                {% endif %}
+                {% for just in student_absence_teacher.absences.justified %}
+                <tr>
+                    <td>
+                        <strong>{{ just.justificationmodel__motive__short_name }}</strong>
+                    </td>
+                    <td>
+                        {{ just.justificationmodel__motive__name }}
+                        {% if just.justificationmodel__motive__admissible_up_to < 100 %} (max. {{
+                            justificationmodel__motive__admissible_up_to }}) {% endif %} </td>
+                    <td>
+                        {{ just.justificationmodel__motive__count }}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if student_absence_teacher.absences.unjustified %}
+                <tr>
+                    <th></th>
+                    <th>Absences non justifiées</th>
+                </tr>
+                {% endif %}
+                {% for unjust in student_absence_teacher.absences.unjustified %}
+                <tr>
+                    <td>
+                        <strong>{{ unjust.justificationmodel__motive__short_name }}</strong>
+                    </td>
+                    <td>
+                        {{ unjust.justificationmodel__motive__name }}
+                    </td>
+                    <td>
+                        {{ unjust.justificationmodel__motive__count }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% if student_absence_teacher.last_just %}
+        <div>
+            <h3>Justificatifs de la période</h3>
+            <table style="min-width: 8cm;">
+                <tr>
+                    <th></th>
+                    <th>Date de début</th>
+                    <th>Date de fin</th>
+                </tr>
+                {% for just in student_absence_teacher.last_just %}
+                <tr>
+                    <td><strong>{{ just.motive.short_name }}</strong></td>
+                    <td>{{ just.date_just_start|date:'d/m/Y' }}</td>
+                    <td>{{ just.date_just_end|date:'d/m/Y' }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if lateness %}
+    <h2>RETARDS</h2>
+    <div class="data">
+        {% if lateness.scholar_year.justified or lateness.scholar_year.unjustified %}
+        <div>
+            <h3>Résumé année scolaire</h3>
+            <table style="min-width: 8cm;">
+                <tr>
+                    <td>Nombre de retards justifiés</td>
+                    <td>{{ lateness.scholar_year.justified }}</td>
+                </tr>
+                <tr>
+                    <td>Nombre de retards non justifiés</td>
+                    <td>{{ lateness.scholar_year.unjustified }}</td>
+                </tr>
+            </table>
+        </div>
+        {% if lateness.last_entries %}
+        <div>
+            <h3>Retards de la période</h3>
+            <table style="min-width: 8cm;">
+                <tr>
+                    <th>Date du retard</th>
+                    <th></th>
+                </tr>
+                {% for lateness in lateness.last_entries %}
+                <tr>
+                    <td>{{ lateness.datetime_creation|date:'d/m/Y' }}</td>
+                    <td style="text-align: right;">
+                        {% if lateness.justified %}
+                        Justifié
+                        {% else %}
+                        <strong>Non justifié</strong>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
+        {% else %}
+        Aucun retard cette année
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if student_absence_teacher and student_absence_teacher.exclusions > 0 %}
+    <h2>EXCLUSIONS</h2>
+    <div class="data">
+        {% if student_absence_teacher.exclusions > 0 %}
+        <div>
+            <h3>Résumé année scolaire</h3>
+            <table style="min-width: 8cm;">
+                <tr>
+                    <td>Nombre d'exclusions</td>
+                    <td>{{ student_absence_teacher.exclusions }}</td>
+                </tr>
+            </table>
+        </div>
+        {% if student_absence_teacher.last_exclusions %}
+        <div>
+            <h3>Exclusions de la période</h3>
+            <table style="min-width: 8cm;">
+                <tr>
+                    <th>Date de l'exclusion</th>
+                    <th>Période de l'exclusion</th>
+                </tr>
+                {% for excluded in student_absence_teacher.last_exclusions %}
+                <tr>
+                    <td>{{ excluded.date_absence|date:'d/m/Y' }}</td>
+                    <td style="text-align: right;">
+                        {{ excluded.period }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
+        {% else %}
+        Aucune exclusion cette année
+        {% endif %}
+    </div>
+    {% endif %}
+</body>
+
+</html>

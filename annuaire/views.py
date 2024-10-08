@@ -595,7 +595,7 @@ class ClassePhotosView(LoginRequiredMixin, WeasyTemplateView):
 
 
 class SummaryPDF(WeasyTemplateView, PermissionRequiredMixin):
-    template_name = "core/summary.html"
+    template_name = "annuaire/summary.html"
 
     def get_permission_required():
         permission_required = []
