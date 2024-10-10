@@ -238,14 +238,14 @@
     {% endif %}
 
     {% if student_absence_teacher and student_absence_teacher.exclusions > 0 %}
-    <h2>EXCLUSIONS</h2>
+    <h2>EXCLUSIONS D'UN COURS</h2>
     <div class="data">
         {% if student_absence_teacher.exclusions > 0 %}
         <div>
             <h3>Résumé année scolaire</h3>
             <table style="min-width: 8cm;">
                 <tr>
-                    <td>Nombre d'exclusions</td>
+                    <td>Nombre d'exclusions d'un cours</td>
                     <td>{{ student_absence_teacher.exclusions }}</td>
                 </tr>
             </table>
