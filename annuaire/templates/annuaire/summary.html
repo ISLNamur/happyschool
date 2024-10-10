@@ -32,7 +32,7 @@
 
         h2 {
             font-size: medium;
-            text-decoration: overline underline;
+            text-decoration: overline;
             margin-bottom: 0cm;
             margin-top: 0.7cm;
         }
@@ -139,9 +139,11 @@
                     </td>
                     <td>
                         {{ just.justificationmodel__motive__name }}
-                        {% if just.justificationmodel__motive__admissible_up_to < 100 %} (max. {{
-                            justificationmodel__motive__admissible_up_to }}) {% endif %} </td>
-                    <td>
+                        {% if just.justificationmodel__motive__admissible_up_to < 100 %}
+                        (max. {{ just.justificationmodel__motive__admissible_up_to }})
+                        {% endif %}
+                    </td>
+                    <td style="min-width: 0.5cm; text-align: right;">
                         {{ just.justificationmodel__motive__count }}
                     </td>
                 </tr>
@@ -198,11 +200,11 @@
             <table style="min-width: 8cm;">
                 <tr>
                     <td>Nombre de retards justifiés</td>
-                    <td>{{ lateness.scholar_year.justified }}</td>
+                    <td style="text-align: right;">{{ lateness.scholar_year.justified }}</td>
                 </tr>
                 <tr>
                     <td>Nombre de retards non justifiés</td>
-                    <td>{{ lateness.scholar_year.unjustified }}</td>
+                    <td style="text-align: right;">{{ lateness.scholar_year.unjustified }}</td>
                 </tr>
             </table>
         </div>
@@ -216,7 +218,7 @@
                 </tr>
                 {% for lateness in lateness.last_entries %}
                 <tr>
-                    <td>{{ lateness.datetime_creation|date:'d/m/Y' }}</td>
+                    <td>{{ lateness.datetime_creation|date:'d/m/Y à H:i' }}</td>
                     <td style="text-align: right;">
                         {% if lateness.justified %}
                         Justifié
