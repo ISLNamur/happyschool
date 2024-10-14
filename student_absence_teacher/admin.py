@@ -43,6 +43,7 @@ class StudentEducAbsenceAdmin(admin.ModelAdmin):
 
 class StudentAbsenceTeacherAdmin(admin.ModelAdmin):
     raw_id_fields = ["student", "given_course"]
+    list_filter = ["status"]
 
 
 class JustificationAdmin(admin.ModelAdmin):
