@@ -696,6 +696,7 @@ class SummaryPDF(WeasyTemplateView, PermissionRequiredMixin):
                     date_sanction__gte=date_from,
                     date_sanction__lte=date_to,
                     sanction_decision__isnull=False,
+                    sanction_decision__can_ask=True,
                 ).order_by("date_sanction"),
             }
 
