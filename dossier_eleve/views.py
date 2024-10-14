@@ -556,10 +556,13 @@ class StatisticAPI(APIView):
 
     def get(self, request, student, format=None):
         only_sanctions = request.GET.get("only_sanctions", 1) == 1
+        only_asked_sanctions = request.GET.get("only_asked_sanctions", 0) == 1
         stats = self.gen_stats(request.user, student, only_sanctions)
         return Response(json.dumps(stats))
 
-    def gen_stats(self, user_from, student, only_sanctions=False, all_years=False):
+    def gen_stats(
+        self, user_from, student, only_sanctions=False, only_asked_sanctions=False, all_years=False
+    ):
         all_access = get_settings().all_access.all()
         queryset = CasEleve.objects.all()
         if not user_from.groups.intersection(all_access).exists():
@@ -579,6 +582,9 @@ class StatisticAPI(APIView):
             cas_info = cas_info.filter(datetime_encodage__gte=limit_date)
 
         sanctions = SanctionStatisticsModel.objects.all()
+
+        if only_asked_sanctions:
+            sanctions = sanctions.filter(sanctions_decisions__can_ask=True).distinct()
 
         stats = []
         for s in sanctions:
