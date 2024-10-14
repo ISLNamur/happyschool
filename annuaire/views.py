@@ -689,7 +689,7 @@ class SummaryPDF(WeasyTemplateView, PermissionRequiredMixin):
 
             context["dossier_eleve"] = {
                 "statistics": StatisticAPI().gen_stats(
-                    self.request.user, student, only_sanctions=True
+                    self.request.user, student, only_sanctions=True, only_asked_sanctions=True
                 ),
                 "last_entries": CasEleve.objects.filter(
                     student=student,
