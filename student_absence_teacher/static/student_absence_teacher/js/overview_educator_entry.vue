@@ -67,7 +67,7 @@ export default {
     },
     data: function () {
         return {
-            status: [false, false],
+            status: [],
             updating: false,
         };
     },
