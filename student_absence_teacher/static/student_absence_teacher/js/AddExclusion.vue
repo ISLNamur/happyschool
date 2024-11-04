@@ -84,6 +84,15 @@
             :fields="exclusionFields"
         />
     </b-row>
+    <b-row>
+        <b-col>
+            <b-pagination
+                :total-rows="entriesCount"
+                v-model="currentPage"
+                @change="changePage"
+            />
+        </b-col>
+    </b-row>
 </template>
 
 <script>
@@ -113,10 +122,19 @@ export default {
             searchOptions: [],
             searchId: 0,
             addingStudent: false,
+            currentPage: 1,
+            entriesCount: 20,
             store: studentAbsenceTeacherStore(),
         };
     },
     methods: {
+        changePage: function (page) {
+            this.currentPage = page;
+            this.getExclusions();
+            // Move to the top of the page.
+            scroll(0, 0);
+            return;
+        },
         getSearchOptions: function (query) {
             // Ensure the last search is the first response.
             this.searchId += 1;
@@ -161,7 +179,7 @@ export default {
                 });
         },
         getExclusions: function () {
-            axios.get("/student_absence_teacher/api/absence_teacher/?status=excluded")
+            axios.get(`/student_absence_teacher/api/absence_teacher/?status=excluded&page=${this.currentPage}`)
                 .then((resp) => {
                     this.exclusions = resp.data.results.map(e => {
                         return {
@@ -170,6 +188,7 @@ export default {
                             period: `${e.period.start.slice(0, 5)} - ${e.period.end.slice(0, 5)}`,
                         };
                     });
+                    this.entriesCount = resp.data.count;
                 });
         },
         overloadInput: function () {
