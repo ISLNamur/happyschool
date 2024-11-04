@@ -178,6 +178,20 @@
                                         </template>
                                     </b-form-group>
                                     <b-form-group
+                                        label="Date de fin de la sanction"
+                                        label-for="input-date-sanction-end"
+                                        :state="inputStates.date_sanction_end"
+                                    >
+                                        <b-form-input
+                                            id="input-date-sanction-end"
+                                            type="date"
+                                            v-model="form.date_sanction_end"
+                                        />
+                                        <template #invalid-feedback>
+                                            {{ errorMsg('date_sanction_end') }}
+                                        </template>
+                                    </b-form-group>
+                                    <b-form-group
                                         label="Heure de début de la sanction"
                                         label-for="input-time-sanction-start"
                                     >
@@ -301,6 +315,7 @@ export default {
                 important: false,
                 demandeur: "",
                 date_sanction: null,
+                date_sanction_end: null,
                 time_sanction_start: null,
                 time_sanction_end: null,
                 datetime_conseil: null,
@@ -374,6 +389,7 @@ export default {
 
                 this.form.sanction_decision_id = entry.sanction_decision_id;
                 this.form.date_sanction = entry.date_sanction;
+                this.form.date_sanction_end = entry.date_sanction_end;
                 this.form.time_sanction_start = entry.time_sanction_start ? entry.time_sanction_start : null;
                 this.form.time_sanction_end = entry.time_sanction_end ? entry.time_sanction_end.slice(0, 5) : null;
 
@@ -413,6 +429,7 @@ export default {
             this.form.important = false;
             this.form.demandeur = "";
             this.form.date_sanction = null;
+            this.form.date_sanction_end = null;
             this.form.datetime_conseil = null;
             this.form.time_sanction_start = null;
             this.form.time_sanction_end = null;

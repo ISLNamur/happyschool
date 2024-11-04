@@ -254,7 +254,9 @@ export default {
             return this.rowData.sanction_decision.sanction_decision;
         },
         date_sanction: function () {
-            return this.rowData.date_sanction ? Moment(this.rowData.date_sanction).format("DD/MM/YY") : "";
+            const date_sanction_start = this.rowData.date_sanction ? Moment(this.rowData.date_sanction).format("DD/MM/YY") : "";
+            const date_sanction_end = this.rowData.date_sanction_end ? Moment(this.rowData.date_sanction_end).format("DD/MM/YY") : "";
+            return `${date_sanction_start}${this.rowData.date_sanction_end ? " - " : ""}${date_sanction_end}`;
         },
         date_council: function () {
             const datetime_conseil = this.rowData.datetime_conseil ? Moment(this.rowData.datetime_conseil).format("DD/MM/YY") : null;

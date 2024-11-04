@@ -285,6 +285,11 @@ class CasEleve(models.Model):
         null=True,
         blank=True,
     )
+    date_sanction_end = models.DateField(
+        "Date de fin de la sanction",
+        null=True,
+        blank=True,
+    )
     time_sanction_start = models.TimeField("Heure de début de la sanction", null=True, blank=True)
     time_sanction_end = models.TimeField("Heure de fin de la sanction", null=True, blank=True)
     datetime_conseil = models.DateTimeField("date du conseil disciplinaire", null=True, blank=True)
