@@ -27,8 +27,13 @@ class DisorderResponseAdmin(admin.ModelAdmin):
     list_filter = ["disorder"]
 
 
+class PIAAdmin(admin.ModelAdmin):
+    list_filter = ["advanced"]
+    raw_id_fields = ["student"]
+
+
 admin.site.register(models.PIASettingsModel)
-admin.site.register(models.PIAModel)
+admin.site.register(models.PIAModel, PIAAdmin)
 admin.site.register(models.DisorderModel)
 admin.site.register(models.DisorderResponseModel, DisorderResponseAdmin)
 admin.site.register(models.DisorderResponseCategoryModel)
@@ -48,3 +53,4 @@ admin.site.register(models.ResourceDifficultyModel)
 admin.site.register(models.StudentStateModel)
 admin.site.register(models.LogPIAModel)
 admin.site.register(models.ScheduleAdjustmentPlanModel)
+admin.site.register(models.DisorderCareModel)
