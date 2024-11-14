@@ -132,8 +132,6 @@
     <div style="border-bottom: 1px solid black; ">
         <dl>
             {% for disorder_response in pia.disordercaremodel_set.all %}
-            {{ disorder_response.date_start|date:"c" }}
-            {{ date_filter }}
             {% if disorder_response.date_start|date:"c" >= date_filter %}
             <div class="new-period" style="border-top: 1px solid black; border-bottom: 1px solid black">
                 Du <em>{{ disorder_response.date_start }}</em> au <em>{{ disorder_response.date_end }}</em>
