@@ -261,7 +261,9 @@ class LatenessViewSet(BaseModelViewSet):
                 pass
 
         now = timezone.localtime()
+
         # Trigger
+        sanction_next = False
         for trigger in (
             SanctionTriggerModel.objects.filter(teaching=lateness.student.teaching)
             .filter(Q(year__year=lateness.student.classe.year) | Q(classe=lateness.student.classe))
@@ -281,6 +283,15 @@ class LatenessViewSet(BaseModelViewSet):
         ):
             count_first = trigger.lateness_count_trigger_first
             count_trigger = trigger.lateness_count_trigger
+
+            # Check if trigger will be hit next time.
+            if lateness_count + 1 == count_first or (
+                lateness_count >= count_first
+                and (lateness_count + 1 - count_first) % count_trigger == 0
+            ):
+                sanction_next = True
+
+            # Check if it is triggered.
             if lateness_count < count_first or (
                 lateness_count > count_first and (lateness_count - count_first) % count_trigger != 0
             ):
@@ -321,7 +332,13 @@ class LatenessViewSet(BaseModelViewSet):
         # Notification
         if lateness_settings.notify_responsible:
             responsibles = get_resp_emails(lateness.student)
-            context = {"lateness": lateness, "lateness_count": lateness_count}
+
+            context = {
+                "lateness": lateness,
+                "lateness_count": lateness_count,
+                "warning": sanction_next,
+                "core_settings": get_core_settings(),
+            }
             send_email(
                 responsibles,
                 "[Retard]%s  %s %s"
