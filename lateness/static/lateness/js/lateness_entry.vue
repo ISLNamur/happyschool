@@ -55,7 +55,11 @@
                         <b-icon icon="funnel" />
                     </b-btn>
                 </b-col>
-                <b-col sm="2">
+                <b-col
+                    sm="12"
+                    md="4"
+                    lg="3"
+                >
                     <div class="text-right d-flex">
                         <b-form-checkbox
                             v-model="justified"
@@ -66,10 +70,20 @@
                             {{ lateness.justified ? "Justifié" : "Injustifié" }}
                         </b-form-checkbox>
                         <b-btn
+                            :to="`/warning/${lateness.student.matricule}/`"
+                            variant="light"
+                            class="card-link"
+                        >
+                            <b-icon
+                                icon="card-text"
+                                variant="secondary"
+                            />
+                        </b-btn>
+                        <b-btn
                             variant="light"
                             size="sm"
                             @click="$emit('delete')"
-                            class="card-link"
+                            class="card-link ml-2"
                         >
                             <b-icon
                                 icon="trash-fill"
