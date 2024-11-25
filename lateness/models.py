@@ -99,3 +99,8 @@ class LatenessModel(models.Model):
         return LatenessModel.objects.filter(
             student=self.student, justified=False, datetime_creation__gte=settings.date_count_start
         ).count()
+
+
+class MailTemplateModel(models.Model):
+    name = models.CharField(max_length=100, default="warning")
+    template = models.TextField()

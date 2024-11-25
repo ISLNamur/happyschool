@@ -19,7 +19,7 @@
 
 from django.contrib import admin
 
-from .models import LatenessModel, LatenessSettingsModel, SanctionTriggerModel
+from .models import LatenessModel, LatenessSettingsModel, SanctionTriggerModel, MailTemplateModel
 
 
 class TriggerAdmin(admin.ModelAdmin):
@@ -29,3 +29,4 @@ class TriggerAdmin(admin.ModelAdmin):
 admin.site.register(LatenessModel)
 admin.site.register(LatenessSettingsModel)
 admin.site.register(SanctionTriggerModel, TriggerAdmin)
+admin.site.register(MailTemplateModel)

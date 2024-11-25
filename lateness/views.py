@@ -23,12 +23,16 @@ import datetime
 from escpos.printer import Network, Dummy
 from unidecode import unidecode
 
+from weasyprint import HTML
+
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.views.generic import TemplateView
+from django.template.loader import get_template
 from django.contrib.auth.models import Group
 from django.db.models import ObjectDoesNotExist, Count, Q
 from django.utils import timezone
 from django.conf import settings
+from django.template import Template, Context
 
 from django_filters import rest_framework as filters
 
@@ -40,12 +44,12 @@ from rest_framework.response import Response
 
 from core.models import ResponsibleModel, TeachingModel, StudentModel
 from core.utilities import get_menu
-from core.views import BaseModelViewSet, BaseFilters
+from core.views import BaseModelViewSet, BaseFilters, BinaryFileRenderer, get_core_settings
 from core.email import get_resp_emails, send_email
 from core.people import get_classes
 from core.serializers import StudentSerializer
 
-from .models import LatenessSettingsModel, LatenessModel, SanctionTriggerModel
+from .models import LatenessSettingsModel, LatenessModel, SanctionTriggerModel, MailTemplateModel
 from .serializers import LatenessSettingsSerializer, LatenessSerializer
 
 
@@ -426,3 +430,106 @@ class TopLatenessAPI(APIView):
         ]
 
         return Response(top_list)
+
+
+class MailWarningTemplateAPI(APIView):
+    permission_required = [
+        "lateness.add_latenessmodel",
+    ]
+
+    def get(self, request, student_id, format=None):
+        try:
+            student = StudentModel.objects.get(matricule=student_id)
+        except ObjectDoesNotExist:
+            return Response(None)
+
+        template = MailTemplateModel.objects.get_or_create(name="warning")[0]
+        t = Template(template.template)
+
+        last_latenesses = LatenessModel.objects.filter(
+            student=student,
+            datetime_creation__gte=get_settings().date_count_start,
+        )
+
+        c = Context({"student": student, "last_latenesses": last_latenesses})
+        return Response(t.render(context=c))
+
+
+class WarningPDF(APIView):
+    permission_required = [
+        "lateness.add_latenessmodel",
+    ]
+    renderer_classes = [BinaryFileRenderer]
+
+    def post(self, request, format=None):
+        template = get_template("lateness/warning_pdf.html")
+        context = {
+            "student": StudentModel.objects.get(matricule=request.data.get("student_id")),
+            "text": request.data.get("text"),
+            "core_settings": get_core_settings(),
+        }
+        html_render = template.render(context)
+        pdf_file = HTML(string=html_render).write_pdf()
+        return Response(
+            pdf_file,
+            headers={"Content-Disposition": 'attachment; filename="file.pdf"'},
+            content_type="application/pdf",
+        )
+
+
+class MailWarningAPI(APIView):
+    permission_required = [
+        "lateness.add_latenessmodel",
+    ]
+
+    def post(self, request, format=None):
+        try:
+            student = StudentModel.objects.get(matricule=request.data.get("student_id", 0))
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        recipients = request.data.get("recipients", [])
+        context = {
+            "student": student,
+            "text": request.data.get("msg"),
+            "core_settings": get_core_settings(),
+            "last_latenesses": LatenessModel.objects.filter(
+                student__matricule=request.data.get("student_id"),
+                datetime_creation__gte=get_settings().date_count_start,
+            ),
+        }
+
+        resp_school = get_resp_emails(student)
+
+        # Get recipients.
+        recipient_email = set()
+        if "mother" in recipients:
+            recipient_email.add(student.additionalstudentinfo.mother_email)
+        if "father" in recipients:
+            recipient_email.add(student.additionalstudentinfo.father_email)
+        if "resp" in recipients:
+            recipient_email.add(student.additionalstudentinfo.resp_email)
+        if "resp_school" in recipients:
+            recipient_email = recipient_email.union(resp_school)
+
+        other_responsibles = ResponsibleModel.objects.filter(
+            pk__in=request.data.get("other_recipients")
+        )
+        recipient_email = recipient_email.union(
+            {
+                r.email_school if r.email_school else r.email
+                for r in other_responsibles
+                if r.email_school or r.email
+            }
+        )
+
+        for r in recipient_email:
+            send_email(
+                [r],
+                subject=f"Arrivées tardives concernant {student.fullname}",
+                email_template="lateness/email_warning_parents.html",
+                context=context,
+                reply_to=list(resp_school),
+            )
+
+        return Response(status=201)

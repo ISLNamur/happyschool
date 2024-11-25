@@ -27,6 +27,12 @@ from . import views
 urlpatterns = [
     path("", views.LatenessView.as_view(), name="lateness"),
     path("api/top_lateness", views.TopLatenessAPI.as_view()),
+    path(
+        "api/mail_warning_template/<student_id>/",
+        views.MailWarningTemplateAPI.as_view(),
+    ),
+    path("api/mail_warning/", views.MailWarningAPI.as_view()),
+    path("get_pdf_warning/", views.WarningPDF.as_view()),
 ]
 
 router = DefaultRouter()

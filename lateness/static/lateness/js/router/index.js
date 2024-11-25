@@ -20,12 +20,18 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 
 import LatenessList from "../LatenessList.vue";
+import MailWarning from "../MailWarning.vue";
 
 const router = createRouter({
     routes: [
         {
             path: "",
             component: LatenessList,
+        },
+        {
+            path: "/warning/:studentId/",
+            component: MailWarning,
+            props: true,
         }
     ],
     history: createWebHashHistory(),
