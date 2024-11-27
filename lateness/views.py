@@ -231,10 +231,10 @@ class LatenessViewSet(BaseModelViewSet):
                 if settings.DEBUG:
                     print(printer)
                 printer = Network(printer) if not settings.DEBUG else Dummy()
-                printer.charcode("USA")
-                printer.set(align="CENTER", text_type="B")
+                printer.charcode()
+                printer.set(align="center", bold=True)
                 printer.text("RETARD\n")
-                printer.set(align="LEFT")
+                printer.set(align="left")
                 absence_dt = lateness.datetime_creation.astimezone(timezone.get_default_timezone())
 
                 count_or_justified = (
