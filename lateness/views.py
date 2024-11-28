@@ -37,7 +37,7 @@ from django.template import Template, Context
 from django_filters import rest_framework as filters
 
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
-from rest_framework.viewsets import GenericViewSet
+from rest_framework.viewsets import GenericViewSet, ReadOnlyModelViewSet
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -50,7 +50,11 @@ from core.people import get_classes
 from core.serializers import StudentSerializer
 
 from .models import LatenessSettingsModel, LatenessModel, SanctionTriggerModel, MailTemplateModel
-from .serializers import LatenessSettingsSerializer, LatenessSerializer
+from .serializers import (
+    LatenessSettingsSerializer,
+    LatenessSerializer,
+    MailTemplateSerializer,
+)
 
 
 def get_menu_entry(active_app, request):
@@ -449,18 +453,22 @@ class TopLatenessAPI(APIView):
         return Response(top_list)
 
 
-class MailWarningTemplateAPI(APIView):
+class MailTemplateViewSet(ReadOnlyModelViewSet):
+    queryset = MailTemplateModel.objects.all()
+    serializer_class = MailTemplateSerializer
     permission_required = [
         "lateness.add_latenessmodel",
     ]
 
-    def get(self, request, student_id, format=None):
+    def retrieve(self, request, pk=None):
+        student = request.query_params.get("student")
+
         try:
-            student = StudentModel.objects.get(matricule=student_id)
+            student = StudentModel.objects.get(matricule=student)
         except ObjectDoesNotExist:
             return Response(None)
 
-        template = MailTemplateModel.objects.get_or_create(name="warning")[0]
+        template = MailTemplateModel.objects.get(pk=pk)
         t = Template(template.template)
 
         last_latenesses = LatenessModel.objects.filter(

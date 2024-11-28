@@ -20,7 +20,7 @@
 from rest_framework import serializers
 
 from core.serializers import StudentSerializer, StudentModel
-from .models import LatenessSettingsModel, LatenessModel
+from .models import LatenessSettingsModel, LatenessModel, MailTemplateModel
 
 
 class LatenessSettingsSerializer(serializers.ModelSerializer):
@@ -48,3 +48,9 @@ class LatenessSerializer(serializers.ModelSerializer):
             "justified",
             "has_sanction",
         )
+
+
+class MailTemplateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MailTemplateModel
+        fields = "__all__"

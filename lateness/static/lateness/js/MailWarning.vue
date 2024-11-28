@@ -75,6 +75,13 @@
                         <template #noOptions />
                     </multiselect>
                 </b-form-group>
+                <b-form-select
+                    v-model="template"
+                    :options="templateOptions"
+                    text-field="name"
+                    value-field="id"
+                    @input="getTemplate"
+                />
             </b-col>
             <b-col
                 cols="12"
@@ -157,8 +164,9 @@ export default {
             ],
             responsibleOptions: [],
             otherRecipients: [],
-            lastAbsences: [],
-            absenceWarned: [],
+            templateOptions: [],
+            lastLatenesses: [],
+            template: null,
             text: "",
             searchId: -1,
             sending: false,
@@ -214,6 +222,12 @@ export default {
                     this.sending = false;
                 });
         },
+        getTemplate: function (templateId) {
+            axios.get(`/lateness/api/mail_template/${templateId}/?student=${this.studentId}`)
+                .then((resp) => {
+                    this.text = resp.data;
+                });
+        },
         getPDF: function () {
             const data = {
                 student_id: this.studentId,
@@ -245,11 +259,16 @@ export default {
                     return;
                 }
 
-                this.student = this.lastLatenesses[0].student;
-                axios.get(`/lateness/api/mail_warning_template/${this.studentId}/`)
-                    .then((templateResp) => {
-                        this.text = templateResp.data;
-                    });
+                // this.student = this.lastLatenesses[0].student;
+                // axios.get(`/lateness/api/mail_warning_template/${this.studentId}/`)
+                //     .then((templateResp) => {
+                //         this.text = templateResp.data;
+                //     });
+            });
+        
+        axios.get("/lateness/api/mail_template/")
+            .then((resp) => {
+                this.templateOptions = resp.data.results;
             });
     },
     components: {
