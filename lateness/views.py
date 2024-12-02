@@ -268,70 +268,77 @@ class LatenessViewSet(BaseModelViewSet):
 
         # Trigger
         sanction_next = False
-        for trigger in (
-            SanctionTriggerModel.objects.filter(teaching=lateness.student.teaching)
-            .filter(Q(year__year=lateness.student.classe.year) | Q(classe=lateness.student.classe))
-            .filter(
-                Q(
-                    time_lateness_start__isnull=False,
-                    time_lateness_stop__isnull=False,
-                    time_lateness_start__lte=now,
-                    time_lateness_stop__gt=now,
+        if not lateness.justified:
+            for trigger in (
+                SanctionTriggerModel.objects.filter(teaching=lateness.student.teaching)
+                .filter(
+                    Q(year__year=lateness.student.classe.year) | Q(classe=lateness.student.classe)
                 )
-                | Q(
-                    time_lateness_start__isnull=True,
-                    time_lateness_stop__isnull=True,
+                .filter(
+                    Q(
+                        time_lateness_start__isnull=False,
+                        time_lateness_stop__isnull=False,
+                        time_lateness_start__lte=now,
+                        time_lateness_stop__gt=now,
+                    )
+                    | Q(
+                        time_lateness_start__isnull=True,
+                        time_lateness_stop__isnull=True,
+                    )
                 )
-            )
-            .distinct()
-        ):
-            count_first = trigger.lateness_count_trigger_first
-            count_trigger = trigger.lateness_count_trigger
-
-            # Check if trigger will be hit next time.
-            if lateness_count + 1 == count_first or (
-                lateness_count >= count_first
-                and (lateness_count + 1 - count_first) % count_trigger == 0
+                .distinct()
             ):
-                sanction_next = True
 
-            # Check if it is triggered.
-            if lateness_count < count_first or (
-                lateness_count > count_first and (lateness_count - count_first) % count_trigger != 0
-            ):
-                continue
+                count_first = trigger.lateness_count_trigger_first
+                count_trigger = trigger.lateness_count_trigger
 
-            lateness.has_sanction = True
-            if trigger.only_warn:
+                # Check if trigger will be hit next time.
+                if lateness_count + 1 == count_first or (
+                    lateness_count >= count_first
+                    and (lateness_count + 1 - count_first) % count_trigger == 0
+                ):
+                    sanction_next = True
+
+                # Check if it is triggered.
+                if lateness_count < count_first or (
+                    lateness_count > count_first
+                    and (lateness_count - count_first) % count_trigger != 0
+                ):
+                    continue
+
+                lateness.has_sanction = True
+                if trigger.only_warn:
+                    lateness.save()
+                    continue
+                from dossier_eleve.models import CasEleve, SanctionDecisionDisciplinaire
+
+                sanction = SanctionDecisionDisciplinaire.objects.get(id=trigger.sanction_id)
+                today = datetime.datetime.today()
+                # next_week_day == 7 is the same day
+                if trigger.next_week_day < 7:
+                    day_shift = 6 + trigger.next_week_day
+                    day = today + datetime.timedelta(
+                        days=(day_shift - today.isoweekday()) % (6 + trigger.delay) + 1
+                    )
+                else:
+                    day = today
+                day = day.replace(
+                    hour=trigger.sanction_time.hour, minute=trigger.sanction_time.minute
+                )
+
+                cas = CasEleve.objects.create(
+                    student=lateness.student,
+                    name=lateness.student.display,
+                    demandeur=self.request.user.get_full_name(),
+                    sanction_decision=sanction,
+                    explication_commentaire="Sanction pour cause de retard.",
+                    sanction_faite=False,
+                    date_sanction=day,
+                    created_by=self.request.user,
+                )
+                cas.visible_by_groups.set(Group.objects.all())
+                lateness.sanction_id = cas.id
                 lateness.save()
-                continue
-            from dossier_eleve.models import CasEleve, SanctionDecisionDisciplinaire
-
-            sanction = SanctionDecisionDisciplinaire.objects.get(id=trigger.sanction_id)
-            today = datetime.datetime.today()
-            # next_week_day == 7 is the same day
-            if trigger.next_week_day < 7:
-                day_shift = 6 + trigger.next_week_day
-                day = today + datetime.timedelta(
-                    days=(day_shift - today.isoweekday()) % (6 + trigger.delay) + 1
-                )
-            else:
-                day = today
-            day = day.replace(hour=trigger.sanction_time.hour, minute=trigger.sanction_time.minute)
-
-            cas = CasEleve.objects.create(
-                student=lateness.student,
-                name=lateness.student.display,
-                demandeur=self.request.user.get_full_name(),
-                sanction_decision=sanction,
-                explication_commentaire="Sanction pour cause de retard.",
-                sanction_faite=False,
-                date_sanction=day,
-                created_by=self.request.user,
-            )
-            cas.visible_by_groups.set(Group.objects.all())
-            lateness.sanction_id = cas.id
-            lateness.save()
 
         # Notification
         if lateness_settings.notify_responsible:
