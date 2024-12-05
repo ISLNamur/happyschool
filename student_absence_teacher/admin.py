@@ -32,12 +32,16 @@ from .models import (
 
 
 class StudentEducAbsenceAdmin(admin.ModelAdmin):
+    search_fields = ["student__last_name", "student__first_name"]
+    list_filter = ["status"]
+    ordering = ["-date_absence"]
     raw_id_fields = ["student"]
     list_display = (
         "student",
         "date_absence",
         "period",
         "status",
+        "mail_warning",
     )
 
 
