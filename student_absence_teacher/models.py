@@ -21,7 +21,8 @@ from django.db import models
 from django.contrib.auth.models import User, Group
 
 from core.models import StudentModel, TeachingModel, ClasseModel, GivenCourseModel
-from core.utilities import extract_day_of_week
+from core.utilities import extract_day_of_week, get_scholar_year
+from core.views import get_core_settings
 
 
 class StudentAbsenceTeacherSettingsModel(models.Model):
@@ -105,6 +106,19 @@ class StudentAbsenceTeacherModel(models.Model):
 
     def __str__(self):
         return f"{self.date_absence} ({self.period.name}): {self.student} ({self.status})"
+
+    @property
+    def excluded_count(self):
+        core_settings = get_core_settings()
+        month_start = core_settings.month_scholar_year_start
+        day_start = core_settings.day_scholar_year_start
+        year_start = get_scholar_year()
+
+        return StudentAbsenceTeacherModel.objects.filter(
+            student=self.student,
+            status="excluded",
+            datetime_creation__gte=f"{year_start}-{month_start}-{day_start}",
+        ).count()
 
     class Meta:
         indexes = [models.Index(fields=["-date_absence", "student", "status"])]

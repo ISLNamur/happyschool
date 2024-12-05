@@ -118,6 +118,24 @@ export default {
             periods: [],
             period: null,
             exclusions: [],
+            exclusionFields: [
+                {
+                    key: "dateExclusion",
+                    label: "Date d'exclusion"
+                },
+                {
+                    key: "studentName",
+                    label: "Nom",
+                },
+                {
+                    key: "period",
+                    label: "Période",
+                },
+                {
+                    key: "count",
+                    label: "Exclusions",
+                }
+            ],
             search: "",
             searchOptions: [],
             searchId: 0,
@@ -186,6 +204,7 @@ export default {
                             dateExclusion: e.date_absence,
                             studentName: `${e.student.last_name} ${e.student.first_name}`,
                             period: `${e.period.start.slice(0, 5)} - ${e.period.end.slice(0, 5)}`,
+                            count: e.excluded_count,
                         };
                     });
                     this.entriesCount = resp.data.count;
