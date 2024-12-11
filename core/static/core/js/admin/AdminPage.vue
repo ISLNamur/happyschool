@@ -22,29 +22,30 @@
     <app-menu
         :menu-info="menuInfo"
     />
-    <b-container>
+    <BToastOrchestrator />
+    <BContainer>
         <h3>Page d'administration d'HappySchool</h3>
-        <b-row>
-            <b-col sm="3">
-                <b-list-group>
-                    <b-list-group-item to="general">
+        <BRow>
+            <BCol sm="3">
+                <BListGroup>
+                    <BListGroupItem to="general">
                         <strong>Général</strong>
-                    </b-list-group-item>
-                    <b-list-group-item to="import">
+                    </BListGroupItem>
+                    <BListGroupItem to="import">
                         <strong>Import</strong>
-                    </b-list-group-item>
-                    <b-list-group-item to="photos">
+                    </BListGroupItem>
+                    <BListGroupItem to="photos">
                         <strong>Photos</strong>
-                    </b-list-group-item>
-                    <b-list-group-item to="update">
+                    </BListGroupItem>
+                    <BListGroupItem to="update">
                         <strong>Mise à jour</strong>
-                    </b-list-group-item>
-                    <b-list-group-item to="annuaire">
+                    </BListGroupItem>
+                    <BListGroupItem to="annuaire">
                         <strong>Annuaire</strong>
-                    </b-list-group-item>
-                </b-list-group>
-            </b-col>
-            <b-col>
+                    </BListGroupItem>
+                </BListGroup>
+            </BCol>
+            <BCol>
                 <router-view v-slot="{ Component }">
                     <transition
                         name="slide-left"
@@ -53,9 +54,9 @@
                         <component :is="Component" />
                     </transition>
                 </router-view>
-            </b-col>
-        </b-row>
-    </b-container>
+            </BCol>
+        </BRow>
+    </BContainer>
 </template>
 
 <script>

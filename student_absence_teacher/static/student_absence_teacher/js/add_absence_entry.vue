@@ -18,36 +18,36 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-list-group-item>
-        <b-row>
-            <b-col
+    <BListGroupItem>
+        <BRow>
+            <BCol
                 cols="3"
                 :class="isBold"
             >
                 {{ student.last_name }} {{ student.first_name }}
-            </b-col>
-            <b-col>
-                <b-row>
-                    <b-col cols="4">
-                        <b-select
-                            @change="selectedStatus"
+            </BCol>
+            <BCol>
+                <BRow>
+                    <BCol cols="4">
+                        <BFormSelect
+                            @update:model-value="selectedStatus"
                             :options="options"
                             v-model="status"
                         />
-                    </b-col>
-                    <b-col>
-                        <b-form-input
+                    </BCol>
+                    <BCol>
+                        <BFormInput
                             v-if="status != 'presence'"
                             maxlength="200"
                             @update="updateComment"
                             v-model="comment"
                             placeholder="Ajouter une remarque si nécessaire."
                         />
-                    </b-col>
-                </b-row>
-            </b-col>
-        </b-row>
-    </b-list-group-item>
+                    </BCol>
+                </BRow>
+            </BCol>
+        </BRow>
+    </BListGroupItem>
 </template>
 
 <script>

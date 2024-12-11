@@ -20,10 +20,10 @@
 <template>
     <!-- eslint-disable vue/no-unused-vars -->
     <div>
-        <b-tabs content-class="mt-3">
-            <b-tab title="Étudiants">
-                <b-row>
-                    <b-col>
+        <BTabs content-class="mt-3">
+            <BTab title="Étudiants">
+                <BRow>
+                    <BCol>
                         <h5>Format des champs</h5>
                         <ul>
                             <li>
@@ -37,50 +37,50 @@
                             <li><strong>Date de naissance :</strong> La date de naissance peut être sous les formes suivantes yyyymmdd, yyyy-mm-dd ou encore dd/mm/yyyy. Par exemple, 20020322 donnera le 22 mars 2002.</li>
                             <li><strong>Cours :</strong> Seul le nom du cours court est nécessaire. Pour prendre entre compte plusieurs cours, il suffit que la ligne de l'étudiant soit répétée (seul le matricule est nécessaire).</li>
                         </ul>
-                        <b-alert
+                        <BAlert
                             show
                             variant="warning"
                         >
                             Le fichier csv soumit doit contenir l'entièreté des étudiants de l'établissement. Ceux qui ne sont pas présent (identifié
                             par le matricule) seront considérés comme inactifs (anciens) et pourront donc par la suite être réintégrés, par exemple dans un autre établissement.
-                        </b-alert>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col>
-                        <b-form>
-                            <b-form-row>
+                        </BAlert>
+                    </BCol>
+                </BRow>
+                <BRow>
+                    <BCol>
+                        <BForm>
+                            <BFormRow>
                                 <!-- eslint-disable-next-line no-irregular-whitespace -->
-                                <b-form-group label="Établissement où importer les étudiants :">
-                                    <b-select
+                                <BFormGroup label="Établissement où importer les étudiants :">
+                                    <BFormSelect
                                         v-model="teaching"
                                         :options="teachingOptions"
                                         value-field="id"
                                         text-field="display_name"
                                     />
-                                </b-form-group>
-                            </b-form-row>
-                            <b-form-row>
-                                <b-form-checkbox v-model="ignoreFirstLine">
+                                </BFormGroup>
+                            </BFormRow>
+                            <BFormRow>
+                                <BFormCheckbox v-model="ignoreFirstLine">
                                     Ignorer la première ligne
-                                </b-form-checkbox>
-                            </b-form-row>
-                            <b-form-row>
-                                <b-form-group description="Le fichier doit être encodé en UTF-8.">
-                                    <b-form-file
+                                </BFormCheckbox>
+                            </BFormRow>
+                            <BFormRow>
+                                <BFormGroup description="Le fichier doit être encodé en UTF-8.">
+                                    <BFormFile
                                         v-model="file"
                                         accept=".csv"
                                         @input="testFile"
                                         placeholder="Importer un fichier csv..."
                                     />
-                                </b-form-group>
-                            </b-form-row>
-                        </b-form>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col>
-                        <b-table
+                                </BFormGroup>
+                            </BFormRow>
+                        </BForm>
+                    </BCol>
+                </BRow>
+                <BRow>
+                    <BCol>
+                        <BTable
                             :items="content"
                             :fields="studentColumnRawNames.slice(0, fields_number)"
                         >
@@ -89,7 +89,7 @@
                                 #[c]="data"
                                 :key="i"
                             >
-                                <b-select
+                                <BFormSelect
                                     v-model="student_columns[i]"
                                     :options="student_column_names"
                                 >
@@ -101,34 +101,34 @@
                                             Choississez le type de colonne
                                         </option>
                                     </template>
-                                </b-select>
+                                </BFormSelect>
                             </template>
-                        </b-table>
-                    </b-col>
-                </b-row>
+                        </BTable>
+                    </BCol>
+                </BRow>
                 <div v-if="file">
-                    <b-row>
-                        <b-btn @click="importStudents">
+                    <BRow>
+                        <BButton @click="importStudents">
                             Importer
-                        </b-btn>
-                    </b-row>
-                    <b-row class="mt-2">
-                        <b-col>
-                            <b-card
+                        </BButton>
+                    </BRow>
+                    <BRow class="mt-2">
+                        <BCol>
+                            <BCard
                                 bg-variant="dark"
                                 text-variant="white"
                             >
                                 <p class="card-text console">
                                     {{ importState }}
                                 </p>
-                            </b-card>
-                        </b-col>
-                    </b-row>
+                            </BCard>
+                        </BCol>
+                    </BRow>
                 </div>
-            </b-tab>
-            <b-tab title="Enseignants">
-                <b-row>
-                    <b-col>
+            </BTab>
+            <BTab title="Enseignants">
+                <BRow>
+                    <BCol>
                         <h5>Format des champs</h5>
                         <ul>
                             <li>
@@ -136,50 +136,50 @@
                             </li>
                             <li><strong>Cours :</strong> Seul le nom du cours court est nécessaire. Pour prendre entre compte plusieurs cours, il suffit que la ligne de l'étudiant soit répétée (seul le matricule est nécessaire).</li>
                         </ul>
-                        <b-alert
+                        <BAlert
                             show
                             variant="warning"
                         >
                             Le fichier csv soumit doit contenir l'entièreté des enseignants de l'établissement. Ceux qui ne sont pas présent (identifié
                             par le matricule) seront considérés comme inactifs (anciens) et pourront donc par la suite être réintégrés, par exemple dans un autre établissement.
-                        </b-alert>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col>
-                        <b-form>
-                            <b-form-row>
+                        </BAlert>
+                    </BCol>
+                </BRow>
+                <BRow>
+                    <BCol>
+                        <BForm>
+                            <BFormRow>
                                 <!-- eslint-disable-next-line no-irregular-whitespace -->
-                                <b-form-group label="Établissement où importer les étudiants :">
-                                    <b-select
+                                <BFormGroup label="Établissement où importer les étudiants :">
+                                    <BFormSelect
                                         v-model="teaching"
                                         :options="teachingOptions"
                                         value-field="id"
                                         text-field="display_name"
                                     />
-                                </b-form-group>
-                            </b-form-row>
-                            <b-form-row>
-                                <b-form-checkbox v-model="ignoreFirstLine">
+                                </BFormGroup>
+                            </BFormRow>
+                            <BFormRow>
+                                <BFormCheckbox v-model="ignoreFirstLine">
                                     Ignorer la première ligne
-                                </b-form-checkbox>
-                            </b-form-row>
-                            <b-form-row>
-                                <b-form-group description="Le fichier doit être encodé en UTF-8.">
-                                    <b-form-file
+                                </BFormCheckbox>
+                            </BFormRow>
+                            <BFormRow>
+                                <BFormGroup description="Le fichier doit être encodé en UTF-8.">
+                                    <BFormFile
                                         v-model="file"
                                         accept=".csv"
                                         @input="testFile"
                                         placeholder="Importer un fichier csv..."
                                     />
-                                </b-form-group>
-                            </b-form-row>
-                        </b-form>
-                    </b-col>
-                </b-row>
-                <b-row>
-                    <b-col>
-                        <b-table
+                                </BFormGroup>
+                            </BFormRow>
+                        </BForm>
+                    </BCol>
+                </BRow>
+                <BRow>
+                    <BCol>
+                        <BTable
                             :items="content"
                             :fields="teacherColumnRawNames.slice(0, fields_number)"
                         >
@@ -188,7 +188,7 @@
                                 #[c]="data"
                                 :key="i"
                             >
-                                <b-select
+                                <BFormSelect
                                     v-model="teacher_columns[i]"
                                     :options="teacher_column_names"
                                 >
@@ -200,41 +200,36 @@
                                             Choississez le type de colonne
                                         </option>
                                     </template>
-                                </b-select>
+                                </BFormSelect>
                             </template>
-                        </b-table>
-                    </b-col>
-                </b-row>
+                        </BTable>
+                    </BCol>
+                </BRow>
                 <div v-if="file">
-                    <b-row>
-                        <b-btn @click="importTeachers">
+                    <BRow>
+                        <BButton @click="importTeachers">
                             Importer
-                        </b-btn>
-                    </b-row>
-                    <b-row class="mt-2">
-                        <b-col>
-                            <b-card
+                        </BButton>
+                    </BRow>
+                    <BRow class="mt-2">
+                        <BCol>
+                            <BCard
                                 bg-variant="dark"
                                 text-variant="white"
                             >
                                 <p class="card-text console">
                                     {{ importState }}
                                 </p>
-                            </b-card>
-                        </b-col>
-                    </b-row>
+                            </BCard>
+                        </BCol>
+                    </BRow>
                 </div>
-            </b-tab>
-        </b-tabs>
+            </BTab>
+        </BTabs>
     </div>
 </template>
 
 <script>
-import Vue from "vue";
-import BootstrapVue, { BootstrapVueIcons } from "bootstrap-vue";
-Vue.use(BootstrapVue);
-Vue.use(BootstrapVueIcons);
-
 import axios from "axios";
 
 

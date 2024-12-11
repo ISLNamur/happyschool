@@ -27,16 +27,16 @@
             v-if="loaded"
             :menu-info="menuInfo"
         />
-        <b-container v-if="loaded">
+        <BContainer v-if="loaded">
             <h1>Annuaire</h1>
-            <b-row>
-                <b-col
+            <BRow>
+                <BCol
                     v-if="teachingsOptions.length > 1"
                     md="2"
                     sm="12"
                 >
-                    <b-form-group label="Établissement(s) :">
-                        <b-form-select
+                    <BFormGroup label="Établissement(s) :">
+                        <BFormSelect
                             multiple
                             :select-size="3"
                             v-model="teachings"
@@ -44,10 +44,10 @@
                             value-field="id"
                             text-field="display_name"
                         />
-                    </b-form-group>
-                </b-col>
-                <b-col>
-                    <b-form-group
+                    </BFormGroup>
+                </BCol>
+                <BCol>
+                    <BFormGroup
                         label="Recherche :"
                         class="ml-4"
                     >
@@ -72,9 +72,9 @@
                             </template>
                             <template #noOptions />
                         </multiselect>
-                    </b-form-group>
-                </b-col>
-            </b-row>
+                    </BFormGroup>
+                </BCol>
+            </BRow>
             <router-view v-slot="{ Component }">
                 <transition
                     name="slide-right"
@@ -83,7 +83,7 @@
                     <component :is="Component" />
                 </transition>
             </router-view>
-        </b-container>
+        </BContainer>
     </div>
 </template>
 

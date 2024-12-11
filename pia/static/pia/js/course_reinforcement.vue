@@ -19,11 +19,11 @@
 
 <template>
     <div>
-        <b-card>
-            <b-row>
-                <b-col>
-                    <b-form-group>
-                        <b-form-radio-group
+        <BCard>
+            <BRow>
+                <BCol>
+                    <BFormGroup>
+                        <BFormRadioGroup
                             v-model="reinforcement"
                             :options="[{ text: 'Oui', value: true }, { text: 'Non', value: false }]"
                             name="has-reinforcement"
@@ -33,65 +33,67 @@
                         <template #label>
                             <strong>Renforcement/Méthodo cours CE1D</strong>
                         </template>
-                    </b-form-group>
-                </b-col>
-            </b-row>
-            <b-row v-if="reinforcement">
-                <b-col>
-                    <b-form-group>
-                        <b-select
+                    </BFormGroup>
+                </BCol>
+            </BRow>
+            <BRow v-if="reinforcement">
+                <BCol>
+                    <BFormGroup>
+                        <BFormSelect
                             :options="courseReinforcements"
                             value-field="id"
                             v-model="currentCourseReinforId"
-                            @change="updateCourseReinforcement"
+                            @update:model-value="updateCourseReinforcement"
                         />
-                    </b-form-group>
-                </b-col>
-                <b-col>
-                    <b-btn
-                        variant="outline-secondary"
-                        @click="copy"
-                        :disabled="courseReinforcements.length === 0"
-                    >
-                        <b-icon icon="files" />
-                        Copier
-                    </b-btn>
-                    <b-btn
-                        variant="success"
-                        @click="add"
-                    >
-                        <b-icon icon="plus" />
-                        Ajouter
-                    </b-btn>
-                    <b-btn
-                        variant="danger"
-                        @click="remove"
-                        :disabled="courseReinforcements.length === 0"
-                    >
-                        <b-icon icon="trash" />
-                        Supprimer
-                    </b-btn>
-                </b-col>
-            </b-row>
-            <b-row v-if="currentCourseReinfor">
-                <b-col>
+                    </BFormGroup>
+                </BCol>
+                <BCol>
+                    <BButtonGroup>
+                        <BButton
+                            variant="outline-secondary"
+                            @click="copy"
+                            :disabled="courseReinforcements.length === 0"
+                        >
+                            <IBiFiles />
+                            Copier
+                        </BButton>
+                        <BButton
+                            variant="success"
+                            @click="add"
+                        >
+                            <IBiPlus />
+                            Ajouter
+                        </BButton>
+                        <BButton
+                            variant="danger"
+                            @click="remove"
+                            :disabled="courseReinforcements.length === 0"
+                        >
+                            <IBiTrash />
+                            Supprimer
+                        </BButton>
+                    </BButtonGroup>
+                </BCol>
+            </BRow>
+            <BRow v-if="currentCourseReinfor">
+                <BCol>
                     <strong>
-                        <b-form inline>
-                            Du<b-form-input
+                        <BForm inline>
+                            Du<BFormInput
                                 type="date"
                                 v-model="currentCourseReinfor.date_start"
                                 class="mr-sm-2 ml-2"
                             />
-                            au<b-form-input
+                            au<BFormInput
                                 type="date"
                                 v-model="currentCourseReinfor.date_end"
                                 class="ml-2"
                             />
-                        </b-form>
+                        </BForm>
                     </strong>
-                </b-col>
-            </b-row>
-            <b-row
+                </BCol>
+            </BRow>
+            <BRow
                 v-if="currentCourseReinfor"
                 class="mt-1"
             >
@@ -113,8 +115,8 @@
                     </template>
                     <template #noOptions />
                 </multiselect>
-            </b-row>
-        </b-card>
+            </BRow>
+        </BCard>
     </div>
 </template>
 

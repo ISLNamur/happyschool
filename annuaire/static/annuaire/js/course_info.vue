@@ -18,14 +18,14 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-row>
-        <b-col>
-            <b-card
+    <BRow>
+        <BCol>
+            <BCard
                 v-if="courseObject"
                 :title="`${courseObject.long_name} (${courseObject.short_name})`"
             >
-                <b-row>
-                    <b-col>
+                <BRow>
+                    <BCol>
                         <dl>
                             <dt>Enseignement</dt>
                             <dd>{{ currentTeaching }}</dd>
@@ -54,7 +54,7 @@
                                             >
                                                 Voir les étudiants
                                             </a>)
-                                            <b-collapse :id="`students-${givenCourse.id}`">
+                                            <BCollapse :id="`students-${givenCourse.id}`">
                                                 <ul>
                                                     <li
                                                         v-for="student in givenCourse.students"
@@ -65,17 +65,17 @@
                                                         </a>
                                                     </li>
                                                 </ul>
-                                            </b-collapse>
+                                            </BCollapse>
                                         </dd>
                                     </li>
                                 </ul>
                             </dd>
                         </dl>
-                    </b-col>
-                </b-row>
-            </b-card>
-        </b-col>
-    </b-row>
+                    </BCol>
+                </BRow>
+            </BCard>
+        </BCol>
+    </BRow>
 </template>
 
 <script>

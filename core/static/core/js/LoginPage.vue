@@ -18,87 +18,88 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-container
+    <BContainer
         class="text-center"
         style="max-width: 400px;"
     >
-        <b-row>
-            <b-col>
+        <BRow>
+            <BCol>
                 <h1>Se connecter</h1>
-            </b-col>
-        </b-row>
-        <b-row v-if="microsoftLogin || googleLogin">
-            <b-col>
-                <b-card>
+            </BCol>
+        </BRow>
+        <BRow v-if="microsoftLogin || googleLogin">
+            <BCol>
+                <BCard>
                     <strong>
                         <a :href="microsoftLogin || googleLogin">
                             Se connecter avec un compte mail de l'école ({{ microsoftLogin ? "Microsoft" : "Google" }})
                         </a>
                     </strong>
-                </b-card>
-            </b-col>
-        </b-row>
-        <b-row
+                </BCard>
+            </BCol>
+        </BRow>
+        <BRow
             class="mb-2 mt-2"
             v-if="modelLogin && (microsoftLogin || googleLogin)"
         >
-            <b-col>
-                <b-btn
+            <BCol>
+                <BButton
                     v-b-toggle.model-form
                     variant="outline-primary"
                     size="sm"
                 >
                     Autre compte
-                </b-btn> 
-            </b-col>
-        </b-row>
-        <b-collapse
+                </BButton> 
+            </BCol>
+        </BRow>
+        <BCollapse
             id="model-form"
             :visible="modelLogin && !microsoftLogin && !googleLogin"
         >
-            <b-row>
-                <b-col>
-                    <b-card>
-                        <b-form method="post">
+            <BRow>
+                <BCol>
+                    <BCard>
+                        <BForm method="post">
                             <input
                                 type="hidden"
                                 name="csrfmiddlewaretoken"
                                 :value="csrfToken"
                             >
-                            <b-form-group
+                            <BFormGroup
                                 label="Nom d'utilisateur :"
                                 label-for="username"
                             >
-                                <b-form-input
+                                <BFormInput
                                     id="username"
                                     name="username"
                                     required
                                 />
-                            </b-form-group>
-                            <b-form-group
+                            </BFormGroup>
+                            <BFormGroup
                                 label="Mot de passe :"
                                 label-for="password"
                             >
-                                <b-form-input
+                                <BFormInput
                                     id="password"
                                     name="password"
                                     type="password"
                                     required
                                 />
-                            </b-form-group>
-                            <b-btn
+                            </BFormGroup>
+                            <BButton
                                 type="submit"
                                 variant="primary"
                                 size="lg"
+                                class="mt-2"
                             >
                                 Se connecter
-                            </b-btn>
-                        </b-form>
-                    </b-card>
-                </b-col>
-            </b-row>
-        </b-collapse>
-    </b-container>
+                            </BButton>
+                        </BForm>
+                    </BCard>
+                </BCol>
+            </BRow>
+        </BCollapse>
+    </BContainer>
 </template>
 
 <script>

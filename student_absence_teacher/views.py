@@ -508,7 +508,7 @@ class OverviewAPI(APIView):
                 self._extract_count_from_educator(
                     c,
                     StudentAbsenceEducModel.objects.filter(date_absence=date, student__classe=c)
-                    .values("period", "is_absent")
+                    .values("period", "status")
                     .annotate(Count("id")),
                     periods,
                     date,

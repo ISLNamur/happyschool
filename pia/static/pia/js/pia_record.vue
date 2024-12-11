@@ -18,87 +18,87 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-container>
-        <b-row>
+    <BContainer>
+        <BRow>
             <h3>{{ advanced ? "PIA" : "Aide élève" }} : {{ id ? "Modifier" : "Nouveau" }}</h3>
-        </b-row>
-        <b-row class="sticky-top p-2 first-line">
-            <b-col>
-                <b-btn @click="$router.back()">
+        </BRow>
+        <BRow class="sticky-top p-2 first-line">
+            <BCol>
+                <BButton @click="$router.back()">
                     Retour à la liste des élèves
-                </b-btn>
-            </b-col>
-            <b-col
-                cols="4"
+                </BButton>
+            </BCol>
+            <BCol
+                cols="5"
                 align-self="end"
-                class="text-left"
+                class="text-end"
             >
-                <b-dropdown variant="outline-primary">
-                    <template #button-content>
-                        <b-icon icon="file-earmark-pdf" />
-                        PDF
-                    </template>
-                    <b-dropdown-item
-                        :href="`/pia/report/${id}/1/`"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Année scolaire en cours
-                    </b-dropdown-item>
-                    <b-dropdown-item
-                        :href="`/pia/report/${id}/0/`"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Toutes années confondues
-                    </b-dropdown-item>
-                </b-dropdown>
-                <b-overlay
-                    :show="sending"
-                    rounded="sm"
-                    class="d-inline-block"
-                >
-                    <b-btn
+                <BButtonGroup>
+                    <BDropdown variant="outline-primary">
+                        <template #button-content>
+                            <IBiFileEarmarkPdf />
+                            PDF
+                        </template>
+                        <BDropdownItem
+                            :href="`/pia/report/${id}/1/`"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Année scolaire en cours
+                        </BDropdownItem>
+                        <BDropdownItem
+                            :href="`/pia/report/${id}/0/`"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Toutes années confondues
+                        </BDropdownItem>
+                    </BDropdown>
+                    <BButton
                         @click="submit"
                         variant="primary"
-                        :disabled="!form.student"
+                        :disabled="!form.student || sending"
                     >
+                        <BSpinner
+                            small
+                            v-if="sending"
+                        />
                         Sauver
-                    </b-btn>
-                </b-overlay>
-            </b-col>
-        </b-row>
-        <b-overlay :show="loading">
-            <b-tabs
+                    </BButton>
+                </BButtonGroup>
+            </BCol>
+        </BRow>
+        <BOverlay :show="loading">
+            <BTabs
                 content-class="mt-3"
                 justified
                 class="mt-2"
             >
-                <b-tab
+                <BTab
                     title="Élève et aménagements"
                     active
                 >
-                    <b-row>
-                        <b-col>
+                    <BRow>
+                        <BCol>
                             <h3>Référents {{ advanced ? "PIA" : "" }}</h3>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col
+                        </BCol>
+                    </BRow>
+                    <BRow>
+                        <BCol
                             v-if="form.student"
                             md="3"
                         >
-                            <b-img
+                            <BImg
                                 :src="`/static/photos/${form.student.matricule}.jpg`"
                                 alt="Photo de l'élève"
                                 rounded
                                 fluid
                             />
-                        </b-col>
-                        <b-col>
-                            <b-form-row>
-                                <b-col md="4">
-                                    <b-form-group label="Élève">
+                        </BCol>
+                        <BCol>
+                            <BFormRow>
+                                <BCol md="4">
+                                    <BFormGroup label="Élève">
                                         <multiselect
                                             id="student-0"
                                             :internal-search="false"
@@ -119,12 +119,12 @@
                                             </template>
                                             <template #noOptions />
                                         </multiselect>
-                                    </b-form-group>
-                                </b-col>
-                            </b-form-row>
-                            <b-form-row>
-                                <b-col>
-                                    <b-form-group
+                                    </BFormGroup>
+                                </BCol>
+                            </BFormRow>
+                            <BFormRow>
+                                <BCol>
+                                    <BFormGroup
                                         label="Référent(s)"
                                         :state="inputStates.referent"
                                     >
@@ -151,12 +151,12 @@
                                         <template #invalid-feedback>
                                             {{ errorMsg('referent') }}
                                         </template>
-                                    </b-form-group>
-                                </b-col>
-                            </b-form-row>
-                            <b-form-row>
-                                <b-col>
-                                    <b-form-group
+                                    </BFormGroup>
+                                </BCol>
+                            </BFormRow>
+                            <BFormRow>
+                                <BCol>
+                                    <BFormGroup
                                         label="Parrain(s)/Marraine(s)"
                                         :state="inputStates.referent"
                                     >
@@ -183,52 +183,52 @@
                                         <template #invalid-feedback>
                                             {{ errorMsg('sponsor') }}
                                         </template>
-                                    </b-form-group>
-                                </b-col>
-                            </b-form-row>
-                        </b-col>
-                    </b-row>
-                    <b-row class="mt-3">
-                        <b-col>
+                                    </BFormGroup>
+                                </BCol>
+                            </BFormRow>
+                        </BCol>
+                    </BRow>
+                    <BRow class="mt-3">
+                        <BCol>
                             <h3>{{ advanced ? "Aménagements" : "Activités de soutien" }}</h3>
-                        </b-col>
-                    </b-row>
-                    <b-row
+                        </BCol>
+                    </BRow>
+                    <BRow
                         v-if="advanced"
                         class="mt-3"
                     >
-                        <b-col>
+                        <BCol>
                             <disorder-selection
                                 :pia="Number(id)"
                                 ref="disorder"
                             />
-                        </b-col>
-                    </b-row>
+                        </BCol>
+                    </BRow>
                     <schedule-adjustments
                         v-if="advanced"
                         :pia="Number(id)"
                         ref="adjustments"
                     />
-                    <b-row v-else>
-                        <b-col>
+                    <BRow v-else>
+                        <BCol>
                             <activity-support
                                 :pia="Number(id)"
                                 ref="activitysupport"
                             />
-                        </b-col>
-                    </b-row>
-                    <b-row class="mt-4">
-                        <b-col>
+                        </BCol>
+                    </BRow>
+                    <BRow class="mt-4">
+                        <BCol>
                             <h3>Attachements</h3>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            <b-form-group
+                        </BCol>
+                    </BRow>
+                    <BRow>
+                        <BCol>
+                            <BFormGroup
                                 description="Ajouter un ou des fichiers. Accepte uniquement des fichiers images et pdf."
                                 label="Fichier(s)"
                             >
-                                <b-form-file
+                                <BFormFile
                                     multiple
                                     accept=".pdf, .jpg, .png, jpeg"
                                     v-model="form.attachments"
@@ -239,7 +239,7 @@
                                     plain
                                     @input="addFiles"
                                 />
-                                <b-list-group
+                                <BListGroup
                                     v-for="(item, index) in uploadedFiles"
                                     :key="index"
                                 >
@@ -251,35 +251,35 @@
                                         @delete="deleteFile(index)"
                                         @setdata="setFileData(index, $event)"
                                     />
-                                </b-list-group>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-                </b-tab>
-                <b-tab
+                                </BListGroup>
+                            </BFormGroup>
+                        </BCol>
+                    </BRow>
+                </BTab>
+                <BTab
                     v-if="advanced"
                     title="Soutien"
                 >
-                    <b-row>
-                        <b-col>
+                    <BRow>
+                        <BCol>
                             <h4>Activités de soutien</h4>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
+                        </BCol>
+                    </BRow>
+                    <BRow>
+                        <BCol>
                             <activity-support
                                 :pia="Number(id)"
                                 ref="activitysupport"
                             />
-                        </b-col>
-                    </b-row>
-                </b-tab>
-                <b-tab>
+                        </BCol>
+                    </BRow>
+                </BTab>
+                <BTab>
                     <template #title>
-                        <b-overlay :show="loadingOthers">
+                        <BOverlay :show="loadingOthers">
                             {{ advanced ? "Conseils de classe" : "Auto-évaluation" }}
-                            <b-badge>{{ classCouncilCount }}</b-badge>
-                        </b-overlay>
+                            <BBadge>{{ classCouncilCount }}</BBadge>
+                        </BOverlay>
                     </template>
                     <class-council-list
                         ref="councils"
@@ -288,39 +288,39 @@
                         @save="submit"
                         @count="classCouncilCount = $event"
                     />
-                </b-tab>
-                <b-tab>
+                </BTab>
+                <BTab>
                     <template #title>
-                        <b-overlay :show="loadingOthers">
+                        <BOverlay :show="loadingOthers">
                             Objectifs {{ advanced ? "" : "du CCL" }}
-                            <b-badge>{{ cross_goal.length + branch_goal.length }}</b-badge>
-                        </b-overlay>
+                            <BBadge>{{ cross_goal.length + branch_goal.length }}</BBadge>
+                        </BOverlay>
                     </template>
-                    <b-row class="mt-2">
+                    <BRow class="mt-2">
                         <h4>Objectifs du CCL</h4>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            <b-form-checkbox
+                    </BRow>
+                    <BRow>
+                        <BCol>
+                            <BFormCheckbox
                                 v-model="currentCrossGoal"
                                 switch
-                                @change="reloadCrossGoal"
+                                @update:model-value="reloadCrossGoal"
                             >
                                 Année scolaire en cours
-                            </b-form-checkbox>
-                        </b-col>
-                        <b-col class="text-right">
-                            <b-btn
+                            </BFormCheckbox>
+                        </BCol>
+                        <BCol class="text-end">
+                            <BButton
                                 @click="cross_goal.unshift({ id: -1 })"
                                 variant="outline-success"
                             >
-                                <b-icon icon="plus" />
+                                <IBiPlus />
                                 Ajouter
-                            </b-btn>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
+                            </BButton>
+                        </BCol>
+                    </BRow>
+                    <BRow>
+                        <BCol>
                             <student-goal
                                 class="mt-2"
                                 v-for="(goal, index) in cross_goal"
@@ -333,33 +333,33 @@
                                 goal-label="Objectifs transversaux"
                                 item-model="cross_goal_item"
                             />
-                        </b-col>
-                    </b-row>
-                    <b-row class="mt-2">
+                        </BCol>
+                    </BRow>
+                    <BRow class="mt-2">
                         <h4>Objectifs de branche</h4>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            <b-form-checkbox
+                    </BRow>
+                    <BRow>
+                        <BCol>
+                            <BFormCheckbox
                                 v-model="currentBranchGoal"
                                 switch
-                                @change="reloadBranchGoal"
+                                @update:model-value="reloadBranchGoal"
                             >
                                 Année scolaire en cours
-                            </b-form-checkbox>
-                        </b-col>
-                        <b-col class="text-right">
-                            <b-btn
+                            </BFormCheckbox>
+                        </BCol>
+                        <BCol class="text-end">
+                            <BButton
                                 @click="branch_goal.unshift({ id: -1 })"
                                 variant="outline-success"
                             >
-                                <b-icon icon="plus" />
+                                <IBiPlus />
                                 Ajouter
-                            </b-btn>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
+                            </BButton>
+                        </BCol>
+                    </BRow>
+                    <BRow>
+                        <BCol>
                             <student-goal
                                 class="mt-2"
                                 v-for="(goal, index) in branch_goal"
@@ -373,33 +373,33 @@
                                 item-model="branch_goal_item"
                                 use-branch
                             />
-                        </b-col>
-                    </b-row>
-                    <b-row />
-                </b-tab>
-                <b-tab>
+                        </BCol>
+                    </BRow>
+                    <BRow />
+                </BTab>
+                <BTab>
                     <template #title>
-                        <b-overlay :show="loadingOthers">
+                        <BOverlay :show="loadingOthers">
                             Projet et avis
-                            <b-badge>{{ student_project.length + parents_opinion.length }}</b-badge>
-                        </b-overlay>
+                            <BBadge>{{ student_project.length + parents_opinion.length }}</BBadge>
+                        </BOverlay>
                     </template>
-                    <b-row>
+                    <BRow>
                         <h4>Projet de l'élève</h4>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            <b-btn
+                    </BRow>
+                    <BRow>
+                        <BCol>
+                            <BButton
                                 @click="student_project.unshift({ id: -1 })"
                                 variant="outline-secondary"
                             >
-                                <b-icon icon="plus" />
+                                <IBiPlus />
                                 Ajouter
-                            </b-btn>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
+                            </BButton>
+                        </BCol>
+                    </BRow>
+                    <BRow>
+                        <BCol>
                             <pia-comment
                                 class="mt-2"
                                 v-for="(sP, index) in student_project"
@@ -409,24 +409,24 @@
                                 :comment-object="sP"
                                 ref="studentprojects"
                             />
-                        </b-col>
-                    </b-row>
-                    <b-row>
+                        </BCol>
+                    </BRow>
+                    <BRow>
                         <h4>Avis des parents</h4>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            <b-btn
+                    </BRow>
+                    <BRow>
+                        <BCol>
+                            <BButton
                                 @click="parents_opinion.unshift({ id: -1 })"
                                 variant="outline-secondary"
                             >
-                                <b-icon icon="plus" />
+                                <IBiPlus />
                                 Ajouter
-                            </b-btn>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
+                            </BButton>
+                        </BCol>
+                    </BRow>
+                    <BRow>
+                        <BCol>
                             <pia-comment
                                 class="mt-2"
                                 v-for="(pO, index) in parents_opinion"
@@ -436,62 +436,62 @@
                                 :comment-object="pO"
                                 ref="parentsopinions"
                             />
-                        </b-col>
-                    </b-row>
-                </b-tab>
-                <b-tab v-if="hasDossierApp">
+                        </BCol>
+                    </BRow>
+                </BTab>
+                <BTab v-if="hasDossierApp">
                     <template #title>
-                        <b-overlay :show="loadingOthers">
+                        <BOverlay :show="loadingOthers">
                             Autre infos
-                            <b-badge>{{ dossier.length }}</b-badge>
-                        </b-overlay>
+                            <BBadge>{{ dossier.length }}</BBadge>
+                        </BOverlay>
                     </template>
-                    <b-row>
-                        <b-col>
+                    <BRow>
+                        <BCol>
                             <h4>Autre infos (<a href="/dossier_eleve/">Dossier de l'élève</a>)</h4>
-                        </b-col>
-                    </b-row>
-                    <b-row class="mb-1">
-                        <b-col>
-                            <b-btn
+                        </BCol>
+                    </BRow>
+                    <BRow class="mb-1">
+                        <BCol>
+                            <BButton
                                 v-if="this.form.student"
                                 :href="`/dossier_eleve/?matricule=${this.form.student.matricule}`"
                             >
-                                <b-icon icon="arrow-right" />
+                                <IBiArrowRight />
                                 Vers le dossier de l'élève
-                            </b-btn>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            <b-card
+                            </BButton>
+                        </BCol>
+                    </BRow>
+                    <BRow>
+                        <BCol>
+                            <BCard
                                 v-for="cas in dossier"
                                 :key="cas.id"
                                 no-body
                                 class="mb-1"
                             >
-                                <b-card-sub-title class="mt-1 pl-1">
+                                <BCardSubtitle class="mt-1 pl-1">
                                     {{ cas.datetime_modified.slice(0, 10) }}
-                                </b-card-sub-title>
-                                <b-card-body>
+                                </BCardSubtitle>
+                                <BcardBody>
                                     <span v-html="cas.explication_commentaire" />
-                                </b-card-body>
-                                <b-card-footer class="text-right">
-                                    <b-btn
+                                </BcardBody>
+                                <BcardFooter class="text-end">
+                                    <BButton
                                         variant="warning"
                                         :href="`/dossier_eleve/#/edit/${cas.id}/`"
                                     >
-                                        <b-icon icon="pencil-square" />
+                                        <IBiPencilSquare />
                                         Modifier
-                                    </b-btn>
-                                </b-card-footer>
-                            </b-card>
-                        </b-col>
-                    </b-row>
-                </b-tab>
-            </b-tabs>
-        </b-overlay>
-    </b-container>
+                                    </BButton>
+                                </BcardFooter>
+                            </BCard>
+                        </BCol>
+                    </BRow>
+                </BTab>
+            </BTabs>
+        </BOverlay>
+    </BContainer>
 </template>
 
 <script>
@@ -512,10 +512,16 @@ import DisorderSelection from "./disorder_selection.vue";
 import ScheduleAdjustments from "./schedule_adjustments.vue";
 
 import ActivitySupport from "./activity_support.vue";
+import { useModalController, useToastController } from "bootstrap-vue-next";
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        const { confirm } = useModalController();
+        return { show, confirm };
+    },
     props: {
         id: {
             type: String,
@@ -668,11 +674,12 @@ export default {
          */
         removeObject: function (objectType, objectIndex) {
             let app = this;
-            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer l'élément ?", {
+            this.confirm({props:{
+                body: "Êtes-vous sûr de vouloir supprimer l'élément ?",
                 okTitle: "Oui",
                 cancelTitle: "Non",
                 centered: true,
-            }).then(resp => {
+            }}).then(resp => {
                 if (resp) {
                     if (app[objectType][objectIndex].id >= 0) {
                         axios.delete(`/pia/api/${objectType}/` + app[objectType][objectIndex].id + "/", token)
@@ -685,7 +692,6 @@ export default {
             });
         },
         getPeople: function (searchQuery, person) {
-            console.log(searchQuery, person);
             person = person.split("-")[0];
             this.searchId += 1;
             let currentSearch = this.searchId;
@@ -722,25 +728,28 @@ export default {
             let app = this;
             app.sending = false;
             if (app.id) {
-                app.$root.$bvToast.toast("Les données ont bien été sauvegardées", {
+                app.show({props: {
+                    body: "Les données ont bien été sauvegardées",
                     variant: "success",
                     noCloseButton: true,
-                });
+                }});
             } else {
-                app.$router.replace(`/edit/${recordId}/${this.advanced}/`, () => {
-                    app.$root.$bvToast.toast("Les données ont bien été sauvegardées", {
+                app.$router.replace(`/edit/${recordId}/${this.advanced}/`).then(() => {
+                    app.show({props: {
+                        body: "Les données ont bien été sauvegardées",
                         variant: "success",
                         noCloseButton: true,
-                    });
+                    }});
                 });
             }
         },
         showFailure: function () {
             this.sending = false;
-            this.$root.$bvToast.toast("Un problème est survenu lors de l'enregistrement. Merci de vérifier que les données requises ont été complétées.", {
+            this.show({props: {
+                body: "Un problème est survenu lors de l'enregistrement. Merci de vérifier que les données requises ont été complétées.",
                 variant: "danger",
                 noCloseButton: true,
-            });
+            }});
         },
         submit: function (evt) {
             if (evt) evt.preventDefault();
@@ -783,7 +792,6 @@ export default {
                                 const compResps = resps.filter(r => r && r.config.url.includes(`pia/api/${comp}/`));
                                 app[comp] = compResps.map(r => r.data).sort((a, b) => a.datetime_creation < b.datetime_creation);
                             });
-                            console.log(resps);
 
                             app.showSuccess(recordId);
                         })
@@ -847,7 +855,7 @@ export default {
 
                     this.form.selected_disorder_response = resp.data.selected_disorder_response;
                     this.selectedResponseLoading = true;
-                    Promise.all(resp.data.selected_disorder_response.map(id => axios.get(`/pia/api/selected_disorder_response/${id}/`)))
+                    Promise.all(resp.data.selected_disorder_response.map(id => axios.get(`/pia/api/selected_disorder_response_new/${id}/`)))
                         .then(resps => {
                             this.selected_disorder_response = resps.map(r => r.data);
                             this.selectedResponseLoading = false;

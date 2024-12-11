@@ -19,10 +19,10 @@
 
 <template>
     <div>
-        <b-row class="mt-1">
-            <b-col>
-                <b-overlay :show="loading">
-                    <b-table
+        <BRow class="mt-1">
+            <BCol>
+                <BOverlay :show="loading">
+                    <BTable
                         id="classoverview"
                         :items="studentAsList"
                         :fields="fields"
@@ -32,28 +32,28 @@
                             v-if="date !== 'null'"
                             #head(absence)=""
                         >
-                            <b-row>
-                                <b-col
+                            <BRow>
+                                <BCol
                                     v-for="p in teachersPeriod"
                                     :key="p.id"
                                     class="pr-1 pl-1"
                                 >
                                     {{ p.start.slice(0, 5) }}
-                                </b-col>
-                            </b-row>
-                            <b-row>
-                                <b-col
+                                </BCol>
+                            </BRow>
+                            <BRow>
+                                <BCol
                                     v-for="p in educatorsPeriod"
                                     :key="p.id"
                                 >
                                     {{ p.name }}
-                                </b-col>
-                            </b-row>
+                                </BCol>
+                            </BRow>
                         </template>
                         <template #cell(studentName)="data">
                             {{ data.value }}
                             <a :href="`/annuaire/#/person/student/${data.item.matricule}/`">
-                                <b-icon icon="file-earmark-richtext" />
+                                <IBiFileEarmarkRichtext />
                             </a>
                         </template>
                         <template
@@ -63,19 +63,19 @@
                             <overview-teacher-entry :absences="data.item.absence_teachers" />
                             <overview-educator-entry
                                 :absences="data.item.absence_educators"
-                                @change="updateEducatorAbsence($event)"
+                                @update:model-value="updateEducatorAbsence($event)"
                             />
                         </template>
-                    </b-table>
-                </b-overlay>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
+                    </BTable>
+                </BOverlay>
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
                 <absences-stat :student-id="studentId" />
-            </b-col>
-            <b-col>
-                <b-card
+            </BCol>
+            <BCol>
+                <BCard
                     no-body
                     class="scrollable"
                 >
@@ -84,64 +84,52 @@
                     >
                         <div class="d-flex justify-content-between align-items-center">
                             <strong>Justificatif</strong>
-                            <b-badge variant="primary">
+                            <BBadge variant="primary">
                                 {{ justifications.length }}
-                            </b-badge>
+                            </BBadge>
                         </div>
                     </template>
-                    <b-list-group flush>
-                        <b-list-group-item
+                    <BListGroup flush>
+                        <BListGroupItem
                             v-for="just in justifications"
                             :key="just.id"
                         >
                             <div class="d-flex w-100 justify-content-between">
                                 <span>
-                                    <strong :id="`motive-name-${just.id}`">{{ just.motive.short_name }}</strong> :
+                                    <strong v-b-tooltip="just.motive.name">{{ just.motive.short_name }}</strong> :
                                     {{ just.date_just_start }} ({{ this.educatorsPeriod[just.half_day_start].name }})
                                     – {{ just.date_just_end }} ({{ this.educatorsPeriod[just.half_day_end].name }}) 
                                     <span>
-                                        <b-icon
+                                        <IBiChatText
                                             v-if="just.comment"
                                             :id="`comment-${just.id}`"
-                                            icon="chat-text"
+                                            v-b-tooltip="just.comment"
                                         />
-                                        <b-tooltip
-                                            :target="`comment-${just.id}`"
-                                            triggers="hover"
-                                        >
-                                            {{ just.comment }}
-                                        </b-tooltip>
                                     </span>
-                                    <b-tooltip
-                                        :target="`motive-name-${just.id}`"
-                                        triggers="hover"
-                                    >
-                                        {{ just.motive.name }}
-                                    </b-tooltip>
                                 </span>
                                 <span>
-                                    <b-btn
+                                    <BButton
                                         :to="`/justification/${just.id}/`"
                                         variant="outline-success"
                                         size="sm"
                                     >
-                                        <b-icon icon="pencil-square" />
-                                    </b-btn>
+                                        <IBiPencilSquare />
+                                    </BButton>
                                 </span>
                             </div>
-                        </b-list-group-item>
-                    </b-list-group>
-                </b-card>
-            </b-col>
-        </b-row>
-        <b-row class="mt-2">
-            <b-col>
+                        </BListGroupItem>
+                    </BListGroup>
+                </BCard>
+            </BCol>
+        </BRow>
+        <BRow class="mt-2">
+            <BCol>
                 <student-year-view
                     :student-id="parseInt(studentId)"
                     :current-date="date"
                 />
-            </b-col>
-        </b-row>
+            </BCol>
+        </BRow>
     </div>
 </template>
 

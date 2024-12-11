@@ -27,19 +27,18 @@
             />
         </div>
         <div v-if="showCalendar">
-            <b-popover
+            <BPopover
                 v-for="course in calendarOptions.events"
                 :key="course.id"
                 tabindex="0"
                 :target="`popover-${course.id}`"
-                triggers="hover focus"
                 :title="`${course.description} (${course.title})`"
             >
                 {{ course.related_classes }}
                 <br>
                 {{ course.place ? `${course.place} : ` : "" }}
                 {{ course.related_responsibles }}
-            </b-popover>
+            </BPopover>
         </div>
     </div>
 </template>

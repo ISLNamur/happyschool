@@ -19,20 +19,20 @@
 
 <template>
     <div>
-        <b-row>
-            <b-col class="text-right mb-1">
-                <b-btn
+        <BRow>
+            <BCol class="text-right mb-1">
+                <BButton
                     variant="primary"
                     @click="validateEducatorAbsences"
                 >
                     Valider toutes les présences
-                </b-btn>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-overlay :show="loading">
-                    <b-table
+                </BButton>
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
+                <BOverlay :show="loading">
+                    <BTable
                         id="classoverview"
                         :items="students"
                         :fields="fields"
@@ -40,60 +40,54 @@
                         small
                     >
                         <template #head(absence)="">
-                            <b-row>
-                                <b-col
+                            <BRow>
+                                <BCol
                                     v-for="p in teachersPeriod"
                                     :key="p.id"
                                     class="pr-1 pl-1"
                                 >
                                     {{ p.start.slice(0, 5) }}
-                                </b-col>
-                            </b-row>
-                            <b-row>
-                                <b-col
+                                </BCol>
+                            </BRow>
+                            <BRow>
+                                <BCol
                                     v-for="p in educatorsPeriod"
                                     :key="p.id"
                                 >
                                     {{ p.name }}
-                                </b-col>
-                            </b-row>
+                                </BCol>
+                            </BRow>
                         </template>
                         <template #cell(studentName)="data">
-                            <b-link
+                            <BLink
+                                underline-variant="info"
+                                underline-offset="3"
                                 :to="`/overview/${date}/student_view/${data.item.matricule}/`"
                                 @click="$emit('clearSearch')"
                             >
                                 {{ data.value }}
-                            </b-link>
+                            </BLink>
                             <a :href="`/annuaire/#/person/student/${data.item.matricule}/`">
-                                <b-icon icon="file-earmark-richtext" />
+                                <IBiFileEarmarkRichtext />
                             </a>
                         </template>
                         <template #cell(absence)="data">
                             <overview-teacher-entry :absences="data.item.absence_teachers" />
                             <overview-educator-entry
                                 :absences="data.item.absence_educators"
-                                @change="updateEducatorAbsence($event, data.index)"
+                                @update:model-value="updateEducatorAbsence($event, data.index)"
                             />
                         </template>
                         <template #cell(appel)="data">
-                            <b-icon
+                            <IBiTelephone
                                 v-if="data.value"
-                                :id="`call-${data.value.id}`"
-                                icon="telephone"
+                                v-b-tooltip.hover="data.value ? `${data.value.object.display} - ${data.value.motive.display}: ${data.value.commentaire}`: ''"
                             />
-                            <b-tooltip
-                                v-if="data.value"
-                                :target="`call-${data.value.id}`"
-                                triggers="hover"
-                            >
-                                {{ data.value.object.display }} - {{ data.value.motive.display }}: {{ data.value.commentaire }}
-                            </b-tooltip>
                         </template>
-                    </b-table>
-                </b-overlay>
-            </b-col>
-        </b-row>
+                    </BTable>
+                </BOverlay>
+            </BCol>
+        </BRow>
     </div>
 </template>
 
@@ -275,7 +269,7 @@ export default {
 </script>
 
 <style>
-#classoverview table.b-table>thead>tr> :nth-child(2) {
+#classoverview table.BTable>thead>tr> :nth-child(2) {
     width: 75%;
 }
 </style>

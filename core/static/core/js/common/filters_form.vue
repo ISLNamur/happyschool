@@ -19,47 +19,47 @@
 
 <template>
     <div>
-        <b-form inline>
-            <b-btn
+        <BForm inline>
+            <BButton
                 class="mb-1 mr-1 "
                 variant="primary"
                 @click="$emit('toggleSearch')"
             >
-                <b-icon icon="search" />
+                <IBiSearch />
                 Rechercher
-            </b-btn>
-            <b-form-group>
-                <b-form-checkbox-group
+            </BButton>
+            <BFormGroup>
+                <BFormCheckboxGroup
                     v-model="activated"
                     :options="activateFilters"
                     switches
-                    @change="updateActivateFilters"
+                    @update:model-value="updateActivateFilters"
                 />
-            </b-form-group>
-        </b-form>
-        <b-collapse
+            </BFormGroup>
+        </BForm>
+        <BCollapse
             id="filters-card"
             :visible="showSearch"
             @shown="setFocus"
         >
-            <b-card
+            <BCard
                 no-body
-                class="pl-1"
+                class="p-1"
             >
-                <b-form-group label="Choisir un filtre">
-                    <b-input-group>
-                        <b-col
+                <BFormGroup label="Choisir un filtre">
+                    <BInputGroup>
+                        <BCol
                             sm="12"
                             md="4"
                         >
-                            <b-form-select
+                            <BFormSelect
                                 :options="filterTypeOptions"
                                 v-model="filterType"
                                 @input="cleanDate"
                                 ref="selectType"
                             />
-                        </b-col>
-                        <b-col
+                        </BCol>
+                        <BCol
                             sm="12"
                             md="8"
                         >
@@ -87,12 +87,12 @@
                             >
                                 <template #noOptions />
                             </multiselect>
-                        </b-col>
-                    </b-input-group>
-                </b-form-group>
-            </b-card>
-        </b-collapse>
-        <b-modal
+                        </BCol>
+                    </BInputGroup>
+                </BFormGroup>
+            </BCard>
+        </BCollapse>
+        <BModal
             id="prompt-period-modal"
             title="Choisir une période"
             ok-title="Ajouter"
@@ -100,39 +100,41 @@
             ok-variant="success"
             @ok="addDateTimeTag"
         >
-            <b-form-row>
-                <b-col>
-                    <b-form-group
+            <BFormRow>
+                <BCol>
+                    <BFormGroup
                         label="À partir de"
                     >
-                        <b-form-input
+                        <BFormInput
                             :type="inputType"
                             v-model="dateTime1"
                             :max="dateTime2"
                         />
-                    </b-form-group>
-                </b-col>
-            </b-form-row>
-            <b-form-row>
-                <b-col>
-                    <b-form-group
+                    </BFormGroup>
+                </BCol>
+            </BFormRow>
+            <BFormRow>
+                <BCol>
+                    <BFormGroup
                         label="Jusqu'à"
                     >
-                        <b-form-input
+                        <BFormInput
                             :type="inputType"
                             v-model="dateTime2"
                             :min="dateTime1"
                         />
-                    </b-form-group>
-                </b-col>
-            </b-form-row>
-        </b-modal>
+                    </BFormGroup>
+                </BCol>
+            </BFormRow>
+        </BModal>
     </div>
 </template>
 
 <script>
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
+
+import { useModal } from "bootstrap-vue-next";
 
 import axios from "axios";
 
@@ -170,6 +172,10 @@ export default {
             type: Object,
             default: () => null
         }
+    },
+    setup: function () {
+        const { show } = useModal("prompt-period-modal");
+        return { show };
     },
     data: function () {
         return {
@@ -240,7 +246,6 @@ export default {
         displayStudent,
         storeCommit: function (fct, payload) {
             if (this.store) {
-                console.log(fct);
                 return this.store[`${fct}`](payload);
             }
 
@@ -260,7 +265,7 @@ export default {
                 || this.inputType == "month"
                 || this.inputType == "time") {
                 this.$refs.selectType.focus();
-                this.$bvModal.show("prompt-period-modal");
+                this.show();
             }
         },
         /** 

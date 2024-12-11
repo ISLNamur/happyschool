@@ -18,24 +18,24 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-row>
-        <b-col>
+    <BRow>
+        <BCol>
             <h2>Exclusion d'un élève</h2>
-        </b-col>
-    </b-row>
-    <b-row>
-        <b-col
+        </BCol>
+    </BRow>
+    <BRow>
+        <BCol
             cols="12"
             md="3"
         >
-            <b-select
+            <BFormSelect
                 text-field="display"
                 value-field="id"
                 :options="periods"
                 v-model="period"
             />
-        </b-col>
-        <b-col
+        </BCol>
+        <BCol
             sm="12"
             md="7"
         >
@@ -45,7 +45,6 @@
                 :internal-search="false"
                 :options="searchOptions"
                 @search-change="getSearchOptions"
-                :loading="searchLoading"
                 placeholder="Rechercher un étudiant"
                 select-label=""
                 selected-label="Sélectionné"
@@ -58,51 +57,44 @@
                     Aucune personne trouvée.
                 </template>
             </multiselect>
-        </b-col>
-        <b-col
+        </BCol>
+        <BCol
             cols="3"
             sm="2"
             class="mt-1 mt-md-0"
         >
-            <b-button
+            <BButton
                 :disabled="!search || addingStudent"
                 @click="addStudent"
             >
-                <b-spinner
+                <BSpinner
                     v-if="addingStudent"
                     small
                 />
                 Ajouter
-            </b-button>
-        </b-col>
-    </b-row>
-    <b-row>
-        <b-table
+            </BButton>
+        </BCol>
+    </BRow>
+    <BRow>
+        <BTable
             stripped
             hover
             :items="exclusions"
             :fields="exclusionFields"
         />
-    </b-row>
-    <b-row>
-        <b-col>
-            <b-pagination
+    </BRow>
+    <BRow>
+        <BCol>
+            <BPagination
                 :total-rows="entriesCount"
                 v-model="currentPage"
-                @change="changePage"
+                @update:model-value="changePage"
             />
-        </b-col>
-    </b-row>
+        </BCol>
+    </BRow>
 </template>
 
 <script>
-import Vue from "vue";
-import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
-import "bootstrap-vue/dist/bootstrap-vue.css";
-
-Vue.use(BootstrapVue);
-Vue.use(BootstrapVueIcons);
-
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 

@@ -18,12 +18,12 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-overlay :show="loading">
-        <b-row>
-            <b-col>
-                <b-col sm="3">
+    <BOverlay :show="loading">
+        <BRow>
+            <BCol>
+                <BCol sm="3">
                     <div class="text-center">
-                        <b-img
+                        <BImg
                             v-if="justification.student"
                             rounded
                             :src="'/static/photos/' + justification.student + '.jpg'"
@@ -31,10 +31,10 @@
                             alt="Photo de l'élève"
                         />
                     </div>
-                </b-col>
-            </b-col>
-            <b-col>
-                <b-form-group
+                </BCol>
+            </BCol>
+            <BCol>
+                <BFormGroup
                     label="Nom"
                     label-for="input-name"
                 >
@@ -58,19 +58,19 @@
                         </template>
                         <template #noOptions />
                     </multiselect>
-                </b-form-group>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-form-group label="Début">
-                    <b-input-group>
-                        <b-input
+                </BFormGroup>
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
+                <BFormGroup label="Début">
+                    <BInputGroup>
+                        <BFormInput
                             type="date"
                             v-model="justification.date_just_start"
                             @input="getRelatedAbsences"
                         />
-                        <b-select
+                        <BFormSelect
                             :options="store.periodEduc"
                             :select-size="2"
                             text-field="name"
@@ -78,18 +78,18 @@
                             v-model="justification.half_day_start"
                             @input="getRelatedAbsences"
                         />
-                    </b-input-group>
-                </b-form-group>
-            </b-col>
-            <b-col>
-                <b-form-group label="Fin">
-                    <b-input-group>
-                        <b-input
+                    </BInputGroup>
+                </BFormGroup>
+            </BCol>
+            <BCol>
+                <BFormGroup label="Fin">
+                    <BInputGroup>
+                        <BFormInput
                             type="date"
                             v-model="justification.date_just_end"
                             @input="getRelatedAbsences"
                         />
-                        <b-select
+                        <BFormSelect
                             v-model="justification.half_day_end"
                             :options="store.periodEduc"
                             :select-size="2"
@@ -97,73 +97,73 @@
                             value-field="index"
                             @input="getRelatedAbsences"
                         />
-                    </b-input-group>
-                </b-form-group>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-form-group label="Motif">
-                    <b-select
+                    </BInputGroup>
+                </BFormGroup>
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
+                <BFormGroup label="Motif">
+                    <BFormSelect
                         v-model="justification.motive"
                         :options="motiveOptions"
                         value-field="id"
                         :select-size="4"
                     />
-                </b-form-group>
-            </b-col>
-            <b-col>
-                <b-form-group label="Commentaire">
+                </BFormGroup>
+            </BCol>
+            <BCol>
+                <BFormGroup label="Commentaire">
                     <text-editor v-model="justification.comment" />
-                </b-form-group>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-form-group label="Absences concernées">
-                    <b-list-group>
-                        <b-list-group-item
+                </BFormGroup>
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
+                <BFormGroup label="Absences concernées">
+                    <BListGroup>
+                        <BListGroupItem
                             v-for="absence in relativeAbsences"
                             :key="absence.id"
                         >
                             {{ absence.date_absence }} – {{ store.periodEduc.find(p => p.id === absence.period).name }}
-                        </b-list-group-item>
-                    </b-list-group>
-                </b-form-group>
-            </b-col>
-        </b-row>
-        <b-row v-if="justification.student">
-            <b-col>
-                <b-overlay :show="submitting">
-                    <b-btn
+                        </BListGroupItem>
+                    </BListGroup>
+                </BFormGroup>
+            </BCol>
+        </BRow>
+        <BRow v-if="justification.student">
+            <BCol>
+                <BOverlay :show="submitting">
+                    <BButton
                         @click="submit"
                         variant="primary"
                     >
                         Soumettre
-                    </b-btn>
-                </b-overlay>
-            </b-col>
-            <b-col
+                    </BButton>
+                </BOverlay>
+            </BCol>
+            <BCol
                 v-if="justId !== '-1'"
-                class="text-right"
+                class="text-end"
             >
-                <b-btn
+                <BButton
                     @click="remove"
                     variant="danger"
                 >
                     Supprimer
-                </b-btn>
-            </b-col>
-        </b-row>
-        <b-row
+                </BButton>
+            </BCol>
+        </BRow>
+        <BRow
             class="mt-2"
             v-if="student"
         >
-            <b-col>
+            <BCol>
                 <absences-stat :student-id="student.matricule" />
-            </b-col>
-        </b-row>
-    </b-overlay>
+            </BCol>
+        </BRow>
+    </BOverlay>
 </template>
 
 <script>
@@ -171,6 +171,8 @@ import axios from "axios";
 
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
+
+import { useToastController } from "bootstrap-vue-next";
 
 import { studentAbsenceTeacherStore } from "./stores/index.js";
 import AbsencesStat from "./AbsencesStat.vue";
@@ -182,6 +184,10 @@ import moment from "moment";
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        return { show };
+    },
     props: {
         "justId": {
             type: String,
@@ -308,13 +314,15 @@ export default {
 
             send(url, data, token)
                 .then(() => {
-                    this.$router.push(`/overview/${data.date_just_start}/student_view/${data.student}/`,() => {
-                        this.submitting = false;
-                        this.$root.$bvToast.toast("Les données ont bien été envoyées", {
-                            variant: "success",
-                            noCloseButton: true,
+                    this.$router.push(`/overview/${data.date_just_start}/student_view/${data.student}/`)
+                        .then(() => {
+                            this.submitting = false;
+                            this.show({props: {
+                                body: "Les données ont bien été envoyées",
+                                variant: "success",
+                                noCloseButton: true,
+                            }});
                         });
-                    });
                 })
                 .catch(() =>  {
                     this.submitting = false;
@@ -336,13 +344,15 @@ export default {
                     const studentMatricule = this.justification.student;
                     axios.delete(`/student_absence_teacher/api/justification/${this.justId}/`, token)
                         .then(() => {
-                            this.$router.push(`/overview/${dateJustStart}/student_view/${studentMatricule}/`,() => {
-                                this.submitting = false;
-                                this.$root.$bvToast.toast("Les données ont bien été supprimées", {
-                                    variant: "success",
-                                    noCloseButton: true,
+                            this.$router.push(`/overview/${dateJustStart}/student_view/${studentMatricule}/`)
+                                .then(() => {
+                                    this.submitting = false;
+                                    this.show({props: {
+                                        body: "Les données ont bien été supprimées",
+                                        variant: "success",
+                                        noCloseButton: true,
+                                    }});
                                 });
-                            });
                         });
                 });
         }

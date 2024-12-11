@@ -22,6 +22,7 @@
         <app-menu
             :menu-info="menuInfo"
         />
+        <BModalOrchestrator />
         <router-view v-slot="{ Component }">
             <Transition name="fade">
                 <component :is="Component" />
@@ -49,3 +50,9 @@ export default {
     }
 };
 </script>
+
+<style>
+.b-form-group {
+    margin-bottom: 1rem;
+}
+</style>

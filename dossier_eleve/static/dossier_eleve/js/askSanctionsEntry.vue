@@ -23,12 +23,12 @@
             appear
             name="fade"
         >
-            <b-card
+            <BCard
                 :class="'px-4 mt-2 current-card '"
                 no-body
             >
-                <b-row :class="lightDisplay ? '' : 'entry-title'">
-                    <b-col>
+                <BRow :class="lightDisplay ? '' : 'entry-title'">
+                    <BCol>
                         <span :class="lightDisplay ? '' : 'h5'">
                             <a
                                 class="clickable"
@@ -37,144 +37,138 @@
                                 rel="noopener noreferrer"
                             >{{
                                 title }}</a>
-                            <b-btn
+                            <BButton
                                 variant="link"
                                 size="sm"
                                 @click="filterStudent"
                             >
-                                <b-icon icon="funnel" />
-                            </b-btn>
+                                <IBiFunnel />
+                            </BButton>
                         </span>
-                    </b-col>
-                    <b-col
+                    </BCol>
+                    <BCol
                         sm="12"
                         md="4"
                     >
-                        <div class="text-right">
+                        <div class="text-end">
                             <span v-if="store.canSetSanction">
-                                <b-icon
-                                    icon="question-circle"
+                                <IBiQuestionCircle
                                     variant="primary"
                                     v-if="!canSetSanctionDone"
-                                    v-b-tooltip.hover
-                                    title="La date de sanction doit être antérieure ou égale à aujourd'hui."
+                                    v-b-tooltip.hover="'La date de sanction doit être antérieure ou égale à aujourd\'hui.'"
                                 />
-                                <b-form-checkbox
+                                <BFormCheckbox
                                     :disabled="!canSetSanctionDone"
-                                    @change="setSanctionDone"
+                                    @update:model-value="setSanctionDone"
                                 >
                                     Sanction faite ?
-                                </b-form-checkbox>
+                                </BFormCheckbox>
                             </span>
                         </div>
-                    </b-col>
-                    <b-col
+                    </BCol>
+                    <BCol
                         sm="12"
                         md="5"
                     >
-                        <div class="text-right">
+                        <div class="text-end">
                             <span v-if="canEditSanction">
-                                <b-btn
+                                <BButton
                                     v-if="outdated"
                                     variant="light"
                                     size="sm"
                                     class="card-link"
                                     v-b-modal="`move-sanction-date-${rowData.id}`"
-                                    v-b-tooltip.hover
-                                    title="Déplacer la sanction (date et/ou type de sanction)"
+                                    v-b-tooltip.hover="'Déplacer la sanction (date et/ou type de sanction)'"
                                 >
-                                    <b-icon icon="arrow-right-square" />
-                                </b-btn>
-                                <b-btn
+                                    <IBiArrowRightSquare />
+                                </BButton>
+                                <BButton
                                     v-if="rowData.date_sanction"
                                     variant="light"
                                     size="sm"
                                     class="card-link"
                                     :to="`/warn/${rowData.id}/`"
                                 >
-                                    <b-iconstack>
-                                        <b-icon
-                                            icon="file-earmark-post-fill"
-                                            stacked
-                                        />
-                                        <b-icon
-                                            v-if="rowData.notified"
-                                            icon="check"
-                                            color="green"
-                                            scale="1.8"
-                                            stacked
-                                        />
-                                    </b-iconstack>
-                                </b-btn>
-                                <b-btn
+                                    <IBiFileEarmarkCheck
+                                        v-if="rowData.notified"
+                                        color="green"
+                                    />
+                                    <IBiFileEarmark
+                                        v-else
+                                        color="blue"
+                                    />
+                                </BButton>
+                                <BButton
                                     variant="light"
                                     size="sm"
                                     @click="editEntry"
                                     class="card-link"
-                                ><b-icon
-                                    icon="pencil-square"
+                                ><IBiPencilSquare
                                     color="green"
                                     class="align-text-bottom"
-                                /></b-btn>
-                                <b-btn
+                                /></BButton>
+                                <BButton
                                     variant="light"
                                     size="sm"
                                     @click="deleteEntry"
                                     class="card-link"
-                                ><b-icon
-                                    icon="trash-fill"
+                                ><IBiTrashFill
                                     color="red"
                                     class="align-text-bottom"
-                                /></b-btn>
+                                /></BButton>
                             </span>
                         </div>
-                    </b-col>
-                </b-row>
-                <b-row
+                    </BCol>
+                </BRow>
+                <BRow
                     v-if="!lightDisplay"
                     class="entry-subtitle"
                 >
                     <em>{{ subtitle }}</em>
-                </b-row>
-                <b-row>
-                    <b-col
+                </BRow>
+                <BRow>
+                    <BCol
                         :md="lightDisplay ? '6' : '2'"
                         class="category"
                     >
                         {{ category }}
-                    </b-col>
-                    <b-col
+                    </BCol>
+                    <BCol
                         v-if="store.settings.enable_disciplinary_council && !lightDisplay"
                         md="2"
                         class="text-center"
                     >
                         {{ date_council }}
-                    </b-col>
-                    <b-col
+                    </BCol>
+                    <BCol
                         md="2"
                         class="text-center"
                     >
                         {{ date_sanction }}
-                    </b-col>
-                    <b-col
+                    </BCol>
+                    <BCol
                         v-if="!lightDisplay"
                         class="current-data mb-1 mr-1"
                     >
                         <span v-html="comment" />
-                        <b-btn
+                        <BButton
                             class="move-up"
                             size="sm"
                             variant="light"
                             v-if="comment.length > 100"
                             @click="expand = !expand"
                         >
-                            <b-icon
+                            <IBiChevronDoubleUp
                                 class="align-text-top"
-                                :icon="expand ? 'chevron-double-up' : 'chevron-double-down'"
+                                v-if="expand"
                             />
-                        </b-btn>
-                    </b-col>
-                </b-row>
+                            <IBiChevronDoubleDown
+                                class="align-text-top"
+                                v-else
+                            />
+                        </BButton>
+                    </BCol>
+                </BRow>
                 <b-modal
                     :id="`move-sanction-date-${rowData.id}`"
                     size="sm"
@@ -183,18 +177,18 @@
                     cancel-title="Annuler"
                     @ok="$emit('update-sanction', nextSanctionData)"
                 >
-                    <b-form-input
+                    <BFormInput
                         type="date"
                         v-model="nextDate"
                     />
-                    <b-select
+                    <BFormSelect
                         :options="sanctionOptions"
                         text-field="sanction_decision"
                         value-field="id"
                         v-model="nextSanction"
                     />
                 </b-modal>
-            </b-card>
+            </BCard>
         </transition>
     </div>
 </template>

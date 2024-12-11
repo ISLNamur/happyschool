@@ -18,25 +18,25 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-container>
-        <b-row>
-            <b-col>
+    <BContainer>
+        <BRow>
+            <BCol>
                 <h2>
                     {{ id < 0 ? "Ajouter un cas" : "Modifier un cas" }}
                 </h2>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-btn to="/">
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
+                <BButton to="/">
                     Retour à la liste
-                </b-btn>
-            </b-col>
-        </b-row>
-        <b-row class="mt-2">
-            <b-col sm="3">
+                </BButton>
+            </BCol>
+        </BRow>
+        <BRow class="mt-2">
+            <BCol sm="3">
                 <div class="text-center">
-                    <b-img
+                    <BImg
                         v-if="name.matricule"
                         rounded
                         :src="'/static/photos/' + name.matricule + '.jpg'"
@@ -44,12 +44,12 @@
                         alt="Photo de l'élève"
                     />
                 </div>
-            </b-col>
-            <b-col>
-                <b-form @submit="submit">
-                    <b-form-row>
-                        <b-col sm="8">
-                            <b-form-group
+            </BCol>
+            <BCol>
+                <BForm @submit="submit">
+                    <BFormRow>
+                        <BCol sm="8">
+                            <BFormGroup
                                 label="Nom"
                                 label-for="input-name"
                                 :state="inputStates.name"
@@ -76,25 +76,25 @@
                                 <template #invalid-feedback>
                                     {{ errorMsg('name') }}
                                 </template>
-                            </b-form-group>
-                        </b-col>
-                        <b-col sm="4">
-                            <b-form-group
+                            </BFormGroup>
+                        </BCol>
+                        <BCol sm="4">
+                            <BFormGroup
                                 label="Matricule"
                                 label-for="input-matricule"
                             >
-                                <b-form-input
+                                <BFormInput
                                     id="input-matricule"
                                     type="text"
                                     v-model="name.matricule"
                                     readonly
                                 />
-                            </b-form-group>
-                        </b-col>
-                    </b-form-row>
-                    <b-form-row>
-                        <b-col>
-                            <b-form-group
+                            </BFormGroup>
+                        </BCol>
+                    </BFormRow>
+                    <BFormRow>
+                        <BCol>
+                            <BFormGroup
                                 label="Demandeur"
                                 label-for="input-demandeur"
                                 :state="inputStates.demandeur"
@@ -121,50 +121,50 @@
                                 <template #invalid-feedback>
                                     {{ errorMsg('demandeur') }}
                                 </template>
-                            </b-form-group>
-                        </b-col>
-                    </b-form-row>
-                    <b-form-row class="mb-2">
-                        <b-col>
-                            <b-form-group
+                            </BFormGroup>
+                        </BCol>
+                    </BFormRow>
+                    <BFormRow class="mb-2">
+                        <BCol>
+                            <BFormGroup
                                 description="Mettre en évidence les informations importantes sur le long terme (décès d'un parent, dyslexie, anorexie, idées noires...)."
                             >
-                                <b-form-checkbox v-model="form.important">
+                                <BFormCheckbox v-model="form.important">
                                     Marquer comme important.
-                                </b-form-checkbox>
-                            </b-form-group>
-                        </b-col>
-                    </b-form-row>
-                    <b-form-row>
-                        <b-col>
-                            <b-form-group label="Type d'info">
-                                <b-form-radio-group
+                                </BFormCheckbox>
+                            </BFormGroup>
+                        </BCol>
+                    </BFormRow>
+                    <BFormRow>
+                        <BCol>
+                            <BFormGroup label="Type d'info">
+                                <BFormRadioGroup
                                     id="info-or-sanction"
                                     v-model="infoOrSanction"
                                     :disabled="id >= 0 ? true : false"
                                 >
-                                    <b-form-radio value="info">
+                                    <BFormRadio value="info">
                                         Non disciplinaire
-                                    </b-form-radio>
-                                    <b-form-radio
+                                    </BFormRadio>
+                                    <BFormRadio
                                         value="sanction-decision"
                                         :disabled="!store.canSetSanction"
                                     >
                                         Disciplinaire
-                                    </b-form-radio>
-                                </b-form-radio-group>
-                            </b-form-group>
-                        </b-col>
-                    </b-form-row>
+                                    </BFormRadio>
+                                </BFormRadioGroup>
+                            </BFormGroup>
+                        </BCol>
+                    </BFormRow>
                     <div v-if="infoOrSanction == 'info'">
-                        <b-form-row>
-                            <b-col>
-                                <b-form-group
+                        <BFormRow>
+                            <BCol>
+                                <BFormGroup
                                     label="Info"
                                     label-for="input-info"
                                     :state="inputStates.info_id"
                                 >
-                                    <b-form-select
+                                    <BFormSelect
                                         id="input-info"
                                         v-model="form.info_id"
                                         :options="infoOptions"
@@ -177,23 +177,23 @@
                                                 Choisissez un type d'info
                                             </option>
                                         </template>
-                                    </b-form-select>
+                                    </BFormSelect>
                                     <template #invalid-feedback>
                                         {{ errorMsg('info_id') }}
                                     </template>
-                                </b-form-group>
-                            </b-col>
-                        </b-form-row>
+                                </BFormGroup>
+                            </BCol>
+                        </BFormRow>
                     </div>
                     <div v-if="infoOrSanction == 'sanction-decision'">
-                        <b-form-row>
-                            <b-col sm="7">
-                                <b-form-group
+                        <BFormRow>
+                            <BCol sm="7">
+                                <BFormGroup
                                     label="Info disciplinaire"
                                     label-for="input-info"
                                     :state="inputStates.sanction_decision_id"
                                 >
-                                    <b-form-select
+                                    <BFormSelect
                                         id="input-info"
                                         v-model="form.sanction_decision_id"
                                         :options="sanctionDecisionOptions"
@@ -206,17 +206,17 @@
                                                 Choisissez dans la liste
                                             </option>
                                         </template>
-                                    </b-form-select>
+                                    </BFormSelect>
                                     <template #invalid-feedback>
                                         {{ errorMsg('sanction_decision_id') }}
                                     </template>
-                                </b-form-group>
-                                <b-form-group
+                                </BFormGroup>
+                                <BFormGroup
                                     label="Date de la sanction"
                                     label-for="input-date-sanction"
                                     :state="inputStates.date_sanction"
                                 >
-                                    <b-form-input
+                                    <BFormInput
                                         id="input-date-sanction"
                                         type="date"
                                         v-model="form.date_sanction"
@@ -224,35 +224,35 @@
                                     <template #invalid-feedback>
                                         {{ errorMsg('date_sanction') }}
                                     </template>
-                                </b-form-group>
-                                <b-form-group
+                                </BFormGroup>
+                                <BFormGroup
                                     v-if="form.sanction_faite !== null"
                                     label-for="input-sanction-faite"
                                 >
-                                    <b-form-checkbox
+                                    <BFormCheckbox
                                         id="input-sanction-faite"
                                         v-model="form.sanction_faite"
                                     >
                                         Sanction faite ?
-                                    </b-form-checkbox>
-                                </b-form-group>
-                            </b-col>
-                            <b-col sm="5">
-                                <b-list-group>
-                                    <b-list-group-item
+                                    </BFormCheckbox>
+                                </BFormGroup>
+                            </BCol>
+                            <BCol sm="5">
+                                <BListGroup>
+                                    <BListGroupItem
                                         class="d-flex justify-content-between align-items-center"
                                         v-for="(val, index) in stats"
                                         :key="index"
                                     >
                                         <strong>{{ val.display }} :</strong> {{ val.value }}
-                                    </b-list-group-item>
-                                </b-list-group>
-                            </b-col>
-                        </b-form-row>
+                                    </BListGroupItem>
+                                </BListGroup>
+                            </BCol>
+                        </BFormRow>
                     </div>
-                    <b-form-row v-if="infoOrSanction">
-                        <b-col>
-                            <b-form-group
+                    <BFormRow v-if="infoOrSanction">
+                        <BCol>
+                            <BFormGroup
                                 label="Commentaires"
                                 label-for="input-comment"
                                 :state="inputStates.explication_commentaire"
@@ -264,12 +264,12 @@
                                 <template #invalid-feedback>
                                     {{ errorMsg('explication_commentaire') }}
                                 </template>
-                            </b-form-group>
-                            <b-form-group
+                            </BFormGroup>
+                            <BFormGroup
                                 description="Ajouter un ou des fichiers. Accepte uniquement des fichiers images et pdf."
                                 label="Fichier(s)"
                             >
-                                <b-form-file
+                                <BFormFile
                                     multiple
                                     accept=".pdf, .jpg, .png, jpeg"
                                     v-model="attachments"
@@ -280,7 +280,7 @@
                                     plain
                                     @input="addFiles"
                                 />
-                                <b-list-group
+                                <BListGroup
                                     v-for="(item, index) in uploadedFiles"
                                     :key="index"
                                 >
@@ -293,20 +293,20 @@
                                         @setdata="setFileData(index, $event)"
                                         remove-media
                                     />
-                                </b-list-group>
-                            </b-form-group>
-                        </b-col>
-                    </b-form-row>
-                    <b-form-row
+                                </BListGroup>
+                            </BFormGroup>
+                        </BCol>
+                    </BFormRow>
+                    <BFormRow
                         v-if="infoOrSanction == 'info'"
                         class="mb-2"
                     >
-                        <b-col>
-                            <b-form-group
+                        <BCol>
+                            <BFormGroup
                                 v-if="visibilityOptions.length > 0"
                                 label="Donner la visibilité à :"
                             >
-                                <b-form-checkbox-group
+                                <BFormCheckboxGroup
                                     stacked
                                     v-model="form.visible_by_groups"
                                     name="visible_by_groups"
@@ -314,28 +314,28 @@
                                     value-field="id"
                                     text-field="text"
                                 />
-                            </b-form-group>
-                            <b-form-checkbox
+                            </BFormGroup>
+                            <BFormCheckbox
                                 v-model="form.send_to_teachers"
                                 :disabled="!store.canSetSanction"
                             >
                                 Envoyer l'info par courriel aux professeurs de la classe de l'élève (les fichiers seront
                                 joints).
-                            </b-form-checkbox>
-                        </b-col>
-                    </b-form-row>
-                    <b-btn
+                            </BFormCheckbox>
+                        </BCol>
+                    </BFormRow>
+                    <BButton
                         variant="primary"
                         v-if="form.info_id || form.sanction_decision_id"
                         type="submit"
                         :disabled="sending"
                     >
                         Soumettre
-                    </b-btn>
-                </b-form>
-            </b-col>
-        </b-row>
-    </b-container>
+                    </BButton>
+                </BForm>
+            </BCol>
+        </BRow>
+    </BContainer>
 </template>
 
 <script>
@@ -350,6 +350,8 @@ Moment.locale("fr");
 
 import axios from "axios";
 
+import { useToastController } from "bootstrap-vue-next";
+
 import FileUpload from "@s:core/js/common/file_upload.vue";
 
 import { dossierEleveStore } from "./stores/dossier_eleve.js";
@@ -357,6 +359,10 @@ import { dossierEleveStore } from "./stores/dossier_eleve.js";
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        return { show };
+    },
     props: {
         "id": {
             type: String,
@@ -539,11 +545,12 @@ export default {
 
             send.then(() => {
                 this.sending = false;
-                this.$router.push("/", () => {
-                    this.$root.$bvToast.toast("Les données ont bien été envoyées", {
+                this.$router.push("/").then(() => {
+                    this.show({props: {
+                        body: "Les données ont bien été envoyées",
                         variant: "success",
                         noCloseButton: true,
-                    });
+                    }});
                 });
             }).catch(function (error) {
                 this.sending = false;

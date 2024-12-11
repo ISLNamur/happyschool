@@ -23,58 +23,58 @@
             class="loading"
             v-if="!loaded"
         />
-        <b-container v-if="loaded">
-            <b-row>
+        <BContainer v-if="loaded">
+            <BRow>
                 <h2>Dossier des élèves</h2>
-            </b-row>
-            <b-row
+            </BRow>
+            <BRow
                 class="mb-2"
                 v-if="canAskSanction"
             >
-                <b-nav tabs>
-                    <b-nav-item
+                <BNav tabs>
+                    <BNavItem
                         active
                         href="/dossier_eleve/"
                     >
                         Dossier des élèves
-                    </b-nav-item>
-                    <b-nav-item href="/dossier_eleve/ask_sanctions">
+                    </BNavItem>
+                    <BNavItem href="/dossier_eleve/ask_sanctions">
                         <span class="text-danger">Demandes de sanction</span>
                         <span v-if="store.canSetSanction">
-                            <b-badge>{{ askSanctionsCount }}</b-badge>
-                            <b-badge variant="warning">{{ askSanctionsNotDoneCount }}</b-badge>
+                            <BBadge>{{ askSanctionsCount }}</BBadge>
+                            <BBadge variant="warning">{{ askSanctionsNotDoneCount }}</BBadge>
                         </span>
-                    </b-nav-item>
-                </b-nav>
-            </b-row>
-            <b-row>
-                <b-col
+                    </BNavItem>
+                </BNav>
+            </BRow>
+            <BRow>
+                <BCol
                     cols="12"
                     lg="3"
                 >
-                    <b-form-group>
+                    <BFormGroup>
                         <div>
-                            <b-btn
+                            <BButton
                                 variant="primary"
                                 to="/new/"
                                 class="w-100"
                                 v-if="store.canAddCas"
                             >
-                                <b-icon icon="plus" />
+                                <IBiPlus />
                                 Nouveau cas
-                            </b-btn>
-                            <b-btn
+                            </BButton>
+                            <BButton
                                 variant="secondary"
                                 @click="openDynamicModal('export-modal')"
                                 class="w-100 mt-1"
                             >
-                                <b-icon icon="file-earmark-text" />
+                                <IBiFileEarmarkText />
                                 Export
-                            </b-btn>
+                            </BButton>
                         </div>
-                    </b-form-group>
-                </b-col>
-                <b-col>
+                    </BFormGroup>
+                </BCol>
+                <BCol>
                     <filters
                         app="dossier_eleve"
                         model="cas_eleve"
@@ -84,13 +84,13 @@
                         :show-search="showFilters"
                         @toggle-search="showFilters = !showFilters"
                     />
-                </b-col>
-            </b-row>
-            <b-pagination
+                </BCol>
+            </BRow>
+            <BPagination
                 class="mt-1"
                 :total-rows="entriesCount"
                 v-model="currentPage"
-                @change="changePage"
+                @update:model-value="changePage"
                 :per-page="20"
             />
             <cas-eleve-entry
@@ -108,25 +108,21 @@
                 :entry="currentEntry"
                 :entries-count="entriesCount"
             />
-            <b-pagination
+            <BPagination
                 class="mt-1"
                 :total-rows="entriesCount"
                 v-model="currentPage"
-                @change="changePage"
+                @update:model-value="changePage"
                 :per-page="20"
             />
-        </b-container>
+        </BContainer>
     </div>
 </template>
 
 <script>
-import Vue from "vue";
-import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
-import "bootstrap-vue/dist/bootstrap-vue.css";
-Vue.use(BootstrapVue);
-Vue.use(BootstrapVueIcons);
-
 import axios from "axios";
+
+import { useModalController } from "bootstrap-vue-next";
 
 import Filters from "@s:core/js/common/filters_form.vue";
 import {getFilters} from "@s:core/js/common/filters.js";
@@ -138,6 +134,10 @@ import { dossierEleveStore } from "./stores/dossier_eleve.js";
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
+    setup: function () {
+        const { confirm } = useModalController();
+        return { confirm };
+    },
     data: function () {
         return {
             menuInfo: {},
@@ -193,14 +193,15 @@ export default {
             this.loadEntries();
         },
         askDelete: function (entry) {
-            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer l'entrée ?",{
+            this.confirm({props: {
+                body: "Êtes-vous sûr de vouloir supprimer l'entrée ?",
                 centered: true,
                 buttonSize: "sm",
                 okVariant: "danger",
                 okTitle: "Oui",
                 cancelTitle: "Annuler",
-            })
-                .then(remove => {
+            }})
+                .then((remove) => {
                     if (!remove) return;
 
                     axios.delete(`/dossier_eleve/api/cas_eleve/${entry.id}/`, token)

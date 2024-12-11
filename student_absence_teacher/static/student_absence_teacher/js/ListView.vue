@@ -18,10 +18,10 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-row>
-        <b-col>
-            <b-overlay :show="loading">
-                <b-table
+    <BRow>
+        <BCol>
+            <BOverlay :show="loading">
+                <BTable
                     hover
                     bordered
                     :items="absence_count"
@@ -31,28 +31,29 @@
                 >
                     <template #head(classe)="">
                         <div class="d-flex justify-content-between">
-                            <b-button
+                            <BButton
                                 v-b-toggle.other-options
                                 variant="primary"
-                                class="mr-1"
                             >
-                                <b-icon icon="grid1x2" />
-                            </b-button>
-
-                            <b-form-group label-for="filterInput">
-                                <b-form-input
-                                    v-model="filter"
-                                    type="search"
-                                    id="filterInput"
-                                    placeholder="Filtrer par classe"
-                                />
-                            </b-form-group>
+                                <IBiGear />
+                            </BButton>
+                            <BFormInput
+                                v-model="filter"
+                                type="search"
+                                id="filterInput"
+                                placeholder="Filtrer par classe"
+                                class="ms-1"
+                            />
                         </div>
                     </template>
                     <template #cell(classe)="data">
-                        <b-link :to="`/overview/${date}/class_view/${data.item.classe__id}/`">
+                        <BLink
+                            underline-offset="3"
+                            underline-variant="info"
+                            :to="`/overview/${date}/class_view/${data.item.classe__id}/`"
+                        >
                             {{ data.value }}
-                        </b-link>
+                        </BLink>
                     </template>
                     <template #cell()="data">
                         <span v-if="data.value.teacher_count >= 0">
@@ -67,72 +68,73 @@
                             <span v-else>-</span>
                         </span>
                     </template>
-                </b-table>
-            </b-overlay>
-        </b-col>
-    </b-row>
-    <b-sidebar
+                </BTable>
+            </BOverlay>
+        </BCol>
+    </BRow>
+    <BModal
         id="other-options"
         title="Options de visualisation"
+        ok-only
         right
         shadow
     >
-        <b-form-group
+        <BFormGroup
             label="Vue horaire"
             v-slot="{ ariaDescribedby }"
             class="ml-1"
         >
-            <b-form-radio-group
+            <BFormRadioGroup
                 id="point-of-view-radio"
                 v-model="pointOfView"
                 :options="optionsPointOfView"
                 :aria-describedby="ariaDescribedby"
                 button-variant="outline-primary"
                 name="point-of-view-radio"
-                @change="get_absence_count()"
+                @update:model-value="get_absence_count()"
                 buttons
             />
-        </b-form-group>
-        <b-form-group
+        </BFormGroup>
+        <BFormGroup
             label="Liste des classes"
             v-slot="{ ariaDescribedby }"
             class="ml-1"
         >
-            <b-form-radio-group
+            <BFormRadioGroup
                 id="class-list-type-radio"
                 v-model="classListType"
                 :options="optionsClassListType"
                 :aria-describedby="ariaDescribedby"
                 button-variant="outline-primary"
                 name="class-list-type-radio"
-                @change="get_absence_count()"
+                @update:model-value="get_absence_count()"
                 buttons
             />
-        </b-form-group>
-        <b-form-group
+        </BFormGroup>
+        <BFormGroup
             v-if="isProecoActivated"
             label="Export vers ProEco"
             class="ml-1"
         >
-            <b-dropdown
+            <BDropdown
                 text="Export"
                 variant="outline-secondary"
             >
-                <b-dropdown-item
+                <BDropdownItem
                     v-for="p in educatorPeriods"
                     :key="p.id"
                     :href="`/student_absence_teacher/api/export_selection/?page_size=2000&date_absence=${date}&period__name=${p.name}&status=A${exportOwnClasses}`"
                 >
                     {{ p.name }}
-                </b-dropdown-item>
-                <b-dropdown-item
+                </BDropdownItem>
+                <BDropdownItem
                     :href="`/student_absence_teacher/api/export_selection/?page_size=2000&date_absence=${date}&status=A${exportOwnClasses}`"
                 >
                     Toute la journée
-                </b-dropdown-item>
-            </b-dropdown>
-        </b-form-group>
-    </b-sidebar>
+                </BDropdownItem>
+            </BDropdown>
+        </BFormGroup>
+    </BModal>
 </template>
 
 <script>
@@ -197,6 +199,7 @@ export default {
         },
         get_absence_count: function () {
             this.loading = true;
+            this.absence_count = [];
             this.getPeriods();
             axios.get(`/student_absence_teacher/api/count_absence/${this.date}/${this.pointOfView}/${this.classListType}/`)
                 .then(resp => {

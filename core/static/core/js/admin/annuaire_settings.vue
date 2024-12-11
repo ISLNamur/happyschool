@@ -21,97 +21,102 @@
     <div>
         <h4>Annuaire</h4>
         <br>
-        <b-row>
-            <b-col>
+        <BRow>
+            <BCol>
                 <h5>Gestion des accès aux données</h5>
-            </b-col>
-        </b-row>
+            </BCol>
+        </BRow>
         <div
             v-for="permission in permissions"
             :key="permission.title"
         >
-            <b-row>
-                <b-col>
-                    <b-card
+            <BRow>
+                <BCol>
+                    <BCard
                         no-body
                         class="mb-2"
                     >
-                        <b-card-header>
+                        <BCardHeader>
                             {{ permission.title }}
-                        </b-card-header>
-                        <b-list-group flush>
-                            <b-list-group-item
+                        </BCardHeader>
+                        <BListGroup flush>
+                            <BListGroupItem
                                 v-for="group in permission.canSee"
                                 :key="group.id"
                             >
                                 {{ group.name }}
-                                <b-btn
+                                <BButton
                                     variant="light"
                                     class="float-right"
                                     size="sm"
                                     @click="deleteGroup(permission.permissionName, group)" 
                                 >
-                                    <b-icon
-                                        icon="trash-fill"
-                                        variant="danger"
+                                    <IBiTrashFill
+                                        color="red"
                                     />
-                                </b-btn>
-                            </b-list-group-item>
-                        </b-list-group>
-                        <b-card-body body-bg-variant="light">
-                            <b-form-group label="Sélectionner un groupe dans la liste et cliquer sur 'Ajouter'">
-                                <b-input-group>
-                                    <b-form-select
+                                </BButton>
+                            </BListGroupItem>
+                        </BListGroup>
+                        <BcardBody body-bg-variant="light">
+                            <BFormGroup label="Sélectionner un groupe dans la liste et cliquer sur 'Ajouter'">
+                                <BInputGroup>
+                                    <BFormSelect
                                         v-model="permission.selected"
                                         :options="permission.availableGroups"
                                         value-field="id"
                                         text-field="name"
                                     />
-                                    <b-input-group-append>
-                                        <b-button
+                                    <template #append>
+                                        <BButton
                                             size="sm"
                                             text="Button"
                                             variant="success"
                                             @click="sendPermission(permission.permissionName)"
                                         >
                                             Ajouter
-                                        </b-button>
-                                    </b-input-group-append>
-                                </b-input-group>
-                            </b-form-group>
-                        </b-card-body>
-                    </b-card>
-                </b-col>
-            </b-row>
+                                        </BButton>
+                                    </template>
+                                </BInputGroup>
+                            </BFormGroup>
+                        </BcardBody>
+                    </BCard>
+                </BCol>
+            </BRow>
         </div>
-        <b-row>
-            <b-col>
+        <BRow>
+            <BCol>
                 <h5>Afficher les identifiants</h5>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-form-group 
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
+                <BFormGroup 
                     description=" Afficher les champs utilisateur/mot de passe dans la fiche info et ainsi que la liste des mots de passe des élèves par classe"
                 >
-                    <b-form-checkbox 
+                    <BFormCheckbox 
                         v-model="credentials"
-                        @change="sendCredentials"
+                        @update:model-value="sendCredentials"
                     >
                         Afficher les champs utilisateur/mot de passe
-                    </b-form-checkbox>
-                </b-form-group>
-            </b-col>
-        </b-row>
+                    </BFormCheckbox>
+                </BFormGroup>
+            </BCol>
+        </BRow>
     </div>
 </template>
 
 <script>
 import axios from "axios";
 
+import { useToastController } from "bootstrap-vue-next";
+
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        return { show };
+    },
     data: function() {
         return {
             /** A list of permissions which includes:
@@ -170,10 +175,11 @@ export default {
             this.credentials = !this.credentials;
             axios.put("/annuaire/api/settings/1/",{ show_credentials: this.credentials },token)
                 .then(() => {
-                    this.$bvToast.toast("Sauvegardé.", {
+                    this.show({props: {
+                        body: "Sauvegardé.",
                         variant: "success",
                         noCloseButton: true
-                    });
+                    }});
                 });
         },
         /** Add a group in a permission.
@@ -193,10 +199,11 @@ export default {
                     permission.canSee = canSeeData.map(id => this.groups.find(g => g.id == id));
                     permission.availableGroups = permission.availableGroups.filter(aG => aG.id != permission.selected);
                     permission.selected = null;
-                    this.$bvToast.toast("Sauvegardé.", {
+                    this.show({props: {
+                        body: "Sauvegardé.",
                         variant: "success",
                         noCloseButton: true
-                    });
+                    }});
                 })
                 .catch(err => {
                     alert(err);

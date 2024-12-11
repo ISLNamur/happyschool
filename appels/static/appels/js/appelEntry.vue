@@ -4,12 +4,12 @@
             appear
             name="fade"
         >
-            <b-card
+            <BCard
                 class="px-4 mt-2 current-card"
                 no-body
             >
-                <b-row>
-                    <b-col>
+                <BRow>
+                    <BCol>
                         <h5>
                             <a
                                 v-if="rowData.is_student"
@@ -17,23 +17,21 @@
                                 @click="$emit('showInfo')"
                             >{{ title }}</a>
                             <span v-else>{{ title }}</span>
-                            <b-btn
+                            <BButton
                                 v-if="rowData.is_student"
                                 variant="link"
                                 size="sm"
                                 @click="filterStudent"
                             >
-                                <b-icon
-                                    icon="funnel"
-                                />
-                            </b-btn>
+                                <IBiFunnel />
+                            </BButton>
                         </h5>
-                    </b-col>
-                    <b-col
+                    </BCol>
+                    <BCol
                         sm="3"
-                        class="text-right"
+                        class="text-end"
                     >
-                        <b-btn
+                        <BButton
                             @click="$emit('processing')"
                             :to="'/edit/' + rowData.id + '/1'"
                             v-if="!this.rowData.is_traiter"
@@ -41,66 +39,60 @@
                             size="sm"
                         >
                             Traiter l'appel
-                        </b-btn>
-                        <b-link
+                        </BButton>
+                        <BLink
                             :to="'/edit/' + rowData.id + '/0'"
                             class="card-link"
                         >
-                            <b-icon
-                                icon="pencil-square"
-                                variant="success"
-                            />
-                        </b-link>
-                        <b-link
+                            <IBiPencilSquare color="green" />
+                        </BLink>
+                        <BLink
                             @click="$emit('delete')"
                             class="card-link"
                         >
-                            <b-icon
-                                icon="trash-fill"
-                                variant="danger"
-                            />
-                        </b-link>
-                    </b-col>
-                </b-row>
-                <b-row class="entry-subtitle">
+                            <IBiTrashFill color="red" />
+                        </BLink>
+                    </BCol>
+                </BRow>
+                <BRow class="entry-subtitle">
                     <em>{{ subtitle }}</em>
-                </b-row>
-                <b-row class="text-center">
-                    <b-col
+                </BRow>
+                <BRow class="text-center">
+                    <BCol
                         md="2"
                         class="current-data"
                     >
                         {{ rowData.object.display }}
-                    </b-col>
-                    <b-col
+                    </BCol>
+                    <BCol
                         md="2"
                         class="current-data"
                     >
                         {{ rowData.motive.display }}
-                    </b-col>
-                    <b-col
+                    </BCol>
+                    <BCol
                         md="1"
                         class="current-data"
                     >
                         {{ motif_start }}
-                    </b-col>
-                    <b-col
+                    </BCol>
+                    <BCol
                         md="1"
                         class="current-data"
                     >
                         {{ motif_end }}
-                    </b-col>
-                    <b-col
+                    </BCol>
+                    <BCol
                         md="2"
                         class="current-data"
                     >
                         {{ appel }}
-                    </b-col>
-                    <b-col class="current-data">
+                    </BCol>
+                    <BCol class="current-data">
                         {{ rowData.commentaire }}
-                    </b-col>
-                </b-row>
-            </b-card>
+                    </BCol>
+                </BRow>
+            </BCard>
         </transition>
     </div>
 </template>

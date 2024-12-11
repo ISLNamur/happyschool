@@ -18,63 +18,59 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-overlay :show="loading">
-        <b-card class="mt-1">
-            <b-row>
-                <b-col>
+    <BOverlay :show="loading">
+        <BCard class="mt-1">
+            <BRow>
+                <BCol>
                     <strong>{{ councilStatement ? councilStatement.branch : "" }}</strong>
-                </b-col>
-                <b-col
+                </BCol>
+                <BCol
                     cols="2"
-                    class="text-right"
+                    class="text-end"
                 >
-                    <b-btn
+                    <BButton
                         variant="light"
                         size="sm"
                         @click="editing = true"
                         class="card-link mb-1"
                     >
-                        <b-icon
-                            icon="pencil-square"
+                        <IBiPencilSquare
                             variant="success"
                         />
-                    </b-btn>
-                    <b-btn
+                    </BButton>
+                    <BButton
                         variant="light"
                         size="sm"
                         @click="$emit('remove')"
                         class="card-link"
                     >
-                        <b-icon
-                            variant="danger"
-                            icon="trash-fill"
-                        />
-                    </b-btn>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
+                        <IBiTrashFill variant="danger" />
+                    </BButton>
+                </BCol>
+            </BRow>
+            <BRow>
+                <BCol>
                     <span class="text-muted">Ressources</span>
                     <div v-html="resources" />
-                </b-col>
-                <b-col>
+                </BCol>
+                <BCol>
                     <span class="text-muted">Difficultés</span>
                     <div v-html="difficulties" />
-                </b-col>
-                <b-col>
+                </BCol>
+                <BCol>
                     <span class="text-muted">Autres</span>
                     <div v-html="others" />
-                </b-col>
-            </b-row>
+                </BCol>
+            </BRow>
             <b-modal
                 v-model="editing"
                 size="xl"
                 title="Éditer"
                 ok-only
             >
-                <b-form-row>
-                    <b-col>
-                        <b-form-group
+                <BFormRow>
+                    <BCol>
+                        <BFormGroup
                             label="Branche"
                             label-cols="2"
                         >
@@ -97,33 +93,33 @@
                                 </template>
                                 <template #noOptions />
                             </multiselect>
-                        </b-form-group>
-                    </b-col>
-                </b-form-row>
-                <b-form-row>
-                    <b-col>
-                        <b-form-group label="Ressources">
+                        </BFormGroup>
+                    </BCol>
+                </BFormRow>
+                <BFormRow>
+                    <BCol>
+                        <BFormGroup label="Ressources">
                             <text-editor v-model="resources" />
-                        </b-form-group>
-                    </b-col>
-                </b-form-row>
-                <b-form-row>
-                    <b-col>
-                        <b-form-group label="Difficultés">
+                        </BFormGroup>
+                    </BCol>
+                </BFormRow>
+                <BFormRow>
+                    <BCol>
+                        <BFormGroup label="Difficultés">
                             <text-editor v-model="difficulties" />
-                        </b-form-group>
-                    </b-col>
-                </b-form-row>
-                <b-form-row>
-                    <b-col>
-                        <b-form-group label="Autres">
+                        </BFormGroup>
+                    </BCol>
+                </BFormRow>
+                <BFormRow>
+                    <BCol>
+                        <BFormGroup label="Autres">
                             <text-editor v-model="others" />
-                        </b-form-group>
-                    </b-col>
-                </b-form-row>
+                        </BFormGroup>
+                    </BCol>
+                </BFormRow>
             </b-modal>
-        </b-card>
-    </b-overlay>
+        </BCard>
+    </BOverlay>
 </template>
 
 <script>

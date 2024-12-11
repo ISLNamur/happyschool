@@ -19,7 +19,7 @@
 
 <template>
     <div>
-        <b-modal
+        <BModal
             size="xl"
             title="Nouvelle demande"
             ok-title="Soumettre"
@@ -29,22 +29,22 @@
             @ok="askSanction"
             @hidden="resetModal"
         >
-            <b-row>
-                <b-col sm="4">
+            <BRow>
+                <BCol sm="4">
                     <div>
-                        <b-img
+                        <BImg
                             rounded
                             :src="'/static/photos/' + name.matricule + '.jpg'"
                             fluid
                             alt="Photo de l'élève"
                         />
                     </div>
-                </b-col>
-                <b-col>
-                    <b-form>
-                        <b-form-row>
-                            <b-col sm="8">
-                                <b-form-group
+                </BCol>
+                <BCol>
+                    <BForm>
+                        <BFormRow>
+                            <BCol sm="8">
+                                <BFormGroup
                                     label="Nom"
                                     label-for="input-name"
                                     :state="inputStates.name"
@@ -71,24 +71,24 @@
                                     <template #invalid-feedback>
                                         {{ errorMsg('name') }}
                                     </template>
-                                </b-form-group>
-                            </b-col>
-                            <b-col sm="4">
-                                <b-form-group
+                                </BFormGroup>
+                            </BCol>
+                            <BCol sm="4">
+                                <BFormGroup
                                     label="Matricule"
                                     label-for="input-matricule"
                                 >
-                                    <b-form-input
+                                    <BFormInput
                                         id="input-matricule"
                                         type="text"
                                         v-model="name.matricule"
                                         readonly
                                     />
-                                </b-form-group>
-                            </b-col>
-                        </b-form-row>
-                        <b-form-row>
-                            <b-form-group
+                                </BFormGroup>
+                            </BCol>
+                        </BFormRow>
+                        <BFormRow>
+                            <BFormGroup
                                 label="Demandeur"
                                 label-for="input-demandeur"
                                 :state="inputStates.demandeur"
@@ -115,21 +115,23 @@
                                 <template #invalid-feedback>
                                     {{ errorMsg('demandeur') }}
                                 </template>
-                            </b-form-group>
-                        </b-form-row>
-                        <b-form-row v-if="store.canSetSanction">
-                            <b-form-checkbox v-model="form.important">
-                                Marquer comme important.
-                            </b-form-checkbox>
-                        </b-form-row>
-                        <b-form-row class="mt-2">
-                            <b-col sm="7">
-                                <b-form-group
+                            </BFormGroup>
+                        </BFormRow>
+                        <BFormRow v-if="store.canSetSanction">
+                            <BFormGroup>
+                                <BFormCheckbox v-model="form.important">
+                                    Marquer comme important.
+                                </BFormCheckbox>
+                            </BFormGroup>
+                        </BFormRow>
+                        <BFormRow class="mt-2">
+                            <BCol sm="7">
+                                <BFormGroup
                                     label="Sanction disciplinaire"
                                     label-for="input-info"
                                     :state="inputStates.sanction_decision_id"
                                 >
-                                    <b-form-select
+                                    <BFormSelect
                                         id="input-info"
                                         v-model="form.sanction_decision_id"
                                         :options="sanctionOptions"
@@ -142,19 +144,19 @@
                                                 Choisissez un type de sanction
                                             </option>
                                         </template>
-                                    </b-form-select>
+                                    </BFormSelect>
                                     <template #invalid-feedback>
                                         {{ errorMsg('sanction_decision_id') }}
                                     </template>
-                                </b-form-group>
+                                </BFormGroup>
                                 <div v-if="store.canSetSanction">
-                                    <b-form-group
+                                    <BFormGroup
                                         v-if="store.settings.enable_disciplinary_council"
                                         label="Date du conseil"
                                         label-for="input-date-conseil"
                                         :state="inputStates.datetime_conseil"
                                     >
-                                        <b-form-input
+                                        <BFormInput
                                             id="input-date-conseil"
                                             type="date"
                                             v-model="form.datetime_conseil"
@@ -162,13 +164,13 @@
                                         <template #invalid-feedback>
                                             {{ errorMsg('datetime_conseil') }}
                                         </template>
-                                    </b-form-group>
-                                    <b-form-group
+                                    </BFormGroup>
+                                    <BFormGroup
                                         label="Date de la sanction"
                                         label-for="input-date-sanction"
                                         :state="inputStates.date_sanction"
                                     >
-                                        <b-form-input
+                                        <BFormInput
                                             id="input-date-sanction"
                                             type="date"
                                             v-model="form.date_sanction"
@@ -176,13 +178,13 @@
                                         <template #invalid-feedback>
                                             {{ errorMsg('date_sanction') }}
                                         </template>
-                                    </b-form-group>
-                                    <b-form-group
+                                    </BFormGroup>
+                                    <BFormGroup
                                         label="Date de fin de la sanction"
                                         label-for="input-date-sanction-end"
                                         :state="inputStates.date_sanction_end"
                                     >
-                                        <b-form-input
+                                        <BFormInput
                                             id="input-date-sanction-end"
                                             type="date"
                                             v-model="form.date_sanction_end"
@@ -190,12 +192,12 @@
                                         <template #invalid-feedback>
                                             {{ errorMsg('date_sanction_end') }}
                                         </template>
-                                    </b-form-group>
-                                    <b-form-group
+                                    </BFormGroup>
+                                    <BFormGroup
                                         label="Heure de début de la sanction"
                                         label-for="input-time-sanction-start"
                                     >
-                                        <b-form-input
+                                        <BFormInput
                                             id="input-time-sanction-start"
                                             type="time"
                                             v-model="form.time_sanction_start"
@@ -203,13 +205,13 @@
                                         <template #invalid-feedback>
                                             {{ errorMsg('time_sanction_start') }}
                                         </template>
-                                    </b-form-group>
-                                    <b-form-group
+                                    </BFormGroup>
+                                    <BFormGroup
                                         label="Heure de fin de la sanction"
                                         label-for="input-time-sanction-end"
                                         :state="inputStates.time_sanction_end"
                                     >
-                                        <b-form-input
+                                        <BFormInput
                                             id="input-time-sanction-end"
                                             type="time"
                                             v-model="form.time_sanction_end"
@@ -217,24 +219,24 @@
                                         <template #invalid-feedback>
                                             {{ errorMsg('time_sanction_end') }}
                                         </template>
-                                    </b-form-group>
+                                    </BFormGroup>
                                 </div>
-                            </b-col>
-                            <b-col sm="5">
-                                <b-list-group>
-                                    <b-list-group-item
+                            </BCol>
+                            <BCol sm="5">
+                                <BListGroup>
+                                    <BListGroupItem
                                         class="d-flex justify-content-between align-items-center"
                                         v-for="(val, index) in stats"
                                         :key="index"
                                     >
                                         <strong>{{ val.display }} :</strong> {{ val.value }}
-                                    </b-list-group-item>
-                                </b-list-group>
-                            </b-col>
-                        </b-form-row>
-                        <b-form-row>
-                            <b-col>
-                                <b-form-group
+                                    </BListGroupItem>
+                                </BListGroup>
+                            </BCol>
+                        </BFormRow>
+                        <BFormRow>
+                            <BCol>
+                                <BFormGroup
                                     label="Commentaires"
                                     label-for="input-comment"
                                     :state="inputStates.explication_commentaire"
@@ -243,12 +245,12 @@
                                     <template #invalid-feedback>
                                         {{ errorMsg('explication_commentaire') }}
                                     </template>
-                                </b-form-group>
-                                <b-form-group
+                                </BFormGroup>
+                                <BFormGroup
                                     description="Ajouter un ou des fichiers. Accepte uniquement des fichiers pdf."
                                     label="Fichier(s)"
                                 >
-                                    <b-form-file
+                                    <BFormFile
                                         multiple
                                         accept=".pdf"
                                         v-model="attachments"
@@ -259,7 +261,7 @@
                                         plain
                                         @input="addFiles"
                                     />
-                                    <b-list-group
+                                    <BListGroup
                                         v-for="(item, index) in uploadedFiles"
                                         :key="index"
                                     >
@@ -271,14 +273,14 @@
                                             @delete="deleteFile(index)"
                                             @setdata="setFileData(index, $event)"
                                         />
-                                    </b-list-group>
-                                </b-form-group>
-                            </b-col>
-                        </b-form-row>
-                    </b-form>
-                </b-col>
-            </b-row>
-        </b-modal>
+                                    </BListGroup>
+                                </BFormGroup>
+                            </BCol>
+                        </BFormRow>
+                    </BForm>
+                </BCol>
+            </BRow>
+        </BModal>
     </div>
 </template>
 

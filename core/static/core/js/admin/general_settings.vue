@@ -20,96 +20,92 @@
 <template>
     <div>
         <h4>Paramètres généraux</h4>
-        <b-row>
+        <BRow>
             <p>Pour le moment, HappySchool utilise principalement les pages d'administrations fournies par django.</p>
             <p>
-                <b-button href="/admin">
+                <BButton href="/admin">
                     Accèder à l'interface d'administration de django
-                </b-button>
+                </BButton>
             </p>
-        </b-row>
-        <b-row>
+        </BRow>
+        <BRow>
             <h5>Établissement(s)</h5>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-list-group>
-                    <b-list-group-item
+        </BRow>
+        <BRow>
+            <BCol>
+                <BListGroup>
+                    <BListGroupItem
                         v-for="item in teachings"
                         :key="item.pk"
                     >
                         {{ item.display_name }} ({{ item.name }})
-                        <b-btn
+                        <BButton
                             v-b-modal.addModal
                             variant="light"
                             @click="currentTeaching = item"
                             class="float-right"
                         >
-                            <b-icon
-                                icon="pencil-square"
-                                variant="success"
+                            <IBiPencilSquare
+                                color="green"
                             />
-                        </b-btn>
-                        <b-btn
+                        </BButton>
+                        <BButton
                             v-b-modal.deleteModal
                             variant="light"
                             class="float-right"
                             @click="currentTeaching = item"
                         >
-                            <b-icon
-                                icon="trash-fill"
-                                variant="danger"
+                            <IBiTrashFill
+                                color="red"
                             />
-                        </b-btn>
-                    </b-list-group-item>
-                </b-list-group>
+                        </BButton>
+                    </BListGroupItem>
+                </BListGroup>
                 <p class="card-text mt-2">
-                    <b-btn
+                    <BButton
                         v-b-modal.addModal
-                        variant="light"
+                        variant="outline-success"
                     >
-                        <b-icon
-                            icon="plus"
+                        <IBiPlus
                             scale="1.5"
-                            variant="success"
+                            color="green"
                         />
                         Ajouter
-                    </b-btn>
+                    </BButton>
                 </p>
-            </b-col>
-        </b-row>
-        <b-row>
+            </BCol>
+        </BRow>
+        <BRow>
             <h5>Logo</h5>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-form>
-                    <b-form-row>
-                        <b-form-group description="Le logo doit être au format png.">
-                            <b-form-file
+        </BRow>
+        <BRow>
+            <BCol>
+                <BForm>
+                    <BFormRow>
+                        <BFormGroup description="Le logo doit être au format png.">
+                            <BFormFile
                                 v-model="logo"
                                 accept=".png"
                                 placeholder="Sélectionner le logo"
                             />
-                        </b-form-group>
-                    </b-form-row>
-                </b-form>
+                        </BFormGroup>
+                    </BFormRow>
+                </BForm>
                 <p class="card-text mt-2">
-                    <b-btn
-                        variant="light"
+                    <BButton
+                        variant="outline-success"
                         @click="sendLogo"
                         :disabled="!logo"
                     >
-                        <b-icon
-                            icon="plus"
+                        <IBiPlus
                             scale="1.5"
-                            variant="success"
+                            color="green"
                         />
                         Envoyer
-                    </b-btn>
+                    </BButton>
                 </p>
-            </b-col>
-        </b-row>
+            </BCol>
+        </BRow>
         <b-modal
             id="deleteModal"
             cancel-title="Annuler"
@@ -125,48 +121,50 @@
             id="addModal"
             ref="addModal"
             cancel-title="Annuler"
-            title="Ajouter un établissement"
+            title="Ajouter/Modifier un établissement"
             ok-title="Ajouter"
             centered
             @ok="setTeaching"
             @hidden="resetTeachings"
         >
             <form>
-                <b-form-input
+                <BFormInput
                     type="text"
                     v-model="currentTeaching.display_name"
                     placeholder="Nom d'affichage"
                     aria-describedby="displayNameFeedback"
                     :state="inputStates.display_name"
                 />
-                <b-form-invalid-feedback id="displayNameFeedback">
+                <BFormInvalidFeedback id="displayNameFeedback">
                     {{ errorMsg('display_name') }}
-                </b-form-invalid-feedback>
-                <b-form-input
+                </BFormInvalidFeedback>
+                <BFormInput
                     type="text"
                     v-model="currentTeaching.name"
                     placeholder="Nom simple"
                     aria-describedby="nameFeedback"
                     :state="inputStates.name"
                 />
-                <b-form-invalid-feedback id="nameFeedback">
+                <BFormInvalidFeedback id="nameFeedback">
                     {{ errorMsg('name') }}
-                </b-form-invalid-feedback>
+                </BFormInvalidFeedback>
             </form>
         </b-modal>
     </div>
 </template>
 
 <script>
-import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
-Vue.use(BootstrapVue);
+import { useToastController } from "bootstrap-vue-next";
 
 import axios from "axios";
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        return { show };
+    },
     data: function () {
         return {
             teachings: [],
@@ -195,10 +193,11 @@ export default {
             axios.post("/core/api/logo/", data, token)
                 .then(() => {
                     this.logo = null;
-                    this.$bvToast.toast("Le logo a été envoyé, actualisez la page pour voir le nouveau logo.", {
+                    this.show({props: {
+                        body: "Le logo a été envoyé, actualisez la page pour voir le nouveau logo.",
                         variant: "success",
                         noCloseButton: true,
-                    });
+                    }});
                 })
                 .catch(err => {
                     alert(err);

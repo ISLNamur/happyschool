@@ -18,19 +18,19 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-overlay :show="loading">
-        <b-card
+    <BOverlay :show="loading">
+        <BCard
             no-body
             class="mt-1"
             border-variant="info"
         >
-            <b-card-header>
-                <b-row>
-                    <b-col v-if="!editMode && advanced">
+            <BCardHeader>
+                <BRow>
+                    <BCol v-if="!editMode && advanced">
                         <strong>{{ branch ? branch.branch : "Ne concerne pas une branche en particulier" }}</strong>
-                    </b-col>
-                    <b-col v-else-if="advanced">
-                        <b-form-group
+                    </BCol>
+                    <BCol v-else-if="advanced">
+                        <BFormGroup
                             label="Branche"
                             label-cols="2"
                         >
@@ -53,60 +53,63 @@
                                 </template>
                                 <template #noOptions />
                             </multiselect>
-                        </b-form-group>
-                    </b-col>
-                    <b-col
+                        </BFormGroup>
+                    </BCol>
+                    <BCol
                         cols="2"
-                        class="text-right"
+                        class="text-end"
                     >
-                        <b-btn
+                        <BButton
                             variant="light"
                             size="sm"
                             @click="editMode = !editMode; if (!editMode) $emit('save')"
                             class="card-link mb-1"
                         >
-                            <b-icon
-                                :icon="editMode ? 'check2-square' : 'pencil-square'"
-                                variant="success"
+                            <IBiCheck2Square
+                                color="green"
+                                v-if="editMode"
                             />
-                        </b-btn>
-                        <b-btn
+                            <IBiPencilSquare
+                                v-else
+                                color="green"
+                            />
+                        </BButton>
+                        <BButton
                             variant="light"
                             size="sm"
                             @click="$emit('remove')"
                             class="card-link"
                         >
-                            <b-icon
-                                variant="danger"
-                                icon="trash-fill"
-                            />
-                        </b-btn>
-                    </b-col>
-                </b-row>
-                <b-row v-if="editMode">
-                    <b-col>
+                            <IBiTrashFill color="red" />
+                        </BButton>
+                    </BCol>
+                </BRow>
+                <BRow v-if="editMode">
+                    <BCol>
                         <p class="text-info">
-                            <b-icon icon="info-circle" />
+                            <IBiInfoCircle />
                             Il n'est <strong>pas nécessaire</strong> de statuer sur chacune des ressources et
                             difficultés.
                         </p>
-                    </b-col>
-                </b-row>
-                <b-row v-if="editMode">
-                    <b-col>
-                        <b-input-group>
-                            <b-input-group-prepend is-text>
-                                <b-icon icon="search" />
-                            </b-input-group-prepend>
-                            <b-form-input
+                    </BCol>
+                </BRow>
+                <BRow v-if="editMode">
+                    <BCol>
+                        <BInputGroup>
+                            <template
+                                #prepend
+                            >
+                                <BInputGroupText><IBiSearch /></BInputGroupText>
+                            </template>
+                            <BFormInput
                                 placeholder="Filtrer les ressources et difficultés"
                                 v-model="filter"
                             />
-                        </b-input-group>
-                    </b-col>
-                </b-row>
-            </b-card-header>
-            <b-list-group
+                        </BInputGroup>
+                    </BCol>
+                </BRow>
+            </BCardHeader>
+            <BListGroup
                 flush
                 v-if="editMode"
             >
@@ -117,23 +120,23 @@
                     v-model="statements[store.resourceDifficulty.findIndex(rD => rD.id === resDif.id)]"
                     :edit-mode="editMode"
                 />
-                <b-list-group-item class="text-right">
-                    <b-btn
+                <BListGroupItem class="text-end">
+                    <BButton
                         @click="editMode = false; $emit('save')"
                         variant="outline-primary"
                     >
-                        <b-icon icon="box-arrow-in-right" />
+                        <IBiBoxArrowInRight />
                         Sauver
-                    </b-btn>
-                </b-list-group-item>
-            </b-list-group>
-            <b-card-body v-else>
-                <b-row>
-                    <b-col>
-                        <b-list-group>
-                            <b-list-group-item>
+                    </BButton>
+                </BListGroupItem>
+            </BListGroup>
+            <BcardBody v-else>
+                <BRow>
+                    <BCol>
+                        <BListGroup>
+                            <BListGroupItem>
                                 <strong>Ressources</strong>
-                            </b-list-group-item>
+                            </BListGroupItem>
                             <resource-difficulty
                                 v-for="res in resources"
                                 :key="res.id"
@@ -141,13 +144,13 @@
                                 :edit-mode="editMode"
                                 :value="true"
                             />
-                        </b-list-group>
-                    </b-col>
-                    <b-col>
-                        <b-list-group>
-                            <b-list-group-item>
+                        </BListGroup>
+                    </BCol>
+                    <BCol>
+                        <BListGroup>
+                            <BListGroupItem>
                                 <strong>Difficultés</strong>
-                            </b-list-group-item>
+                            </BListGroupItem>
                             <resource-difficulty
                                 v-for="res in difficulties"
                                 :key="res.id"
@@ -155,12 +158,12 @@
                                 :edit-mode="editMode"
                                 :value="false"
                             />
-                        </b-list-group>
-                    </b-col>
-                </b-row>
-            </b-card-body>
-        </b-card>
-    </b-overlay>
+                        </BListGroup>
+                    </BCol>
+                </BRow>
+            </BcardBody>
+        </BCard>
+    </BOverlay>
 </template>
 
 <script>

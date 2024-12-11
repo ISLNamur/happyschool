@@ -18,26 +18,26 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-container>
-        <b-row>
-            <b-nav tabs>
-                <b-nav-item to="/">
+    <BContainer>
+        <BRow>
+            <BNav tabs>
+                <BNavItem to="/">
                     Envoyer un email
-                </b-nav-item>
-                <b-nav-item
+                </BNavItem>
+                <BNavItem
                     active
                     href="/mail_notification/list/"
                 >
                     Liste des emails envoyés
-                </b-nav-item>
-            </b-nav>
-        </b-row>
-        <b-row
+                </BNavItem>
+            </BNav>
+        </BRow>
+        <BRow
             v-for="email in emails"
             :key="email.id"
         >
-            <b-col>
-                <b-card
+            <BCol>
+                <BCard
                     :title="email.subject"
                     :sub-title="`Envoyé à : ${email.email_to} (${email.teaching}) à partir de : ${email.email_from}`"
                 >
@@ -47,23 +47,19 @@
                         État : {{ email.errors }}
                     </p>
                     <p>
-                        Message <b-icon
-                            v-if="email.attachments.length > 0"
-                            name="paperclip"
-                        /> :
+                        Message <IBiPaperclip v-if="email.attachments.length > 0" /> :
                     </p>
-                    <b-card>
-                        {{ email.body }}
-                    </b-card>
-                </b-card>
-            </b-col>
-        </b-row>
-    </b-container>
+                    <BCardBody v-html="email.body" />
+                </BCard>
+            </BCol>
+        </BRow>
+    </BContainer>
 </template>
 
 <script>
 
 import axios from "axios";
+import { BCardBody } from "bootstrap-vue-next";
 
 export default {
     data: function () {

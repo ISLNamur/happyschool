@@ -18,74 +18,83 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-overlay :show="loading">
-        <b-row>
-            <b-col>
+    <BOverlay :show="loading">
+        <BRow>
+            <BCol>
                 <h4 class="mt-4">
                     Aménagements d'horaire
                 </h4>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-form-group>
-                    <b-select
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
+                <BFormGroup>
+                    <BFormSelect
                         :options="scheduleAdjustments"
                         value-field="id"
                         v-model="currentSchedAdjId"
-                        @change="updateCurrentSchedAdj"
+                        @update:model-value="updateCurrentSchedAdj"
                     />
-                </b-form-group>
-            </b-col>
-            <b-col>
-                <b-btn
-                    variant="outline-secondary"
-                    @click="copy"
-                    :disabled="scheduleAdjustments.length === 0"
-                >
-                    <b-icon icon="files" />
-                    Copier
-                </b-btn>
-                <b-btn
-                    variant="success"
-                    @click="add"
-                >
-                    <b-icon icon="plus" />
-                    Ajouter
-                </b-btn>
-                <b-btn
-                    variant="danger"
-                    @click="remove"
-                    :disabled="scheduleAdjustments.length === 0"
-                >
-                    <b-icon icon="trash" />
-                    Supprimer
-                </b-btn>
-            </b-col>
-        </b-row>
-        <b-row v-if="currentSchedAdj">
-            <b-col>
-                <b-card>
-                    <b-row class="mb-1">
-                        <b-col>
+                </BFormGroup>
+            </BCol>
+            <BCol>
+                <BButtonGroup>
+                    <BButton
+                        variant="outline-secondary"
+                        @click="copy"
+                        :disabled="scheduleAdjustments.length === 0"
+                    >
+                        <IBiFiles />
+                        Copier
+                    </BButton>
+                    <BButton
+                        variant="success"
+                        @click="add"
+                    >
+                        <IBiPlus />
+                        Ajouter
+                    </BButton>
+                    <BButton
+                        variant="danger"
+                        @click="remove"
+                        :disabled="scheduleAdjustments.length === 0"
+                    >
+                        <IBiTrash />
+                        Supprimer
+                    </BButton>
+                </BButtonGroup>
+            </BCol>
+        </BRow>
+        <BRow v-if="currentSchedAdj">
+            <BCol>
+                <BCard>
+                    <BRow class="mb-1">
+                        <BCol>
                             <strong>
-                                <b-form inline>
-                                    Du<b-form-input
-                                        type="date"
-                                        v-model="currentSchedAdj.date_start"
-                                        class="mr-sm-2 ml-2"
-                                    />
-                                    au<b-form-input
-                                        type="date"
-                                        v-model="currentSchedAdj.date_end"
-                                        class="ml-2"
-                                    />
-                                </b-form>
+                                <BForm class="d-flex flex-row align-items-center flex-wrap">
+                                    <label class="col-form-label me-2">Du</label>
+                                    <div class="col-lg-3 me-2 my-2">
+                                        <BFormInput
+                                            type="date"
+                                            v-model="currentSchedAdj.date_start"
+                                            class="mr-sm-2 ml-2"
+                                        />
+                                    </div>
+                                    <label class="col-form-label me-2">au</label>
+                                    <div class="col-lg-3 me-2 my-2">
+                                        <BFormInput
+                                            type="date"
+                                            v-model="currentSchedAdj.date_end"
+                                            class="ml-2"
+                                        />
+                                    </div> 
+                                </BForm>
+                            
                             </strong>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
+                        </BCol>
+                    </BRow>
+                    <BRow>
+                        <BCol>
                             <multiselect
                                 :options="store.scheduleAdjustments"
                                 placeholder="Sélectionner le ou les différents adaptations"
@@ -103,12 +112,12 @@
                                 </template>
                                 <template #noOptions />
                             </multiselect>
-                        </b-col>
-                    </b-row>
-                </b-card>
-            </b-col>
-        </b-row>
-    </b-overlay>
+                        </BCol>
+                    </BRow>
+                </BCard>
+            </BCol>
+        </BRow>
+    </BOverlay>
 </template>
 
 <script>

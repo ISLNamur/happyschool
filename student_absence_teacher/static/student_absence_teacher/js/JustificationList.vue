@@ -18,52 +18,52 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-row>
-        <b-col
+    <BRow>
+        <BCol
             cols="12"
             md="4"
         >
-            <b-button-group>
-                <b-btn
+            <BButton-group>
+                <BButton
                     variant="success"
                     :to="`/justification/-1/`"
                 >
-                    <b-icon icon="plus" />
+                    <IBiPlus />
                     Ajouter un justificatif
-                </b-btn>
-                <b-btn
+                </BButton>
+                <BButton
                     :href="`/student_absence_teacher/get_pdf_just/?${urlData}&page_size=1000`"
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    <b-icon icon="file-earmark-pdf" />
+                    <IBiFileEarmarkPdf />
                     Export
-                </b-btn>
-            </b-button-group>
-        </b-col>
-        <b-col>
-            <b-form-checkbox
+                </BButton>
+            </BButton-group>
+        </BCol>
+        <BCol>
+            <BFormCheckbox
                 v-model="allClasses"
-                @change="loadEntries"
+                @update:model-value="loadEntries"
                 switch
             >
                 Toutes les classes
-            </b-form-checkbox>
-        </b-col>
-        <b-col>
-            <b-form-checkbox
+            </BFormCheckbox>
+        </BCol>
+        <BCol>
+            <BFormCheckbox
                 v-model="noProcessedEntries"
-                @change="loadEntries"
+                @update:model-value="loadEntries"
                 switch
             >
                 Non Traitées
-            </b-form-checkbox>
-        </b-col>
-        <b-col
+            </BFormCheckbox>
+        </BCol>
+        <BCol
             cols="12"
             md="4"
         >
-            <b-form-group>
+            <BFormGroup>
                 <multiselect
                     ref="input"
                     :show-no-options="false"
@@ -91,13 +91,13 @@
                         />
                     </template>
                 </multiselect>
-            </b-form-group>
-        </b-col>
-    </b-row>
-    <b-row class="mt-2">
-        <b-overlay :show="loading">
-            <b-col>
-                <b-table
+            </BFormGroup>
+        </BCol>
+    </BRow>
+    <BRow class="mt-2">
+        <BOverlay :show="loading">
+            <BCol>
+                <BTable
                     :items="absencesWithoutJust"
                     :fields="fields"
                     stacked="md"
@@ -105,61 +105,58 @@
                     hover
                 >
                     <template #cell(studentLabel)="data">
-                        <b-link :to="`/overview/${data.item.date_absence.slice(0, 10)}/student_view/${data.item.student.matricule}/`">
+                        <BLink :to="`/overview/${data.item.date_absence.slice(0, 10)}/student_view/${data.item.student.matricule}/`">
                             {{ data.value }}
-                        </b-link>
-                        <b-btn
+                        </BLink>
+                        <BButton
                             variant="link"
                             size="sm"
                             @click="filterStudent(data.item.student)"
                         >
-                            <b-icon icon="funnel" />
-                        </b-btn>
+                            <IBiFunnel />
+                        </BButton>
                     </template>
                     <template #cell(addJust)="data">
-                        <b-btn
+                        <BButton
                             size="sm"
                             variant="outline-success"
                             :to="`/justification/-1/${data.item.student.matricule}/${data.item.endDate}/${data.item.countNoJustification}/`"
                         >
-                            <b-icon icon="plus" />
+                            <IBiPlus />
                             Justifier
-                        </b-btn>
+                        </BButton>
                     </template>
                     <template #cell(mail_warning)="data">
-                        <b-btn
+                        <BButton
                             v-if="!data.value"
                             size="sm"
                             variant="outline-primary"
                             :to="`/mail_warning/${data.item.student.matricule}/`"
                         >
-                            <b-icon icon="card-text" />
-                        </b-btn>
-                        <b-btn
+                            <IBiCardText />
+                        </BButton>
+                        <BButton
                             v-else
                             size="sm"
                             variant="outline-succes"
                             :to="`/mail_warning/${data.item.student.matricule}/`"
                         >
-                            <b-icon
-                                icon="check"
-                                variant="success"
-                            />
-                        </b-btn>
+                            <IBiCheck variant="success" />
+                        </BButton>
                     </template>
-                </b-table>
-            </b-col>
-        </b-overlay>
-    </b-row>
-    <b-row>
-        <b-col>
-            <b-pagination
+                </BTable>
+            </BCol>
+        </BOverlay>
+    </BRow>
+    <BRow>
+        <BCol>
+            <BPagination
                 :total-rows="entriesCount"
                 v-model="currentPage"
-                @change="changePage"
+                @update:model-value="changePage"
             />
-        </b-col>
-    </b-row>
+        </BCol>
+    </BRow>
 </template>
 
 <script>

@@ -18,17 +18,17 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-container>
-        <b-row>
-            <b-col>
+    <BContainer>
+        <BRow>
+            <BCol>
                 <h2>Préparer les changements</h2>
-            </b-col>
-        </b-row>
+            </BCol>
+        </BRow>
 
-        <b-overlay :show="loading">
-            <b-row>
-                <b-col>
-                    <b-form-group
+        <BOverlay :show="loading">
+            <BRow>
+                <BCol>
+                    <BFormGroup
                         label="Prof(s) absent(s)/indisponible(s)/concerné(s)"
                     >
                         <multiselect
@@ -48,89 +48,89 @@
                             </template>
                             <template #noOptions />
                         </multiselect>
-                    </b-form-group>
-                </b-col>
-            </b-row>
+                    </BFormGroup>
+                </BCol>
+            </BRow>
 
-            <b-row>
-                <b-col>
-                    <b-form-group
+            <BRow>
+                <BCol>
+                    <BFormGroup
                         id="date-start-input-group"
                         label="À partir de"
                         label-cols="12"
                         label-cols-sm="4"
                     >
-                        <b-form-input
+                        <BFormInput
                             type="date"
                             v-model="dateStart"
-                            @change="updateEnd"
+                            @update:model-value="updateEnd"
                         />
-                    </b-form-group>
-                </b-col>
-                <b-col>
-                    <b-form-group
+                    </BFormGroup>
+                </BCol>
+                <BCol>
+                    <BFormGroup
                         id="date-end-input-group"
                         label="Jusqu'à"
                         label-cols="12"
                         label-cols-sm="4"
                     >
-                        <b-form-input
+                        <BFormInput
                             type="date"
                             v-model="dateEnd"
                             :min="dateStart"
                         />
-                    </b-form-group>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <b-form-group
+                    </BFormGroup>
+                </BCol>
+            </BRow>
+            <BRow>
+                <BCol>
+                    <BFormGroup
                         label="Type par défaut"
                         label-cols="12"
                         label-cols-md="5"
                     >
-                        <b-form-select
+                        <BFormSelect
                             v-model="defaultType"
                             :options="store.changeType"
                             value-field="id"
                             text-field="name"
                         />
-                    </b-form-group>
-                </b-col>
-                <b-col>
-                    <b-form-group
+                    </BFormGroup>
+                </BCol>
+                <BCol>
+                    <BFormGroup
                         label="Catégorie par défaut"
                         label-cols="12"
                         label-cols-md="5"
                     >
-                        <b-form-select
+                        <BFormSelect
                             v-model="defaultCategory"
                             :options="store.changeCategory"
                             value-field="id"
                             text-field="category"
                         />
-                    </b-form-group>
-                </b-col>
-            </b-row>
-            <b-row class="text-right">
-                <b-col>
-                    <b-btn
+                    </BFormGroup>
+                </BCol>
+            </BRow>
+            <BRow class="text-end">
+                <BCol>
+                    <BButton
                         variant="outline-primary"
                         @click="prepareSchedule"
                     >
-                        <b-icon icon="receipt" />
+                        <IBiReceipt />
                         Générer les changements
-                    </b-btn>
-                </b-col>
-            </b-row>
-            <b-row class="mt-2">
-                <b-col>
-                    <b-table
+                    </BButton>
+                </BCol>
+            </BRow>
+            <BRow class="mt-2">
+                <BCol>
+                    <BTable
                         :items="scheduleChanges"
                         :fields="tableFields"
                     >
                         <template #cell(change)="data">
-                            <b-form-select
+                            <BFormSelect
                                 v-model="scheduleChanges[data.index].change"
                                 :options="store.changeType"
                                 value-field="id"
@@ -138,7 +138,7 @@
                             />
                         </template>
                         <template #cell(category)="data">
-                            <b-form-select
+                            <BFormSelect
                                 v-model="scheduleChanges[data.index].category"
                                 :options="store.changeCategory"
                                 value-field="id"
@@ -146,13 +146,13 @@
                             />
                         </template>
                         <template #cell(time_start)="data">
-                            <b-input
+                            <BFormInput
                                 type="time"
                                 v-model="scheduleChanges[data.index].time_start"
                             />
                         </template>
                         <template #cell(time_end)="data">
-                            <b-input
+                            <BFormInput
                                 type="time"
                                 v-model="scheduleChanges[data.index].time_end"
                             />
@@ -192,29 +192,29 @@
                             </multiselect>
                         </template>
                         <template #cell(remove)="data">
-                            <b-btn
+                            <BButton
                                 size="sm"
                                 variant="danger"
                                 @click="removeChange(data.index)"
                             >
-                                <b-icon icon="trash" />
-                            </b-btn>
+                                <IBiTrash />
+                            </BButton>
                         </template>
-                    </b-table>
-                </b-col>
-            </b-row>
-            <b-row class="text-right">
-                <b-col>
-                    <b-btn
+                    </BTable>
+                </BCol>
+            </BRow>
+            <BRow class="text-end">
+                <BCol>
+                    <BButton
                         variant="success"
                         @click="submitScheduleChanges"
                     >
                         Créer les changements
-                    </b-btn>
-                </b-col>
-            </b-row>
-        </b-overlay>
-    </b-container>
+                    </BButton>
+                </BCol>
+            </BRow>
+        </BOverlay>
+    </BContainer>
 </template>
 
 <script>
@@ -227,11 +227,17 @@ import "vue-multiselect/dist/vue-multiselect.css";
 
 import axios from "axios";
 
+import { useToastController } from "bootstrap-vue-next";
+
 import { scheduleChangeStore } from "./stores/index.js";
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        return { show };
+    },
     data: function () {
         return {
             dateStart: null,
@@ -411,11 +417,12 @@ export default {
             this.loading = true;
             axios.post("/schedule_change/api/schedule_change/", this.scheduleChanges, token)
                 .then(() => {
-                    this.$router.push("/", () => {
-                        this.$root.$bvToast.toast("Les changements ont bien été créés.", {
+                    this.$router.push("/").then(() => {
+                        this.show({props: {
+                            body: "Les changements ont bien été créés.",
                             variant: "success",
                             noCloseButton: true,
-                        });
+                        }});
                     });
                     this.loading = false;
                 })

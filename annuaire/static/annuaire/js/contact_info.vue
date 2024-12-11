@@ -18,10 +18,10 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-overlay :show="loading">
+    <BOverlay :show="loading">
         <div v-if="contact">
             <dl class="row">
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     Téléphone de l'élève
                 </dt>
                 <dd class="col-7">
@@ -29,7 +29,7 @@
                         {{ contact.student_phone }}
                     </a>
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     GSM de l'élève
                 </dt>
                 <dd class="col-7">
@@ -37,19 +37,19 @@
                         {{ contact.student_mobile }}
                     </a>
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     Email de l'élève
                 </dt>
                 <dd class="col-7">
                     <a :href="'mailto:' + contact.student_email">{{ contact.student_email }}</a>
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     Nom du responsable
                 </dt>
                 <dd class="col-7">
                     {{ contact.resp_last_name }} {{ contact.resp_first_name }}
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     Téléphone responsable
                 </dt>
                 <dd class="col-7">
@@ -57,7 +57,7 @@
                         {{ contact.resp_phone }}
                     </a>
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     GSM responsable
                 </dt>
                 <dd class="col-7">
@@ -65,19 +65,19 @@
                         {{ contact.resp_mobile }}
                     </a>
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     Email responsable
                 </dt>
                 <dd class="col-7">
                     <a :href="'mailto:' + contact.resp_email">{{ contact.resp_email }}</a>
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     Nom de la mère
                 </dt>
                 <dd class="col-7">
                     {{ contact.mother_last_name }} {{ contact.mother_first_name }}
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     Téléphone de la mère
                 </dt>
                 <dd class="col-7">
@@ -85,7 +85,7 @@
                         {{ contact.mother_phone }}
                     </a>
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     GSM de la mère
                 </dt>
                 <dd class="col-7">
@@ -93,19 +93,19 @@
                         {{ contact.mother_mobile }}
                     </a>
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     Email de la mère
                 </dt>
                 <dd class="col-7">
                     <a :href="'mailto:' + contact.mother_email">{{ contact.mother_email }}</a>
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     Nom du père
                 </dt>
                 <dd class="col-7">
                     {{ contact.father_last_name }} {{ contact.father_first_name }}
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     Téléphone du père
                 </dt>
                 <dd class="col-7">
@@ -113,7 +113,7 @@
                         {{ contact.father_phone }}
                     </a>
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     GSM du père
                 </dt>
                 <dd class="col-7">
@@ -121,7 +121,7 @@
                         {{ contact.father_mobile }}
                     </a>
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     Email du père
                 </dt>
                 <dd class="col-7">
@@ -129,7 +129,7 @@
                 </dd>
             </dl>
         </div>
-    </b-overlay>
+    </BOverlay>
 </template>
 
 <script>

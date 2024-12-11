@@ -18,42 +18,42 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-container>
-        <b-row>
-            <b-col>
+    <BContainer>
+        <BRow>
+            <BCol>
                 <h2>Avertir les parents du retard</h2>
-            </b-col>
-        </b-row>
-        <b-row class="mb-1 text-right">
-            <b-col>
-                <b-btn
+            </BCol>
+        </BRow>
+        <BRow class="mb-1 text-right">
+            <BCol>
+                <BButton
                     @click="getPDF"
                     variant="outline-primary"
                 >
-                    <b-icon icon="file-text" />
+                    <IBiFileText />
                     Télécharger PDF
-                </b-btn>
-            </b-col>
-        </b-row>
+                </BButton>
+            </BCol>
+        </BRow>
 
-        <b-row v-if="student">
-            <b-col>
+        <BRow v-if="student">
+            <BCol>
                 Éleve concerné : <strong>{{ displayStudent(student) }}</strong>
-            </b-col>
-        </b-row>
+            </BCol>
+        </BRow>
 
-        <b-row>
-            <b-col>
-                <b-form-group
+        <BRow>
+            <BCol>
+                <BFormGroup
                     label="Destinataires"
                     description="Si deux destinataires sont les mêmes, un seul courriel sera envoyé."
                 >
-                    <b-form-checkbox-group
+                    <BFormCheckboxGroup
                         v-model="recipient"
                         :options="recipientOptions"
                     />
-                </b-form-group>
-                <b-form-group label="Autres personnes de l'école">
+                </BFormGroup>
+                <BFormGroup label="Autres personnes de l'école">
                     <multiselect
                         id="responsible-0"
                         :internal-search="false"
@@ -74,26 +74,26 @@
                         </template>
                         <template #noOptions />
                     </multiselect>
-                </b-form-group>
-                <b-form-select
+                </BFormGroup>
+                <BFormSelect
                     v-model="template"
                     :options="templateOptions"
                     text-field="name"
                     value-field="id"
                     @input="getTemplate"
                 />
-            </b-col>
-            <b-col
+            </BCol>
+            <BCol
                 cols="12"
                 md="4"
             >
-                <b-card
+                <BCard
                     no-body
                     class="scrollable"
                     header="Derniers retards"
                 >
-                    <b-list-group>
-                        <b-list-group-item
+                    <BListGroup>
+                        <BListGroupItem
                             v-for="lateness in lastLatenesses"
                             :key="lateness.id"
                             class="d-flex justify-content-between align-items-center"
@@ -104,29 +104,29 @@
                             <span v-if="lateness.justified">
                                 <strong>Justifié</strong>
                             </span>
-                        </b-list-group-item>
-                    </b-list-group>
-                </b-card>
-            </b-col>
-        </b-row>
-        <b-row class="mt-2">
-            <b-col>
+                        </BListGroupItem>
+                    </BListGroup>
+                </BCard>
+            </BCol>
+        </BRow>
+        <BRow class="mt-2">
+            <BCol>
                 <text-editor v-model="text" />
-            </b-col>
-        </b-row>
-        <b-row class="mt-2">
-            <b-col>
-                <b-overlay :show="sending">
-                    <b-btn
+            </BCol>
+        </BRow>
+        <BRow class="mt-2">
+            <BCol>
+                <BOverlay :show="sending">
+                    <BButton
                         variant="primary"
                         @click="send"
                     >
                         Envoyer
-                    </b-btn>
-                </b-overlay>
-            </b-col>
-        </b-row>
-    </b-container>
+                    </BButton>
+                </BOverlay>
+            </BCol>
+        </BRow>
+    </BContainer>
 </template>
 
 <script>
@@ -136,6 +136,8 @@ import "moment/dist/locale/fr";
 
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
+
+import { useToastController } from "bootstrap-vue-next";
 
 import TextEditor from "@s:core/js/common/text_editor.vue";
 
@@ -147,6 +149,10 @@ import { latenessStore } from "./stores/index.js";
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        return { show };
+    },
     props: {
         studentId: {
             type: String,
@@ -210,11 +216,12 @@ export default {
             axios.post("/lateness/api/mail_warning/", data, token)
                 .then(() => {
                     this.sending = false;
-                    this.$router.push("/", () => {
-                        this.$root.$bvToast.toast("Le message a bien été envoyé.", {
+                    this.$router.push("/").then(() => {
+                        this.show({props: {
+                            body: "Le message a bien été envoyé.",
                             variant: "success",
                             noCloseButton: true,
-                        });
+                        }});
                     });
                 })
                 .catch(err => {

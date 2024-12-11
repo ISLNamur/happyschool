@@ -27,14 +27,14 @@
         >
             <template #modal-footer>
                 <div class="w-100 text-right">
-                    <b-button
+                    <BButton
                         variant="primary"
                         @click="getPdf"
                         :disabled="!date_from && !date_to"
                     >
                         Créer PDF
-                    </b-button>
-                    <b-button
+                    </BButton>
+                    <BButton
                         v-if="store.hasProEco"
                         variant="primary"
                         class="ml-1"
@@ -42,125 +42,125 @@
                         :disabled="!date_from && !date_to"
                     >
                         Exporter vers ProEco
-                    </b-button>
+                    </BButton>
                 </div>
             </template>
-            <b-tabs v-model="tabIndex">
-                <b-tab
+            <BTabs v-model="tabIndex">
+                <BTab
                     v-if="store.settings.enable_disciplinary_council"
                     title="Conseil de discipline"
                     active
                 >
-                    <b-row class="mt-4">
-                        <b-col>
-                            <b-form-row>
-                                <b-form-group label="À partir du">
+                    <BRow class="mt-4">
+                        <BCol>
+                            <BFormRow>
+                                <BFormGroup label="À partir du">
                                     <input
                                         type="date"
                                         v-model="date_from"
                                         :max="date_to"
                                     >
-                                </b-form-group>
-                            </b-form-row>
-                        </b-col>
-                        <b-col>
-                            <b-form-row>
-                                <b-form-group label="Jusqu'au">
+                                </BFormGroup>
+                            </BFormRow>
+                        </BCol>
+                        <BCol>
+                            <BFormRow>
+                                <BFormGroup label="Jusqu'au">
                                     <input
                                         type="date"
                                         v-model="date_to"
                                         :min="date_from"
                                     >
-                                </b-form-group>
-                            </b-form-row>
-                        </b-col>
-                    </b-row>
-                </b-tab>
-                <b-tab title="Retenues">
-                    <b-form-row class="mt-4">
-                        <b-col>
-                            <b-form-row>
-                                <b-form-group label="À partir du">
+                                </BFormGroup>
+                            </BFormRow>
+                        </BCol>
+                    </BRow>
+                </BTab>
+                <BTab title="Retenues">
+                    <BFormRow class="mt-4">
+                        <BCol>
+                            <BFormRow>
+                                <BFormGroup label="À partir du">
                                     <input
                                         type="date"
                                         v-model="date_from"
                                         :max="date_to"
                                     >
-                                </b-form-group>
-                            </b-form-row>
-                        </b-col>
-                        <b-col>
-                            <b-form-row>
-                                <b-form-group label="Jusqu'au">
+                                </BFormGroup>
+                            </BFormRow>
+                        </BCol>
+                        <BCol>
+                            <BFormRow>
+                                <BFormGroup label="Jusqu'au">
                                     <input
                                         type="date"
                                         v-model="date_to"
                                         :min="date_from"
                                     >
-                                </b-form-group>
-                            </b-form-row>
-                        </b-col>
-                    </b-form-row>
-                    <b-form-row>
-                        <b-col>
-                            <b-form-group>
-                                <b-checkbox
+                                </BFormGroup>
+                            </BFormRow>
+                        </BCol>
+                    </BFormRow>
+                    <BFormRow>
+                        <BCol>
+                            <BFormGroup>
+                                <BFormCheckbox
                                     v-model="sortByClasse"
                                 >
                                     Trier par classe
-                                </b-checkbox>
-                            </b-form-group>
-                        </b-col>
-                    </b-form-row>
-                    <b-form-row>
-                        <b-col>
-                            <b-form-group>
-                                <b-checkbox
+                                </BFormCheckbox>
+                            </BFormGroup>
+                        </BCol>
+                    </BFormRow>
+                    <BFormRow>
+                        <BCol>
+                            <BFormGroup>
+                                <BFormCheckbox
                                     v-model="sortBySanction"
                                 >
                                     Trier par sanction
-                                </b-checkbox>
-                            </b-form-group>
-                        </b-col>
-                    </b-form-row>
-                    <b-form-row>
-                        <b-col>
-                            <b-form-group
+                                </BFormCheckbox>
+                            </BFormGroup>
+                        </BCol>
+                    </BFormRow>
+                    <BFormRow>
+                        <BCol>
+                            <BFormGroup
                                 label="Types de sanctions"
                             >
-                                <b-form-select
+                                <BFormSelect
                                     v-model="selectedSanctions"
                                     :options="optionsSanction"
                                     multiple
                                     :select-size="5"
                                 />
-                            </b-form-group>
-                        </b-col>
-                    </b-form-row>
-                    <b-form-row>
-                        <b-col>
-                            <b-form-group>
-                                <b-checkbox
+                            </BFormGroup>
+                        </BCol>
+                    </BFormRow>
+                    <BFormRow>
+                        <BCol>
+                            <BFormGroup>
+                                <BFormCheckbox
                                     v-model="sanction_not_done"
                                 >
                                     Sanctions non faites uniquement
-                                </b-checkbox>
-                            </b-form-group>
-                        </b-col>
-                    </b-form-row>
-                    <b-form-row>
-                        <b-col>
-                            <b-form-group>
-                                <b-checkbox
+                                </BFormCheckbox>
+                            </BFormGroup>
+                        </BCol>
+                    </BFormRow>
+                    <BFormRow>
+                        <BCol>
+                            <BFormGroup>
+                                <BFormCheckbox
                                     v-model="ownClass"
                                 >
                                     Uniquement ses classes
-                                </b-checkbox>
-                            </b-form-group>
-                        </b-col>
-                    </b-form-row>
-                </b-tab>
-            </b-tabs>
+                                </BFormCheckbox>
+                            </BFormGroup>
+                        </BCol>
+                    </BFormRow>
+                </BTab>
+            </BTabs>
         </b-modal>
     </div>
 </template>

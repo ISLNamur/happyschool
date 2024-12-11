@@ -18,56 +18,44 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-list-group-item :variant="value === null ? 'info' : ''">
+    <BListGroupItem :variant="modelValue === null ? 'info' : ''">
         <div class="d-flex w-100 justify-content-between">
-            <span :class="value ? 'text-success' : ''">
-                <b-icon
-                    v-if="value"
-                    icon="check"
-                />
-                <b-icon
-                    v-if="value == false"
-                    icon="x"
-                />
-                {{ !value && value !== null ? resourceDifficulty.difficulty : resourceDifficulty.resource }}
+            <span :class="modelValue ? 'text-success' : ''">
+                <IBiCheck v-if="modelValue" />
+                <IBiX v-if="modelValue == false" />
+                {{ !modelValue && modelValue !== null ? resourceDifficulty.difficulty : resourceDifficulty.resource }}
             </span>
-            <span>
-                <b-btn
-                    v-if="editMode && !value"
+            <BButtonGroup>
+                <BButton
+                    v-if="editMode && !modelValue"
                     variant="success"
-                    @click="$emit('input', true)"
+                    @click="$emit('update:modelValue', true)"
                     size="sm"
                 >
-                    <b-icon
-                        icon="check"
-                    />
+                    <IBiCheck />
                     Acquis
-                </b-btn>
-                <b-btn
-                    v-if="editMode && (value === true || value === null)"
+                </BButton>
+                <BButton
+                    v-if="editMode && (modelValue === true || modelValue === null)"
                     variant="danger"
-                    @click="$emit('input', false)"
+                    @click="$emit('update:modelValue', false)"
                     size="sm"
                 >
-                    <b-icon
-                        icon="x"
-                    />
+                    <IBiX />
                     Non acquis
-                </b-btn>
-                <b-btn
-                    v-if="editMode && value !== null"
+                </BButton>
+                <BButton
+                    v-if="editMode && modelValue !== null"
                     variant="outline-info"
-                    @click="$emit('input', null)"
+                    @click="$emit('update:modelValue', null)"
                     size="sm"
                 >
-                    <b-icon
-                        icon="arrow-counterclockwise"
-                    />
+                    <IBiArrowCounterclockwise />
                     Non considéré
-                </b-btn>
-            </span>
+                </BButton>
+            </BButtonGroup>
         </div>
-    </b-list-group-item>
+    </BListGroupItem>
 </template>
 
 <script>
@@ -81,7 +69,7 @@ export default {
             type: Object,
             default: () => {}
         },
-        value: {
+        modelValue: {
             type: Boolean,
             default: null,
         }

@@ -18,22 +18,19 @@
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import Vue from "vue";
-import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
+import {createApp} from "vue";
+import {createBootstrap} from "bootstrap-vue-next";
 
 import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap-vue/dist/bootstrap-vue.css";
-
-Vue.use(BootstrapVue);
-Vue.use(BootstrapVueIcons);
+import "bootstrap-vue-next/dist/bootstrap-vue-next.css";
 
 import router from "./admin/router/index.js";
 
 import AdminPage from "./admin/AdminPage.vue";
 
-import { createApp } from "vue";
 const app = createApp(AdminPage);
 
 app.use(router);
+app.use(createBootstrap());
 
 app.mount("#vue-app");

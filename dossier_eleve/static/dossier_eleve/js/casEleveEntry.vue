@@ -23,12 +23,12 @@
             appear
             name="fade"
         >
-            <b-card
+            <BCard
                 :class="'px-4 mt-2 current-card ' + cardClass"
                 no-body
             >
-                <b-row class="entry-title">
-                    <b-col>
+                <BRow class="entry-title">
+                    <BCol>
                         <h5>
                             <a
                                 class="clickable"
@@ -36,102 +36,96 @@
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >{{ title }}</a>
-                            <b-btn
+                            <BButton
                                 variant="link"
                                 size="sm"
                                 @click="filterStudent"
                             >
-                                <b-icon icon="funnel" />
-                            </b-btn>
+                                <IBiFunnel />
+                            </BButton>
                         </h5>
-                    </b-col>
-                    <b-col
+                    </BCol>
+                    <BCol
                         v-if="store.canAddCas"
                         sm="2"
                     >
-                        <div class="text-right">
-                            <b-btn
+                        <div class="text-end">
+                            <BButton
                                 variant="light"
                                 size="sm"
                                 :to="`/edit/${rowData.id}/`"
                                 class="card-link"
                             >
-                                <b-icon
-                                    icon="pencil-square"
-                                    variant="success"
+                                <IBiPencilSquare
+                                    color="green"
                                 />
-                            </b-btn>
-                            <b-btn
+                            </BButton>
+                            <BButton
                                 variant="light"
                                 size="sm"
                                 @click="deleteEntry"
                                 class="card-link"
                             >
-                                <b-icon
-                                    icon="trash-fill"
-                                    variant="danger"
+                                <IBiTrashFill
+                                    color="red"
                                 />
-                            </b-btn>
+                            </BButton>
                         </div>
-                    </b-col>
-                </b-row>
-                <b-row class="entry-subtitle">
+                    </BCol>
+                </BRow>
+                <BRow class="entry-subtitle">
                     <em>{{ subtitle }}</em>
-                    <b-dropdown
+                    <BDropdown
                         size="sm"
                         variant="link"
                         toggle-class="text-decoration-none"
                         no-caret
                     >
                         <template #button-content>
-                            <b-icon
-                                icon="paperclip"
-                                variant="primary"
+                            <IBiPaperclip
+                                color="blue"
                                 v-if="rowData.attachments.length > 0"
                             />
                         </template>
-                        <b-dropdown-item
+                        <BDropdownItem
                             v-for="a in attachments"
                             :key="a.id"
                             :href="`/dossier_eleve/attachment/${a.id}/`"
                         >
                             {{ a.filename }}
-                        </b-dropdown-item>
-                    </b-dropdown>
-                </b-row>
-                <b-row class="text-center">
-                    <b-col
+                        </BDropdownItem>
+                    </BDropdown>
+                </BRow>
+                <BRow class="text-center">
+                    <BCol
                         md="2"
                         class="category"
                     >
-                        <b-icon
-                            icon="info-circle-fill"
+                        <IBiInfoCircleFill
                             v-if="isInfo"
-                            variant="primary"
+                            color="blue"
                         />
-                        <b-icon
-                            icon="bell-fill"
+                        <IBiBellFill
                             v-else
-                            variant="danger"
+                            color="red"
                         />
                         {{ category }}
-                    </b-col>
-                    <b-col class="current-data mb-1 mr-1">
+                    </BCol>
+                    <BCol class="current-data mb-1 mr-1">
                         <span v-html="comment" />
-                        <b-btn
+                        <BButton
                             class="move-up"
                             size="sm"
                             variant="outline-primary"
                             v-if="comment.length > 150"
                             @click="expand = !expand"
                         >
-                            <b-icon
-                                :icon="expand ? 'chevron-double-up' : 'chevron-double-down'"
-                            />
-                        </b-btn>
-                    </b-col>
-                </b-row>
-            </b-card>
+                            <IBiChevronDoubleUp v-if="expand" />
+                            <IBiChevronDoubleDown v-else />
+                        </BButton>
+                    </BCol>
+                </BRow>
+            </BCard>
         </transition>
     </div>
 </template>
@@ -153,6 +147,7 @@ export default {
             default: () => {}
         },
     },
+    emits: ["delete", "filterStudent"],
     data: function () {
         return {
             expand: false,

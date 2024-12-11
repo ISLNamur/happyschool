@@ -19,31 +19,33 @@
 
 <template>
     <div>
-        <b-row class="mb-1">
-            <b-col
+        <BRow class="mb-1">
+            <BCol
                 cols="12"
                 md="8"
             >
-                <b-form
+                <BForm
                     inline
-                    class="mb-1"
+                    class="d-flex flex-row align-items-center flex-wrap"
                 >
-                    <b-form-group
+                    <BFormGroup
                         label="Date"
-                        class="mr-2"
+                        class="me-2"
                     >
-                        <b-overlay
+                        <BOverlay
                             :show="loading"
                             rounded="sm"
                         >
-                            <b-input
+                            <BFormInput
                                 type="date"
-                                :value="date"
-                                @input="changeDate"
+                                :model-value="date"
+                                @update:model-value="changeDate"
                             />
-                        </b-overlay>
-                    </b-form-group>
-                    <b-form-group label="Rechercher">
+                        </BOverlay>
+                    </BFormGroup>
+                    <BFormGroup
+                        label="Rechercher"
+                    >
                         <multiselect
                             ref="input"
                             :show-no-options="false"
@@ -64,10 +66,10 @@
                             </template>
                             <template #noOptions />
                         </multiselect>
-                    </b-form-group>
-                </b-form>
-            </b-col>
-        </b-row>
+                    </BFormGroup>
+                </BForm>
+            </BCol>
+        </BRow>
         <router-view
             :date="date"
             @clear-search="search = null"
@@ -125,8 +127,8 @@ export default {
         },
     },
     methods: {
-        changeDate: function (evt) {
-            let newPath = `/overview/${evt}/`;
+        changeDate: function (date) {
+            let newPath = `/overview/${date}/`;
 
             if ("classId" in this.$route.params) {
                 this.$router.push(`${newPath}class_view/${this.$route.params.classId}/`);

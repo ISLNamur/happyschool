@@ -18,35 +18,37 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-container>
-        <b-row>
+    <BContainer>
+        <BRow>
             <h3>Passage infirmerie : {{ this.id ? "Modification" : "Ajout" }}</h3>
-        </b-row>
-        <b-row>
-            <b-btn
-                class="mb-2"
-                to="/"
-            >
-                Retour à la liste des passages
-            </b-btn>
-        </b-row>
-        <b-row>
-            <b-col sm="4">
-                <b-img
+        </BRow>
+        <BRow>
+            <BCol>
+                <BButton
+                    class="mb-2"
+                    to="/"
+                >
+                    Retour à la liste des passages
+                </BButton>
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol sm="4">
+                <BImg
                     rounded
                     :src="photoPath"
                     fluid
                     alt="Photo de l'élève"
                 />
-            </b-col>
-            <b-col>
-                <b-form
+            </BCol>
+            <BCol>
+                <BForm
                     @submit="submit"
                     @reset="reset"
                 >
-                    <b-form-row>
-                        <b-col sm="8">
-                            <b-form-group
+                    <BFormRow>
+                        <BCol sm="8">
+                            <BFormGroup
                                 label="Nom"
                                 label-for="input-name"
                                 :state="inputStates.name"
@@ -72,30 +74,30 @@
                                 <template #invalid-feedback>
                                     {{ errorMsg('name') }}
                                 </template>
-                            </b-form-group>
-                        </b-col>
-                        <b-col sm="4">
-                            <b-form-group
+                            </BFormGroup>
+                        </BCol>
+                        <BCol sm="4">
+                            <BFormGroup
                                 label="Matricule"
                                 label-for="input-matricule"
                             >
-                                <b-form-input
+                                <BFormInput
                                     id="input-matricule"
                                     type="text"
                                     v-model="form.matricule_id"
                                     readonly
                                 />
-                            </b-form-group>
-                        </b-col>
-                    </b-form-row>
-                    <b-form-row>
-                        <b-col>
-                            <b-form-group
+                            </BFormGroup>
+                        </BCol>
+                    </BFormRow>
+                    <BFormRow>
+                        <BCol>
+                            <BFormGroup
                                 label="Motifs d'admissions :"
                                 label-for="input-admission"
                                 :state="inputStates.motifs_admission"
                             >
-                                <b-form-textarea
+                                <BFormTextarea
                                     id="input-admission"
                                     :rows="3"
                                     v-model="form.motifs_admission"
@@ -103,17 +105,17 @@
                                 <template #invalid-feedback>
                                     {{ errorMsg('motifs_admission') }}
                                 </template>
-                            </b-form-group>
-                        </b-col>
-                    </b-form-row>
-                    <b-form-row>
-                        <b-col>
-                            <b-form-group
+                            </BFormGroup>
+                        </BCol>
+                    </BFormRow>
+                    <BFormRow>
+                        <BCol>
+                            <BFormGroup
                                 label="Date de l'arrivée"
                                 label-for="input-date-arrive"
                                 :state="inputStates.datetime_arrive"
                             >
-                                <b-form-input
+                                <BFormInput
                                     id="input-date-arrive"
                                     type="date"
                                     v-model="dateArrive"
@@ -121,15 +123,15 @@
                                 <template #invalid-feedback>
                                     {{ errorMsg('datetime_arrive') }}
                                 </template>
-                            </b-form-group>
-                        </b-col>
-                        <b-col>
-                            <b-form-group
+                            </BFormGroup>
+                        </BCol>
+                        <BCol>
+                            <BFormGroup
                                 label="Heure de l'arrivée"
                                 label-for="input-time-arrive"
                                 :state="inputStates.datetime_arrive"
                             >
-                                <b-form-input
+                                <BFormInput
                                     id="input-time-arrive"
                                     type="time"
                                     v-model="timeArrive"
@@ -137,18 +139,18 @@
                                 <template #invalid-feedback>
                                     {{ errorMsg('datetime_arrive') }}
                                 </template>
-                            </b-form-group>
-                        </b-col>
-                    </b-form-row>
+                            </BFormGroup>
+                        </BCol>
+                    </BFormRow>
                     <div v-if="form.datetime_sortie || sortie=='1'">
-                        <b-form-row>
-                            <b-col>
-                                <b-form-group
+                        <BFormRow>
+                            <BCol>
+                                <BFormGroup
                                     label="Remarques de sortie :"
                                     label-for="input-remarques"
                                     :state="inputStates.non_field_errors"
                                 >
-                                    <b-form-textarea
+                                    <BFormTextarea
                                         id="input-remarque"
                                         :rows="3"
                                         v-model="form.remarques_sortie"
@@ -156,17 +158,17 @@
                                     <template #invalid-feedback>
                                         {{ errorMsg('non_field_errors') }}
                                     </template>
-                                </b-form-group>
-                            </b-col>
-                        </b-form-row>
-                        <b-form-row>
-                            <b-col>
-                                <b-form-group
+                                </BFormGroup>
+                            </BCol>
+                        </BFormRow>
+                        <BFormRow>
+                            <BCol>
+                                <BFormGroup
                                     label="Date de sortie"
                                     label-for="input-date-sortie"
                                     :state="inputStates.datetime_sortie"
                                 >
-                                    <b-form-input
+                                    <BFormInput
                                         id="input-date-sortie"
                                         type="date"
                                         v-model="dateSortie"
@@ -174,15 +176,15 @@
                                     <template #invalid-feedback>
                                         {{ errorMsg('datetime_sortie') }}
                                     </template>
-                                </b-form-group>
-                            </b-col>
-                            <b-col>
-                                <b-form-group
+                                </BFormGroup>
+                            </BCol>
+                            <BCol>
+                                <BFormGroup
                                     label="Heure de sortie"
                                     label-for="input-time-sortie"
                                     :state="inputStates.datetime_sortie"
                                 >
-                                    <b-form-input
+                                    <BFormInput
                                         id="input-time-sortie"
                                         type="time"
                                         v-model="timeSortie"
@@ -190,26 +192,26 @@
                                     <template #invalid-feedback>
                                         {{ errorMsg('datetime_sortie') }}
                                     </template>
-                                </b-form-group>
-                            </b-col>
-                        </b-form-row>
+                                </BFormGroup>
+                            </BCol>
+                        </BFormRow>
                     </div>
-                    <b-form-row>
-                        <b-alert show>
+                    <BFormRow>
+                        <BAlert show>
                             Un email sera envoyé aux différents responsables de l'élève.
-                        </b-alert>
-                    </b-form-row>
-                    <b-button
+                        </BAlert>
+                    </BFormRow>
+                    <BButton
                         type="submit"
                         variant="primary"
                         :disabled="sending"
                     >
                         Soumettre
-                    </b-button>
-                </b-form>
-            </b-col>
-        </b-row>
-    </b-container>
+                    </BButton>
+                </BForm>
+            </BCol>
+        </BRow>
+    </BContainer>
 </template>
 
 <script>
@@ -222,11 +224,17 @@ import Moment from "moment";
 import "moment/dist/locale/fr";
 Moment.locale("fr");
 
+import { useToastController } from "bootstrap-vue-next";
+
 import { infirmerieStore } from "./stores/index.js";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        return { show };
+    },
     props: {
         sortie:{
             type: String,
@@ -389,11 +397,12 @@ export default {
                 this.errors = {};
                 this.$emit("update");
                 this.sending = false;
-                this.$router.push("/",() => {
-                    this.$root.$bvToast.toast("Les données ont bien été envoyées", {
+                this.$router.push("/").then(() => {
+                    this.show({props: {
+                        body: "Les données ont bien été envoyées",
                         variant: "success",
                         noCloseButton: true,
-                    });
+                    }});
                 });
             }).catch(function (error) {
                 modal.sending = false;

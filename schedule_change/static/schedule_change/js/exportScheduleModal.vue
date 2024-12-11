@@ -27,7 +27,7 @@
         @hidden="resetModal"
     >
         <template #modal-footer="">
-            <b-btn
+            <BButton
                 variant="primary"
                 :href="summaryUrl"
                 target="_blank"
@@ -35,45 +35,45 @@
                 @click="$refs.exportModal.hide()"
             >
                 {{ buttonOkText }}
-            </b-btn>
+            </BButton>
         </template>
-        <b-row class="mt-2">
-            <b-col>
-                <b-form-row>
-                    <b-form-group label="À partir du">
+        <BRow class="mt-2">
+            <BCol>
+                <BFormRow>
+                    <BFormGroup label="À partir du">
                         <input
                             type="date"
                             v-model="export_from"
                             :max="export_to"
                         >
-                    </b-form-group>
-                </b-form-row>
-            </b-col>
-            <b-col>
-                <b-form-row>
-                    <b-form-group label="Jusqu'au">
+                    </BFormGroup>
+                </BFormRow>
+            </BCol>
+            <BCol>
+                <BFormRow>
+                    <BFormGroup label="Jusqu'au">
                         <input
                             type="date"
                             v-model="export_to"
                             :min="export_from"
                         >
-                    </b-form-group>
-                </b-form-row>
-            </b-col>
-        </b-row>
-        <b-row
+                    </BFormGroup>
+                </BFormRow>
+            </BCol>
+        </BRow>
+        <BRow
             class="ml-2"
             v-if="store.canAdd"
         >
-            <b-form-group>
-                <b-checkbox v-model="sendToTeachers">
+            <BFormGroup>
+                <BFormCheckbox v-model="sendToTeachers">
                     Envoyer le récapitulatif aux enseignants concernés
-                </b-checkbox>
-            </b-form-group>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-form-textarea
+                </BFormCheckbox>
+            </BFormGroup>
+        </BRow>
+        <BRow>
+            <BCol>
+                <BFormTextarea
                     v-if="sendToTeachers"
                     v-model="message"
                     placeholder="Message à inclure dans l'email"
@@ -81,8 +81,8 @@
                     max-rows="6"
                     maxlength="240"
                 />
-            </b-col>
-        </b-row>
+            </BCol>
+        </BRow>
     </b-modal>
 </template>
 

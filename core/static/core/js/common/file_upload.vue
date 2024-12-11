@@ -18,19 +18,19 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-list-group-item>
-        <b-spinner
+    <BListGroupItem>
+        <BSpinner
             v-if="loading"
             small
         />
-        <b-btn
+        <BButton
             v-else
             @click="deleteEntry"
             size="sm"
             variant="danger"
         >
             Enlever
-        </b-btn>
+        </BButton>
         <span v-if="file">{{ file.name }}</span>
         <span v-else>
             Voir <a
@@ -39,7 +39,7 @@
                 :href="link"
             >{{ filename.substring(removestr, 40) }}</a>
         </span>
-    </b-list-group-item>
+    </BListGroupItem>
 </template>
 
 <script>

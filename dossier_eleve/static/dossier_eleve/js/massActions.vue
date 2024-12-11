@@ -19,26 +19,26 @@
 
 <template>
     <div>
-        <b-tabs v-model="tabIndex">
-            <b-tab title="Reporter">
+        <BTabs v-model="tabIndex">
+            <BTab title="Reporter">
                 <p><strong>Reporter les sanctions sélectionnées</strong></p>
                 <p>Les sanctions sélectionnées seront reportées d'une semaine</p>
-            </b-tab>
-            <b-tab
+            </BTab>
+            <BTab
                 title="Changer de sanction"
                 disabled
             >
                 <strong>Changer de type de sanctions</strong>
-                <b-form-group label="Choississez vers quelle sanction changer">
+                <BFormGroup label="Choississez vers quelle sanction changer">
                     En cours de construction…
-                </b-form-group>
-            </b-tab>
-        </b-tabs>
+                </BFormGroup>
+            </BTab>
+        </BTabs>
         <div>
-            <b-list-group>
+            <BListGroup>
                 Nombre de sanctions sélectionnées : {{ selected.length }}
-                <b-form-checkbox-group v-model="selected">
-                    <b-list-group-item
+                <BFormCheckboxGroup v-model="selected">
+                    <BListGroupItem
                         class="d-flex justify-content-between align-items-center"
                         v-for="sanction in sanctions"
                         :key="sanction.id"
@@ -53,20 +53,20 @@
                         </span>
                         <span>
                             {{ sanction.sanction_decision.sanction_decision }}
-                            <b-form-checkbox
+                            <BFormCheckbox
                                 class=""
                                 :value="sanction.id"
                             />
                         </span>
-                    </b-list-group-item>
-                </b-form-checkbox-group>
-                <b-btn
+                    </BListGroupItem>
+                </BFormCheckboxGroup>
+                <BButton
                     variant="success"
                     @click="reportSanctions"
                 >
                     {{ tabIndex ? "Changer" : "Reporter" }}
-                </b-btn>
-            </b-list-group>
+                </BButton>
+            </BListGroup>
         </div>
     </div>
 </template>

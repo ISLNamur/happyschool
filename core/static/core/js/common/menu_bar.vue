@@ -19,70 +19,70 @@
 
 <template>
     <div>
-        <b-navbar
+        <BNavbar
             toggleable="lg"
             type="light"
             variant="light"
         >
-            <b-nav-toggle target="nav_text_collapse" />
-            <b-navbar-brand href="/">
+            <BNavbarToggle target="nav_text_collapse" />
+            <BNavbarBrand href="/">
                 <img
                     id="logo-school"
                     :src="'/media/core/logo.png'"
                     class="d-inline-block align-top"
                 >
                 HappySchool
-            </b-navbar-brand>
-            <b-collapse
+            </BNavbarBrand>
+            <BCollapse
                 is-nav
                 id="nav_text_collapse"
             >
-                <b-navbar-nav
+                <BNavbarNav
                     is-nav-bar
                     v-for="(app) in menuInfo.apps"
                     :key="app.app"
                 >
-                    <b-nav-item
+                    <BNavItem
                         :active="app.active"
                         :href="app.url"
                         :target="app.new_tab ? '_blank' : ''"
                         :rel="app.new_tab ? 'noreferrer noopener' : ''"
                     >
                         {{ app.display }}
-                        <b-badge
+                        <BBadge
                             v-if="app.new_items && (app.new_items > 0 || app.new_items.length > 1)"
                             variant="primary"
                         >
                             {{ app.new_items }}
-                        </b-badge>
-                    </b-nav-item>
-                </b-navbar-nav>
-                <b-navbar-nav class="ml-auto">
-                    <b-nav-text><strong>{{ menuInfo.full_name }}</strong></b-nav-text>
-                    <b-nav-item-dropdown
+                        </BBadge>
+                    </BNavItem>
+                </BNavbarNav>
+                <BNavbarNav class="ml-auto">
+                    <BNavText><strong>{{ menuInfo.full_name }}</strong></BNavText>
+                    <BNavItem-dropdown
                         text="Options"
                         right
                     >
-                        <b-dropdown-item
+                        <BDropdownItem
                             v-if="userMatricule"
                             :href="`/annuaire/#/person/responsible/${userMatricule}/`"
                         >
                             Profil
-                        </b-dropdown-item>
-                        <b-dropdown-item
+                        </BDropdownItem>
+                        <BDropdownItem
                             v-if="menuInfo.admin_settings"
                             href="/core/admin/"
                         >
                             Administration
-                        </b-dropdown-item>
-                        <b-dropdown-divider />
-                        <b-dropdown-item href="/logout/">
+                        </BDropdownItem>
+                        <BDropdownDivider />
+                        <BDropdownItem href="/logout/">
                             Se déconnecter
-                        </b-dropdown-item>
-                    </b-nav-item-dropdown>
-                </b-navbar-nav>
-            </b-collapse>
-        </b-navbar>
+                        </BDropdownItem>
+                    </BNavItem-dropdown>
+                </BNavbarNav>
+            </BCollapse>
+        </BNavbar>
     </div>
 </template>
 

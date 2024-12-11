@@ -21,52 +21,58 @@
 <template>
     <div>
         <h4>Mise à jour</h4>
-        <b-row>
-            <b-alert
+        <BRow>
+            <BAlert
                 show
                 variant="warning"
             >
                 Une fois la mise à jour terminée, veuillez redémarrer HappySchool.
                 Attention, une fois la mise à jour enclenchée, elle continuera même si la page est rafraîchie.
-            </b-alert>
-        </b-row>
-        <b-row>
-            <b-btn
+            </BAlert>
+        </BRow>
+        <BRow>
+            <BButton
                 @click="runUpdate"
                 :disabled="updating"
             >
-                <b-spinner
+                <BSpinner
                     v-if="updating"
                 />
                 Mettre à jour
-            </b-btn>
-            <b-btn
+            </BButton>
+            <BButton
                 variant="danger"
                 @click="runRestart"
             >
                 Redémarrer HappySchool
-            </b-btn>
-        </b-row>
-        <b-row class="mt-2">
-            <b-col>
-                <b-card
+            </BButton>
+        </BRow>
+        <BRow class="mt-2">
+            <BCol>
+                <BCard
                     bg-variant="dark"
                     text-variant="white"
                 >
                     <p class="card-text console">
                         {{ updateState }}
                     </p>
-                </b-card>
-            </b-col>
-        </b-row>
+                </BCard>
+            </BCol>
+        </BRow>
     </div>
 </template>
 
 <script>
 import axios from "axios";
 
+import { useToastController } from "bootstrap-vue-next";
+
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        return { show };
+    },
     data: function () {
         return {
             updating: false,
@@ -97,11 +103,12 @@ export default {
                 document.location.reload(true);
             }, 10000);
             axios.get("/core/api/restart/", token);
-            this.$bvToast.toast("La page sera automatiquement rafraîchie dans 10 secondes.", {
+            this.show({props: {
+                body: "La page sera automatiquement rafraîchie dans 10 secondes.",
                 title: "Attention",
                 variant: "danger",
                 autoHideDelay: 10000,
-            });
+            }});
         }
     }
 };

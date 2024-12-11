@@ -23,21 +23,21 @@
             class="loading"
             v-if="!loaded"
         />
-        <b-container
+        <BContainer
             v-if="loaded"
             :fluid="fullscreen"
         >
-            <b-row>
+            <BRow>
                 <h2>Changement d'horaire</h2>
-            </b-row>
-            <b-row v-if="!fullscreen">
-                <b-col
+            </BRow>
+            <BRow v-if="!fullscreen">
+                <BCol
                     cols="12"
                     lg="3"
                 >
-                    <b-form-group>
+                    <BFormGroup>
                         <div>
-                            <b-dropdown
+                            <BDropdown
                                 v-if="store.canAdd"
                                 split
                                 split-to="/schedule_form/-1/"
@@ -45,37 +45,31 @@
                                 class="w-100"
                             >
                                 <template #button-content>
-                                    <b-icon
-                                        icon="plus"
+                                    <IBiPlus
                                         scale="1.5"
                                     />
                                     Ajouter un changement
                                 </template>
-                                <b-dropdown-item
+                                <BDropdownItem
                                     to="/mass_schedule_change/"
                                     variant="success"
                                 >
-                                    <b-icon
-                                        icon="list"
-                                    />
+                                    <IBiList />
                                     Génerer des changements
-                                </b-dropdown-item>
-                            </b-dropdown>
-                            <b-btn
+                                </BDropdownItem>
+                            </BDropdown>
+                            <BButton
                                 variant="secondary"
                                 @click="openModal('export-schedule-modal')"
                                 class="w-100 mt-1"
                             >
-                                <b-icon
-                                    icon="file-earmark"
-                                    scale="1"
-                                />
+                                <IBiFileEarmark scale="1" />
                                 Sommaire
-                            </b-btn>
+                            </BButton>
                         </div>
-                    </b-form-group>
-                </b-col>
-                <b-col>
+                    </BFormGroup>
+                </BCol>
+                <BCol>
                     <filters
                         app="schedule_change"
                         model="schedule_change"
@@ -85,16 +79,9 @@
                         :show-search="showFilters"
                         @toggle-search="showFilters = !showFilters"
                     />
-                </b-col>
-            </b-row>
-            <b-overlay :show="loading">
-                <b-pagination-nav
-                    v-if="!fullscreen"
-                    class="mt-1"
-                    :number-of-pages="numberOfPage"
-                    :link-gen="pageLink"
-                    use-router
-                />
+                </BCol>
+            </BRow>
+            <BOverlay :show="loading">
                 <div
                     v-for="(group, index) in entriesGrouped"
                     :key="index"
@@ -102,49 +89,51 @@
                     <hr><h5 class="day">
                         {{ calendar(group.day) }}
                     </h5>
-                    <b-card
+                    <BCard
                         class="d-none d-md-block d-lg-block d-xl-block"
                         no-body
                     >
-                        <b-row
+                        <BRow
                             class="text-center"
                             v-if="!fullscreen"
                         >
-                            <b-col :cols="fullscreen ? 3 : 2">
+                            <BCol :cols="fullscreen ? 3 : 2">
                                 <strong>Changement</strong>
-                            </b-col>
-                            <b-col :cols="fullscreen ? 2 : 1">
+                            </BCol>
+                            <BCol :cols="fullscreen ? 2 : 1">
                                 <strong>Classes</strong>
-                            </b-col>
-                            <b-col :cols="fullscreen ? '' : 3">
+                            </BCol>
+                            <BCol :cols="fullscreen ? '' : 3">
                                 <strong>Absent(s)/indisponible(s)</strong>
-                            </b-col>
-                        </b-row>
+                            </BCol>
+                        </BRow>
                         <table
                             v-else
                             width="100%"
                         >
-                            <tr>
-                                <td width="20%">
-                                    <strong>Changement</strong>
-                                </td>
-                                <td width="20%">
-                                    <strong>Classes</strong>
-                                </td>
-                                <td>
-                                    <strong>Absent(s)/indisponible(s)</strong>
-                                </td>
-                                <td />
-                            </tr>
+                            <tbody>
+                                <tr>
+                                    <td width="20%">
+                                        <strong>Changement</strong>
+                                    </td>
+                                    <td width="20%">
+                                        <strong>Classes</strong>
+                                    </td>
+                                    <td>
+                                        <strong>Absent(s)/indisponible(s)</strong>
+                                    </td>
+                                    <td />
+                                </tr>
+                            </tbody>
                         </table>
-                    </b-card>
+                    </BCard>
                     <div
                         v-for="(subGroup, idx) in group.sameDayEntries"
                         :key="idx"
                     >
                         <hr class="smallhr"><strong>{{ time(subGroup) }}</strong>
                         <hr class="smallhr">
-                        <b-overlay
+                        <BOverlay
                             v-if="store.ready"
                             rounded="sm"
                         >
@@ -155,18 +144,19 @@
                                 @delete="askDelete(entry)"
                                 :fullscreen="fullscreen"
                             />
-                        </b-overlay>
+                        </BOverlay>
                     </div>
                 </div>
-                <b-pagination-nav
+                <BPagination
                     v-if="!fullscreen"
+                    :value="currentPage"
+                    :total-rows="entriesCount"
+                    :per-page="entriesPerPage"
+                    @update:model-value="changePage"
                     class="mt-1"
-                    :number-of-pages="numberOfPage"
-                    :link-gen="pageLink"
-                    use-router
                 />
-            </b-overlay>
-        </b-container>
+            </BOverlay>
+        </BContainer>
         <b-modal
             ref="deleteModal"
             cancel-title="Annuler"
@@ -184,12 +174,6 @@
 </template>
 
 <script>
-import Vue from "vue";
-import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
-import "bootstrap-vue/dist/bootstrap-vue.css";
-Vue.use(BootstrapVue);
-Vue.use(BootstrapVueIcons);
-
 import Moment from "moment";
 import "moment/dist/locale/fr";
 Moment.locale("fr");
@@ -235,21 +219,15 @@ export default {
             this.loadEntries();
         }
     },
-    computed: {
-        numberOfPage: function () {
-            return Math.ceil(this.entriesCount/this.entriesPerPage);
-        }
-    },
     methods: {
         /**
-         * Generate link to other pages.
+         * Move to another page.
          * 
          * @param {Number} pageNum The page number
          */
-        pageLink: function (pageNum) {
-            return {
-                path: `/page/${pageNum}/`,
-            };
+        changePage: function (pageNum) {
+            this.$router.push(`/page/${pageNum}/`);
+            scroll(0, 0);
         },
         calendar: function(date) {
             return Moment(date).calendar().split(" à")[0];

@@ -20,50 +20,45 @@
 <template>
     <div>
         <app-menu :menu-info="menuInfo" />
-        <b-container v-cloak>
+        <BContainer v-cloak>
             <h1>Gestion du personnels</h1>
-            <b-row>
+            <BRow>
                 <p class="card-text mb-2 ml-3">
-                    <b-btn
+                    <BButton
                         v-b-modal.addGroupModal
                         variant="primary"
                     >
-                        <b-icon
-                            icon="plus"
+                        <IBiPlus
                             scale="1.5"
                         />
                         Ajouter un groupe
-                    </b-btn>
+                    </BButton>
                 </p>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <b-card-group columns>
-                        <b-card header="<b>Secrétaires</b>">
-                            <b-list-group>
-                                <b-list-group-item
+            </BRow>
+            <BRow>
+                <BCol>
+                    <BCardGroup columns>
+                        <BCard header="<b>Secrétaires</b>">
+                            <BListGroup>
+                                <BListGroupItem
                                     v-for="item in secretary"
                                     :key="item.pk"
                                 >
                                     {{ item.last_name }} {{ item.first_name }}
-                                </b-list-group-item>
-                            </b-list-group>
-                        </b-card>
-                        <b-card>
+                                </BListGroupItem>
+                            </BListGroup>
+                        </BCard>
+                        <BCard>
                             <template #header>
                                 <b>Autres personnels</b>
-                                <b-icon
+                                <IBiInfoCircle
                                     id="others-info"
-                                    icon="info-circle"
                                     variant="primary"
-                                />
-                                <b-tooltip
-                                    target="others-info"
-                                    title="Personnes responsables"
+                                    v-b-tooltip="'Personnes responsables'"
                                 />
                             </template>
-                            <b-list-group>
-                                <b-list-group-item
+                            <BListGroup>
+                                <BListGroupItem
                                     v-for="item in others"
                                     :key="item.pk"
                                     class="d-flex justify-content-between align-items-center"
@@ -71,65 +66,61 @@
                                 >
                                     {{ item.last_name }} {{ item.first_name }}
                                     <div>
-                                        <b-btn
+                                        <BButton
                                             v-b-modal.addModal
                                             variant="light"
                                             @click="fillModal(item)"
                                         >
-                                            <b-icon
-                                                icon="square-pencil"
+                                            <IBiSquare
                                                 scale="1"
-                                                variant="success"
+                                                color="green"
                                             />
-                                        </b-btn>
-                                        <b-btn
+                                        </BButton>
+                                        <BButton
                                             v-b-modal.deleteModal
                                             variant="light"
                                             class="card-link"
                                             @click="currentItem = item"
                                         >
-                                            <b-icon
-                                                icon="trash-fill"
+                                            <IBiTrashFill
                                                 variant="danger"
                                             />
-                                        </b-btn>
+                                        </BButton>
                                     </div>
-                                </b-list-group-item>
-                            </b-list-group>
+                                </BListGroupItem>
+                            </BListGroup>
                             <p class="card-text mt-2">
-                                <b-btn
+                                <BButton
                                     v-b-modal.addModal
                                     variant="light"
                                 >
-                                    <b-icon
-                                        icon="plus"
+                                    <IBiPlus
                                         variant="success"
                                     />
                                     Ajouter
-                                </b-btn>
+                                </BButton>
                             </p>
-                        </b-card>
-                        <b-card
+                        </BCard>
+                        <BCard
                             v-for="g in groups"
                             :key="g.id"
                         >
                             <template #header>
                                 <b>{{ g.name }}</b>
-                                <b-btn
+                                <BButton
                                     v-b-modal.deleteGroupModal
                                     variant="light"
                                     class="card-link"
                                     @click="currentGroup = g"
                                 >
-                                    <b-icon
-                                        icon="dash"
+                                    <IBiDash
                                         scale="1.5"
-                                        variant="danger"
+                                        color="red"
                                     />
-                                </b-btn>
+                                </BButton>
                             </template>
-                            <b-list-group>
-                                <b-list-group-item
+                            <BListGroup>
+                                <BListGroupItem
                                     v-for="p in otherEmails[g.id]"
                                     :key="p.id"
                                     v-b-popover.hover="p.email"
@@ -137,49 +128,46 @@
                                 >
                                     {{ p.last_name }} {{ p.first_name }}
                                     <div>
-                                        <b-btn
+                                        <BButton
                                             v-b-modal.addModal
                                             variant="light"
                                             @click="fillModal(p)"
                                         >
-                                            <b-icon
-                                                icon="pencil-square"
+                                            <IBiPencilSquare
                                                 variant="success"
                                             />
-                                        </b-btn>
-                                        <b-btn
+                                        </BButton>
+                                        <BButton
                                             v-b-modal.deleteModal
                                             variant="light"
                                             class="card-link"
                                             @click="currentItem = p"
                                         >
-                                            <b-icon
-                                                icon="trash-fill"
+                                            <IBiTrashFill
                                                 variant="danger"
                                             />
-                                        </b-btn>
+                                        </BButton>
                                     </div>
-                                </b-list-group-item>
-                            </b-list-group>
+                                </BListGroupItem>
+                            </BListGroup>
                             <p class="card-text mt-2">
-                                <b-btn
+                                <BButton
                                     v-b-modal.addModal
                                     variant="light"
                                     @click="group = g.id"
                                 >
-                                    <b-icon
-                                        icon="plus"
+                                    <IBiPlus
                                         scale="1.5"
                                         variant="success"
                                     />
                                     Ajouter
-                                </b-btn>
+                                </BButton>
                             </p>
-                        </b-card>
-                    </b-card-group>
-                </b-col>
-            </b-row>
-        </b-container>
+                        </BCard>
+                    </BCardGroup>
+                </BCol>
+            </BRow>
+        </BContainer>
         <b-modal
             id="deleteModal"
             cancel-title="Annuler"
@@ -207,13 +195,13 @@
             @ok="addGroup"
             @hidden="resetGroupModal"
         >
-            <b-form>
-                <b-form-input
+            <BForm>
+                <BFormInput
                     type="text"
                     v-model="groupName"
                     placeholder="Nom du groupe"
                 />
-            </b-form>
+            </BForm>
         </b-modal>
         <b-modal
             id="addModal"
@@ -226,7 +214,7 @@
             @hidden="resetModal"
         >
             <form>
-                <b-form-input
+                <BFormInput
                     type="text"
                     v-model="last_name"
                     placeholder="Nom"
@@ -234,10 +222,10 @@
                     aria-describedby="lastNameFeedback"
                     :state="inputStates.last_name"
                 />
-                <b-form-invalid-feedback id="lastNameFeedback">
+                <BFormInvalidFeedback id="lastNameFeedback">
                     {{ errorMsg('last_name') }}
-                </b-form-invalid-feedback>
-                <b-form-input
+                </BFormInvalidFeedback>
+                <BFormInput
                     type="text"
                     v-model="first_name"
                     placeholder="Prénom"
@@ -245,10 +233,10 @@
                     aria-describedby="firstNameFeedback"
                     :state="inputStates.first_name"
                 />
-                <b-form-invalid-feedback id="firstNameFeedback">
+                <BFormInvalidFeedback id="firstNameFeedback">
                     {{ errorMsg('first_name') }}
-                </b-form-invalid-feedback>
-                <b-form-input
+                </BFormInvalidFeedback>
+                <BFormInput
                     type="email"
                     v-model="email"
                     placeholder="Email"
@@ -256,24 +244,20 @@
                     aria-describedby="emailFeedback"
                     :state="inputStates.email"
                 />
-                <b-form-invalid-feedback id="emailFeedback">
+                <BFormInvalidFeedback id="emailFeedback">
                     {{ errorMsg('email') }}
-                </b-form-invalid-feedback>
+                </BFormInvalidFeedback>
             </form>
         </b-modal>
     </div>
 </template>
 
 <script>
-import Vue from "vue";
-import BootstrapVue, { BootstrapVueIcons } from "bootstrap-vue";
-import "bootstrap-vue/dist/bootstrap-vue.css";
-Vue.use(BootstrapVue);
-Vue.use(BootstrapVueIcons);
-
 import axios from "axios";
 
 import Menu from "@s:core/js/common/menu_bar.vue";
+
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
     data: function () {
@@ -369,7 +353,6 @@ export default {
                 });
         },
         deleteCoreEntry() {
-            let token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             let isCore = !("group" in this.currentItem);
             let path = isCore ? "/core/api/members/" : "/mail_notification/api/other_email/";
             let id = isCore ? this.currentItem.pk : this.currentItem.id;
@@ -386,7 +369,6 @@ export default {
                 });
         },
         deleteGroup() {
-            let token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             let path = "/mail_notification/api/other_email_group/" + this.currentGroup.id + "/";
             axios.delete(path, token)
                 .then(() => {
@@ -399,7 +381,6 @@ export default {
         addGroup(evt) {
             evt.preventDefault();
 
-            let token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
             let data = {name: this.groupName};
             axios.post("/mail_notification/api/other_email_group/", data, token)
                 .then(response => {

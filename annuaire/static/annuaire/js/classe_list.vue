@@ -18,101 +18,102 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-row>
-        <b-col>
+    <BRow align-h="end">
+        <BCol>
             <div
                 v-if="students.length > 0"
-                class="mb-2 text-right"
+                class="mb-2 text-end"
             >
-                <b-button-group>
-                    <b-button
+                <BButtonGroup>
+                    <BButton
                         variant="outline-primary"
                         target="_blank"
                         rel="noopener noreferrer"
                         :href="getClassePhoto"
                     >
-                        <b-icon icon="image" />
+                        <IBiImage />
                         Photos
-                    </b-button>
-                    <b-button
+                    </BButton>
+                    <BButton
                         v-if="canSeeSummary"
                         variant="outline-secondary"
-                        v-b-modal.summaryclass
+                        @click="summaryClassModal = !summaryClassModal"
                     >
-                        <b-icon icon="file-pdf" />
+                        <IBiFilePdf />
                         Récapitulatifs
-                    </b-button>
-                    <b-dropdown
+                    </BButton>
+                    <BDropdown
                         v-if="store.settings.show_credentials"
                         text="Liste identifiants"
                         variant="outline-secondary"
                     >
-                        <b-dropdown-item
+                        <BDropdownItem
                             target="_blank"
                             rel="noopener noreferrer"
                             :href="getClasseListExcel"
                         >
                             Fichier Excel
-                        </b-dropdown-item>
-                        <b-dropdown-item
+                        </BDropdownItem>
+                        <BDropdownItem
                             target="_blank"
                             rel="noopener noreferrer"
                             :href="getClasseListPDF"
                         >
                             Fichier PDF
-                        </b-dropdown-item>
-                    </b-dropdown>
-                </b-button-group>
+                        </BDropdownItem>
+                    </BDropdown>
+                </BButtonGroup>
             </div>
             <p v-else>
                 Il n'y a pas d'élèves dans cette classe.
             </p>
-            <b-list-group class="text-center">
-                <b-list-group-item
+            <BListGroup class="text-center">
+                <BListGroupItem
                     v-for="s in students"
                     :key="s.matricule"
                     button
                     @click="selectStudent(s.matricule)"
                 >
                     {{ s.display }}
-                </b-list-group-item>
-            </b-list-group>
-        </b-col>
-        <b-modal
+                </BListGroupItem>
+            </BListGroup>
+        </BCol>
+        <BModal
             id="summaryclass"
+            v-model="summaryClassModal"
             ok-only
         >
-            <b-row>
-                <b-col>
-                    <b-form-group label="À partir de ">
-                        <b-input
+            <BRow>
+                <BCol>
+                    <BFormGroup label="À partir de ">
+                        <BFormInput
                             type="date"
                             v-model="date_from"
                         />
-                    </b-form-group>
-                    <b-form-group label="Jusqu'à ">
-                        <b-input
+                    </BFormGroup>
+                    <BFormGroup label="Jusqu'à ">
+                        <BFormInput
                             type="date"
                             v-model="date_to"
                         />
-                    </b-form-group>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col class="text-center">
-                    <b-btn
+                    </BFormGroup>
+                </BCol>
+            </BRow>
+            <BRow>
+                <BCol class="text-center">
+                    <BButton
                         :href="`/annuaire/summary/class/${classe}/${date_from}/${date_to}/`"
                         target="_blank"
                         variant="primary"
                         :disabled="!date_from || !date_to"
                     >
-                        <b-icon icon="file-pdf" />
+                        <IBiFilePdf />
                         Télécharger
-                    </b-btn>
-                </b-col>
-            </b-row>
-        </b-modal>
-    </b-row>
+                    </BButton>
+                </BCol>
+            </BRow>
+        </BModal>
+    </BRow>
 </template>
 
 <script>
@@ -134,6 +135,7 @@ export default {
             date_from: null,
             date_to: null,
             store: annuaireStore(),
+            summaryClassModal: false,
         };
     },
     watch: {

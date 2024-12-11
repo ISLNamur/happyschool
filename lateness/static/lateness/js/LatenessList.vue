@@ -19,279 +19,269 @@
 
 <template>
     <div>
-        <div
-            class="loading"
-            v-if="!loaded"
-        />
-        <app-menu
-            v-if="loaded"
-            :menu-info="menuInfo"
-        />
-        <b-container v-if="loaded">
+        <BContainer>
             <h1>Retards des élèves</h1>
-            <b-row class="mb-1">
-                <b-col
-                    sm="12"
-                    :md="store.settings.enable_camera_scan ? '8' : '10' "
-                >
-                    <multiselect
-                        ref="input"
-                        :show-no-options="false"
-                        :internal-search="false"
-                        :options="searchOptions"
-                        @search-change="getSearchOptions"
-                        :loading="searchLoading"
-                        placeholder="Rechercher un étudiant"
-                        select-label=""
-                        selected-label="Sélectionné"
-                        deselect-label=""
-                        label="display"
-                        track-by="matricule"
-                        v-model="search"
+            <BOverlay :show="loading">
+                <BRow class="mb-1">
+                    <BCol
+                        sm="12"
+                        :md="store.settings.enable_camera_scan ? '8' : '10' "
                     >
-                        <template #noResult>
-                            Aucune personne trouvée.
-                        </template>
-                    </multiselect>
-                </b-col>
-                <b-col
-                    cols="3"
-                    sm="2"
-                    class="mt-1 mt-md-0"
-                >
-                    <b-button
-                        :disabled="!search || addingStudent"
-                        @click="addStudent"
-                    >
-                        <b-spinner
-                            v-if="addingStudent"
-                            small
-                        />
-                        Ajouter
-                    </b-button>
-                </b-col>
-                <b-col
-                    v-if="store.settings.enable_camera_scan"
-                    cols="3"
-                    sm="2"
-                    class="mt-1 mt-md-0"
-                >
-                    <b-btn @click="scanCode">
-                        Scanner
-                    </b-btn>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col
-                    v-if="store.settings.printer.length > 0"
-                    cols="5"
-                    md="4"
-                >
-                    <b-card
-                        bg-variant="light"
-                        no-body
-                        class="p-2"
-                    >
-                        <b-form-checkbox v-model="printing">
-                            Imprimer le retard
-                        </b-form-checkbox>
-                    </b-card>
-                </b-col>
-                <b-col
-                    cols="4"
-                    md="4"
-                >
-                    <b-card
-                        bg-variant="light"
-                        no-body
-                        class="p-2"
-                    >
-                        <b-form-checkbox v-model="justified">
-                            Retard justifié
-                        </b-form-checkbox>
-                    </b-card>
-                </b-col>
-                <b-col
-                    cols="3"
-                    md="4"
-                    v-if="store.settings.printer.length > 0 && availablePrinters.length > 1"
-                >
-                    <b-card
-                        bg-variant="light"
-                        no-body
-                        class="p-1"
-                    >
-                        <b-btn
-                            v-b-modal.printer-selection
-                            size="sm"
+                        <multiselect
+                            ref="input"
+                            :show-no-options="false"
+                            :internal-search="false"
+                            :options="searchOptions"
+                            @search-change="getSearchOptions"
+                            :loading="searchLoading"
+                            placeholder="Rechercher un étudiant"
+                            select-label=""
+                            selected-label="Sélectionné"
+                            deselect-label=""
+                            label="display"
+                            track-by="matricule"
+                            v-model="search"
                         >
-                            <b-icon icon="printer" />
-                            <span class="d-none d-md-inline">
-                                Imprimante :
-                            </span>
-                            {{ printer ? availablePrinters.find(p => p.value === printer).text : "" }}
-                        </b-btn>
-                    </b-card>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <filters
-                        app="lateness"
-                        model="lateness"
-                        ref="filters"
-                        @update="applyFilter"
-                        :store="store"
-                        :show-search="showFilters"
-                        @toggle-search="showFilters = !showFilters"
-                    />
-                </b-col>
-                <b-col
-                    v-if="store.hasSettingsPerm"
-                    cols="12"
-                    md="5"
-                    class="text-right"
+                            <template #noResult>
+                                Aucune personne trouvée.
+                            </template>
+                        </multiselect>
+                    </BCol>
+                    <BCol
+                        cols="3"
+                        sm="2"
+                        class="mt-1 mt-md-0"
+                    >
+                        <BButton
+                            :disabled="!search || addingStudent"
+                            @click="addStudent"
+                        >
+                            <BSpinner
+                                v-if="addingStudent"
+                                small
+                            />
+                            Ajouter
+                        </BButton>
+                    </BCol>
+                    <BCol
+                        v-if="store.settings.enable_camera_scan"
+                        cols="3"
+                        sm="2"
+                        class="mt-1 mt-md-0"
+                    >
+                        <BButton @click="scanCode">
+                            Scanner
+                        </BButton>
+                    </BCol>
+                </BRow>
+                <BRow>
+                    <BCol
+                        v-if="store.settings.printer.length > 0"
+                        cols="5"
+                        md="4"
+                    >
+                        <BCard
+                            bg-variant="light"
+                            no-body
+                            class="p-2"
+                        >
+                            <BFormCheckbox v-model="printing">
+                                Imprimer le retard
+                            </BFormCheckbox>
+                        </BCard>
+                    </BCol>
+                    <BCol
+                        cols="4"
+                        md="4"
+                    >
+                        <BCard
+                            bg-variant="light"
+                            no-body
+                            class="p-2"
+                        >
+                            <BFormCheckbox v-model="justified">
+                                Retard justifié
+                            </BFormCheckbox>
+                        </BCard>
+                    </BCol>
+                    <BCol
+                        cols="3"
+                        md="4"
+                        v-if="store.settings.printer.length > 0 && availablePrinters.length > 1"
+                    >
+                        <BCard
+                            bg-variant="light"
+                            no-body
+                            class="p-1"
+                        >
+                            <BButton
+                                v-b-modal.printer-selection
+                                size="sm"
+                            >
+                                <IBiPrinter />
+                                <span class="d-none d-md-inline">
+                                    Imprimante :
+                                </span>
+                                {{ printer ? availablePrinters.find(p => p.value === printer).text : "" }}
+                            </BButton>
+                        </BCard>
+                    </BCol>
+                </BRow>
+                <BRow>
+                    <BCol>
+                        <filters
+                            app="lateness"
+                            model="lateness"
+                            ref="filters"
+                            @update="applyFilter"
+                            :store="store"
+                            :show-search="showFilters"
+                            @toggle-search="showFilters = !showFilters"
+                            class="mt-2"
+                        />
+                    </BCol>
+                    <BCol
+                        v-if="store.hasSettingsPerm"
+                        cols="12"
+                        md="5"
+                        class="text-end"
+                    >
+                        <BDropdown
+                            text="Export"
+                            variant="outline-secondary"
+                            class="mt-1"
+                        >
+                            <BDropdownItem href="/lateness/proeco_list/AM/">
+                                Matin
+                            </BDropdownItem>
+                            <BDropdownItem href="/lateness/proeco_list/PM/">
+                                Après-midi
+                            </BDropdownItem>
+                            <BDropdownItem href="/lateness/proeco_list/DAY/">
+                                Journée
+                            </BDropdownItem>
+                        </BDropdown>
+                        <BButton
+                            @click="$refs['topLateness'].show();getTopList()"
+                            variant="outline-secondary"
+                            class="mt-1"
+                        >
+                            <IBiListOl />
+                            Top retards
+                        </BButton>
+                        <BButton
+                            variant="outline-warning"
+                            @click="promptChangeCount"
+                            class="mt-1"
+                        >
+                            <IBiGear />
+                            Début du comptage
+                        </BButton>
+                    </BCol>
+                </BRow>
+                <BRow>
+                    <BCol>
+                        <BPagination
+                            class="mt-1"
+                            :total-rows="entriesCount"
+                            v-model="currentPage"
+                            @update:model-value="changePage"
+                            :per-page="20"
+                        />
+                    </BCol>
+                </BRow>
+                <BRow>
+                    <BCol>
+                        <lateness-entry
+                            v-for="(lateness, index) in latenesses"
+                            :key="lateness.id"
+                            :lateness="lateness"
+                            ref="entries"
+                            @update="latenesses.splice(index, 1, $event)"
+                            @delete="askDelete(lateness)"
+                            @filter-student="filterStudent($event)"
+                        />
+                    </BCol>
+                </BRow>
+                <BModal
+                    ref="deleteModal"
+                    cancel-title="Annuler"
+                    hide-header
+                    centered
+                    @ok="deleteEntry"
+                    @cancel="currentEntry = null"
+                    :no-close-on-backdrop="true"
+                    :no-close-on-esc="true"
                 >
-                    <b-dropdown
-                        text="Export"
-                        variant="outline-secondary"
-                        class="mt-1"
-                    >
-                        <b-dropdown-item href="/lateness/proeco_list/AM/">
-                            Matin
-                        </b-dropdown-item>
-                        <b-dropdown-item href="/lateness/proeco_list/PM/">
-                            Après-midi
-                        </b-dropdown-item>
-                        <b-dropdown-item href="/lateness/proeco_list/DAY/">
-                            Journée
-                        </b-dropdown-item>
-                    </b-dropdown>
-                    <b-btn
-                        @click="$refs['topLateness'].show();getTopList()"
-                        variant="outline-secondary"
-                        class="mt-1"
-                    >
-                        <b-icon icon="list-ol" />
-                        Top retards
-                    </b-btn>
-                    <b-btn
-                        variant="outline-warning"
-                        @click="promptChangeCount"
-                        class="mt-1"
-                    >
-                        <b-icon icon="gear" />
-                        Début du comptage
-                    </b-btn>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <b-pagination
-                        class="mt-1"
-                        :total-rows="entriesCount"
-                        v-model="currentPage"
-                        @change="changePage"
-                        :per-page="20"
-                    />
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <lateness-entry
-                        v-for="(lateness, index) in latenesses"
-                        :key="lateness.id"
-                        :lateness="lateness"
-                        ref="entries"
-                        @update="latenesses.splice(index, 1, $event)"
-                        @delete="askDelete(lateness)"
-                        @filter-student="filterStudent($event)"
-                    />
-                </b-col>
-            </b-row>
-            <b-modal
-                ref="deleteModal"
-                cancel-title="Annuler"
-                hide-header
-                centered
-                @ok="deleteEntry"
-                @cancel="currentEntry = null"
-                :no-close-on-backdrop="true"
-                :no-close-on-esc="true"
-            >
-                Êtes-vous sûr de vouloir supprimer ce passage ?
-            </b-modal>
-            <b-modal
-                ref="changeCountModal"
-                title="Changer la date du début de comptage"
-                hide-header-close
-                centered
-                cancel-title="Annuler"
-                :no-close-on-backdrop="true"
-                :no-close-on-esc="true"
-                @ok="changeCountDate"
-                @cancel="countDate = store.settings.date_count_start"
-            >
-                <b-input
-                    type="date"
-                    v-model="countDate"
-                />
-            </b-modal>
-            <b-modal
-                ref="topLateness"
-                ok-only
-            >
-                <b-form-group>
-                    <b-form-checkbox
-                        v-model="topOwnClasses"
-                        switch
-                        @input="getTopList()"
-                    >
-                        N'afficher que ses classes
-                    </b-form-checkbox>
-                </b-form-group>
-                <b-list-group>
-                    <b-list-group-item
-                        v-for="item in topLateness"
-                        :key="item.student.matricule"
-                        class="d-flex justify-content-between align-items-center"
-                    >
-                        {{ item.student.display }}
-                        <b-badge variant="primary">
-                            {{ item.count }}
-                        </b-badge>
-                    </b-list-group-item>
-                </b-list-group>
-            </b-modal>
-            <b-modal
-                id="printer-selection"
-                ok-only
-            >
-                <b-form-group
-                    label="Sélectionner l'imprimante à utiliser"
+                    Êtes-vous sûr de vouloir supprimer ce passage ?
+                </BModal>
+                <BModal
+                    ref="changeCountModal"
+                    title="Changer la date du début de comptage"
+                    hide-header-close
+                    centered
+                    cancel-title="Annuler"
+                    :no-close-on-backdrop="true"
+                    :no-close-on-esc="true"
+                    @ok="changeCountDate"
+                    @cancel="countDate = store.settings.date_count_start"
                 >
-                    <b-select
-                        v-model="printer"
-                        :options="availablePrinters"
+                    <BFormInput
+                        type="date"
+                        v-model="countDate"
                     />
-                </b-form-group>
-            </b-modal>
-        </b-container>
+                </BModal>
+                <BModal
+                    ref="topLateness"
+                    ok-only
+                >
+                    <BFormGroup>
+                        <BFormCheckbox
+                            v-model="topOwnClasses"
+                            switch
+                            @input="getTopList()"
+                        >
+                            N'afficher que ses classes
+                        </BFormCheckbox>
+                    </BFormGroup>
+                    <BListGroup>
+                        <BListGroupItem
+                            v-for="item in topLateness"
+                            :key="item.student.matricule"
+                            class="d-flex justify-content-between align-items-center"
+                        >
+                            {{ item.student.display }}
+                            <BBadge variant="primary">
+                                {{ item.count }}
+                            </BBadge>
+                        </BListGroupItem>
+                    </BListGroup>
+                </BModal>
+                <BModal
+                    id="printer-selection"
+                    ok-only
+                >
+                    <BFormGroup
+                        label="Sélectionner l'imprimante à utiliser"
+                    >
+                        <BFormSelect
+                            v-model="printer"
+                            :options="availablePrinters"
+                        />
+                    </BFormGroup>
+                </BModal>
+            </BOverlay>
+        </BContainer>
     </div>
 </template>
 
 <script>
-import Vue from "vue";
-import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
-import "bootstrap-vue/dist/bootstrap-vue.css";
-
-Vue.use(BootstrapVue);
-Vue.use(BootstrapVueIcons);
-
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
 import axios from "axios";
+
+import { useToastController } from "bootstrap-vue-next";
 
 import Filters from "@s:core/js/common/filters_form.vue";
 import {getFilters} from "@s:core/js/common/filters.js";
@@ -302,10 +292,14 @@ import { latenessStore } from "./stores/index.js";
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        return { show };
+    },
     data: function () {
         return {
             menuInfo: {},
-            loaded: false,
+            loading: true,
             search: null,
             searchId: -1,
             searchOptions: [],
@@ -424,10 +418,10 @@ export default {
             this.addingStudent = true;
             axios.post(url, data, token)
                 .then(response => {
-                    if (response.data.has_sanction) this.$bvToast.toast(
-                        `Une sanction ${response.data.sanction_id ? "a été" : "doit être"} ajoutée !`,
-                        {title: "Sanction !"}
-                    );
+                    if (response.data.has_sanction) this.show({props: {
+                        body: `Une sanction ${response.data.sanction_id ? "a été" : "doit être"} ajoutée !`,
+                        title: "Sanction !"
+                    }});
                     this.addingStudent = false;
                     // Reload entries.
                     this.search = null;
@@ -448,14 +442,12 @@ export default {
             this.loadEntries();
         },
         loadEntries: function () {
-            axios.get(`/lateness/api/lateness/?ordering=-datetime_creation${this.filter}&page=${this.currentPage}`, token)
-                .then(response => {
+            axios.get(`/lateness/api/lateness/?ordering=-datetime_creation${this.filter}&page=${this.currentPage}`)
+                .then((response) => {
                     this.latenesses = response.data.results;
                     this.entriesCount = response.data.count;
-                    this.loaded = true;
-                
-                })
-                .catch(err => {
+                    this.loading = false;
+                }).catch(err => {
                     alert(err);
                     this.loaded = true;
                 });

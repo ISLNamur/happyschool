@@ -18,81 +18,81 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-overlay :show="loading">
-        <b-row>
-            <b-col>
+    <BOverlay :show="loading">
+        <BRow>
+            <BCol>
                 <h4 class="mt-4">
                     Aménagements spécifiques
                 </h4>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-form-group>
-                    <b-select
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
+                <BFormGroup>
+                    <BFormSelect
                         :options="otherAdjustments"
                         value-field="id"
                         v-model="currentOtherAdjId"
-                        @change="updatecurrentOtherAdj"
+                        @update:model-value="updatecurrentOtherAdj"
                     />
-                </b-form-group>
-            </b-col>
-            <b-col>
-                <b-btn
+                </BFormGroup>
+            </BCol>
+            <BCol>
+                <BButton
                     variant="outline-secondary"
                     @click="copy"
                     :disabled="otherAdjustments.length === 0"
                 >
-                    <b-icon icon="files" />
+                    <IBiFiles />
                     Copier
-                </b-btn>
-                <b-btn
+                </BButton>
+                <BButton
                     variant="success"
                     @click="add"
                 >
-                    <b-icon icon="plus" />
+                    <IBiPlus />
                     Ajouter
-                </b-btn>
-                <b-btn
+                </BButton>
+                <BButton
                     variant="danger"
                     @click="remove"
                     :disabled="otherAdjustments.length === 0"
                 >
-                    <b-icon icon="trash" />
+                    <IBiTrash />
                     Supprimer
-                </b-btn>
-            </b-col>
-        </b-row>
-        <b-row v-if="currentOtherAdj">
-            <b-col>
-                <b-card>
-                    <b-row class="mb-1">
-                        <b-col>
+                </BButton>
+            </BCol>
+        </BRow>
+        <BRow v-if="currentOtherAdj">
+            <BCol>
+                <BCard>
+                    <BRow class="mb-1">
+                        <BCol>
                             <strong>
-                                <b-form inline>
-                                    Du<b-form-input
+                                <BForm inline>
+                                    Du<BFormInput
                                         type="date"
                                         v-model="currentOtherAdj.date_start"
                                         class="mr-sm-2 ml-2"
                                     />
-                                    au<b-form-input
+                                    au<BFormInput
                                         type="date"
                                         v-model="currentOtherAdj.date_end"
                                         class="ml-2"
                                     />
-                                </b-form>
+                                </BForm>
                             </strong>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
+                        </BCol>
+                    </BRow>
+                    <BRow>
+                        <BCol>
                             <text-editor v-model="currentOtherAdj.other_adjustments" />
-                        </b-col>
-                    </b-row>
-                </b-card>
-            </b-col>
-        </b-row>
-    </b-overlay>
+                        </BCol>
+                    </BRow>
+                </BCard>
+            </BCol>
+        </BRow>
+    </BOverlay>
 </template>
 
 <script>

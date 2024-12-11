@@ -22,6 +22,8 @@
         <app-menu
             :menu-info="menuInfo"
         />
+        <BModalOrchestrator />
+        <BToastOrchestrator />
         <router-view v-slot="{ Component }">
             <Transition name="fade">
                 <component :is="Component" />

@@ -18,33 +18,33 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-container>
-        <b-row>
-            <b-col>
-                <b-btn to="/">
-                    <b-icon icon="chevron-left" />
+    <BContainer>
+        <BRow>
+            <BCol>
+                <BButton to="/">
+                    <IBiChevronLeft />
                     Retour
-                </b-btn>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-form-group
+                </BButton>
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
+                <BFormGroup
                     label="Type de changement"
                 >
-                    <b-form-select
+                    <BFormSelect
                         v-model="form.change"
                         :options="store.changeType"
                         value-field="id"
                         text-field="name"
                     />
-                </b-form-group>
-            </b-col>
-            <b-col>
-                <b-form-group
+                </BFormGroup>
+            </BCol>
+            <BCol>
+                <BFormGroup
                     label="Catégorie"
                 >
-                    <b-form-select
+                    <BFormSelect
                         v-model="form.category"
                         :options="store.changeCategory"
                         value-field="id"
@@ -53,66 +53,66 @@
                         <template #first>
                             <option :value="null" />
                         </template>
-                    </b-form-select>
-                </b-form-group>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col sm="4">
-                <b-form-group
+                    </BFormSelect>
+                </BFormGroup>
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol sm="4">
+                <BFormGroup
                     id="date-start-input-group"
                     label="Date"
                     :state="inputStates.date_change"
                     label-cols="4"
                 >
-                    <b-form-input
+                    <BFormInput
                         type="date"
                         v-model="form.date_change"
                     />
                     <template #invalid-feedback>
                         {{ errorMsg('date_change') }}
                     </template>
-                </b-form-group>
-            </b-col>
-            <b-col>
-                <b-form-group
+                </BFormGroup>
+            </BCol>
+            <BCol>
+                <BFormGroup
                     id="time-start-input-group"
                     label="Heure début"
                     :state="inputStates.time_start"
                     label-cols-sm="8"
-                    label-class="text-right"
+                    label-class="text-end"
                 >
-                    <b-form-input
+                    <BFormInput
                         type="time"
                         v-model="form.time_start"
                     />
                     <template #invalid-feedback>
                         {{ errorMsg('time_start') }}
                     </template>
-                </b-form-group>
-            </b-col>
-            <b-col>
-                <b-form-group
+                </BFormGroup>
+            </BCol>
+            <BCol>
+                <BFormGroup
                     id="time-end-input-group"
                     label="Heure fin"
                     :state="inputStates.time_end"
                     label-cols-sm="8"
-                    label-class="text-right"
+                    label-class="text-end"
                 >
-                    <b-form-input
+                    <BFormInput
                         type="time"
                         v-model="form.time_end"
                     />
                     <template #invalid-feedback>
                         {{ errorMsg('time_end') }}
                     </template>
-                </b-form-group>
-            </b-col>
-        </b-row>
+                </BFormGroup>
+            </BCol>
+        </BRow>
 
-        <b-row>
-            <b-col>
-                <b-form-group
+        <BRow>
+            <BCol>
+                <BFormGroup
                     label="Classe(s) et/ou année(s) concernée(s)"
                 >
                     <multiselect
@@ -132,13 +132,13 @@
                         </template>
                         <template #noOptions />
                     </multiselect>
-                </b-form-group>
-            </b-col>
-        </b-row>
+                </BFormGroup>
+            </BCol>
+        </BRow>
 
-        <b-row>
-            <b-col>
-                <b-form-group
+        <BRow>
+            <BCol>
+                <BFormGroup
                     label="Prof/Educ(s) absent(s)/indisponible(s)/concerné(s)"
                 >
                     <multiselect
@@ -160,13 +160,13 @@
                         </template>
                         <template #noOptions />
                     </multiselect>
-                </b-form-group>
-            </b-col>
-        </b-row>
+                </BFormGroup>
+            </BCol>
+        </BRow>
 
-        <b-row>
-            <b-col>
-                <b-form-group
+        <BRow>
+            <BCol>
+                <BFormGroup
                     v-if="isReplacement"
                     label="Prof/Educ(s) remplacant(s)"
                 >
@@ -189,13 +189,13 @@
                         </template>
                         <template #noOptions />
                     </multiselect>
-                </b-form-group>
-            </b-col>
-        </b-row>
+                </BFormGroup>
+            </BCol>
+        </BRow>
 
-        <b-row>
-            <b-col>
-                <b-form-group
+        <BRow>
+            <BCol>
+                <BFormGroup
                     label="Local/Lieu de subtitution"
                 >
                     <multiselect
@@ -211,109 +211,97 @@
                     >
                         <template #noOptions />
                     </multiselect>
-                </b-form-group>
-            </b-col>
-        </b-row>
+                </BFormGroup>
+            </BCol>
+        </BRow>
 
-        <b-row>
-            <b-col>
-                <b-form-group
+        <BRow>
+            <BCol>
+                <BFormGroup
                     label="Commentaire"
                 >
-                    <b-form-textarea
+                    <BFormTextarea
                         v-model="form.comment"
                         :rows="2"
                         placeholder="Un commentaire sur le changement"
                     />
-                </b-form-group>
-                <b-form-group>
-                    <b-form-checkbox v-model="form.send_email_general">
+                </BFormGroup>
+                <BFormGroup>
+                    <BFormCheckbox v-model="form.send_email_general">
                         Notifier par courriel les responsables des changements
                         <span
-                            v-b-tooltip
-                            :title="store.settings.responsible_name"
+                            v-b-tooltip="store.settings.responsible_name"
                         >
-                            <b-icon
-                                icon="question-circle"
-                                variant="primary"
-                            />
+                            <IBiQuestionCircle variant="primary" />
                         </span>
-                    </b-form-checkbox>
-                </b-form-group>
-            </b-col>
-        </b-row>
+                    </BFormCheckbox>
+                </BFormGroup>
+            </BCol>
+        </BRow>
 
-        <b-row>
-            <b-col>
-                <b-form-group>
-                    <b-form-checkbox v-model="form.send_email_educ">
+        <BRow>
+            <BCol>
+                <BFormGroup>
+                    <BFormCheckbox v-model="form.send_email_educ">
                         Notifier par courriel les educateurs
-                    </b-form-checkbox>
-                </b-form-group>
-                <b-form-group v-if="form.teachers_replaced.length > 0">
-                    <b-form-checkbox
+                    </BFormCheckbox>
+                </BFormGroup>
+                <BFormGroup v-if="form.teachers_replaced.length > 0">
+                    <BFormCheckbox
                         v-model="form.send_email_replaced"
                     >
                         Notifier par courriel l'absent(s)/indisponible(s)/concerné(s)
                         <span
-                            v-b-tooltip
-                            :title="form.teachers_replaced.map(t => t.display).join(', ')"
+                            v-b-tooltip="form.teachers_replaced.map(t => t.display).join(', ')"
                         >
-                            <b-icon
-                                icon="question-circle"
-                                variant="primary"
-                            />
+                            <IBiQuestionCircle variant="primary" />
                         </span>
-                    </b-form-checkbox>
-                </b-form-group>
-                <b-form-group v-if="form.teachers_substitute.length > 0">
-                    <b-form-checkbox
+                    </BFormCheckbox>
+                </BFormGroup>
+                <BFormGroup v-if="form.teachers_substitute.length > 0">
+                    <BFormCheckbox
                         v-model="form.send_email_substitute"
                     >
                         Notifier le remplaçant par courriel
                         <span
-                            v-b-tooltip
-                            :title="form.teachers_substitute.map(t => t.display).join(', ')"
+                            v-b-tooltip="form.teachers_substitute.map(t => t.display).join(', ')"
                         >
-                            <b-icon
-                                icon="question-circle"
-                                variant="primary"
-                            />
+                            <IBiQuestion-circle variant="primary" />
                         </span>
-                    </b-form-checkbox>
-                </b-form-group>
-                <b-form-group>
-                    <b-form-checkbox
+                    </BFormCheckbox>
+                </BFormGroup>
+                <BFormGroup>
+                    <BFormCheckbox
                         v-model="form.hide_for_students"
                     >
                         Cacher aux étudiants
-                    </b-form-checkbox>
-                </b-form-group>
-            </b-col>
-        </b-row>
+                    </BFormCheckbox>
+                </BFormGroup>
+            </BCol>
+        </BRow>
 
-        <b-row>
-            <b-col>
-                <b-btn @click="copy">
-                    <b-icon icon="files" />
+        <BRow>
+            <BCol>
+                <BButton @click="copy">
+                    <IBiFiles />
                     Copier
-                </b-btn>
-            </b-col>
-            <b-col class="text-right">
-                <b-btn
+                </BButton>
+            </BCol>
+            <BCol class="text-end">
+                <BButton
                     @click="submitForm"
                     :disabled="submitting"
                     variant="primary"
                 >
-                    <b-spinner
+                    <BSpinner
                         v-if="submitting"
                         small
                     />
                     Soumettre
-                </b-btn>
-            </b-col>
-        </b-row>
-    </b-container>
+                </BButton>
+            </BCol>
+        </BRow>
+    </BContainer>
 </template>
 
 <script>
@@ -326,9 +314,15 @@ import "vue-multiselect/dist/vue-multiselect.css";
 
 import axios from "axios";
 
+import { useToastController } from "bootstrap-vue-next";
+
 import { scheduleChangeStore } from "./stores/index.js";
 
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        return { show };
+    },
     props: {
         id: {
             type: Number,
@@ -411,10 +405,11 @@ export default {
             delete this.form.id;
             delete this.entry.id;
             this.$router.push("/schedule_form/-1/");
-            this.$root.$bvToast.toast("Ceci est une copie de l'entrée, vous pouvez maintenant modifier les données sans changer la précédente.", {
+            this.show({props: {
+                body: "Ceci est une copie de l'entrée, vous pouvez maintenant modifier les données sans changer la précédente.",
                 variant: "info",
                 noCloseButton: true,
-            });
+            }});
         },
         addPlaces: function (newPlace) {
             this.placesOptions.push(newPlace);
@@ -531,11 +526,12 @@ export default {
             send.then(() => {
                 this.errors = {};
                 const nextPage = this.store.lastPage ? `/page/${this.store.lastPage}/` : "/";
-                this.$router.push(nextPage, () => {
-                    this.$root.$bvToast.toast("Les données ont bien été envoyées.", {
+                this.$router.push(nextPage).then(() => {
+                    this.show({props: {
+                        body: "Les données ont bien été envoyées.",
                         variant: "success",
                         noCloseButton: true,
-                    });
+                    }});
                 });
                 this.submitting = false;
             }).catch(function (error) {

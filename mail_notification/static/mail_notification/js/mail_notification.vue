@@ -1,79 +1,79 @@
 <template>
     <div v-cloak>
-        <b-container v-cloak>
-            <b-row>
-                <b-col>
-                    <b-nav tabs>
-                        <b-nav-item
+        <BContainer v-cloak>
+            <BRow>
+                <BCol>
+                    <BNav tabs>
+                        <BNavItem
                             active
                             href="/mail_notification/"
                         >
                             Envoyer un email
-                        </b-nav-item>
-                        <b-nav-item to="/list/">
+                        </BNavItem>
+                        <BNavItem to="/list/">
                             Liste des emails envoyés
-                        </b-nav-item>
-                        <b-nav-item href="/mail_answer/">
+                        </BNavItem>
+                        <BNavItem href="/mail_answer/">
                             Gestion des modèles
-                        </b-nav-item>
-                        <b-nav-item href="/core/members/">
+                        </BNavItem>
+                        <BNavItem href="/core/members/">
                             Gestion des personnes
-                        </b-nav-item>
-                    </b-nav>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <b-form @submit="onSubmit">
+                        </BNavItem>
+                    </BNav>
+                </BCol>
+            </BRow>
+            <BRow>
+                <BCol>
+                    <BForm @submit="onSubmit">
                         <div>
-                            <b-form-group label="Choisissez d'abord l'enseignement : ">
-                                <b-form-radio-group
+                            <BFormGroup label="Choisissez d'abord l'enseignement : ">
+                                <BFormRadioGroup
                                     v-model="teaching"
                                     name="teaching"
                                 >
-                                    <b-form-radio value="secondaire">
+                                    <BFormRadio value="secondaire">
                                         Secondaire
-                                    </b-form-radio>
-                                    <b-form-radio value="primaire">
+                                    </BFormRadio>
+                                    <BFormRadio value="primaire">
                                         Primaire
-                                    </b-form-radio>
-                                </b-form-radio-group>
-                            </b-form-group>
+                                    </BFormRadio>
+                                </BFormRadioGroup>
+                            </BFormGroup>
                         </div>
                         <div v-if="teaching">
                             <h3>Enseignement : {{ teaching.toUpperCase() }}</h3>
-                            <b-form-group label="Le type de destinataires : ">
-                                <b-form-radio-group
+                            <BFormGroup label="Le type de destinataires : ">
+                                <BFormRadioGroup
                                     v-model="toType"
                                     name="toType"
-                                    @change="warnChoice"
+                                    @update:model-value="warnChoice"
                                 >
-                                    <b-form-radio value="teachers">
+                                    <BFormRadio value="teachers">
                                         Professeurs
-                                    </b-form-radio>
-                                    <b-form-radio value="parents">
+                                    </BFormRadio>
+                                    <BFormRadio value="parents">
                                         Parents
-                                    </b-form-radio>
-                                </b-form-radio-group>
-                            </b-form-group>
-                            <b-form-group
+                                    </BFormRadio>
+                                </BFormRadioGroup>
+                            </BFormGroup>
+                            <BFormGroup
                                 v-if="toType == 'parents'"
                                 description="Si «Par parent» est choisi, un parent ayant plusieurs enfants ne recevra qu'un seul email. À contrario, si «Par élève» est choisi, un parent ayant plusieurs élèves recevra un email par élève."
                                 label="Type d'envoi : "
                             >
-                                <b-form-radio-group
+                                <BFormRadioGroup
                                     v-model="sendType"
                                     name="sendType"
                                 >
-                                    <b-form-radio value="parents">
+                                    <BFormRadio value="parents">
                                         Par parent
-                                    </b-form-radio>
-                                    <b-form-radio value="students">
+                                    </BFormRadio>
+                                    <BFormRadio value="students">
                                         Par élève
-                                    </b-form-radio>
-                                </b-form-radio-group>
-                            </b-form-group>
-                            <b-form-group
+                                    </BFormRadio>
+                                </BFormRadioGroup>
+                            </BFormGroup>
+                            <BFormGroup
                                 description="Sélectionner à partir de quelle adresse l'email sera envoyé."
                                 label="Expéditeur* : "
                                 :state="emailFromState"
@@ -91,15 +91,15 @@
                                     </template>
                                     <template #noOptions />
                                 </multiselect>
-                                <b-alert
+                                <BAlert
                                     variant="danger"
                                     :show="!emailFromState"
                                 >
                                     Merci de choisir un expéditeur.
-                                </b-alert>
-                            </b-form-group>
+                                </BAlert>
+                            </BFormGroup>
 
-                            <b-form-group
+                            <BFormGroup
                                 description="Ajouter un cycle et/ou un degré, une année, une classe…"
                                 label="Destinataires* : "
                                 :state="emailToState"
@@ -121,19 +121,19 @@
                                     </template>
                                     <template #noOptions />
                                 </multiselect>
-                                <b-alert
+                                <BAlert
                                     variant="danger"
                                     :show="!emailToState"
                                 >
                                     Merci de choisir au moins un destinataire.
-                                </b-alert>
-                            </b-form-group>
-                            <b-form-group>
-                                <b-form-checkbox v-model="responsibles">
+                                </BAlert>
+                            </BFormGroup>
+                            <BFormGroup>
+                                <BFormCheckbox v-model="responsibles">
                                     Également envoyer aux educateurs et coordonnateurs correspondants.
-                                </b-form-checkbox>
-                            </b-form-group>
-                            <b-form-group v-if="sendType == 'students'">
+                                </BFormCheckbox>
+                            </BFormGroup>
+                            <BFormGroup v-if="sendType == 'students'">
                                 <multiselect
                                     v-model="template"
                                     :options="templateOptions"
@@ -143,8 +143,8 @@
                                 >
                                     <template #noOptions />
                                 </multiselect>
-                            </b-form-group>
-                            <b-form-group
+                            </BFormGroup>
+                            <BFormGroup
                                 label="Tag(s) : "
                                 description="Permet de facilement identifier l'email (CPE, CGQ,…)"
                             >
@@ -165,21 +165,21 @@
                                     </template>
                                     <template #noOptions />
                                 </multiselect>
-                            </b-form-group>
+                            </BFormGroup>
 
-                            <b-form-group label="Sujet* : ">
-                                <b-form-input
+                            <BFormGroup label="Sujet* : ">
+                                <BFormInput
                                     v-model="subject"
                                     type="text"
                                     placeholder="Sujet de l'email"
                                 />
-                            </b-form-group>
+                            </BFormGroup>
 
-                            <b-form-group
+                            <BFormGroup
                                 description="Ajouter une ou des pièces jointes à l'email. Accepte uniquement des fichiers pdf."
                                 label="Pièce(s) jointe(s) : "
                             >
-                                <b-form-file
+                                <BFormFile
                                     multiple
                                     accept=".pdf"
                                     v-model="attachments"
@@ -190,7 +190,7 @@
                                     plain
                                     @input="addFiles"
                                 />
-                                <b-list-group
+                                <BListGroup
                                     v-for="(item, index) in uploadedFiles"
                                     :key="index"
                                 >
@@ -201,9 +201,9 @@
                                         @delete="deleteFile(index)"
                                         @setdata="setFileData(index, $event)"
                                     />
-                                </b-list-group>
-                            </b-form-group>
-                            <b-form-group
+                                </BListGroup>
+                            </BFormGroup>
+                            <BFormGroup
                                 :description="explanation_mail"
                                 label="Email : "
                             >
@@ -217,24 +217,24 @@
                                     class="html ql-editor"
                                     v-html="replaceContent"
                                 />
-                            </b-form-group>
-                            <b-button
+                            </BFormGroup>
+                            <BButton
                                 type="submit"
                                 variant="primary"
                             >
                                 Envoyer
-                            </b-button>
+                            </BButton>
                         </div>
-                    </b-form>
-                </b-col>
-            </b-row>
-        </b-container>
+                    </BForm>
+                </BCol>
+            </BRow>
+        </BContainer>
         <b-modal
             v-model="showModal"
             centered
         >
             <p v-if="sending">
-                <b-spinner small />
+                <BSpinner small />
                 Envoi des emails en cours…
             </p>
             <p v-if="!sending && !hasError">
@@ -247,27 +247,22 @@
             </p>
             <p />
             <template #modal-footer>
-                <b-btn
+                <BButton
                     size="sm"
                     class="float-right"
                     variant="primary"
                     @click="showModal = false"
                 >
                     OK
-                </b-btn>
+                </BButton>
             </template>
         </b-modal>
     </div>
 </template>
 
 <script>
-import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
-Vue.use(BootstrapVue);
-
 import TextEditor from "@s:core/js/common/text_editor.vue";
 
-import "bootstrap-vue/dist/bootstrap-vue.css";
 import "vue-multiselect/dist/vue-multiselect.css";
 
 import axios from "axios";

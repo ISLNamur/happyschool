@@ -27,67 +27,60 @@
             v-if="loaded"
             :menu-info="menuInfo"
         />
-        <b-container v-if="loaded">
+        <BContainer v-if="loaded">
             <h1>Absence des élèves</h1>
-            <b-row class="mb-1">
-                <b-nav tabs>
-                    <b-nav-item
+            <BRow class="mb-1">
+                <BNav tabs>
+                    <BNavItem
                         to="/add_absence"
                         v-if="can_access_adding"
                     >
-                        <b-icon
-                            icon="plus"
+                        <IBiPlus
                             color="green"
                             scale="1.5"
                             class="border"
                         />
                         Ajouter absenses/retards
-                    </b-nav-item>
-                    <b-nav-item
+                    </BNavItem>
+                    <BNavItem
                         to="/add_exclusion"
                         v-if="can_access_exclusion"
                     >
-                        <b-icon
-                            icon="plus"
+                        <IBiPlus
                             color="green"
                             scale="1.5"
                             class="border"
                         />
                         Ajouter exclusion
-                    </b-nav-item>
-                    <b-nav-item
+                    </BNavItem>
+                    <BNavItem
                         v-if="can_access_list"
                         :to="`/overview/${date}/`"
                     >
                         Vue d'ensemble
-                    </b-nav-item>
-                    <b-nav-item
+                    </BNavItem>
+                    <BNavItem
                         v-if="can_access_list"
                         :to="`/justification/`"
                     >
                         Justificatifs
-                    </b-nav-item>
-                    <b-nav-item
+                    </BNavItem>
+                    <BNavItem
                         v-if="can_access_adding"
                         to="/export"
                     >
                         Export
-                    </b-nav-item>
-                </b-nav>
-            </b-row>
+                    </BNavItem>
+                </BNav>
+            </BRow>
             <router-view />
-        </b-container>
+        </BContainer>
+        <BModalOrchestrator />
+        <BToastOrchestrator />
     </div>
 </template>
 
 <script>
-import Vue from "vue";
-import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
-import "bootstrap-vue/dist/bootstrap-vue.css";
-
-Vue.use(BootstrapVue);
-Vue.use(BootstrapVueIcons);
-
 import Moment from "moment";
 import "moment/dist/locale/fr";
 Moment.locale("fr");
@@ -168,3 +161,9 @@ export default {
     }
 };
 </script>
+
+<style>
+.b-form-group {
+    margin-bottom: 1rem;
+}
+</style>

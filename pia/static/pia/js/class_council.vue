@@ -18,63 +18,62 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-card>
-        <b-row>
-            <b-col>
-                <b-form-row>
-                    <b-col>
+    <BCard>
+        <BRow>
+            <BCol>
+                <BFormRow>
+                    <BCol>
                         <strong>
-                            <b-form inline>
+                            <BForm inline>
                                 {{ advanced ? "Semaine du conseil de classe" : "Date de l'auto-évaluation" }}
-                                <b-form-input
+                                <BFormInput
                                     type="date"
                                     v-model="date_council"
                                     class="ml-1"
                                 />
-                            </b-form>
+                            </BForm>
                         </strong>
-                    </b-col>
-                    <b-col
+                    </BCol>
+                    <BCol
                         cols="2"
                         align-self="end"
-                        class="text-right"
+                        class="text-end"
                     >
-                        <b-btn
+                        <BButton
                             @click="toggleExpand"
                             variant="light"
                         >
                             {{ expanded ? "Cacher" : "Voir" }}
-                        </b-btn>
-                        <b-btn
+                        </BButton>
+                        <BButton
                             @click="$emit('remove')"
                             variant="danger"
                             size="sm"
-                            v-b-tooltip.hover
-                            title="Supprimer"
+                            v-b-tooltip.hover="'Supprimer'"
                         >
-                            <b-icon icon="trash" />
-                        </b-btn>
-                    </b-col>
-                </b-form-row>
-            </b-col>
-        </b-row>
-        <b-collapse
+                            <IBiTrash />
+                        </BButton>
+                    </BCol>
+                </BFormRow>
+            </BCol>
+        </BRow>
+        <BCollapse
             v-model="expanded"
             :id="Math.random().toString(36).substring(7)"
         >
-            <b-row>
-                <b-col>
-                    <b-btn
+            <BRow>
+                <BCol>
+                    <BButton
                         @click="council_statement.unshift({resources: [], difficulties: []})"
                         variant="info"
                     >
-                        <b-icon icon="plus" />
+                        <IBiPlus />
                         Ajouter <span v-if="advanced">une branche</span>
-                    </b-btn>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
+                    </BButton>
+                </BCol>
+            </BRow>
+            <BRow>
+                <BCol>
                     <council-statement
                         v-for="(statement, index) in council_statement"
                         :key="statement.id"
@@ -85,24 +84,24 @@
                         @save="$emit('save')"
                         @update="updateStatement(index, $event)"
                     />
-                </b-col>
-            </b-row>
-            <b-row
+                </BCol>
+            </BRow>
+            <BRow
                 v-if="council_statement.length > 0"
                 class="mt-1"
             >
-                <b-col>
-                    <b-btn
+                <BCol>
+                    <BButton
                         @click="other_statement.unshift({})"
                         variant="outline-info"
                     >
-                        <b-icon icon="plus" />
+                        <IBiPlus />
                         Autres ressources/difficultés
-                    </b-btn>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
+                    </BButton>
+                </BCol>
+            </BRow>
+            <BRow>
+                <BCol>
                     <other-statement
                         v-for="(statement, index) in other_statement"
                         :key="statement.id"
@@ -110,10 +109,10 @@
                         ref="otherstatements"
                         @remove="removeStatement(index, 'other_statement')"
                     />
-                </b-col>
-            </b-row>
-        </b-collapse>
-    </b-card>
+                </BCol>
+            </BRow>
+        </BCollapse>
+    </BCard>
 </template>
 
 <script>

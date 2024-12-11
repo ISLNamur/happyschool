@@ -1,33 +1,33 @@
 <template>
     <div>
-        <b-container>
-            <b-row>
+        <BContainer>
+            <BRow>
                 <h3>{{ this.state=="1" ? "Traiter" : "Ajout/Modifier" }} un appel</h3>
-            </b-row>
-            <b-row>
-                <b-col sm="4">
-                    <b-btn
+            </BRow>
+            <BRow>
+                <BCol sm="4">
+                    <BButton
                         class="mb-2"
                         to="/"
                     >
                         Retour à la liste des appels
-                    </b-btn>
+                    </BButton>
                     <div>
-                        <b-img
+                        <BImg
                             rounded
                             :src="'/static/photos' + photo + '.jpg'"
                             fluid
                             alt="Photo de la personne"
                         />
                     </div>
-                </b-col>
-                <b-col>
-                    <b-form
+                </BCol>
+                <BCol>
+                    <BForm
                         @submit="addAppel"
                     >
-                        <b-form-row>
-                            <b-col sm="8">
-                                <b-form-group
+                        <BFormRow>
+                            <BCol sm="8">
+                                <BFormGroup
                                     label="Nom"
                                     label-for="input-name"
                                     :state="inputStates.name"
@@ -54,30 +54,30 @@
                                     <template #invalid-feedback>
                                         {{ errorMsg('name') }}
                                     </template>
-                                </b-form-group>
-                            </b-col>
-                            <b-col sm="4">
-                                <b-form-group
+                                </BFormGroup>
+                            </BCol>
+                            <BCol sm="4">
+                                <BFormGroup
                                     label="Matricule"
                                     label-for="input-matricule"
                                 >
-                                    <b-form-input
+                                    <BFormInput
                                         id="input-matricule"
                                         type="text"
                                         v-model="form.matricule_id"
                                         readonly
                                     />
-                                </b-form-group>
-                            </b-col>
-                        </b-form-row>
-                        <b-form-row>
-                            <b-col>
-                                <b-form-group
+                                </BFormGroup>
+                            </BCol>
+                        </BFormRow>
+                        <BFormRow>
+                            <BCol>
+                                <BFormGroup
                                     label="Objet"
                                     label-for="input-object"
                                     :state="inputStates.object_id"
                                 >
-                                    <b-form-select
+                                    <BFormSelect
                                         id="input-object"
                                         v-model="form.object_id"
                                         :options="objectOptions"
@@ -90,19 +90,19 @@
                                                 Choisissez un objet
                                             </option>
                                         </template>
-                                    </b-form-select>
+                                    </BFormSelect>
                                     <template #invalid-feedback>
                                         {{ errorMsg('object_id') }}
                                     </template>
-                                </b-form-group>
-                            </b-col>
-                            <b-col>
-                                <b-form-group
+                                </BFormGroup>
+                            </BCol>
+                            <BCol>
+                                <BFormGroup
                                     label="Motif"
                                     label-for="input-motif"
                                     :state="inputStates.motive_id"
                                 >
-                                    <b-form-select
+                                    <BFormSelect
                                         v-model="form.motive_id"
                                         :options="motiveOptions"
                                     >
@@ -114,22 +114,22 @@
                                                 Choisissez un motif
                                             </option>
                                         </template>
-                                    </b-form-select>
+                                    </BFormSelect>
                                     <template #invalid-feedback>
                                         {{ errorMsg('motive_id') }}
                                     </template>
-                                </b-form-group>
-                            </b-col>
-                        </b-form-row>
+                                </BFormGroup>
+                            </BCol>
+                        </BFormRow>
                         <div v-if="this.state==0 || form.is_traiter">
-                            <b-form-row>
-                                <b-col>
-                                    <b-form-group
+                            <BFormRow>
+                                <BCol>
+                                    <BFormGroup
                                         label="Début du motif"
                                         label-for="input-date-motif-start"
                                         :state="inputStates.date_motif_start"
                                     >
-                                        <b-form-input
+                                        <BFormInput
                                             id="input-date-motif-start"
                                             type="date"
                                             v-model="form.date_motif_start"
@@ -138,30 +138,30 @@
                                         <template #invalid-feedback>
                                             {{ errorMsg('date_motif_start') }}
                                         </template>
-                                    </b-form-group>
-                                </b-col>
-                                <b-col>
-                                    <b-form-group
+                                    </BFormGroup>
+                                </BCol>
+                                <BCol>
+                                    <BFormGroup
                                         label="(heure)"
                                         label-for="input-time-motif-start"
                                     >
-                                        <b-form-input
+                                        <BFormInput
                                             id="input-time-motif-start"
                                             type="time"
                                             v-model="form.time_motif_start"
                                             :state="inputStates.time_motif_start"
                                         />
-                                    </b-form-group>
-                                </b-col>
-                            </b-form-row>
-                            <b-form-row>
-                                <b-col>
-                                    <b-form-group
+                                    </BFormGroup>
+                                </BCol>
+                            </BFormRow>
+                            <BFormRow>
+                                <BCol>
+                                    <BFormGroup
                                         label="Fin du motif"
                                         label-for="input-date-motif-end"
                                         :state="inputStates.date_motif_end"
                                     >
-                                        <b-form-input
+                                        <BFormInput
                                             id="input-date-motif-end"
                                             type="date"
                                             v-model="form.date_motif_end"
@@ -169,29 +169,29 @@
                                         <template #invalid-feedback>
                                             {{ errorMsg('date_motif_end') }}
                                         </template>
-                                    </b-form-group>
-                                </b-col>
-                                <b-col>
-                                    <b-form-group
+                                    </BFormGroup>
+                                </BCol>
+                                <BCol>
+                                    <BFormGroup
                                         label="(heure)"
                                         label-for="input-time-motif-end"
                                     >
-                                        <b-form-input
+                                        <BFormInput
                                             id="input-time-motif-end"
                                             type="time"
                                             v-model="form.time_motif_end"
                                         />
-                                    </b-form-group>
-                                </b-col>
-                            </b-form-row>
-                            <b-form-row>
-                                <b-col>
-                                    <b-form-group
+                                    </BFormGroup>
+                                </BCol>
+                            </BFormRow>
+                            <BFormRow>
+                                <BCol>
+                                    <BFormGroup
                                         label="Date de l'appel"
                                         label-for="input-date-appel"
                                         :state="inputStates.datetime_appel"
                                     >
-                                        <b-form-input
+                                        <BFormInput
                                             id="input-date-appel"
                                             type="date"
                                             v-model="form.datetime_appel"
@@ -199,27 +199,27 @@
                                         <template #invalid-feedback>
                                             {{ errorMsg('datetime_appel') }}
                                         </template>
-                                    </b-form-group>
-                                </b-col>
-                                <b-col>
-                                    <b-form-group
+                                    </BFormGroup>
+                                </BCol>
+                                <BCol>
+                                    <BFormGroup
                                         label="Heure de l'appel"
                                         label-for="input-time-appel"
                                     >
-                                        <b-form-input
+                                        <BFormInput
                                             id="input-time-appel"
                                             type="time"
                                             :step="60"
                                             v-model="timeAppel"
                                         />
-                                    </b-form-group>
-                                </b-col>
-                            </b-form-row>
+                                    </BFormGroup>
+                                </BCol>
+                            </BFormRow>
                         </div>
                         <div v-if="this.state==1 || form.is_traiter">
-                            <b-form-row>
-                                <b-form-group label="Destinataire(s) : ">
-                                    <b-form-checkbox-group
+                            <BFormRow>
+                                <BFormGroup label="Destinataire(s) : ">
+                                    <BFormCheckboxGroup
                                         id="emails"
                                         stacked
                                         v-model="form.emails"
@@ -227,15 +227,15 @@
                                         value-field="id"
                                         text-field="display"
                                     />
-                                </b-form-group>
-                            </b-form-row>
-                            <b-form-row>
-                                <b-form-group
+                                </BFormGroup>
+                            </BFormRow>
+                            <BFormRow>
+                                <BFormGroup
                                     label="Autre email :"
                                     label-for="input-custom-email"
                                     :state="inputStates.custom_email"
                                 >
-                                    <b-form-input
+                                    <BFormInput
                                         v-model="form.custom_email"
                                         type="text"
                                         id="input-custom-email"
@@ -244,42 +244,42 @@
                                     <template #invalid-feedback>
                                         {{ errorMsg('custom_email') }}
                                     </template>
-                                </b-form-group>
-                            </b-form-row>
+                                </BFormGroup>
+                            </BFormRow>
                         </div>
 
-                        <b-form-row>
-                            <b-col>
-                                <b-form-group
+                        <BFormRow>
+                            <BCol>
+                                <BFormGroup
                                     label="Commentaires"
                                     label-for="input-comment"
                                 >
-                                    <b-form-textarea
+                                    <BFormTextarea
                                         id="input-comment"
                                         :rows="3"
                                         v-model="form.commentaire"
                                     />
-                                </b-form-group>
-                            </b-col>
-                        </b-form-row>
-                        <b-button
+                                </BFormGroup>
+                            </BCol>
+                        </BFormRow>
+                        <BButton
                             type="submit"
                             variant="primary"
                             :disabled="loading"
                         >
                             {{ this.state==1 ? 'Traiter' : 'Soumettre' }}
-                        </b-button>
-                    </b-form>
-                </b-col>
-            </b-row>
+                        </BButton>
+                    </BForm>
+                </BCol>
+            </BRow>
             <template #modal-ok>
-                <b-spinner
+                <BSpinner
                     v-if="loading"
                     small
                 />
                 {{ this.state==1 ? 'Traiter' : 'Soumettre' }}
             </template>
-        </b-container>
+        </BContainer>
     </div>
 </template>
 
@@ -292,12 +292,16 @@ import "moment/dist/locale/fr";
 Moment.locale("fr");
 
 import axios from "axios";
-window.axios = axios;
-window.axios.defaults.baseURL = window.location.origin; // In order to have httpS.
+
+import { useToastController } from "bootstrap-vue-next";
 
 import { appelsStore } from "./stores/index.js";
 
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        return { show };
+    },
     props: { entry: {
         type: Object,
         default: null
@@ -510,18 +514,21 @@ export default {
                 this.$emit("update");
                 this.loading = false;
                 if(this.form.id){
-                    this.$router.push("/",() => {
-                        this.$root.$bvToast.toast("L'appel a été envoyé.", {
+                    this.$router.push("/").then(() => {
+                        this.show({props: {
+                            body: "L'appel a été envoyé.",
                             variant: "success",
                             noCloseButton: true,
-                        });
+                        }});
                     });
-                } else {this.$router.push("/",() => {
-                    this.$root.$bvToast.toast("L'appel a été créé. Traiter l'appel pour envoyé l'information par courriel.", {
-                        variant: "success",
-                        noCloseButton: true,
+                } else {
+                    this.$router.push("/").then(() => {
+                        this.show({props: {
+                            body: "L'appel a été créé. Traiter l'appel pour envoyé l'information par courriel.",
+                            variant: "success",
+                            noCloseButton: true,
+                        }});
                     });
-                });
                 }            
             })
                 .catch(function (error) {

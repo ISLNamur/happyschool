@@ -18,47 +18,47 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-row>
-        <b-col
+    <BRow>
+        <BCol
             v-for="(a, index) in status"
             :key="index"
         >
-            <b-overlay :show="updating">
-                <b-checkbox
-                    switch
-                    v-model="status[index]"
-                    @change="updateRecord(index, $event)"
-                >
-                    <template #default="">
-                        <span>
-                            {{ status[index] ? "A" : "P" }}
-                        </span>
-                        <b-iconstack>
-                            <b-icon
-                                stacked
-                                icon="square"
-                                variant="secondary"
-                            />
-                            <b-icon
-                                stacked
-                                v-if="absences[index].status !== null"
-                                icon="check"
-                                variant="success"
-                            />
-                        </b-iconstack>
-                    </template>
-                </b-checkbox>
-            </b-overlay>
-        </b-col>
-    </b-row>
+            <BOverlay :show="updating">
+                <BForm class="d-flex justify-content-center flex-wrap">
+                    <BFormCheckbox
+                        switch
+                        v-model="status[index]"
+                        @update:model-value="updateRecord(index, $event)"
+                    />
+                    <span class="position-relative">
+                        {{ status[index] ? "A" : "P" }}
+                        <BBadge
+                            v-if="absences[index].status !== null"
+                            text-variant="success"
+                            bg-variant="transparent"
+                            placement="bottom-end"
+                        >
+                             
+                            <IBiCheck v-if="absences[index] !== null" />
+                        </BBadge>
+                    </span>
+                </BForm>
+            </BOverlay>
+        </BCol>
+    </BRow>
 </template>
 
 <script>
 import axios from "axios";
+import { useToastController } from "bootstrap-vue-next";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        return { show };
+    },
     props: {
         absences: {
             type: Array,
@@ -96,22 +96,23 @@ export default {
                 .catch(() => {
                     this.status[index] = this.absences[index].status;
                     this.updating = false;
-                    this.$bvToast.toast("Une erreur est survenue lors de la mise à jour des données.", {
+                    this.show({props:{
+                        body: "Une erreur est survenue lors de la mise à jour des données.",
                         title: "Erreur",
                         variant: "danger",
                         solid: true
-                    });
+                    }});
                 });
         }
     },
     mounted: function () {
         this.status = this.absences.map(a => a.status == "A");
-    }
+    },
 };
 </script>
 
 <style>
-    table.b-table > thead > tr > :nth-child(1) {
+    table.BTable > thead > tr > :nth-child(1) {
         width: 25%;
     }
 </style>

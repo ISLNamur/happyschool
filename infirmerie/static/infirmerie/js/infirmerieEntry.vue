@@ -23,84 +23,76 @@
             appear
             name="fade"
         >
-            <b-card
+            <BCard
                 class="'px-4 mt-2"
                 no-body
             >
-                <b-row>
-                    <b-col>
+                <BRow>
+                    <BCol>
                         <h5>
                             <a
                                 class="clickable"
                                 :href="urlToStudentInfo"
                             >{{ title }}</a>
-                            <b-btn
+                            <BButton
                                 variant="link"
                                 size="sm"
                                 @click="filterStudent"
                             >
-                                <b-icon
-                                    icon="funnel"
-                                />
-                            </b-btn>
+                                <IBiFunnel />
+                            </BButton>
                         </h5>
-                    </b-col>
-                    <b-col sm="2">
-                        <div class="text-right">
-                            <b-btn
+                    </BCol>
+                    <BCol sm="2">
+                        <div class="text-end">
+                            <BButton
                                 variant="light"
                                 size="sm"
                                 :to="'/edit/' + rowData.id + '/0'"
                                 class="card-link"
                             >
-                                <b-icon
-                                    icon="pencil-square"
-                                    variant="success"
-                                />
-                            </b-btn>
-                            <b-btn
+                                <IBiPencilSquare color="green" />
+                            </BButton>
+                            <BButton
                                 variant="light"
                                 size="sm"
                                 @click="deleteEntry"
                                 class="card-link"
                             >
-                                <b-icon
-                                    icon="trash-fill"
-                                    variant="danger"
-                                />
-                            </b-btn>
+                                <IBiTrashFill color="red" />
+                            </BButton>
                         </div>
-                    </b-col>
-                </b-row>
-                <b-row class="text-center">
-                    <b-col
+                    </BCol>
+                </BRow>
+                <BRow class="text-center">
+                    <BCol
                         md="2"
                         class="current-data"
                     >
                         <strong>Arrivée :</strong> {{ arrival }}
-                    </b-col>
-                    <b-col
+                    </BCol>
+                    <BCol
                         md="2"
                         class="current-data"
                     >
                         <span v-if="rowData.datetime_sortie"><strong>Départ :</strong>{{ departure }}</span>
-                        <b-btn
+                        <BButton
                             v-else
                             class="mb-1"
                             size="sm"
                             :to="'/edit/' + rowData.id + '/1'"
                         >
                             Encoder départ
-                        </b-btn>
-                    </b-col>
-                    <b-col class="current-data">
+                        </BButton>
+                    </BCol>
+                    <BCol class="current-data">
                         {{ rowData.motifs_admission }}
-                    </b-col>
-                    <b-col class="current-data">
+                    </BCol>
+                    <BCol class="current-data">
                         {{ rowData.remarques_sortie }}
-                    </b-col>
-                </b-row>
-            </b-card>
+                    </BCol>
+                </BRow>
+            </BCard>
         </transition>
     </div>
 </template>

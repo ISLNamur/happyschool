@@ -19,46 +19,45 @@
 
 <template>
     <div>
-        <b-container>
-            <b-row>
+        <BContainer>
+            <BRow>
                 <h2>Plan Individuel d'Apprentissage</h2>
-            </b-row>
-            <b-row>
-                <b-col
+            </BRow>
+            <BRow>
+                <BCol
                     v-if="canAddPia"
                     cols="12"
                     sm="3"
                 >
-                    <b-dropdown variant="success">
+                    <BDropdown variant="success">
                         <template #button-content>
-                            <b-icon
-                                icon="plus"
+                            <IBiPlus
                                 scale="1.5"
                             />
                             Ajouter
                         </template>
-                        <b-dropdown-item to="/new/true/">
+                        <BDropdownItem to="/new/true/">
                             PIA
-                        </b-dropdown-item>
-                        <b-dropdown-item to="/new/false/">
+                        </BDropdownItem>
+                        <BDropdownItem to="/new/false/">
                             Aide élève
-                        </b-dropdown-item>
-                    </b-dropdown>
-                </b-col>
-                <b-col>
-                    <b-form-group
+                        </BDropdownItem>
+                    </BDropdown>
+                </BCol>
+                <BCol>
+                    <BFormGroup
                         label="Filtrer PIA/Aide"
                         label-cols="12"
                         label-cols-md="5"
                     >
-                        <b-form-select
+                        <BFormSelect
                             v-model="filterAdvanced"
                             :options="filterOptions"
-                            @change="loadEntries"
+                            @update:model-value="loadEntries"
                         />
-                    </b-form-group>
-                </b-col>
-                <b-col>
+                    </BFormGroup>
+                </BCol>
+                <BCol>
                     <multiselect
                         id="search"
                         :internal-search="false"
@@ -80,11 +79,11 @@
                             Aucun élève trouvé.
                         </template>
                     </multiselect>
-                </b-col>
-            </b-row>
-            <b-row class="mt-2">
-                <b-col>
-                    <b-alert
+                </BCol>
+            </BRow>
+            <BRow class="mt-2">
+                <BCol>
+                    <BAlert
                         :show="lastPias.length > 0"
                         dismissible
                     >
@@ -99,46 +98,39 @@
                                 </a>
                             </li>
                         </ul>
-                    </b-alert>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <b-pagination-nav
-                        class="mt-1"
+                    </BAlert>
+                </BCol>
+            </BRow>
+            <BRow>
+                <BCol>
+                    <BPagination
                         :value="currentPage"
-                        :number-of-pages="pagesCount"
-                        :link-gen="pageLink"
-                        use-router
+                        :total-rows="entriesCount"
+                        :per-page="entriesPerPage"
+                        @update:model-value="changePage"
+                        class="mt-1"
                     />
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
+                </BCol>
+            </BRow>
+            <BRow>
+                <BCol>
                     <pia-entry
                         v-for="(entry, index) in entries"
                         :key="entry.id"
                         :row-data="entry"
                         @delete="deleteRecord(index)"
                     />
-                </b-col>
-            </b-row>
-        </b-container>
+                </BCol>
+            </BRow>
+        </BContainer>
     </div>
 </template>
 
 <script>
 import axios from "axios";
 
-import Vue from "vue";
-import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
-import "bootstrap-vue/dist/bootstrap-vue.css";
-
 import { piaStore } from "./stores/index.js";
 import { displayStudent } from "@s:core/js/common/utilities.js";
-
-Vue.use(BootstrapVue);
-Vue.use(IconsPlugin);
 
 import Multiselect from "vue-multiselect";
 
@@ -188,14 +180,13 @@ export default {
     methods: {
         displayStudent: displayStudent,
         /**
-         * Generate link to other pages.
+         * Move to another page.
          * 
          * @param {Number} pageNum The page number
          */
-        pageLink: function (pageNum) {
-            return {
-                path: `/page/${pageNum}/`,
-            };
+        changePage: function (pageNum) {
+            this.$router.push(`/page/${pageNum}/`);
+            scroll(0, 0);
         },
         /**
          * Move to the PIA record page.

@@ -18,81 +18,83 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-overlay :show="loading">
-        <b-row>
-            <b-col>
-                <b-form-group>
-                    <b-select
+    <BOverlay :show="loading">
+        <BRow>
+            <BCol>
+                <BFormGroup>
+                    <BFormSelect
                         :options="activitySupports"
                         value-field="id"
                         v-model="currentActSuppId"
-                        @change="updateCurrentActSupp"
+                        @update:model-value="updateCurrentActSupp"
                     />
-                </b-form-group>
-            </b-col>
-            <b-col>
-                <b-btn
-                    variant="outline-secondary"
-                    @click="copy"
-                    :disabled="activitySupports.length === 0"
-                >
-                    <b-icon icon="files" />
-                    Copier
-                </b-btn>
-                <b-btn
-                    variant="success"
-                    @click="add"
-                >
-                    <b-icon icon="plus" />
-                    Ajouter
-                </b-btn>
-                <b-btn
-                    variant="danger"
-                    @click="remove"
-                    :disabled="activitySupports.length === 0"
-                >
-                    <b-icon icon="trash" />
-                    Supprimer
-                </b-btn>
-            </b-col>
-        </b-row>
-        <b-row v-if="currentActSupp">
-            <b-col>
-                <b-card>
-                    <b-row class="mb-1">
-                        <b-col>
+                </BFormGroup>
+            </BCol>
+            <BCol>
+                <BButtonGroup>
+                    <BButton
+                        variant="outline-secondary"
+                        @click="copy"
+                        :disabled="activitySupports.length === 0"
+                    >
+                        <IBiFiles />
+                        Copier
+                    </BButton>
+                    <BButton
+                        variant="success"
+                        @click="add"
+                    >
+                        <IBiPlus />
+                        Ajouter
+                    </BButton>
+                    <BButton
+                        variant="danger"
+                        @click="remove"
+                        :disabled="activitySupports.length === 0"
+                    >
+                        <IBiTrash />
+                        Supprimer
+                    </BButton>
+                </BButtonGroup>
+            </BCol>
+        </BRow>
+        <BRow v-if="currentActSupp">
+            <BCol>
+                <BCard>
+                    <BRow class="mb-1">
+                        <BCol>
                             <strong>
-                                <b-form inline>
-                                    Du<b-form-input
+                                <BForm inline>
+                                    Du<BFormInput
                                         type="date"
                                         v-model="currentActSupp.date_start"
                                         class="mr-sm-2 ml-2"
                                     />
-                                    au<b-form-input
+                                    au<BFormInput
                                         type="date"
                                         v-model="currentActSupp.date_end"
                                         class="ml-2"
                                     />
-                                </b-form>
+                                </BForm>
                             </strong>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-table-simple v-if="!loading">
-                            <b-thead>
-                                <b-tr>
-                                    <b-th>Jour</b-th>
-                                    <b-th>Cours</b-th>
-                                    <b-th>Prof</b-th>
-                                </b-tr>
-                            </b-thead>
-                            <b-tbody>
-                                <b-tr
+                        </BCol>
+                    </BRow>
+                    <BRow>
+                        <BTableSimple v-if="!loading">
+                            <BThead>
+                                <BTr>
+                                    <BTh>Jour</BTh>
+                                    <BTh>Cours</BTh>
+                                    <BTh>Prof</BTh>
+                                </BTr>
+                            </BThead>
+                            <BTbody>
+                                <BTr
                                     v-for="day in supportDays"
                                     :key="day"
                                 >
-                                    <b-td>{{ dayOfWeek[day] }}</b-td>
-                                    <b-td>
+                                    <BTd>{{ dayOfWeek[day] }}</BTd>
+                                    <BTd>
                                         <multiselect
                                             :internal-search="false"
                                             :options="store.branches"
@@ -111,8 +113,8 @@
                                             </template>
                                             <template #noOptions />
                                         </multiselect>
-                                    </b-td>
-                                    <b-td>
+                                    </BTd>
+                                    <BTd>
                                         <multiselect
                                             :id="`responsible-support-${day}`"
                                             :internal-search="false"
@@ -133,22 +135,22 @@
                                             </template>
                                             <template #noOptions />
                                         </multiselect>
-                                    </b-td>
-                                </b-tr>
-                            </b-tbody>
-                        </b-table-simple>
-                    </b-row>
-                </b-card>
-            </b-col>
-        </b-row>
-        <b-row
+                                    </BTd>
+                                </BTr>
+                            </BTbody>
+                        </BTableSimple>
+                    </BRow>
+                </BCard>
+            </BCol>
+        </BRow>
+        <BRow
             v-if="currentActSupp"
             class="mt-3"
         >
-            <b-col>
-                <b-card>
-                    <b-form-group>
-                        <b-form-radio-group
+            <BCol>
+                <BCard>
+                    <BFormGroup>
+                        <BFormRadioGroup
                             v-model="directedStudy"
                             :options="[{ text: 'Oui', value: true }, { text: 'Non', value: false }]"
                             name="has-directed-study"
@@ -158,30 +160,30 @@
                         <template #label>
                             <strong>Étude dirigée</strong>
                         </template>
-                    </b-form-group>
-                    <b-form-group
+                    </BFormGroup>
+                    <BFormGroup
                         v-slot="{ ariaDescribedby }"
                         v-if="directedStudy"
                     >
-                        <b-form-checkbox-group
+                        <BFormCheckboxGroup
                             v-model="currentActSupp.directed_study.days"
                             :options="studyDays"
                             :aria-describedby="ariaDescribedby"
                             name="directed-study"
                         />
-                    </b-form-group>
-                </b-card>
-            </b-col>
-        </b-row>
-        <b-row class="mt-2">
-            <b-col>
+                    </BFormGroup>
+                </BCard>
+            </BCol>
+        </BRow>
+        <BRow class="mt-2">
+            <BCol>
                 <course-reinforcement
                     :pia="pia"
                     ref="reinforcement"
                 />
-            </b-col>
-        </b-row>
-    </b-overlay>
+            </BCol>
+        </BRow>
+    </BOverlay>
 </template>
 
 <script>

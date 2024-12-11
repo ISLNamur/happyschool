@@ -3,89 +3,91 @@
         appear
         name="fade"
     >
-        <b-card
+        <BCard
             :class="setCardClass()"
             no-body
         >
-            <b-row
+            <BRow
                 v-if="!fullscreen"
                 class="text-center"
             >
-                <b-col
+                <BCol
                     :cols="fullscreen ? 3 : 2"
                     class="current-data"
                 >
-                    <b-icon
+                    <component
+                        :is="icon"
                         v-if="rowData.category"
-                        :icon="icon"
-                        v-b-tooltip.hover
-                        :title="category"
+                        v-b-tooltip.hover="category"
                     />
                     <em>{{ formatChange(rowData.change) }}</em>
-                </b-col>
-                <b-col
+                </BCol>
+                <BCol
                     :cols="fullscreen ? 2 : 1"
                     class="current-data"
                 >
                     {{ rowData.classes }}
-                </b-col>
-                <b-col
+                </BCol>
+                <BCol
                     :cols="fullscreen ? '' : 3"
                     class="current-data"
                 >
                     <s v-if="rowData.teachers_substitute.length > 0">{{ formatTeachers(rowData.teachers_replaced) }}</s>
                     <span v-else>{{ formatTeachers(rowData.teachers_replaced) }}</span>
                     <span v-if="rowData.teachers_substitute.length > 0">
-                        <b-icon icon="arrow-right" />
+                        <IBiArrowRight />
                         {{ formatTeachers(rowData.teachers_substitute) }}
                     </span>
-                </b-col>
-                <b-col
+                </BCol>
+                <BCol
                     cols="2"
                     class="current-data"
                     v-if="rowData.place.length > 0"
                 >
                     {{ rowData.place }}
-                </b-col>
-                <b-col
+                </BCol>
+                <BCol
                     v-if="!hide_comment"
                     class="current-data"
                 >
                     {{ rowData.comment }}
-                </b-col>
-                <b-col
+                </BCol>
+                <BCol
                     cols="1"
                     v-if="store.canAdd"
                 >
-                    <a
-                        :href="`#/schedule_form/${rowData.id}/`"
+                    <BButton
+                        :to="`/schedule_form/${rowData.id}/`"
                         @click="editEntry"
                         class="card-link"
-                    ><b-icon
-                        icon="pencil-square"
-                        variant="success"
-                    /></a>
-                    <a
-                        href="#"
+                        size="sm"
+                        variant="outline-light"
+                    >
+                        <IBiPencilSquare
+                            color="green"
+                        />
+                    </BButton>
+                    <BButton
+                        size="sm"
+                        variant="outline-light"
                         @click="deleteEntry"
-                        class=""
-                    ><b-icon
-                        icon="trash-fill"
-                        variant="danger"
-                    /></a>
-                </b-col>
-            </b-row>
+                    >
+                        <IBiTrashFill
+                            color="red"
+                        />
+                    </BButton>
+                </BCol>
+            </BRow>
             <table
                 v-else
                 width="100%"
             >
                 <tr>
                     <td width="20%">
-                        <b-icon
+                        <component
                             v-if="rowData.category"
-                            :icon="icon"
-                            v-b-tooltip.hover
-                            :title="category"
+                            :is="icon"
+                            v-b-tooltip.hover="category"
                         />
                         <em>{{ formatChange(rowData.change) }}</em>
                     </td>
@@ -96,7 +98,7 @@
                         <s v-if="rowData.teachers_substitute.length > 0">{{ formatTeachers(rowData.teachers_replaced) }}</s>
                         <span v-else>{{ formatTeachers(rowData.teachers_replaced) }}</span>
                         <span v-if="rowData.teachers_substitute.length > 0">
-                            <b-icon icon="arrow-right" />
+                            <IBiArrowRight />
                             {{ formatTeachers(rowData.teachers_substitute) }}
                         </span>
                     </td>
@@ -111,7 +113,7 @@
                     </td>
                 </tr>
             </table>
-        </b-card>
+        </BCard>
     </transition>
 </template>
 
@@ -121,6 +123,7 @@ import "moment/dist/locale/fr";
 Moment.locale("fr");
 
 import { scheduleChangeStore } from "./stores/index.js";
+import { BButton } from "bootstrap-vue-next";
 
 export default {
     props: {
@@ -136,7 +139,10 @@ export default {
     }),
     computed: {
         icon: function () {
-            if (this.rowData.category) return this.store.changeCategory.filter(c => c.id === this.rowData.category)[0].icon;
+            if (this.rowData.category) {
+                return `IBi${this.store.changeCategory.filter(c => c.id === this.rowData.category)[0].icon}`;
+            }
+        
             return "";
         },
         category: function () {
