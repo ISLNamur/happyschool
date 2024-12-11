@@ -18,14 +18,14 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-overlay :show="loading">
+    <BOverlay :show="loading">
         <div v-if="info">
             <dl
                 v-if="$route.params.type !== 'student'"
                 class="row"
             >
                 <dt
-                    class="col-5 text-right"
+                    class="col-5 text-end"
                 >
                     Courriel
                 </dt>
@@ -39,13 +39,13 @@
                 v-else
                 class="row"
             >
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     Date de naissance
                 </dt>
                 <dd class="col-7">
                     {{ niceDate(info.birth_date) }}
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     Adresse
                 </dt>
                 <dd
@@ -62,7 +62,7 @@
                 </dd>
                 <dt
                     v-if="info.father_job"
-                    class="col-5 text-right"
+                    class="col-5 text-end"
                 >
                     Profession du père
                 </dt>
@@ -71,7 +71,7 @@
                 </dd>
                 <dt
                     v-if="info.mother_job"
-                    class="col-5 text-right"
+                    class="col-5 text-end"
                 >
                     Profession de la mère
                 </dt>
@@ -80,7 +80,7 @@
                 </dd>
             </dl>
         </div>
-    </b-overlay>
+    </BOverlay>
 </template>
 
 <script>

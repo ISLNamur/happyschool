@@ -19,7 +19,7 @@
 
 <template>
     <div>
-        <b-table-lite
+        <BTableLite
             :items="calendar"
             sticky-header="650px"
             :fields="fields"
@@ -33,9 +33,12 @@
             head-variant="dark"
         >
             <template #cell()="data">
-                {{ data.value[3] }}
-                <b-link
-                    v-if="data.value[3]"
+                <div v-if="data.value">
+                    {{ data.value[3] }}
+                </div>
+                <BLink
+                    underline-variant="light"
+                    v-if="data.value"
                     :to="`/overview/${data.value[0]}-${String(data.value[1]).padStart(2, '0')}-${String(data.value[2]).padStart(2, '0')}/student_view/${$route.params.studentId}/`"
                 >
                     <span v-if="data.value[4]">
@@ -44,12 +47,12 @@
                     <span v-else>
                         _
                     </span>
-                </b-link>
+                </BLink>
             </template>
             <template #cell(Mois)="data">
                 <strong>{{ month[(firstDate.getMonth() + data.index) % 12] }}</strong>
             </template>
-        </b-table-lite>
+        </BTableLite>
     </div>
 </template>
 
@@ -106,17 +109,14 @@ export default {
             return data[0] === parseInt(this.currentDate.slice(0, 4)) && data[1] === parseInt(this.currentDate.slice(5, 7)) && data[2] === parseInt(this.currentDate.slice(8, 10));
         },
         initData: function () {
-            let app = this;
             for (let d = 0; d < 31; d++) {
                 this.fields.push(
                     {
                         key: String(d),
                         label: String(d + 1),
-                        tdClass: function (value) {
-                            return [app.isToday(value) ? "today" : "", app.isCurrentDate(value) ? "currentdate" : ""];
-                        }
                     }
                 );
+
             }
 
             const currentYear = getCurrentScholarYear();
@@ -130,15 +130,43 @@ export default {
                 .then(resps => {
                     const firstDate = resps[0].data[0][0];
                     this.firstDate = new Date(firstDate[0], firstDate[1] - 1, firstDate[2]);
-                    this.calendar = resps[0].data;
+                    this.calendar = resps[0].data.map(month => {
+                        return Object.assign({}, month);
+                    });
+                    this.calendar.forEach(month => Object.entries(month).forEach((dayData) => {
+                        if (this.isToday(dayData[1])) {
+                            if (month._cellVariants) {
+                                month._cellVariants[dayData[0]] = "warning";
+                            } else {
+                                month._cellVariants = {[dayData[0]]: "warning"};
+                            }
+                        }
+                        if (this.isCurrentDate(dayData[1])) {
+                            if (month._cellVariants) {
+                                month._cellVariants[dayData[0]] = "success";
+                            } else {
+                                month._cellVariants = {[dayData[0]]: "success"};
+                            }
+                        }
+
+                        if (dayData[1][3] && ((dayData[1][3] == "Di") || (dayData[1][3] == "Sa"))) {
+                            if (month._cellVariants) {
+                                month._cellVariants[dayData[0]] = "danger";
+                            } else {
+                                month._cellVariants = {[dayData[0]]: "danger"};
+                            }
+                        }
+
+                    }));
                     resps[1].data.results.forEach(abs => {
                         const rowIndex = ((11 - this.firstDate.getMonth()) + parseInt(abs.date_absence.slice(5, 7))) % 12;
                         const columnIndex = parseInt(abs.date_absence.slice(8, 10)) - 1;
                         const hasJustification = resps[2].data.results.find(just => just.absences.includes(abs.id));
-                        this.calendar[rowIndex][columnIndex][4] += hasJustification ? abs.status.toLowerCase() : abs.status;
+                        this.calendar[rowIndex][String(columnIndex)][4] += hasJustification ? abs.status.toLowerCase() : abs.status;
                     });
                 });
         }
+        
     },
     mounted: function () {
         this.initData();
@@ -149,14 +177,5 @@ export default {
 <style>
 .small-text {
     font-size: 0.85em;
-}
-
-.today {
-    background-color: lightseagreen;
-}
-
-.currentdate {
-    font-weight: bold;
-    background-color: lightblue;
 }
 </style>

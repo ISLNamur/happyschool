@@ -18,39 +18,34 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-row>
-        <b-col
+    <BRow>
+        <BCol
             v-for="(a, index) in status"
             :key="index"
         >
-            <b-overlay :show="updating">
-                <b-checkbox
-                    switch
-                    v-model="status[index]"
-                    @change="updateRecord(index, $event)"
-                >
-                    <template #default="">
-                        <span>
-                            {{ status[index] ? "A" : "P" }}
-                        </span>
-                        <b-iconstack>
-                            <b-icon
-                                stacked
-                                icon="square"
-                                variant="secondary"
-                            />
-                            <b-icon
-                                stacked
-                                v-if="absences[index].status !== null"
-                                icon="check"
-                                variant="success"
-                            />
-                        </b-iconstack>
-                    </template>
-                </b-checkbox>
-            </b-overlay>
-        </b-col>
-    </b-row>
+            <BOverlay :show="updating">
+                <BForm class="d-flex justify-content-center flex-wrap">
+                    <BFormCheckbox
+                        switch
+                        v-model="status[index]"
+                        @change="updateRecord(index, $event)"
+                    />
+                    <span class="position-relative">
+                        {{ status[index] ? "A" : "P" }}
+                        <BBadge
+                            v-if="absences[index].status !== null"
+                            text-variant="success"
+                            bg-variant="transparent"
+                            placement="top-end"
+                        >
+                             
+                            <IBiCheck v-if="absences[index] !== null" />
+                        </BBadge>
+                    </span>
+                </BForm>
+            </BOverlay>
+        </BCol>
+    </BRow>
 </template>
 
 <script>
@@ -106,12 +101,12 @@ export default {
     },
     mounted: function () {
         this.status = this.absences.map(a => a.status == "A");
-    }
+    },
 };
 </script>
 
 <style>
-    table.b-table > thead > tr > :nth-child(1) {
+    table.BTable > thead > tr > :nth-child(1) {
         width: 25%;
     }
 </style>

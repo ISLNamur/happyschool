@@ -21,48 +21,48 @@
 <template>
     <div>
         <h4>Importer des photos</h4>
-        <b-row>
+        <BRow>
             <p>Les photos des étudiants doivent être sous la forme "numéro_de_matricule.jpg", par exemple 6143.<strong>jpg</strong>.</p>
-        </b-row>
-        <b-row>
-            <b-form>
-                <b-form-row>
-                    <b-form-group label="Type de personne">
-                        <b-form-select
+        </BRow>
+        <BRow>
+            <BForm>
+                <BFormRow>
+                    <BFormGroup label="Type de personne">
+                        <BFormSelect
                             v-model="people"
                             :options="peopleOptions"
                         />
-                    </b-form-group>
-                </b-form-row>
-                <b-form-row v-if="people">
-                    <b-form-group label="Photos">
-                        <b-form-file
+                    </BFormGroup>
+                </BFormRow>
+                <BFormRow v-if="people">
+                    <BFormGroup label="Photos">
+                        <BFormFile
                             v-model="photos"
                             accept=".jpg"
                             placeholder="Choisir les photos..."
                             multiple
                             :file-name-formatter="formatNames"
                         />
-                    </b-form-group>
-                </b-form-row>
-                <b-form-row v-if="people && photos.length > 0">
-                    <b-form-group>
-                        <b-btn
+                    </BFormGroup>
+                </BFormRow>
+                <BFormRow v-if="people && photos.length > 0">
+                    <BFormGroup>
+                        <BButton
                             @click="uploadPhotos"
                             :disabled="sending"
                         >
-                            <b-spinner
+                            <BSpinner
                                 small
                                 label="Sending..."
                                 v-if="sending"
                                 variant="light"
                             />
                             {{ sendingButton }}
-                        </b-btn>
-                    </b-form-group>
-                </b-form-row>
-            </b-form>
-        </b-row>
+                        </BButton>
+                    </BFormGroup>
+                </BFormRow>
+            </BForm>
+        </BRow>
     </div>
 </template>
 

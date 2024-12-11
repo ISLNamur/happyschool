@@ -18,51 +18,53 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-overlay :show="loading">
-        <b-row>
-            <b-col>
+    <BOverlay :show="loading">
+        <BRow>
+            <BCol>
                 <h4>
                     Aménagements raisonnables
                 </h4>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-form-group>
-                    <b-select
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
+                <BFormGroup>
+                    <BFormSelect
                         :options="disorderCares"
                         value-field="id"
                         v-model="currentDisorderCare"
-                        @change="saveBeforeChange"
+                        @update:model-value="saveBeforeChange"
                     />
-                </b-form-group>
-            </b-col>
-            <b-col>
-                <b-btn
+                </BFormGroup>
+            </BCol>
+            <BCol>
+                <BButton
                     variant="outline-secondary"
                     @click="copy"
                     :disabled="disorderCares.length === 0"
                 >
-                    <b-icon icon="files" />
+                    <IBiFiles />
                     Copier
-                </b-btn>
-                <b-btn
+                </BButton>
+                <BButton
                     variant="success"
                     @click="add"
+                    class="ms-1"
                 >
-                    <b-icon icon="plus" />
+                    <IBiPlus />
                     Ajouter
-                </b-btn>
-                <b-btn
+                </BButton>
+                <BButton
                     variant="danger"
                     @click="remove"
                     :disabled="disorderCares.length === 0"
+                    class="ms-1"
                 >
-                    <b-icon icon="trash" />
+                    <IBiTrash />
                     Supprimer
-                </b-btn>
-            </b-col>
-        </b-row>
+                </BButton>
+            </BCol>
+        </BRow>
         <disorder-care
             v-if="currentDisorderCare"
             v-model:date_start="currentDisorderCareObj.date_start"
@@ -72,11 +74,13 @@
             :disorder-care-id="currentDisorderCare"
             ref="disorderCare"
         />
-    </b-overlay>
+    </BOverlay>
 </template>
 
 <script>
 import axios from "axios";
+
+import { useModalController } from "bootstrap-vue-next";
 
 import { piaStore } from "./stores/index.js";
 import DisorderCare from "./disorder_care.vue";
@@ -84,6 +88,10 @@ import DisorderCare from "./disorder_care.vue";
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
+    setup: function () {
+        const { confirm, show } = useModalController();
+        return { confirm, show };
+    },
     props: {
         pia: {
             type: Number,
@@ -128,15 +136,15 @@ export default {
             this.$refs.disorderCare.resetSelectionId();
         },
         remove: function () {
-            this.$bvModal.msgBoxConfirm(
-                "Êtes-vous sûr de vouloir supprimer l'élément ?",
-                {
+            this.confirm({
+                props: {
+                    body: "Êtes-vous sûr de vouloir supprimer l'élément ?",
                     title: "Attention !",
                     okVariant: "danger",
                     okTitle: "Oui",
                     cancelTitle: "Non",
                 },
-            ).then((confirm) => {
+            }).then((confirm) => {
                 if (confirm) {
                     const dCIndex = this.disorderCares.findIndex(
                         sA => sA.id === this.currentDisorderCare && sA.date_start === this.currentDisorderCareObj.date_start
@@ -153,7 +161,7 @@ export default {
         },
         saveBeforeChange: function (event) {
             if (this.pia < 0) {
-                this.$bvModal.msgBoxOk("Sauvegarder avant de pouvoir créer un nouvel aménagement)");
+                this.show({props: { body: "Sauvegarder avant de pouvoir créer un nouvel aménagement)"}});
             } else {
                 this.save(this.pia)
                     .then(() => {

@@ -18,30 +18,32 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-container>
-        <b-row>
+    <BContainer>
+        <BRow>
             <h3>Absence Prof : {{ this.id ? "Modification" : "Ajout" }}</h3>
-        </b-row>
-        <b-row>
-            <b-btn to="/">
-                Retour à la liste des absences
-            </b-btn>
-        </b-row>
-        <b-row>
-            <b-col sm="4">
-                <b-img
+        </BRow>
+        <BRow>
+            <BCol>
+                <BButton to="/">
+                    Retour à la liste des absences
+                </BButton>
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol sm="4">
+                <BImg
                     rounded
                     :src="`/static/photos_prof/${form.id_person}.jpg`"
                     fluid
                     alt="Photo de la personne"
                 />
-            </b-col>
-            <b-col>
-                <b-form
+            </BCol>
+            <BCol>
+                <BForm
                     @submit="submit"
                     @reset="reset"
                 >
-                    <b-form-group>
+                    <BFormGroup class="mb-1">
                         <multiselect
                             :internal-search="false"
                             :options="responsibleOptions"
@@ -62,19 +64,23 @@
                             </template>
                             <template #noOptions />
                         </multiselect>
-                    </b-form-group>
-                    <b-form-group>
-                        <b-form-select
+                    </BFormGroup>
+                    <BFormGroup
+                        label="Motif"
+                        class="mb-1"
+                    >
+                        <BFormSelect
                             v-model="form.motif"
                             :options="motifOptions"
                             required
                         />
-                    </b-form-group>
-                    <b-form-group
+                    </BFormGroup>
+                    <BFormGroup
                         label="Date de début"
                         :state="inputStates.non_field_errors"
+                        class="mb-1"
                     >
-                        <b-form-input
+                        <BFormInput
                             v-model="form.date_absence_start"
                             type="date"
                             required
@@ -83,12 +89,13 @@
                         <template #invalid-feedback>
                             {{ errorMsg('non_field_errors') }}
                         </template>
-                    </b-form-group>
-                    <b-form-group
+                    </BFormGroup>
+                    <BFormGroup
                         label="Date de fin"
                         :state="inputStates.non_field_errors"
+                        class="mb-1"
                     >
-                        <b-form-input
+                        <BFormInput
                             v-model="form.date_absence_end"
                             type="date"
                             required
@@ -96,21 +103,24 @@
                         <template #invalid-feedback>
                             {{ errorMsg('non_field_errors') }}
                         </template>
-                    </b-form-group>
-                    <b-form-group label="commentaire">
-                        <b-textarea v-model="form.comment" />
-                    </b-form-group>
-                    <b-button
+                    </BFormGroup>
+                    <BFormGroup
+                        label="Commentaire"
+                        class="mb-1"
+                    >
+                        <BFormTextarea v-model="form.comment" />
+                    </BFormGroup>
+                    <BButton
                         type="submit"
                         variant="primary"
                         :disabled="sending"
                     >
                         Soumettre
-                    </b-button>
-                </b-form>
-            </b-col>
-        </b-row>
-    </b-container>
+                    </BButton>
+                </BForm>
+            </BCol>
+        </BRow>
+    </BContainer>
 </template>
 
 <script>
@@ -119,12 +129,18 @@ import axios from "axios";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
+import { useToastController } from "bootstrap-vue-next";
+
 import {getPeopleByName} from "@s:core/js/common/search.js";
 import { absenceProfStore } from "./stores/index.js";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        return { show };
+    },
     props: {
         id: {
             type: String,
@@ -227,12 +243,15 @@ export default {
             Promise.all(promises)
                 .then(() => {
                     this.sending = false;
-                    this.$router.push("/",() => {
-                        this.$root.$bvToast.toast("Les données ont bien été envoyées", {
-                            variant: "success",
-                            noCloseButton: true,
+                    console.log("Toast !!");
+                    this.$router.push("/")
+                        .then(() => {
+                            this.show({props:{
+                                body:"Les données ont bien été envoyées",
+                                variant: "success",
+                                noCloseButton: true,
+                            }});
                         });
-                    });
                 })
                 .catch(err => {
                     this.errors = err.response.data;

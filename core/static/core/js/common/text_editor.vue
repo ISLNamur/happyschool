@@ -22,19 +22,20 @@
         <ckeditor
             :config="editorOptions"
             :editor="editor"
-            :model-value="value"
-            @update:model-value="$emit('input', $event)"
+            :model-value="modelValue"
+            @update:model-value="$emit('update:modelValue', $event)"
         />
     </div>
 </template>
 
 <script>
-import CKEditor from "@ckeditor/ckeditor5-vue";
+import { Ckeditor } from "@ckeditor/ckeditor5-vue";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 export default {
+    emits: ["update:modelValue"],
     props: {
-        value: {
+        modelValue: {
             type: String,
             default: "",
             required: true,
@@ -52,6 +53,7 @@ export default {
             default: false,
         }
     },
+    emits: ["update:modelValue"],
     data: function () {
         return {
             editor: ClassicEditor,
@@ -72,7 +74,8 @@ export default {
                         "|",
                         "outdent", "indent",
                     ],
-                    placeholder: this.placeholder
+                    placeholder: this.placeholder,
+                    licenseKey: "GPL",
                 };
             } else {
                 return {
@@ -83,7 +86,8 @@ export default {
                         "|",
                         "bulletedList", "numberedList",
                     ],
-                    placeholder: this.placeholder
+                    placeholder: this.placeholder,
+                    licenseKey: "GPL",
                 };
             }
         },
@@ -96,7 +100,7 @@ export default {
         }
     },
     components: {
-        ckeditor: CKEditor.component
+        ckeditor: Ckeditor
     }
 };
 </script>

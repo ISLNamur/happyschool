@@ -19,36 +19,36 @@
 
 <template>
     <div>
-        <b-card
+        <BCard
             no-body
             :class="studentAbsenceClass"
         >
-            <b-row class="m-1">
-                <b-col>
+            <BRow class="m-1">
+                <BCol>
                     <strong>{{ absence.date_absence }}</strong>:
                     <a :href="`/annuaire/#/person/student/${absence.student.matricule}/`">
                         {{ displayStudent(absence.student) }}
                     </a>
-                    <b-btn
+                    <BButton
                         variant="link"
                         size="sm"
                         @click="filterStudent"
                     >
-                        <b-icon icon="funnel" />
-                    </b-btn>
+                        <IBiFunnel />
+                    </BButton>
                     <div>
                         <strong>{{ status }}</strong>
                         {{ absence.period.name }}
                         {{ useCourse ? `(${absence.given_course.display})` : "" }}
                         <p>{{ absence.comment }}</p>
                     </div>
-                </b-col>
-                <b-col
+                </BCol>
+                <BCol
                     v-if="studentAbsenceComparison !== 'match'"
                     cols="12"
                     sm="6"
                     lg="6"
-                    class="text-right"
+                    class="text-end"
                 >
                     <p v-if="studentAbsenceComparison === 'mismatch'">
                         La présence chez les éducateurs est <strong>différente</strong>.
@@ -56,27 +56,27 @@
                     <p v-if="studentAbsenceComparison === 'notset'">
                         Aucune présence chez les éducateurs.
                     </p>
-                    <b-overlay :show="updating">
-                        <b-btn
+                    <BOverlay :show="updating">
+                        <BButton
                             @click="pushStudentAbs()"
                             class="m-1"
                         >
                             Mettre à jour l'entrée de l'éducateur
-                        </b-btn>
-                    </b-overlay>
+                        </BButton>
+                    </BOverlay>
                     <div v-if="studentAbsenceComparison === 'mismatch'">
-                        <b-overlay :show="updating">
-                            <b-btn
+                        <BOverlay :show="updating">
+                            <BButton
                                 @click="pullStudentAbs()"
                                 class="m-1"
                             >
                                 Mettre à jour l'entrée du prof
-                            </b-btn>
-                        </b-overlay>
+                            </BButton>
+                        </BOverlay>
                     </div>
-                </b-col>
-            </b-row>
-        </b-card>
+                </BCol>
+            </BRow>
+        </BCard>
     </div>
 </template>
 

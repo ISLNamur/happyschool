@@ -18,7 +18,7 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-card no-body>
+    <BCard no-body>
         <template
             #header
         >
@@ -26,20 +26,20 @@
                 <strong>Absences</strong>
             </div>
         </template>
-        <b-list-group>
-            <b-list-group-item class="d-flex justify-content-between align-items-center">
+        <BListGroup>
+            <BListGroupItem class="d-flex justify-content-between align-items-center">
                 Absences en attentes de justificatifs
-                <b-badge :variant="pendingAbsences > 0 ? 'warning' : ''">
+                <BBadge :variant="pendingAbsences > 0 ? 'warning' : ''">
                     {{ pendingAbsences }}
-                </b-badge>
-            </b-list-group-item>
+                </BBadge>
+            </BListGroupItem>
 
-            <b-list-group-item
+            <BListGroupItem
                 variant="secondary"
             >
                 <strong>Absences motivées:</strong>
-            </b-list-group-item>
-            <b-list-group-item
+            </BListGroupItem>
+            <BListGroupItem
                 v-for="justCount in justifiedAbsences"
                 :key="justCount.justificationmodel__motive__short_name"
                 class="d-flex justify-content-between align-items-center"
@@ -49,40 +49,33 @@
                     {{ justCount.justificationmodel__motive__name.slice(0, 50) }}
                     <span v-if="justCount.justificationmodel__motive__name.length > 50">…</span>
                 </span>
-                <b-badge
-                    :id="`just-count-badge-${justCount.justificationmodel__motive__short_name}`"
+                <BBadge
+                    v-b-tooltip.hover="justCount.justificationmodel__motive__count > justCount.justificationmodel__motive__admissible_up_to ? `Max. ${justCount.justificationmodel__motive__admissible_up_to}` : ''"
                     :variant="justCount.justificationmodel__motive__count > justCount.justificationmodel__motive__admissible_up_to ? 'danger' : ''"
                 >
                     {{ justCount.justificationmodel__motive__count }}
-                </b-badge>
-                <b-tooltip
-                    v-if="justCount.justificationmodel__motive__count > justCount.justificationmodel__motive__admissible_up_to"
-                    :target="`just-count-badge-${justCount.justificationmodel__motive__short_name}`"
-                    triggers="hover"
-                >
-                    Max. {{ justCount.justificationmodel__motive__admissible_up_to }}
-                </b-tooltip>
-            </b-list-group-item>
-            <b-list-group-item
+                </BBadge>
+            </BListGroupItem>
+            <BListGroupItem
                 class="d-flex justify-content-between align-items-center"
             >
                 <strong>Total justifiées / motivées:</strong>
                 <span>
-                    <b-badge variant="primary">
+                    <BBadge variant="primary">
                         {{ totalAdmissibleCount }}
-                    </b-badge>
+                    </BBadge>
                     /
-                    <b-badge variant="primary">
+                    <BBadge variant="primary">
                         {{ totalJustCount }}
-                    </b-badge>
+                    </BBadge>
                 </span>
-            </b-list-group-item>
-            <b-list-group-item
+            </BListGroupItem>
+            <BListGroupItem
                 variant="danger"
             >
                 <strong>Absences non justifiées:</strong>
-            </b-list-group-item>
-            <b-list-group-item
+            </BListGroupItem>
+            <BListGroupItem
                 v-for="justCount in unjustifiedAbsences"
                 :key="justCount.justificationmodel__motive__short_name"
                 class="d-flex justify-content-between align-items-center"
@@ -91,20 +84,20 @@
                     <strong>{{ justCount.justificationmodel__motive__short_name }}</strong>:
                     {{ justCount.justificationmodel__motive__name.slice(0, 50) }}
                 </span>
-                <b-badge>
+                <BBadge>
                     {{ justCount.justificationmodel__motive__count }}
-                </b-badge>
-            </b-list-group-item>
-            <b-list-group-item
+                </BBadge>
+            </BListGroupItem>
+            <BListGroupItem
                 class="d-flex justify-content-between align-items-center"
             >
                 <strong>Total :</strong>
-                <b-badge variant="danger">
+                <BBadge variant="danger">
                     {{ totalUnjustCount }}
-                </b-badge>
-            </b-list-group-item>
-        </b-list-group>
-    </b-card>
+                </BBadge>
+            </BListGroupItem>
+        </BListGroup>
+    </BCard>
 </template>
 
 <script>

@@ -18,52 +18,52 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-container>
-        <b-row>
-            <b-col>
+    <BContainer>
+        <BRow>
+            <BCol>
                 <h2>Avertir les parents de la sanction</h2>
-            </b-col>
-        </b-row>
-        <b-row class="mb-1">
-            <b-col>
-                <b-btn to="/">
+            </BCol>
+        </BRow>
+        <BRow class="mb-1">
+            <BCol>
+                <BButton to="/">
                     Retour
-                </b-btn>
-                <b-btn
+                </BButton>
+                <BButton
                     @click="getPDF"
                     variant="outline-primary"
                 >
-                    <b-icon icon="file-text" />
+                    <IBiFileText />
                     Télécharger PDF
-                </b-btn>
-            </b-col>
-        </b-row>
-        <b-row v-if="sanction && sanction.notified">
-            <b-col>
-                <b-alert
+                </BButton>
+            </BCol>
+        </BRow>
+        <BRow v-if="sanction && sanction.notified">
+            <BCol>
+                <BAlert
                     show
                     variant="warning"
                 >
                     La sanction a déjà été notifié.
-                </b-alert>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-form-group
+                </BAlert>
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
+                <BFormGroup
                     label="Destinataires"
                     description="Si deux destinataires sont les mêmes, un seul courriel sera envoyé."
                 >
-                    <b-form-checkbox-group
+                    <BFormCheckboxGroup
                         v-model="recipient"
                         :options="recipientOptions"
                     />
-                </b-form-group>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-form-group label="Autres personnes de l'école">
+                </BFormGroup>
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
+                <BFormGroup label="Autres personnes de l'école">
                     <multiselect
                         id="responsible-0"
                         :internal-search="false"
@@ -84,26 +84,26 @@
                         </template>
                         <template #noOptions />
                     </multiselect>
-                </b-form-group>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-btn
+                </BFormGroup>
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
+                <BButton
                     variant="outline-secondary"
                     @click="addAskPerson"
                     size="sm"
                 >
-                    <b-icon icon="plus" />
+                    <IBiPlus />
                     Ajouter le demandeur
-                </b-btn>
-            </b-col>
-        </b-row>
-        <b-row
+                </BButton>
+            </BCol>
+        </BRow>
+        <BRow
             v-if="sanction"
             class="mt-2"
         >
-            <b-col>
+            <BCol>
                 <p style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 15px;">
                     {{ sanction.sanction_decision.sanction_decision }}
                 </p>
@@ -124,26 +124,26 @@
                 >
                     Objet : <strong>Mesure disciplinaire</strong>
                 </p>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
                 <text-editor v-model="text" />
-            </b-col>
-        </b-row>
-        <b-row class="mt-2">
-            <b-col>
-                <b-overlay :show="sending">
-                    <b-btn
+            </BCol>
+        </BRow>
+        <BRow class="mt-2">
+            <BCol>
+                <BOverlay :show="sending">
+                    <BButton
                         variant="primary"
                         @click="send"
                     >
                         Envoyer
-                    </b-btn>
-                </b-overlay>
-            </b-col>
-        </b-row>
-    </b-container>
+                    </BButton>
+                </BOverlay>
+            </BCol>
+        </BRow>
+    </BContainer>
 </template>
 
 <script>
@@ -197,7 +197,7 @@ export default {
                 .then(() => {
                     this.sending = false;
                     this.$router.push("/", () => {
-                        this.$root.$bvToast.toast("Le message a bien été envoyé.", {
+                        this.show({props:{body:"Le message a bien été envoyé.", {
                             variant: "success",
                             noCloseButton: true,
                         });

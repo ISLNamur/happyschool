@@ -19,29 +19,28 @@
 
 <template>
     <div>
-        <b-container v-if="loaded">
-            <b-row>
+        <BContainer v-if="loaded">
+            <BRow>
                 <h2>Infirmerie</h2>
-            </b-row>
-            <b-row>
-                <b-col
+            </BRow>
+            <BRow>
+                <BCol
                     cols="12"
                     md="4"
                     lg="3"
                 >
-                    <b-button
+                    <BButton
                         variant="outline-success"
                         to="/new/"
                         class="w-100"
                     >
-                        <b-icon
-                            icon="plus"
+                        <IBiPlus
                             scale="1.5"
                         />
                         Ajouter un malade
-                    </b-button>
-                </b-col>
-                <b-col
+                    </BButton>
+                </BCol>
+                <BCol
                     cols="12"
                     lg="9"
                 >
@@ -55,13 +54,13 @@
                         @update="applyFilter"
                         class="mt-1 mt-lg-0"
                     />
-                </b-col>
-            </b-row>
-            <b-pagination
+                </BCol>
+            </BRow>
+            <BPagination
                 class="mt-1"
                 :total-rows="entriesCount"
                 v-model="currentPage"
-                @change="changePage"
+                @update:model-value="changePage"
                 :per-page="20"
             />
             <infirmerie-entry
@@ -74,7 +73,7 @@
                 @filter-student="filterStudent($event)"
                 @show-info="showInfo(entry)"
             />
-        </b-container>
+        </BContainer>
         <b-modal
             ref="deleteModal"
             cancel-title="Annuler"

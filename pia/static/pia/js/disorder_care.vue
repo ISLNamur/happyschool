@@ -18,30 +18,35 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-card>
-        <b-row class="mb-1">
-            <b-col>
+    <BCard>
+        <BRow class="mb-1">
+            <BCol>
                 <strong>
-                    <b-form inline>
-                        Du<b-form-input
-                            type="date"
-                            :value="date_start"
-                            @input="$emit('update:date_start', $event)"
-                            class="mr-sm-2 ml-2"
-                        />
-                        au<b-form-input
-                            type="date"
-                            :value="date_end"
-                            @input="$emit('update:date_end', $event)"
-                            class="ml-2"
-                        />
-                    </b-form>
+                    <BForm class="d-flex flex-row align-items-center flex-wrap">
+                        <label class="col-form-label me-2">Du</label>
+                        <div class="col-lg-3 me-2 my-2">
+                            <BFormInput
+                                type="date"
+                                :model-value="date_start"
+                                @update:model-value="$emit('update:date_start', $event)"
+                            />
+                        </div>
+                        <label class="col-form-label me-2">au</label>
+                        <div class="col-lg-3 me-2 my-2">
+                            <BFormInput
+                                type="date"
+                                :model-value="date_end"
+                                @update:model-value="$emit('update:date_end', $event)"
+                                class="ml-2"
+                            />
+                        </div> 
+                    </BForm>
                 </strong>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-form-group
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
+                <BFormGroup
                     label="Trouble d'apprentissage"
                     label-cols="3"
                 >
@@ -63,72 +68,72 @@
                         </template>
                         <template #noOptions />
                     </multiselect>
-                </b-form-group>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
+                </BFormGroup>
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
                 <h4>
                     Aménagements incontournables
                 </h4>
-            </b-col>
-            <b-col class="text-right">
-                <b-form-checkbox
-                    v-model="editDisorderResponse"
-                    switch
-                >
+            </BCol>
+            <BCol class="text-end">
+                <div>
+                    <BFormCheckbox
+                        v-model="editDisorderResponse"
+                        switch
+                    />
                     <span class="text-secondary">Modifier</span>
-                </b-form-checkbox>
-            </b-col>
-        </b-row>
-        <b-overlay
+                </div>
+            </BCol>
+        </BRow>
+        <BOverlay
             v-if="disorder.length > 0"
             :show="loading"
         >
-            <b-row>
-                <b-col
+            <BRow>
+                <BCol
                     v-for="category, index in this.disorderResponseCategories"
                     :key="category.id"
                 >
-                    <b-card no-body>
+                    <BCard no-body>
                         <template #header>
                             <div class="d-flex justify-content-between">
                                 <span>
                                     <strong class="text-primary">{{ category.name }}</strong>
-                                    <b-badge variant="primary">
+                                    <BBadge variant="primary">
                                         {{ selectedRespList[index].length }}
-                                    </b-badge>
-                                    <b-icon
+                                    </BBadge>
+                                    <IBiQuestionCircle
                                         v-if="category.explanation"
                                         v-b-popover.hover.top="category.explanation"
-                                        icon="question-circle"
                                         variant="primary"
                                     />
                                 </span>
                                 <span v-if="editDisorderResponse">
-                                    <b-btn
+                                    <BButton
                                         size="sm"
                                         variant="outline-success"
                                         @click="showAddCustomResponse(category)"
                                     >
-                                        <b-icon icon="plus" />
+                                        <IBiPlus />
                                         Ajouter
-                                    </b-btn>
+                                    </BButton>
                                 </span>
                             </div>
                         </template>
-                        <b-list-group
+                        <BListGroup
                             class="scrollable"
                             flush
                         >
-                            <b-list-group-item
+                            <BListGroupItem
                                 v-for="disorderResponse in editDisorderResponse ? allDisorderRespList[index] : selectedRespList[index]"
                                 :key="`${disorderResponse.id}-${disorderResponse.response}`"
                                 class="d-flex justify-content-between"
                                 :variant="selectedRespList[index].find(selResp => disorderResponse.id === selResp.id) ? '' : 'info'"
                             >
                                 <span>
-                                    <b-icon icon="chevron-compact-right" />
+                                    <IBiChevronCompactRight />
                                     {{ disorderResponse.response }}
                                     (<em>{{ disorder.find(d => d.id === disorderResponse.disorder).disorder }}</em>)
                                 </span>
@@ -137,91 +142,91 @@
                                     class="ml-2"
                                 >
 
-                                    <b-btn
+                                    <BButton
                                         size="sm"
                                         variant="danger"
                                         v-if="selectedRespList[index].find(selResp => disorderResponse.id === selResp.id)"
                                         @click="removeDisorderResponse(disorderResponse, category.id)"
                                     >
-                                        <b-icon icon="x" />
-                                    </b-btn>
-                                    <b-btn
+                                        <IBiX />
+                                    </BButton>
+                                    <BButton
                                         v-else
                                         size="sm"
                                         variant="success"
                                         @click="addDisorderResponse(disorderResponse, category.id)"
                                     >
-                                        <b-icon icon="check" />
-                                    </b-btn>
+                                        <IBiCheck />
+                                    </BButton>
                                 </span>
-                            </b-list-group-item>
-                        </b-list-group>
-                    </b-card>
-                </b-col>
-            </b-row>
-            <b-row class="mt-2">
-                <b-col>
+                            </BListGroupItem>
+                        </BListGroup>
+                    </BCard>
+                </BCol>
+            </BRow>
+            <BRow class="mt-2">
+                <BCol>
                     <text-editor
-                        :value="other_adjustments"
-                        @input="$emit('update:other_adjustments', $event)"
+                        :model-value="other_adjustments"
+                        @update:model-value="$emit('update:other_adjustments', $event)"
                     />
-                </b-col>
-            </b-row>
-            <b-row v-if="disorder.length > 0">
-                <b-col>
+                </BCol>
+            </BRow>
+            <BRow v-if="disorder.length > 0">
+                <BCol>
                     <h4 class="mt-4">
                         Aménagements conseillés
                     </h4>
-                </b-col>
-            </b-row>
-            <b-row
+                </BCol>
+            </BRow>
+            <BRow
                 v-if="disorder.length > 0"
                 class="mb-2"
             >
-                <b-col
+                <BCol
                     v-for="category, index in this.disorderResponseCategories"
                     :key="category.id"
                 >
-                    <b-card no-body>
+                    <BCard no-body>
                         <template #header>
                             <div class="d-flex justify-content-between">
                                 <span>
                                     <strong class="text-secondary">{{ category.name }}</strong>
-                                    <b-badge>
+                                    <BBadge class="ms-1">
                                         {{ notSelectedRespList[index].length }}
-                                    </b-badge>
+                                    </BBadge>
                                 </span>
-                                <b-btn
+                                <BButton
                                     size="sm"
                                     variant="outline-info"
                                     v-b-toggle="`adviced-response-cat-${category.id}`"
                                 >
-                                    <b-icon icon="chevron-bar-expand" />
-                                </b-btn>
+                                    <IBiChevronBarExpand />
+                                </BButton>
                             </div>
                         </template>
-                        <b-collapse :id="`adviced-response-cat-${category.id}`">
-                            <b-list-group
+                        <BCollapse :id="`adviced-response-cat-${category.id}`">
+                            <BListGroup
                                 flush
                                 class="scrollable"
                             >
-                                <b-list-group-item
+                                <BListGroupItem
                                     v-for="disorderResponse in notSelectedRespList[index]"
                                     :key="disorderResponse.id"
                                     class="d-flex justify-content-between"
                                 >
                                     <span>
-                                        <b-icon icon="chevron-compact-right" />
+                                        <IBiChevronCompactRight />
                                         {{ disorderResponse.response }}
                                         (<em>{{ disorder.find(d => d.id === disorderResponse.disorder).disorder }}</em>)
                                     </span>
-                                </b-list-group-item>
-                            </b-list-group>
-                        </b-collapse>
-                    </b-card>
-                </b-col>
-            </b-row>
-        </b-overlay>
+                                </BListGroupItem>
+                            </BListGroup>
+                        </BCollapse>
+                    </BCard>
+                </BCol>
+            </BRow>
+        </BOverlay>
         <b-modal
             id="add-custom-response"
             title="Ajouter une réponse personnalisée"
@@ -230,11 +235,11 @@
             cancel-title="Annuler"
             @ok="addCustomResponse"
         >
-            <b-form-group label="Réponse personnalisée">
-                <b-input v-model="customResponse.text" />
-            </b-form-group>
+            <BFormGroup label="Réponse personnalisée">
+                <BFormInput v-model="customResponse.text" />
+            </BFormGroup>
         </b-modal>
-    </b-card>
+    </BCard>
 </template>
 
 <script>
@@ -250,7 +255,7 @@ import { piaStore } from "./stores/index.js";
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
-
+    emits: ["update:date_start", "update:date_end", "update:disorder", "update:other_adjustments"],
     props: [
         "disorderCareId",
         "date_start",
@@ -428,6 +433,7 @@ export default {
             if (this.disorderCareId > 0) {
                 axios.get(`/pia/api/selected_disorder_response_new/?disorder_care=${this.disorderCareId}`)
                     .then((resp) => {
+                        console.log(resp.data.count);
                         this.selected_disorder_response = resp.data.results;
                         this.loading = false;
                     });
