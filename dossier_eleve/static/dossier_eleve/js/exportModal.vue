@@ -29,14 +29,14 @@
             @ok="getPdf"
             @hidden="resetModal"
         >
-            <b-tabs v-model="tabIndex">
-                <b-tab
+            <BTabs v-model="tabIndex">
+                <BTab
                     title="Sommaire"
                     active
                 >
-                    <b-row>
-                        <b-col>
-                            <b-form-group
+                    <BRow>
+                        <BCol>
+                            <BFormGroup
                                 label="Nom, prénom ou classe"
                                 label-for="input-name-classe"
                             >
@@ -59,22 +59,22 @@
                                     </template>
                                     <template #noOptions />
                                 </multiselect>
-                            </b-form-group>
-                            <b-form-group label="Type de données">
-                                <b-form-checkbox v-model="info">
+                            </BFormGroup>
+                            <BFormGroup label="Type de données">
+                                <BFormCheckbox v-model="info">
                                     Informations
-                                </b-form-checkbox>
-                                <b-form-checkbox v-model="sanction">
+                                </BFormCheckbox>
+                                <BFormCheckbox v-model="sanction">
                                     Sanctions
-                                </b-form-checkbox>
-                                <b-form-checkbox v-model="allYears">
+                                </BFormCheckbox>
+                                <BFormCheckbox v-model="allYears">
                                     Toutes années scolaires confondues
-                                </b-form-checkbox>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-                </b-tab>
-                <b-tab
+                                </BFormCheckbox>
+                            </BFormGroup>
+                        </BCol>
+                    </BRow>
+                </BTab>
+                <BTab
                     title="Filtre courant"
                 >
                     <p>
@@ -83,20 +83,20 @@
                     <p>
                         Le nombre de cas filtré est de : {{ entriesCount }}
                     </p>
-                    <b-alert
+                    <BAlert
                         variant="warning"
                         :show="entriesCount > 100 && entriesCount < 1000"
                     >
                         Le nombre de cas est relativement grand. La génération du pdf peut prendre un certain temps.
-                    </b-alert>
-                    <b-alert
+                    </BAlert>
+                    <BAlert
                         variant="danger"
                         :show="entriesCount >= 1000"
                     >
                         Le nombre de cas est très grand ! Êtes-vous sûr de vouloir exporter autant de cas ?
-                    </b-alert>
-                </b-tab>
-            </b-tabs>
+                    </BAlert>
+                </BTab>
+            </BTabs>
         </b-modal>
     </div>
 </template>

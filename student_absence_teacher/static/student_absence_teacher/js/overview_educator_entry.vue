@@ -18,13 +18,13 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-row>
-        <b-col
+    <BRow>
+        <BCol
             v-for="(a, index) in status"
             :key="index"
         >
-            <b-overlay :show="updating">
-                <b-checkbox
+            <BOverlay :show="updating">
+                <BFormCheckbox
                     switch
                     v-model="status[index]"
                     @change="updateRecord(index, $event)"
@@ -33,24 +33,16 @@
                         <span>
                             {{ status[index] ? "A" : "P" }}
                         </span>
-                        <b-iconstack>
-                            <b-icon
-                                stacked
-                                icon="square"
-                                variant="secondary"
-                            />
-                            <b-icon
-                                stacked
-                                v-if="absences[index].status !== null"
-                                icon="check"
-                                variant="success"
-                            />
-                        </b-iconstack>
+                        <IBiCheckSquare
+                            stacked
+                            v-if="absences[index].status !== null"
+                            variant="success"
+                        />
                     </template>
-                </b-checkbox>
-            </b-overlay>
-        </b-col>
-    </b-row>
+                </BFormCheckbox>
+            </BOverlay>
+        </BCol>
+    </BRow>
 </template>
 
 <script>
@@ -111,7 +103,7 @@ export default {
 </script>
 
 <style>
-    table.b-table > thead > tr > :nth-child(1) {
+    table.BTable > thead > tr > :nth-child(1) {
         width: 25%;
     }
 </style>

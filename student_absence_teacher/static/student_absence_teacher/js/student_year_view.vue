@@ -19,7 +19,7 @@
 
 <template>
     <div>
-        <b-table-lite
+        <BTableLite
             :items="calendar"
             sticky-header="650px"
             :fields="fields"
@@ -34,7 +34,7 @@
         >
             <template #cell()="data">
                 {{ data.value[3] }}
-                <b-link
+                <BLink
                     v-if="data.value[3]"
                     :to="`/overview/${data.value[0]}-${String(data.value[1]).padStart(2, '0')}-${String(data.value[2]).padStart(2, '0')}/student_view/${$route.params.studentId}/`"
                 >
@@ -44,12 +44,12 @@
                     <span v-else>
                         _
                     </span>
-                </b-link>
+                </BLink>
             </template>
             <template #cell(Mois)="data">
                 <strong>{{ month[(firstDate.getMonth() + data.index) % 12] }}</strong>
             </template>
-        </b-table-lite>
+        </BTableLite>
     </div>
 </template>
 

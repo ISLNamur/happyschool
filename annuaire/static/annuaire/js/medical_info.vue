@@ -18,34 +18,34 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-overlay :show="loading">
+    <BOverlay :show="loading">
         <div v-if="medical">
             <dl class="row">
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     Médecin
                 </dt>
                 <dd class="col-7">
                     {{ medical.doctor }}
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     Téléphone médecin
                 </dt>
                 <dd class="col-7">
                     {{ medical.doctor_phone }}
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     Mutuelle
                 </dt>
                 <dd class="col-7">
                     {{ medical.mutual }}
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     Numéro mutuelle
                 </dt>
                 <dd class="col-7">
                     {{ medical.mutual_number }}
                 </dd>
-                <dt class="col-5 text-right">
+                <dt class="col-5 text-end">
                     Infos complémentaires
                 </dt>
                 <dd class="col-7">
@@ -53,23 +53,23 @@
                 </dd>
             </dl>
         </div>
-        <b-card v-if="other_medical_info.length > 0">
-            <b-row
+        <BCard v-if="other_medical_info.length > 0">
+            <BRow
                 v-for="cas in other_medical_info"
                 :key="cas.id"
                 class="mb-2"
             >
-                <b-col
+                <BCol
                     cols="2"
                 >
                     {{ niceDate(cas.datetime_encodage) }}
-                </b-col>
-                <b-col>
+                </BCol>
+                <BCol>
                     <div v-html="cas.explication_commentaire" />
-                </b-col>
-            </b-row>
-        </b-card>
-    </b-overlay>
+                </BCol>
+            </BRow>
+        </BCard>
+    </BOverlay>
 </template>
 
 <script>

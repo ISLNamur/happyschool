@@ -18,202 +18,199 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-overlay :show="loading">
-        <b-row v-if="canSeeSummary">
-            <b-col class="text-right">
-                <b-btn
+    <BOverlay :show="loading">
+        <BRow v-if="canSeeSummary">
+            <BCol class="text-end">
+                <BButton
                     variant="outline-primary"
-                    v-b-modal.summary
+                    @click="summaryModal = !summaryModal"
                 >
-                    <b-icon icon="file-pdf" />
+                    <IBiFilePdf />
                     Récapitulatif
-                </b-btn>
-            </b-col>
-        </b-row>
-        <b-card
+                </BButton>
+            </BCol>
+        </BRow>
+        <BCard
             :header="`Derniers messages du dossier des élèves (${dossier_eleve.count} au total)`"
             class="mt-2"
             v-if="dossier_eleve && dossier_eleve.count > 0"
         >
-            <b-row>
-                <b-col cols="2">
+            <BRow>
+                <BCol cols="2">
                     <strong>Date</strong>
-                </b-col>
-                <b-col cols="2">
+                </BCol>
+                <BCol cols="2">
                     <strong>Objet/Motif</strong>
-                </b-col>
-                <b-col><strong>Message</strong></b-col>
-            </b-row>
-            <b-row
+                </BCol>
+                <BCol><strong>Message</strong></BCol>
+            </BRow>
+            <BRow
                 v-for="cas in dossier_eleve.results.slice(0, 5)"
                 :key="cas.id"
                 class="mb-2"
             >
-                <b-col
+                <BCol
                     cols="2"
                     :class="cas.important ? ' important' : ''"
                 >
                     {{ niceDate(cas.datetime_encodage) }}
-                </b-col>
-                <b-col
+                </BCol>
+                <BCol
                     cols="2"
                     :class="cas.important ? ' important' : ''"
                 >
                     {{ cas.sanction_decision ? cas.sanction_decision.sanction_decision : cas.info.info }}
-                </b-col>
-                <b-col :class="cas.important ? ' important' : ''">
+                </BCol>
+                <BCol :class="cas.important ? ' important' : ''">
                     <div v-html="cas.explication_commentaire" />
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <b-btn :href="'/dossier_eleve/?matricule=' + $route.params.matricule ">
-                        <b-icon
-                            icon="eye"
-                        />
+                </BCol>
+            </BRow>
+            <BRow>
+                <BCol>
+                    <BButton :href="'/dossier_eleve/?matricule=' + $route.params.matricule ">
+                        <IBiEye />
                         Voir tous les cas dans le dossier des élèves
-                    </b-btn>
-                </b-col>
-            </b-row>
-        </b-card>
-        <b-card
+                    </BButton>
+                </BCol>
+            </BRow>
+        </BCard>
+        <BCard
             :header="`Retards (${lateness.count} au total)`"
             v-if="lateness && lateness.count > 0"
             class="mt-2"
         >
-            <b-row>
-                <b-col>
+            <BRow>
+                <BCol>
                     Nombre de retards cette année : {{ lateness.count }}
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
+                </BCol>
+            </BRow>
+            <BRow>
+                <BCol>
                     Derniers retards:
-                    <b-list-group-item
+                    <BListGroupItem
                         v-for="l in lateness.results.slice(0, 5)"
                         :key="l.id"
                     >
                         {{ niceDate(l.datetime_creation) }} à {{ niceTime(l.datetime_creation) }}
-                    </b-list-group-item>
-                </b-col>
-            </b-row>
-            <b-row class="mt-2">
-                <b-col>
-                    <b-btn :href="`/lateness/?student__matricule=${$route.params.matricule}`">
-                        <b-icon
-                            icon="eye"
-                        />
+                    </BListGroupItem>
+                </BCol>
+            </BRow>
+            <BRow class="mt-2">
+                <BCol>
+                    <BButton :href="`/lateness/?student__matricule=${$route.params.matricule}`">
+                        <IBiEye />
                         Voir tous les retards
-                    </b-btn>
-                </b-col>
-            </b-row>
-        </b-card>
-        <b-card
+                    </BButton>
+                </BCol>
+            </BRow>
+        </BCard>
+        <BCard
             :header="`Derniers passages à l'infirmerie (${infirmerie.count} au total)`"
             class="mt-2"
             v-if="infirmerie && infirmerie.count > 0"
         >
-            <b-row>
-                <b-col cols="2">
+            <BRow>
+                <BCol cols="2">
                     <strong>Arrivé</strong>
-                </b-col>
-                <b-col cols="2">
+                </BCol>
+                <BCol cols="2">
                     <strong>Sortie</strong>
-                </b-col>
-                <b-col cols="2">
+                </BCol>
+                <BCol cols="2">
                     <strong>Motifs d'admission</strong>
-                </b-col>
-                <b-col><strong>Remarques de sortie</strong></b-col>
-            </b-row>
-            <b-row
+                </BCol>
+                <BCol><strong>Remarques de sortie</strong></BCol>
+            </BRow>
+            <BRow
                 v-for="passage in infirmerie.results.slice(0, 5)"
                 :key="passage.id"
                 class="mb-2"
             >
-                <b-col cols="2">
+                <BCol cols="2">
                     {{ niceDate(passage.datetime_arrive) }}
-                </b-col>
-                <b-col cols="2">
+                </BCol>
+                <BCol cols="2">
                     {{ passage.datetime_sortie ? niceDate(passage.datetime_sortie) : '' }}
-                </b-col>
-                <b-col cols="2">
+                </BCol>
+                <BCol cols="2">
                     {{ passage.motifs_admission }}
-                </b-col>
-                <b-col>{{ passage.remarques_sortie }}</b-col>
-            </b-row>
-        </b-card>
-        <b-card
+                </BCol>
+                <BCol>{{ passage.remarques_sortie }}</BCol>
+            </BRow>
+        </BCard>
+        <BCard
             :header="`Derniers appels (${appels.count} au total)`"
             class="mt-2"
             v-if="appels && appels.count > 0"
         >
-            <b-row>
-                <b-col cols="2">
+            <BRow>
+                <BCol cols="2">
                     <strong>Date</strong>
-                </b-col>
-                <b-col cols="2">
+                </BCol>
+                <BCol cols="2">
                     <strong>Objet</strong>
-                </b-col>
-                <b-col cols="2">
+                </BCol>
+                <BCol cols="2">
                     <strong>Motif</strong>
-                </b-col>
-                <b-col><strong>Message</strong></b-col>
-            </b-row>
-            <b-row
+                </BCol>
+                <BCol><strong>Message</strong></BCol>
+            </BRow>
+            <BRow
                 v-for="appel in appels.results.slice(0, 5)"
                 :key="appel.id"
                 class="mb-2"
             >
-                <b-col cols="2">
+                <BCol cols="2">
                     {{ niceDate(appel.datetime_appel) }}
-                </b-col>
-                <b-col cols="2">
+                </BCol>
+                <BCol cols="2">
                     {{ appel.object.display }}
-                </b-col>
-                <b-col cols="2">
+                </BCol>
+                <BCol cols="2">
                     {{ appel.motive.display }}
-                </b-col>
-                <b-col>{{ appel.commentaire }}</b-col>
-            </b-row>
-        </b-card>
+                </BCol>
+                <BCol>{{ appel.commentaire }}</BCol>
+            </BRow>
+        </BCard>
         <p v-if="infoCount == 0">
             <em>Aucune donnée concernant l'élève n'est présente.</em>
         </p>
-        <b-modal
+        <BModal
             id="summary"
+            v-model="summaryModal"
             ok-only
         >
-            <b-row>
-                <b-col>
-                    <b-form-group label="À partir de ">
-                        <b-input
+            <BRow>
+                <BCol>
+                    <BFormGroup label="À partir de ">
+                        <BFormInput
                             type="date"
                             v-model="date_from"
                         />
-                    </b-form-group>
-                    <b-form-group label="Jusqu'à ">
-                        <b-input
+                    </BFormGroup>
+                    <BFormGroup label="Jusqu'à ">
+                        <BFormInput
                             type="date"
                             v-model="date_to"
                         />
-                    </b-form-group>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col class="text-center">
-                    <b-btn
+                    </BFormGroup>
+                </BCol>
+            </BRow>
+            <BRow>
+                <BCol class="text-center">
+                    <BButton
                         :href="`/annuaire/summary/student/${$route.params.matricule}/${date_from}/${date_to}/`"
                         target="_blank"
                         variant="primary"
                         :disabled="!date_from || !date_to"
                     >
-                        <b-icon icon="file-pdf" />
+                        <IBiFilePdf />
                         Télécharger
-                    </b-btn>
-                </b-col>
-            </b-row>
-        </b-modal>
-    </b-overlay>
+                    </BButton>
+                </BCol>
+            </BRow>
+        </BModal>
+    </BOverlay>
 </template>
 
 
@@ -238,6 +235,7 @@ export default {
             infoCount: 0,
             date_from: null,
             date_to: null,
+            summaryModal: false,
             store: annuaireStore(),
         };
     },

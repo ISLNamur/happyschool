@@ -19,21 +19,21 @@
 
 <template>
     <div>
-        <b-row>
-            <b-col
+        <BRow>
+            <BCol
                 cols="12"
                 md="4"
                 lg="3"
             >
-                <b-form-group>
-                    <b-input
+                <BFormGroup>
+                    <BFormInput
                         v-model="currentDate"
                         type="date"
                         @change="getStudents('UND')"
                     />
-                </b-form-group>
-            </b-col>
-            <b-col
+                </BFormGroup>
+            </BCol>
+            <BCol
                 cols="12"
                 md="6"
                 lg="3"
@@ -56,8 +56,8 @@
                         Aucune période ne correspond à votre recherche.
                     </template>
                 </multiselect>
-            </b-col>
-            <b-col
+            </BCol>
+            <BCol
                 cols="12"
                 md="6"
                 lg="3"
@@ -80,9 +80,9 @@
                         Aucun cours ne correspond à votre recherche.
                     </template>
                 </multiselect>
-            </b-col>
+            </BCol>
             <span v-if="store.settings.select_student_by === 'CLGC'">ou</span>
-            <b-col>
+            <BCol>
                 <multiselect
                     v-if="store.settings.select_student_by === 'CL' || store.settings.select_student_by === 'CLGC'"
                     :options="classesOptions"
@@ -102,11 +102,11 @@
                         Aucune classe ne correspond à votre recherche.
                     </template>
                 </multiselect>
-            </b-col>
-        </b-row>
-        <b-row v-if="groups.length > 0">
-            <b-col md="6">
-                <b-form-group
+            </BCol>
+        </BRow>
+        <BRow v-if="groups.length > 0">
+            <BCol md="6">
+                <BFormGroup
                     label="Groupe"
                     label-cols="2"
                     label-class="font-weight-bold"
@@ -126,62 +126,62 @@
                             Aucune classe ne correspond à votre recherche.
                         </template>
                     </multiselect>
-                </b-form-group>
-            </b-col>
-        </b-row>
-        <b-row class="mt-2">
-            <b-col cols="4">
-                <b-btn
+                </BFormGroup>
+            </BCol>
+        </BRow>
+        <BRow class="mt-2">
+            <BCol cols="4">
+                <BButton
                     @click="sendChanges"
                     :disabled="!showAlert"
                 >
                     Valider les changements
-                </b-btn>
-            </b-col>
-            <b-col>
-                <b-alert
+                </BButton>
+            </BCol>
+            <BCol>
+                <BAlert
                     :show="showAlert"
                     variant="warning"
                 >
                     Changements non-validés !
-                </b-alert>
-            </b-col>
-        </b-row>
-        <b-row class="mt-2">
-            <b-col>
-                <b-overlay :show="loadingStudent">
-                    <b-list-group>
+                </BAlert>
+            </BCol>
+        </BRow>
+        <BRow class="mt-2">
+            <BCol>
+                <BOverlay :show="loadingStudent">
+                    <BListGroup>
                         <add-absence-entry
                             v-for="s in filteredStudent"
                             :key="s.matricule"
                             :student="s"
                             @update="computeAlert"
                         />
-                    </b-list-group>
-                </b-overlay>
-            </b-col>
-        </b-row>
-        <b-row
+                    </BListGroup>
+                </BOverlay>
+            </BCol>
+        </BRow>
+        <BRow
             v-if="students.length > 5"
             class="mt-2"
         >
-            <b-col cols="3">
-                <b-btn
+            <BCol cols="3">
+                <BButton
                     @click="sendChanges"
                     :disabled="!showAlert"
                 >
                     Valider les changements
-                </b-btn>
-            </b-col>
-            <b-col>
-                <b-alert
+                </BButton>
+            </BCol>
+            <BCol>
+                <BAlert
                     :show="showAlert"
                     variant="warning"
                 >
                     Il y a des changements non-validés !
-                </b-alert>
-            </b-col>
-        </b-row>
+                </BAlert>
+            </BCol>
+        </BRow>
     </div>
 </template>
 

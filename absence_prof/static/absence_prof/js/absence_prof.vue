@@ -23,42 +23,39 @@
             class="loading"
             v-if="!loaded"
         />
-        <b-container v-if="loaded">
-            <b-row>
+        <BContainer v-if="loaded">
+            <BRow>
                 <h2>Absence Prof</h2>
-            </b-row>
-            <b-row>
-                <b-col
+            </BRow>
+            <BRow>
+                <BCol
                     cols="12"
                     lg="3"
                 >
-                    <b-form-group>
+                    <BFormGroup>
                         <div>
-                            <b-button
+                            <BButton
                                 variant="outline-success"
                                 to="/new/"
                                 class="w-100"
                             >
-                                <b-icon
-                                    icon="plus"
+                                <IBiPlus
                                     scale="1.5"
                                 />
                                 Ajouter une absence
-                            </b-button>
-                            <b-btn
+                            </BButton>
+                            <BButton
                                 :href="'/absence_prof/list/?ordering=name&page_size=200' + filter"
                                 target="_blank"
                                 class="w-100 mt-1"
                             >
-                                <b-icon
-                                    icon="file-earmark"
-                                />
+                                <IBiFileEarmark />
                                 Exporter en PDF
-                            </b-btn>
+                            </BButton>
                         </div>
-                    </b-form-group>
-                </b-col>
-                <b-col>
+                    </BFormGroup>
+                </BCol>
+                <BCol>
                     <filters
                         app="absence_prof"
                         model="absence"
@@ -68,13 +65,13 @@
                         :show-search="showFilters"
                         @toggle-search="showFilters = !showFilters"
                     />
-                </b-col>
-            </b-row>
-            <b-pagination
-                class="mt-1"
+                </BCol>
+            </BRow>
+            <BPagination
+                class="mt-2"
                 :total-rows="entriesCount"
                 v-model="currentPage"
-                @change="changePage"
+                @page-click="changePage"
                 :per-page="20"
             />
             <absence-prof-entry
@@ -84,32 +81,17 @@
                 @delete="askDelete(entry)"
                 @edit="editEntry(entry)"
             />
-        </b-container>
-        <b-modal
-            ref="deleteModal"
-            cancel-title="Annuler"
-            hide-header
-            centered
-            @ok="deleteEntry"
-            @cancel="currentEntry = null"
-            :no-close-on-backdrop="true"
-            :no-close-on-esc="true"
-        >
-            Êtes-vous sûr de vouloir supprimer cette absence ({{ name }}) ?
-        </b-modal>
+        </BContainer>
     </div>
 </template>
 
 <script>
-import Vue from "vue";
-import {BootstrapVue, BootstrapVueIcons} from "bootstrap-vue";
-import "bootstrap-vue/dist/bootstrap-vue.css";
-
 import Moment from "moment";
 import "moment/dist/locale/fr";
 Moment.locale("fr");
 
 import axios from "axios";
+import { useModalController } from "bootstrap-vue-next";
 
 import Filters from "@s:core/js/common/filters_form.vue";
 
@@ -117,12 +99,14 @@ import { absenceProfStore } from "./stores/index.js";
 
 import AbsenceProfEntry from "./absenceProfEntry.vue";
 
-Vue.use(BootstrapVue);
-Vue.use(BootstrapVueIcons);
-
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+// const { show } = useModalController();
 
 export default {
+    setup: function () {
+        const { confirm } = useModalController();
+        return { confirm };
+    },
     data: function () {
         return {
             menu: {},
@@ -146,13 +130,26 @@ export default {
         }
     },
     methods: {
-        changePage: function (page) {
+        changePage: function (_, page) {
             this.currentPage = page;
             this.loadEntries();
         },
         askDelete: function (entry) {
             this.currentEntry = entry;
-            this.$refs.deleteModal.show();
+            this.confirm(
+                {props: {
+                    body: `Êtes-vous sûr de vouloir supprimer cette absence : ${this.name} ?`,
+                    noHeader: true,
+                    okVariant: "danger",
+                    okTitle: "Oui",
+                    cancelTitle: "Annuler",
+                }}
+            ).then((resp) => {
+                if (resp) {
+                    this.deleteEntry();
+                }
+            });
+            // this.$refs.deleteModal;
         },
         deleteEntry: function () {
             axios.delete("/absence_prof/api/absence/" + this.currentEntry.id + "/", token)

@@ -17,14 +17,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import Vue from "vue";
-import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
+import {createApp} from "vue";
+import {createBootstrap} from "bootstrap-vue-next";
 
 import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap-vue/dist/bootstrap-vue.css";
-
-Vue.use(BootstrapVue);
-Vue.use(BootstrapVueIcons);
+import "bootstrap-vue-next/dist/bootstrap-vue-next.css";
 
 import { createPinia } from "pinia";
 
@@ -32,11 +29,11 @@ const pinia = createPinia();
 
 import router from "./router/index.js";
 
-import { createApp } from "vue";
 import AppelsPage from "./appels_page.vue";
 
 const app = createApp(AppelsPage);
 
+app.use(createBootstrap());
 app.use(router);
 app.use(pinia);
 

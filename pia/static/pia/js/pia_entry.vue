@@ -23,47 +23,45 @@
             appear
             name="fade"
         >
-            <b-card
+            <BCard
                 :class="`px-4 mt-2 ${newEntry ? 'new' : ''}`"
                 no-body
             >
-                <b-row>
-                    <b-col>
+                <BRow>
+                    <BCol>
                         <h5>
                             {{ displayStudent(rowData.student) }}
-                            <b-badge v-if="!rowData.advanced">
+                            <BBadge v-if="!rowData.advanced">
                                 Aide Élève
-                            </b-badge>
+                            </BBadge>
                         </h5>
-                    </b-col>
-                    <b-col sm="2">
-                        <div class="text-right">
-                            <b-btn
+                    </BCol>
+                    <BCol sm="2">
+                        <div class="text-end">
+                            <BButton
                                 variant="light"
                                 size="sm"
                                 :to="`/edit/${rowData.id}/${rowData.advanced}/`"
                                 class="card-link"
                             >
-                                <b-icon
-                                    icon="pencil-square"
+                                <IBiPencilSquare
                                     variant="success"
                                 />
-                            </b-btn>
-                            <b-btn
+                            </BButton>
+                            <BButton
                                 variant="light"
                                 size="sm"
                                 @click="deleteEntry"
                                 class="card-link"
                             >
-                                <b-icon
-                                    icon="trash-fill"
+                                <IBiTrashFill
                                     variant="danger"
                                 />
-                            </b-btn>
+                            </BButton>
                         </div>
-                    </b-col>
-                </b-row>
-            </b-card>
+                    </BCol>
+                </BRow>
+            </BCard>
         </transition>
     </div>
 </template>

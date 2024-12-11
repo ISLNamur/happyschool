@@ -19,30 +19,30 @@
 
 <template>
     <div id="info-student">
-        <b-overlay :show="loading">
-            <b-row v-if="person">
-                <b-col
+        <BOverlay :show="loading">
+            <BRow v-if="person">
+                <BCol
                     md="5"
                     sm="12"
                 >
                     <div>
-                        <b-img
+                        <BImg
                             rounded
                             fluid
                             :src="photoPath"
                             alt="Photo"
                         />
                     </div>
-                </b-col>
-                <b-col>
+                </BCol>
+                <BCol>
                     <dl class="row">
-                        <dt class="col-5 text-right">
+                        <dt class="col-5 text-end">
                             Nom
                         </dt>
                         <dd class="col-7">
                             {{ person.last_name }}
                         </dd>
-                        <dt class="col-5 text-right">
+                        <dt class="col-5 text-end">
                             Prénom
                         </dt>
                         <dd class="col-7">
@@ -50,7 +50,7 @@
                         </dd>
                         <dt
                             v-if="personType === 'student'"
-                            class="col-5 text-right"
+                            class="col-5 text-end"
                         >
                             Matricule
                         </dt>
@@ -62,7 +62,7 @@
                         </dd>
                         <dt
                             v-if="personType === 'responsible' && person.tenure.length > 0"
-                            class="col-5 text-right"
+                            class="col-5 text-end"
                         >
                             Titulariat
                         </dt>
@@ -78,7 +78,7 @@
                             class="col-7"
                         />
 
-                        <dt class="col-5  text-right">
+                        <dt class="col-5  text-end">
                             Enseignement(s)
                         </dt>
                         <dd
@@ -90,7 +90,7 @@
                         </dd>
                         <dt
                             v-if="person.classe.length > 0"
-                            class="col-5  text-right"
+                            class="col-5  text-end"
                         >
                             Classe(s)
                         </dt>
@@ -103,7 +103,7 @@
                         </dd>
                         <dt
                             v-if="person.courses.length > 0"
-                            class="col-5  text-right"
+                            class="col-5  text-end"
                         >
                             Cours
                         </dt>
@@ -115,8 +115,7 @@
                             <a :href="`/annuaire/#/course/${c.course.id}/`">
                                 <span
                                     v-if="c.course.long_name" 
-                                    v-b-tooltip
-                                    :title="`${c.course.short_name} (${c.group.toUpperCase()})`"
+                                    v-b-tooltip="`${c.course.short_name} (${c.group.toUpperCase()})`"
                                 >
                                     {{ c.course.long_name }}
                                 </span>
@@ -130,7 +129,7 @@
                         </dd>
                         <dt
                             v-if="personType === 'student' && person.orientation"
-                            class="col-5 text-right"
+                            class="col-5 text-end"
                         >
                             Orientation
                         </dt>
@@ -142,7 +141,7 @@
                         </dd>
                         <dt
                             v-if="personType === 'student' && person.previous_classe"
-                            class="col-5 text-right"
+                            class="col-5 text-end"
                         >
                             Classe précédente
                         </dt>
@@ -153,7 +152,7 @@
                             {{ person.previous_classe }}
                         </dd>
                         <dt
-                            class="col-5 text-right"
+                            class="col-5 text-end"
                             v-if="personType === 'responsible' && person.email_school"
                         >
                             Courriel de l'école
@@ -171,7 +170,7 @@
                     >
                         <dt
                             v-if="username"
-                            class="col-5 text-right"
+                            class="col-5 text-end"
                         >
                             Nom d'utilisateur
                         </dt>
@@ -183,7 +182,7 @@
                         </dd>
                         <dt
                             v-if="password"
-                            class="col-5 text-right"
+                            class="col-5 text-end"
                         >
                             Mot de passe
                         </dt>
@@ -197,66 +196,66 @@
                             v-else-if="password"
                             class="col-7"
                         >
-                            <b-btn
+                            <BButton
                                 size="sm"
                                 variant="light"
                                 @click="showPassword = true"
                             >
                                 Montrer le mot de passe
-                            </b-btn>
+                            </BButton>
                         </dd>
                     </dl>
-                </b-col>
-            </b-row>
-            <b-row v-if="important.length > 0">
-                <b-col>
-                    <b-card
+                </BCol>
+            </BRow>
+            <BRow v-if="important.length > 0">
+                <BCol>
+                    <BCard
                         no-body
                         class="mb-1"
                     >
-                        <b-card-header
+                        <BCard-header
                             header-tag="header"
                             class="p-1"
                         >
-                            <b-btn
+                            <BButton
                                 block
                                 href="#"
                                 v-b-toggle.infos-importantes
                                 variant="danger"
                             >
                                 Infos importantes
-                            </b-btn>
-                        </b-card-header>
-                        <b-collapse id="infos-importantes">
-                            <b-card-body>
-                                <b-row>
-                                    <b-col cols="2">
+                            </BButton>
+                        </BCard-header>
+                        <BCollapse id="infos-importantes">
+                            <BCard-body>
+                                <BRow>
+                                    <BCol cols="2">
                                         <strong>Date</strong>
-                                    </b-col>
-                                    <b-col cols="3">
+                                    </BCol>
+                                    <BCol cols="3">
                                         <strong>Objet/Motif</strong>
-                                    </b-col>
-                                    <b-col><strong>Message</strong></b-col>
-                                </b-row>
-                                <b-row
+                                    </BCol>
+                                    <BCol><strong>Message</strong></BCol>
+                                </BRow>
+                                <BRow
                                     v-for="cas in important"
                                     :key="cas.id"
                                     class="mb-2"
                                 >
-                                    <b-col cols="2">
+                                    <BCol cols="2">
                                         {{ niceDate(cas.datetime_encodage) }}
-                                    </b-col>
-                                    <b-col cols="3">
+                                    </BCol>
+                                    <BCol cols="3">
                                         {{ cas.sanction_decision ? cas.sanction_decision.sanction_decision : cas.info.info }}
-                                    </b-col>
-                                    <b-col><div v-html="cas.explication_commentaire" /></b-col>
-                                </b-row>
-                            </b-card-body>
-                        </b-collapse>
-                    </b-card>
-                </b-col>
-            </b-row>
-        </b-overlay>
+                                    </BCol>
+                                    <BCol><div v-html="cas.explication_commentaire" /></BCol>
+                                </BRow>
+                            </BCard-body>
+                        </BCollapse>
+                    </BCard>
+                </BCol>
+            </BRow>
+        </BOverlay>
     </div>
 </template>
 

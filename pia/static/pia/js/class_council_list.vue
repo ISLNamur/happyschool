@@ -19,32 +19,32 @@
 
 <template>
     <div>
-        <b-row>
-            <b-col>
+        <BRow>
+            <BCol>
                 <h4 v-if="advanced">
                     Conseil de classe
                 </h4>
                 <h4 v-else>
                     Auto-évaluation
                 </h4>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-btn
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
+                <BButton
                     @click="councils.unshift({id: -1})"
                     variant="outline-secondary"
                 >
-                    <b-icon icon="plus" />
+                    <IBiPlus />
                     Ajouter
-                </b-btn>
-                <b-btn v-b-toggle.previous-councils>
+                </BButton>
+                <BButton v-b-toggle.previous-councils>
                     Voir les anciens
-                </b-btn>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
+                </BButton>
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
                 <class-council
                     v-for="(council, index) in nextCouncils"
                     :key="council.id"
@@ -55,21 +55,21 @@
                     @remove="removeClassCouncil(index, 'nextCouncils')"
                     @save="save"
                 />
-            </b-col>
-        </b-row>
-        <b-collapse id="previous-councils">
-            <b-row class="mt-2">
-                <b-col>
+            </BCol>
+        </BRow>
+        <BCollapse id="previous-councils">
+            <BRow class="mt-2">
+                <BCol>
                     <h5 v-if="advanced">
                         Anciens conseils de classe
                     </h5>
                     <h5 v-else>
                         Anciennes auto-évaluations
                     </h5>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
+                </BCol>
+            </BRow>
+            <BRow>
+                <BCol>
                     <class-council
                         v-for="(council, index) in previousCouncils"
                         :key="council.id"
@@ -80,9 +80,9 @@
                         @remove="removeClassCouncil(index, 'previousCouncils')"
                         @save="save"
                     />
-                </b-col>
-            </b-row>
-        </b-collapse>
+                </BCol>
+            </BRow>
+        </BCollapse>
     </div>
 </template>
 

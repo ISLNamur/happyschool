@@ -20,76 +20,76 @@
 
 <template>
     <div>
-        <b-btn
+        <BButton
             @click="$router.back()"
             class="mb-1"
         >
-            <b-icon icon="chevron-left" />
+            <IBiChevronLeft />
             Retour
-        </b-btn>
-        <b-card no-body>
-            <b-card-header header-tag="nav">
-                <b-nav
+        </BButton>
+        <BCard no-body>
+            <BCard-header header-tag="nav">
+                <BNav
                     card-header
                     tabs
                 >
-                    <b-nav-item
+                    <BNavItem
                         :to="`/person/${type}/${matricule}/`"
                         exact
                         exact-active-class="active"
                     >
                         Fiche
-                    </b-nav-item>
-                    <b-nav-item
+                    </BNavItem>
+                    <BNavItem
                         to="sensitive"
                         exact
                     >
                         Infos personnelles
-                    </b-nav-item>
-                    <b-nav-item
+                    </BNavItem>
+                    <BNavItem
                         to="schedule"
                         exact
                     >
                         Horaire
-                    </b-nav-item>
-                    <b-nav-item
+                    </BNavItem>
+                    <BNavItem
                         v-if="type === 'student'"
                         to="contact"
                         exact
                     >
                         Moyens de contacts
-                    </b-nav-item>
-                    <b-nav-item
+                    </BNavItem>
+                    <BNavItem
                         v-if="type === 'student'"
                         to="medical"
                         exact
                     >
                         Infos médicales
-                    </b-nav-item>
-                    <b-nav-item
+                    </BNavItem>
+                    <BNavItem
                         v-if="type === 'student' && !noNews"
                         to="other"
                         exact
                     >
                         Infos générales
-                        <b-badge>
+                        <BBadge>
                             {{ infoCount }}
-                        </b-badge>
-                    </b-nav-item>
-                    <b-nav-item
+                        </BBadge>
+                    </BNavItem>
+                    <BNavItem
                         v-if="pia"
                         :href="`/pia/#/edit/${pia.id}/${pia.advanced}/`"
                         link-classes="font-weight-bold"
                     >
                         PIA
-                    </b-nav-item>
-                </b-nav>
-            </b-card-header>
+                    </BNavItem>
+                </BNav>
+            </BCard-header>
 
-            <b-card-body>
+            <BCard-body>
                 <router-view />
-            </b-card-body>
-        </b-card>
+            </BCard-body>
+        </BCard>
     </div>
 </template>
 

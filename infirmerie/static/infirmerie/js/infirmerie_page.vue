@@ -23,6 +23,7 @@
         <app-menu
             :menu-info="menuInfo"
         />
+        <BModalOrchestrator />
         <router-view v-slot="{ Component }">
             <transition
                 name="slide-left"
@@ -52,3 +53,9 @@ export default {
     }
 };
 </script>
+
+<style>
+.b-form-group {
+    margin-bottom: 1rem;
+}
+</style>

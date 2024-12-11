@@ -18,28 +18,22 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-row>
-        <b-col
+    <BRow>
+        <BCol
             v-for="(a, index) in absences"
             :key="index"
         >
             <span v-if="a === null">-</span>
             <span v-else>
                 <span :class="status(a.status) !== 'P' ? 'font-weight-bold' : ''">{{ status(a.status) }}</span>
-                <b-icon
+                <IBiChatText
                     v-if="a.comment"
                     :id="`comment-${a.id}`"
-                    icon="chat-text"
+                    v-b-tooltip.hover="a.comment"
                 />
-                <b-tooltip
-                    :target="`comment-${a.id}`"
-                    triggers="hover"
-                >
-                    {{ a.comment }}
-                </b-tooltip>
             </span>
-        </b-col>
-    </b-row>
+        </BCol>
+    </BRow>
 </template>
 
 <script>

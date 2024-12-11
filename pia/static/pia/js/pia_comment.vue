@@ -19,45 +19,44 @@
 
 <template>
     <div>
-        <b-card>
-            <b-form-row>
-                <b-col>
+        <BCard>
+            <BFormRow>
+                <BCol>
                     <strong>
-                        <b-form inline>
-                            Date<b-form-input
+                        <BForm inline>
+                            Date<BFormInput
                                 type="date"
                                 v-model="date_comment"
                                 class="mr-sm-2 ml-2"
                                 :state="inputStates.date_comment"
                             />
-                            <b-form-invalid-feedback :state="inputStates.date_comment">
+                            <BFormInvalidFeedback :state="inputStates.date_comment">
                                 {{ errorMsg('date_student_project') }}{{ errorMsg('date_parents_opinion') }}
-                            </b-form-invalid-feedback>
-                        </b-form>
+                            </BFormInvalidFeedback>
+                        </BForm>
                     </strong>
-                </b-col>
-                <b-col
+                </BCol>
+                <BCol
                     cols="1"
                     align-self="end"
-                    class="text-right"
+                    class="text-end"
                 >
-                    <b-btn
+                    <BButton
                         @click="$emit('remove')"
                         variant="danger"
                         size="sm"
-                        v-b-tooltip.hover
-                        title="Supprimer"
+                        v-b-tooltip.hover="'Supprimer'"
                     >
-                        <b-icon icon="trash" />
-                    </b-btn>
-                </b-col>
-            </b-form-row>
-            <b-form-row class="mt-2">
-                <b-col>
+                        <IBiTrash />
+                    </BButton>
+                </BCol>
+            </BFormRow>
+            <BFormRow class="mt-2">
+                <BCol>
                     <text-editor v-model="comment" />
-                </b-col>
-            </b-form-row>
-        </b-card>
+                </BCol>
+            </BFormRow>
+        </BCard>
     </div>
 </template>
 

@@ -19,102 +19,90 @@
 
 <template>
     <div>
-        <b-card @click="displayPhoto">
-            <b-row>
-                <b-col
+        <BCard @click="displayPhoto">
+            <BRow>
+                <BCol
                     cols="2"
                     v-if="showPhoto"
                 >
-                    <b-img
+                    <BImg
                         :src="`/static/photos/${lateness.student_id}.jpg`"
                         fluid
                         alt="Photo de l'élève"
                     />
-                </b-col>
-                <b-col>
-                    <b-icon
-                        v-if="lateness.sanction_id"
-                        icon="exclamation-circle"
-                    />
+                </BCol>
+                <BCol>
+                    <IBiExclamationCircle v-if="lateness.sanction_id" />
                     <strong>{{ niceDate }}</strong>:
                     <a :href="`/annuaire/#/person/student/${lateness.student.matricule}/`">
                         {{ lateness.student.display }}
                     </a>
-                    <b-badge
+                    <BBadge
                         v-if="!lateness.justified"
-                        v-b-tooltip.hover
-                        title="Nombre de retards"
+                        v-b-tooltip.hover="'Nombre de retards'"
                     >
                         {{ lateness.lateness_count }}
-                    </b-badge>
-                    <b-btn
+                    </BBadge>
+                    <BButton
                         variant="link"
                         size="sm"
                         @click="filterStudent"
                     >
-                        <b-icon icon="funnel" />
-                    </b-btn>
-                </b-col>
-                <b-col
+                        <IBiFunnel />
+                    </BButton>
+                </BCol>
+                <BCol
                     sm="12"
                     md="4"
                     lg="3"
                 >
                     <div class="text-right d-flex">
-                        <b-form-checkbox
+                        <BFormCheckbox
                             v-model="justified"
                             switch
                             class="pr-2"
                             @input="updateJustified"
                         >
                             {{ lateness.justified ? "Justifié" : "Injustifié" }}
-                        </b-form-checkbox>
-                        <b-btn
+                        </BFormCheckbox>
+                        <BButton
                             :to="`/warning/${lateness.student.matricule}/`"
                             variant="light"
                             class="card-link"
                         >
-                            <b-icon
-                                icon="card-text"
-                                variant="secondary"
-                            />
-                        </b-btn>
-                        <b-btn
+                            <IBiCard-text variant="secondary" />
+                        </BButton>
+                        <BButton
                             variant="light"
                             size="sm"
                             @click="$emit('delete')"
                             class="card-link ml-2"
                         >
-                            <b-icon
-                                icon="trash-fill"
+                            <IBiTrashFill
                                 variant="danger"
                             />
-                        </b-btn>
+                        </BButton>
                     </div>
-                </b-col>
-            </b-row>
-            <b-row v-if="sanction">
-                <b-col>
+                </BCol>
+            </BRow>
+            <BRow v-if="sanction">
+                <BCol>
                     Date de la sanction : {{ sanction.date_sanction }}
                     <span v-if="!sanction.to_be_done">
-                        <b-icon
+                        <IBiCheck
                             v-if="sanction.sanction_faite"
-                            icon="check"
                             variant="success"
-                            v-b-tooltip.hover
-                            title="Sanction faite"
+                            v-b-tooltip.hover="'Sanction faite'"
                         />
-                        <b-icon
+                        <IBiX
                             v-else
-                            icon="x"
                             variant="danger"
-                            v-b-tooltip.hover
-                            title="Sanction non-faite"
+                            v-b-tooltip.hover="'Sanction non-faite'"
                         />
                     </span>
-                </b-col>
-            </b-row>
-        </b-card>
+                </BCol>
+            </BRow>
+        </BCard>
     </div>
 </template>
 

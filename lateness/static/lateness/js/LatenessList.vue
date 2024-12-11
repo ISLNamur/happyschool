@@ -27,10 +27,10 @@
             v-if="loaded"
             :menu-info="menuInfo"
         />
-        <b-container v-if="loaded">
+        <BContainer v-if="loaded">
             <h1>Retards des élèves</h1>
-            <b-row class="mb-1">
-                <b-col
+            <BRow class="mb-1">
+                <BCol
                     sm="12"
                     :md="store.settings.enable_camera_scan ? '8' : '10' "
                 >
@@ -53,89 +53,89 @@
                             Aucune personne trouvée.
                         </template>
                     </multiselect>
-                </b-col>
-                <b-col
+                </BCol>
+                <BCol
                     cols="3"
                     sm="2"
                     class="mt-1 mt-md-0"
                 >
-                    <b-button
+                    <BButton
                         :disabled="!search || addingStudent"
                         @click="addStudent"
                     >
-                        <b-spinner
+                        <BSpinner
                             v-if="addingStudent"
                             small
                         />
                         Ajouter
-                    </b-button>
-                </b-col>
-                <b-col
+                    </BButton>
+                </BCol>
+                <BCol
                     v-if="store.settings.enable_camera_scan"
                     cols="3"
                     sm="2"
                     class="mt-1 mt-md-0"
                 >
-                    <b-btn @click="scanCode">
+                    <BButton @click="scanCode">
                         Scanner
-                    </b-btn>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col
+                    </BButton>
+                </BCol>
+            </BRow>
+            <BRow>
+                <BCol
                     v-if="store.settings.printer.length > 0"
                     cols="5"
                     md="4"
                 >
-                    <b-card
+                    <BCard
                         bg-variant="light"
                         no-body
                         class="p-2"
                     >
-                        <b-form-checkbox v-model="printing">
+                        <BFormCheckbox v-model="printing">
                             Imprimer le retard
-                        </b-form-checkbox>
-                    </b-card>
-                </b-col>
-                <b-col
+                        </BFormCheckbox>
+                    </BCard>
+                </BCol>
+                <BCol
                     cols="4"
                     md="4"
                 >
-                    <b-card
+                    <BCard
                         bg-variant="light"
                         no-body
                         class="p-2"
                     >
-                        <b-form-checkbox v-model="justified">
+                        <BFormCheckbox v-model="justified">
                             Retard justifié
-                        </b-form-checkbox>
-                    </b-card>
-                </b-col>
-                <b-col
+                        </BFormCheckbox>
+                    </BCard>
+                </BCol>
+                <BCol
                     cols="3"
                     md="4"
                     v-if="store.settings.printer.length > 0 && availablePrinters.length > 1"
                 >
-                    <b-card
+                    <BCard
                         bg-variant="light"
                         no-body
                         class="p-1"
                     >
-                        <b-btn
+                        <BButton
                             v-b-modal.printer-selection
                             size="sm"
                         >
-                            <b-icon icon="printer" />
+                            <IBiPrinter />
                             <span class="d-none d-md-inline">
                                 Imprimante :
                             </span>
                             {{ printer ? availablePrinters.find(p => p.value === printer).text : "" }}
-                        </b-btn>
-                    </b-card>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
+                        </BButton>
+                    </BCard>
+                </BCol>
+            </BRow>
+            <BRow>
+                <BCol>
                     <filters
                         app="lateness"
                         model="lateness"
@@ -145,59 +145,59 @@
                         :show-search="showFilters"
                         @toggle-search="showFilters = !showFilters"
                     />
-                </b-col>
-                <b-col
+                </BCol>
+                <BCol
                     v-if="store.hasSettingsPerm"
                     cols="12"
                     md="5"
-                    class="text-right"
+                    class="text-end"
                 >
-                    <b-dropdown
+                    <BDropdown
                         text="Export"
                         variant="outline-secondary"
                         class="mt-1"
                     >
-                        <b-dropdown-item href="/lateness/proeco_list/AM/">
+                        <BDropdownItem href="/lateness/proeco_list/AM/">
                             Matin
-                        </b-dropdown-item>
-                        <b-dropdown-item href="/lateness/proeco_list/PM/">
+                        </BDropdownItem>
+                        <BDropdownItem href="/lateness/proeco_list/PM/">
                             Après-midi
-                        </b-dropdown-item>
-                        <b-dropdown-item href="/lateness/proeco_list/DAY/">
+                        </BDropdownItem>
+                        <BDropdownItem href="/lateness/proeco_list/DAY/">
                             Journée
-                        </b-dropdown-item>
-                    </b-dropdown>
-                    <b-btn
+                        </BDropdownItem>
+                    </BDropdown>
+                    <BButton
                         @click="$refs['topLateness'].show();getTopList()"
                         variant="outline-secondary"
                         class="mt-1"
                     >
-                        <b-icon icon="list-ol" />
+                        <IBiListOl />
                         Top retards
-                    </b-btn>
-                    <b-btn
+                    </BButton>
+                    <BButton
                         variant="outline-warning"
                         @click="promptChangeCount"
                         class="mt-1"
                     >
-                        <b-icon icon="gear" />
+                        <IBiGear />
                         Début du comptage
-                    </b-btn>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
-                    <b-pagination
+                    </BButton>
+                </BCol>
+            </BRow>
+            <BRow>
+                <BCol>
+                    <BPagination
                         class="mt-1"
                         :total-rows="entriesCount"
                         v-model="currentPage"
                         @change="changePage"
                         :per-page="20"
                     />
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col>
+                </BCol>
+            </BRow>
+            <BRow>
+                <BCol>
                     <lateness-entry
                         v-for="(lateness, index) in latenesses"
                         :key="lateness.id"
@@ -207,8 +207,8 @@
                         @delete="askDelete(lateness)"
                         @filter-student="filterStudent($event)"
                     />
-                </b-col>
-            </b-row>
+                </BCol>
+            </BRow>
             <b-modal
                 ref="deleteModal"
                 cancel-title="Annuler"
@@ -232,7 +232,7 @@
                 @ok="changeCountDate"
                 @cancel="countDate = store.settings.date_count_start"
             >
-                <b-input
+                <BFormInput
                     type="date"
                     v-model="countDate"
                 />
@@ -241,42 +241,42 @@
                 ref="topLateness"
                 ok-only
             >
-                <b-form-group>
-                    <b-form-checkbox
+                <BFormGroup>
+                    <BFormCheckbox
                         v-model="topOwnClasses"
                         switch
                         @input="getTopList()"
                     >
                         N'afficher que ses classes
-                    </b-form-checkbox>
-                </b-form-group>
-                <b-list-group>
-                    <b-list-group-item
+                    </BFormCheckbox>
+                </BFormGroup>
+                <BListGroup>
+                    <BListGroupItem
                         v-for="item in topLateness"
                         :key="item.student.matricule"
                         class="d-flex justify-content-between align-items-center"
                     >
                         {{ item.student.display }}
-                        <b-badge variant="primary">
+                        <BBadge variant="primary">
                             {{ item.count }}
-                        </b-badge>
-                    </b-list-group-item>
-                </b-list-group>
+                        </BBadge>
+                    </BListGroupItem>
+                </BListGroup>
             </b-modal>
             <b-modal
                 id="printer-selection"
                 ok-only
             >
-                <b-form-group
+                <BFormGroup
                     label="Sélectionner l'imprimante à utiliser"
                 >
-                    <b-select
+                    <BFormSelect
                         v-model="printer"
                         :options="availablePrinters"
                     />
-                </b-form-group>
+                </BFormGroup>
             </b-modal>
-        </b-container>
+        </BContainer>
     </div>
 </template>
 

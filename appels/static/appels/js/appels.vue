@@ -4,29 +4,28 @@
             class="loading"
             v-if="!loaded"
         />
-        <b-container v-if="loaded">
-            <b-row>
+        <BContainer v-if="loaded">
+            <BRow>
                 <h2>Appels</h2>
-            </b-row>
-            <b-row>
-                <b-col
+            </BRow>
+            <BRow>
+                <BCol
                     cols="12"
                     md="4"
                     lg="3"
                 >
-                    <b-button
+                    <BButton
                         variant="outline-success"
                         to="/add/"
                         class="w-100"
                     >
-                        <b-icon
-                            icon="plus"
+                        <IBiPlus
                             scale="1.5"
                         />
                         Ajouter un appel
-                    </b-button>
-                </b-col>
-                <b-col
+                    </BButton>
+                </BCol>
+                <BCol
                     cols="12"
                     lg="9"
                 >
@@ -40,36 +39,37 @@
                         @toggle-search="showFilters = !showFilters"
                         class="mt-1 mt-lg-0"
                     />
-                </b-col>
-            </b-row>
-            <b-pagination
+                </BCol>
+            </BRow>
+            <BPagination
                 :total-rows="entriesCount"
+                :per-page="20"
                 v-model="currentPage"
-                @change="changePage"
+                @update:model-value="changePage"
             />
-            <b-card
+            <BCard
                 no-body
                 class="current-card d-none d-md-block d-lg-block d-xl-block"
             >
-                <b-row class="text-center">
-                    <b-col cols="2">
+                <BRow class="text-center">
+                    <BCol cols="2">
                         <strong>Objet</strong>
-                    </b-col>
-                    <b-col cols="2">
+                    </BCol>
+                    <BCol cols="2">
                         <strong>Motif</strong>
-                    </b-col>
-                    <b-col cols="1">
+                    </BCol>
+                    <BCol cols="1">
                         <strong>De</strong>
-                    </b-col>
-                    <b-col cols="1">
+                    </BCol>
+                    <BCol cols="1">
                         <strong>À</strong>
-                    </b-col>
-                    <b-col cols="1">
+                    </BCol>
+                    <BCol cols="1">
                         <strong>Appel</strong>
-                    </b-col>
-                    <b-col><strong>Commentaire(s)</strong></b-col>
-                </b-row>
-            </b-card>
+                    </BCol>
+                    <BCol><strong>Commentaire(s)</strong></BCol>
+                </BRow>
+            </BCard>
             <appel-entry
                 v-for="(entry, index) in entries"
                 :key="entry.id"
@@ -80,8 +80,8 @@
                 @filter-student="filterStudent($event)"
                 @show-info="showInfo(entry)"
             />
-        </b-container>
-        <b-modal
+        </BContainer>
+        <BModal
             ref="deleteModal"
             cancel-title="Annuler"
             hide-header
@@ -92,8 +92,8 @@
             :no-close-on-esc="true"
         >
             Êtes-vous sûr de vouloir supprimer cet appel ?
-        </b-modal>
-        <b-modal
+        </BModal>
+        <BModal
             :title="currentName"
             size="xl"
             ref="infoModal"
@@ -101,31 +101,27 @@
             ok-only
             @hidden="currentEntry = null"
         >
-            <b-tabs>
-                <b-tab title="Info">
+            <BTabs>
+                <BTab title="Info">
                     <person-info
                         v-if="currentEntry"
                         :custom-matricule="currentEntry.matricule_id"
                         custom-person-type="student"
                     />
-                </b-tab>
-                <b-tab title="Moyens de contacts">
+                </BTab>
+                <BTab title="Moyens de contacts">
                     <person-contact
                         v-if="currentEntry"
                         :custom-matricule="currentEntry.matricule_id"
                         custom-person-type="student"
                     />
-                </b-tab>
-            </b-tabs>
-        </b-modal>
+                </BTab>
+            </BTabs>
+        </BModal>
     </div>
 </template>
 
 <script>
-import Vue from "vue";
-import {BootstrapVue, BootstrapVueIcons} from "bootstrap-vue";
-import "bootstrap-vue/dist/bootstrap-vue.css";
-
 import PersonInfo from "@s:annuaire/js/person_info.vue";
 import PersonContact from "@s:annuaire/js/contact_info.vue";
 
@@ -135,11 +131,6 @@ import { appelsStore } from "./stores/index.js";
 import axios from "axios";
 
 import AppelEntry from "./appelEntry.vue";
-
-Vue.component("AppelEntry", AppelEntry);
-
-Vue.use(BootstrapVue);
-Vue.use(BootstrapVueIcons);
 
 export default {
     data: function () {
@@ -240,6 +231,7 @@ export default {
         "filters": Filters,
         "person-info": PersonInfo,
         "person-contact": PersonContact,
+        "appel-entry": AppelEntry,
     },
 };
 </script>

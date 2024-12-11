@@ -18,56 +18,44 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-list-group-item :variant="value === null ? 'info' : ''">
+    <BListGroupItem :variant="value === null ? 'info' : ''">
         <div class="d-flex w-100 justify-content-between">
             <span :class="value ? 'text-success' : ''">
-                <b-icon
-                    v-if="value"
-                    icon="check"
-                />
-                <b-icon
-                    v-if="value == false"
-                    icon="x"
-                />
+                <IBiCheck v-if="value" />
+                <IBiX v-if="value == false" />
                 {{ !value && value !== null ? resourceDifficulty.difficulty : resourceDifficulty.resource }}
             </span>
             <span>
-                <b-btn
+                <BButton
                     v-if="editMode && !value"
                     variant="success"
                     @click="$emit('input', true)"
                     size="sm"
                 >
-                    <b-icon
-                        icon="check"
-                    />
+                    <IBiCheck />
                     Acquis
-                </b-btn>
-                <b-btn
+                </BButton>
+                <BButton
                     v-if="editMode && (value === true || value === null)"
                     variant="danger"
                     @click="$emit('input', false)"
                     size="sm"
                 >
-                    <b-icon
-                        icon="x"
-                    />
+                    <IBiX />
                     Non acquis
-                </b-btn>
-                <b-btn
+                </BButton>
+                <BButton
                     v-if="editMode && value !== null"
                     variant="outline-info"
                     @click="$emit('input', null)"
                     size="sm"
                 >
-                    <b-icon
-                        icon="arrow-counterclockwise"
-                    />
+                    <IBiArrowCounterclockwise />
                     Non considéré
-                </b-btn>
+                </BButton>
             </span>
         </div>
-    </b-list-group-item>
+    </BListGroupItem>
 </template>
 
 <script>

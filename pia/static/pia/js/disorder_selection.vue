@@ -18,51 +18,51 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-overlay :show="loading">
-        <b-row>
-            <b-col>
+    <BOverlay :show="loading">
+        <BRow>
+            <BCol>
                 <h4>
                     Aménagements raisonnables
                 </h4>
-            </b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-form-group>
-                    <b-select
+            </BCol>
+        </BRow>
+        <BRow>
+            <BCol>
+                <BFormGroup>
+                    <BFormSelect
                         :options="disorderCares"
                         value-field="id"
                         v-model="currentDisorderCare"
                         @change="saveBeforeChange"
                     />
-                </b-form-group>
-            </b-col>
-            <b-col>
-                <b-btn
+                </BFormGroup>
+            </BCol>
+            <BCol>
+                <BButton
                     variant="outline-secondary"
                     @click="copy"
                     :disabled="disorderCares.length === 0"
                 >
-                    <b-icon icon="files" />
+                    <IBiFiles />
                     Copier
-                </b-btn>
-                <b-btn
+                </BButton>
+                <BButton
                     variant="success"
                     @click="add"
                 >
-                    <b-icon icon="plus" />
+                    <IBiPlus />
                     Ajouter
-                </b-btn>
-                <b-btn
+                </BButton>
+                <BButton
                     variant="danger"
                     @click="remove"
                     :disabled="disorderCares.length === 0"
                 >
-                    <b-icon icon="trash" />
+                    <IBiTrash />
                     Supprimer
-                </b-btn>
-            </b-col>
-        </b-row>
+                </BButton>
+            </BCol>
+        </BRow>
         <disorder-care
             v-if="currentDisorderCare"
             v-model:date_start="currentDisorderCareObj.date_start"
@@ -72,7 +72,7 @@
             :disorder-care-id="currentDisorderCare"
             ref="disorderCare"
         />
-    </b-overlay>
+    </BOverlay>
 </template>
 
 <script>

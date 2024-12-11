@@ -19,87 +19,82 @@
 
 <template>
     <div>
-        <b-card>
-            <b-form-row>
-                <b-col>
+        <BCard>
+            <BFormRow>
+                <BCol>
                     <strong>
-                        <b-form inline>
-                            Du<b-form-input
+                        <BForm inline>
+                            Du<BFormInput
                                 type="date"
                                 v-model="date_start"
                                 class="mr-sm-2 ml-2"
                                 :state="inputStates.date_start"
                             />
-                            au<b-form-input
+                            au<BFormInput
                                 type="date"
                                 v-model="date_end"
                                 class="ml-2"
                                 :state="inputStates.date_end"
                             />
-                        </b-form>
+                        </BForm>
                     </strong>
-                </b-col>
-                <b-col
+                </BCol>
+                <BCol
                     v-if="branch"
                     class="text-right form-inline"
                 >
                     <strong>{{ branch.branch }}</strong>
-                </b-col>
-                <b-col
+                </BCol>
+                <BCol
                     cols="3"
                     align-self="end"
-                    class="text-right"
+                    class="text-end"
                 >
-                    <b-icon
+                    <IBiCheckCircleFill
                         v-if="goalState === 'OK'"
-                        icon="check-circle-fill"
                         variant="success"
                     />
-                    <b-icon
+                    <IBiXCircleFill
                         v-if="goalState === 'NOK'"
-                        icon="x-circle-fill"
                         variant="error"
                     />
-                    <b-icon
+                    <IBiSlashCircle
                         v-if="goalState === 'IP'"
-                        icon="slash-circle"
                         variant="warning"
                     />
-                    <b-btn
+                    <BButton
                         @click="toggleExpand"
                         variant="light"
                     >
                         {{ expanded ? "Cacher" : "Voir" }}
-                    </b-btn>
-                    <b-btn
+                    </BButton>
+                    <BButton
                         @click="$emit('clone')"
                         size="sm"
-                        v-b-tooltip.hover
-                        title="Cloner"
+                        v-b-tooltip.hover="'Cloner'"
                     >
-                        <b-icon icon="files" />
-                    </b-btn>
-                    <b-btn
+                        <IBiFiles />
+                    </BButton>
+                    <BButton
                         @click="$emit('remove')"
                         variant="danger"
                         size="sm"
-                        v-b-tooltip.hover
-                        title="Supprimer"
+                        v-b-tooltip.hover="'Supprimer'"
                     >
-                        <b-icon icon="trash" />
-                    </b-btn>
-                </b-col>
-            </b-form-row>
-            <b-collapse
+                        <IBiTrash />
+                    </BButton>
+                </BCol>
+            </BFormRow>
+            <BCollapse
                 v-model="expanded"
                 :id="Math.random().toString(36).substring(7)"
             >
-                <b-form-row
+                <BFormRow
                     v-if="useBranch"
                     class="mt-2"
                 >
-                    <b-col>
-                        <b-form-group
+                    <BCol>
+                        <BFormGroup
                             label="Branche"
                             label-cols="3"
                             :state="inputStates.branch"
@@ -127,12 +122,12 @@
                             <template #invalid-feedback>
                                 {{ errorMsg('branch') }}
                             </template>
-                        </b-form-group>
-                    </b-col>
-                </b-form-row>
-                <b-form-row :class="useBranch ? '' : 'mt-2'">
-                    <b-col>
-                        <b-form-group
+                        </BFormGroup>
+                    </BCol>
+                </BFormRow>
+                <BFormRow :class="useBranch ? '' : 'mt-2'">
+                    <BCol>
+                        <BFormGroup
                             :label="goalLabel"
                             label-cols="3"
                             :state="inputStates.goals"
@@ -166,53 +161,53 @@
                             <template #invalid-feedback>
                                 {{ errorMsg('cross_goals') }}{{ errorMsg('branch_goals') }}
                             </template>
-                        </b-form-group>
-                    </b-col>
-                </b-form-row>
-                <b-form-row v-if="advanced">
-                    <b-col>
-                        <b-form-group
+                        </BFormGroup>
+                    </BCol>
+                </BFormRow>
+                <BFormRow v-if="advanced">
+                    <BCol>
+                        <BFormGroup
                             label="Indicateur(s)/Action(s)"
                             label-cols="2"
                         >
                             <text-editor v-model="indicatorAction" />
-                        </b-form-group>
-                    </b-col>
-                </b-form-row>
-                <b-form-row v-if="advanced">
-                    <b-col>
-                        <b-form-group
+                        </BFormGroup>
+                    </BCol>
+                </BFormRow>
+                <BFormRow v-if="advanced">
+                    <BCol>
+                        <BFormGroup
                             label="Aide(s)"
                             label-cols="2"
                         >
                             <text-editor v-model="givenHelp" />
-                        </b-form-group>
-                    </b-col>
-                </b-form-row>
+                        </BFormGroup>
+                    </BCol>
+                </BFormRow>
 
-                <b-form-row v-if="advanced && useBranch">
-                    <b-col>
-                        <b-form-group label="Évaluation intermédiaire">
-                            <b-table-simple>
-                                <b-thead>
-                                    <b-tr>
-                                        <b-th>Date</b-th>
-                                        <b-th>Évaluation intermédiaire</b-th>
-                                        <b-th />
-                                    </b-tr>
-                                </b-thead>
-                                <b-tbody>
-                                    <b-tr
+                <BFormRow v-if="advanced && useBranch">
+                    <BCol>
+                        <BFormGroup label="Évaluation intermédiaire">
+                            <BTableSimple>
+                                <BThead>
+                                    <BTr>
+                                        <BTh>Date</BTh>
+                                        <BTh>Évaluation intermédiaire</BTh>
+                                        <BTh />
+                                    </BTr>
+                                </BThead>
+                                <BTbody>
+                                    <BTr
                                         v-for="(intEval, index) in intermediateEvaluation"
                                         :key="intEval.id"
                                     >
-                                        <b-td>
-                                            <b-input
+                                        <BTd>
+                                            <BFormInput
                                                 type="date"
                                                 v-model="intEval.date_evaluation"
                                             />
-                                        </b-td>
-                                        <b-td>
+                                        </BTd>
+                                        <BTd>
                                             <multiselect
                                                 :options="store.assessments"
                                                 placeholder="Choisisser une évaluation"
@@ -230,41 +225,41 @@
                                                 </template>
                                                 <template #noOptions />
                                             </multiselect>
-                                        </b-td>
-                                        <b-td>
-                                            <b-btn
+                                        </BTd>
+                                        <BTd>
+                                            <BButton
                                                 size="sm"
                                                 variant="danger"
                                                 @click="removeIntermediateEval(index)"
                                             >
-                                                <b-icon icon="trash" />
-                                            </b-btn>
-                                        </b-td>
-                                    </b-tr>
-                                    <b-tr>
-                                        <b-td>
-                                            <b-btn
+                                                <IBiTrash />
+                                            </BButton>
+                                        </BTd>
+                                    </BTr>
+                                    <BTr>
+                                        <BTd>
+                                            <BButton
                                                 variant="success"
                                                 @click="addIntermediateEval"
                                             >
-                                                <b-icon icon="plus" />
+                                                <IBiPlus />
                                                 Ajouter
-                                            </b-btn>
-                                        </b-td>
-                                    </b-tr>
-                                </b-tbody>
-                            </b-table-simple>
-                        </b-form-group>
-                    </b-col>
-                </b-form-row>
-                <b-form-row v-if="advanced">
-                    <b-col v-if="!useBranch">
-                        <b-form-group label="Auto-évaluation">
+                                            </BButton>
+                                        </BTd>
+                                    </BTr>
+                                </BTbody>
+                            </BTableSimple>
+                        </BFormGroup>
+                    </BCol>
+                </BFormRow>
+                <BFormRow v-if="advanced">
+                    <BCol v-if="!useBranch">
+                        <BFormGroup label="Auto-évaluation">
                             <text-editor v-model="selfAssessment" />
-                        </b-form-group>
-                    </b-col>
-                    <b-col>
-                        <b-form-group label="Évaluation du CCL">
+                        </BFormGroup>
+                    </BCol>
+                    <BCol>
+                        <BFormGroup label="Évaluation du CCL">
                             <multiselect
                                 :options="store.assessments"
                                 placeholder="Choisisser une ou des évaluations"
@@ -282,16 +277,16 @@
                                 </template>
                                 <template #noOptions />
                             </multiselect>
-                        </b-form-group>
-                    </b-col>
-                </b-form-row>
-                <b-form-row v-if="advanced">
-                    <b-col>
-                        <b-form-group
+                        </BFormGroup>
+                    </BCol>
+                </BFormRow>
+                <BFormRow v-if="advanced">
+                    <BCol>
+                        <BFormGroup
                             description="Ajouter un ou des fichiers. Accepte uniquement des fichiers images et pdf."
                             label="Fichier(s)"
                         >
-                            <b-form-file
+                            <BFormFile
                                 multiple
                                 accept=".pdf, .jpg, .png, jpeg"
                                 v-model="attachments"
@@ -302,7 +297,7 @@
                                 plain
                                 @input="addFiles"
                             />
-                            <b-list-group
+                            <BListGroup
                                 v-for="(item, index) in uploadedFiles"
                                 :key="index"
                             >
@@ -314,12 +309,12 @@
                                     @delete="deleteFile(index)"
                                     @setdata="setFileData(index, $event)"
                                 />
-                            </b-list-group>
-                        </b-form-group>
-                    </b-col>
-                </b-form-row>
-            </b-collapse>
-        </b-card>
+                            </BListGroup>
+                        </BFormGroup>
+                    </BCol>
+                </BFormRow>
+            </BCollapse>
+        </BCard>
     </div>
 </template>
 
