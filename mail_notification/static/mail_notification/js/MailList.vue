@@ -49,7 +49,9 @@
                     <p>
                         Message <IBiPaperclip v-if="email.attachments.length > 0" /> :
                     </p>
-                    <BCardBody v-html="email.body" />
+                    <BCardBody>
+                        <div v-html="email.body" />
+                    </BCardBody>
                 </BCard>
             </BCol>
         </BRow>
@@ -59,7 +61,6 @@
 <script>
 
 import axios from "axios";
-import { BCardBody } from "bootstrap-vue-next";
 
 export default {
     data: function () {

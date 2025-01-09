@@ -38,7 +38,6 @@
                             bg-variant="transparent"
                             placement="bottom-end"
                         >
-                             
                             <IBiCheck v-if="absences[index] !== null" />
                         </BBadge>
                     </span>

@@ -18,7 +18,7 @@
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import Appels from "../appels.vue";
+import Appels from "../AppelsList.vue";
 import AddAppels from "../addAppels.vue";
 
 import { createRouter, createWebHashHistory } from "vue-router";

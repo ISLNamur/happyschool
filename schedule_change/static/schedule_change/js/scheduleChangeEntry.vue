@@ -123,7 +123,6 @@ import "moment/dist/locale/fr";
 Moment.locale("fr");
 
 import { scheduleChangeStore } from "./stores/index.js";
-import { BButton } from "bootstrap-vue-next";
 
 export default {
     props: {

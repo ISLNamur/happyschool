@@ -114,16 +114,14 @@
                                     @click="currentGroup = g"
                                 >
                                     <IBiDash
-                                        scale="1.5"
                                         color="red"
                                     />
                                 </BButton>
                             </template>
                             <BListGroup>
                                 <BListGroupItem
-                                    v-for="p in otherEmails[g.id]"
+                                    v-for="p in otherEmails.filter(oE => oE.group === g.id)"
                                     :key="p.id"
-                                    v-b-popover.hover="p.email"
                                     class="d-flex justify-content-between align-items-center"
                                 >
                                     {{ p.last_name }} {{ p.first_name }}
@@ -134,7 +132,7 @@
                                             @click="fillModal(p)"
                                         >
                                             <IBiPencilSquare
-                                                variant="success"
+                                                color="green"
                                             />
                                         </BButton>
                                         <BButton
@@ -144,7 +142,7 @@
                                             @click="currentItem = p"
                                         >
                                             <IBiTrashFill
-                                                variant="danger"
+                                                color="red"
                                             />
                                         </BButton>
                                     </div>
@@ -266,7 +264,7 @@ export default {
             secretary: [],
             others: [],
             groups: [],
-            otherEmails: {},
+            otherEmails: [],
             currentItem: {},
             currentGroup: {},
             last_name: "",
@@ -336,9 +334,10 @@ export default {
                 .then(response => {
                     for (let g in this.groups) {
                         let id = this.groups[g].id;
-                        let results = response.data.results.filter(e => e.group === id);
+                        // let results = response.data.results.filter(e => e.group === id);
+                        this.otherEmails = response.data.results;
                         // So we are sure vue knows that the list changed.
-                        Vue.set(this.otherEmails, id, results);
+                        // Vue.set(this.otherEmails, id, results);
                     }
                 })
                 .catch(function (error) {
