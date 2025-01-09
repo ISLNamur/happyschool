@@ -9,42 +9,42 @@ Par souci de simplicité, il est conseillé d'installer sur une machine réserv�
 il est tout à fait possible d'utiliser une machine existante. Une machine
 virtuelle (ou une instance docker) sera donc tout à fait appropriée et
 recommandé pour l'installation.
-La manière la plus rapide et la plus simple pour l'installation est d'utiliser
-un playbook ansible pour automatiser l'installation et la configuration d'HappySchool.
-Cependant celle-ci se limite pour le moment à ubuntu 18.04. Pour une installation
-sur un autre système ou plus poussé, une installation manuelle est décrite
-ci-dessous. A vous à l'adapter selon les spécificités de votre machine.
+.. La manière la plus rapide et la plus simple pour l'installation est d'utiliser
+.. un playbook ansible pour automatiser l'installation et la configuration d'HappySchool.
+.. Cependant celle-ci se limite pour le moment à ubuntu 18.04. Pour une installation
+.. sur un autre système ou plus poussé, une installation manuelle est décrite
+.. ci-dessous. A vous à l'adapter selon les spécificités de votre machine.
 
-Ansible
-=======
+.. Ansible
+.. =======
 
-`Ansible <https://www.ansible.com/>`__ est un outil puissant qui permet
-d'automatiser l'installation et la configuration d'un ou plusieurs serveurs.
-En règle générale, il s'utilise à distance à travers une session *ssh* vers
-le ou les serveurs mais peut très bien s'utiliser en local. Un *role*
-pour installer HappySchool est disponible pour n'importe quelle utilisation.
-Un script *shell* est également fourni pour faciliter l'installation en local.
-Pour télécharger le role et l'inclure dans votre propre playbook clonez le dépôt
-correspondant:
+.. `Ansible <https://www.ansible.com/>`__ est un outil puissant qui permet
+.. d'automatiser l'installation et la configuration d'un ou plusieurs serveurs.
+.. En règle générale, il s'utilise à distance à travers une session *ssh* vers
+.. le ou les serveurs mais peut très bien s'utiliser en local. Un *role*
+.. pour installer HappySchool est disponible pour n'importe quelle utilisation.
+.. Un script *shell* est également fourni pour faciliter l'installation en local.
+.. Pour télécharger le role et l'inclure dans votre propre playbook clonez le dépôt
+.. correspondant:
 
-::
+.. ::
 
-   git clone https://github.com/ISLNamur/happyschool-ansible
+..    git clone https://github.com/ISLNamur/happyschool-ansible
 
 
-La configuration de votre instance (superutilisateur, applications actives, etc) se
-fait dans un *playbook* que vous pouvez créer à partir du fichier ``happyschool.example.yml``.
-Les possibilités de configuration se trouve dans ``roles/common/defaults/main.yml``.
-Ensuite, à la racine du dépôt exécutez le script suivant qui utilisera un *playbook*
-``happyschool.yml`` :
+.. La configuration de votre instance (superutilisateur, applications actives, etc) se
+.. fait dans un *playbook* que vous pouvez créer à partir du fichier ``happyschool.example.yml``.
+.. Les possibilités de configuration se trouve dans ``roles/common/defaults/main.yml``.
+.. Ensuite, à la racine du dépôt exécutez le script suivant qui utilisera un *playbook*
+.. ``happyschool.yml`` :
 
-::
+.. ::
 
-   ./recipe.sh
+..    ./recipe.sh
 
-Celui-ci devrait vous demander votre mot de passe pour l'installation des
-paquets système. Au final, HappySchool sera installé dans
-``/home/utilisateur/happyschool``.
+.. Celui-ci devrait vous demander votre mot de passe pour l'installation des
+.. paquets système. Au final, HappySchool sera installé dans
+.. ``/home/utilisateur/happyschool``.
 
 Installation manuelle
 =====================
@@ -147,7 +147,7 @@ dossier racine (cela peut prendre un peu de temps):
 ::
 
    npm install
-   ./node_modules/.bin/webpack --config webpack.prod.js
+   pipenv run npm run build
 
 Pour écrire les schémas dans la base de donnée :
 

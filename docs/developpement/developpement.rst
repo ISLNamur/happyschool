@@ -61,17 +61,17 @@ création, dans le dossier racine d’Happyschool :
 
 ::
 
-   python3 manage.py startapp student_absence
+   python3 manage.py startapp my_student_absence
 
 Ceci va créer une arborescence dans un nouveau dossier
-``student_absence``. Le fichier ``manage.py`` permet de faire `pas mal
+``my_student_absence``. Le fichier ``manage.py`` permet de faire `pas mal
 de choses <https://docs.djangoproject.com/fr/2.0/ref/django-admin/>`__
 en relation avec Django et le projet, comme un accès à un shell python
 pour interagir avec les modèles créés ou encore d’appliquer des
 changements de notre modèle.
 
 Tout d’abord, créons notre modèle dans le fichier
-``student_absence/models.py``:
+``my_student_absence/models.py``:
 
 ::
 
@@ -128,7 +128,7 @@ notre nouvelle application :
        'dossier_eleve',
        'mail_notification',
        'mail_answer',
-       'student_absence,
+       'my_student_absence,
    ]
 
 Cela fait, nous pouvons créer le schéma grâce à ``manage.py``, nous
@@ -426,18 +426,17 @@ template aura la forme suivante
 
    {% block header %}
    <title>HappySchool : Absence des élèves</title>
+   {% vite %}
+   {% vite "appels/js/appels.js" %}
    {% endblock %}
    {% block content %}
    <script>
-       const current_app = "student_absence";
+       const current_app = "my_student_absence";
        const settings = JSON.parse('{{ settings|safe }}');
        const menu = {{ menu|safe }};
        const filters = JSON.parse('{{ filters|safe }}');
    </script>
    <div id="vue-app"></div>
-   {% load render_bundle from webpack_loader %}
-   {% render_bundle 'student_absence' %}
-
    {% endblock %}
 
 Le langage de gabarit utilisé par django permet non seulement d’insérer
@@ -447,8 +446,9 @@ d’un autre gabarit ``core/base_vue.html`` qui s’occupe de charger les
 certaines librairies commune à toutes les applications mais également
 d’exposer l’utilisateur et les groupes auxquels il appartient.
 ``{% block header %}...{% endblock %}`` permet d’insérer du code html
-dans la partie header de la page, ici le titre de la page. Quant à
-``{% block content %}...{% endblock %}`` il permet d’insérer du code
+dans la partie header de la page, ici le titre de la page et le javascript
+avec l'outil vite.
+Quant à ``{% block content %}...{% endblock %}`` il permet d’insérer du code
 html dans la balise ``<body>`` de la page. C’est dans la balise
 ``<script>`` que le *context* de la page va être *traduit* en javascript
 (``{{ settings|safe }}``, …), le filtre
@@ -457,9 +457,7 @@ indique à django de ne pas échapper les caractères (accent, guillement,
 etc).
 
 ``<div id="vue-app"></div>`` servira à Vue.js comme nous le verons par
-la suite. Quant à ``{% load render_bundle from webpack_loader %}`` et
-``{% render_bundle 'student_absence' %}``, ils insérent le code généré
-par Vue.js.
+la suite.
 
 Revenons maintenant à notre fichier ``views.py`` et notre class
 ``StudentAbsenceView``. Tout d’abord, elle hérite de
@@ -490,64 +488,44 @@ Et c’est tout pour le code python. Passons au javascript !
 Afin de structurer le code en différents modules, mutualiser le
 chargement des librairies externes mais aussi minimiser le code pour le
 rendre moins lourd à charger, nous utiliserons
-`Webpack <https://webpack.js.org/>`__. Nous allons pour le moment nous
+`Vite <https://vite.dev/>`__. Nous allons pour le moment nous
 contenter de rajouter notre application et en particulier le code
-javascript que nous allons écrire. Pour cela, regardons le fichier
-``webpack.common.js`` et particulier les deux parties suivantes :
+javascript que nous allons écrire.
 
-::
-
-   entry: {
-           babelPolyfill: "babel-polyfill",
-           menu: './assets/js/menu',
-           annuaire: './assets/js/annuaire',
-           appels: './assets/js/appels',
-           mail_notification: './assets/js/mail_notification',
-           mail_notification_list: './assets/js/mail_notification_list',
-           members: './assets/js/members',
-           mail_answer: './assets/js/mail_answer',
-           answer: './assets/js/answer',
-           dossier_eleve: './assets/js/dossier_eleve',
-           ask_sanctions: './assets/js/ask_sanctions',
-           student_absence: './assets/js/student_absence',
-       },
-
-Où nous avons rajouter le point d’entrée
-``./assets/js/student_absence``.
-
-::
-
-   name: "commons",
-               chunks: ["menu", "schedule_change", "appels", "mail_notification",
-                   "mail_notification_list", "members", "mail_answer", "dossier_eleve",
-                   "ask_sanctions", "annuaire", "student_absence",
-               ],
-
-Où nous avons rajouter notre application dans la liste des applications
-mutualisables.
+Le code javascript qui va tourner dans le navigateur des utilisateurs,
+se range dans le dossier ``static/app_name/js/`` de l'application, pour
+notre exemple ``my_student_absence/static/my_student_absence/js/``. Le
+point d'entrée est un fichier ``my_student_absence.js``.
 
 Créons donc un simple point d’entrée :
 
 ::
 
-   import Vue from 'vue';
+   import Vue from "vue";
+   import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue";
 
-   import StudentAbsence from '../student_absence/student_absence.vue';
+   import "bootstrap/dist/css/bootstrap.css";
+   import "bootstrap-vue/dist/bootstrap-vue.css";
 
-   var studentAbsenceApp = new Vue({
-       el: '#vue-app',
-       data: {},
-       template: '<student-absence/>',
-       components: { StudentAbsence },
-   })
+   Vue.use(BootstrapVue);
+   Vue.use(BootstrapVueIcons);
 
-La première ligne importe ``Vue`` et la deuxième notre composant, qui
-sera le cœur de la partie front-end. Finalement, la variable
-``studentAbsenceApp`` est une application *Vue.js* qui s’attache à
-l’élément ``<div id="vue-app">`` de notre gabarit.
+   import { createApp } from "vue";
+   import MyStudentAbsencePage from "./MyStudentAbsencePage.vue";
+
+   const studentAbsenceApp = createApp(MyStudentAbsencePage);
+
+
+   studentAbsenceApp.mount("#vue-app");
+
+
+La quatre premières lignes importe ``Vue`` et une librairie pour utiliser
+Bootstrap avec Vue. Finalement, la variable ``studentAbsenceApp`` est une
+application *Vue.js* qui s’attache à l’élément ``<div id="vue-app">``
+de notre gabarit et chargera le composant Vue ``MyStudentAbsencePage``.
 
 Ajoutons donc notre composant
-``assets/student_absence/student_absence.vue`` :
+``static/my_student_absence/MyStudentAbsencePage.vue`` :
 
 ::
 
@@ -627,13 +605,12 @@ Un composant vue possède trois parties : ``<template>`` qui est
 également un gabarit mais cette fois-ci pour le code js, ``<script>``
 pour toute la partie logique et ``<style>`` pour le style *css*.
 
-Pour dire à webpack de *compiler* le code, la commande suivante permet
-de le faire ainsi que de relancer la compilation à chaque changement de
-fichier :
+Pour dire à vite de *compiler* le code, la commande suivante va recharger
+le ou les composants directement dans le navigateur :
 
 ::
 
-   ./node_modules/.bin/webpack --config webpack.dev.js --watch
+   pipenv run npm run dev
 
 Si l’on pointe maintenant notre navigateur vers
 http://localhost:8000/student_absence et si le serveur de développement
@@ -701,7 +678,7 @@ l’extension vuejs devtools. Et vous verrez dans le composant
 StudentAbsence : ``entries:Array[1]``.
 
 Créons maintenant un composant pour afficher notre absence,
-``assets/student_absence/studentAbsenceEntry.vue`` :
+``static/my_student_absence/studentAbsenceEntry.vue`` :
 
 ::
 
@@ -712,7 +689,7 @@ Créons maintenant un composant pour afficher notre absence,
                    <b-row>
                        <b-col><strong><a href="#" @click="filterStudent">{{ rowData.student.display }}</a> : </strong>
                        Absent du {{ rowData.date_absence_start }} au {{ rowData.date_absence_end}}.</b-col>
-                       <b-col sm="2"><div class="text-right">
+                       <b-col sm="2"><div class="text-end">
                            <b-btn variant="light" size="sm" @click="editEntry" class="card-link">
                                <icon scale="1.3" name="edit" color="green" class="align-text-bottom"></icon>
                            </b-btn>
@@ -974,7 +951,7 @@ sur l’utilisation du gestionnaire d’état. Le code dans *template* donne
                        </b-collapse>
                    </b-col>
                </b-row>
-               <b-pagination class="mt-1" :total-rows="entriesCount" v-model="currentPage" @change="changePage" :per-page="20">
+               <b-pagination class="mt-1" :total-rows="entriesCount" v-model="currentPage" @update:model-value="changePage" :per-page="20">
                </b-pagination>
                <b-row>
                    <b-col>
@@ -1389,7 +1366,7 @@ principale :
                        </b-collapse>
                    </b-col>
                </b-row>
-               <b-pagination class="mt-1" :total-rows="entriesCount" v-model="currentPage" @change="changePage" :per-page="20">
+               <b-pagination class="mt-1" :total-rows="entriesCount" v-model="currentPage" @update:model-value="changePage" :per-page="20">
                </b-pagination>
                <b-row>
                    <b-col>

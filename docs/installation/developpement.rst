@@ -84,7 +84,7 @@ Les commandes utiles à lancer dans le conteneur sont :
 ::
 
    # Regénère le code javascript au moindre changement.
-   ./node_modules/.bin/webpack --config webpack.dev.js --watch
+   pipenv run npm run dev
 
    # Démarre celery pour gérer les tâches asynchrones.
    pipenv run celery -A happyschool worker -l info
@@ -198,7 +198,7 @@ dossier racine (cela peut prendre un peu de temps):
 ::
 
    npm install
-   ./node_modules/.bin/webpack --config webpack.dev.js
+   pipenv run npm run dev
 
 Pour écrire les schémas dans la base de donnée :
 
@@ -225,7 +225,7 @@ Finalement, pour la lancer le serveur de test :
 
 ::
 
-   pipenv run ./manage.py runserver --nostatic
+   pipenv run ./manage.py runserver
 
 HappySchool devrait maintenant être accessible à l’adresse suivante:
 `<http://127.0.0.1:8000>`_. La prochaine étape est la
