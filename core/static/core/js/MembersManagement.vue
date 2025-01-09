@@ -332,13 +332,8 @@ export default {
         loadOtherPeople() {
             axios.get("/mail_notification/api/other_email/")
                 .then(response => {
-                    for (let g in this.groups) {
-                        let id = this.groups[g].id;
-                        // let results = response.data.results.filter(e => e.group === id);
-                        this.otherEmails = response.data.results;
-                        // So we are sure vue knows that the list changed.
-                        // Vue.set(this.otherEmails, id, results);
-                    }
+                    this.otherEmails = response.data.results;
+
                 })
                 .catch(function (error) {
                     console.log(error);
