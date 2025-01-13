@@ -76,7 +76,7 @@ conteneurs actifs à accéder).
 
 ::
 
-   sudo docker exec -ti happyschool_django_1 bash
+   sudo docker exec -ti happyschool-django-1 bash
 
 
 Les commandes utiles à lancer dans le conteneur sont :
