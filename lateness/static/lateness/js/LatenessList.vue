@@ -141,7 +141,6 @@
                         />
                     </BCol>
                     <BCol
-                        v-if="store.hasSettingsPerm"
                         cols="12"
                         md="5"
                         class="text-end"
@@ -170,6 +169,7 @@
                             Top retards
                         </BButton>
                         <BButton
+                            v-if="store.hasSettingsPerm"
                             variant="outline-warning"
                             @click="promptChangeCount"
                             class="mt-1"
