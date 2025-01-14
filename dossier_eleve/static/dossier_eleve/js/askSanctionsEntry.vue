@@ -48,9 +48,9 @@
                     </BCol>
                     <BCol
                         sm="12"
-                        md="4"
+                        md="3"
                     >
-                        <div class="text-end">
+                        <div>
                             <span v-if="store.canSetSanction">
                                 <IBiQuestionCircle
                                     variant="primary"
@@ -68,7 +68,7 @@
                     </BCol>
                     <BCol
                         sm="12"
-                        md="5"
+                        md="4"
                     >
                         <div class="text-end">
                             <span v-if="canEditSanction">
