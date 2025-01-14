@@ -351,12 +351,17 @@ class StudentAbsenceEducViewSet(ModelViewSet):
             abs_object = serializer.save()
             abs_object.user = request.user
             abs_object.save()
+            self.update_justification(abs_object)
 
             absences_done.append(serializer.data)
         if get_settings().sync_with_proeco:
             self.cursor.connection.commit()
             self.cursor.connection.close()
         return Response(absences_done, status=status.HTTP_201_CREATED)
+
+    def perform_update(self, serializer):
+        absence = serializer.save()
+        self.update_justification(absence)
 
     def sync_proeco(self, data: dict):
         from libreschoolfdb import writer
@@ -375,6 +380,25 @@ class StudentAbsenceEducViewSet(ModelViewSet):
                 commit=False,
             )
         return False
+
+    def update_justification(self, absence):
+        # Add absence to justification.
+        if absence.status == StudentAbsenceEducModel.ABSENCE:
+            justifications = JustificationModel.objects.filter(
+                date_just_start__lte=absence.date_absence,
+                date_just_end__gte=absence.date_absence,
+            )
+
+            for just in justifications:
+                periods = {p.id: i for i, p in enumerate(PeriodEducModel.objects.all())}
+                half_day = periods[absence.period.id]
+                if half_day >= just.half_day_start and half_day <= just.half_day_end:
+                    just.absences.add(absence)
+
+        # Remove absence from justification.
+        if absence.status != StudentAbsenceEducModel.ABSENCE:
+            for just in JustificationModel.objects.filter(absences=absence):
+                just.absences.remove(absence)
 
 
 class PeriodTeacherViewSet(ReadOnlyModelViewSet):
