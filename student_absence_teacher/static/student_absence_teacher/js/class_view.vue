@@ -84,6 +84,13 @@
                                 v-b-tooltip.hover="data.value ? `${data.value.object.display} - ${data.value.motive.display}: ${data.value.commentaire}`: ''"
                             />
                         </template>
+                        <template #cell(isProcessed)="data">
+                            <BFormCheckbox
+                                :disabled="!data.item.absence_educators.some(a => a.status)"
+                                v-model="students[data.index].isProcessed"
+                                @update:model-value="updateIsProcessed($event, data.item)"
+                            />
+                        </template>
                     </BTable>
                 </BOverlay>
             </BCol>
@@ -100,6 +107,7 @@ import { studentAbsenceTeacherStore } from "./stores/index.js";
 
 import OverviewTeacherEntry from "./overview_teacher_entry.vue";
 import OverviewEducatorEntry from "./overview_educator_entry.vue";
+import { BFormCheckbox } from "bootstrap-vue-next";
 
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
@@ -125,6 +133,10 @@ export default {
                 {
                     key: "absence",
                     label: ""
+                },
+                {
+                    key: "isProcessed",
+                    label: ""
                 }
             ],
             students: [],
@@ -148,6 +160,14 @@ export default {
         updateStudentList: function () {
             this.loading = true;
             this.getStudentsAbsences(this.classId, this.date);
+        },
+        updateIsProcessed: function (event, student) {
+            student.absence_educators.filter(a => a.status !== null).forEach(a => {
+                axios.patch(`/student_absence_teacher/api/absence_educ/${a.id}/`, {is_processed: event}, token)
+                    .then((resp) => {
+                        student = resp.data;
+                    });
+            });
         },
         getSearchOptions: function (query) {
             // Ensure the last search is the first response.
@@ -231,6 +251,7 @@ export default {
                         const absence = educatorsAbsences.find(a => a.period === p.id && a.student_id === s.matricule);
                         return absence ? absence : { status: null, student_id: s.matricule, period: p.id, date_absence: date };
                     });
+                    s.isProcessed = s.absence_educators.map(a => a.is_processed).every((p) => p);
                     return s;
                 });
                 // Check if there are groups amongs students. If yes add group column.
