@@ -16,6 +16,7 @@
     var currentYear = JSON.parse('{{ current_year|safe }}');
     var canSetSanction = JSON.parse('{{ can_set_sanction|safe }}');
     var canAskSanction = JSON.parse('{{ can_ask_sanction|safe }}');
+    var groups = {{ groups|safe }};
     const proeco = {{ proeco| safe }};
 </script>
 <div id="vue-app"></div>

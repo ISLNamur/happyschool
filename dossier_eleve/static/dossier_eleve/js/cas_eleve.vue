@@ -297,10 +297,7 @@
                             </BFormGroup>
                         </BCol>
                     </BFormRow>
-                    <BFormRow
-                        v-if="infoOrSanction == 'info'"
-                        class="mb-2"
-                    >
+                    <BFormRow class="mb-2">
                         <BCol>
                             <BFormGroup
                                 v-if="visibilityOptions.length > 0"
@@ -492,12 +489,10 @@ export default {
                 this.form.sanction_faite = this.casObject.sanction_faite;
 
                 this.infoOrSanction = this.casObject.info_id ? "info" : "sanction-decision";
-                if (this.casObject.info_id) {
-                    // Set policies.
-                    this.form.visible_by_groups = this.casObject.visible_by_groups;
-                    if (this.casObject.visible_by_tenure) {
-                        this.form.visible_by_groups.push(-1);
-                    }
+                // Set policies.
+                this.form.visible_by_groups = this.casObject.visible_by_groups;
+                if (this.casObject.visible_by_tenure) {
+                    this.form.visible_by_groups.push(-1);
                 }
 
                 this.setSanctionDecisionOptions();
@@ -516,21 +511,15 @@ export default {
             this.form.demandeur = this.demandeur.display;
             let data = JSON.parse(JSON.stringify(this.form));
 
-            // Set visibility for all if it's sanction_decision.
-            if (this.infoOrSanction == "sanction-decision") {
-                // Set visibility to all.
-                // eslint-disable-next-line no-undef
-                data.visible_by_groups = Object.keys(groups).map(x => groups[x].id);
+            // Tenure is not a group, remove from groups and add proper setting.
+            const tenureGroupIndex = data.visible_by_groups.findIndex(g => g === -1);
+            if (tenureGroupIndex >= 0) {
+                data.visible_by_groups.splice(tenureGroupIndex, 1);
+                data.visible_by_tenure = true;
             } else {
-                // Tenure is not a group, remove from groups and add proper setting.
-                const tenureGroupIndex = data.visible_by_groups.findIndex(g => g === -1);
-                if (tenureGroupIndex >= 0) {
-                    data.visible_by_groups.splice(tenureGroupIndex, 1);
-                    data.visible_by_tenure = true;
-                } else {
-                    data.visible_by_tenure = false;
-                }
+                data.visible_by_tenure = false;
             }
+
             if (this.uploadedFiles.length > 0) {
                 data.attachments = Array.from(this.uploadedFiles.map(u => u.id));
             } else if (this.casObject) {

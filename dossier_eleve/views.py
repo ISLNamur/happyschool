@@ -227,76 +227,8 @@ class VisibilityPermissions(BasePermission):
         return False
 
 
-class CasEleveViewSet(BaseModelViewSet):
-    queryset = CasEleve.objects.filter(student__isnull=False).order_by("-datetime_modified")
-
-    serializer_class = CasEleveSerializer
-    permission_classes = (
-        IsAuthenticated,
-        DjangoModelPermissions,
-    )
-    filterset_class = CasEleveFilter
-    ordering_fields = ("datetime_encodage", "student__last_name", "datetime_modified")
-    user_field = "created_by"
-
-    def get_group_all_access(self):
-        return get_settings().all_access.all()
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        if get_settings().enable_submit_sanctions:
-            queryset = queryset.filter(Q(info__isnull=False) | ~Q(sanction_faite=False))
-
-        filter_by_groups = Q()
-        for g in self.request.user.groups.all():
-            filter_by_groups |= Q(visible_by_groups=g)
-        filter_by_groups |= Q(created_by=self.request.user)
-        # Give access to tenures
-        try:
-            resp = ResponsibleModel.objects.get(user=self.request.user)
-            filter_by_groups |= Q(student__classe__in=resp.tenure.all(), visible_by_tenure=True)
-        except ObjectDoesNotExist:
-            pass
-
-        queryset = queryset.filter(filter_by_groups).distinct()
-        return queryset
-
-    def perform_create(self, serializer):
-        send_to_teachers = serializer.validated_data.get("send_to_teachers", False)
-        # Remove from serializer as model doesn't need it.
-        if "send_to_teachers" in serializer.validated_data:
-            serializer.validated_data.pop("send_to_teachers")
-
-        super().perform_create(serializer)
-        cas = serializer.save(created_by=self.request.user)
-        if send_to_teachers:
-            task_send_info_email.apply_async(
-                countdown=1, kwargs={"instance_id": serializer.save().id}
-            )
-
-        if cas.sanction_decision:
-            if cas.sanction_decision.notify:
-                notify_sanction.apply_async(countdown=1, kwargs={"instance_id": cas.id})
-
-        if serializer.validated_data["info"]:
-            self.force_visibility(serializer)
-        else:
-            serializer.save(visible_by_groups=get_generic_groups().values())
-
-    def perform_update(self, serializer):
-        super().perform_update(serializer)
-
-        if serializer.validated_data["send_to_teachers"]:
-            task_send_info_email.apply_async(
-                countdown=1, kwargs={"instance_id": serializer.save().id}
-            )
-
-        if serializer.validated_data["info"]:
-            self.force_visibility(serializer)
-        else:
-            serializer.save(visible_by_groups=get_generic_groups().values())
-
-    def force_visibility(self, serializer):
+class ForceVisibilityMixin:
+    def force_visibility(self, serializer) -> CasEleve:
         user_groups = self.request.user.groups.all()
         dossier_settings = get_settings()
 
@@ -408,7 +340,71 @@ class CasEleveViewSet(BaseModelViewSet):
 
         visible_by = serializer.validated_data["visible_by_groups"] + list(forced_visibility)
 
-        serializer.save(visible_by_groups=visible_by, visible_by_tenure=visible_by_tenure)
+        return serializer.save(visible_by_groups=visible_by, visible_by_tenure=visible_by_tenure)
+
+
+class CasEleveViewSet(BaseModelViewSet, ForceVisibilityMixin):
+    queryset = CasEleve.objects.filter(student__isnull=False).order_by("-datetime_modified")
+
+    serializer_class = CasEleveSerializer
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )
+    filterset_class = CasEleveFilter
+    ordering_fields = ("datetime_encodage", "student__last_name", "datetime_modified")
+    user_field = "created_by"
+
+    def get_group_all_access(self):
+        return get_settings().all_access.all()
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if get_settings().enable_submit_sanctions:
+            queryset = queryset.filter(Q(info__isnull=False) | ~Q(sanction_faite=False))
+
+        filter_by_groups = Q()
+        for g in self.request.user.groups.all():
+            filter_by_groups |= Q(visible_by_groups=g)
+        filter_by_groups |= Q(created_by=self.request.user)
+        # Give access to tenures
+        try:
+            resp = ResponsibleModel.objects.get(user=self.request.user)
+            filter_by_groups |= Q(student__classe__in=resp.tenure.all(), visible_by_tenure=True)
+        except ObjectDoesNotExist:
+            pass
+
+        queryset = queryset.filter(filter_by_groups).distinct()
+        return queryset
+
+    def perform_create(self, serializer):
+        send_to_teachers = serializer.validated_data.get("send_to_teachers", False)
+        # Remove from serializer as model doesn't need it.
+        if "send_to_teachers" in serializer.validated_data:
+            serializer.validated_data.pop("send_to_teachers")
+
+        super().perform_create(serializer)
+        cas = serializer.save(created_by=self.request.user)
+        if send_to_teachers:
+            task_send_info_email.apply_async(
+                countdown=1, kwargs={"instance_id": serializer.save().id}
+            )
+
+        if cas.sanction_decision:
+            if cas.sanction_decision.notify:
+                notify_sanction.apply_async(countdown=1, kwargs={"instance_id": cas.id})
+
+        self.force_visibility(serializer)
+
+    def perform_update(self, serializer):
+        super().perform_update(serializer)
+
+        if serializer.validated_data["send_to_teachers"]:
+            task_send_info_email.apply_async(
+                countdown=1, kwargs={"instance_id": serializer.save().id}
+            )
+
+        self.force_visibility(serializer)
 
     def is_only_tenure(self):
         return False
@@ -487,7 +483,7 @@ class AskSanctionsFilter(BaseFilters):
         return queryset
 
 
-class AskSanctionsViewSet(ModelViewSet):
+class AskSanctionsViewSet(ModelViewSet, ForceVisibilityMixin):
     queryset = CasEleve.objects.filter(
         student__isnull=False, sanction_decision__isnull=False, sanction_faite=False
     )
@@ -515,6 +511,19 @@ class AskSanctionsViewSet(ModelViewSet):
         sanctions = SanctionDecisionDisciplinaire.objects.filter(can_ask=True)
 
         queryset = super().get_queryset().filter(sanction_decision__in=sanctions)
+        filter_by_groups = Q()
+        for g in self.request.user.groups.all():
+            filter_by_groups |= Q(visible_by_groups=g)
+        filter_by_groups |= Q(created_by=self.request.user)
+        # Give access to tenures
+        try:
+            resp = ResponsibleModel.objects.get(user=self.request.user)
+            filter_by_groups |= Q(student__classe__in=resp.tenure.all(), visible_by_tenure=True)
+        except ObjectDoesNotExist:
+            pass
+
+        queryset = queryset.filter(filter_by_groups).distinct()
+
         return queryset
 
     def perform_create(self, serializer):
@@ -522,7 +531,8 @@ class AskSanctionsViewSet(ModelViewSet):
         serializer.save(
             sanction_faite=False, user=self.request.user.username, created_by=self.request.user
         )
-        cas = serializer.save(visible_by_groups=get_generic_groups().values())
+
+        cas = self.force_visibility(serializer)
 
         if cas.sanction_decision:
             if cas.sanction_decision.notify:
@@ -530,7 +540,9 @@ class AskSanctionsViewSet(ModelViewSet):
 
     def perform_update(self, serializer):
         super().perform_update(serializer)
-        serializer.save(visible_by_groups=get_generic_groups().values())
+
+        if self.request.method != "PATCH":
+            self.force_visibility(serializer)
 
 
 class InfoViewSet(ReadOnlyModelViewSet):

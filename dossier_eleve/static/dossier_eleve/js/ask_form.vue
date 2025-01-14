@@ -277,6 +277,23 @@
                                 </BFormGroup>
                             </BCol>
                         </BFormRow>
+                        <BFormRow>
+                            <BCol>
+                                <BFormGroup
+                                    v-if="visibilityOptions.length > 0"
+                                    label="Donner la visibilité à :"
+                                >
+                                    <BFormCheckboxGroup
+                                        stacked
+                                        v-model="form.visible_by_groups"
+                                        name="visible_by_groups"
+                                        :options="visibilityOptions"
+                                        value-field="id"
+                                        text-field="text"
+                                    />
+                                </BFormGroup>
+                            </BCol>
+                        </BFormRow>
                     </BForm>
                 </BCol>
             </BRow>
@@ -321,8 +338,7 @@ export default {
                 time_sanction_start: null,
                 time_sanction_end: null,
                 datetime_conseil: null,
-                visible_by_educ: true,
-                visible_by_tenure: true,
+                visible_by_groups: [],
             },
             attachments: [],
             uploadedFiles: [],
@@ -336,6 +352,7 @@ export default {
             searchId: 0,
             stats: {},
             timeSanction: null,
+            visibilityOptions: [],
             errors: {},
             inputStates: {
                 name: null,
@@ -394,6 +411,10 @@ export default {
                 this.form.date_sanction_end = entry.date_sanction_end;
                 this.form.time_sanction_start = entry.time_sanction_start ? entry.time_sanction_start : null;
                 this.form.time_sanction_end = entry.time_sanction_end ? entry.time_sanction_end.slice(0, 5) : null;
+                this.form.visible_by_groups = entry.visible_by_groups;
+                if (entry.visible_by_tenure) {
+                    this.form.visible_by_groups.push(-1);
+                }
 
                 if (entry.datetime_conseil) {
                     this.form.datetime_conseil = Moment(entry.datetime_conseil).format("YYYY-MM-DD");
@@ -435,6 +456,7 @@ export default {
             this.form.datetime_conseil = null;
             this.form.time_sanction_start = null;
             this.form.time_sanction_end = null;
+            this.form.visible_by_groups = [];
         },
         errorMsg(err) {
             if (err in this.errors) {
@@ -462,6 +484,16 @@ export default {
 
             this.form.demandeur = this.demandeur.display;
             let data = this.form;
+
+            // Tenure is not a group, remove from groups and add proper setting.
+            const tenureGroupIndex = data.visible_by_groups.findIndex(g => g === -1);
+            if (tenureGroupIndex >= 0) {
+                data.visible_by_groups.splice(tenureGroupIndex, 1);
+                data.visible_by_tenure = true;
+            } else {
+                data.visible_by_tenure = false;
+            }
+
             // Add times if any.
             if (!data.date_sanction) {
                 data.date_sanction = null;
@@ -552,6 +584,78 @@ export default {
                     app.nameLoading = false;
                 });
         },
+        setVisibilityGroups: function () {
+            let settings = this.store.settings;
+            // eslint-disable-next-line no-undef
+            const groupSet = Object.assign({}, groups);
+            groupSet.tenure = {
+                id: -1, text: "Titulaire(s)"
+            };
+            // eslint-disable-next-line no-undef
+            if (user_groups.find(g => g.id == groupSet.sysadmin.id)) {
+                this.visibilityOptions = Object.values(groupSet).filter(g => g.id !== groupSet.sysadmin.id);
+                return;
+            }
+            // Match between groups and settings name.
+            const groupSettingsMatch = {
+                direction: "dir",
+                educateur: "educ",
+                professeur: "teacher",
+                pms: "pms",
+                coordonateur: "coord",
+            };
+            const consideredGroups = Object.keys(groupSettingsMatch);
+            // eslint-disable-next-line no-undef
+            const userGroups = user_groups.filter(g => consideredGroups.includes(g.name));
+            const concernedSettings = userGroups.map(g => {
+                const allowedGroupSetting = groupSettingsMatch[g.name] + "_allow_visibility_to";
+                const forcedGroupSetting = groupSettingsMatch[g.name] + "_force_visibility_to";
+                let groupSetting = {
+                    group: g.id,
+                    isAllowed: new Set(settings[allowedGroupSetting]),
+                    isForced: new Set(settings[forcedGroupSetting]),
+                };
+                // Add tenure "group".
+                if (settings.tenure_force_visibility_from.includes(g.id)) {
+                    groupSetting.isForced.add(-1);
+                }
+                if (settings.tenure_allow_visibility_from.includes(g.id)) {
+                    groupSetting.isAllowed.add(-1);
+                }
+                return groupSetting;
+            });
+
+            // eslint-disable-next-line no-undef
+            if (user_properties.tenure.includes(this.name.classe)) {
+                concernedSettings.push({
+                    group: -1,
+                    isAllowed: new Set(settings.tenure_allow_visibility_to),
+                    isForced: new Set(settings.tenure_force_visibility_to),
+                });
+            }
+
+            const allowedGroups = [...new Set(concernedSettings.map(s => s.isAllowed).reduce((acc, curValue) => {
+                return new Set([...curValue, ...acc]);
+            }, new Set()))];
+
+            this.visibilityOptions = allowedGroups.map(aG => {
+                let group = Object.values(groupSet).find(g => g.id === aG);
+                // Is the group forced?
+                // First check if a group allows it but is not forced. In this case, this group permission prevails
+                // and it is not forced.
+                if (concernedSettings.find(uG => [...uG.isAllowed].includes(aG) && ![...uG.isForced].includes(aG))) {
+                    group.disabled = false;
+                    return group;
+                    // Check if the group is simultaneously forced and allowed in the remaining settings.
+                } else if (concernedSettings.find(uG => [...uG.isAllowed].includes(aG) && [...uG.isForced].includes(aG))) {
+                    // Append the group to pre-selectioned options.
+                    this.form.visible_by_groups.push(aG);
+                    group.disabled = true;
+                    return group;
+                }
+                return group;
+            });
+        },
     },
     mounted: function () {
         // Set sanctions and decisions options.
@@ -564,6 +668,8 @@ export default {
             .catch(function (error) {
                 alert(error);
             });
+        
+        this.setVisibilityGroups();
     },
     components: { Multiselect, TextEditor, FileUpload },
 };
