@@ -80,7 +80,7 @@
                     :options="templateOptions"
                     text-field="name"
                     value-field="id"
-                    @input="getTemplate"
+                    @update:model-value="getTemplate"
                 />
             </BCol>
             <BCol
