@@ -52,18 +52,24 @@ export const studentAbsenceTeacherStore = defineStore("studentAbsenceTeacher", {
             this.changes = {};
         },
         getOptions: function () {
-            axios.get("/student_absence_teacher/api/period_educ/")
-                .then((resp) => {
-                    this.periodEduc = resp.data.results;
+            return new Promise((resolve, reject) => {
+                Promise.all([
+                    axios.get("/student_absence_teacher/api/period_educ/"),
+                    axios.get("/student_absence_teacher/api/just_motive/"),
+                ]).then((resps) => {
+                    this.periodEduc = resps[0].data.results;
                     this.periodEduc.forEach((v, i) => {
                         v.index = i;
                     });
-                });
 
-            axios.get("/student_absence_teacher/api/just_motive/")
-                .then((resp) => {
-                    this.motives = resp.data.results;
+                    this.motives = resps[1].data.results;
+
+                    resolve();
+                }).catch((err) => {
+                    console.log(err);
+                    reject();
                 });
+            });
         }
     }
 });

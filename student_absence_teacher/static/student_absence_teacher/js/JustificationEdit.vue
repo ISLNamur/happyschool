@@ -358,44 +358,47 @@ export default {
         }
     },
     mounted: function () {
-        this.store.getOptions();
-
-        if (parseInt(this.studentId) > 0) {
-            this.justification.student = this.studentId;
-            axios.get(`/annuaire/api/student/${this.studentId}/`)
-                .then((resp) => {
-                    this.student = resp.data;
-                });
-
-            if (this.endDate) {
-                this.justification.date_just_end = this.endDate;
-                // Estimate from unjustified count (with a margin of two days).
-                const startDate = moment(this.endDate).subtract(Math.round(this.absencesCount / this.store.periodEduc.length) + 2, "days").format("YYYY-MM-DD");
-                axios.get(
-                    `/student_absence_teacher/api/absence_educ/?student__matricule=${this.studentId}&status=A&date_absence__lte=${this.endDate}&date_absence__gte=${startDate}&ordering=date_absence,period__start`
-                ).then((resp) => {
-                    this.justification.date_just_start = resp.data.results[0].date_absence;
-                    this.justification.half_day_start = this.store.periodEduc.find(p => p.id === resp.data.results[0].period).index;
-                    this.justification.half_day_end = this.store.periodEduc.find(p => p.id === resp.data.results[resp.data.count - 1].period).index;
-                });
-            }
-        }
-
-        if (!this.justId || parseInt(this.justId) < 0) {
-            this.loading = false;
-            return;
-        }
-
-        axios.get(`/student_absence_teacher/api/justification/${this.justId}`)
-            .then((resp) => {
-                this.justification = resp.data;
-                axios.get(`/annuaire/api/student/${this.justification.student}`)
+        this.store.getOptions().then(() => {
+            if (parseInt(this.studentId) > 0) {
+                this.justification.student = this.studentId;
+                axios.get(`/annuaire/api/student/${this.studentId}/`)
                     .then((resp) => {
                         this.student = resp.data;
                     });
-                this.getRelatedAbsences();
+
+                if (this.endDate) {
+                    this.justification.date_just_end = this.endDate;
+                    // Estimate from unjustified count (with a margin of two days).
+                    const startDate = moment(this.endDate).subtract(Math.round(this.absencesCount / this.store.periodEduc.length) + 2, "days").format("YYYY-MM-DD");
+
+                    axios.get(
+                        `/student_absence_teacher/api/absence_educ/?student__matricule=${this.studentId}&status=A&date_absence__lte=${this.endDate}&date_absence__gte=${startDate}&ordering=date_absence,period__start`
+                    ).then((resp) => {
+                        this.justification.date_just_start = resp.data.results[0].date_absence;
+                        this.justification.half_day_start = this.store.periodEduc.find(p => p.id === resp.data.results[0].period).index;
+                        this.justification.half_day_end = this.store.periodEduc.find(p => p.id === resp.data.results[resp.data.count - 1].period).index;
+
+                        this.getRelatedAbsences();
+                    });
+                }
+            }
+
+            if (!this.justId || parseInt(this.justId) < 0) {
                 this.loading = false;
-            });
+                return;
+            }
+
+            axios.get(`/student_absence_teacher/api/justification/${this.justId}`)
+                .then((resp) => {
+                    this.justification = resp.data;
+                    axios.get(`/annuaire/api/student/${this.justification.student}`)
+                        .then((resp) => {
+                            this.student = resp.data;
+                        });
+                    this.getRelatedAbsences();
+                    this.loading = false;
+                });
+        });
     },
     components: {
         TextEditor,
