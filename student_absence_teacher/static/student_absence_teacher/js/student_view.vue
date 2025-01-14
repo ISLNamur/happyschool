@@ -91,11 +91,12 @@
                     </template>
                     <BListGroup flush>
                         <BListGroupItem
-                            v-for="just in justifications"
+                            v-for="(just, i) in justifications"
                             :key="just.id"
                         >
                             <div class="d-flex w-100 justify-content-between">
                                 <span>
+                                    {{ i + 1 }}:
                                     <strong v-b-tooltip="just.motive.name">{{ just.motive.short_name }}</strong> :
                                     {{ just.date_just_start }} ({{ this.educatorsPeriod[just.half_day_start].name }})
                                     – {{ just.date_just_end }} ({{ this.educatorsPeriod[just.half_day_end].name }}) 
