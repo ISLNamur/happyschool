@@ -107,7 +107,6 @@ import { studentAbsenceTeacherStore } from "./stores/index.js";
 
 import OverviewTeacherEntry from "./overview_teacher_entry.vue";
 import OverviewEducatorEntry from "./overview_educator_entry.vue";
-import { BFormCheckbox } from "bootstrap-vue-next";
 
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
