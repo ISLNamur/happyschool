@@ -20,6 +20,7 @@
 from django.conf import settings
 
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 
 from core.serializers import StudentSerializer, GivenCourseSerializer
 from core.models import StudentModel, GivenCourseModel
@@ -57,6 +58,52 @@ class JustificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = JustificationModel
         fields = "__all__"
+
+        validators = [
+            UniqueTogetherValidator(
+                queryset=JustificationModel.objects.all(),
+                fields=[
+                    "date_just_start",
+                    "date_just_end",
+                    "half_day_start",
+                    "half_day_end",
+                    "student",
+                ],
+                message="Une justification existe déjà pour cet étudiant à cette période. Actualisez la page pour mettre les données à jour.",
+            )
+        ]
+
+    def validate(self, data):
+        # Check if there is already an overlapping justification.
+
+        # Inside date interval.
+        for just in JustificationModel.objects.filter(
+            date_just_start__lte=data["date_just_end"], date_just_end__gte=data["date_just_start"]
+        ):
+            print(self.instance)
+            # Don't compare with itself.
+            if self.instance and self.instance.id == just.id:
+                continue
+
+            # On the edge of the interval.
+            if (
+                data["date_just_start"] < just.date_just_start
+                and data["date_just_end"] == just.date_just_start
+                and data["half_day_end"] < just.half_day_start
+            ):
+                continue
+            if (
+                data["date_just_end"] >= just.date_just_end
+                and data["date_just_start"] == just.date_just_end
+                and data["half_day_start"] > just.half_day_end
+            ):
+                continue
+
+            raise serializers.ValidationError(
+                "Il existe déjà une justification pour cet étudiant à cette période."
+            )
+
+        return data
 
 
 class JustMotiveSerializer(serializers.ModelSerializer):
@@ -122,6 +169,14 @@ class StudentAbsenceEducSerializer(serializers.ModelSerializer):
             "datetime_update",
         )
         read_only_fields = ("user",)
+
+        validators = [
+            UniqueTogetherValidator(
+                queryset=StudentAbsenceEducModel.objects.all(),
+                fields=["date_absence", "period", "student"],
+                message="Une absence/présence existe déjà pour cet étudiant à cette période. Actualisez la page pour mettre les données à jour.",
+            )
+        ]
 
     def update(self, instance, validated_data):
         if (

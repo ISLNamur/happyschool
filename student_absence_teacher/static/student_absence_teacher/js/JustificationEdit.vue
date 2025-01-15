@@ -324,8 +324,18 @@ export default {
                             }});
                         });
                 })
-                .catch(() =>  {
+                .catch((err) =>  {
                     this.submitting = false;
+                    let additionalInfo = "";
+                    if ("response" in err && err.response.data.non_field_errors) {
+                        additionalInfo = err.response.data.non_field_errors.join(" ");
+                    }
+                    const errorMessage = `Une erreur est survenue lors de l'envoi des données. ${additionalInfo}`;
+                    this.show({props: {
+                        body: errorMessage,
+                        variant: "danger",
+                        noCloseButton: true,
+                    }});
                 });
 
         },
