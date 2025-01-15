@@ -109,13 +109,22 @@
                                     </span>
                                 </span>
                                 <span>
-                                    <BButton
-                                        :to="`/justification/${just.id}/`"
-                                        variant="outline-success"
-                                        size="sm"
-                                    >
-                                        <IBiPencilSquare />
-                                    </BButton>
+                                    <BButtonGroup>
+                                        <BButton
+                                            :to="`/justification/${just.id}/`"
+                                            variant="outline-success"
+                                            size="sm"
+                                        >
+                                            <IBiPencilSquare />
+                                        </BButton>
+                                        <BButton
+                                            @click="removeJustification(i)"
+                                            variant="danger"
+                                            size="sm"
+                                        >
+                                            <IBiTrash />
+                                        </BButton>
+                                    </BButtonGroup>
                                 </span>
                             </div>
                         </BListGroupItem>
@@ -136,6 +145,7 @@
 
 <script>
 import axios from "axios";
+import { useModalController } from "bootstrap-vue-next";
 
 import { displayStudent } from "@s:core/js/common/utilities.js";
 
@@ -146,8 +156,13 @@ import OverviewEducatorEntry from "./overview_educator_entry.vue";
 import StudentYearView from "./student_year_view.vue";
 import AbsencesStat from "./AbsencesStat.vue";
 
+const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
+    setup: function () {
+        const { confirm } = useModalController();
+        return { confirm };
+    },
     props: {
         date: {
             type: String,
@@ -195,6 +210,24 @@ export default {
     },
     methods: {
         displayStudent,
+        removeJustification: function (justIndex) {
+            this.confirm({props: {
+                body: "Êtes-vous sûr de vouloir supprimer cette justification",
+                centered: true,
+                buttonSize: "sm",
+                okVariant: "danger",
+                okTitle: "Oui",
+                cancelTitle: "Annuler",
+            }})
+                .then(remove => {
+                    if (!remove) return;
+
+                    axios.delete(`/student_absence_teacher/api/justification/${this.justifications[justIndex].id}/`, token)
+                        .then(() => {
+                            this.justifications.splice(justIndex, 1);
+                        });
+                });
+        },
         updateEducatorAbsence: function (payload) {
             console.log("coucou");
             const data = payload[0];

@@ -172,7 +172,7 @@ import axios from "axios";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
-import { useToastController } from "bootstrap-vue-next";
+import { useToastController, useModalController } from "bootstrap-vue-next";
 
 import { studentAbsenceTeacherStore } from "./stores/index.js";
 import AbsencesStat from "./AbsencesStat.vue";
@@ -186,7 +186,8 @@ const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 export default {
     setup: function () {
         const { show } = useToastController();
-        return { show };
+        const { confirm } = useModalController();
+        return { show, confirm };
     },
     props: {
         "justId": {
@@ -340,13 +341,14 @@ export default {
 
         },
         remove: function () {
-            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer cette justification",{
+            this.confirm({props: {
+                body: "Êtes-vous sûr de vouloir supprimer cette justification",
                 centered: true,
                 buttonSize: "sm",
                 okVariant: "danger",
                 okTitle: "Oui",
                 cancelTitle: "Annuler",
-            })
+            }})
                 .then(remove => {
                     if (!remove) return;
 
