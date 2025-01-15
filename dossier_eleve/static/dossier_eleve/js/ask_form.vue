@@ -456,7 +456,7 @@ export default {
             this.form.datetime_conseil = null;
             this.form.time_sanction_start = null;
             this.form.time_sanction_end = null;
-            this.form.visible_by_groups = [];
+            this.form.visible_by_groups = this.visibilityOptions.map(g => g.id);
         },
         errorMsg(err) {
             if (err in this.errors) {
@@ -655,6 +655,7 @@ export default {
                 }
                 return group;
             });
+            
         },
     },
     mounted: function () {
@@ -670,6 +671,7 @@ export default {
             });
         
         this.setVisibilityGroups();
+        this.form.visible_by_groups = this.visibilityOptions.map(g => g.id);
     },
     components: { Multiselect, TextEditor, FileUpload },
 };
