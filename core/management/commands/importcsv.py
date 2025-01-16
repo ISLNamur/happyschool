@@ -23,7 +23,7 @@ from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 
-from core.models import TeachingModel
+from core.models import TeachingModel, ColumnToFieldImportModel
 from core.adminsettings.importclass import ImportStudentCSV, ImportResponsibleCSV
 
 
@@ -50,6 +50,8 @@ class Command(BaseCommand):
             help="Implementation of the related people i.e. teaching field of the person.",
         )
 
+        parser.add_argument("-m", "--model", help="The name of the column to field model.")
+
     def handle(self, *args, **options):
         if options["student"]:
             with open(options["student"], newline="", encoding="utf-8-sig") as student_csv:
@@ -60,16 +62,25 @@ class Command(BaseCommand):
                         name=options["implementation"],
                         display_name=options["implementation"].title(),
                     )
-                column_map = {
-                    "Matric Info": "matricule",
-                    "Nom Elève": "last_name",
-                    "Prénom Elève": "first_name",
-                    "Année": "year",
-                    "Classe": "classe_letter",
-                    "Email": "email",
-                }
-                import_student_csv = ImportStudentCSV(teaching, column_map)
-                import_student_csv.sync(student_csv, has_header=True)
+
+                if not options["model"]:
+                    column_map = {
+                        "Matric Info": "matricule",
+                        "Nom Elève": "last_name",
+                        "Prénom Elève": "first_name",
+                        "Année": "year",
+                        "Classe": "classe_letter",
+                        "Email": "email",
+                    }
+                    import_student_csv = ImportStudentCSV(teaching, column_map)
+                    import_student_csv.sync(student_csv, has_header=True)
+                else:
+                    import_model = ColumnToFieldImportModel.objects.get(
+                        name=options["model"], model="student"
+                    )
+                    column_to_index = {j: i for i, j in enumerate(import_model.column_to_field)}
+                    import_student_csv = ImportStudentCSV(teaching, column_index=column_to_index)
+                    import_student_csv.sync(student_csv)
 
         if options["teacher"]:
             with open(options["teacher"], newline="", encoding="utf-8-sig") as teacher_csv:

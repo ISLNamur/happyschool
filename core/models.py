@@ -363,3 +363,14 @@ class MenuEntryModel(models.Model):
 
     def __str__(self) -> str:
         return f"{self.display} ({self.link})"
+
+
+class ColumnToFieldImportModel(models.Model):
+    MODEL_CHOICES = [
+        ("ST", "Student"),
+        ("RE", "Responsible"),
+    ]
+
+    name = models.CharField(max_length=100)
+    model = models.CharField(max_length=2, choices=MODEL_CHOICES)
+    column_to_field = models.JSONField()

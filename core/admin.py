@@ -33,6 +33,7 @@ from .models import (
     PeriodCoreModel,
     CourseScheduleModel,
     MenuEntryModel,
+    ColumnToFieldImportModel,
 )
 
 
@@ -135,3 +136,4 @@ admin.site.register(ImportCalendarModel)
 admin.site.register(PeriodCoreModel)
 admin.site.register(CourseScheduleModel, CourseScheduleAdmin)
 admin.site.register(MenuEntryModel)
+admin.site.register(ColumnToFieldImportModel)
