@@ -387,6 +387,7 @@ class StudentAbsenceEducViewSet(ModelViewSet):
             justifications = JustificationModel.objects.filter(
                 date_just_start__lte=absence.date_absence,
                 date_just_end__gte=absence.date_absence,
+                student=absence.student,
             )
 
             for just in justifications:
@@ -735,6 +736,17 @@ class JustificationCountAPI(APIView):
             student__matricule=student,
             status="A",
             date_absence__gte=start,
+        )
+
+        print(
+            total_absences_with_just.filter(justificationmodel__motive__admissible_up_to__gt=0)
+            .values(
+                "justificationmodel__motive",
+                "justificationmodel__motive__short_name",
+                "justificationmodel__motive__name",
+                "justificationmodel__motive__admissible_up_to",
+            )
+            .annotate(Count("justificationmodel__motive"))
         )
 
         justified = (
