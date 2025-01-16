@@ -68,7 +68,7 @@
                         <BFormInput
                             type="date"
                             v-model="justification.date_just_start"
-                            @input="getRelatedAbsences"
+                            @update:model-value="getRelatedAbsences"
                         />
                         <BFormSelect
                             :options="store.periodEduc"
@@ -76,7 +76,7 @@
                             text-field="name"
                             value-field="index"
                             v-model="justification.half_day_start"
-                            @input="getRelatedAbsences"
+                            @update:model-value="getRelatedAbsences"
                         />
                     </BInputGroup>
                 </BFormGroup>
@@ -87,7 +87,7 @@
                         <BFormInput
                             type="date"
                             v-model="justification.date_just_end"
-                            @input="getRelatedAbsences"
+                            @update:model-value="getRelatedAbsences"
                         />
                         <BFormSelect
                             v-model="justification.half_day_end"
@@ -95,7 +95,7 @@
                             :select-size="2"
                             text-field="name"
                             value-field="index"
-                            @input="getRelatedAbsences"
+                            @update:model-value="getRelatedAbsences"
                         />
                     </BInputGroup>
                 </BFormGroup>

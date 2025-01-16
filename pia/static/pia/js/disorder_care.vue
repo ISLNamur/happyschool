@@ -171,7 +171,7 @@
                 <BCol>
                     <text-editor
                         :value="other_adjustments"
-                        @input="$emit('update:other_adjustments', $event)"
+                        @update:model-value="$emit('update:other_adjustments', $event)"
                     />
                 </BCol>
             </BRow>

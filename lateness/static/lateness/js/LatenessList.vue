@@ -239,7 +239,7 @@
                         <BFormCheckbox
                             v-model="topOwnClasses"
                             switch
-                            @input="getTopList()"
+                            @update:model-value="getTopList()"
                         >
                             N'afficher que ses classes
                         </BFormCheckbox>

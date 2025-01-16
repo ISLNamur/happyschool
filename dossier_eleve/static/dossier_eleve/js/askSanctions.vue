@@ -215,7 +215,7 @@
                         <BFormSelect
                             class="mt-1"
                             v-model="entriesPerPage"
-                            @input="loadEntries"
+                            @update:model-value="loadEntries"
                             size="sm"
                         >
                             <option :value="20">

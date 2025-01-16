@@ -29,7 +29,7 @@
                     <BFormInput
                         v-model="currentDate"
                         type="date"
-                        @input="getStudents('UND')"
+                        @update:model-value="getStudents('UND')"
                     />
                 </BFormGroup>
             </BCol>

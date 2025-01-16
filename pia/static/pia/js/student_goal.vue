@@ -116,7 +116,7 @@
                                 deselect-label="Cliquer dessus pour enlever"
                                 v-model="branch"
                                 :show-no-options="false"
-                                @input="updateBranchGoal"
+                                @update:model-value="updateBranchGoal"
                                 label="branch"
                                 track-by="id"
                             >
@@ -304,7 +304,7 @@
                                 choose-label="Attacher un ou des fichiers"
                                 drop-label="Déposer des fichiers ici"
                                 plain
-                                @input="addFiles"
+                                @update:model-value="addFiles"
                             />
                             <BListGroup
                                 v-for="(item, index) in uploadedFiles"

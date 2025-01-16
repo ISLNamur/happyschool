@@ -70,7 +70,7 @@
                                     <BFormFile
                                         v-model="file"
                                         accept=".csv"
-                                        @input="testFile"
+                                        @update:model-value="testFile"
                                         placeholder="Importer un fichier csv..."
                                     />
                                 </BFormGroup>
@@ -169,7 +169,7 @@
                                     <BFormFile
                                         v-model="file"
                                         accept=".csv"
-                                        @input="testFile"
+                                        @update:model-value="testFile"
                                         placeholder="Importer un fichier csv..."
                                     />
                                 </BFormGroup>

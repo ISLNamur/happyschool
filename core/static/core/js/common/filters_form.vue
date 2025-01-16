@@ -55,7 +55,7 @@
                             <BFormSelect
                                 :options="filterTypeOptions"
                                 v-model="filterType"
-                                @input="cleanDate"
+                                @update:model-value="cleanDate"
                                 ref="selectType"
                             />
                         </BCol>
