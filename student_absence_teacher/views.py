@@ -738,17 +738,6 @@ class JustificationCountAPI(APIView):
             date_absence__gte=start,
         )
 
-        print(
-            total_absences_with_just.filter(justificationmodel__motive__admissible_up_to__gt=0)
-            .values(
-                "justificationmodel__motive",
-                "justificationmodel__motive__short_name",
-                "justificationmodel__motive__name",
-                "justificationmodel__motive__admissible_up_to",
-            )
-            .annotate(Count("justificationmodel__motive"))
-        )
-
         justified = (
             total_absences_with_just.filter(justificationmodel__motive__admissible_up_to__gt=0)
             .values(
