@@ -76,11 +76,12 @@ class JustificationSerializer(serializers.ModelSerializer):
     def validate(self, data):
         # Check if there is already an overlapping justification.
 
-        # Inside date interval.
+        # Look for dates interval intersections.
         for just in JustificationModel.objects.filter(
-            date_just_start__lte=data["date_just_end"], date_just_end__gte=data["date_just_start"]
+            date_just_start__lte=data["date_just_end"],
+            date_just_end__gte=data["date_just_start"],
+            student=data["student"],
         ):
-            print(self.instance)
             # Don't compare with itself.
             if self.instance and self.instance.id == just.id:
                 continue
