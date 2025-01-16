@@ -24,6 +24,7 @@ from .models import (
     StudentAbsenceEducModel,
     StudentAbsenceTeacherSettingsModel,
     PeriodModel,
+    PeriodEducModel,
     LessonModel,
     JustificationModel,
     JustMotiveModel,
@@ -56,6 +57,7 @@ class JustificationAdmin(admin.ModelAdmin):
 
 admin.site.register(StudentAbsenceTeacherSettingsModel)
 admin.site.register(PeriodModel)
+admin.site.register(PeriodEducModel)
 admin.site.register(LessonModel)
 admin.site.register(StudentAbsenceTeacherModel, StudentAbsenceTeacherAdmin)
 admin.site.register(StudentAbsenceEducModel, StudentEducAbsenceAdmin)
