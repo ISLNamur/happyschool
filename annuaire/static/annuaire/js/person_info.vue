@@ -215,11 +215,10 @@
                     >
                         <BCard-header
                             header-tag="header"
-                            class="p-1"
+                            class="p-1 text-center"
                         >
                             <BButton
                                 block
-                                href="#"
                                 v-b-toggle.infos-importantes
                                 variant="danger"
                             >
@@ -227,7 +226,7 @@
                             </BButton>
                         </BCard-header>
                         <BCollapse id="infos-importantes">
-                            <BCard-body>
+                            <BCardBody>
                                 <BRow>
                                     <BCol cols="2">
                                         <strong>Date</strong>
@@ -250,7 +249,7 @@
                                     </BCol>
                                     <BCol><div v-html="cas.explication_commentaire" /></BCol>
                                 </BRow>
-                            </BCard-body>
+                            </BCardBody>
                         </BCollapse>
                     </BCard>
                 </BCol>
