@@ -25,8 +25,8 @@
             ref="askExportModal"
             @hidden="resetModal"
         >
-            <template #modal-footer>
-                <div class="w-100 text-right">
+            <template #footer>
+                <div class="w-100 text-end">
                     <BButton
                         variant="primary"
                         @click="getPdf"
@@ -37,7 +37,7 @@
                     <BButton
                         v-if="store.hasProEco"
                         variant="primary"
-                        class="ml-1"
+                        class="ms-1"
                         @click="exportProEco"
                         :disabled="!date_from && !date_to"
                     >
