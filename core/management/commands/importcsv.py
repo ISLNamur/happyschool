@@ -76,7 +76,7 @@ class Command(BaseCommand):
                     import_student_csv.sync(student_csv, has_header=True)
                 else:
                     import_model = ColumnToFieldImportModel.objects.get(
-                        name=options["model"], model="student"
+                        name=options["model"], model="ST"
                     )
                     column_to_index = {j: i for i, j in enumerate(import_model.column_to_field)}
                     import_student_csv = ImportStudentCSV(teaching, column_index=column_to_index)
