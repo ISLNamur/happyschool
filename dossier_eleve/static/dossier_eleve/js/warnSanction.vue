@@ -41,7 +41,7 @@
         <BRow v-if="sanction && sanction.notified">
             <BCol>
                 <BAlert
-                    show
+                    :model-value="true"
                     variant="warning"
                 >
                     La sanction a déjà été notifié.

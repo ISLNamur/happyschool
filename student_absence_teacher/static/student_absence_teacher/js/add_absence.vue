@@ -144,7 +144,7 @@
             </BCol>
             <BCol>
                 <BAlert
-                    :show="showAlert"
+                    :model-value="showAlert"
                     variant="warning"
                 >
                     Changements non-validés !
@@ -179,7 +179,7 @@
             </BCol>
             <BCol>
                 <BAlert
-                    :show="showAlert"
+                    :model-value="showAlert"
                     variant="warning"
                 >
                     Il y a des changements non-validés !

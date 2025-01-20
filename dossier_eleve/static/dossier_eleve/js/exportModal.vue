@@ -85,13 +85,13 @@
                     </p>
                     <BAlert
                         variant="warning"
-                        :show="entriesCount > 100 && entriesCount < 1000"
+                        :model-value="entriesCount > 100 && entriesCount < 1000"
                     >
                         Le nombre de cas est relativement grand. La génération du pdf peut prendre un certain temps.
                     </BAlert>
                     <BAlert
                         variant="danger"
-                        :show="entriesCount >= 1000"
+                        :model-value="entriesCount >= 1000"
                     >
                         Le nombre de cas est très grand ! Êtes-vous sûr de vouloir exporter autant de cas ?
                     </BAlert>

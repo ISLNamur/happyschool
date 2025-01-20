@@ -93,7 +93,7 @@
                                 </multiselect>
                                 <BAlert
                                     variant="danger"
-                                    :show="!emailFromState"
+                                    :model-value="!emailFromState"
                                 >
                                     Merci de choisir un expéditeur.
                                 </BAlert>
@@ -123,7 +123,7 @@
                                 </multiselect>
                                 <BAlert
                                     variant="danger"
-                                    :show="!emailToState"
+                                    :model-value="!emailToState"
                                 >
                                     Merci de choisir au moins un destinataire.
                                 </BAlert>

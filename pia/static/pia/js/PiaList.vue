@@ -84,7 +84,7 @@
             <BRow class="mt-2">
                 <BCol>
                     <BAlert
-                        :show="lastPias.length > 0"
+                        :model-value="lastPias.length > 0"
                         dismissible
                     >
                         <p>Les PIA des élèves suivants ont été modifiés récemment :</p>

@@ -197,7 +197,7 @@
                         </BFormRow>
                     </div>
                     <BFormRow>
-                        <BAlert show>
+                        <BAlert :mdole-value="true">
                             Un email sera envoyé aux différents responsables de l'élève.
                         </BAlert>
                     </BFormRow>
