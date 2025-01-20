@@ -43,6 +43,7 @@
                             :options="teachingsOptions"
                             value-field="id"
                             text-field="display_name"
+                            class="mb-2"
                         />
                     </BFormGroup>
                 </BCol>

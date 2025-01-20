@@ -20,13 +20,22 @@
 
 <template>
     <div>
-        <BButton
-            @click="$router.back()"
-            class="mb-1"
-        >
-            <IBiChevronLeft />
-            Retour
-        </BButton>
+        <BBreadcrumb>
+            <BBreadcrumbItem
+                v-if="backHistory"
+                @click="$router.back()"
+            >
+                Retour
+            </BBreadcrumbItem>
+            <BBreadcrumbItem
+                v-for="(item, i) in locations"
+                :key="item.text"
+                :to="item.to"
+                :active="locations.length - 1 === i"
+            >
+                {{ item.text }}
+            </BBreadcrumbItem>
+        </BBreadcrumb>
         <BCard no-body>
             <BCard-header header-tag="nav">
                 <BNav
@@ -116,12 +125,23 @@ export default {
     data: function () {
         return {
             infoCount: 0,
+            locations: [],
+            backHistory: false,
             pia: null,
         };
     },
     methods: {
         initInfo: function () {
+            if (window.history.length > 1 && !window.history.state.back) {
+                this.backHistory = true;
+            }
             if (this.type === "student") {
+                axios.get(`/annuaire/api/student/${this.matricule}/`)
+                    .then((resp) => {
+                        this.locations.push({text: "Classe", to: `/classe/${resp.data.classe.id}/`});
+                        this.locations.push({text: "Élève"});
+                    });
+
                 axios.get(`/pia/api/pia/?student__matricule=${this.matricule}`)
                     .then(resp => {
                         this.pia = resp.data.count > 0 ? resp.data.results[0] : null;
@@ -154,6 +174,8 @@ export default {
                         });
                         this.loading = false;
                     });
+            } else if (this.type === "responsible") {
+                this.locations = [{text: "Responsable"}];
             }
         }
     },
