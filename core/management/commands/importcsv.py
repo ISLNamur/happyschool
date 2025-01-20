@@ -91,13 +91,24 @@ class Command(BaseCommand):
                         name=options["implementation"],
                         display_name=options["implementation"].title(),
                     )
-                column_map = {
-                    "Matricule Ministère": "matricule",
-                    "Nom Enseignant": "last_name",
-                    "Prénom Enseignant": "first_name",
-                    "Classe": "classe",
-                    "Email": "email",
-                }
-                import_teacher_csv = ImportResponsibleCSV(teaching, column_map, is_teacher=True)
-                import_teacher_csv.sync(teacher_csv, has_header=True)
+
+                if not options["model"]:
+                    column_map = {
+                        "Matricule Ministère": "matricule",
+                        "Nom Enseignant": "last_name",
+                        "Prénom Enseignant": "first_name",
+                        "Classe": "classe",
+                        "Email": "email",
+                    }
+                    import_teacher_csv = ImportResponsibleCSV(teaching, column_map, is_teacher=True)
+                    import_teacher_csv.sync(teacher_csv, has_header=True)
+                else:
+                    import_model = ColumnToFieldImportModel.objects.get(
+                        name=options["model"], model="ST"
+                    )
+                    column_to_index = {j: i for i, j in enumerate(import_model.column_to_field)}
+                    import_teacher_csv = ImportResponsibleCSV(
+                        teaching, column_index=column_to_index, is_teacher=True
+                    )
+                    import_teacher_csv.sync(teacher_csv, has_header=False)
         return
