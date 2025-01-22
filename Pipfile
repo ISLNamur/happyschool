@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 ipython = "*"
 ruff = "*"
-seleniumbase = "4.9.0"
+seleniumbase = "4.34.0"
 sphinx = "*"
 black = "*"
 
