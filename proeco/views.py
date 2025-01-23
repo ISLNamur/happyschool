@@ -18,11 +18,15 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.http import HttpResponse
+from django.contrib.auth.models import User
 
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
-from .models import TemplateSelectionModel
+from core.models import TeachingModel
+
+from .models import TemplateSelectionModel, ProEcoWriteModel
+from .tasks import task_write_proeco
 
 
 class ExportStudentSelectionAPI(APIView):
@@ -47,3 +51,14 @@ class ExportStudentSelectionAPI(APIView):
 
     def _format_file_name(self, request, **kwargs):
         return "Pref_NOMS_.TXT"
+
+
+def proeco_write(
+    app: str, method: str, payload: list, person: str, user: User, teaching: TeachingModel
+):
+    write = ProEcoWriteModel(
+        app=app, method=method, payload=payload, person=person, user=user, teaching=teaching
+    )
+    write.save()
+
+    task_write_proeco.apply_async(args=(write.id,), countdown=2)
