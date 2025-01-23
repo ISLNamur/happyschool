@@ -321,31 +321,10 @@ class StudentAbsenceEducViewSet(ModelViewSet):
         if isinstance(request.data, list) and len(request.data) == 0:
             return Response(status=status.HTTP_201_CREATED)
 
-        if get_settings().sync_with_proeco:
-            from libreschoolfdb import absences
-
-            first_absence = request.data[0] if isinstance(request.data, list) else request.data
-            teaching_name = StudentModel.objects.get(
-                matricule=first_absence.get("student_id")
-            ).teaching.name
-
-            server = [
-                s["server"] for s in settings.SYNC_FDB_SERVER if s["teaching_name"] == teaching_name
-            ]
-            if len(server) == 0:
-                raise
-
-            self.fdb_server = server[0]
-            self.cursor = absences._get_absence_cursor(fdb_server=self.fdb_server)
-
-        # if isinstance(request.data, list) and len(request.data) > 0:
         absences_done = []
         for absence in request.data:
             serializer = self.get_serializer(data=absence)
             serializer.is_valid(raise_exception=True)
-            if get_settings().sync_with_proeco:
-                if not self.sync_proeco(serializer.validated_data):
-                    continue
 
             # Save object and add user/username.
             abs_object = serializer.save()
@@ -354,32 +333,69 @@ class StudentAbsenceEducViewSet(ModelViewSet):
             self.update_justification(abs_object)
 
             absences_done.append(serializer.data)
+
         if get_settings().sync_with_proeco:
-            self.cursor.connection.commit()
-            self.cursor.connection.close()
+            from proeco.views import proeco_write
+            from proeco.models import ProEcoWriteModel
+
+            first_absence = request.data[0] if isinstance(request.data, list) else request.data
+            teaching = StudentModel.objects.get(matricule=first_absence.get("student_id")).teaching
+
+            periods = PeriodEducModel.objects.all().order_by("start")
+            period_to_proeco = {p.id: i for i, p in enumerate(periods)}
+
+            print(absences_done)
+
+            payload = [
+                {
+                    "matricule": a["student_id"],
+                    "date": a["date_absence"],
+                    "period": period_to_proeco[a["period"]],
+                    "absence_status": a["status"],
+                }
+                for a in absences_done
+            ]
+
+            proeco_write(
+                app="student_absence_teacher",
+                method="set_student_absence",
+                payload=payload,
+                person=ProEcoWriteModel.STUDENT,
+                user=request.user,
+                teaching=teaching,
+            )
+
         return Response(absences_done, status=status.HTTP_201_CREATED)
 
     def perform_update(self, serializer):
         absence = serializer.save()
-        self.update_justification(absence)
+        if get_settings().sync_with_proeco:
+            from proeco.views import proeco_write
+            from proeco.models import ProEcoWriteModel
 
-    def sync_proeco(self, data: dict):
-        from libreschoolfdb import writer
-
-        if self.cursor:
+            teaching = absence.student.teaching
             periods = PeriodEducModel.objects.all().order_by("start")
-            period = [i for i, p in enumerate(periods) if p.id == data.get("period", None).id][0]
+            period_to_proeco = {p.id: i for i, p in enumerate(periods)}
 
-            return writer.set_student_absence(
-                matricule=data.get("student").matricule,
-                day=data.get("date_absence"),
-                period=period,
-                absence_status=data.get("status"),
-                cur=self.cursor,
-                fdb_server=self.fdb_server,
-                commit=False,
+            payload = [
+                {
+                    "matricule": absence.student.matricule,
+                    "date": absence.date_absence,
+                    "period": period_to_proeco[absence.period.id],
+                    "absence_status": absence.status,
+                }
+            ]
+
+            proeco_write(
+                app="student_absence_teacher",
+                method="set_student_absence",
+                payload=payload,
+                person=ProEcoWriteModel.STUDENT,
+                user=self.request.user,
+                teaching=teaching,
             )
-        return False
+
+        self.update_justification(absence)
 
     def update_justification(self, absence):
         # Add absence to justification.
