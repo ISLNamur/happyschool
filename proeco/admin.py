@@ -30,5 +30,11 @@ class OverwriteDataAdmin(admin.ModelAdmin):
     )
 
 
+class ProEcoWriteAdmin(admin.ModelAdmin):
+    list_display = ("app", "method", "status", "datetime_creation")
+    list_filter = ["status"]
+
+
 admin.site.register(models.OverwriteDataModel, OverwriteDataAdmin)
 admin.site.register(models.TemplateSelectionModel)
+admin.site.register(models.ProEcoWriteModel, ProEcoWriteAdmin)

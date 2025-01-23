@@ -18,6 +18,10 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.db import models
+from django.contrib.auth.models import User
+from django.core.serializers.json import DjangoJSONEncoder
+
+from core.models import TeachingModel
 
 people_type = [("student", "Étudiant"), ("responsible", "Responsable")]
 
@@ -36,3 +40,32 @@ class OverwriteDataModel(models.Model):
 
 class TemplateSelectionModel(models.Model):
     template = models.TextField()
+
+
+class ProEcoWriteModel(models.Model):
+    WAITING = "waiting"
+    DONE = "done"
+    ERROR = "error"
+    STUDENT = "stud"
+    RESPONSIBLE = "resp"
+
+    STATUS_CHOICES = [
+        (WAITING, "Waiting"),
+        (DONE, "Done"),
+        (ERROR, "Error"),
+    ]
+
+    PERSON_CHOICES = [
+        (STUDENT, "Student"),
+        (RESPONSIBLE, "Responsible"),
+    ]
+
+    app = models.CharField(max_length=100)
+    teaching = models.ForeignKey(TeachingModel, on_delete=models.CASCADE)
+    payload = models.JSONField(encoder=DjangoJSONEncoder)
+    method = models.CharField(max_length=30)
+    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default=WAITING)
+    person = models.CharField(max_length=4, choices=PERSON_CHOICES)
+    user = models.ForeignKey(User, null=True, on_delete=models.deletion.SET_NULL)
+    datetime_creation = models.DateTimeField(auto_now_add=True)
+    datetime_update = models.DateTimeField(auto_now=True)
