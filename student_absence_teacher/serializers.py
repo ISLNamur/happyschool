@@ -178,34 +178,3 @@ class StudentAbsenceEducSerializer(serializers.ModelSerializer):
                 message="Une absence/présence existe déjà pour cet étudiant à cette période. Actualisez la page pour mettre les données à jour.",
             )
         ]
-
-    def update(self, instance, validated_data):
-        if (
-            StudentAbsenceTeacherSettingsModel.objects.first().sync_with_proeco
-            and "status" in validated_data
-        ):
-            if not self.sync_proeco(instance, validated_data["status"]):
-                raise
-        return super(StudentAbsenceEducSerializer, self).update(instance, validated_data)
-
-    @staticmethod
-    def sync_proeco(absence: StudentAbsenceEducModel, absence_status):
-        from libreschoolfdb import writer
-
-        server = [
-            s["server"]
-            for s in settings.SYNC_FDB_SERVER
-            if s["teaching_name"] == absence.student.teaching.name
-        ]
-        if len(server) != 0:
-            periods = PeriodEducModel.objects.all().order_by("start")
-            period = [i for i, p in enumerate(periods) if p.id == absence.period.id][0]
-
-            return writer.set_student_absence(
-                matricule=absence.student.matricule,
-                day=absence.date_absence,
-                period=period,
-                absence_status=absence_status,
-                fdb_server=server[0],
-            )[0]
-        return False
