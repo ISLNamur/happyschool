@@ -83,6 +83,7 @@
                                 @search-change="getOptions"
                                 :internal-search="false"
                                 @open="handleSpecificInput"
+                                :prevent-autofocus="true"
                                 preserve-search
                             >
                                 <template #noOptions />
