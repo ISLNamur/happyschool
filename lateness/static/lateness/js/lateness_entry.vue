@@ -65,7 +65,7 @@
                             v-model="justified"
                             switch
                             class="me-2"
-                            @input="updateJustified"
+                            @update:model-value="updateJustified"
                         >
                             {{ lateness.justified ? "Justifié" : "Injustifié" }}
                         </BFormCheckbox>
