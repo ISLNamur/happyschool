@@ -284,7 +284,6 @@ export default {
             }
             
             let param = {};
-            if (!this.filterType.endsWith("display")) param["unique"] = this.filterType;
             param[this.filterType] = search;
             this.searchId += 1;
             let currentSearch = this.searchId;
