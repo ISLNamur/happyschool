@@ -73,6 +73,8 @@ def get_scholar_year() -> int:
 
 
 def in_scholar_year(date) -> bool:
+    """Determines whether a given date falls within the current
+    scholar year."""
     from core.views import get_core_settings as get_settings
 
     current_year = get_scholar_year()
@@ -160,12 +162,22 @@ def check_student_photo(student, copy=True) -> bool:
 
 
 def extract_day_of_week(day_of_week: str) -> list:
+    if not day_of_week:
+        return []
+
     seq_days = day_of_week.strip().split(",")
+
+    # Ensure range or single day are well formatted (!= from x or x-y).
+    if [seq for seq in seq_days if len(seq.strip()) != 1 and len(seq.strip()) != 3]:
+        raise ValueError
+
     days = [int(day.strip()) for day in seq_days if len(day.strip()) == 1]
-    ranges = [day.strip() for day in seq_days if len(day.strip()) == 3]
+    ranges = [seq.strip() for seq in seq_days if len(seq.strip()) == 3]
     for r in ranges:
         if r[1] != "-":
-            continue
+            raise ValueError
+        if int(r[0]) > int(r[2]):
+            raise ValueError
         days += list(range(int(r[0]), int(r[2]) + 1))
     days = list(set(days))
     days.sort()

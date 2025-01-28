@@ -17,6 +17,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import date, datetime
+
+from unittest.mock import patch, Mock
+
 from django.test import TestCase
 from django.contrib.auth.models import User
 from .people import (
@@ -28,6 +32,8 @@ from .people import (
     check_access_to_student,
     get_students_from_teacher,
 )
+
+from .utilities import in_scholar_year, get_scholar_year, extract_day_of_week
 
 from .models import TeachingModel, StudentModel, ClasseModel, ResponsibleModel, CoreSettingsModel
 
@@ -481,3 +487,106 @@ class CheckStudentTeacherRelationship(TestCase):
         settings.save()
         students = get_students_from_teacher(teacher)
         self.assertEqual(students.count(), 105)
+
+
+# Mocking the get_scholar_year and get_settings functions for testing purposes
+def mock_get_scholar_year():
+    return 2023
+
+
+def mock_get_settings():
+    return CoreSettingsModel(month_scholar_year_start=9, day_scholar_year_start=1)
+
+
+@patch("core.utilities.get_scholar_year", return_value=2023)
+@patch(
+    "core.views.get_core_settings",
+    return_value=CoreSettingsModel(month_scholar_year_start=9, day_scholar_year_start=1),
+)
+class TestInScholarYear(TestCase):
+    def test_in_scholar_year_happy_path(self, mock_get_settings, mock_get_scholar_year):
+        # Test cases for the happy path
+        self.assertTrue(in_scholar_year(date(2023, 10, 1)))  # After start date in current year
+        self.assertTrue(in_scholar_year(date(2024, 8, 31)))  # Before start date in next year
+        self.assertFalse(in_scholar_year(date(2022, 9, 1)))  # Before start date in previous year
+
+    def test_in_scholar_year_edge_cases(self, mock_get_settings, mock_get_scholar_year):
+        # Test cases for edge cases
+        self.assertTrue(in_scholar_year(date(2023, 9, 1)))  # Start date of the scholar year
+        self.assertFalse(
+            in_scholar_year(date(2023, 8, 31))
+        )  # Day before start date in current year
+        self.assertFalse(in_scholar_year(date(2024, 9, 1)))  # Start date of the next scholar year
+        self.assertTrue(in_scholar_year(date(2024, 8, 31)))  # Day before start date in next year
+
+
+@patch("core.views.timezone.now")
+@patch(
+    "core.views.get_core_settings",
+    return_value=CoreSettingsModel(month_scholar_year_start=9, day_scholar_year_start=1),
+)
+class TestGetScholarYear(TestCase):
+
+    def test_happy_path(self, mock_get_settings, mock_now):
+        # Set up the mock to return a date after the start of the scholar year
+        mock_now.return_value = datetime(2023, 10, 15)
+
+        # Call the function and check if it returns the correct year
+        result = get_scholar_year()
+        self.assertEqual(result, 2023)
+
+    def test_before_start_of_scholar_year(self, mock_get_settings, mock_now):
+        # Set up the mock to return a date before the start of the scholar year
+        mock_now.return_value = datetime(2023, 8, 14)
+
+        # Call the function and check if it returns the correct year (previous year)
+        result = get_scholar_year()
+        self.assertEqual(result, 2022)
+
+    def test_on_start_of_scholar_year(self, mock_get_settings, mock_now):
+        # Set up the mock to return a date exactly at the start of the scholar year
+        mock_now.return_value = datetime(2023, 9, 1)
+
+        # Call the function and check if it returns the correct year (current year)
+        result = get_scholar_year()
+        self.assertEqual(result, 2023)
+
+    def test_just_before_start_of_scholar_year(self, mock_get_settings, mock_now):
+        # Set up the mock to return a date just before the start of the scholar year
+        mock_now.return_value = datetime(2023, 8, 30)
+
+        # Call the function and check if it returns the correct year (previous year)
+        result = get_scholar_year()
+        self.assertEqual(result, 2022)
+
+
+class TestExtractDayOfWeek(TestCase):
+
+    def test_happy_path(self):
+        self.assertEqual(extract_day_of_week("1,3,5"), [1, 3, 5])
+        self.assertEqual(extract_day_of_week("2-4"), [2, 3, 4])
+        self.assertEqual(extract_day_of_week("1-3,5-7"), [1, 2, 3, 5, 6, 7])
+
+    def test_range_with_single_digit(self):
+        self.assertEqual(extract_day_of_week("1-3,5"), [1, 2, 3, 5])
+        self.assertEqual(extract_day_of_week("1-2,4"), [1, 2, 4])
+
+    def test_empty_string(self):
+        self.assertEqual(extract_day_of_week(""), [])
+
+    def test_invalid_range(self):
+        with self.assertRaises(ValueError):
+            extract_day_of_week("1-3,5-2")
+
+    def test_non_digit_characters(self):
+        with self.assertRaises(ValueError):
+            extract_day_of_week("a,b,c")
+        with self.assertRaises(ValueError):
+            extract_day_of_week("1,a,3")
+
+    def test_duplicate_days(self):
+        self.assertEqual(extract_day_of_week("1,1,1"), [1])
+        self.assertEqual(extract_day_of_week("1-2,1-3"), [1, 2, 3])
+
+    def test_large_range(self):
+        self.assertEqual(extract_day_of_week("1-7"), list(range(1, 8)))
