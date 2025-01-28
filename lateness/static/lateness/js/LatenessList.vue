@@ -347,7 +347,7 @@ export default {
             this.$refs.deleteModal.show();
         },
         deleteEntry: function () {
-            axios.delete("/lateness/api/lateness/" + this.currentEntry.id, token)
+            axios.delete(`/lateness/api/lateness/${this.currentEntry.id}/`, token)
                 .then(() => {
                     this.loadEntries();
                 });

@@ -126,6 +126,7 @@ Moment.locale("fr");
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
+    emits: ["delete", "filterStudent", "update"],
     props: {
         lateness: {
             type: Object,
