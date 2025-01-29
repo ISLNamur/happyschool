@@ -125,7 +125,7 @@ export default {
             Promise.all([
                 axios.get("/core/api/scholar_calendar/"),
                 axios.get(`/student_absence_teacher/api/absence_educ/?student__matricule=${this.studentId}&date_absence__gte=${from}&date_absence__lt=${to}&page_size=1000&ordering=period__start`),
-                axios.get(`/student_absence_teacher/api/justification/?student__matricule=${this.studentId}&scholar_year=${currentYear}-${currentYear + 1}`)
+                axios.get(`/student_absence_teacher/api/justification/?student__matricule=${this.studentId}&scholar_year=${currentYear}-${currentYear + 1}&page_size=1000`)
             ])
                 .then(resps => {
                     const firstDate = resps[0].data[0][0];

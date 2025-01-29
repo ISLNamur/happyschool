@@ -240,7 +240,7 @@ export default {
                 axios.get("/student_absence_teacher/api/period_teacher/"),
                 axios.get("/student_absence_teacher/api/period_educ/"),
                 // eslint-disable-next-line no-undef
-                axios.get(`/student_absence_teacher/api/justification/?student__matricule=${this.studentId}&ordering=date_just_start&scholar_year=${current_scholar_year}-${current_scholar_year + 1}`),
+                axios.get(`/student_absence_teacher/api/justification/?student__matricule=${this.studentId}&ordering=date_just_start&scholar_year=${current_scholar_year}-${current_scholar_year + 1}&page_size=500`),
                 axios.get("/student_absence_teacher/api/just_motive/"),
             ];
             if (this.date !== "null") {
