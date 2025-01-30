@@ -344,8 +344,6 @@ class StudentAbsenceEducViewSet(ModelViewSet):
             periods = PeriodEducModel.objects.all().order_by("start")
             period_to_proeco = {p.id: i for i, p in enumerate(periods)}
 
-            print(absences_done)
-
             payload = [
                 {
                     "matricule": a["student_id"],
