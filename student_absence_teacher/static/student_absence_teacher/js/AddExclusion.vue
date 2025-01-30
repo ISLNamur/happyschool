@@ -102,6 +102,8 @@ import axios from "axios";
 
 import { studentAbsenceTeacherStore } from "./stores/index.js";
 
+import { displayStudent } from "@s:core/js/common/utilities";
+
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
@@ -138,6 +140,7 @@ export default {
         };
     },
     methods: {
+        displayStudent,
         changePage: function (page) {
             this.currentPage = page;
             this.getExclusions();
@@ -194,7 +197,7 @@ export default {
                     this.exclusions = resp.data.results.map(e => {
                         return {
                             dateExclusion: e.date_absence,
-                            studentName: `${e.student.last_name} ${e.student.first_name}`,
+                            studentName: this.displayStudent(e.student),
                             period: `${e.period.start.slice(0, 5)} - ${e.period.end.slice(0, 5)}`,
                             count: e.excluded_count,
                         };
