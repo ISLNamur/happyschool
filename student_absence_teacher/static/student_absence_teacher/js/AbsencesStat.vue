@@ -51,9 +51,10 @@
                 </span>
                 <BBadge
                     v-b-tooltip.hover="justCount.justificationmodel__motive__count > justCount.justificationmodel__motive__admissible_up_to ? `Max. ${justCount.justificationmodel__motive__admissible_up_to}` : ''"
-                    :variant="justCount.justificationmodel__motive__count > justCount.justificationmodel__motive__admissible_up_to ? 'danger' : ''"
+                    :variant="justCount.justificationmodel__motive__count >= justCount.justificationmodel__motive__admissible_up_to ? 'danger' : 'secondary'"
                 >
                     {{ justCount.justificationmodel__motive__count }}
+                    <span v-if="justCount.justificationmodel__motive__admissible_up_to < 500">/ {{ justCount.justificationmodel__motive__admissible_up_to }}</span>
                 </BBadge>
             </BListGroupItem>
             <BListGroupItem
