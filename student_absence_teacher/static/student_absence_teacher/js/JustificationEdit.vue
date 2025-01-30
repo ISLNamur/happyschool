@@ -160,7 +160,10 @@
             v-if="student"
         >
             <BCol>
-                <absences-stat :student-id="student.matricule" />
+                <absences-stat
+                    :student-id="student.matricule"
+                    ref="stat"
+                />
             </BCol>
         </BRow>
     </BOverlay>
@@ -186,8 +189,10 @@ const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 export default {
     setup: function () {
         const { show } = useToastController();
-        const { confirm } = useModalController();
-        return { show, confirm };
+        const modal = useModalController();
+        const confirm = modal.confirm;
+        const info = modal.show;
+        return { show, confirm, info };
     },
     props: {
         "justId": {
@@ -213,6 +218,7 @@ export default {
             submitting: false,
             justification: {
                 student: null,
+                motive: null,
                 date_just_start: null,
                 date_just_end: null,
                 half_day_start: null,
@@ -301,44 +307,85 @@ export default {
                     this.relativeAbsences.sort((a, b) => a.date_absence > b.date_absence);
                 });
         },
+        checkAdmissibility: function () {
+            return new Promise((resolve, reject) => {
+                // Check admissible justification.
+                const justMotive = this.$refs.stat.justifiedAbsences.find(m => m.justificationmodel__motive === this.justification.motive);
+                if (justMotive) {
+                    // No further justification should be admissible.
+                    if (justMotive.justificationmodel__motive__count >= justMotive.justificationmodel__motive__admissible_up_to) {
+                        this.confirm({props: {
+                            body: `L'étudiant a atteint la limite maximum de justificatif (${justMotive.justificationmodel__motive__count}). Êtes-vous sûr de vouloir continuer ?`,
+                            centered: true,
+                            buttonSize: "sm",
+                            okVariant: "danger",
+                            okTitle: "Oui",
+                            cancelTitle: "Annuler",
+                        }}).then((proceed) => {
+                            if (proceed) {
+                                resolve();
+                            } else {
+                                reject();
+                            }
+                        });
+                    } else if (justMotive.justificationmodel__motive__count +2 >= justMotive.justificationmodel__motive__admissible_up_to) {
+                        this.info({props: {
+                            body: `L'étudiant a bientôt atteint la limite des justificatifs pour le motif ${justMotive.justificationmodel__motive__short_name}. Merci de prendre les dispositions nécessaire.`,
+                            okOnly: true,
+                        }}).then(() => {
+                            resolve();
+                        });
+                    } else {
+                        resolve();
+                    }
+                } else {
+                    resolve();
+                }
+            });
+        },
         submit: function () {
             this.submitting = true;
 
-            const data = Object.assign({}, this.justification);
-            data.absences = this.relativeAbsences.map(a => a.id);
-            const newJust = parseInt(this.justId) <= 0;
-            if (!newJust) {
-                data.id = this.justId;
-            }
-            const send = newJust ? axios.post : axios.put;
-            const url = `/student_absence_teacher/api/justification/${newJust ? "" : this.justId + "/"}`;
-
-            send(url, data, token)
+            this.checkAdmissibility()
                 .then(() => {
-                    this.$router.push(`/overview/${data.date_just_start}/student_view/${data.student}/`)
+                    const data = Object.assign({}, this.justification);
+                    data.absences = this.relativeAbsences.map(a => a.id);
+                    const newJust = parseInt(this.justId) <= 0;
+                    if (!newJust) {
+                        data.id = this.justId;
+                    }
+                    const send = newJust ? axios.post : axios.put;
+                    const url = `/student_absence_teacher/api/justification/${newJust ? "" : this.justId + "/"}`;
+
+                    send(url, data, token)
                         .then(() => {
+                            this.$router.push(`/overview/${data.date_just_start}/student_view/${data.student}/`)
+                                .then(() => {
+                                    this.submitting = false;
+                                    this.show({props: {
+                                        body: "Les données ont bien été envoyées",
+                                        variant: "success",
+                                        noCloseButton: true,
+                                    }});
+                                });
+                        })
+                        .catch((err) =>  {
                             this.submitting = false;
+                            let additionalInfo = "";
+                            if ("response" in err && err.response.data.non_field_errors) {
+                                additionalInfo = err.response.data.non_field_errors.join(" ");
+                            }
+                            const errorMessage = `Une erreur est survenue lors de l'envoi des données. ${additionalInfo}`;
                             this.show({props: {
-                                body: "Les données ont bien été envoyées",
-                                variant: "success",
+                                body: errorMessage,
+                                variant: "danger",
                                 noCloseButton: true,
                             }});
                         });
                 })
-                .catch((err) =>  {
+                .catch(() => {
                     this.submitting = false;
-                    let additionalInfo = "";
-                    if ("response" in err && err.response.data.non_field_errors) {
-                        additionalInfo = err.response.data.non_field_errors.join(" ");
-                    }
-                    const errorMessage = `Une erreur est survenue lors de l'envoi des données. ${additionalInfo}`;
-                    this.show({props: {
-                        body: errorMessage,
-                        variant: "danger",
-                        noCloseButton: true,
-                    }});
                 });
-
         },
         remove: function () {
             this.confirm({props: {
