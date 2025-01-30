@@ -40,6 +40,10 @@ urlpatterns = [
     path("get_pdf_warning/", views.WarningPDF.as_view()),
     path("get_pdf_just/", views.JustListPDF.as_view()),
     path("api/exclude_student/", views.ExcludeStudentAPI.as_view()),
+    path(
+        "api/massive_attendance/",
+        views.MassiveAttendanceAPI.as_view(),
+    ),
 ]
 
 router = DefaultRouter()

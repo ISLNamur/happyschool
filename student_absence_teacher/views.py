@@ -47,7 +47,7 @@ from rest_framework import status
 
 from core.models import ClasseModel, StudentModel, ResponsibleModel
 from core.utilities import get_menu, get_scholar_year
-from core.people import get_classes
+from core.people import get_classes, People
 from core.email import send_email, get_resp_emails
 from core.views import (
     BaseFilters,
@@ -1095,3 +1095,98 @@ class JustListPDF(LoginRequiredMixin, PermissionRequiredMixin, WeasyTemplateView
     def get_youngest(self, absences, period_dict) -> str:
         youngest = max(absences, key=lambda a: a["date_absence"])
         return f"{youngest['date_absence'][8:10]}/{youngest['date_absence'][5:7]}/{youngest['date_absence'][2:4]} ({period_dict[youngest['period']]})"
+
+
+class MassiveAttendanceAPI(APIView):
+    """
+    A class-based view to handle POST requests for massive attendance data.
+    """
+
+    permission_required = [
+        "student_absence_teacher.add_studentabsenceeducmodel",
+    ]
+
+    def post(self, request, format=None):
+        """
+        Handle the POST request.
+
+        Validate and process the incoming data.
+        """
+
+        # Extract parameters from the request
+        class_id = request.data.get("class_id")
+        period_id = request.data.get("period_id")
+        date_str = request.data.get("date")
+
+        if not all([class_id, period_id, date_str]):
+            return Response(
+                {"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Convert the date string to a datetime object
+        try:
+            date = datetime.datetime.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError:
+            return Response(
+                {"error": "Invalid date format. Use YYYY-MM-DD."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        classe = ClasseModel.objects.get(id=class_id)
+
+        # Get students already registered.
+        recorded_students = StudentAbsenceEducModel.objects.filter(
+            period__id=period_id, date_absence=date, student__classe__id=class_id
+        ).values_list("student__matricule", flat=True)
+
+        # Get all the other students from the class.
+        present_students = (
+            People().get_students_by_classe(classe=classe).exclude(matricule__in=recorded_students)
+        )
+
+        # Record data to StudentAbsenceEducModel.
+        presence_done = []
+        period = PeriodEducModel.objects.get(id=period_id)
+        for s in present_students:
+            p = StudentAbsenceEducModel(
+                student=s,
+                date_absence=date,
+                period=period,
+                status=StudentAbsenceEducModel.PRESENCE,
+                user=request.user,
+            )
+            p.save()
+            presence_done.append(p)
+
+        # Sync with ProEco if enabled.
+        if get_settings().sync_with_proeco:
+            from proeco.views import proeco_write
+            from proeco.models import ProEcoWriteModel
+
+            teaching = classe.teaching
+
+            periods = PeriodEducModel.objects.all().order_by("start")
+            period_to_proeco = {p.id: i for i, p in enumerate(periods)}
+
+            payload = [
+                {
+                    "matricule": p.student.matricule,
+                    "date": date_str,
+                    "period": period_to_proeco[period_id],
+                    "absence_status": StudentAbsenceEducModel.PRESENCE,
+                }
+                for p in presence_done
+            ]
+
+            proeco_write(
+                app="student_absence_teacher",
+                method="set_student_absence",
+                payload=payload,
+                person=ProEcoWriteModel.STUDENT,
+                user=request.user,
+                teaching=teaching,
+            )
+
+        response_data = StudentAbsenceEducSerializer(presence_done, many=True).data
+
+        return Response(response_data, status=status.HTTP_201_CREATED)

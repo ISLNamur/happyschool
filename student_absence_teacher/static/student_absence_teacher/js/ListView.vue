@@ -27,23 +27,38 @@
                     :items="absence_count"
                     :fields="fields"
                     :filter="filter"
-                    :filter-included-fields="['classe']"
+                    :filterable="['classe']"
                 >
                     <template #head(classe)="">
                         <div class="d-flex justify-content-between">
                             <BButton
+                                v-b-toggle.massive-attendance
+                                variant="outline-primary"
+                            >
+                                <IBiClipboardCheck />
+                            </BButton>
+
+                            <BButton
                                 v-b-toggle.other-options
                                 variant="primary"
+                                class="ms-1"
                             >
                                 <IBiGear />
                             </BButton>
-                            <BFormInput
-                                v-model="filter"
-                                type="search"
-                                id="filterInput"
-                                placeholder="Filtrer par classe"
-                                class="ms-1"
-                            />
+
+                            <BInputGroup class="ms-1">
+                                <BFormInput
+                                    v-model="filter"
+                                    type="search"
+                                    id="filterInput"
+                                    placeholder=""
+                                />
+                                <template #prepend>
+                                    <BInputGroupText>
+                                        <IBiFunnel />
+                                    </BInputGroupText>
+                                </template>
+                            </BInputGroup>
                         </div>
                     </template>
                     <template #cell(classe)="data">
@@ -72,6 +87,32 @@
             </BOverlay>
         </BCol>
     </BRow>
+    <BModal
+        id="massive-attendance"
+        ref="massive-attendance"
+    >
+        <BOverlay :show="massiveAttendanceLoading">
+            <p>Les élèves des classes suivantes seront mis comme <strong>«présents»</strong>. Les élèves qui sont déjà mis comme «absents» ne seront pas affectés.</p>
+            <p>
+                {{ absence_count.map(a => a.classe).join(", ") }}
+            </p>
+            <div class="text-center">
+                <BButton
+                    variant="success"
+                    @click="massiveAttendance"
+                >
+                    <IBiClipboardCheck />
+                    Marquer présent
+                </BButton>
+            </div>
+        </BOverlay>
+        <div class="mt-2">
+            <BProgress :value="massiveAttendanceProgress * 100" />
+        </div>
+        <template #footer>
+            <span />
+        </template>
+    </BModal>
     <BModal
         id="other-options"
         title="Options de visualisation"
@@ -148,6 +189,8 @@ import { extractDayOfWeek } from "@s:core/js/common/utilities.js";
 
 import { studentAbsenceTeacherStore } from "./stores/index.js";
 
+const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+
 export default {
     props: {
         date: {
@@ -173,6 +216,8 @@ export default {
             educatorPeriods: [],
             filter: "",
             loading: true,
+            massiveAttendanceLoading: false,
+            massiveAttendanceProgress: 0,
             searchOptions: [],
             search: "",
             searchId: -1,
@@ -194,6 +239,38 @@ export default {
         }
     },
     methods: {
+        async massiveAttendance () {
+            this.massiveAttendanceLoading = true;
+            const classes = this.absence_count.map(a => a.classe__id);
+
+            if (classes.length === 0) {
+                this.$refs["massive-attendance"].hide();
+                this.massiveAttendanceLoading = false;
+                return;
+            }
+
+            const tasks = classes.map(c => {
+                return (p) => axios.post(
+                    "/student_absence_teacher/api/massive_attendance/",
+                    {class_id: c, period_id: p, date: this.date},
+                    token);
+            });
+
+            const totalRequests = this.educatorPeriods.length * classes.length;
+            let processed = 0;
+            for (const task in tasks) {
+                for (const p in this.educatorPeriods) {
+                    await tasks[task](this.educatorPeriods[p].id);
+                    processed++;
+                    this.massiveAttendanceProgress = processed / totalRequests;
+                }
+            }
+
+            this.$refs["massive-attendance"].hide();
+            this.massiveAttendanceLoading = false;
+            this.massiveAttendanceProgress = 0;
+            this.get_absence_count();
+        },
         changeDate: function (evt) {
             this.$router.push(`/overview/${evt}/`);
         },
