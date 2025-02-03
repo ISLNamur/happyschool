@@ -94,7 +94,7 @@
         <BOverlay :show="massiveAttendanceLoading">
             <p>Les élèves des classes suivantes seront mis comme <strong>«présents»</strong>. Les élèves qui sont déjà mis comme «absents» ne seront pas affectés.</p>
             <p>
-                {{ absence_count.map(a => a.classe).join(", ") }}
+                {{ absence_count.filter(a => a.classe.includes(filter)).map(a => a.classe).join(", ") }}
             </p>
             <div class="text-center">
                 <BButton
@@ -239,9 +239,14 @@ export default {
         }
     },
     methods: {
+        /** Updates the massive attendance information of multiple students in multiple classes.
+         *
+         * @async
+         * @return {void}
+         */
         async massiveAttendance () {
             this.massiveAttendanceLoading = true;
-            const classes = this.absence_count.map(a => a.classe__id);
+            const classes = this.absence_count.filter(a => a.classe.contains(this.filter)).map(a => a.classe__id);
 
             if (classes.length === 0) {
                 this.$refs["massive-attendance"].hide();
