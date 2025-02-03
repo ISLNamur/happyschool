@@ -18,6 +18,8 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
+import time
+import random
 
 from celery import shared_task
 
@@ -36,6 +38,8 @@ def task_write_proeco(self, id):
         return
 
     if write_task.method == "set_student_absence":
+        from fdb import DatabaseError
+
         from libreschoolfdb.writer import set_student_absence
         from libreschoolfdb import absences
 
@@ -53,14 +57,27 @@ def task_write_proeco(self, id):
         cursor = absences._get_absence_cursor(fdb_server=server[0])
 
         for data in write_task.payload:
-            result = set_student_absence(
-                matricule=data["matricule"],
-                day=datetime.datetime.strptime(data["date"], "%Y-%m-%d").date(),
-                period=data["period"],
-                absence_status=data["absence_status"],
-                cur=cursor,
-                commit=False,
-            )
+            try:
+                result = set_student_absence(
+                    matricule=data["matricule"],
+                    day=datetime.datetime.strptime(data["date"], "%Y-%m-%d").date(),
+                    period=data["period"],
+                    absence_status=data["absence_status"],
+                    cur=cursor,
+                    commit=False,
+                )
+            except DatabaseError:
+                # Wait and retry
+                print("Wait and retry…")
+                time.sleep(random.randint(10, 20))
+                result = set_student_absence(
+                    matricule=data["matricule"],
+                    day=datetime.datetime.strptime(data["date"], "%Y-%m-%d").date(),
+                    period=data["period"],
+                    absence_status=data["absence_status"],
+                    cur=cursor,
+                    commit=False,
+                )
 
             if not result:
                 cursor.connection.rollback()

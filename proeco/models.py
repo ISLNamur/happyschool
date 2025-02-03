@@ -69,3 +69,6 @@ class ProEcoWriteModel(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.deletion.SET_NULL)
     datetime_creation = models.DateTimeField(auto_now_add=True)
     datetime_update = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str((self.datetime_creation, self.app, self.method, self.status))
