@@ -276,9 +276,17 @@ export default {
             this.massiveAttendanceProgress = 0;
             this.get_absence_count();
         },
+        /**
+        * Navigates to a new page for the given date.
+        * @param {Date} evt The date object representing the date to navigate to.
+        */
         changeDate: function (evt) {
             this.$router.push(`/overview/${evt}/`);
         },
+        /**
+         * Fetches a list of periods and their absence counts from the server
+         * and highlights period rows with mismatching teacher/educator attendance.
+         */
         get_absence_count: function () {
             this.loading = true;
             this.absence_count = [];
