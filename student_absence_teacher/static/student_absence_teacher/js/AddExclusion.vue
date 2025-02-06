@@ -192,7 +192,7 @@ export default {
                 });
         },
         getExclusions: function () {
-            axios.get(`/student_absence_teacher/api/absence_teacher/?status=excluded&page=${this.currentPage}`)
+            axios.get(`/student_absence_teacher/api/absence_teacher/?status=excluded&page=${this.currentPage}&ordering=-date_absence`)
                 .then((resp) => {
                     this.exclusions = resp.data.results.map(e => {
                         return {
