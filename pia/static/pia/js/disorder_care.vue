@@ -170,7 +170,7 @@
             <BRow class="mt-2">
                 <BCol>
                     <text-editor
-                        :value="other_adjustments"
+                        :model-value="other_adjustments"
                         @update:model-value="$emit('update:other_adjustments', $event)"
                     />
                 </BCol>
