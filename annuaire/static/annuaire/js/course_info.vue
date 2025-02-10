@@ -38,35 +38,37 @@
                                         v-for="givenCourse in givenCourses"
                                         :key="givenCourse.id"
                                     >
-                                        <dt>
-                                            <a
-                                                v-for="teacher in givenCourse.teachers"
-                                                :key="teacher.id"
-                                                :href="`/annuaire/#/person/responsible/${teacher.matricule}/`"
-                                            >
-                                                {{ teacher.fullname }}
-                                            </a>
-                                        </dt>
-                                        <dd>
-                                            Classes concernées : {{ givenCourse.classes }}
-                                            (<a
-                                                v-b-toggle="`students-${givenCourse.id}`"
-                                            >
-                                                Voir les étudiants
-                                            </a>)
-                                            <BCollapse :id="`students-${givenCourse.id}`">
-                                                <ul>
-                                                    <li
-                                                        v-for="student in givenCourse.students"
-                                                        :key="`${givenCourse.id}-${student.matricule}`"
-                                                    >
-                                                        <a :href="`#/person/student/${student.matricule}/`">
-                                                            {{ student.display }}
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </BCollapse>
-                                        </dd>
+                                        <dl>
+                                            <dt>
+                                                <a
+                                                    v-for="teacher in givenCourse.teachers"
+                                                    :key="teacher.id"
+                                                    :href="`/annuaire/#/person/responsible/${teacher.matricule}/`"
+                                                >
+                                                    {{ teacher.fullname }}
+                                                </a>
+                                            </dt>
+                                            <dd>
+                                                Classes concernées : {{ givenCourse.classes }}
+                                                (<a
+                                                    v-b-toggle="`students-${givenCourse.id}`"
+                                                >
+                                                    Voir les étudiants
+                                                </a>)
+                                                <BCollapse :id="`students-${givenCourse.id}`">
+                                                    <ul>
+                                                        <li
+                                                            v-for="student in givenCourse.students"
+                                                            :key="`${givenCourse.id}-${student.matricule}`"
+                                                        >
+                                                            <a :href="`#/person/student/${student.matricule}/`">
+                                                                {{ student.display }}
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </BCollapse>
+                                            </dd>
+                                        </dl>
                                     </li>
                                 </ul>
                             </dd>
