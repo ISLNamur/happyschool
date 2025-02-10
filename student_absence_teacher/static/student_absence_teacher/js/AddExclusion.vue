@@ -45,7 +45,7 @@
                 :internal-search="false"
                 :options="searchOptions"
                 @search-change="getSearchOptions"
-                placeholder="Rechercher un étudiant"
+                placeholder="Ajouter un étudiant"
                 select-label=""
                 selected-label="Sélectionné"
                 deselect-label=""
@@ -72,6 +72,42 @@
                     small
                 />
                 Ajouter
+            </BButton>
+        </BCol>
+    </BRow>
+    <BRow class="mt-2">
+        <BCol
+            sm="12"
+            md="7"
+            lg="5"
+            class="d-flex justify-content-between align-items-center"
+        >
+            <IBiSearch class="me-1" />
+            <multiselect
+                :show-no-options="false"
+                :internal-search="false"
+                :options="searchOptions"
+                @search-change="getSearchOptions"
+                @select="getExclusions"
+                @remove="getExclusions"
+                placeholder="Rechercher un étudiant"
+                select-label=""
+                selected-label="Sélectionné"
+                deselect-label=""
+                label="display"
+                track-by="matricule"
+                v-model="filter"
+            >
+                <template #noResult>
+                    Aucune personne trouvée.
+                </template>
+            </multiselect>
+            <BButton
+                :disabled="!filter"
+                @click="filter=null;getExclusions()"
+                class="ms-1"
+            >
+                <IBiX />
             </BButton>
         </BCol>
     </BRow>
@@ -133,6 +169,7 @@ export default {
             search: "",
             searchOptions: [],
             searchId: 0,
+            filter: null,
             addingStudent: false,
             currentPage: 1,
             entriesCount: 20,
@@ -192,7 +229,8 @@ export default {
                 });
         },
         getExclusions: function () {
-            axios.get(`/student_absence_teacher/api/absence_teacher/?status=excluded&page=${this.currentPage}&ordering=-date_absence`)
+            const studentFilter = this.filter ? `&student__matricule=${this.filter.matricule}` : "";
+            axios.get(`/student_absence_teacher/api/absence_teacher/?status=excluded&page=${this.currentPage}&ordering=-date_absence${studentFilter}`)
                 .then((resp) => {
                     this.exclusions = resp.data.results.map(e => {
                         return {
@@ -237,7 +275,7 @@ export default {
             });
     },
     components: {
-        Multiselect
+        Multiselect,
     }
 };
 </script>
