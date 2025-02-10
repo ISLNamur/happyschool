@@ -481,7 +481,7 @@ class MailTemplateViewSet(ReadOnlyModelViewSet):
         last_latenesses = LatenessModel.objects.filter(
             student=student,
             datetime_creation__gte=get_settings().date_count_start,
-        )
+        ).order_by("datetime_creation")
 
         c = Context({"student": student, "last_latenesses": last_latenesses})
         return Response(t.render(context=c))
