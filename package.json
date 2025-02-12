@@ -33,7 +33,7 @@
     "eslint-plugin-vue": "^9.26.0",
     "glob": "^10.3.10",
     "globals": "^15.4.0",
-    "unplugin-icons": "^0.21.0",
+    "unplugin-icons": "^22.0.0",
     "unplugin-vue-components": "^0.27.5",
     "vite": "^5.2.13"
   }
