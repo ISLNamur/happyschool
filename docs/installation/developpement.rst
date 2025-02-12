@@ -84,7 +84,7 @@ Les commandes utiles à lancer dans le conteneur sont :
 ::
 
    # Regénère le code javascript au moindre changement.
-   pipenv run npm run dev
+   pipenv run npm run dev -- --host
 
    # Démarre celery pour gérer les tâches asynchrones.
    pipenv run celery -A happyschool worker -l info
