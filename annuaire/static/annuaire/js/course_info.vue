@@ -30,49 +30,72 @@
                             <dt>Enseignement</dt>
                             <dd>{{ currentTeaching }}</dd>
                         </dl>
-                        <dl>
-                            <dt>Liste des cours donnés</dt>
-                            <dd>
-                                <ul>
-                                    <li
-                                        v-for="givenCourse in givenCourses"
-                                        :key="givenCourse.id"
+                    </BCol>
+                </BRow>
+                <BRow>
+                    <BCol>
+                        <h3>Liste des cours donnés</h3>
+                        <BListGroup>
+                            <BListGroupItem
+                                v-for="gC in givenCourses"
+                                :key="gC.id"
+                                class="d-flex justify-content-between align-items-center"
+                                :variant="gC.id === givenCourse ? 'primary': ''"
+                            >
+                                <span>
+                                    {{ gC.classes }}
+                                    <br>(<span
+                                        v-for="teacher in gC.teachers"
+                                        :key="teacher.id"
                                     >
-                                        <dl>
-                                            <dt>
-                                                <a
-                                                    v-for="teacher in givenCourse.teachers"
-                                                    :key="teacher.id"
-                                                    :href="`/annuaire/#/person/responsible/${teacher.matricule}/`"
-                                                >
-                                                    {{ teacher.fullname }}
-                                                </a>
-                                            </dt>
-                                            <dd>
-                                                Classes concernées : {{ givenCourse.classes }}
-                                                (<a
-                                                    v-b-toggle="`students-${givenCourse.id}`"
-                                                >
-                                                    Voir les étudiants
-                                                </a>)
-                                                <BCollapse :id="`students-${givenCourse.id}`">
-                                                    <ul>
-                                                        <li
-                                                            v-for="student in givenCourse.students"
-                                                            :key="`${givenCourse.id}-${student.matricule}`"
-                                                        >
-                                                            <a :href="`#/person/student/${student.matricule}/`">
-                                                                {{ student.display }}
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </BCollapse>
-                                            </dd>
-                                        </dl>
-                                    </li>
-                                </ul>
-                            </dd>
-                        </dl>
+                                        <a :href="`/annuaire/#/person/responsible/${teacher.matricule}/`">{{ teacher.fullname }}</a> 
+                                    </span>)
+                                </span>
+                                <span>
+                                    <BButtonGroup>
+                                        <BButton
+                                            size="sm"
+                                            variant="outline-primary"
+                                            :href="`/annuaire/get_class_photo_pdf/?course_id=${gC.id}`"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <IBiImage />
+                                        </BButton>
+                                        <BButton
+                                            size="sm"
+                                            variant="outline-secondary"
+                                            :href="`/annuaire/get_class_list_excel/?course_id=${gC.id}`"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <IBiFileEarmarkSpreadsheet />
+                                        </BButton>
+                                        <BButton
+                                            size="sm"
+                                            variant="outline-primary"
+                                            :to="`/course/${course}/${gC.id}/`"
+                                        >
+                                            <IBiCaretRight />
+                                        </BButton>
+                                    
+                                    </BButtonGroup>
+                                </span>
+                            </BListGroupItem>
+                        </BListGroup>
+                    </BCol>
+                    <BCol>
+                        <h3>Liste des élèves du cours</h3>
+                        <ul>
+                            <li
+                                v-for="student in studentList"
+                                :key="`${givenCourse.id}-${student.matricule}`"
+                            >
+                                <a :href="`#/person/student/${student.matricule}/`">
+                                    {{ displayStudent(student) }}
+                                </a>
+                            </li>
+                        </ul>
                     </BCol>
                 </BRow>
             </BCard>
@@ -83,9 +106,16 @@
 <script>
 import axios from "axios";
 
+import { displayStudent } from "@s:core/js/common/utilities.js";
+import { BButtonGroup } from "bootstrap-vue-next";
+
 export default {
     props: {
         course: {
+            type: Number,
+            default: -1,
+        },
+        givenCourse: {
             type: Number,
             default: -1,
         }
@@ -96,6 +126,23 @@ export default {
             currentTeaching: "",
             givenCourses: [],
         };
+    },
+    computed: {
+        studentList: function () {
+            if (this.givenCourse < 0) {
+                return [];
+            }
+
+            const givenCourse = this.givenCourses.find(gC => gC.id === this.givenCourse);
+            if (!givenCourse) {
+                return [];
+            }
+
+            return givenCourse.students;
+        }
+    },
+    methods: {
+        displayStudent,
     },
     mounted: function () {
         Promise.all([

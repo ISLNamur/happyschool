@@ -112,7 +112,7 @@
                             :key="c.id"
                             :class="{'col-7': index == 0, 'col-7 offset-5': index > 0}"
                         >
-                            <a :href="`/annuaire/#/course/${c.course.id}/`">
+                            <BLink :to="`/course/${c.course.id}/${c.id}/`">
                                 <span
                                     v-if="c.course.long_name" 
                                     v-b-tooltip="`${c.course.short_name} (${c.group.toUpperCase()})`"
@@ -125,7 +125,7 @@
                                 <span v-if="c.group !== ''">
                                     ({{ c.classes }})
                                 </span>
-                            </a>
+                            </BLink>
                         </dd>
                         <dt
                             v-if="personType === 'student' && person.orientation"

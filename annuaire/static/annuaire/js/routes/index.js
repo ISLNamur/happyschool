@@ -69,9 +69,23 @@ export default [
         props: true
     },
     {
+        path: "/course/:course/:givenCourse/",
+        component: CourseInfo,
+        props: (route) => {
+            const props = { ...route.params };
+            props.course = Number(props.course);
+            props.givenCourse = Number(props.givenCourse);
+            return props;
+        },
+    },
+    {
         path: "/course/:course/",
         component: CourseInfo,
-        props: true,
-    }
+        props: (route) => {
+            const props = { ...route.params };
+            props.course = Number(props.course);
+            return props;
+        },
+    },
     // ]
 ];
