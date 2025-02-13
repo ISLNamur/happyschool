@@ -154,7 +154,7 @@ export default {
             if (!this.classe)
                 return "";
 
-            return "/annuaire/get_class_list_excel/" + this.classe + "/";
+            return `/annuaire/get_class_list_excel/?classe_id=${this.classe}`;
         },
         getClasseListPDF: function () {
             if (!this.classe)

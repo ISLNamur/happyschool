@@ -489,15 +489,25 @@ class StudentMedicalInfoViewSet(ReadOnlyModelViewSet):
 
 class ClasseListExcelView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        classe_id = kwargs["classe_id"]
-        try:
-            classe = ClasseModel.objects.get(id=classe_id)
-        except ObjectDoesNotExist:
-            # Class not found
-            return render(request, "dossier_eleve/no_student.html")
+        classe_id = self.request.GET.get("classe_id")
+        course_id = self.request.GET.get("course_id")
 
-        students = StudentModel.objects.filter(classe=classe).order_by("last_name", "first_name")
-        file_name = "classes_%s_%s%s.xlsx" % (classe.teaching.name, classe.year, classe.letter)
+        if classe_id:
+            try:
+                classe = ClasseModel.objects.get(id=classe_id)
+            except ObjectDoesNotExist:
+                # Class not found
+                return render(request, "dossier_eleve/no_student.html")
+
+            students = StudentModel.objects.filter(classe=classe).order_by(
+                "last_name", "first_name"
+            )
+            file_name = "classes_%s_%s%s.xlsx" % (classe.teaching.name, classe.year, classe.letter)
+        elif course_id:
+            given_course = GivenCourseModel.objects.get(id=course_id)
+            students = StudentModel.objects.filter(courses=given_course)
+            file_name = f"cours_{given_course.course.short_name.replace(' ', '-')}.xlsx"
+
         output = BytesIO()
         workbook = xlsxwriter.Workbook(output, {"in_memory": True})
         worksheet = workbook.add_worksheet()
