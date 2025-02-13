@@ -35,7 +35,7 @@
                     <IBiExclamationCircle v-if="lateness.sanction_id" />
                     <strong>{{ niceDate }}</strong>:
                     <a :href="`/annuaire/#/person/student/${lateness.student.matricule}/`">
-                        {{ lateness.student.display }}
+                        {{ displayStudent(lateness.student) }}
                     </a>
                     <BBadge
                         v-if="!lateness.justified"
@@ -123,6 +123,9 @@ import Moment from "moment";
 import "moment/dist/locale/fr";
 Moment.locale("fr");
 
+import { latenessStore } from "./stores/index.js";
+import { displayStudent } from "@s:core/js/common/utilities.js";
+
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
@@ -138,6 +141,7 @@ export default {
             justified: false,
             showPhoto: false,
             sanction: null,
+            store: latenessStore(),
         };
     },
     computed: {
@@ -146,6 +150,7 @@ export default {
         }
     },
     methods: {
+        displayStudent,
         displayPhoto: function () {
             this.showPhoto = true;
             setTimeout(() => {
