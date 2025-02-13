@@ -113,7 +113,7 @@ class LatenessSettingsViewSet(GenericViewSet, UpdateModelMixin):
 class LatenessFilter(BaseFilters):
     datetime_field = "datetime_creation"
 
-    student__display = filters.CharFilter(method="people_name_by")
+    student = filters.CharFilter(method="people_name_by")
     date_lateness__gte = filters.DateFilter(method="date_lateness_by")
     date_lateness__lte = filters.DateFilter(method="date_lateness_by")
     count_lateness = filters.NumberFilter(method="count_lateness_by")
