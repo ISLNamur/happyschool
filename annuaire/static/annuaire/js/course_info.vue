@@ -65,7 +65,7 @@
                                         <BButton
                                             size="sm"
                                             variant="outline-secondary"
-                                            :href="`/annuaire/get_class_list_excel/?course_id=${gC.id}`"
+                                            :href="`/annuaire/get_class_list_excel/?course_id=${gC.id}&list_type=info`"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >

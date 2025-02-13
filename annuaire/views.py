@@ -491,6 +491,7 @@ class ClasseListExcelView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         classe_id = self.request.GET.get("classe_id")
         course_id = self.request.GET.get("course_id")
+        list_type = self.request.GET.get("list_type", "login")
 
         if classe_id:
             try:
@@ -511,25 +512,35 @@ class ClasseListExcelView(LoginRequiredMixin, View):
         output = BytesIO()
         workbook = xlsxwriter.Workbook(output, {"in_memory": True})
         worksheet = workbook.add_worksheet()
-        worksheet.set_column(0, 2, 30)
+        worksheet.set_column(0, 6, 30)
 
-        row = 0
-        worksheet.write_row(0, 0, ["Nom et prénom", "Nom d'utilisateur", "Mot de passe"])
-        row += 1
+        headers = ["Nom", "Prénom", "Classe"]
+        if list_type == "login":
+            headers += ["Nom d'utilisateur", "Mot de passe"]
+        elif list_type == "info":
+            headers += ["Genre", "Orientation", "Langue 1"]
+
+        row_number = 0
+        worksheet.write_row(0, 0, headers)
+        row_number += 1
         for s in students:
+            row = [s.last_name, s.first_name, s.classe.compact_str]
             if not s.additionalstudentinfo:
-                worksheet.write(row, 0, s.fullname)
+                worksheet.write(row_number, 0, row)
             else:
-                worksheet.write_row(
-                    row,
-                    0,
-                    [
-                        s.fullname,
+                if list_type == "login":
+                    row += [
                         s.additionalstudentinfo.username,
                         s.additionalstudentinfo.password,
-                    ],
-                )
-            row += 1
+                    ]
+                elif list_type == "info":
+                    row += [
+                        s.additionalstudentinfo.gender,
+                        s.additionalstudentinfo.orientation,
+                    ]
+
+                worksheet.write_row(row_number, 0, row)
+            row_number += 1
         workbook.close()
 
         response = HttpResponse(
