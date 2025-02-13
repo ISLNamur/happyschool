@@ -189,6 +189,7 @@ class DossierEleveView(BaseDossierEleveView):
 
 class CasEleveFilter(BaseFilters):
     classe = filters.CharFilter(method="classe_by")
+    student = filters.CharFilter(method="people_name_by")
     activate_important = filters.BooleanFilter(field_name="important")
     no_sanctions = filters.BooleanFilter(method="no_sanctions_by")
     no_infos = filters.BooleanFilter(method="no_infos_by")
@@ -438,6 +439,7 @@ class AskSanctionsView(BaseDossierEleveView):
 
 class AskSanctionsFilter(BaseFilters):
     classe = filters.CharFilter(method="classe_by")
+    student = filters.CharFilter(method="people_name_by")
     activate_not_done = filters.CharFilter(method="activate_not_done_by")
     activate_waiting = filters.CharFilter(method="activate_waiting_by")
     activate_today = filters.CharFilter(method="activate_today_by")
