@@ -24,7 +24,7 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 urlpatterns = [
-    path("get_class_photo_pdf/<int:classe_id>/", views.ClassePhotosView.as_view()),
+    path("get_class_photo_pdf/", views.ClassePhotosView.as_view()),
     path("", views.AnnuaireView.as_view(), name="annuaire"),
     path("get_class_list_excel/<int:classe_id>/", views.ClasseListExcelView.as_view()),
     path("get_class_list_pdf/<int:classe_id>/", views.ClasseListPDFView.as_view()),

@@ -567,12 +567,29 @@ class ClassePhotosView(LoginRequiredMixin, WeasyTemplateView):
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
-        classe_id = kwargs["classe_id"]
-        try:
-            classe = ClasseModel.objects.get(id=classe_id)
-        except ObjectDoesNotExist:
+
+        classe_id = self.request.GET.get("classe_id")
+        course_id = self.request.GET.get("course_id")
+
+        if classe_id:
+            try:
+                classe = ClasseModel.objects.get(id=classe_id)
+                students = StudentModel.objects.filter(classe=classe)
+                title = classe.compact_str
+                tenures = ResponsibleModel.objects.filter(tenure=classe)
+
+                context["tenures"] = tenures
+            except ObjectDoesNotExist:
+                return context
+        elif course_id:
+            try:
+                given_course = GivenCourseModel.objects.get(id=course_id)
+                students = StudentModel.objects.filter(courses=given_course)
+                title = f"{given_course.course.long_name} ({given_course.classes})"
+            except ObjectDoesNotExist:
+                return context
+        else:
             return context
-        students = StudentModel.objects.filter(classe=classe)
 
         students = sorted(students, key=lambda s: unidecode(s.last_name.lower()))
         rows = []
@@ -586,11 +603,10 @@ class ClassePhotosView(LoginRequiredMixin, WeasyTemplateView):
             if i % student_by_row == student_by_row - 1 or len(students) == i + 1:
                 rows.append(row)
 
-        context = {"classe": classe.compact_str, "list": rows, "students_numb": len(students)}
+        context["title"] = title
+        context["list"] = rows
+        context["students_numb"] = len(students)
 
-        tenures = ResponsibleModel.objects.filter(tenure=classe)
-
-        context["tenures"] = tenures
         return context
 
 
