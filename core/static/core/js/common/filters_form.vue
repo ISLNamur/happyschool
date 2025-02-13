@@ -332,6 +332,7 @@ export default {
                     people_type: "student",
                     teachings: this.storeState.settings.teachings,
                     check_access: false,
+                    active: false,
                 };
                 axios.post("/annuaire/api/people/", data, token)
                     .then(resp => {
