@@ -48,7 +48,7 @@
                                         v-for="teacher in gC.teachers"
                                         :key="teacher.id"
                                     >
-                                        <a :href="`/annuaire/#/person/responsible/${teacher.matricule}/`">{{ teacher.fullname }}</a> 
+                                        <a :href="`/annuaire/#/person/responsible/${teacher.matricule}/`">{{ teacher.fullname }}</a>
                                     </span>)
                                 </span>
                                 <span>
@@ -107,7 +107,6 @@
 import axios from "axios";
 
 import { displayStudent } from "@s:core/js/common/utilities.js";
-import { BButtonGroup } from "bootstrap-vue-next";
 
 export default {
     props: {
