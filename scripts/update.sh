@@ -7,5 +7,5 @@ git pull
 rm Pipfile.lock
 pipenv install
 pipenv run ./manage.py migrate
-wget https://test.happyschool.be/static/bundles.tar.bz2 
+wget https://test.happyschool.be/media/bundles.tar.bz2
 tar -xf bundles.tar.bz2
