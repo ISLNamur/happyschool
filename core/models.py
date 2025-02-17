@@ -19,6 +19,8 @@
 
 from django.conf import settings
 from django.db import models
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVector
 
 from .ldap import get_ldap_connection
 
@@ -191,6 +193,14 @@ class StudentModel(models.Model):
     )
     inactive_from = models.DateTimeField(null=True, blank=True, default=None)
 
+    class Meta:
+        indexes = [
+            GinIndex(
+                SearchVector("last_name", "first_name", config="fr_unaccent"),
+                name="search_vector_stud_idx",
+            )
+        ]
+
     def __str__(self):
         """Return the full name with the last name first."""
         if self.inactive_from:
@@ -284,6 +294,14 @@ class ResponsibleModel(models.Model):
     is_sync = models.BooleanField(default=True)
     inactive_from = models.DateTimeField(null=True, blank=True, default=None)
     birth_date = models.DateField("birth date", null=True, blank=True)
+
+    class Meta:
+        indexes = [
+            GinIndex(
+                SearchVector("last_name", "first_name", config="fr_unaccent"),
+                name="search_vector_resp_idx",
+            )
+        ]
 
     def __str__(self):
         """Return the full name with the last name first."""

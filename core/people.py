@@ -25,6 +25,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db.models import Q, QuerySet, Model
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db.utils import OperationalError, ProgrammingError
 
 from .models import ResponsibleModel, StudentModel, TeachingModel, ClasseModel, CoreSettingsModel
@@ -191,35 +192,7 @@ class People:
         :param teaching: A list of teachers' teachings.
         :return: A QuerySet of teachers.
         """
-        tokens = name.split(" ")
-        people = model_name.objects.none()
-        quality = 2
-
-        if len(tokens) > 1:
-            # First check compound last name.
-            people = model_name.objects.filter(
-                Q(last_name__unaccent__istartswith=" ".join(tokens[:2]))
-                | Q(last_name__unaccent__istartswith=" ".join(tokens[-2:]))
-            )
-            if len(people) == 0:
-                people = model_name.objects.filter(
-                    Q(
-                        first_name__unaccent__iexact=tokens[0],
-                        last_name__unaccent__istartswith=tokens[1],
-                    )
-                    | Q(
-                        first_name__unaccent__istartswith=tokens[1],
-                        last_name__unaccent__iexact=tokens[0],
-                    )
-                )
-
-        if len(people) == 0:
-            quality = 1
-            for name_part in tokens:
-                people |= model_name.objects.filter(
-                    Q(first_name__unaccent__istartswith=name_part)
-                    | Q(last_name__unaccent__istartswith=name_part)
-                )
+        people = model_name.objects.all()
 
         if teaching and "all" not in teaching:
             if type(teaching[0]) == TeachingModel:
@@ -232,7 +205,25 @@ class People:
         if additional_filter:
             people = people.filter(**additional_filter)
 
-        return (people, quality)
+        vector = SearchVector("last_name", weight="A", config="fr_unaccent") + SearchVector(
+            "first_name", weight="B", config="fr_unaccent"
+        )
+
+        search = " & ".join([f"{token}:*" for token in name.split(" ")])
+        # search = name.strip().replace(" ", " & ") + ":*"
+
+        query = SearchQuery(search, config="fr_unaccent", search_type="raw")
+
+        people = (
+            people.annotate(rank=SearchRank(vector, query)).filter(rank__gt=0.01).order_by("-rank")
+        )
+
+        if people.exists():
+            top_rank = people.first().rank
+        else:
+            top_rank = 0
+
+        return (people, top_rank)
 
     def get_students_by_name(
         self, name: str, teaching: list = ("all",), classes: list = None, active: bool = True
