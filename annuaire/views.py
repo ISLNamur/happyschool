@@ -175,7 +175,6 @@ def search_people(
 
     truncate_limit = 50
 
-    print(query, people_type, teachings, check_access, active)
     # Check if user can see inactive people. Otherwise revert boolean parameter.
     if active == False:
         annuaire_settings = get_settings()
