@@ -246,7 +246,7 @@ export default {
          */
         async massiveAttendance () {
             this.massiveAttendanceLoading = true;
-            const classes = this.absence_count.filter(a => a.classe.contains(this.filter)).map(a => a.classe__id);
+            const classes = this.absence_count.filter(a => a.classe.includes(this.filter)).map(a => a.classe__id);
 
             if (classes.length === 0) {
                 this.$refs["massive-attendance"].hide();
