@@ -44,7 +44,7 @@ class AccountTests(APITestCase):
         """
         url = "/annuaire/api/people/"
         data = {
-            "query": "t",
+            "query": "tut",
         }
         response = self.client.post(url, data, format="json")
         # Without authentification, it should fail wih unauthorized.

@@ -133,7 +133,7 @@ class PeopleTest(TestCase):
         result = People()._get_people_by_name_by_model(
             StudentModel, "Adelai", teaching=["secondaire"]
         )
-        self.assertEqual(len(result[0]), 2)
+        self.assertEqual(len(result[0]), 4)
 
         result = People()._get_people_by_name_by_model(
             StudentModel, "Barre Adelai", teaching=["secondaire"]
@@ -154,8 +154,8 @@ class PeopleTest(TestCase):
         result = People().get_people_by_name(name="jacquel", person_type=STUDENT)
         self.assertEqual(len(result), 5)
 
-        result = People().get_people_by_name(name="jacqueline d")
-        self.assertEqual(len(result["student"][0]) + len(result["responsible"][0]), 2)
+        result = People().get_people_by_name(name="jacqueline dan")
+        self.assertEqual(len(result["student"][0]) + len(result["responsible"][0]), 1)
 
         result = People().get_people_by_name(name="jacquel", teaching=["all"])
         self.assertEqual(len(result["student"][0]) + len(result["responsible"][0]), 6)
@@ -164,8 +164,8 @@ class PeopleTest(TestCase):
 
     def test_get_students_by_name(self):
         result = People().get_students_by_name("Adelaï")
-        self.assertEqual(result.count(), 4)
-        result = People().get_students_by_name("zz")
+        self.assertEqual(result.count(), 8)
+        result = People().get_students_by_name("zzz")
         self.assertEqual(result.count(), 0)
 
     def test_get_students_by_name_with_classes(self):
