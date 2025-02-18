@@ -112,18 +112,13 @@ puis récupérer le code avec git :
 
 HappySchool s’appuie sur le framework
 `Django <https://www.djangoproject.com/>`__ ainsi que toutes une série
-de modules python. Afin des les gérer ainsi que leur versions, *pipenv* et *pyenv*                                           
-sont utilisés. Pour les installer avec un shell bash :
+de modules python. Afin des les gérer ainsi que leur versions, *uv*                                           
+est utilisé. Pour l'installer avec un shell bash :
 
 ::
 
-   pip3 install --user pipenv
-   curl https://pyenv.run | bash                                                                                            
-   echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ./.bashrc                                                                  
-   echo 'eval "$(pyenv init -)"' >> ./.bashrc                                                                                
-   echo 'eval "$(pyenv virtualenv-init -)"' >> ./.bashrc
-   cd happyschool
-   PIPENV_YES=1 pipenv install
+   curl -LsSf https://astral.sh/uv/install.sh | sh                                                                                          
+   uv sync
 
 
 Il existe plusieurs niveaux de configurations pour Happyschool, le plus
@@ -147,13 +142,13 @@ dossier racine (cela peut prendre un peu de temps):
 ::
 
    npm install
-   pipenv run npm run build
+   uv run npm run build
 
 Pour écrire les schémas dans la base de donnée :
 
 ::
 
-   pipenv run ./manage.py migrate
+   uv run ./manage.py migrate
 
 Certaines applications ont besoin que les groupes soient déjà
 accessibles pour pouvoir fonctionner. La commande suivante permet de les
@@ -161,14 +156,14 @@ générer à partir du fichier ``happyschool/settings.py``:
 
 ::
 
-   pipenv run ./manage.py creategroups
+   uv run ./manage.py creategroups
 
 Vous pouvez créer un super utilisateur en répondant aux questions posées
 par :
 
 ::
 
-   pipenv run ./manage.py createsuperuser
+   uv run ./manage.py createsuperuser
 
 Ensuite récupérez les fichiers statiques (css,…) utilisés par django et
 ses applications. Pour cela, assurez-vous que ``DEBUG = FALSE`` dans
@@ -177,7 +172,7 @@ votre fichier ``happyschool/settings.py`` et lancez la commande suivante
 
 ::
 
-   pipenv run ./manage.py collectstatic
+   uv run ./manage.py collectstatic
 
 
 Supervisord
@@ -222,7 +217,7 @@ Ainsi qu'un fichier pour chacun des processus que supervisor doit gérer.
 ::
 
     [program:daphne]
-    command=/home/myuser/.local/bin/pipenv run daphne -b 0.0.0.0 -p 8080 happyschool.asgi:application ; Remplacer 'myuser' par l'utilisateur courant !
+    command=/usr/bin/uv run daphne -b 0.0.0.0 -p 8080 happyschool.asgi:application ; Remplacer 'myuser' par l'utilisateur courant !
     directory=/home/myuser/happyschool            ; Remplacer 'myuser' par l'utilisateur courant !
     autostart=true
     autorestart=true
@@ -235,7 +230,7 @@ et ``/etc/supervisor/conf.d/celery.conf`` :
 ::
 
     [program:celery]
-    command=/home/myuser/.local/bin/pipenv run celery -A happyschool worker -l info ; Remplacer 'myuser' par l'utilisateur courant !
+    command=/usr/bin/uv run celery -A happyschool worker -l info ; Remplacer 'myuser' par l'utilisateur courant !
     directory=/home/myuser/happyschool            ; Remplacer 'myuser' par l'utilisateur courant !
     autostart=true
     autorestart=true

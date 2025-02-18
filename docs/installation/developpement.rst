@@ -84,10 +84,10 @@ Les commandes utiles à lancer dans le conteneur sont :
 ::
 
    # Regénère le code javascript au moindre changement.
-   pipenv run npm run dev -- --host
+   uv run npm run dev -- --host
 
    # Démarre celery pour gérer les tâches asynchrones.
-   pipenv run celery -A happyschool worker -l info
+   uv run celery -A happyschool worker -l info
 
 Mises à jour
 ------------
@@ -163,18 +163,13 @@ puis récupérer le code avec git :
 
 HappySchool s’appuie sur le framework
 `Django <https://www.djangoproject.com/>`__ ainsi que toutes une série
-de modules python. Afin des les gérer ainsi que leur versions, *pipenv* et *pyenv*
-sont utilisés. Pour les installer avec un shell bash:
+de modules python. Afin des les gérer ainsi que leur versions, *uv*                                           
+est utilisé. Pour l'installer avec un shell bash :
 
 ::
 
-   pip3 install --user pipenv
-   curl https://pyenv.run | bash
-   echo 'export PATH="$HOME/.pyenv/bin:$HOME/.local/bin:$PATH"' >> ~/.bashrc
-   echo 'eval "$(pyenv init -)"' >> ~/.bashrc
-   echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
-   cd happyschool
-   PIPENV_YES=1 pipenv install
+   curl -LsSf https://astral.sh/uv/install.sh | sh                                                                                          
+   uv sync
 
 
 Il existe plusieurs niveaux de configurations pour Happyschool, le plus
@@ -198,13 +193,13 @@ dossier racine (cela peut prendre un peu de temps):
 ::
 
    npm install
-   pipenv run npm run dev
+   uv run npm run dev
 
 Pour écrire les schémas dans la base de donnée :
 
 ::
 
-   pipenv run ./manage.py migrate
+   uv run ./manage.py migrate
 
 Certaines applications ont besoin que les groupes soient déjà
 accessibles pour pouvoir fonctionner. La commande suivante permet de les
@@ -212,20 +207,20 @@ générer à partir du fichier ``happyschool/settings.py``:
 
 ::
 
-   pipenv run ./manage.py creategroups
+   uv run ./manage.py creategroups
 
 Vous pouvez créer un super utilisateur en répondant aux questions posées
 par :
 
 ::
 
-   pipenv run ./manage.py createsuperuser
+   uv run ./manage.py createsuperuser
 
 Finalement, pour la lancer le serveur de test :
 
 ::
 
-   pipenv run ./manage.py runserver
+   uv run ./manage.py runserver
 
 HappySchool devrait maintenant être accessible à l’adresse suivante:
 `<http://127.0.0.1:8000>`_. La prochaine étape est la

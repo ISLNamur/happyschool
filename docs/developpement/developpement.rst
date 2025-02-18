@@ -610,7 +610,7 @@ le ou les composants directement dans le navigateur :
 
 ::
 
-   pipenv run npm run dev
+   uv run npm run dev
 
 Si l’on pointe maintenant notre navigateur vers
 http://localhost:8000/student_absence et si le serveur de développement
