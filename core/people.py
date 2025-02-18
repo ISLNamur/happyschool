@@ -209,7 +209,7 @@ class People:
             "first_name", weight="B", config="fr_unaccent"
         )
 
-        search = " & ".join([f"{token}:*" for token in name.split(" ")])
+        search = " & ".join([f"{token}:*" for token in name.strip().split(" ")])
         # search = name.strip().replace(" ", " & ") + ":*"
 
         query = SearchQuery(search, config="fr_unaccent", search_type="raw")
