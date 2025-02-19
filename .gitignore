@@ -14,8 +14,10 @@ Pipfile.lock
 docs/_build/
 package-lock.json
 /static/
+/media/
 .hotfile
 .directory
 .vscode/
 libreschoolfdb
 /scripts/local/
+uv.lock
