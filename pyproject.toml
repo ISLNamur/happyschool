@@ -49,9 +49,3 @@ dev = [
     "sphinx>=8.1.3",
     "seleniumbase>=4.34.15",
 ]
-proeco = [
-    "libreschoolfdb>=0.9.4",
-]
-
-[tool.uv.sources]
-libreschoolfdb = { path = "../libreschoolfdb" }
