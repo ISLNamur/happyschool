@@ -162,6 +162,10 @@
                             v-if="personType === 'responsible' && person.email_school"
                         >
                             {{ person.email_school }}
+                            <IBiCopy
+                                class="ms-2"
+                                @click="copyToClipboard(person.email_school)"
+                            />
                         </dd>
                     </dl>
                     <dl
@@ -179,6 +183,10 @@
                             class="col-7"
                         >
                             {{ username }}
+                            <IBiCopy
+                                class="ms-2"
+                                @click="copyToClipboard(username)"
+                            />
                         </dd>
                         <dt
                             v-if="password"
@@ -191,6 +199,10 @@
                             class="col-7"
                         >
                             {{ password }}
+                            <IBiCopy
+                                class="ms-2"
+                                @click="copyToClipboard(password)"
+                            />
                         </dd>
                         <dd
                             v-else-if="password"
@@ -265,9 +277,15 @@ import Moment from "moment";
 import "moment/dist/locale/fr";
 Moment.locale("fr");
 
+import { useToastController } from "bootstrap-vue-next";
+
 import { annuaireStore } from "./stores/index.js";
 
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        return { show };
+    },
     props: {
         customMatricule: {
             type: Number,
@@ -319,6 +337,14 @@ export default {
         }
     },
     methods: {
+        copyToClipboard: function (text) {
+            navigator.clipboard.writeText(text);
+            this.show({props:{
+                body: "Copié !",
+                variant: "success",
+                noCloseButton: true,
+            }});
+        },
         niceDate: function (date) {
             if (!date) return "";
 

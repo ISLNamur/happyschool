@@ -27,6 +27,7 @@
             v-if="loaded"
             :menu-info="menuInfo"
         />
+        <BToastOrchestrator />
         <BContainer v-if="loaded">
             <h1>Annuaire</h1>
             <BRow>

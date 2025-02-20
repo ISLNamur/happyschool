@@ -33,6 +33,10 @@
                     class="col-7"
                 >
                     {{ info.email }}
+                    <IBiCopy
+                        class="ms-2"
+                        @click="copyToClipboard(username)"
+                    />
                 </dd>
             </dl>
             <dl
@@ -90,7 +94,13 @@ Moment.locale("fr");
 
 import axios from "axios";
 
+import { useToastController } from "bootstrap-vue-next";
+
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        return { show };
+    },
     data: function () {
         return {
             info: null,
@@ -98,6 +108,14 @@ export default {
         };
     },
     methods: {
+        copyToClipboard: function (text) {
+            navigator.clipboard.writeText(text);
+            this.show({props:{
+                body: "Copié !",
+                variant: "success",
+                noCloseButton: true,
+            }});
+        },
         niceDate: function (date) {
             if (!date) return "";
 
