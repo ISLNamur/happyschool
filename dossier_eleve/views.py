@@ -781,10 +781,21 @@ class AskSanctionsPDFGenAPI(APIView):
         return results
 
 
-class AskSanctionCouncilPDFGenAPI(AskSanctionsPDFGenAPI):
-    template = "dossier_eleve/discip_council.rml"
-    file_name = "council"
-    field_date = "conseil"
+class AskSanctionCouncilPDF(WeasyTemplateView):
+    template_name = "dossier_eleve/discip_council_pdf.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        view_set = AskSanctionsViewSet.as_view({"get": "list"})
+        results = view_set(self.request).data["results"]
+        results = self.modify_entries(results)
+
+        field_date = "datetime_conseil"
+        date_from = self.request.GET.get("%s__gte" % field_date)[:10]
+        date_to = self.request.GET.get("%s__lte" % field_date)[:10]
+        context = {"date_from": date_from, "date_to": date_to, "list": results}
+        return context
 
     def modify_entries(self, results):
         for r in results:
@@ -795,6 +806,7 @@ class AskSanctionCouncilPDFGenAPI(AskSanctionsPDFGenAPI):
             r["datetime_conseil"] = timezone.datetime.strptime(
                 r["datetime_conseil"][:19], "%Y-%m-%dT%H:%M:%S"
             )
+            r["demandeur"] = r["demandeur"].split(" — ")[0]
         return results
 
 

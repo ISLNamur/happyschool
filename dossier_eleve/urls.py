@@ -35,7 +35,7 @@ urlpatterns = [
     path("attachment/<int:pk>/", views.AttachmentView.as_view()),
     path("get_pdf/", views.CasElevePDFGenAPI.as_view()),
     path("get_pdf_list/", views.CasEleveListPDFGen.as_view()),
-    path("get_pdf_council/", views.AskSanctionCouncilPDFGenAPI.as_view()),
+    path("get_pdf_council/", views.AskSanctionCouncilPDF.as_view()),
     path("get_pdf_retenues/", views.AskSanctionRetenuesPDFGenAPI.as_view()),
     path("get_pdf_sanction/", views.SanctionPDF.as_view()),
     path("api/template_sanction/<int:cas_id>/", views.SanctionTemplate.as_view()),

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @charset "UTF-8";
+        @page {
+            size: landscape;
+            margin: 1cm;
+            counter-increment: page;
+            @bottom-right {
+                content: "Page " counter(page) "/" counter(pages);
+                border-top: .25pt solid #666;
+                width: 50%;
+            }
+        }
+
+        html {
+            font-size: 0.9em;
+        }
+
+        h1 {
+            font-size: large;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        table {
+            font-size: 0.85em;
+        }
+        th, td {
+            border-bottom: 2px solid gray;
+        }
+        table p {
+            margin: 0px 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Conseil disciplinaire
+        {%if date_from == date_to%}
+        {{ date_from}}
+        {% else %}
+        {{ date_from }} – {{ date_to }}
+        {% endif %}
+    </h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    Élève
+                </th>
+                <th>
+                    Demandeur
+                </th>
+                <th>
+                    Sanction/Décision
+                </th>
+                <th>
+                    Explication/Commentaire
+                </th>
+                <th>
+                    Conseil discip.
+                </th>
+                <th>
+                    Sanction
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in list %}
+            <tr>
+                <td>
+                    {{ c.student.last_name }} {{ c.student.first_name }} {{ c.student.classe.year }}{{ c.student.classe.letter|upper }}
+                </td>
+                <td>
+                    {{ c.demandeur }}
+                </td>
+                <td>
+                    {{ c.sanction_decision.sanction_decision }}
+                </td>
+                <td style="text-align: justify">
+                    {% autoescape off %}
+                    {{ c.explication_commentaire }}
+                    {% endautoescape %}
+                </td>
+                <td>{{ c.datetime_conseil|date:'d/m/y' }}</td>
+                <td>{% if c.date_sanction %}{{ c.date_sanction|date:'d/m/y' }}{% else %}?{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
