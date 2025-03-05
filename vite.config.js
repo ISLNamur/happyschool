@@ -10,10 +10,16 @@ import {BootstrapVueNextResolver} from "bootstrap-vue-next";
 import Icons from "unplugin-icons/vite";
 import IconsResolver from "unplugin-icons/resolver";
 
+import { spawnSync } from "child_process";
+
+const py = spawnSync("python", ["manage.py", "django_vite_plugin", "--action", "config"]);
+const installedApps = Object.keys(JSON.parse(py.stdout.toString()).INSTALLED_APPS);
+
 // Look for apps
 const appPathStartPoint = globSync("*/static/*/js/*.js");
 // Remove */static/
-const appPathTruncate = appPathStartPoint.map(p => p.split("/").slice(2, 5).join("/"));
+const appPathTruncate = appPathStartPoint.map(p => p.split("/").slice(2, 5).join("/"))
+    .filter(app => installedApps.includes(app.split("/")[0]));
 console.log("App found", appPathTruncate);
 
 export default defineConfig({
