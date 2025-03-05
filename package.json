@@ -30,7 +30,7 @@
     "@vitejs/plugin-vue": "^5.1.4",
     "django-vite-plugin": "^4.0.0",
     "eslint": "^9.4.0",
-    "eslint-plugin-vue": "^9.26.0",
+    "eslint-plugin-vue": "^10.0.0",
     "glob": "^11.0.1",
     "globals": "^15.4.0",
     "unplugin-icons": "^22.0.0",
