@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            @charset "UTF-8";
+            @page {
+                margin: 1cm;
+                counter-increment: page;
+                @bottom-right {
+                    content: "Page " counter(page) "/" counter(pages);
+                    border-top: .25pt solid #666;
+                    width: 50%;
+                }
+            }
+
+            html {
+                font-size: 0.9em;
+            }
+
+            h1 {
+                font-size: large;
+                text-align: center;
+                text-transform: uppercase;
+            }
+
+            table {
+                font-size: 0.9em;
+                width: 100%;
+            }
+            td {
+                border-bottom: 2px solid gray;
+            }
+            th {
+                border-bottom: 2px solid black
+            }
+            table p {
+                margin: 0px 5px;
+            }
+        </style>
+    </head>
+    <body>
+        {% if classe %}
+            <h1>
+                <strong>{{ classe.compact_str }}</strong> ({{ students_numb }} élèves) Titulaire(s) :
+                {% for t in tenures %}{{ t.fullname }}{% endfor %}
+            </h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nom complet</th>
+                        <th>Nom d'utilisateur</th>
+                        <th>Mot de passe</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in students %}
+                        <tr>
+                            <td>
+                                <strong>{{ s.fullname }}</strong>
+                            </td>
+                            <td>
+                                {% if s.additionalstudentinfo %}{{ s.additionalstudentinfo.username }}{% endif %}
+                            </td>
+                            <td>
+                                {% if s.additionalstudentinfo %}{{ s.additionalstudentinfo.password }}{% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Aucune classe trouvée</p>
+        {% endif %}
+    </body>
+</html>

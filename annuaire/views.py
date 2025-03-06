@@ -550,36 +550,28 @@ class ClasseListExcelView(LoginRequiredMixin, View):
         return response
 
 
-class ClasseListPDFView(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
+class ClasseListPDF(WeasyTemplateView, LoginRequiredMixin):
+    template_name = "annuaire/classe_list_pdf.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
         classe_id = kwargs["classe_id"]
         try:
             classe = ClasseModel.objects.get(id=classe_id)
+            context["classe"] = classe
         except ObjectDoesNotExist:
             # Class not found
-            return render(request, "dossier_eleve/no_student.html")
+            context["classe"] = None
+            return context
 
-        students = StudentModel.objects.filter(classe=classe).order_by("last_name", "first_name")
-        tenures = ResponsibleModel.objects.filter(tenure=classe)
-        t = get_template("annuaire/classe_list.rml")
-        rml_str = t.render(
-            {
-                "students": students,
-                "students_numb": len(students),
-                "classe": classe,
-                "tenures": tenures,
-            }
+        context["students"] = StudentModel.objects.filter(classe=classe).order_by(
+            "last_name", "first_name"
         )
+        context["students_numb"] = len(context["students"])
+        context["tenures"] = ResponsibleModel.objects.filter(tenure=classe)
 
-        pdf = rml2pdf.parseString(rml_str)
-        if not pdf:
-            return render(request, "dossier_eleve/no_student.html")
-        pdf_name = "classes_%s_%s%s.pdf" % (classe.teaching.name, classe.year, classe.letter)
-
-        response = HttpResponse(content_type="application/pdf")
-        response["Content-Disposition"] = 'filename; filename="' + pdf_name + '"'
-        response.write(pdf.read())
-        return response
+        return context
 
 
 class ClassePhotosView(LoginRequiredMixin, WeasyTemplateView):

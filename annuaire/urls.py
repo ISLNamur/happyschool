@@ -27,7 +27,7 @@ urlpatterns = [
     path("get_class_photo_pdf/", views.ClassePhotosView.as_view()),
     path("", views.AnnuaireView.as_view(), name="annuaire"),
     path("get_class_list_excel/", views.ClasseListExcelView.as_view()),
-    path("get_class_list_pdf/<int:classe_id>/", views.ClasseListPDFView.as_view()),
+    path("get_class_list_pdf/<int:classe_id>/", views.ClasseListPDF.as_view()),
     path("api/people/", views.SearchPeopleAPI.as_view()),
     path("api/classes/", views.SearchClassesAPI.as_view()),
     path("api/people_or_classes/", views.SearchClassesOrPeopleAPI.as_view()),
