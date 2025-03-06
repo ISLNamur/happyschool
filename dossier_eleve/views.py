@@ -781,8 +781,8 @@ class AskSanctionsPDFGenAPI(APIView):
         return results
 
 
-class AskSanctionCouncilPDF(WeasyTemplateView):
-    template_name = "dossier_eleve/discip_council_pdf.html"
+class AskSanctionBasePDF(WeasyTemplateView):
+    field_date = None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -791,9 +791,8 @@ class AskSanctionCouncilPDF(WeasyTemplateView):
         results = view_set(self.request).data["results"]
         results = self.modify_entries(results)
 
-        field_date = "datetime_conseil"
-        date_from = self.request.GET.get("%s__gte" % field_date)[:10]
-        date_to = self.request.GET.get("%s__lte" % field_date)[:10]
+        date_from = self.request.GET.get("%s__gte" % self.field_date)[:10]
+        date_to = self.request.GET.get("%s__lte" % self.field_date)[:10]
         context = {"date_from": date_from, "date_to": date_to, "list": results}
         return context
 
@@ -810,17 +809,14 @@ class AskSanctionCouncilPDF(WeasyTemplateView):
         return results
 
 
-class AskSanctionRetenuesPDFGenAPI(AskSanctionsPDFGenAPI):
-    template = "dossier_eleve/discip_retenues.rml"
-    file_name = "retenues"
-    field_date = "sanction"
+class AskSanctionCouncilPDF(AskSanctionBasePDF):
+    template_name = "dossier_eleve/discip_council_pdf.html"
+    field_date = "datetime_conseil"
 
-    def modify_entries(self, results):
-        for r in results:
-            r["date_sanction"] = timezone.datetime.strptime(r["date_sanction"][:19], "%Y-%m-%d")
-            if r["time_sanction_end"]:
-                r["time_sanction_end"] = r["time_sanction_end"][:5]
-        return results
+
+class AskSanctionRetenuesPDF(AskSanctionBasePDF):
+    template_name = "dossier_eleve/discip_retenues_pdf.html"
+    field_date = "date_sanction"
 
 
 class SanctionPDF(APIView):
