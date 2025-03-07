@@ -43,6 +43,8 @@ from rest_framework.status import HTTP_202_ACCEPTED, HTTP_201_CREATED
 
 from django_filters import rest_framework as filters
 
+from django_weasyprint import WeasyTemplateView
+
 from core.views import BaseModelViewSet, BaseFilters, get_core_settings, get_app_settings
 from core.utilities import get_menu
 from core.email import send_email
@@ -350,6 +352,103 @@ class ScheduleChangeViewSet(BaseModelViewSet):
 
     def get_group_all_access(self):
         return get_settings().all_access.all()
+
+
+class SummaryPDF(WeasyTemplateView):
+    template_name = "schedule_change/summary_pdf.html"
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+
+        send_to_teachers = json.loads(request.GET.get("send_to_teachers", "false"))
+
+        response = self.render_to_response(context)
+        if send_to_teachers:
+            self.send_to_teachers(context, response.rendered_content)
+
+        return response
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        view_set = ScheduleChangeViewSet.as_view({"get": "list"})
+        results = view_set(self.request).data["results"]
+        changes = [c["id"] for c in results]
+
+        context["list"] = [ScheduleChangeModel.objects.get(id=c) for c in changes]
+        context["date_from"] = self.request.GET.get("date_change__gte")
+        context["date_to"] = self.request.GET.get("date_change__lte")
+        context["message"] = self.request.GET.get("message", "")
+        context["phone"] = get_settings().responsible_phone
+        context["responsible"] = get_settings().responsible_name
+        context["categories"] = ScheduleChangeCategoryModel.objects.all()
+
+        return context
+
+    def send_to_teachers(self, context, pdf_file) -> None:
+        pdf_name = f"changement_horaire_{context['date_from']}_{context['date_to']}.pdf"
+        classes = ClasseModel.objects.none()
+        for c in context["list"]:
+            if c.classes:
+                classes |= self.get_classes_from_display(c.classes)
+
+        teachers_involved = ResponsibleModel.objects.filter(
+            Q(classe__in=classes) | Q(tenure__in=classes)
+        )
+        attachments = [{"filename": pdf_name, "file": pdf_file}]
+        settings = get_settings()
+        core_settings = get_core_settings()
+        teachers_email = (
+            [t.email_school for t in teachers_involved]
+            if settings.email_school
+            else [t.email for t in teachers_involved]
+        )
+        substitutes = []
+        for c in context["list"]:
+            subs = c.teachers_substitute.filter(is_teacher=True)
+            if not subs:
+                continue
+            substitutes += (
+                [t.email_school for t in subs] if settings.email_school else [t.email for t in subs]
+            )
+
+        teachers_email += substitutes
+
+        context["url"] = core_settings.remote if settings.copy_to_remote else core_settings.root
+        send_email(
+            set(teachers_email),
+            "Changement horaire",
+            "schedule_change/email_summary.html",
+            context=context,
+            attachments=attachments,
+            use_bcc=True,
+        )
+
+    def get_classes_from_display(self, flat_classes: str) -> QuerySet:
+        classes_str = flat_classes.split(";")
+        use_teaching_display = " — " in classes_str[0]
+        classes_ids = []
+        for cl in classes_str:
+            classe = cl.split(" — ")[0] if use_teaching_display else cl
+            year = classe[0]
+            teaching = (
+                TeachingModel.objects.get(display_name=cl.split(" — ")[1])
+                if use_teaching_display
+                else get_settings().teachings.all()[0]
+            )
+            if "année" in classe:
+                classes_ids += [
+                    cm.id for cm in ClasseModel.objects.filter(year=int(year), teaching=teaching)
+                ]
+            else:
+                classe_letter = classe[1:].lower()
+                classes_ids.append(
+                    ClasseModel.objects.get(
+                        year=int(year), letter__iexact=classe_letter, teaching=teaching
+                    ).id
+                )
+
+        return ClasseModel.objects.filter(pk__in=classes_ids)
 
 
 class SummaryPDFAPI(APIView):

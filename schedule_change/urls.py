@@ -37,7 +37,7 @@ urlpatterns = [
         views.FullscreenScheduleChangeView.as_view(),
         name="fullscreen_schedule_change_html",
     ),
-    path("api/summary_pdf/", views.SummaryPDFAPI.as_view()),
+    path("api/summary_pdf/", views.SummaryPDF.as_view()),
 ]
 
 router = DefaultRouter()
