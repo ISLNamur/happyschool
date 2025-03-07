@@ -18,7 +18,7 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <b-modal
+    <BModal
         size="lg"
         title="Exporter un récapitulatif"
         cancel-title="Annuler"
@@ -26,7 +26,7 @@
         ref="exportModal"
         @hidden="resetModal"
     >
-        <template #modal-footer="">
+        <template #footer>
             <BButton
                 variant="primary"
                 :href="summaryUrl"
@@ -83,7 +83,7 @@
                 />
             </BCol>
         </BRow>
-    </b-modal>
+    </BModal>
 </template>
 
 <script>
@@ -97,7 +97,6 @@ export default {
             buttonStr: "Créer le pdf",
             sendToTeachers: false,
             message: "",
-            ws: null,
             processing: false,
             store: scheduleChangeStore(),
         };
