@@ -45,7 +45,6 @@ from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
 
 from django_weasyprint import WeasyTemplateView
-from z3c.rml import rml2pdf
 from unidecode import unidecode
 
 from core.utilities import get_menu, check_student_photo, get_scholar_year

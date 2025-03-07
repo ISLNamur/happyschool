@@ -66,7 +66,6 @@ from .serializers import *
 from .models import *
 from .tasks import task_send_info_email, notify_sanction
 
-from z3c.rml import rml2pdf
 from io import BytesIO
 from PyPDF2 import PdfWriter
 
@@ -747,38 +746,6 @@ class CasElevePDFGenAPI(LoginRequiredMixin, PermissionRequiredMixin, WeasyTempla
         context["student"] = student
         context["list"] = results
         return context
-
-
-class AskSanctionsPDFGenAPI(APIView):
-    permission_classes = (IsAuthenticated,)
-    template = ""
-    file_name = ""
-    field_date = ""
-
-    def get(self, request, format=None):
-        view_set = AskSanctionsViewSet.as_view({"get": "list"})
-        results = view_set(request._request).data["results"]
-        results = self.modify_entries(results)
-
-        field_date = "date_sanction" if self.field_date == "sanction" else "datetime_conseil"
-        date_from = request.GET.get("%s__gte" % field_date)
-        date_to = request.GET.get("%s__lte" % field_date)
-        context = {"date_from": date_from, "date_to": date_to, "list": results}
-        t = get_template(self.template)
-        rml_str = t.render(context)
-
-        pdf = rml2pdf.parseString(rml_str)
-        if not pdf:
-            return render(request, "dossier_eleve/no_student.html")
-        pdf_name = self.file_name + "_" + date_from + "_" + date_to + ".pdf"
-
-        response = HttpResponse(content_type="application/pdf")
-        response["Content-Disposition"] = 'filename; filename="' + pdf_name + '"'
-        response.write(pdf.read())
-        return response
-
-    def modify_entries(self, results):
-        return results
 
 
 class AskSanctionBasePDF(WeasyTemplateView):
