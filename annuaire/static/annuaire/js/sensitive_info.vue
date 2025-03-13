@@ -35,7 +35,7 @@
                     {{ info.email }}
                     <IBiCopy
                         class="ms-2"
-                        @click="copyToClipboard(username)"
+                        @click="copyToClipboard(info.email)"
                     />
                 </dd>
             </dl>
