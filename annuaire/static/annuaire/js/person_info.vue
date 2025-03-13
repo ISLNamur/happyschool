@@ -45,8 +45,13 @@
                         <dt class="col-5 text-end">
                             Prénom
                         </dt>
-                        <dd class="col-7">
-                            {{ person.first_name }}
+                        <dd class="col-7 d-flex justify-content-between align-items-center">
+                            <span>
+                                {{ person.first_name }}
+                            </span>
+                            <IBiCopy
+                                @click="copyToClipboardFullname()"
+                            />
                         </dd>
                         <dt
                             v-if="personType === 'student'"
@@ -278,6 +283,7 @@ import "moment/dist/locale/fr";
 Moment.locale("fr");
 
 import { useToastController } from "bootstrap-vue-next";
+import { displayStudent } from "@s:core/js/common/utilities.js";
 
 import { annuaireStore } from "./stores/index.js";
 
@@ -344,6 +350,15 @@ export default {
                 variant: "success",
                 noCloseButton: true,
             }});
+        },
+        copyToClipboardFullname: function(){
+            let fullname = "";
+            if (this.personType === "responsible") {
+                fullname = `${this.person.first_name} ${this.person.last_name}`;
+            } else if (this.personType =="student") {
+                fullname = `${displayStudent(this.person, this)} (${this.person.matricule})`;
+            }
+            this.copyToClipboard(fullname);
         },
         niceDate: function (date) {
             if (!date) return "";
