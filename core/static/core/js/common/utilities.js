@@ -27,7 +27,7 @@ function countCurrentTeaching(app) {
         teachings = teachings.filter(value => app.$store.state.settings.teachings.includes(value));
     }
     // Pinia store needs to be in the data component.
-    if ("store" in app && "settings" in app.store) {
+    if ("store" in app && "settings" in app.store && "teachings" in app.store.settings) {
         teachings = teachings.filter(value => app.store.settings.teachings.includes(value));
     }
     return teachings.length;
