@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "celery==5.4.0",
-    "channels==4.2.0",
+    "channels==4.2.2",
     "channels-redis==4.2.1",
     "daphne==4.1.2",
     "django==4.2.18",
