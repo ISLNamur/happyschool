@@ -17,4 +17,27 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.test import TestCase
+from rest_framework.status import HTTP_200_OK, HTTP_403_FORBIDDEN
+from rest_framework.test import APIRequestFactory, APITestCase, force_authenticate
+
+from django.contrib.auth.models import User
+
+from .models import ScheduleChangeTypeModel
+from .views import ScheduleChangeTypeViewSet
+
+
+class TestScheduleChangeTypeViewSet(APITestCase):
+    fixtures = ["base_random_people_auth.json", "base_random_people_core.json"]
+
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        self.dir_user = User.objects.get(username="director")
+        self.view = ScheduleChangeTypeViewSet.as_view({"get": "list"})
+
+    def test_get_change_type_list(self):
+        request = self.factory.get("/api/schedule_change_type/")
+        force_authenticate(request, user=self.dir_user)
+
+        response = self.view(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data["results"]), 6)
