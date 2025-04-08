@@ -64,6 +64,7 @@ def task_write_proeco(self, id):
                     period=data["period"],
                     absence_status=data["absence_status"],
                     cur=cursor,
+                    fdb_server=server[0],
                     commit=False,
                 )
             except DatabaseError:
