@@ -23,6 +23,8 @@
     var canAskSanction = JSON.parse('{{ can_ask_sanction|safe }}');
     var groups = {{ groups|safe }};
 </script>
-<div id="vue-app"></div>
+<div id="vue-app">
+    <img class="loading-spin" src="/static/img/spin.svg" alt="Loading" />
+</div>
 
 {% endblock %}

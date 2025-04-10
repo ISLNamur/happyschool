@@ -20,6 +20,8 @@
     const disorderResponses = {{ disorder_responses|safe }};
     const lastAccess = "{{ pia_last_access|safe }}";
 </script>
-<div id="vue-app"></div>
+<div id="vue-app">
+    <img class="loading-spin" src="/static/img/spin.svg" alt="Loading" />
+</div>
 
 {% endblock %}
