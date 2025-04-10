@@ -415,7 +415,13 @@ export default {
         },
         submitScheduleChanges: function () {
             this.loading = true;
-            axios.post("/schedule_change/api/schedule_change/", this.scheduleChanges, token)
+            const data = this.scheduleChanges.map(sC => {
+                if (sC.time_end === "") {
+                    sC.time_end = null;
+                }
+                return sC;
+            });
+            axios.post("/schedule_change/api/schedule_change/", data, token)
                 .then(() => {
                     this.$router.push("/").then(() => {
                         this.show({props: {
