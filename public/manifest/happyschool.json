@@ -1,18 +1,24 @@
 {
-    "name": "HappySchool",
-    "short_name": "HS",
-    "start_url": "/",
-    "scope": "/",
-    "display": "standalone",
-    "icons": [{
-        "src": "/static/img/logo.png",
-        "sizes": "64x64",
-        "type": "image/png"
+  "name": "HappySchool",
+  "short_name": "HS",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "/static/img/logo.png",
+      "sizes": "64x64",
+      "type": "image/png"
     },
     {
-        "src": "/static/img/logo_144.png",
-        "sizes": "144x144",
-        "type": "image/png"
-      }
-    ]
-  }
+      "src": "/static/img/logo_32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    }
+    {
+      "src": "/static/img/logo_144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    }
+  ]
+}
