@@ -117,7 +117,17 @@
             hover
             :items="exclusions"
             :fields="exclusionFields"
-        />
+        >
+            <template #cell(actions)="data">
+                <BButton
+                    size="sm"
+                    variant="danger"
+                    @click="removeExclusion(data.item, data.index)"
+                >
+                    <IBiTrash />
+                </BButton>
+            </template>
+        </BTable>
     </BRow>
     <BRow>
         <BCol>
@@ -136,6 +146,8 @@ import "vue-multiselect/dist/vue-multiselect.css";
 
 import axios from "axios";
 
+import { useModalController } from "bootstrap-vue-next";
+
 import { studentAbsenceTeacherStore } from "./stores/index.js";
 
 import { displayStudent } from "@s:core/js/common/utilities";
@@ -143,6 +155,10 @@ import { displayStudent } from "@s:core/js/common/utilities";
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
+    setup: function () {
+        const { confirm } = useModalController();
+        return { confirm };
+    },
     data: function () {
         return {
             periods: [],
@@ -164,6 +180,10 @@ export default {
                 {
                     key: "count",
                     label: "Exclusions",
+                },
+                {
+                    key: "actions",
+                    label: "",
                 }
             ],
             search: "",
@@ -184,6 +204,25 @@ export default {
             // Move to the top of the page.
             scroll(0, 0);
             return;
+        },
+        removeExclusion: function (item, idx) {
+            console.log(item, idx);
+            this.confirm({props: {
+                body: "Êtes-vous sûr de vouloir supprimer cette exclusion ?",
+                centered: true,
+                buttonSize: "sm",
+                okVariant: "danger",
+                okTitle: "Oui",
+                cancelTitle: "Annuler",
+            }})
+                .then(remove => {
+                    if (!remove) return;
+
+                    axios.delete(`/student_absence_teacher/api/absence_teacher/${item.id}/`, token)
+                        .then(() => {
+                            this.getExclusions();
+                        });
+                });
         },
         getSearchOptions: function (query) {
             // Ensure the last search is the first response.
@@ -234,6 +273,7 @@ export default {
                 .then((resp) => {
                     this.exclusions = resp.data.results.map(e => {
                         return {
+                            id: e.id,
                             dateExclusion: e.date_absence,
                             studentName: this.displayStudent(e.student),
                             period: `${e.period.start.slice(0, 5)} - ${e.period.end.slice(0, 5)}`,
