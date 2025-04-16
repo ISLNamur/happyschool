@@ -259,34 +259,14 @@ export default {
     },
     mounted: function () {
         this.store.getOptions();
-        axios.get(`/student_absence_teacher/api/absence_educ/?student__matricule=${this.studentId}&status=A&ordering=-date_absence&activate_no_justification=true`)
+        // eslint-disable-next-line no-undef
+        axios.get(`/student_absence_teacher/api/absence_educ/?student__matricule=${this.studentId}&status=A&ordering=-date_absence&activate_no_justification=true&scholar_year=${current_scholar_year}`)
             .then((resp) => {
-                this.absenceWarned = resp.data.results.map(() => false);
+                this.absenceWarned = resp.data.results.map(() => true);
                 this.lastAbsences = resp.data.results;
 
                 if (this.lastAbsences.length === 0) {
                     return;
-                }
-
-                this.student = this.lastAbsences[0].student;
-
-                // Prefill related absences.
-                let lastDate = Moment(this.lastAbsences[0].date_absence);
-                for (let i in this.lastAbsences) {
-                    let dateBefore = Moment(this.lastAbsences[i].date_absence);
-                    if (dateBefore.day() === 5) {
-                        // It is friday, add 3 days.
-                        dateBefore.add(3, "days");
-                    } else {
-                        dateBefore.add(1, "days");
-                    }
-
-                    if (dateBefore.isSameOrAfter(lastDate)) {
-                        this.absenceWarned[i] = true;
-                    } else {
-                        break;
-                    }
-                    lastDate = Moment(this.lastAbsences[i].date_absence);
                 }
 
                 axios.get(`/student_absence_teacher/api/mail_warning_template/${this.studentId}/${this.dateStart}/${this.dateEnd}/`)
