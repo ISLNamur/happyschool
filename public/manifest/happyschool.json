@@ -6,17 +6,17 @@
   "display": "standalone",
   "icons": [
     {
-      "src": "/static/img/logo.png",
+      "src": "/static/img/happyschool.png",
       "sizes": "64x64",
       "type": "image/png"
     },
     {
-      "src": "/static/img/logo_32.png",
+      "src": "/static/img/happyschool_32.png",
       "sizes": "32x32",
       "type": "image/png"
     }
     {
-      "src": "/static/img/logo_144.png",
+      "src": "/static/img/happyschool_144.png",
       "sizes": "144x144",
       "type": "image/png"
     }
