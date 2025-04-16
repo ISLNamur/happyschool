@@ -4,12 +4,11 @@ on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 4
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04]
+        os: [ubuntu-22.04, ubuntu-24.04]
 
     services:
       postgres:
@@ -29,35 +28,35 @@ jobs:
           - 5432:5432
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Install system package
-      run: sudo apt update && sudo apt install -y libldap2-dev libsasl2-dev zlib1g-dev make build-essential libssl-dev libbz2-dev libreadline-dev libsqlite3-dev wget llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev liblzma-dev libffi-dev git python3-dateutil ttf-bitstream-vera redis-server nodejs libpangocairo-1.0-0 libcairo2-dev
-    - name: Install dependencies
-      run: |
-        curl -LsSf https://astral.sh/uv/install.sh | sh
-        uv sync
-        uv run seleniumbase install geckodriver
-        npm install
-    - name: Prepare project
-      run: |
-        cp happyschool/settings.example.py happyschool/settings.py
-        sed -i 's/DEBUG = False/DEBUG = True/g' happyschool/settings.py
-        uv run ./manage.py makemigrations && uv run ./manage.py migrate
-        uv run npm run build
-      env:
-        DB_NAME: happyschool
-        DB_USER: happyschool
-        DB_PASSWORD: libreschool
-    - name: Run Tests
-      run: |
-        echo "CHECK JS/VUE FORMATTING"
-        npx eslint */static/
-        echo "CHECK PYTHON FORMATING"
-        uv run black --check --diff .
-        echo "CHECK TEST CODE"
-        uv run coverage run --source='.' manage.py test
-        uv run coverage report
-      env:
-        DB_NAME: happyschool
-        DB_USER: happyschool
-        DB_PASSWORD: libreschool
+      - uses: actions/checkout@v2
+      - name: Install system package
+        run: sudo apt update && sudo apt install -y libldap2-dev libsasl2-dev zlib1g-dev make build-essential libssl-dev libbz2-dev libreadline-dev libsqlite3-dev wget llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev liblzma-dev libffi-dev git python3-dateutil ttf-bitstream-vera redis-server nodejs libpangocairo-1.0-0 libcairo2-dev
+      - name: Install dependencies
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          uv sync
+          uv run seleniumbase install geckodriver
+          npm install
+      - name: Prepare project
+        run: |
+          cp happyschool/settings.example.py happyschool/settings.py
+          sed -i 's/DEBUG = False/DEBUG = True/g' happyschool/settings.py
+          uv run ./manage.py makemigrations && uv run ./manage.py migrate
+          uv run npm run build
+        env:
+          DB_NAME: happyschool
+          DB_USER: happyschool
+          DB_PASSWORD: libreschool
+      - name: Run Tests
+        run: |
+          echo "CHECK JS/VUE FORMATTING"
+          npx eslint */static/
+          echo "CHECK PYTHON FORMATING"
+          uv run black --check --diff .
+          echo "CHECK TEST CODE"
+          uv run coverage run --source='.' manage.py test
+          uv run coverage report
+        env:
+          DB_NAME: happyschool
+          DB_USER: happyschool
+          DB_PASSWORD: libreschool
