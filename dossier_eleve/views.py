@@ -769,9 +769,10 @@ class AskSanctionBasePDF(WeasyTemplateView):
                 r["date_sanction"] = timezone.datetime.strptime(r["date_sanction"][:19], "%Y-%m-%d")
             else:
                 r["date_sanction"] = None
-            r["datetime_conseil"] = timezone.datetime.strptime(
-                r["datetime_conseil"][:19], "%Y-%m-%dT%H:%M:%S"
-            )
+            if r["datetime_conseil"]:
+                r["datetime_conseil"] = timezone.datetime.strptime(
+                    r["datetime_conseil"][:19], "%Y-%m-%dT%H:%M:%S"
+                )
             r["demandeur"] = r["demandeur"].split(" — ")[0]
         return results
 
