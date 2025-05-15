@@ -17,10 +17,8 @@
                 >
                     <component
                         :is="icon"
-                        v-if="rowData.category"
-                        v-b-tooltip.hover="category"
                     />
-                    <em>{{ formatChange(rowData.change) }}</em>
+                    <em class="change">{{ formatChange(rowData.change) }}</em>
                 </BCol>
                 <BCol
                     :cols="fullscreen ? 2 : 1"
@@ -87,7 +85,6 @@
                         <component
                             v-if="rowData.category"
                             :is="icon"
-                            v-b-tooltip.hover="category"
                         />
                         <em>{{ formatChange(rowData.change) }}</em>
                     </td>
@@ -122,6 +119,13 @@ import Moment from "moment";
 import "moment/dist/locale/fr";
 Moment.locale("fr");
 
+import { defineAsyncComponent } from "vue";
+
+import IBiPlus from "~icons/bi/plus";
+import IBiBoxArrowRight from "~icons/bi/box-arrow-right";
+import IBiArrowLeftRight from "~icons/bi/arrow-left-right";
+import IBiRecycle from "~icons/bi/recycle";
+
 import { scheduleChangeStore } from "./stores/index.js";
 
 export default {
@@ -134,18 +138,29 @@ export default {
         fullscreen: {type: Boolean, default: false},
     },
     data: () => ({
+        test: "plus",
         store: scheduleChangeStore(),
     }),
     computed: {
         icon: function () {
             if (this.rowData.category) {
-                return `IBi${this.store.changeCategory.filter(c => c.id === this.rowData.category)[0].icon}`;
+                const categoryObj = this.store.changeCategory.find(c => c.id === this.rowData.category);
+                if (categoryObj.icon) {
+                    return categoryObj.icon;
+                    // return `IBi${categoryObj.icon[0].toUpperCase() + categoryObj.icon.slice(1)}`;
+                } else {
+                    return "";
+                }
             }
         
             return "";
         },
         category: function () {
-            if (this.rowData.category) return this.store.changeCategory.filter(c => c.id === this.rowData.category)[0].category;
+            const categoryObj = this.store.changeCategory.find(c => c.id === this.rowData.category);
+            if (categoryObj) {
+                return categoryObj.category;
+            }
+
             return "";
         },
         hide_comment: function () {
@@ -179,7 +194,13 @@ export default {
         copyEntry: function() {
             this.$emit("copy");
         }
-    }
+    },
+    components: {
+        "home": IBiBoxArrowRight,
+        "plus": IBiPlus,
+        "exchange": IBiArrowLeftRight,
+        "recycle": IBiRecycle,
+    },
 };
 </script>
 
@@ -198,5 +219,9 @@ export default {
     }
     .fade-enter, .fade-leave-to .fade-leave-active {
       opacity: 0
+    }
+
+    .change {
+        margin-left: 0.5em;
     }
 </style>

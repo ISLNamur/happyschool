@@ -58,7 +58,7 @@ class ScheduleChangeCategoryModel(models.Model):
         default="", max_length=6, help_text="Valeur hexadecimal de la couleur."
     )
     icon = models.CharField(
-        default="", max_length=50, help_text="Icône utilisée par Font Awesome 4.7."
+        default="", max_length=50, help_text="Disponible : exchange, place-move, plus or recycle"
     )
 
     def __str__(self):
