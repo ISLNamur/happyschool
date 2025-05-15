@@ -121,9 +121,10 @@ est utilisé. Pour l'installer avec un shell bash :
    uv sync
 
 
-Il existe plusieurs niveaux de configurations pour Happyschool, le plus
-bas niveau est ``happyschool/settings.py`` (chemin relatif au dossier
-racine d’Happyschool). Un fichier exemple est disponible et peut être copié :
+Il existe plusieurs fichiers de configurations pour Happyschool, le principal
+est ``happyschool/settings.py`` (chemin relatif au dossier racine
+d’Happyschool) et est nécessaire au fonctionnement d'HappySchool. Un fichier
+exemple est disponible et peut être copié :
 
 ::
 
