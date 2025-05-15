@@ -169,7 +169,7 @@ class ScheduleChangeFilter(BaseFilters):
     def search_teacher_by(self, queryset, name, value):
         if value.isdigit():
             return queryset.filter(
-                Q(teachers_replaced__id=value) | Q(teachers_substitute__id=value)
+                Q(teachers_replaced__id=value) | Q(teachers_substitute__id=value).distinct()
             )
         else:
             return queryset.filter(
@@ -177,7 +177,7 @@ class ScheduleChangeFilter(BaseFilters):
                 | Q(teachers_replaced__first_name__unaccent__istartswith=value)
                 | Q(teachers_substitute__last_name__unaccent__istartswith=value)
                 | Q(teachers_substitute__first_name__unaccent__istartswith=value)
-            )
+            ).distinct()
 
     def activate_own_changes_by(self, queryset, name, value):
         resp = ResponsibleModel.objects.get(user=self.request.user)
