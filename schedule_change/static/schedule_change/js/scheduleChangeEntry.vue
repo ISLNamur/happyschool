@@ -196,7 +196,7 @@ export default {
         }
     },
     components: {
-        "home": IBiBoxArrowRight,
+        "place-move": IBiBoxArrowRight,
         "plus": IBiPlus,
         "exchange": IBiArrowLeftRight,
         "recycle": IBiRecycle,
