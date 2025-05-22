@@ -103,12 +103,12 @@ export default {
                 document.location.reload(true);
             }, 10000);
             axios.get("/core/api/restart/", token);
-            this.show({props: {
+            this.show({
                 body: "La page sera automatiquement rafraîchie dans 10 secondes.",
                 title: "Attention",
                 variant: "danger",
                 autoHideDelay: 10000,
-            }});
+            });
         }
     }
 };

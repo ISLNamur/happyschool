@@ -346,8 +346,8 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { confirm } = useModalController();
-        return { confirm };
+        const { create } = useModalController();
+        return { create };
     },
     props: {
         goalObject: {
@@ -543,14 +543,14 @@ export default {
             this.intermediateEvaluation.push({ branch_goal: this.goalObject.id, date_evaluation: null, evaluation: null });
         },
         removeIntermediateEval: function (index) {
-            this.confirm({props:{
+            this.create({
                 body: "Êtes-vous sûr de vouloir supprimer cet élèment ?",
                 title: "Confirmation",
                 okVariant: "danger",
                 okTitle: "Oui",
                 cancelTitle: "Non",
-            }}).then((response) => {
-                if (response && "id" in this.intermediateEvaluation[index]) {
+            }).then((response) => {
+                if (response.ok && "id" in this.intermediateEvaluation[index]) {
                     axios.delete(`/pia/api/intermediate_evaluation/${this.intermediateEvaluation[index].id}/`, token);
                 }
 

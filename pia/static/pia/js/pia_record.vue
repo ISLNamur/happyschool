@@ -519,8 +519,8 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 export default {
     setup: function () {
         const { show } = useToastController();
-        const { confirm } = useModalController();
-        return { show, confirm };
+        const { create } = useModalController();
+        return { show, create };
     },
     props: {
         id: {
@@ -674,13 +674,13 @@ export default {
          */
         removeObject: function (objectType, objectIndex) {
             let app = this;
-            this.confirm({props:{
+            this.create({
                 body: "Êtes-vous sûr de vouloir supprimer l'élément ?",
                 okTitle: "Oui",
                 cancelTitle: "Non",
                 centered: true,
-            }}).then(resp => {
-                if (resp) {
+            }).then(resp => {
+                if (resp.ok) {
                     if (app[objectType][objectIndex].id >= 0) {
                         axios.delete(`/pia/api/${objectType}/` + app[objectType][objectIndex].id + "/", token)
                             .then(() => app[objectType].splice(objectIndex, 1))
@@ -728,28 +728,28 @@ export default {
             let app = this;
             app.sending = false;
             if (app.id) {
-                app.show({props: {
+                app.show( {
                     body: "Les données ont bien été sauvegardées",
                     variant: "success",
                     noCloseButton: true,
-                }});
+                });
             } else {
                 app.$router.replace(`/edit/${recordId}/${this.advanced}/`).then(() => {
-                    app.show({props: {
+                    app.show( {
                         body: "Les données ont bien été sauvegardées",
                         variant: "success",
                         noCloseButton: true,
-                    }});
+                    });
                 });
             }
         },
         showFailure: function () {
             this.sending = false;
-            this.show({props: {
+            this.show( {
                 body: "Un problème est survenu lors de l'enregistrement. Merci de vérifier que les données requises ont été complétées.",
                 variant: "danger",
                 noCloseButton: true,
-            }});
+            });
         },
         submit: function (evt) {
             if (evt) evt.preventDefault();

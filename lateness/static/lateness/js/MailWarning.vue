@@ -217,11 +217,11 @@ export default {
                 .then(() => {
                     this.sending = false;
                     this.$router.push("/").then(() => {
-                        this.show({props: {
+                        this.show( {
                             body: "Le message a bien été envoyé.",
                             variant: "success",
                             noCloseButton: true,
-                        }});
+                        });
                     });
                 })
                 .catch(err => {

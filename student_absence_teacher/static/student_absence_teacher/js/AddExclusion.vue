@@ -156,8 +156,8 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
     setup: function () {
-        const { confirm } = useModalController();
-        return { confirm };
+        const { create } = useModalController();
+        return { create };
     },
     data: function () {
         return {
@@ -207,16 +207,16 @@ export default {
         },
         removeExclusion: function (item, idx) {
             console.log(item, idx);
-            this.confirm({props: {
+            this.create({
                 body: "Êtes-vous sûr de vouloir supprimer cette exclusion ?",
                 centered: true,
                 buttonSize: "sm",
                 okVariant: "danger",
                 okTitle: "Oui",
                 cancelTitle: "Annuler",
-            }})
+            })
                 .then(remove => {
-                    if (!remove) return;
+                    if (!remove.ok) return;
 
                     axios.delete(`/student_absence_teacher/api/absence_teacher/${item.id}/`, token)
                         .then(() => {

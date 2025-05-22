@@ -88,8 +88,8 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { confirm } = useModalController();
-        return { confirm };
+        const { create } = useModalController();
+        return { create };
     },
     props: {
         pia: {
@@ -135,16 +135,16 @@ export default {
             this.$refs.disorderCare.resetSelectionId();
         },
         remove: function () {
-            this.confirm(
-                {props:{
+            this.create(
+                {
                     body: "Êtes-vous sûr de vouloir supprimer l'élément ?",
                     title: "Attention !",
                     okVariant: "danger",
                     okTitle: "Oui",
                     cancelTitle: "Non",
-                }}
+                }
             ).then((confirm) => {
-                if (confirm) {
+                if (confirm.ok) {
                     const dCIndex = this.disorderCares.findIndex(
                         sA => sA.id === this.currentDisorderCare && sA.date_start === this.currentDisorderCareObj.date_start
                     );

@@ -160,8 +160,8 @@ const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
     setup: function () {
-        const { confirm } = useModalController();
-        return { confirm };
+        const { create } = useModalController();
+        return { create };
     },
     props: {
         date: {
@@ -211,16 +211,16 @@ export default {
     methods: {
         displayStudent,
         removeJustification: function (justIndex) {
-            this.confirm({props: {
+            this.create({
                 body: "Êtes-vous sûr de vouloir supprimer cette justification",
                 centered: true,
                 buttonSize: "sm",
                 okVariant: "danger",
                 okTitle: "Oui",
                 cancelTitle: "Annuler",
-            }})
+            })
                 .then(remove => {
-                    if (!remove) return;
+                    if (!remove.ok) return;
 
                     axios.delete(`/student_absence_teacher/api/justification/${this.justifications[justIndex].id}/`, token)
                         .then(() => {

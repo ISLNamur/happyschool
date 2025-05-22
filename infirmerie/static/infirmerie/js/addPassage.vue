@@ -197,7 +197,7 @@
                         </BFormRow>
                     </div>
                     <BFormRow>
-                        <BAlert :mdole-value="true">
+                        <BAlert :model-value="true">
                             Un email sera envoyé aux différents responsables de l'élève.
                         </BAlert>
                     </BFormRow>
@@ -398,11 +398,11 @@ export default {
                 this.$emit("update");
                 this.sending = false;
                 this.$router.push("/").then(() => {
-                    this.show({props: {
+                    this.show({
                         body: "Les données ont bien été envoyées",
                         variant: "success",
                         noCloseButton: true,
-                    }});
+                    });
                 });
             }).catch(function (error) {
                 modal.sending = false;

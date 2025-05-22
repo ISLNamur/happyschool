@@ -189,10 +189,8 @@ const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 export default {
     setup: function () {
         const { show } = useToastController();
-        const modal = useModalController();
-        const confirm = modal.confirm;
-        const info = modal.show;
-        return { show, confirm, info };
+        const create = useModalController();
+        return { show, create };
     },
     props: {
         "justId": {
@@ -314,25 +312,25 @@ export default {
                 if (justMotive) {
                     // No further justification should be admissible.
                     if (justMotive.justificationmodel__motive__count >= justMotive.justificationmodel__motive__admissible_up_to) {
-                        this.confirm({props: {
+                        this.create({
                             body: `L'étudiant a atteint la limite maximum de justificatif (${justMotive.justificationmodel__motive__count}). Êtes-vous sûr de vouloir continuer ?`,
                             centered: true,
                             buttonSize: "sm",
                             okVariant: "danger",
                             okTitle: "Oui",
                             cancelTitle: "Annuler",
-                        }}).then((proceed) => {
-                            if (proceed) {
+                        }).then((proceed) => {
+                            if (proceed.ok) {
                                 resolve();
                             } else {
                                 reject();
                             }
                         });
                     } else if (justMotive.justificationmodel__motive__count +2 >= justMotive.justificationmodel__motive__admissible_up_to) {
-                        this.info({props: {
+                        this.create({
                             body: `L'étudiant a bientôt atteint la limite des justificatifs pour le motif ${justMotive.justificationmodel__motive__short_name}. Merci de prendre les dispositions nécessaire.`,
                             okOnly: true,
-                        }}).then(() => {
+                        }).then(() => {
                             resolve();
                         });
                     } else {
@@ -362,11 +360,11 @@ export default {
                             this.$router.push(`/overview/${data.date_just_start}/student_view/${data.student}/`)
                                 .then(() => {
                                     this.submitting = false;
-                                    this.show({props: {
+                                    this.show( {
                                         body: "Les données ont bien été envoyées",
                                         variant: "success",
                                         noCloseButton: true,
-                                    }});
+                                    });
                                 });
                         })
                         .catch((err) =>  {
@@ -376,11 +374,11 @@ export default {
                                 additionalInfo = err.response.data.non_field_errors.join(" ");
                             }
                             const errorMessage = `Une erreur est survenue lors de l'envoi des données. ${additionalInfo}`;
-                            this.show({props: {
+                            this.show({
                                 body: errorMessage,
                                 variant: "danger",
                                 noCloseButton: true,
-                            }});
+                            });
                         });
                 })
                 .catch(() => {
@@ -388,16 +386,16 @@ export default {
                 });
         },
         remove: function () {
-            this.confirm({props: {
+            this.create({
                 body: "Êtes-vous sûr de vouloir supprimer cette justification",
                 centered: true,
                 buttonSize: "sm",
                 okVariant: "danger",
                 okTitle: "Oui",
                 cancelTitle: "Annuler",
-            }})
+            })
                 .then(remove => {
-                    if (!remove) return;
+                    if (!remove.ok) return;
 
                     const dateJustStart = this.justification.date_just_start;
                     const studentMatricule = this.justification.student;
@@ -406,11 +404,11 @@ export default {
                             this.$router.push(`/overview/${dateJustStart}/student_view/${studentMatricule}/`)
                                 .then(() => {
                                     this.submitting = false;
-                                    this.show({props: {
+                                    this.show({
                                         body: "Les données ont bien été supprimées",
                                         variant: "success",
                                         noCloseButton: true,
-                                    }});
+                                    });
                                 });
                         });
                 });

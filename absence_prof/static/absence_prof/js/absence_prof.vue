@@ -100,12 +100,11 @@ import { absenceProfStore } from "./stores/index.js";
 import AbsenceProfEntry from "./absenceProfEntry.vue";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
-// const { show } = useModalController();
 
 export default {
     setup: function () {
-        const { confirm } = useModalController();
-        return { confirm };
+        const { create } = useModalController();
+        return { create };
     },
     data: function () {
         return {
@@ -136,20 +135,19 @@ export default {
         },
         askDelete: function (entry) {
             this.currentEntry = entry;
-            this.confirm(
-                {props: {
+            this.create(
+                {
                     body: `Êtes-vous sûr de vouloir supprimer cette absence : ${this.name} ?`,
                     noHeader: true,
                     okVariant: "danger",
                     okTitle: "Oui",
                     cancelTitle: "Annuler",
-                }}
+                }
             ).then((resp) => {
-                if (resp) {
+                if (resp.ok) {
                     this.deleteEntry();
                 }
             });
-            // this.$refs.deleteModal;
         },
         deleteEntry: function () {
             axios.delete("/absence_prof/api/absence/" + this.currentEntry.id + "/", token)

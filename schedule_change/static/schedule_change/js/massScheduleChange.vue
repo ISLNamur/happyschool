@@ -424,11 +424,11 @@ export default {
             axios.post("/schedule_change/api/schedule_change/", data, token)
                 .then(() => {
                     this.$router.push("/").then(() => {
-                        this.show({props: {
+                        this.show( {
                             body: "Les changements ont bien été créés.",
                             variant: "success",
                             noCloseButton: true,
-                        }});
+                        });
                     });
                     this.loading = false;
                 })

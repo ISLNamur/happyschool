@@ -175,11 +175,11 @@ export default {
             this.credentials = !this.credentials;
             axios.put("/annuaire/api/settings/1/",{ show_credentials: this.credentials },token)
                 .then(() => {
-                    this.show({props: {
+                    this.show({
                         body: "Sauvegardé.",
                         variant: "success",
                         noCloseButton: true
-                    }});
+                    });
                 });
         },
         /** Add a group in a permission.
@@ -199,11 +199,11 @@ export default {
                     permission.canSee = canSeeData.map(id => this.groups.find(g => g.id == id));
                     permission.availableGroups = permission.availableGroups.filter(aG => aG.id != permission.selected);
                     permission.selected = null;
-                    this.show({props: {
+                    this.show({
                         body: "Sauvegardé.",
                         variant: "success",
                         noCloseButton: true
-                    }});
+                    });
                 })
                 .catch(err => {
                     alert(err);

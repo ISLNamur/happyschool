@@ -135,8 +135,8 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
     setup: function () {
-        const { confirm } = useModalController();
-        return { confirm };
+        const { create } = useModalController();
+        return { create };
     },
     data: function () {
         return {
@@ -193,16 +193,16 @@ export default {
             this.loadEntries();
         },
         askDelete: function (entry) {
-            this.confirm({props: {
+            this.create({
                 body: "Êtes-vous sûr de vouloir supprimer l'entrée ?",
                 centered: true,
                 buttonSize: "sm",
                 okVariant: "danger",
                 okTitle: "Oui",
                 cancelTitle: "Annuler",
-            }})
+            })
                 .then((remove) => {
-                    if (!remove) return;
+                    if (!remove.ok) return;
 
                     axios.delete(`/dossier_eleve/api/cas_eleve/${entry.id}/`, token)
                         .then(() => {

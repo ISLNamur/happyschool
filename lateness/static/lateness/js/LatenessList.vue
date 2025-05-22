@@ -418,10 +418,10 @@ export default {
             this.addingStudent = true;
             axios.post(url, data, token)
                 .then(response => {
-                    if (response.data.has_sanction) this.show({props: {
+                    if (response.data.has_sanction) this.show({
                         body: `Une sanction ${response.data.sanction_id ? "a été" : "doit être"} ajoutée !`,
                         title: "Sanction !"
-                    }});
+                    });
                     this.addingStudent = false;
                     // Reload entries.
                     this.search = null;

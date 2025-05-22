@@ -95,12 +95,12 @@ export default {
                 .catch(() => {
                     this.status[index] = this.absences[index].status;
                     this.updating = false;
-                    this.show({props:{
+                    this.show({
                         body: "Une erreur est survenue lors de la mise à jour des données.",
                         title: "Erreur",
                         variant: "danger",
                         solid: true
-                    }});
+                    });
                 });
         }
     },

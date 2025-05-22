@@ -345,11 +345,11 @@ export default {
     methods: {
         copyToClipboard: function (text) {
             navigator.clipboard.writeText(text);
-            this.show({props:{
+            this.show({
                 body: "Copié !",
                 variant: "success",
                 noCloseButton: true,
-            }});
+            });
         },
         copyToClipboardFullname: function(){
             let fullname = "";

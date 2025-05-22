@@ -290,8 +290,6 @@
 <script>
 import axios from "axios";
 
-import { useModalController } from "bootstrap-vue-next";
-
 import AskSanctionsEntry from "./askSanctionsEntry.vue";
 import AskModal from "./ask_form.vue";
 import AskExportModal from "./askExportModal.vue";
@@ -304,10 +302,6 @@ import { askSanctionsStore } from "./stores/ask_sanctions.js";
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
-    setup: function () {
-        const { confirm } = useModalController();
-        return { confirm };
-    },
     data: function () {
         return {
             menuInfo: {},

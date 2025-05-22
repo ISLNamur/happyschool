@@ -515,19 +515,19 @@ export default {
                 this.loading = false;
                 if(this.form.id){
                     this.$router.push("/").then(() => {
-                        this.show({props: {
+                        this.show({
                             body: "L'appel a été envoyé.",
                             variant: "success",
                             noCloseButton: true,
-                        }});
+                        });
                     });
                 } else {
                     this.$router.push("/").then(() => {
-                        this.show({props: {
+                        this.show({
                             body: "L'appel a été créé. Traiter l'appel pour envoyé l'information par courriel.",
                             variant: "success",
                             noCloseButton: true,
-                        }});
+                        });
                     });
                 }            
             })

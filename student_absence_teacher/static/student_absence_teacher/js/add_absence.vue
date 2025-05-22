@@ -402,11 +402,11 @@ export default {
                                     this.lastUpdate = r.data.datetime_update;
                                 }
                             });
-                            this.show({props: {
+                            this.show( {
                                 body: "Les changements ont été sauvés.",
                                 variant: "success",
                                 noCloseButton: true,
-                            }});
+                            });
                             if (this.period.length === 1) {
                                 this.getStudents();
                             } else {

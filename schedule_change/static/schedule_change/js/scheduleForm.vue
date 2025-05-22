@@ -405,11 +405,11 @@ export default {
             delete this.form.id;
             delete this.entry.id;
             this.$router.push("/schedule_form/-1/");
-            this.show({props: {
+            this.show( {
                 body: "Ceci est une copie de l'entrée, vous pouvez maintenant modifier les données sans changer la précédente.",
                 variant: "info",
                 noCloseButton: true,
-            }});
+            });
         },
         addPlaces: function (newPlace) {
             this.placesOptions.push(newPlace);
@@ -527,11 +527,11 @@ export default {
                 this.errors = {};
                 const nextPage = this.store.lastPage ? `/page/${this.store.lastPage}/` : "/";
                 this.$router.push(nextPage).then(() => {
-                    this.show({props: {
+                    this.show( {
                         body: "Les données ont bien été envoyées.",
                         variant: "success",
                         noCloseButton: true,
-                    }});
+                    });
                 });
                 this.submitting = false;
             }).catch(function (error) {

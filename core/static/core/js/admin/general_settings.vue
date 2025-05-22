@@ -193,11 +193,11 @@ export default {
             axios.post("/core/api/logo/", data, token)
                 .then(() => {
                     this.logo = null;
-                    this.show({props: {
+                    this.show({
                         body: "Le logo a été envoyé, actualisez la page pour voir le nouveau logo.",
                         variant: "success",
                         noCloseButton: true,
-                    }});
+                    });
                 })
                 .catch(err => {
                     alert(err);
