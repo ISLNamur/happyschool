@@ -119,8 +119,6 @@ import Moment from "moment";
 import "moment/dist/locale/fr";
 Moment.locale("fr");
 
-import { defineAsyncComponent } from "vue";
-
 import IBiPlus from "~icons/bi/plus";
 import IBiBoxArrowRight from "~icons/bi/box-arrow-right";
 import IBiArrowLeftRight from "~icons/bi/arrow-left-right";
