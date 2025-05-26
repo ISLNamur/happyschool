@@ -29,6 +29,7 @@ from .models import (
     JustificationModel,
     JustMotiveModel,
     MailTemplateModel,
+    MailTriggerModel,
 )
 
 
@@ -64,3 +65,4 @@ admin.site.register(StudentAbsenceEducModel, StudentEducAbsenceAdmin)
 admin.site.register(JustificationModel, JustificationAdmin)
 admin.site.register(JustMotiveModel)
 admin.site.register(MailTemplateModel)
+admin.site.register(MailTriggerModel)

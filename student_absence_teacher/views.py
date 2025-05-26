@@ -67,6 +67,7 @@ from .models import (
     JustificationModel,
     JustMotiveModel,
     MailTemplateModel,
+    MailTriggerModel,
 )
 from .serializers import (
     StudentAbsenceTeacherSettingsSerializer,
@@ -264,6 +265,15 @@ class ExcludeStudentAPI(APIView):
 
         today = timezone.now()
 
+        # Don't create duplicates.
+        if StudentAbsenceTeacherModel.objects.filter(
+            student=student,
+            date_absence=today,
+            status=StudentAbsenceTeacherModel.EXCLUDED,
+            period=period,
+        ).exists():
+            return Response(status=status.HTTP_201_CREATED)
+
         exclusion = StudentAbsenceTeacherModel(
             student=student,
             date_absence=today,
@@ -272,6 +282,30 @@ class ExcludeStudentAPI(APIView):
             user=request.user,
         )
         exclusion.save()
+
+        # Check if total count triggers a mail sending.
+        scholar_year = get_scholar_year()
+        core_settings = get_core_settings()
+        student_exclusions = StudentAbsenceTeacherModel.objects.filter(
+            student=student,
+            status=StudentAbsenceTeacherModel.EXCLUDED,
+            date_absence__gte=f"{scholar_year}-{core_settings.month_scholar_year_start}-{core_settings.day_scholar_year_start}",
+        )
+        student_exclusions_count = student_exclusions.count()
+
+        if student_exclusions_count != 0:
+            for trig in MailTriggerModel.objects.all():
+                if student_exclusions_count % trig.exclusion_count_trigger == 0:
+                    responsibles = get_resp_emails(student)
+                    send_email(
+                        to=responsibles,
+                        subject=f"[Sanction] Exclusions concernant {student.fullname_classe}",
+                        email_template="student_absence_teacher/mail_exclusion.html",
+                        context={
+                            "exclusions": student_exclusions,
+                            "mail_content": trig.mail_content,
+                        },
+                    )
 
         if "lateness" in settings.INSTALLED_APPS:
             from lateness.models import LatenessSettingsModel

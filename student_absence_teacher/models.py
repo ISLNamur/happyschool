@@ -72,6 +72,14 @@ class PeriodModel(models.Model):
         return self.display
 
 
+class MailTriggerModel(models.Model):
+    exclusion_count_trigger = models.PositiveSmallIntegerField(default=3)
+    mail_content = models.TextField(default="")
+
+    def __str__(self):
+        return f"Mail tout les {self.exclusion_count_trigger} exclusions"
+
+
 class StudentAbsenceTeacherModel(models.Model):
     PRESENCE = "presence"
     LATENESS = "lateness"
