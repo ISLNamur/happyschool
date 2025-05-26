@@ -278,16 +278,17 @@ class ExcludeStudentAPI(APIView):
 
             try:
                 printer_ip = LatenessSettingsModel.objects.first().printer
-                printer = Network(printer_ip)
-                printer.charcode("AUTO")
-                printer.set(align="center")
-                printer.text("EXCLUSION\n")
-                printer.set(align="left")
-                printer.text(f" {student.fullname_classe}\n")
-                printer.text(f" Exclusion de la periode :\n")
-                printer.text(f" {period.display}\n\n")
-                printer.cut()
-                printer.close()
+                if printer_ip:
+                    printer = Network(printer_ip)
+                    printer.charcode("AUTO")
+                    printer.set(align="center")
+                    printer.text("EXCLUSION\n")
+                    printer.set(align="left")
+                    printer.text(f" {student.fullname_classe}\n")
+                    printer.text(f" Exclusion de la periode :\n")
+                    printer.text(f" {period.display}\n\n")
+                    printer.cut()
+                    printer.close()
             except OSError:
                 pass
 
