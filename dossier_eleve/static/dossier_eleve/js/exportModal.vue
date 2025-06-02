@@ -29,7 +29,7 @@
             @ok="getPdf"
             @hidden="resetModal"
         >
-            <BTabs v-model="tabIndex">
+            <BTabs v-model:index="tabIndex">
                 <BTab
                     title="Sommaire"
                     active

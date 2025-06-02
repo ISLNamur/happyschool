@@ -19,7 +19,7 @@
 
 <template>
     <div>
-        <BTabs v-model="tabIndex">
+        <BTabs v-model:index="tabIndex">
             <BTab title="Reporter">
                 <p><strong>Reporter les sanctions sélectionnées</strong></p>
                 <p>Les sanctions sélectionnées seront reportées d'une semaine</p>

@@ -45,7 +45,7 @@
                     </BButton>
                 </div>
             </template>
-            <BTabs v-model="tabIndex">
+            <BTabs v-model:index="tabIndex">
                 <BTab
                     v-if="store.settings.enable_disciplinary_council"
                     title="Conseil de discipline"
