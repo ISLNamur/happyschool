@@ -189,7 +189,7 @@ const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 export default {
     setup: function () {
         const { show } = useToastController();
-        const create = useModalController();
+        const { create } = useModalController();
         return { show, create };
     },
     props: {
