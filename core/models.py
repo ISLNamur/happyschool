@@ -43,6 +43,7 @@ class CoreSettingsModel(models.Model):
     school_city = models.CharField(max_length=100, default="", blank=True)
     school_phone = models.CharField(max_length=50, default="", blank=True)
     school_fax = models.CharField(max_length=50, default="", blank=True)
+    school_it_support_email = models.EmailField(max_length=254, default="", blank=True)
     day_scholar_year_start = models.PositiveSmallIntegerField(default=20)
     month_scholar_year_start = models.PositiveSmallIntegerField(default=8)
     student_teacher_relationship = models.CharField(
