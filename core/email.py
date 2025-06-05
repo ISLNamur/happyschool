@@ -30,6 +30,7 @@ from django.db.models.fields.files import FieldFile
 
 from email.mime.image import MIMEImage
 from .models import EmailModel, StudentModel, ResponsibleModel
+from core.views import get_core_settings
 
 
 def send_email(
@@ -46,6 +47,12 @@ def send_email(
     to = list(to)
     if not to:
         return
+
+    # Auto include core_settings.
+    if not context:
+        context = {"core_settings": get_core_settings()}
+    elif not "core_settings" in context:
+        context = {"core_settings": get_core_settings()} | context
 
     connection = get_connection()
     html_content = render_to_string(email_template, context)
