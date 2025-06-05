@@ -1,16 +1,13 @@
-<html>
-<head>
-   <meta charset="UTF-8">
-</head>
+{% extends "core/email.html" %}
 
-<body>
+{% block content %}
   <div>
       <div>
       <h2>Infirmerie</h2>
       <p>Bonjour,</p>
-      <p>Pour information, {{ eleve.last_name }} {{ eleve.first_name }} est entré(e) à l'infirmerie à {{ passage.datetime_arrive }}.</p>
+      <p>Pour information, {{ eleve.last_name }} {{ eleve.first_name }} est entré(e) à l'infirmerie le {{ passage.datetime_arrive }}.</p>
       <p>Voici le commentaire d'admission laissé à ce sujet par l'équipe de l'infirmerie :</p>
-      <p>{{ passage.motifs_admission }}</p>
+      <p style="margin-left: 10px">{{ passage.motifs_admission }}</p>
       {% if phone_number %}
       <p>Vous pouvez contacter l'infirmerie par téléphone au {{ phone_number }} pour plus de renseignements. Par ailleurs, vous serez avertis par mail lorsque l'élève quittera l'infirmerie</p>
       {% endif %}
@@ -20,9 +17,6 @@
       <div>
 	  <div>
 	      <h3>{{ eleve.last_name }} {{ eleve.first_name }}</h3>
-	  </div>
-	  <div style="float:left;margin-right:20px;">
-	      <img src="cid:{{ eleve.matricule }}.jpg"></img>
 	  </div>
       <table>
         <tbody>
@@ -108,6 +102,8 @@
           </tr>
       </table>
       </div>
+      <div>
+	      <img src="cid:{{ eleve.matricule }}.jpg"></img>
+	  </div>
   </div>
-</body>
-</html>
+{% endblock %}
