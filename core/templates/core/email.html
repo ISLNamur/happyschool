@@ -113,8 +113,7 @@
                     <span class="apple-link" style="color: #999999; font-size: 12px; text-align: center;">
                         Vous avez reçu ce courriel parce que votre enfant est inscrit à {{ core_settings.school_name }}.
                     </span>
-                    <br> Si ce n'est pas le cas ou que vous ne souhaitez pas recevoir de courriels de l'école, merci de contacter le service informatique
-                     {% if core_settings.school_it_support_email %}à <a href="mailto:{{ core_settings.school_it_support_email }}">{{ core_settings.school_it_support_email }}</a>{% endif %}.
+                    <br> Si ce n'est pas le cas ou que vous ne souhaitez pas recevoir de courriels de l'école, merci de contacter le service informatique{% if core_settings.school_it_support_email %} à <a href="mailto:{{ core_settings.school_it_support_email }}">{{ core_settings.school_it_support_email }}</a>{% endif %}.
                   </td>
                 </tr>
               </table>
