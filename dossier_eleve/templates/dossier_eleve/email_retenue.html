@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>ISLN: Retenue de {{ student.surname }} {{ student.firstname }} {{ student.classe|upper }}</title>
-</head>
-<body>
+{% extends "core/email.html" %}
+
+{% block content %}
     <p>Bonjour,</p>
     <p>Une retenue a été attribué à <strong>{{ student.surname }} {{ student.firstname }} {{ student.classe|upper }}</strong>.
         Elle a été demandé par <em>{{ retenue.demandeur }}</em> pour le motif suivant :</p>
@@ -13,5 +9,4 @@
     <p>La date de la retenue a été initiallement fixée le {{ retenue.date_sanction|date:'d N Y' }}.</p>
     <p>Pour plus d'informations, merci de contacter les éducateurs et/ou coordonnateurs relevants.</p>
     <p>L'institut Saint-Louis Namur</p>
-</body>
-</html>
+{% endblock %}

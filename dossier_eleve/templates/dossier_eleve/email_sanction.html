@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>HappySchool: Sanction concernant {{ student.fullname_classe }}</title>
-</head>
-<body>
+{% extends "core/email.html" %}
+
+{% block content %}
     <p>Bonjour,</p>
     <p>{{ student.fullname_classe }} a reçu une sanction de type «{{ sanction.sanction_decision.sanction_decision }}»
         le {{ sanction.datetime_encodage|date:"d/m/Y" }} :
@@ -14,5 +10,4 @@
     <p>Pour plus d'informations, merci de contacter les éducateurs et/ou coordonnateurs de l'étudiant.</p>
     <p>Bien à vous,</p>
     <p>L'équipe éducative de l'école</p>
-</body>
-</html>
+{% endblock %}

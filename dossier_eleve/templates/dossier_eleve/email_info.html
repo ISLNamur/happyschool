@@ -1,15 +1,10 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>HappySchool: info à propos de {{ student.fullname }} {{ student.classe|upper }}</title>
-</head>
-<body>
+{% extends "core/email.html" %}
+
+{% block content %}
     <p>Bonjour,</p>
     <p>Voici une info ({{ info_type }}) à propos de <strong>{{ student.fullname }} {{ student.classe|upper }}</strong>.
         Elle a été demandée par <em>{{ info.demandeur }}</em> pour le motif suivant :</p>
     <p>{{ info.explication_commentaire|safe }}</p>
     <br>
     <p>Pour plus d'informations, merci de contacter les éducateurs et/ou coordonnateurs relevants.</p>
-</body>
-</html>
+{% endblock %}
