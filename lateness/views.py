@@ -42,7 +42,7 @@ from rest_framework.mixins import UpdateModelMixin
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from core.models import ResponsibleModel, TeachingModel, StudentModel
+from core.models import ResponsibleModel, TeachingModel, StudentModel, NotificationLogModel
 from core.utilities import get_menu
 from core.views import BaseModelViewSet, BaseFilters, BinaryFileRenderer, get_core_settings
 from core.email import get_resp_emails, send_email
@@ -563,5 +563,17 @@ class MailWarningAPI(APIView):
                 context=context,
                 reply_to=list(resp_school),
             )
+
+        # Log notification
+        log = NotificationLogModel(
+            application="lateness",
+            related_view="MailWarningAPI",
+            student=student,
+            message=request.data.get("msg"),
+            recipients=list(recipient_email),
+            author=request.user,
+            status=NotificationLogModel.DONE,
+        )
+        log.save()
 
         return Response(status=201)
