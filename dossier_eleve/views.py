@@ -58,7 +58,7 @@ from core.views import (
 )
 from core.utilities import get_menu
 from core.utilities import get_scholar_year, check_student_photo
-from core.models import StudentModel, ResponsibleModel
+from core.models import StudentModel, ResponsibleModel, NotificationLogModel
 from core.people import People, get_classes
 from core.email import send_email, get_resp_emails
 
@@ -878,6 +878,20 @@ class WarnSanctionAPI(APIView):
             )
         sanction.notified = True
         sanction.save()
+
+        # Log notification
+        log = NotificationLogModel(
+            application="dossier_eleve",
+            related_view="WarnSanctionAPI",
+            related_object=sanction.pk,
+            student=sanction.student,
+            message=request.data.get("msg"),
+            recipients=list(recipient_email),
+            author=request.user,
+            status=NotificationLogModel.DONE,
+        )
+        log.save()
+
         return Response(status=201)
 
 
