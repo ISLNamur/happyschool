@@ -45,7 +45,7 @@ from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.filters import OrderingFilter
 from rest_framework import status
 
-from core.models import ClasseModel, StudentModel, ResponsibleModel
+from core.models import ClasseModel, StudentModel, ResponsibleModel, NotificationLogModel
 from core.utilities import get_menu, get_scholar_year
 from core.people import get_classes, People
 from core.email import send_email, get_resp_emails
@@ -1048,6 +1048,18 @@ class MailWarningAPI(APIView):
         for absence in StudentAbsenceEducModel.objects.filter(id__in=absences_id):
             absence.mail_warning = True
             absence.save()
+
+        # Log notification
+        log = NotificationLogModel(
+            application="student_absence_teacher",
+            related_view="MailWarningAPI",
+            student=student,
+            message=request.data.get("msg"),
+            recipients=list(recipient_email),
+            author=request.user,
+            status=NotificationLogModel.DONE,
+        )
+        log.save()
 
         return Response(status=201)
 
