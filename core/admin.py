@@ -34,6 +34,7 @@ from .models import (
     CourseScheduleModel,
     MenuEntryModel,
     ColumnToFieldImportModel,
+    NotificationLogModel,
 )
 
 
@@ -137,3 +138,4 @@ admin.site.register(PeriodCoreModel)
 admin.site.register(CourseScheduleModel, CourseScheduleAdmin)
 admin.site.register(MenuEntryModel)
 admin.site.register(ColumnToFieldImportModel)
+admin.site.register(NotificationLogModel)

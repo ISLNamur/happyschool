@@ -393,3 +393,30 @@ class ColumnToFieldImportModel(models.Model):
     name = models.CharField(max_length=100)
     model = models.CharField(max_length=2, choices=MODEL_CHOICES)
     column_to_field = models.JSONField()
+
+
+class NotificationLogModel(models.Model):
+    PROCESSING = "PR"
+    DONE = "DO"
+    ERROR = "ER"
+    WAITING = "WA"
+
+    STATUS_CHOICES = [
+        (PROCESSING, "Processing"),
+        (DONE, "Sent"),
+        (ERROR, "Error"),
+        (WAITING, "Waiting"),
+    ]
+
+    application = models.CharField(max_length=100)
+    related_view = models.CharField(max_length=100)
+    related_object = models.IntegerField(null=True, blank=True)
+    student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)
+    datetime_creation = models.DateTimeField(auto_now_add=True)
+    message = models.TextField(blank=True)
+    recipients = models.JSONField()
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    status = models.CharField(max_length=2, choices=STATUS_CHOICES)
+
+    def __str__(self):
+        return f"{self.datetime_creation}: {self.application} - {self.student.display}"
