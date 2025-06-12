@@ -1,15 +1,10 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>[Absence prof]: {% if new %}Nouvelle {% else %}Modification de l'{% endif %}absence de {{ absence.name }}</title>
-</head>
-<body>
+{% extends "core/email.html" %}
+
+{% block content %}
     <p>Bonjour ceci est une {% if new %}nouvelle {% else %}modification de l'{% endif %}absence.</p>
     <p>La personne suivante <strong>{{ absence.name }}</strong> sera absente du {{ absence.date_absence_start|date:'d N Y' }}
         au {{ absence.date_absence_end|date:'d N Y' }} pour le motif suivant : «<em>{{ absence.motif }}</em>» avec comme
         commentaire : «<em>{{ absence.comment }}</em>».</p>
 
     <p>Bonne journée !</p>
-</body>
-</html>
+{% endblock %}
