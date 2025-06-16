@@ -4,13 +4,15 @@
 <h2>Appel</h2>
 <p>Bonjour,<p>
 <p>Un appel a été reçu.</p>
+{% if appel.is_student %}
+<div align='justify'><p align='center'><img src='cid:{{ etudiant.matricule }}.jpg' width='90' height='136'></p></div>
 <dl>
     <dt>Concerne</dt>
     <dd><strong>{% if appel.is_student %}{{ etudiant.display }}{% else %}{{ appel.name }}{% endif %}</strong></dd>
     <dt>Objet</dt>
     <dd>{{ appel.object.display }}</dd>
     <dt>Motif</dt>
-    <dd>{{ appel.motive.display }}</dd>
+    <dd><strong>{{ appel.motive.display }}</strong></dd>
     <dt>Date et heure de l'appel</dt>
     <dd>{{ appel.datetime_appel|date:'d/m/y à H:i' }}</dd>
     <dt>Période</dt>
@@ -18,7 +20,7 @@
         Du {{ appel.date_motif_start}} {% if appel.time_motif_start %}à {{ appel.time_motif_start }}{% endif %}
         au {{ appel.date_motif_end }}  {% if appel.time_motif_end %}à {{ appel.time_motif_end }}{% endif %}
     </dd>
-    <dt>Commentaire(s)</dt>
+    <dt><strong>Commentaire(s)</strong></dt>
     <dd>{{ appel.commentaire }}</dd>
     {% if appel.is_student %}
     <dt>Email resp.</dt>
@@ -51,7 +53,5 @@
 <p>Bonne journée,</p>
 <p>L'équipe de l'accueil.</p>
 
-{% if appel.is_student %}
-<div align='justify'><p align='center'><img src='cid:{{ etudiant.matricule }}.jpg' width='183' height='277'></p></div>
 {% endif %}
 {% endblock %}
