@@ -80,30 +80,27 @@
                 </BRow>
                 <BRow>
                     <BCol>
-                        <BTable
-                            :items="content"
-                            :fields="studentColumnRawNames.slice(0, fields_number)"
-                        >
-                            <template
-                                v-for="(c, i) in studentColumnHeads.slice(0, fields_number)"
-                                #[c]="data"
-                                :key="i"
-                            >
-                                <BFormSelect
-                                    v-model="student_columns[i]"
-                                    :options="student_column_names"
+                        <BTableSimple>
+                            <BTbody>
+                                <BTr
+                                    v-for="(field, i) in testData"
+                                    :key="i"
                                 >
-                                    <template #first>
-                                        <option
-                                            :value="null"
-                                            disabled
-                                        >
-                                            Choississez le type de colonne
-                                        </option>
-                                    </template>
-                                </BFormSelect>
-                            </template>
-                        </BTable>
+                                    <BTd>
+                                        <BFormSelect
+                                            :options="student_column_names"
+                                            v-model="fieldToColumn[i]"
+                                        />
+                                    </BTd>
+                                    <BTd
+                                        v-for="(test, j) in field"
+                                        :key="j"
+                                    >
+                                        {{ test }}
+                                    </BTd>
+                                </BTr>
+                            </BTbody>
+                        </BTableSimple>
                     </BCol>
                 </BRow>
                 <div v-if="file">
@@ -179,30 +176,27 @@
                 </BRow>
                 <BRow>
                     <BCol>
-                        <BTable
-                            :items="content"
-                            :fields="teacherColumnRawNames.slice(0, fields_number)"
-                        >
-                            <template
-                                v-for="(c, i) in teacherColumnHeads.slice(0, fields_number)"
-                                #[c]="data"
-                                :key="i"
-                            >
-                                <BFormSelect
-                                    v-model="teacher_columns[i]"
-                                    :options="teacher_column_names"
+                        <BTableSimple>
+                            <BTbody>
+                                <BTr
+                                    v-for="(field, i) in testData"
+                                    :key="i"
                                 >
-                                    <template #first>
-                                        <option
-                                            :value="null"
-                                            disabled
-                                        >
-                                            Choississez le type de colonne
-                                        </option>
-                                    </template>
-                                </BFormSelect>
-                            </template>
-                        </BTable>
+                                    <BTd>
+                                        <BFormSelect
+                                            :options="teacher_column_names"
+                                            v-model="fieldToColumn[i]"
+                                        />
+                                    </BTd>
+                                    <BTd
+                                        v-for="(test, j) in field"
+                                        :key="j"
+                                    >
+                                        {{ test }}
+                                    </BTd>
+                                </BTr>
+                            </BTbody>
+                        </BTableSimple>
                     </BCol>
                 </BRow>
                 <div v-if="file">
@@ -302,14 +296,10 @@ export default {
             file: null,
             fields_number: 0,
             content: [],
-            "student_columns": new Array(student_column_names.length),
-            "student_column_names": student_column_names,
-            "teacher_columns": new Array(teacher_column_names.length),
-            "teacher_column_names": teacher_column_names,
-            studentColumnRawNames: student_column_names.map((o, i) => i.toString()),
-            studentColumnHeads: student_column_names.map((o, i) => "head(" + i + ")"),
-            teacherColumnRawNames: teacher_column_names.map((o, i) => i.toString()),
-            teacherColumnHeads: teacher_column_names.map((o, i) => "head(" + i + ")"),
+            testData: [],
+            fieldToColumn: [],
+            student_column_names: student_column_names,
+            teacher_column_names: teacher_column_names,
             progressSocket: null,
             importState: "",
         };
@@ -331,7 +321,9 @@ export default {
                     headers: {"Content-Disposition": "form-data; name=\"file\"; filename=\"" + file.name.normalize() + "\""},
                 })
                 .then(response => {
-                    this.content = JSON.parse(response.data);
+                    this.content = response.data;
+                    this.fieldToColumn = new Array(response.data[0].length);
+                    this.testData = response.data[0].map((_, colIndex) => response.data.map(row => row[colIndex]));
                     if (this.content.length > 0) {
                         this.fields_number = Object.keys(this.content[0]).length;
                     }
@@ -343,10 +335,17 @@ export default {
         importStudents: function () {
             let data = new FormData();
             let app = this;
+
             data.append("file", this.file);
             data.append("ignore_first_line", JSON.stringify(this.ignoreFirstLine));
             data.append("teaching", this.teaching);
-            data.append("columns", JSON.stringify(this.student_columns.slice(0, this.fields_number)));
+            data.append(
+                "columns",
+                JSON.stringify(
+                    Object.fromEntries(this.fieldToColumn.map((f, i) => [f, i]).filter(f => f[1] !== undefined))
+                )
+            );
+
             axios.post("/core/api/import_students/", data,
                 {
                     xsrfCookieName: "csrftoken",
@@ -368,7 +367,13 @@ export default {
             data.append("file", this.file);
             data.append("ignore_first_line", JSON.stringify(this.ignoreFirstLine));
             data.append("teaching", this.teaching);
-            data.append("columns", JSON.stringify(this.teacher_columns.slice(0, this.fields_number)));
+            data.append(
+                "columns",
+                JSON.stringify(
+                    Object.fromEntries(this.fieldToColumn.map((f, i) => [f, i]).filter(f => f[1] !== undefined))
+                )
+            );
+
             axios.post("/core/api/import_teachers/", data,
                 {
                     xsrfCookieName: "csrftoken",

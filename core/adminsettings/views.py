@@ -63,11 +63,11 @@ class TestFileAPIView(APIView):
 
         rows = []
         for row in reader:
-            rows.append({"%i" % i: x for i, x in enumerate(row)})
+            rows.append(row)
             if reader.line_num > 10:
                 break
 
-        return Response(data=json.dumps(rows), status=status.HTTP_200_OK)
+        return Response(data=rows, status=status.HTTP_200_OK)
 
 
 class ImportPeopleAPIView(APIView):
@@ -81,7 +81,7 @@ class ImportPeopleAPIView(APIView):
 
         csv_text = request.FILES["file"].read().decode("utf-8-sig")
         teaching = request.POST.get("teaching", None)
-        columns = request.POST.get("columns", "{}")
+        columns = json.loads(request.POST.get("columns", "{}"))
         ignore_first_line = json.loads(request.POST.get("ignore_first_line"))
         if not teaching:
             return Response(status=status.HTTP_400_BAD_REQUEST, data="Teaching needed.")

@@ -86,12 +86,18 @@ def task_import_people(self, csv_file, teaching, columns, ignore_first_line, peo
             },
         )
         return
-    column_index = {i: c for c, i in enumerate(json.loads(columns))}
-    import_csv = (
-        WSImportStudentCSV(teaching_model, self.request.id, column_index)
-        if people == "student"
-        else WSImportTeacherCSV(teaching_model, self.request.id, column_index)
-    )
+
+    import_csv = None
+    if people == "student":
+        import_csv = WSImportStudentCSV(teaching_model, self.request.id, columns)
+    elif people == "teacher":
+        import_csv = WSImportTeacherCSV(teaching_model, self.request.id, columns)
+        if "course_name_short" not in columns:
+            import_csv.sync_course = False
+    else:
+        print("People type not found", people)
+        return
+
     import_csv.sync(io_text, ignore_first_line=ignore_first_line, has_header=False)
 
 
