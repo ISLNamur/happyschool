@@ -279,6 +279,25 @@ class ImportResponsible(ImportBase):
 
         self.print_log("Import done.")
 
+    def format_value(self, value: Union[int, str], column: str) -> Union[int, str, date, None]:
+        if column == "birth_date":
+            if type(value) == int:
+                # Ignore dummy values
+                if value == 19000000 or value < 19900000:
+                    return date.today()
+                return date(
+                    year=int(str(value)[:4]), month=int(str(value)[4:6]), day=int(str(value)[6:])
+                )
+            elif type(value) == str:
+                if "-" in value:
+                    return value
+                if "/" in value:
+                    return date(
+                        year=int(str(value)[6:11]), month=int(value[3:5]), day=int(value[:2])
+                    )
+
+        return value
+
 
 class ImportResponsibleLDAP(ImportResponsible):
     search_login_directory = False
