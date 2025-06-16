@@ -83,6 +83,30 @@
         border-color: #34495e !important;
       }
     }
+
+  dl {
+    display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
+    width: 100%;
+    overflow: visible;
+  }
+  dl dt {
+    flex: 0 0 40%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    border-bottom: 1px solid grey;
+    padding-right:3%;
+    text-align: right;
+  }
+  dl dd {
+    margin-left: auto;
+    text-align: left;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    flex: 0 0 57%;
+    border-bottom: 1px solid grey;
+  }
     </style>
   </head>
   <body class="" style="background-color: #f6f6f6; font-family: sans-serif; -webkit-font-smoothing: antialiased; font-size: 14px; line-height: 1.4; margin: 0; padding: 0; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;">
