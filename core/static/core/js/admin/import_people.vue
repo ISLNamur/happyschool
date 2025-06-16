@@ -80,17 +80,29 @@
                 </BRow>
                 <BRow>
                     <BCol>
-                        <BTableSimple>
+                        <BTableSimple
+                            striped-columns
+                            responsive
+                        >
                             <BTbody>
                                 <BTr
                                     v-for="(field, i) in testData"
                                     :key="i"
                                 >
-                                    <BTd>
+                                    <BTd
+                                        sticky-column
+                                        class="first-column"
+                                    >
                                         <BFormSelect
                                             :options="student_column_names"
                                             v-model="fieldToColumn[i]"
-                                        />
+                                        >
+                                            <template #first>
+                                                <BFormSelectOption
+                                                    :value="undefined"
+                                                />
+                                            </template>
+                                        </BFormSelect>
                                     </BTd>
                                     <BTd
                                         v-for="(test, j) in field"
@@ -176,17 +188,29 @@
                 </BRow>
                 <BRow>
                     <BCol>
-                        <BTableSimple>
+                        <BTableSimple
+                            striped-columns
+                            responsive
+                        >
                             <BTbody>
                                 <BTr
                                     v-for="(field, i) in testData"
                                     :key="i"
                                 >
-                                    <BTd>
+                                    <BTd
+                                        sticky-column
+                                        class="first-column"
+                                    >
                                         <BFormSelect
                                             :options="teacher_column_names"
                                             v-model="fieldToColumn[i]"
-                                        />
+                                        >
+                                            <template #first>
+                                                <BFormSelectOption
+                                                    :value="undefined"
+                                                />
+                                            </template>
+                                        </BFormSelect>
                                     </BTd>
                                     <BTd
                                         v-for="(test, j) in field"
@@ -408,5 +432,9 @@ export default {
 .console {
     font-family:monospace;
     white-space: pre-wrap;
+}
+
+.first-column {
+    min-width: 10rem;
 }
 </style>
