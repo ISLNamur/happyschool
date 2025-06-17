@@ -40,6 +40,8 @@ urlpatterns = [
         views.SummaryPDF.as_view(),
         name="summary",
     ),
+    path("api/yellowpage/<str:phonenum>/", views.YellowpageAPI.as_view()),
+    path("api/emailsearcher/<str:email>/", views.EmailSearcherAPI.as_view()),
 ]
 
 router = DefaultRouter()
