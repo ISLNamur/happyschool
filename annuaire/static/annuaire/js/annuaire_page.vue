@@ -77,6 +77,19 @@
                     </BFormGroup>
                 </BCol>
             </BRow>
+            <BRow>
+                <BCol>
+                    <div class="col-lg-3">
+                        <BFormInput
+                            id="input-1"
+                            v-model="phoneNumber"
+                            type="text"
+                            placeholder="Numéro de téléphone"
+                            required
+                        />
+                    </div>
+                </BCol>
+            </BRow>
             <router-view v-slot="{ Component }">
                 <transition
                     name="slide-right"
@@ -96,6 +109,7 @@ import "vue-multiselect/dist/vue-multiselect.css";
 import axios from "axios";
 
 import Menu from "@s:core/js/common/menu_bar.vue";
+import { BCol, BRow } from "bootstrap-vue-next";
 
 export default {
     data: function () {
@@ -108,6 +122,7 @@ export default {
             search: null,
             searchOptions: [],
             searchLoading: false,
+            phoneNumber: "",
 
         };
     },
