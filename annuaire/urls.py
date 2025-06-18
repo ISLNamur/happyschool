@@ -39,6 +39,7 @@ urlpatterns = [
         views.SummaryPDF.as_view(),
         name="summary",
     ),
+    path("api/yellowpage/<str:phonenum>/",views.Yellowpage.as_view()),
 ]
 
 router = DefaultRouter()

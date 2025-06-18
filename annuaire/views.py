@@ -34,6 +34,7 @@ from django.views.generic import TemplateView
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
+from django.db.models import Q
 
 from rest_framework.views import APIView, Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
@@ -366,8 +367,8 @@ class StudentClasseAPI(APIView):
         )
         if gender:
             students = students.filter(additionalstudentinfo__gender=gender)
-        serializer = StudentSerializer(students, many=True)
-        return Response(serializer.data)
+            serializer = StudentSerializer(students, many=True)
+            return Response(serializer.data)
 
 
 class StudentGivenCourseAPI(APIView):
@@ -781,3 +782,17 @@ class SummaryPDF(WeasyTemplateView, PermissionRequiredMixin):
             }
 
         return context
+
+class Yellowpage(APIView):
+    def get(self, request, phonenum, format=None):
+        students = AdditionalStudentInfo.objects.filter(
+            Q(resp_mobile=phonenum)| 
+            Q(resp_phone=phonenum)|
+            Q(father_mobile=phonenum)|
+            Q(father_phone=phonenum)|
+            Q(mother_mobile=phonenum)|
+            Q(mother_phone=phonenum)|
+            Q(student_mobile=phonenum)
+            )
+        serializer = StudentContactInfoSerializer(students, many=True)
+        return Response(serializer.data)

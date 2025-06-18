@@ -79,15 +79,17 @@
             </BRow>
             <BRow>
                 <BCol>
-                    <div class="col-lg-3">
-                        <BFormInput
-                            id="input-1"
-                            v-model="phoneNumber"
-                            type="text"
-                            placeholder="Numéro de téléphone"
-                            required
-                        />
-                    </div>
+                    <BFormGroup>
+                        <div class="col-lg-3">
+                            <BFormInput
+                                id="phonenumber"
+                                v-model="phoneNumber"
+                                type="text"
+                                @keyup.enter="loadInfoByPhoneNumber"
+                                placeholder="Numéro de téléphone"
+                            />
+                        </div>
+                    </BFormGroup>
                 </BCol>
             </BRow>
             <router-view v-slot="{ Component }">
@@ -217,6 +219,16 @@ export default {
             }, 300);
             
         },
+        loadInfoByPhoneNumber: function () {
+            console.log("recheche du numéro : "+this.phoneNumber);
+            axios.get(`api/yellowpage/${this.phoneNumber}/`)
+                .then(response => {
+                    console.log(response.data);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        }   
     },
     mounted: function () {
         axios.get("/core/api/teaching/")
