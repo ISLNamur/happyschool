@@ -49,6 +49,7 @@ from core.models import ClasseModel, StudentModel, ResponsibleModel, Notificatio
 from core.utilities import get_menu, get_scholar_year
 from core.people import get_classes, People
 from core.email import send_email, get_resp_emails
+from core.serializers import StudentSerializer
 from core.views import (
     BaseFilters,
     PageNumberSizePagination,
@@ -1237,3 +1238,49 @@ class MassiveAttendanceAPI(APIView):
         response_data = StudentAbsenceEducSerializer(presence_done, many=True).data
 
         return Response(response_data, status=status.HTTP_201_CREATED)
+
+
+class TopExclusionsAPI(APIView):
+    """
+    A class-based view to handle GET requests for top exclusions.
+    """
+
+    permission_required = [
+        "student_absence_teacher.add_studentabsenceeducmodel",
+    ]
+
+    def get(self, request, format=None):
+        own_classes = request.GET.get("own_classes", False) == "true"
+
+        scholar_year = get_scholar_year()
+        core_settings = get_core_settings()
+        student_exclusions = StudentAbsenceTeacherModel.objects.filter(
+            status=StudentAbsenceTeacherModel.EXCLUDED,
+            date_absence__gte=f"{scholar_year}-{core_settings.month_scholar_year_start}-{core_settings.day_scholar_year_start}",
+        )
+
+        if own_classes:
+            classes = get_classes(
+                check_access=True,
+                user=self.request.user,
+                tenure_class_only=True,
+                educ_by_years="both",
+            ).values_list("id")
+            student_exclusions = student_exclusions.filter(student__classe__id__in=classes)
+
+        top_list = (
+            student_exclusions.values("student")
+            .annotate(count_exclusion=Count("student"))
+            .order_by("-count_exclusion")
+            .values_list("student", "count_exclusion")[:50]
+        )
+
+        top_list = [
+            {
+                "student": StudentSerializer(StudentModel.objects.get(matricule=s[0])).data,
+                "count": s[1],
+            }
+            for s in top_list
+        ]
+
+        return Response(top_list)

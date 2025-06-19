@@ -44,6 +44,7 @@ urlpatterns = [
         "api/massive_attendance/",
         views.MassiveAttendanceAPI.as_view(),
     ),
+    path("api/top_exclusions/", views.TopExclusionsAPI.as_view()),
 ]
 
 router = DefaultRouter()

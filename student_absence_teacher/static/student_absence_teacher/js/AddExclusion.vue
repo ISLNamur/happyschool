@@ -120,6 +120,16 @@
                 Ses classes
             </BFormCheckbox>
         </BCol>
+        <BCol>
+            <BButton
+                @click="$refs['topExclusion'].show();getTopList()"
+                variant="outline-secondary"
+                class="mt-1"
+            >
+                <IBiListOl />
+                Top Exclusions
+            </BButton>
+        </BCol>
     </BRow>
     <BRow>
         <BTable
@@ -148,6 +158,23 @@
             />
         </BCol>
     </BRow>
+    <BModal
+        ref="topExclusion"
+        ok-only
+    >
+        <BListGroup>
+            <BListGroupItem
+                v-for="item in topExclusions"
+                :key="item.student.matricule"
+                class="d-flex justify-content-between align-items-center"
+            >
+                {{ item.student.display }}
+                <BBadge variant="primary">
+                    {{ item.count }}
+                </BBadge>
+            </BListGroupItem>
+        </BListGroup>
+    </BModal>
 </template>
 
 <script>
@@ -201,6 +228,7 @@ export default {
             searchId: 0,
             filter: null,
             activate_own_classes: false,
+            topExclusions: [],
             addingStudent: false,
             currentPage: 1,
             entriesCount: 20,
@@ -209,6 +237,12 @@ export default {
     },
     methods: {
         displayStudent,
+        getTopList: function () {
+            axios.get(`/student_absence_teacher/api/top_exclusions?${this.activate_own_classes ? "own_classes=true" : ""}`)
+                .then(resp => {
+                    this.topExclusions = resp.data;
+                });
+        },
         changePage: function (page) {
             this.currentPage = page;
             this.getExclusions();
