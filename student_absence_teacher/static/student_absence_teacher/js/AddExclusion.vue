@@ -110,6 +110,16 @@
                 <IBiX />
             </BButton>
         </BCol>
+        <BCol>
+            <BFormCheckbox
+                v-model="ownClasses"
+                @update:model-value="getExclusions()"
+                switch
+                class="mt-2"
+            >
+                Ses classes
+            </BFormCheckbox>
+        </BCol>
     </BRow>
     <BRow>
         <BTable
@@ -190,6 +200,7 @@ export default {
             searchOptions: [],
             searchId: 0,
             filter: null,
+            activate_own_classes: false,
             addingStudent: false,
             currentPage: 1,
             entriesCount: 20,
@@ -269,7 +280,8 @@ export default {
         },
         getExclusions: function () {
             const studentFilter = this.filter ? `&student__matricule=${this.filter.matricule}` : "";
-            axios.get(`/student_absence_teacher/api/absence_teacher/?status=excluded&page=${this.currentPage}&ordering=-date_absence${studentFilter}`)
+            const ownClasses = this.ownClasses ? "&activate_own_classes=true" : "";
+            axios.get(`/student_absence_teacher/api/absence_teacher/?status=excluded&page=${this.currentPage}&ordering=-date_absence${studentFilter}${ownClasses}`)
                 .then((resp) => {
                     this.exclusions = resp.data.results.map(e => {
                         return {
