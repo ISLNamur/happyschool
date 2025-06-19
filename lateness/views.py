@@ -90,6 +90,7 @@ class LatenessView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
         {"value": "classe", "text": "Classe"},
         {"value": "count_lateness", "text": "Nombre de retard"},
         {"value": "activate_after_count", "text": "À partir du comptage"},
+        {"value": "activate_own_classes", "text": "Ses classes"},
     ]
 
     def get_context_data(self, **kwargs):
