@@ -78,6 +78,7 @@ from .serializers import (
     StudentAbsenceTeacherSerializer,
     JustificationSerializer,
     JustMotiveSerializer,
+    MailTemplateSerializer,
 )
 
 
@@ -976,21 +977,27 @@ class JustMotiveViewSet(ReadOnlyModelViewSet):
     pagination_class = LargePageSizePagination
 
 
-class MailWarningTemplateAPI(APIView):
+class MailTemplateViewSet(ReadOnlyModelViewSet):
+    queryset = MailTemplateModel.objects.all()
+    serializer_class = MailTemplateSerializer
     permission_required = [
         "student_absence_teacher.add_justificationmodel",
     ]
 
-    def get(self, request, student_id, date_start, date_end, format=None):
+    def retrieve(self, request, pk=None):
+        student_id = request.query_params.get("student")
+        dates = request.query_params.get("dates").split(",")
+
         try:
             student = StudentModel.objects.get(matricule=student_id)
         except ObjectDoesNotExist:
             return Response(None)
 
-        template = MailTemplateModel.objects.get_or_create(name="mail_warning")[0]
+        template = MailTemplateModel.objects.get(pk=pk)
         t = Template(template.template)
 
-        c = Context({"student": student, "date_start": date_start, "date_end": date_end})
+        c = Context({"student": student, "dates": dates})
+
         return Response(t.render(context=c))
 
 

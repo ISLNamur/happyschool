@@ -33,6 +33,7 @@ from .models import (
     PeriodEducModel,
     JustMotiveModel,
     JustificationModel,
+    MailTemplateModel,
 )
 
 
@@ -178,3 +179,9 @@ class StudentAbsenceEducSerializer(serializers.ModelSerializer):
                 message="Une absence/présence existe déjà pour cet étudiant à cette période. Actualisez la page pour mettre les données à jour.",
             )
         ]
+
+
+class MailTemplateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MailTemplateModel
+        fields = "__all__"

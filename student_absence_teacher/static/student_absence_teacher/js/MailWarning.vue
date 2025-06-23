@@ -18,127 +18,60 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <BRow>
-        <BCol>
-            <h2>Avertir les parents de l'absence</h2>
-        </BCol>
-    </BRow>
-    <BRow class="mb-1 text-right">
-        <BCol>
-            <BButton
-                @click="getPDF"
-                variant="outline-primary"
-            >
-                <IBiFileText />
-                Télécharger PDF
-            </BButton>
-        </BCol>
-    </BRow>
+    <BOverlay :show="sending">
+        <MailTemplate
+            :student-id="studentId"
+            :teachings="store.settings.teachings"
+            title="Avertir les parents de l'absence"
+            get-pdf-url="/student_absence_teacher/get_pdf_warning/"
+            get-pdf-filename="absences_non_motivees.pdf"
+            template-url="/student_absence_teacher/api/mail_warning_template/"
+            :template-context="context"
 
-    <BRow v-if="student">
-        <BCol>
-            Éleve concerné : <strong>{{ displayStudent(student) }}</strong>
-        </BCol>
-    </BRow>
-
-    <BRow>
-        <BCol>
-            <BFormGroup
-                label="Destinataires"
-                description="Si deux destinataires sont les mêmes, un seul courriel sera envoyé."
-            >
-                <BFormCheckboxGroup
-                    v-model="recipient"
-                    :options="recipientOptions"
-                />
-            </BFormGroup>
-            <BFormGroup label="Autres personnes de l'école">
-                <multiselect
-                    id="responsible-0"
-                    :internal-search="false"
-                    :options="responsibleOptions"
-                    @search-change="getResponsible"
-                    placeholder="Ajouter une autre personne de l'école"
-                    select-label=""
-                    selected-label="Sélectionné"
-                    deselect-label="Cliquer dessus pour enlever"
-                    v-model="otherRecipients"
-                    label="display"
-                    track-by="matricule"
-                    :show-no-options="false"
-                    multiple
+            @sending="send"
+        >
+            <template #side> 
+                <BCard
+                    no-body
+                    class="scrollable"
                 >
-                    <template #noResult>
-                        Aucun responsable trouvé.
-                    </template>
-                    <template #noOptions />
-                </multiselect>
-            </BFormGroup>
-        </BCol>
-        <BCol>
-            <BCard
-                no-body
-                class="scrollable"
-            >
-                <template
-                    #header
-                >
-                    <div class="d-flex justify-content-between align-items-center">
-                        <strong>Absences concernées (du {{ dateStart }} au {{ dateEnd }})</strong>
-                        <BBadge variant="primary">
-                            {{ absenceWarned.filter(a => a).length }}
-                        </BBadge>
-                    </div>
-                </template>
-                <BListGroup>
-                    <BListGroupItem
-                        v-for="absence, idx in lastAbsences"
-                        :key="absence.id"
-                        class="d-flex justify-content-between align-items-center"
-                        :variant="absence.mail_warning ? '' : 'warning'"
+                    <template
+                        #header
                     >
-                        <span>
-                            <BFormCheckbox v-model="absenceWarned[idx]">
-                                {{ absence.date_absence }}
-                                ({{ store.periodEduc.find(p => p.id === absence.period).name }})
-                            </BFormCheckbox>
-                        </span>
-                        <IBiCheck v-if="absence.mail_warning" />
-                        <IBiX v-else />
-                    </BListGroupItem>
-                </BListGroup>
-            </BCard>
-        </BCol>
-    </BRow>
-    <BRow class="mt-2">
-        <BCol>
-            <text-editor v-model="text" />
-        </BCol>
-    </BRow>
-    <BRow class="mt-2">
-        <BCol>
-            <BOverlay :show="sending">
-                <BButton
-                    variant="primary"
-                    @click="send"
-                >
-                    Envoyer
-                </BButton>
-            </BOverlay>
-        </BCol>
-    </BRow>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong>Absences concernées (du {{ dateStart }} au {{ dateEnd }})</strong>
+                            <BBadge variant="primary">
+                                {{ absenceWarned.filter(a => a).length }}
+                            </BBadge>
+                        </div>
+                    </template>
+                    <BListGroup>
+                        <BListGroupItem
+                            v-for="absence, idx in lastAbsences"
+                            :key="absence.id"
+                            class="d-flex justify-content-between align-items-center"
+                            :variant="absence.mail_warning ? '' : 'warning'"
+                        >
+                            <span>
+                                <BFormCheckbox v-model="absenceWarned[idx]">
+                                    {{ absence.date_absence }}
+                                    ({{ store.periodEduc.find(p => p.id === absence.period).name }})
+                                </BFormCheckbox>
+                            </span>
+                            <IBiCheck v-if="absence.mail_warning" />
+                            <IBiX v-else />
+                        </BListGroupItem>
+                    </BListGroup>
+                </BCard>
+            </template> 
+        </mailtemplate>
+    </BOverlay>
 </template>
 
 <script>
 import axios from "axios";
 
-import Multiselect from "vue-multiselect";
-import "vue-multiselect/dist/vue-multiselect.css";
-
-import TextEditor from "@s:core/js/common/text_editor.vue";
-
-import { getPeopleByName } from "@s:core/js/common/search.js";
-import { displayStudent } from "@s:core/js/common/utilities";
+import MailTemplate from "@s:core/js/common/MailTemplate.vue";
 
 import { studentAbsenceTeacherStore } from "./stores/index.js";
 
@@ -153,25 +86,22 @@ export default {
     },
     data: function () {
         return {
-            recipient: [],
-            recipientOptions: [
-                { "text": "Père", "value": "father" },
-                { "text": "Mère", "value": "mother" },
-                { "text": "Responsable légal", "value": "resp" },
-                { "text": "Responsable à l'école", "value": "resp_school" },
-            ],
-            responsibleOptions: [],
-            otherRecipients: [],
             lastAbsences: [],
             absenceWarned: [],
-            text: "",
-            searchId: -1,
             sending: false,
             student: null,
             store: studentAbsenceTeacherStore()
         };
     },
     computed: {
+        context: function () {
+            return { 
+                dates: this.lastAbsences.map(lA => {
+                    const periodName = this.store.periodEduc.find(p => p.id === lA.period).name;
+                    return `${lA.date_absence} ${periodName}`;
+                }).join(",")
+            };
+        },
         dateStart: function () {
             const absences = this.lastAbsences.filter((lA, i) => this.absenceWarned[i]);
             if (absences.length === 0) return "";
@@ -186,38 +116,11 @@ export default {
         },
     },
     methods: {
-        displayStudent,
-        getResponsible: function (searchQuery) {
-            this.searchId += 1;
-            let currentSearch = this.searchId;
-
-            const teachings = this.store.settings.teachings.filter(
-                // eslint-disable-next-line no-undef
-                value => user_properties.teaching.includes(value));
-            getPeopleByName(searchQuery, teachings, "responsible")
-                .then((resp) => {
-                    // Avoid that a previous search overwrites a faster following search results.
-                    if (this.searchId !== currentSearch)
-                        return;
-                    this.responsibleOptions = resp.data;
-                    // this.searching = false;
-                })
-                .catch((err) => {
-                    alert(err);
-                    // this.searching = false;
-                });
-        },
-        send: function () {
+        send: function (data) {
             const relatedAbsences = this.lastAbsences.filter((lA, i) => this.absenceWarned[i]).map(a => a.id);
-            const data = {
-                msg: this.text,
-                student_id: this.studentId,
-                recipients: this.recipient,
-                other_recipients: this.otherRecipients.map(r => r.pk),
-                absences: relatedAbsences,
-            };
+            const context = Object.assign(data, { absences: relatedAbsences});
             this.sending = true;
-            axios.post("/student_absence_teacher/api/mail_warning/", data, token)
+            axios.post("/student_absence_teacher/api/mail_warning/", context, token)
                 .then(() => {
                     this.sending = false;
                     this.$router.push("/justification/").then(() => {
@@ -233,27 +136,6 @@ export default {
                     this.sending = false;
                 });
         },
-        getPDF: function () {
-            const data = {
-                student_id: this.studentId,
-                text: this.text,
-            };
-            axios.post("/student_absence_teacher/get_pdf_warning/", data, {
-                responseType: "blob",
-                xsrfCookieName: "csrftoken",
-                xsrfHeaderName: "X-CSRFToken"
-            })
-                .then(resp => {
-                    const blob = new Blob([resp.data], { type: "application/pdf" });
-                    var link = document.createElement("a");
-                    link.href = window.URL.createObjectURL(blob);
-                    link.download = "absences_non_motivees.pdf";
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                });
-
-        },
     },
     mounted: function () {
         this.store.getOptions();
@@ -266,16 +148,10 @@ export default {
                 if (this.lastAbsences.length === 0) {
                     return;
                 }
-
-                axios.get(`/student_absence_teacher/api/mail_warning_template/${this.studentId}/${this.dateStart}/${this.dateEnd}/`)
-                    .then((templateResp) => {
-                        this.text = templateResp.data;
-                    });
             });
     },
     components: {
-        Multiselect,
-        TextEditor
+        MailTemplate
     }
 };
 </script>

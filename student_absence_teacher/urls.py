@@ -32,10 +32,6 @@ urlpatterns = [
     path("api/count_absence/<date>/<point_of_view>/<class_list>/", views.OverviewAPI.as_view()),
     path("api/count_no_justification/<student>/", views.NoJustificationCountAPI.as_view()),
     path("api/count_justification/<student>/", views.JustificationCountAPI.as_view()),
-    path(
-        "api/mail_warning_template/<student_id>/<date_start>/<date_end>/",
-        views.MailWarningTemplateAPI.as_view(),
-    ),
     path("api/mail_warning/", views.MailWarningAPI.as_view()),
     path("get_pdf_warning/", views.WarningPDF.as_view()),
     path("get_pdf_just/", views.JustListPDF.as_view()),
@@ -54,6 +50,7 @@ router.register(r"api/absence_teacher", views.StudentAbsenceTeacherViewSet)
 router.register(r"api/absence_educ", views.StudentAbsenceEducViewSet)
 router.register(r"api/justification", views.JustificationViewSet)
 router.register(r"api/just_motive", views.JustMotiveViewSet)
+router.register(r"api/mail_warning_template", views.MailTemplateViewSet)
 
 urlpatterns += router.urls
 
