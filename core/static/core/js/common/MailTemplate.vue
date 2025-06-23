@@ -69,6 +69,7 @@
                     track-by="matricule"
                     :show-no-options="false"
                     multiple
+                    ref="searchpeople"
                 >
                     <template #noResult>
                         Aucun responsable trouvé.
@@ -76,13 +77,21 @@
                     <template #noOptions />
                 </multiselect>
             </BFormGroup>
-            <BFormSelect
-                v-model="template"
-                :options="templateOptions"
-                text-field="name"
-                value-field="id"
-                @update:model-value="getTemplate"
-            />
+            <BInputGroup v-if="templateOptions.length > 0">
+                <BFormSelect
+                    v-model="template"
+                    :options="templateOptions"
+                    text-field="name"
+                    value-field="id"
+                    @update:model-value="getTemplate"
+                />
+                <BButton
+                    :disabled="!template"
+                    @click="getTemplate(template)"
+                >
+                    <IBiArrowRepeat />
+                </BButton>
+            </BInputGroup>
         </BCol>
         <BCol v-if="$slots.side">
             <slot name="side" />
@@ -141,11 +150,15 @@ export default {
         },
         templateUrl: {
             type: String,
-            default: "/app/api/template_email/"
+            default: undefined,
         },
         templateContext: {
             type: Object,
             default: () => {}
+        },
+        baseTemplate: {
+            type: String,
+            default: ""
         },
     },
     data: function () {
@@ -168,7 +181,7 @@ export default {
     },
     methods: {
         displayStudent,
-        getResponsible: function (searchQuery) {
+        getResponsible: function (searchQuery, autoAdd) {
             this.searchId += 1;
             let currentSearch = this.searchId;
 
@@ -181,7 +194,12 @@ export default {
                     if (this.searchId !== currentSearch)
                         return;
                     this.responsibleOptions = resp.data;
-                    // this.searching = false;
+
+                    if (autoAdd && this.responsibleOptions.length === 1) {
+                        this.otherRecipients.push(this.responsibleOptions[0]);
+                    } else if (autoAdd) {
+                        this.$refs.searchpeople.activate();
+                    }
                 })
                 .catch((err) => {
                     alert(err);
@@ -227,10 +245,14 @@ export default {
         },
     },
     mounted: function () {
-        axios.get(this.templateUrl)
-            .then((resp) => {
-                this.templateOptions = resp.data.results;
-            });
+        if (this.templateUrl) {
+            axios.get(this.templateUrl)
+                .then((resp) => {
+                    this.templateOptions = resp.data.results;
+                });
+        }
+
+        this.text = this.baseTemplate;
     },
     components: {
         Multiselect,
