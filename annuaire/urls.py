@@ -40,6 +40,8 @@ urlpatterns = [
         name="summary",
     ),
     path("api/yellowpage/<str:phonenum>/",views.Yellowpage.as_view()),
+    path("api/course/<str:keyword>",views.CourseAPI.as_view()),
+    path("api/given_course/<int:course_id>/",views.GivenCourseAPI.as_view()),
 ]
 
 router = DefaultRouter()
