@@ -785,19 +785,34 @@ class SummaryPDF(WeasyTemplateView, PermissionRequiredMixin):
             }
         return context
 
-class Yellowpage(APIView):
+class YellowpageAPI(APIView):
+    permission_classes = (IsAuthenticated,)
+    
     def get(self, request, phonenum, format=None):
         students = StudentModel.objects.filter(
-            Q(additionalstudentinfo__resp_mobile__startswith=phonenum)| 
-            Q(additionalstudentinfo__resp_phone__startswith=phonenum)|
-            Q(additionalstudentinfo__father_mobile__startswith=phonenum)|
-            Q(additionalstudentinfo__father_phone__startswith=phonenum)|
-            Q(additionalstudentinfo__mother_mobile__startswith=phonenum)|
-            Q(additionalstudentinfo__mother_phone__startswith=phonenum)|
-            Q(additionalstudentinfo__student_mobile__startswith=phonenum)
+            Q(additionalstudentinfo__resp_mobile__iexact=phonenum)| 
+            Q(additionalstudentinfo__resp_phone__iexact=phonenum)|
+            Q(additionalstudentinfo__father_mobile__iexact=phonenum)|
+            Q(additionalstudentinfo__father_phone__iexact=phonenum)|
+            Q(additionalstudentinfo__mother_mobile__iexact=phonenum)|
+            Q(additionalstudentinfo__mother_phone__iexact=phonenum)|
+            Q(additionalstudentinfo__student_mobile__iexact=phonenum)
             )
         serializer = StudentSerializer(students,many=True)
         #serializer = StudentContactInfoSerializer(students, many=True)
+        return Response(serializer.data)
+
+class EmailSearcherAPI(APIView):
+    permission_classes = (IsAuthenticated,)
+    
+    def get(self, request, email, format=None):
+        students = StudentModel.objects.filter(
+            Q(additionalstudentinfo__resp_email__iexact=email)| 
+            Q(additionalstudentinfo__mother_email__iexact=email)|
+            Q(additionalstudentinfo__father_email__iexact=email)|
+            Q(additionalstudentinfo__student_email__iexact=email)
+            )
+        serializer = StudentSerializer(students,many=True)
         return Response(serializer.data)
 
 class CourseAPI(APIView):

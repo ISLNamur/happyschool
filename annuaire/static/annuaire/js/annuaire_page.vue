@@ -53,9 +53,8 @@
                         <BFormSelect
                             v-model="advancedSearchSelected"
                             :options="advancedSearchOptions"
-                            :select-size="3"
+                            :select-size="1"
                         />
-                        <div>Selected: {{ advancedSearchSelected.value }}</div>
                     </BFormGroup>
                 </BCol>
                 <BCol>
@@ -148,8 +147,9 @@ export default {
             phoneNumberResults:[],
             advancedSearchSelected: {value:"default",desc:"Rechercher un étudiant, une classe, un professeur, …"},
             advancedSearchOptions:[
-                {text:"Normal",value:{value:"default",desc:"Rechercher un étudiant, une classe, un professeur, …"}},
+                {text:"Normale",value:{value:"default",desc:"Rechercher un étudiant, une classe, un professeur, …"}},
                 {text:"Par téléphone",value:{value:"phone",desc:"Rechercher par numéro de téléphone fix ou GSM ex: 0470.00.00.00 …"}},
+                {text:"Par e-mail",value:{value:"email",desc:"Rechercher par e-mail ex: adresse@email.be"}},
             ],
             
 
@@ -162,7 +162,7 @@ export default {
                 this.$router.push(`/classe/${option.id}/`);
                 return;
             }else if(option.type == "phone"){
-                this.$router.push(`/person/student/${option.id}/contact/`);
+                this.$router.push(`/person/student/${option.id}/contact`);
             }
             else {
                 this.$router.push(`/person/${option.type}/${option.id}/`);
@@ -184,10 +184,26 @@ export default {
             console.log(query);
             if (this.advancedSearchSelected.value == "phone")
             {
-                console.log();
-                //this.loadInfoByPhoneNumber(query);
-                console.log("recheche du numéro : "+query);
+                query = this.numberPhoneConvertor(query);
+                console.log("convert and query: "+query);
                 axios.get(`api/yellowpage/${query}/`)
+                    .then(response => {
+                        console.log(response.data);
+                        const options = response.data.map(p => {
+                            return {
+                                display: p.display,
+                                id: p.matricule,
+                                type: "phone",
+                            };
+                        });
+                        this.searchOptions = options;
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+            }
+            else if(this.advancedSearchSelected.value == "email"){
+                axios.get(`api/emailsearcher/${query}/`)
                     .then(response => {
                         console.log(response.data);
                         const options = response.data.map(p => {
@@ -274,7 +290,22 @@ export default {
                 }
             }, 300);
             
-        }, 
+        },
+        numberPhoneConvertor(numberPhone){
+            var numberPhoneConverted;
+            if(numberPhone.length == 10){
+                console.log("is Mobile");
+                numberPhoneConverted = `${numberPhone.substring(0,4)}.${numberPhone.substring(4,6)}.${numberPhone.substring(6,8)}.${numberPhone.substring(8,10)}`; 
+            }else if (numberPhone.length == 9){
+                console.log("is Fix");
+                numberPhoneConverted = `${numberPhone.substring(0,3)}.${numberPhone.substring(3,5)}.${numberPhone.substring(5,7)}.${numberPhone.substring(7,9)}`; 
+            }
+            else{
+                numberPhoneConverted = numberPhone;
+            }
+            console.log(numberPhoneConverted);
+            return numberPhoneConverted;
+        } 
     },
     mounted: function () {
         axios.get("/core/api/teaching/")
