@@ -39,8 +39,8 @@ from django.db.models import Q
 from rest_framework.views import APIView, Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAuthenticated, BasePermission, IsAdminUser
+
 
 from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
@@ -784,9 +784,14 @@ class SummaryPDF(WeasyTemplateView, PermissionRequiredMixin):
                 ),
             }
         return context
-
+class ContactPermission(BasePermission):
+    message = 'Adding customers not allowed.'
+    def has_permission(self,request, view):
+        allowed_groups = get_settings().can_see_student_contact.all()
+        return request.user.groups.intersection(allowed_groups).exists()
+        
 class YellowpageAPI(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,ContactPermission)
     
     def get(self, request, phonenum, format=None):
         students = StudentModel.objects.filter(

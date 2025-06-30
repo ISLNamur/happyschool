@@ -48,15 +48,7 @@
                         />
                     </BFormGroup>
                 </BCol>
-                <BCol md="2">
-                    <BFormGroup label="Type de recherche :">
-                        <BFormSelect
-                            v-model="advancedSearchSelected"
-                            :options="advancedSearchOptions"
-                            :select-size="1"
-                        />
-                    </BFormGroup>
-                </BCol>
+
                 <BCol>
                     <BFormGroup
                         label="Recherche :"
@@ -84,6 +76,28 @@
                             <template #noOptions />
                         </multiselect>
                     </BFormGroup>
+                </BCol>
+                <BCol md="2">
+                    <BButton
+                        v-b-toggle.collapseAdvancedSearch
+                        variant="outline-primary"
+                    >
+                        Recherche avancée
+                    </BButton>
+                    <BCollapse
+                        id="collapseAdvancedSearch"
+                        class="mt-2"
+                    >
+                        <BFormGroup 
+                            label="Type de recherche :"
+                        >
+                            <BFormSelect
+                                v-model="advancedSearchSelected"
+                                :options="advancedSearchOptions"
+                                :select-size="1"
+                            />
+                        </BFormGroup>
+                    </BCollapse>
                 </BCol>
             </BRow>
             <BRow>
@@ -128,7 +142,7 @@ import "vue-multiselect/dist/vue-multiselect.css";
 import axios from "axios";
 
 import Menu from "@s:core/js/common/menu_bar.vue";
-import { BCol, BFormGroup, BRow } from "bootstrap-vue-next";
+import { BCol, BFormGroup, BRow,BCollapse } from "bootstrap-vue-next";
 import { RouterLink } from "vue-router";
 import { options } from "@fullcalendar/core/preact.js";
 
@@ -151,9 +165,6 @@ export default {
                 {text:"Par téléphone",value:{value:"phone",desc:"Rechercher par numéro de téléphone fix ou GSM ex: 0470.00.00.00 …"}},
                 {text:"Par e-mail",value:{value:"email",desc:"Rechercher par e-mail ex: adresse@email.be"}},
             ],
-            
-
-
         };
     },
     methods: {
