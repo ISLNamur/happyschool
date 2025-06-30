@@ -261,6 +261,14 @@ class SanctionStatisticsModel(models.Model):
         return self.display
 
 
+class InfoStatisticsModel(models.Model):
+    display = models.CharField(max_length=100)
+    info = models.ManyToManyField(InfoEleve)
+
+    def __str__(self):
+        return self.display
+
+
 class CasEleve(models.Model):
     student = models.ForeignKey(
         StudentModel, on_delete=models.SET_NULL, to_field="matricule", null=True, blank=True

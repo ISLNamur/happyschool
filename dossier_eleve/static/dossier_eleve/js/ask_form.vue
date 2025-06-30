@@ -350,7 +350,7 @@ export default {
             demandeurOptions: [],
             demandeurLoading: false,
             searchId: 0,
-            stats: {},
+            stats: [],
             timeSanction: null,
             visibilityOptions: [],
             errors: {},
@@ -375,7 +375,7 @@ export default {
                 // Get statistics.
                 axios.get("/dossier_eleve/api/statistics/" + this.name.matricule + "/")
                     .then(response => {
-                        this.stats = JSON.parse(response.data);
+                        this.stats = response.data.filter(s => s.type === "sanction-decision");
                     })
                     .catch(function (error) {
                         alert(error);

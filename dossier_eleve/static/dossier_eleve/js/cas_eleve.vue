@@ -156,100 +156,100 @@
                             </BFormGroup>
                         </BCol>
                     </BFormRow>
-                    <div v-if="infoOrSanction == 'info'">
-                        <BFormRow>
-                            <BCol>
-                                <BFormGroup
-                                    label="Info"
-                                    label-for="input-info"
-                                    :state="inputStates.info_id"
+                    <BFormRow>
+                        <BCol
+                            sm="7"
+                            v-if="infoOrSanction == 'info'"
+                        >
+                            <BFormGroup
+                                label="Info"
+                                label-for="input-info"
+                                :state="inputStates.info_id"
+                            >
+                                <BFormSelect
+                                    id="input-info"
+                                    v-model="form.info_id"
+                                    :options="infoOptions"
                                 >
-                                    <BFormSelect
-                                        id="input-info"
-                                        v-model="form.info_id"
-                                        :options="infoOptions"
-                                    >
-                                        <template #first>
-                                            <option
-                                                :value="null"
-                                                disabled
-                                            >
-                                                Choisissez un type d'info
-                                            </option>
-                                        </template>
-                                    </BFormSelect>
-                                    <template #invalid-feedback>
-                                        {{ errorMsg('info_id') }}
+                                    <template #first>
+                                        <option
+                                            :value="null"
+                                            disabled
+                                        >
+                                            Choisissez un type d'info
+                                        </option>
                                     </template>
-                                </BFormGroup>
-                            </BCol>
-                        </BFormRow>
-                    </div>
-                    <div v-if="infoOrSanction == 'sanction-decision'">
-                        <BFormRow>
-                            <BCol sm="7">
-                                <BFormGroup
-                                    label="Info disciplinaire"
-                                    label-for="input-info"
-                                    :state="inputStates.sanction_decision_id"
+                                </BFormSelect>
+                                <template #invalid-feedback>
+                                    {{ errorMsg('info_id') }}
+                                </template>
+                            </BFormGroup>
+                        </BCol>
+                        <BCol
+                            sm="7"
+                            v-if="infoOrSanction == 'sanction-decision'"
+                        >
+                            <BFormGroup
+                                label="Info disciplinaire"
+                                label-for="input-info"
+                                :state="inputStates.sanction_decision_id"
+                            >
+                                <BFormSelect
+                                    id="input-info"
+                                    v-model="form.sanction_decision_id"
+                                    :options="sanctionDecisionOptions"
                                 >
-                                    <BFormSelect
-                                        id="input-info"
-                                        v-model="form.sanction_decision_id"
-                                        :options="sanctionDecisionOptions"
-                                    >
-                                        <template #first>
-                                            <option
-                                                :value="null"
-                                                disabled
-                                            >
-                                                Choisissez dans la liste
-                                            </option>
-                                        </template>
-                                    </BFormSelect>
-                                    <template #invalid-feedback>
-                                        {{ errorMsg('sanction_decision_id') }}
+                                    <template #first>
+                                        <option
+                                            :value="null"
+                                            disabled
+                                        >
+                                            Choisissez dans la liste
+                                        </option>
                                     </template>
-                                </BFormGroup>
-                                <BFormGroup
-                                    label="Date de la sanction"
-                                    label-for="input-date-sanction"
-                                    :state="inputStates.date_sanction"
+                                </BFormSelect>
+                                <template #invalid-feedback>
+                                    {{ errorMsg('sanction_decision_id') }}
+                                </template>
+                            </BFormGroup>
+                            <BFormGroup
+                                label="Date de la sanction"
+                                label-for="input-date-sanction"
+                                :state="inputStates.date_sanction"
+                            >
+                                <BFormInput
+                                    id="input-date-sanction"
+                                    type="date"
+                                    v-model="form.date_sanction"
+                                />
+                                <template #invalid-feedback>
+                                    {{ errorMsg('date_sanction') }}
+                                </template>
+                            </BFormGroup>
+                            <BFormGroup
+                                v-if="form.sanction_faite !== null"
+                                label-for="input-sanction-faite"
+                            >
+                                <BFormCheckbox
+                                    id="input-sanction-faite"
+                                    v-model="form.sanction_faite"
                                 >
-                                    <BFormInput
-                                        id="input-date-sanction"
-                                        type="date"
-                                        v-model="form.date_sanction"
-                                    />
-                                    <template #invalid-feedback>
-                                        {{ errorMsg('date_sanction') }}
-                                    </template>
-                                </BFormGroup>
-                                <BFormGroup
-                                    v-if="form.sanction_faite !== null"
-                                    label-for="input-sanction-faite"
+                                    Sanction faite ?
+                                </BFormCheckbox>
+                            </BFormGroup>
+                        </BCol>
+                        <BCol sm="5">
+                            <BListGroup>
+                                <BListGroupItem
+                                    class="d-flex justify-content-between align-items-center"
+                                    v-for="(val, index) in relatedStats"
+                                    :key="index"
                                 >
-                                    <BFormCheckbox
-                                        id="input-sanction-faite"
-                                        v-model="form.sanction_faite"
-                                    >
-                                        Sanction faite ?
-                                    </BFormCheckbox>
-                                </BFormGroup>
-                            </BCol>
-                            <BCol sm="5">
-                                <BListGroup>
-                                    <BListGroupItem
-                                        class="d-flex justify-content-between align-items-center"
-                                        v-for="(val, index) in stats"
-                                        :key="index"
-                                    >
-                                        <strong>{{ val.display }} :</strong> {{ val.value }}
-                                    </BListGroupItem>
-                                </BListGroup>
-                            </BCol>
-                        </BFormRow>
-                    </div>
+                                    <strong>{{ val.display }} :</strong> {{ val.value }}
+                                </BListGroupItem>
+                            </BListGroup>
+                        </BCol>
+                    </BFormRow>
                     <BFormRow v-if="infoOrSanction">
                         <BCol>
                             <BFormGroup
@@ -395,7 +395,7 @@ export default {
             demandeurOptions: [],
             demandeurLoading: false,
             searchId: 0,
-            stats: {},
+            stats: [],
             errors: {},
             inputStates: {
                 name: null,
@@ -419,7 +419,7 @@ export default {
                 // Get statistics.
                 axios.get("/dossier_eleve/api/statistics/" + this.name.matricule + "/")
                     .then(response => {
-                        this.stats = JSON.parse(response.data);
+                        this.stats = response.data;
                     })
                     .catch(function (error) {
                         alert(error);
@@ -446,6 +446,15 @@ export default {
                 }
             }
         },
+    },
+    computed: {
+        relatedStats: function () {
+            if (!this.infoOrSanction) {
+                return [];
+            }
+
+            return this.stats.filter(s => s.type === this.infoOrSanction);
+        }
     },
     methods: {
         addFiles: function () {

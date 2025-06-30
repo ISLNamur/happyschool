@@ -571,7 +571,7 @@ class StatisticAPI(APIView):
         only_sanctions = request.GET.get("only_sanctions", 1) == 1
         only_asked_sanctions = request.GET.get("only_asked_sanctions", 0) == 1
         stats = self.gen_stats(request.user, student, only_sanctions)
-        return Response(json.dumps(stats))
+        return Response(stats)
 
     def gen_stats(
         self, user_from, student, only_sanctions=False, only_asked_sanctions=False, all_years=False
@@ -595,6 +595,7 @@ class StatisticAPI(APIView):
             cas_info = cas_info.filter(datetime_encodage__gte=limit_date)
 
         sanctions = SanctionStatisticsModel.objects.all()
+        infos = InfoStatisticsModel.objects.all()
 
         if only_asked_sanctions:
             sanctions = sanctions.filter(sanctions_decisions__can_ask=True).distinct()
@@ -604,12 +605,23 @@ class StatisticAPI(APIView):
             stat = {
                 "display": s.display,
                 "value": len(cas_discip.filter(sanction_decision__in=s.sanctions_decisions.all())),
+                "type": "sanction-decision",
+            }
+            stats.append(stat)
+
+        for i in infos:
+            stat = {
+                "display": i.display,
+                "value": len(cas_info.filter(info__in=i.info.all())),
+                "type": "info",
             }
             stats.append(stat)
 
         if not only_sanctions:
-            stats.append({"display": "Non disciplinaire", "value": len(cas_info)})
-            stats.append({"display": "Total disciplinaire", "value": len(cas_discip)})
+            stats.append({"display": "Non disciplinaire", "value": len(cas_info), "type": "total"})
+            stats.append(
+                {"display": "Total disciplinaire", "value": len(cas_discip), "type": "total"}
+            )
 
         return stats
 
