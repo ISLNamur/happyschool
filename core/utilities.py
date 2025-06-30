@@ -20,6 +20,7 @@
 from pathlib import Path
 import shutil
 import importlib
+import datetime
 
 from django.utils import timezone
 from django.conf import settings
@@ -70,6 +71,20 @@ def get_scholar_year() -> int:
         return year - 1
 
     return year
+
+
+def get_current_scholar_year_interval() -> tuple:
+    """Get the starting and ending date of the current scholar
+    year."""
+    from core.views import get_core_settings as get_settings
+
+    scholar_year = get_scholar_year()
+    core_settings = get_settings()
+
+    start_date = datetime.date(
+        scholar_year, core_settings.month_scholar_year_start, core_settings.day_scholar_year_start
+    )
+    return (start_date, start_date + datetime.timedelta(days=364))
 
 
 def in_scholar_year(date) -> bool:
