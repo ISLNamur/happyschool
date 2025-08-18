@@ -21,14 +21,18 @@
     <BListGroupItem>
         <BRow>
             <BCol
-                cols="3"
-                :class="isBold"
+                cols="12"
+                md="4"
+                :class="isBold + ' mb-2 mb-md-0'"
             >
-                {{ student.last_name }} {{ student.first_name }}
+                {{ displayStudent(student) }} 
             </BCol>
             <BCol>
                 <BRow>
-                    <BCol cols="4">
+                    <BCol
+                        cols="12"
+                        md="4"
+                    >
                         <BFormSelect
                             @update:model-value="selectedStatus"
                             :options="options"
@@ -42,6 +46,7 @@
                             @update="updateComment"
                             v-model="comment"
                             placeholder="Ajouter une remarque si nécessaire."
+                            class="mt-1 mt-md-0"
                         />
                     </BCol>
                 </BRow>
@@ -51,6 +56,8 @@
 </template>
 
 <script>
+import { displayStudent } from "@s:core/js/common/utilities.js";
+
 import { studentAbsenceTeacherStore } from "./stores/index.js";
 
 export default {
@@ -82,6 +89,7 @@ export default {
         }
     },
     methods: {
+        displayStudent,
         selectedStatus: function (status) {
             // Check if there is some changes.
             if ("saved" in this.student) {
