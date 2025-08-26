@@ -485,7 +485,7 @@ export default {
                     display: this.casObject.student.display,
                     fullname: `${this.casObject.student.last_name} ${this.casObject.student.first_name}`,
                     matricule: this.casObject.student_id,
-                    classe: this.casObject.student.classe.id,
+                    classe: this.casObject.student.classe ? this.casObject.student.classe.id : "Ancien·ne",
                 };
                 this.demandeur = {
                     display: this.casObject.demandeur,
