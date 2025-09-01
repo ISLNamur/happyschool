@@ -362,7 +362,7 @@ export default {
                         const students = resp.data.results.map(ab => `${ab.student.last_name} ${ab.student.first_name}`).join(", ");
                         const changes = `Les élèves suivants ont été modifiés : ${students}. `;
                         const endSentence = "Tous les autres changements ont été sauvegardés.";
-                        this.$bvModal.msgBoxOk(`${baseSentence} ${changes}${endSentence}`);
+                        this.show({ body: `${baseSentence} ${changes}${endSentence}`});
                     }
 
                     const promises = [];
