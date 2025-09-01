@@ -189,6 +189,8 @@
 <script>
 import axios from "axios";
 
+import { useModalController } from "bootstrap-vue-next";
+
 import { getPeopleByName } from "@s:core/js/common/search.js";
 
 import { piaStore } from "./stores/index.js";
@@ -202,6 +204,10 @@ import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
 export default {
+    setup: function () {
+        const { create } = useModalController();
+        return { create };
+    },
     props: {
         pia: {
             type: Number,
@@ -269,16 +275,14 @@ export default {
 
         },
         remove: function () {
-            this.$bvModal.msgBoxConfirm(
-                "Êtes-vous sûr de vouloir supprimer l'élément ?",
-                {
-                    title: "Attention !",
-                    okVariant: "danger",
-                    okTitle: "Oui",
-                    cancelTitle: "Non",
-                },
-            ).then((confirm) => {
-                if (confirm) {
+            this.create({
+                body: "Êtes-vous sûr de vouloir supprimer l'élément ?",
+                title: "Attention !",
+                okVariant: "danger",
+                okTitle: "Oui",
+                cancelTitle: "Non",
+                }).then((confirm) => {
+                if (confirm.ok) {
                     const sAIndex = this.activitySupports.findIndex(
                         sA => sA.id === this.currentActSupp.id && sA.date_start === this.currentActSupp.date_start
                     );

@@ -118,6 +118,8 @@
 <script>
 import axios from "axios";
 
+import { useModalController } from "bootstrap-vue-next";
+
 import CouncilStatement from "./council_statement.vue";
 import OtherStatement from "./other_statement.vue";
 
@@ -127,6 +129,10 @@ const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
  * Root component for showing class council.
  */
 export default {
+    setup: function () {
+        const { create } = useModalController();
+        return { create };
+    },
     props: {
         /** class_council data from database (read-only). id is -1 if new. */
         class_council: {
@@ -211,12 +217,13 @@ export default {
          */
         removeStatement: function (councilStatementIndex, statementType) {
             let app = this;
-            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer ?", {
+            this.create({
+                body: "Êtes-vous sûr de vouloir supprimer ?",
                 okTitle: "Oui",
                 cancelTitle: "Non",
                 centered: true,
             }).then(resp => {
-                if (resp) {
+                if (resp.ok) {
                     if (app.class_council.id < 0 || !("id" in app[statementType][councilStatementIndex])) {
                         app[statementType].splice(councilStatementIndex, 1);
                     } else {

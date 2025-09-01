@@ -649,12 +649,13 @@ export default {
          */
         cloneObject: function (objectType, objectIndex) {
             let app = this;
-            this.$bvModal.msgBoxConfirm("Cloner cet élément ?", {
+            this.create({
+                body: "Cloner cet élément ?",
                 okTitle: "Oui",
                 cancelTitle: "Non",
                 centered: true,
             }).then(resp => {
-                if (resp) {
+                if (resp.ok) {
                     let clonedObject = Object.assign({}, app[objectType][objectIndex]);
                     if (app[objectType][objectIndex].id >= 0) {
                         // Remove the id from the object.

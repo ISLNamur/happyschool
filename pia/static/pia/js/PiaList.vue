@@ -129,6 +129,8 @@
 <script>
 import axios from "axios";
 
+import { useModalController } from "bootstrap-vue-next";
+
 import { piaStore } from "./stores/index.js";
 import { displayStudent } from "@s:core/js/common/utilities.js";
 
@@ -147,6 +149,10 @@ export default {
             type: Number,
             default: 1
         }
+    },
+    setup: function () {
+        const { create } = useModalController();
+        return { create };
     },
     data: function () {
         return {
@@ -223,12 +229,14 @@ export default {
          * @param {Number} index Index of the pia entry.
          */
         deleteRecord: function (index) {
-            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer ce PIA ?", {
+            this.create({
+                body: "Êtes-vous sûr de vouloir supprimer ce PIA ?",
                 okTitle: "Oui",
+                okVariant: "danger",
                 cancelTitle: "Non",
                 centered: true,
             }).then(resp => {
-                if (resp) {
+                if (resp.ok) {
                     axios.delete("/pia/api/pia/" + this.entries[index].id + "/", token)
                         .then(() => this.entries.splice(index, 1))
                         .catch(err => alert(err));

@@ -123,6 +123,8 @@
 <script>
 import axios from "axios";
 
+import { useModalController } from "bootstrap-vue-next";
+
 import { piaStore } from "./stores/index.js";
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
@@ -132,6 +134,10 @@ import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
 export default {
+    setup: function () {
+        const { create } = useModalController();
+        return { create };
+    },
     props: {
         pia: {
             type: Number,
@@ -164,16 +170,14 @@ export default {
             this.currentSchedAdj = this.scheduleAdjustments[this.scheduleAdjustments.length - 1];
         },
         remove: function () {
-            this.$bvModal.msgBoxConfirm(
-                "Êtes-vous sûr de vouloir supprimer l'élément ?",
-                {
-                    title: "Attention !",
-                    okVariant: "danger",
-                    okTitle: "Oui",
-                    cancelTitle: "Non",
-                },
-            ).then((confirm) => {
-                if (confirm) {
+            this.create({
+                body: "Êtes-vous sûr de vouloir supprimer l'élément ?",
+                title: "Attention !",
+                okVariant: "danger",
+                okTitle: "Oui",
+                cancelTitle: "Non",
+            }).then((confirm) => {
+                if (confirm.ok) {
                     const sAIndex = this.scheduleAdjustments.findIndex(
                         sA => sA.id === this.currentSchedAdj.id && sA.date_start === this.currentSchedAdj.date_start
                     );

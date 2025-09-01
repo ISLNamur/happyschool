@@ -91,6 +91,8 @@
 <script>
 import axios from "axios";
 
+import { useModalController } from "bootstrap-vue-next";
+
 import ClassCouncil from "./class_council.vue";
 
 import Moment from "moment";
@@ -101,6 +103,10 @@ Moment.locale("fr");
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 export default {
+    setup: function () {
+        const { create } = useModalController();
+        return { create };
+    },
     props: {
         pia: {
             type: Number,
@@ -136,12 +142,13 @@ export default {
          */
         removeClassCouncil: function (index, list) {
             let app = this;
-            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer ce conseil de classe ?", {
+            this.create({
+                body: "Êtes-vous sûr de vouloir supprimer ce conseil de classe ?",
                 okTitle: "Oui",
                 cancelTitle: "Non",
                 centered: true,
             }).then(resp => {
-                if (resp) {
+                if (resp.ok) {
                     const councilIndex = list === "nextCouncils" ? index : index + this.nextCouncils.length;
                     if (app.councils[councilIndex].id >= 0) {
                         axios.delete(`/pia/api/class_council/${app.councils[councilIndex].id}/`, token)

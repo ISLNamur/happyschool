@@ -123,6 +123,8 @@
 <script>
 import axios from "axios";
 
+import { useModalController } from "bootstrap-vue-next";
+
 import { piaStore } from "./stores/index.js";
 
 import Multiselect from "vue-multiselect";
@@ -131,6 +133,10 @@ import "vue-multiselect/dist/vue-multiselect.css";
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
+    setup: function () {
+        const { create } = useModalController();
+        return { create };
+    },
     props: {
         pia: {
             type: Number,
@@ -168,16 +174,14 @@ export default {
 
         },
         remove: function () {
-            this.$bvModal.msgBoxConfirm(
-                "Êtes-vous sûr de vouloir supprimer l'élément ?",
-                {
-                    title: "Attention !",
-                    okVariant: "danger",
-                    okTitle: "Oui",
-                    cancelTitle: "Non",
-                },
-            ).then((confirm) => {
-                if (confirm) {
+            this.create({
+                body: "Êtes-vous sûr de vouloir supprimer l'élément ?",
+                title: "Attention !",
+                okVariant: "danger",
+                okTitle: "Oui",
+                cancelTitle: "Non",
+            }).then((confirm) => {
+                if (confirm.ok) {
                     const cRIndex = this.courseReinforcements.findIndex(
                         cR => cR.id === this.currentCourseReinfor.id && cR.date_start === this.currentCourseReinfor.date_start
                     );
