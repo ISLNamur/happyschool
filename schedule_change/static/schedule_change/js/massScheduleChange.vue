@@ -227,7 +227,7 @@ import "vue-multiselect/dist/vue-multiselect.css";
 
 import axios from "axios";
 
-import { useToastController } from "bootstrap-vue-next";
+import { useToastController, useModalController } from "bootstrap-vue-next";
 
 import { scheduleChangeStore } from "./stores/index.js";
 
@@ -236,7 +236,8 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 export default {
     setup: function () {
         const { show } = useToastController();
-        return { show };
+        const { create } = useModalController();
+        return { show, create };
     },
     data: function () {
         return {
@@ -362,16 +363,14 @@ export default {
             }
 
             if (this.scheduleChanges.length > 0) {
-                this.$bvModal.msgBoxConfirm(
-                    "Génerer de nouveaux changements vont supprimés ceux déjà présents, voulez-vous continuer ?", {
-                        cancelTitle: "Annuler",
-                        title: "Êtes-vous sûr de vouloir continuer ?",
-                        okVariant: "warning",
-                        okTitle: "Continuer"
-                    }
-                )
-                    .then((value) => {
-                        if (value) {
+                this.create({
+                    body: "Génerer de nouveaux changements vont supprimés ceux déjà présents, voulez-vous continuer ?",
+                    cancelTitle: "Annuler",
+                    title: "Êtes-vous sûr de vouloir continuer ?",
+                    okVariant: "warning",
+                    okTitle: "Continuer"
+                }).then((value) => {
+                        if (value.ok) {
                             this.makeSchedules();
                         }
                     });
