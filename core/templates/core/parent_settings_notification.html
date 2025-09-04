@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+    <head>
+        {% load vite %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        {% vite %}
+        {% vite "core/js/parent_settings_notification.js" %}
+        <style>
+            #sticky-footer {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+            }
+        </style>
+        <script>
+            const emails = {{ parents|safe }};
+            const student = "{{ student|safe }}";
+            const uuid = "{{ uuid|safe }}";
+        </script>
+    </head>
+
+    <body>
+        <main class="flex-shrink-0 mb-2">
+            <div id="vue-app" />
+        </main>
+        <footer id="sticky-footer" class="py-3 bg-secondary mt-auto text-white">
+            <div class="container text-center">
+              <small><a class="text-info" href="https://github.com/ISLNamur/happyschool" >HappySchool</a> est un logiciel libre sous licence
+                <a class="text-info" href="https://fr.wikipedia.org/wiki/GNU_Affero_General_Public_License">AGPL</a>.</small>
+            </div>
+        </footer>
+    </body>
+</html>

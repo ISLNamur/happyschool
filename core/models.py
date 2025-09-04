@@ -17,12 +17,25 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
+import uuid
+
 from django.conf import settings
 from django.db import models
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVector
 
 from .ldap import get_ldap_connection
+
+GENDER_MALE = "M"
+GENDER_FEMALE = "F"
+GENDER_OTHER = "O"
+GENDER_UNKNOWN = ""
+GENDER_CHOICES = [
+    (GENDER_FEMALE, "Female"),
+    (GENDER_MALE, "Male"),
+    (GENDER_OTHER, "Other"),
+    (GENDER_UNKNOWN, "Unknown"),
+]
 
 
 class CoreSettingsModel(models.Model):
@@ -182,6 +195,12 @@ class CourseScheduleModel(models.Model):
         return f"{self.course_name} le {self.day_of_week} à {self.period}"
 
 
+class ContactModel(models.Model):
+    phone = models.CharField(max_length=100, blank=True)
+    mobile = models.CharField(max_length=100, blank=True)
+    email = models.EmailField(null=True, blank=True)
+
+
 class StudentModel(models.Model):
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
@@ -193,6 +212,8 @@ class StudentModel(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
     )
     inactive_from = models.DateTimeField(null=True, blank=True, default=None)
+    contact = models.ForeignKey(ContactModel, on_delete=models.SET_NULL, null=True, blank=True)
+    uuid = models.UUIDField(unique=True, default=uuid.uuid4)
 
     class Meta:
         indexes = [
@@ -271,6 +292,30 @@ class AdditionalStudentInfo(models.Model):
 
     username = models.CharField(max_length=20, blank=True)
     password = models.CharField(max_length=200, blank=True)
+
+
+class StudentRelativeModel(models.Model):
+    MOTHER = "M"
+    FATHER = "F"
+    OTHER = "O"
+    RELATIONSHIP_CHOICES = [
+        (MOTHER, "Mother"),
+        (FATHER, "Father"),
+        (OTHER, "Other"),
+    ]
+
+    students = models.ManyToManyField(StudentModel)
+    is_legal_responsible = models.BooleanField(default=False)
+    relationship = models.CharField(max_length=1, choices=RELATIONSHIP_CHOICES)
+    last_name = models.CharField(max_length=200)
+    first_name = models.CharField(max_length=200)
+    job = models.CharField(max_length=500, blank=True)
+    birth_date = models.DateField(null=True, blank=True)
+    gender = models.CharField(max_length=10, default=GENDER_UNKNOWN, choices=GENDER_CHOICES)
+    contact = models.ForeignKey(ContactModel, models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.last_name} {self.first_name} ({self.relationship}) {str(list(self.students.all()))}"
 
 
 class ResponsibleModel(models.Model):
@@ -420,3 +465,15 @@ class NotificationLogModel(models.Model):
 
     def __str__(self):
         return f"{self.datetime_creation}: {self.application} - {self.student.display}"
+
+
+class ParentSettingModel(models.Model):
+    application = models.CharField(max_length=100)
+    description = models.TextField()
+
+
+class ParentNotificationSettingsModel(models.Model):
+    setting = models.ForeignKey(ParentSettingModel, on_delete=models.CASCADE)
+    student = models.ForeignKey(StudentModel, on_delete=models.CASCADE)
+    contact = models.EmailField()
+    period = models.PositiveSmallIntegerField("Number of days between notifications", default=7)

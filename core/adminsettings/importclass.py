@@ -21,6 +21,7 @@ import csv
 import re
 from typing import Union, TextIO
 from datetime import date
+from unidecode import unidecode
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
@@ -35,6 +36,10 @@ from core.models import (
     ResponsibleModel,
     CourseModel,
     GivenCourseModel,
+    StudentRelativeModel,
+    ContactModel,
+    GENDER_FEMALE,
+    GENDER_MALE,
 )
 from core.ldap import get_ldap_connection, get_django_dict_from_ldap
 from core.utilities import get_scholar_year
@@ -544,6 +549,25 @@ class ImportStudent(ImportBase):
         "username",
         "password",
     ]
+
+    relatives = [
+        "resp",
+        "mother",
+        "father",
+    ]
+
+    relative_fields = [
+        "last_name",
+        "first_name",
+        "job",
+    ]
+
+    contact_fields = [
+        "phone",
+        "mobile",
+        "email",
+    ]
+
     ldap_connection = None
     base_dn = None
 
@@ -594,11 +618,17 @@ class ImportStudent(ImportBase):
             self.base_dn = settings.AUTH_LDAP_USER_SEARCH.base_dn
         self.print_log("Importing students…(%s)" % self.teaching.display_name)
         for entry in iterable:
+            debug = False
             # First check mandatory field.
             matricule = int(self.get_value(entry, "matricule"))
             if not matricule:
                 self.print_log("No matricule found, skipping student.")
                 continue
+
+            debug = matricule == 7779
+            # if not debug:
+            #     continue
+
             first_name = self.get_value(entry, "first_name")
             if not first_name:
                 self.print_log("No first name found, skipping student.")
@@ -699,6 +729,210 @@ class ImportStudent(ImportBase):
                     info.username = ldap_info["username"]
                     info.password = ldap_info["password"]
             info.save()
+
+            # Student contact
+            # if student.contact:
+            #     contact = student.contact
+            #     for f in self.contact_fields:
+            #         val = self.get_value(entry, f"student_{f}")
+            #         if val:
+            #             setattr(contact, f, val)
+            # else:
+            #     contact_info = {
+            #         f: self.get_value(entry, f"student_{f}")
+            #         for f in self.contact_fields
+            #         if self.get_value(entry, f"student_{f}")
+            #     }
+            #     if contact_info:
+            #         contact = ContactModel.objects.create(**contact_info)
+            #         student.contact = contact
+            #         student.save()
+
+            # Relatives
+            # First check if relatives already exist.
+            relatives = StudentRelativeModel.objects.filter(students=student)
+            if relatives.exists():
+                # Update data.
+                mother_last_name = self.get_value(entry, "mother_last_name")
+                mother_first_name = self.get_value(entry, "mother_first_name")
+                if mother_last_name and mother_first_name:
+                    try:
+                        mother = relatives.get(relationship=StudentRelativeModel.MOTHER)
+                        for f in self.relative_fields:
+                            val = self.get_value(entry, f"mother_{f}")
+                            if val:
+                                setattr(mother, f, val)
+                        mother.save()
+
+                        contact = mother.contact
+                        if contact:
+                            for f in self.contact_fields:
+                                val = self.get_value(entry, f"mother_{f}")
+                                if val:
+                                    setattr(contact, f, val)
+                            contact.save()
+                    except ObjectDoesNotExist:
+                        print("Mother not found", student, mother_last_name, mother_first_name)
+                father_last_name = self.get_value(entry, "father_last_name")
+                father_first_name = self.get_value(entry, "father_first_name")
+                if father_last_name and father_first_name:
+                    try:
+                        father = relatives.get(relationship=StudentRelativeModel.FATHER)
+                        for f in self.relative_fields:
+                            val = self.get_value(entry, f"father_{f}")
+                            if val:
+                                setattr(father, f, val)
+                        father.save()
+
+                        contact = father.contact
+                        if contact:
+                            for f in self.contact_fields:
+                                val = self.get_value(entry, f"father_{f}")
+                                if val:
+                                    setattr(contact, f, val)
+                            contact.save()
+                    except ObjectDoesNotExist:
+                        print("Father not found", student, father_last_name, father_first_name)
+            else:
+                # Create or set relationship with relative.
+                # Check relative by email.
+                emails = [
+                    self.get_value(entry, f"{r}_email")
+                    for r in self.relatives
+                    if self.get_value(entry, f"{r}_email")
+                ]
+
+                if debug:
+                    print(emails)
+
+                contacts = ContactModel.objects.filter(email__in=emails)
+                if debug:
+                    print("contacts", contacts)
+                if contacts.exists():
+                    for c in contacts:
+                        try:
+                            rel = StudentRelativeModel.objects.get(contact=c)
+                            rel.students.add(student)
+                            if debug:
+                                print(rel)
+                        except ObjectDoesNotExist:
+                            continue
+                else:
+                    has_responsible = False
+
+                    resp_last_name = self.get_value(entry, "resp_last_name")
+                    resp_first_name = self.get_value(entry, "resp_first_name")
+
+                    mother_last_name = self.get_value(entry, "mother_last_name")
+                    mother_first_name = self.get_value(entry, "mother_first_name")
+                    if mother_last_name and mother_first_name:
+                        mother_rel_data = {
+                            f: self.get_value(entry, f"mother_{f}")
+                            for f in self.relative_fields
+                            if self.get_value(entry, f"mother_{f}")
+                        }
+                        mother = StudentRelativeModel(**mother_rel_data)
+                        mother.relationship = StudentRelativeModel.MOTHER
+                        mother.gender = GENDER_FEMALE
+
+                        if unidecode(mother_last_name) == unidecode(resp_last_name) and unidecode(
+                            mother_first_name
+                        ) == unidecode(resp_first_name):
+                            mother.is_legal_responsible = True
+                            has_responsible = True
+                            print("legal resp", mother_last_name)
+
+                        mother_contact_data = {
+                            f: self.get_value(entry, f"mother_{f}")
+                            for f in self.contact_fields
+                            if self.get_value(entry, f"mother_{f}")
+                        }
+                        if mother_contact_data:
+                            contact = ContactModel.objects.create(**mother_contact_data)
+                            print("creating mother contact")
+                            mother.contact = contact
+
+                        mother.save()
+                        mother.students.add(student)
+
+                    father_last_name = self.get_value(entry, "father_last_name")
+                    father_first_name = self.get_value(entry, "father_first_name")
+
+                    if debug:
+                        print(resp_last_name, resp_first_name)
+                        print(mother_last_name, mother_first_name)
+                        print(
+                            unidecode(mother_last_name) == unidecode(resp_last_name)
+                            and unidecode(mother_first_name) == unidecode(resp_first_name)
+                        )
+                        print(father_last_name, father_first_name)
+                        print(
+                            unidecode(father_last_name) == unidecode(resp_last_name)
+                            and unidecode(father_first_name) == unidecode(resp_first_name)
+                        )
+
+                    if father_last_name and father_first_name:
+                        father_rel_data = {
+                            f: self.get_value(entry, f"father_{f}")
+                            for f in self.relative_fields
+                            if self.get_value(entry, f"father_{f}")
+                        }
+                        father = StudentRelativeModel(**father_rel_data)
+                        father.relationship = StudentRelativeModel.FATHER
+                        father.gender = GENDER_MALE
+
+                        if unidecode(father_last_name) == unidecode(resp_last_name) and unidecode(
+                            father_first_name
+                        ) == unidecode(resp_first_name):
+                            father.is_legal_responsible = True
+                            has_responsible = True
+
+                        father_contact_data = {
+                            f: self.get_value(entry, f"father_{f}")
+                            for f in self.contact_fields
+                            if self.get_value(entry, f"father_{f}")
+                        }
+
+                        if father_contact_data:
+                            contact = ContactModel.objects.create(**father_contact_data)
+                            print("creating father contact")
+                            father.contact = contact
+
+                        father.save()
+                        father.students.add(student)
+
+                    # Check if responsible is not the father/mother
+                    if not has_responsible:
+                        if debug:
+                            print("Pas de responsable père/mère")
+                        resp_fields = [
+                            "last_name",
+                            "first_name",
+                        ]
+
+                        resp_rel_data = {
+                            f: self.get_value(entry, f"resp_{f}")
+                            for f in resp_fields
+                            if self.get_value(entry, f"resp_{f}")
+                        }
+                        resp = StudentRelativeModel(**resp_rel_data)
+                        resp.relationship = StudentRelativeModel.OTHER
+                        resp.is_legal_responsible = True
+
+                        resp_contact_data = {
+                            f: self.get_value(entry, f"resp_{f}")
+                            for f in self.contact_fields
+                            if self.get_value(entry, f"resp_{f}")
+                        }
+                        if resp_contact_data:
+                            contact = ContactModel.objects.create(**resp_contact_data)
+                            print("creating resp contact")
+                            resp.contact = contact
+
+                        resp.save()
+                        resp.students.add(student)
+            if debug:
+                break
 
         # Set inactives.
         self.print_log("Set inactive students…")

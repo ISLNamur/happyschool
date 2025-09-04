@@ -35,6 +35,10 @@ from .models import (
     MenuEntryModel,
     ColumnToFieldImportModel,
     NotificationLogModel,
+    StudentRelativeModel,
+    ContactModel,
+    ParentSettingModel,
+    ParentNotificationSettingsModel,
 )
 
 
@@ -139,3 +143,7 @@ admin.site.register(CourseScheduleModel, CourseScheduleAdmin)
 admin.site.register(MenuEntryModel)
 admin.site.register(ColumnToFieldImportModel)
 admin.site.register(NotificationLogModel)
+admin.site.register(StudentRelativeModel)
+admin.site.register(ContactModel)
+admin.site.register(ParentSettingModel)
+admin.site.register(ParentNotificationSettingsModel)

@@ -108,14 +108,15 @@
 <script>
 import axios from "axios";
 
-import { useToastController } from "bootstrap-vue-next";
+import { useModalController, useToastController } from "bootstrap-vue-next";
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
         const { show } = useToastController();
-        return { show };
+        const { create } = useModalController();
+        return { show, create };
     },
     data: function() {
         return {
@@ -215,9 +216,9 @@ export default {
          * @param {Object} group The group that has to be removed.
          */
         deleteGroup: function(permName, group) {
-            this.$bvModal.msgBoxConfirm("Êtes-vous sûr de vouloir supprimer " + group.name +" ?")
+            this.create({ body: "Êtes-vous sûr de vouloir supprimer " + group.name +" ?"})
                 .then(remove => {
-                    if (!remove) return;
+                    if (!remove.ok) return;
 
                     let permission = this.permissions.find(p => p.permissionName == permName);
                     // Create a new list so we can ensure that canSee is updated after sending it.

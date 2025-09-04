@@ -35,7 +35,7 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.renderers import BaseRenderer
-from rest_framework.permissions import DjangoModelPermissions, IsAuthenticated
+from rest_framework.permissions import DjangoModelPermissions, IsAuthenticated, AllowAny
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import MultiPartParser
 
@@ -64,6 +64,9 @@ from core.models import (
     ClasseModel,
     CourseModel,
     GivenCourseModel,
+    StudentRelativeModel,
+    ParentSettingModel,
+    ParentNotificationSettingsModel,
 )
 from core.people import get_classes
 from core.permissions import IsSecretaryPermission
@@ -83,6 +86,8 @@ from core.serializers import (
     PeriodCoreSerializer,
     CourseScheduleSerializer,
     GivenCourseSerializer,
+    StudentRelativeSerializer,
+    ParentSettingsNotificationSerializer,
 )
 from core.utilities import get_scholar_year, get_menu
 
@@ -362,6 +367,26 @@ class MembersView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["menu"] = json.dumps(get_menu(self.request))
+        return context
+
+
+class ParentSettingsNotificationView(TemplateView):
+    template_name = "core/parent_settings_notification.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        try:
+            student = StudentModel.objects.get(uuid=kwargs["student_uuid"])
+        except ObjectDoesNotExist:
+            pass
+
+        email_fields = ["resp_email", "father_email", "mother_email"]
+        emails = set([getattr(student.additionalstudentinfo, f, None) for f in email_fields])
+        context["parents"] = [e for e in emails if e]
+        context["student"] = student.fullname_classe
+        context["uuid"] = kwargs["student_uuid"]
+
         return context
 
 
@@ -723,3 +748,44 @@ class BinaryFileRenderer(BaseRenderer):
 
     def render(self, data, media_type=None, renderer_context=None):
         return data
+
+
+class ParentSettingsNotificationAPI(APIView):
+    # permission_classes = [AllowAny]
+
+    def get(self, request, student_uuid, format=None):
+        try:
+            student = StudentModel.objects.get(uuid=student_uuid)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        # relatives = StudentRelativeModel.objects.filter(students=student, contact__email=passkey)
+        # students = StudentModel.objects.none()
+        # for r in relatives:
+        #     students |= r.students.all()
+
+        notif_settings = ParentNotificationSettingsModel.objects.filter(
+            student=student,
+            setting__application="parent_settings_notification",
+        )
+        return Response(data=ParentSettingsNotificationSerializer(notif_settings, many=True).data)
+
+    def post(self, request, student_uuid, format=None):
+        try:
+            student = StudentModel.objects.get(uuid=student_uuid)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        settings = ParentSettingModel.objects.get_or_create(
+            application="parent_settings_notification"
+        )[0]
+        emails = request.data["emails"]
+        print(emails)
+
+        ParentNotificationSettingsModel.objects.filter(student=student).delete()
+        for email in emails:
+            ParentNotificationSettingsModel.objects.create(
+                student=student, contact=email, setting=settings
+            )
+
+        return Response(status=status.HTTP_201_CREATED)

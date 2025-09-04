@@ -24,6 +24,19 @@ from django.contrib.auth.models import User, Group
 from core.models import *
 
 
+class ContactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactModel
+        fields = "__all__"
+
+
+class StudentRelativeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentRelativeModel
+        fields = "__all__"
+        depth = 1
+
+
 class CourseSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(label="ID", read_only=False)
 
@@ -334,4 +347,10 @@ class CourseScheduleSerializer(serializers.ModelSerializer):
 class PeriodCoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = PeriodCoreModel
+        fields = "__all__"
+
+
+class ParentSettingsNotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ParentNotificationSettingsModel
         fields = "__all__"

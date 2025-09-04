@@ -32,6 +32,14 @@ urlpatterns = [
     path("members/", views.MembersView.as_view(), name="members"),
     path("api/scholar_year/", views.ScholarYearAPI.as_view()),
     path("admin/", admin_views.AdminView.as_view()),
+    path(
+        "parentsettings/<uuid:student_uuid>/",
+        views.ParentSettingsNotificationView.as_view(),
+    ),
+    path(
+        "api/parent_settings/<uuid:student_uuid>/",
+        views.ParentSettingsNotificationAPI.as_view(),
+    ),
     path("api/testfile/", admin_views.TestFileAPIView.as_view()),
     path("api/import_students/", admin_views.ImportStudentAPIView.as_view()),
     path("api/import_teachers/", admin_views.ImportTeacherAPIView.as_view()),

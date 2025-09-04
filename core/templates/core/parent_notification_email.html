@@ -1,0 +1,34 @@
+{% extends "core/email.html" %}
+
+{% block content %}
+<h2>Retards et exclusions de la semaine concernant {{ student.fullname }}</h2>
+<p>Bonjour,</p>
+<p>
+    Vous recevez ce mail parce que vous avez demandez d'être averti·e de manière hebdomaire si
+    votre enfant avait un retard ou une exclusion.
+</p>
+<p>
+    Si vous ne désirez plus recevoir ce mail ultérieurement vous pouvez modifier vos paramètres
+    en cliquant <a href="{{ core_settings.root }}/core/parentsettings/{{ student.uuid }}/">ici</a>.
+</p>
+{% if latenesses %}
+<h3>Retards</h3>
+<ul>
+    {% for lateness in latenesses %}
+    <li>{{ lateness.datetime_creation|date:"d/m/Y H:i" }} ({% if lateness.justified %}justifié{% else %}<strong>non justifié</strong>{% endif %})</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% if exclusions %}
+<h3>Exclusions</h3>
+<ul>
+    {% for excl in exclusions %}
+    <li>Le {{ excl.date_absence|date:'d N Y' }} : {{ excl.period.display }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<p>Merci pour votre collaboration.</p>
+<p>L’équipe éducative</p>
+{% endblock %}
