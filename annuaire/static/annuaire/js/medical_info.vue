@@ -53,21 +53,18 @@
                 </dd>
             </dl>
         </div>
-        <BCard v-if="other_medical_info.length > 0">
-            <BRow
-                v-for="cas in other_medical_info"
-                :key="cas.id"
-                class="mb-2"
-            >
-                <BCol
-                    cols="2"
+        <BCard v-if="other_medical_info.length > 0" no-body>
+            <BListGroup flush>
+                <BListGroupItem
+                    v-for="cas in other_medical_info"
+                    :key="cas.id"
+                    :variant="cas.important ? 'danger' : ''"
+                    class="mb-2"
                 >
-                    {{ niceDate(cas.datetime_encodage) }}
-                </BCol>
-                <BCol>
+                    <em>{{ niceDate(cas.datetime_encodage) }}</em>
                     <div v-html="cas.explication_commentaire" />
-                </BCol>
-            </BRow>
+                </BListGroupItem>
+            </BListGroup>
         </BCard>
     </BOverlay>
 </template>
@@ -80,6 +77,12 @@ import "moment/dist/locale/fr";
 Moment.locale("fr");
 
 export default {
+    props: {
+        student: {
+            type: Number,
+            default: -1
+        }
+    },
     data: function () {
         return {
             medical: null,
@@ -87,27 +90,36 @@ export default {
             loading: true,
         };
     },
+    watch: {
+        student: function () {
+            this.loadData();
+        }
+    },
     methods: {
         niceDate: function (date) {
             if (!date) return "";
 
             return Moment(date).calendar();
         },
+        loadData: function () {
+            const studentId = this.$route.params.matricule ? this.$route.params.matricule : this.student;
+            axios.get(`/annuaire/api/info_medical/${studentId}/`)
+                .then(response => {
+                    this.medical = response.data;
+                    this.loading = false;
+                })
+                .catch(err => {
+                    console.log(err);
+                    this.loading = false;
+                });
+            axios.get(`/dossier_eleve/api/cas_eleve/?ordering=-datetime_encodage&student__matricule=${studentId}&no_sanctions=true`)
+                .then((resp) => {
+                    this.other_medical_info = resp.data.results.filter(cas => cas.info.info.toLowerCase().includes("médical"));
+                });
+            }
     },
     mounted: function () {
-        axios.get(`/annuaire/api/info_medical/${this.$route.params.matricule}/`)
-            .then(response => {
-                this.medical = response.data;
-                this.loading = false;
-            })
-            .catch(err => {
-                console.log(err);
-                this.loading = false;
-            });
-        axios.get(`/dossier_eleve/api/cas_eleve/?ordering=-datetime_encodage&student__matricule=${this.$route.params.matricule}&no_sanctions=true`)
-            .then((resp) => {
-                this.other_medical_info = resp.data.results.filter(cas => cas.info.info.toLowerCase().includes("médical"));
-            });
+        this.loadData();
     }
 };
 </script>
