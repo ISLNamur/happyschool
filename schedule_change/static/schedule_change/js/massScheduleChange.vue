@@ -370,10 +370,10 @@ export default {
                     okVariant: "warning",
                     okTitle: "Continuer"
                 }).then((value) => {
-                        if (value.ok) {
-                            this.makeSchedules();
-                        }
-                    });
+                    if (value.ok) {
+                        this.makeSchedules();
+                    }
+                });
             } else {
                 this.makeSchedules();
             }
