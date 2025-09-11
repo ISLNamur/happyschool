@@ -211,6 +211,13 @@
                 </BForm>
             </BCol>
         </BRow>
+        <BRow v-if="form.matricule_id" class="mt-2">
+            <BCol>
+                <BCard>
+                    <MedicalInfo :student="form.matricule_id" />
+                </BCard>
+            </BCol>
+        </BRow>
     </BContainer>
 </template>
 
@@ -227,6 +234,8 @@ Moment.locale("fr");
 import { useToastController } from "bootstrap-vue-next";
 
 import { infirmerieStore } from "./stores/index.js";
+
+import MedicalInfo from "@s:annuaire/js/medical_info.vue"
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
@@ -414,7 +423,8 @@ export default {
         if (this.id) this.loadPassage();
     },
     components: {
-        Multiselect
+        Multiselect,
+        MedicalInfo,
     }
 };
 </script>
