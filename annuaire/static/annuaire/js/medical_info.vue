@@ -53,7 +53,10 @@
                 </dd>
             </dl>
         </div>
-        <BCard v-if="other_medical_info.length > 0" no-body>
+        <BCard
+            v-if="other_medical_info.length > 0"
+            no-body
+        >
             <BListGroup flush>
                 <BListGroupItem
                     v-for="cas in other_medical_info"
@@ -116,7 +119,7 @@ export default {
                 .then((resp) => {
                     this.other_medical_info = resp.data.results.filter(cas => cas.info.info.toLowerCase().includes("médical"));
                 });
-            }
+        }
     },
     mounted: function () {
         this.loadData();
