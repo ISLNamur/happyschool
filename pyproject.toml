@@ -31,6 +31,10 @@ dependencies = [
     "xlwt>=1.3.0",
 ]
 
+
+[tool.uv.sources]
+libreschoolfdb = { path = "../libreschoolfdb" }
+
 [tool.black]
 line-length = 100
 extend-exclude = "migrations/.*py"
@@ -49,3 +53,8 @@ dev = [
     "seleniumbase>=4.34.15",
     "sphinx-rtd-theme>=3.0.2",
 ]
+
+proeco = [
+    "libreschoolfdb"
+]
+
