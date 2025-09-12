@@ -127,16 +127,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name="studentmodel",
-            name="contact",
-            field=models.ForeignKey(
-                blank=True,
-                null=True,
-                on_delete=django.db.models.deletion.SET_NULL,
-                to="core.contactmodel",
-            ),
-        ),
         migrations.CreateModel(
             name="ContactModel",
             fields=[
@@ -150,6 +140,16 @@ class Migration(migrations.Migration):
                 ("mobile", models.CharField(blank=True, max_length=100)),
                 ("email", models.EmailField(blank=True, max_length=254, null=True)),
             ],
+        ),
+        migrations.AddField(
+            model_name="studentmodel",
+            name="contact",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="core.contactmodel",
+            ),
         ),
         migrations.CreateModel(
             name="ParentSettingModel",
