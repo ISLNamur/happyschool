@@ -281,7 +281,7 @@ export default {
                 okVariant: "danger",
                 okTitle: "Oui",
                 cancelTitle: "Non",
-                }).then((confirm) => {
+            }).then((confirm) => {
                 if (confirm.ok) {
                     const sAIndex = this.activitySupports.findIndex(
                         sA => sA.id === this.currentActSupp.id && sA.date_start === this.currentActSupp.date_start

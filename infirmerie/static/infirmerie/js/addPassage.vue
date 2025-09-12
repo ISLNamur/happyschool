@@ -211,7 +211,10 @@
                 </BForm>
             </BCol>
         </BRow>
-        <BRow v-if="form.matricule_id" class="mt-2">
+        <BRow
+            v-if="form.matricule_id"
+            class="mt-2"
+        >
             <BCol>
                 <BCard>
                     <MedicalInfo :student="form.matricule_id" />
@@ -235,7 +238,7 @@ import { useToastController } from "bootstrap-vue-next";
 
 import { infirmerieStore } from "./stores/index.js";
 
-import MedicalInfo from "@s:annuaire/js/medical_info.vue"
+import MedicalInfo from "@s:annuaire/js/medical_info.vue";
 
 const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
