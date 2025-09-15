@@ -90,7 +90,6 @@ from core.serializers import (
     ParentSettingsNotificationSerializer,
 )
 from core.utilities import get_scholar_year, get_menu
-from core.email import send_email
 
 
 def get_app_settings(SettingsModel):
@@ -789,6 +788,8 @@ class ParentSettingsNotificationAPI(APIView):
             )
 
         # Warn parents about setting modification.
+        from core.email import send_email
+
         email_fields = ["resp_email", "father_email", "mother_email"]
         emails = set([getattr(student.additionalstudentinfo, f, None) for f in email_fields])
         emails = [e for e in emails if e]
