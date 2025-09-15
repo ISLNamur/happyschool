@@ -90,6 +90,7 @@ from core.serializers import (
     ParentSettingsNotificationSerializer,
 )
 from core.utilities import get_scholar_year, get_menu
+from core.email import send_email
 
 
 def get_app_settings(SettingsModel):
@@ -780,12 +781,22 @@ class ParentSettingsNotificationAPI(APIView):
             application="parent_settings_notification"
         )[0]
         emails = request.data["emails"]
-        print(emails)
 
         ParentNotificationSettingsModel.objects.filter(student=student).delete()
         for email in emails:
             ParentNotificationSettingsModel.objects.create(
                 student=student, contact=email, setting=settings
             )
+
+        # Warn parents about setting modification.
+        email_fields = ["resp_email", "father_email", "mother_email"]
+        emails = set([getattr(student.additionalstudentinfo, f, None) for f in email_fields])
+        emails = [e for e in emails if e]
+        send_email(
+            to=emails,
+            subject="Modification des préférences de notification",
+            email_template="core/parent_notification_email_change.html",
+            context={student: student},
+        )
 
         return Response(status=status.HTTP_201_CREATED)

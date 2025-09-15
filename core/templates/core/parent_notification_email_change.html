@@ -1,0 +1,14 @@
+{% extends "core/email.html" %}
+
+{% block content %}
+<p>Bonjour,</p>
+<p>
+    Vous recevez ce mail parce que les paramètres de notification ont été changé pour {{ student.fullname }}
+</p>
+<p>
+    Vous pouvez modifier vos paramètres à tout moment en cliquant <a href="{{ core_settings.root }}/core/parentsettings/{{ student.uuid }}/">ici</a>.
+</p>
+
+<p>Merci pour votre collaboration.</p>
+<p>L’équipe éducative</p>
+{% endblock %}
