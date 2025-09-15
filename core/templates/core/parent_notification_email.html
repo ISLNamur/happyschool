@@ -13,6 +13,8 @@
 </p>
 {% if latenesses %}
 <h3>Retards</h3>
+Depuis le début de l'année scolaire, votre enfant a été en retard {{ lateness_count }} fois.
+Cette semaine :
 <ul>
     {% for lateness in latenesses %}
     <li>{{ lateness.datetime_creation|date:"d/m/Y H:i" }} ({% if lateness.justified %}justifié{% else %}<strong>non justifié</strong>{% endif %})</li>

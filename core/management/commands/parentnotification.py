@@ -23,6 +23,7 @@ from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 
+from core.utilities import get_current_scholar_year_interval
 from core.models import ParentNotificationSettingsModel
 from core.email import send_email, get_resp_emails
 from lateness.models import LatenessModel
@@ -52,6 +53,13 @@ class Command(BaseCommand):
             context["latenesses"] = LatenessModel.objects.filter(
                 datetime_creation__gte=one_week_before, student=setting.student
             )
+
+            scholar_year_start, _ = get_current_scholar_year_interval()
+            context["lateness_count"] = LatenessModel.objects.filter(
+                student=setting.student,
+                datetime_creation__gte=scholar_year_start,
+            )
+
             context["exclusions"] = StudentAbsenceTeacherModel.objects.filter(
                 date_absence__gte=one_week_before,
                 student=setting.student,
