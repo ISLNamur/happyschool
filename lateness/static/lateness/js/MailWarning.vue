@@ -27,6 +27,7 @@
                 get-pdf-filename="retards.pdf"
                 template-url="/lateness/api/mail_template/"
                 :template-context="{}"
+                :teaching="store.settings.teachings"
                 @sending="send"
             >
                 <template #side>
