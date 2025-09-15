@@ -618,16 +618,11 @@ class ImportStudent(ImportBase):
             self.base_dn = settings.AUTH_LDAP_USER_SEARCH.base_dn
         self.print_log("Importing students…(%s)" % self.teaching.display_name)
         for entry in iterable:
-            debug = False
             # First check mandatory field.
             matricule = int(self.get_value(entry, "matricule"))
             if not matricule:
                 self.print_log("No matricule found, skipping student.")
                 continue
-
-            debug = matricule == 7779
-            # if not debug:
-            #     continue
 
             first_name = self.get_value(entry, "first_name")
             if not first_name:
@@ -802,19 +797,12 @@ class ImportStudent(ImportBase):
                     if self.get_value(entry, f"{r}_email")
                 ]
 
-                if debug:
-                    print(emails)
-
                 contacts = ContactModel.objects.filter(email__in=emails)
-                if debug:
-                    print("contacts", contacts)
                 if contacts.exists():
                     for c in contacts:
                         try:
                             rel = StudentRelativeModel.objects.get(contact=c)
                             rel.students.add(student)
-                            if debug:
-                                print(rel)
                         except ObjectDoesNotExist:
                             continue
                 else:
@@ -858,19 +846,6 @@ class ImportStudent(ImportBase):
                     father_last_name = self.get_value(entry, "father_last_name")
                     father_first_name = self.get_value(entry, "father_first_name")
 
-                    if debug:
-                        print(resp_last_name, resp_first_name)
-                        print(mother_last_name, mother_first_name)
-                        print(
-                            unidecode(mother_last_name) == unidecode(resp_last_name)
-                            and unidecode(mother_first_name) == unidecode(resp_first_name)
-                        )
-                        print(father_last_name, father_first_name)
-                        print(
-                            unidecode(father_last_name) == unidecode(resp_last_name)
-                            and unidecode(father_first_name) == unidecode(resp_first_name)
-                        )
-
                     if father_last_name and father_first_name:
                         father_rel_data = {
                             f: self.get_value(entry, f"father_{f}")
@@ -903,8 +878,6 @@ class ImportStudent(ImportBase):
 
                     # Check if responsible is not the father/mother
                     if not has_responsible:
-                        if debug:
-                            print("Pas de responsable père/mère")
                         resp_fields = [
                             "last_name",
                             "first_name",
@@ -931,8 +904,6 @@ class ImportStudent(ImportBase):
 
                         resp.save()
                         resp.students.add(student)
-            if debug:
-                break
 
         # Set inactives.
         self.print_log("Set inactive students…")
