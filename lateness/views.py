@@ -42,7 +42,13 @@ from rest_framework.mixins import UpdateModelMixin
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from core.models import ResponsibleModel, TeachingModel, StudentModel, NotificationLogModel
+from core.models import (
+    ResponsibleModel,
+    TeachingModel,
+    StudentModel,
+    NotificationLogModel,
+    ParentNotificationSettingsModel,
+)
 from core.utilities import get_menu
 from core.views import BaseModelViewSet, BaseFilters, BinaryFileRenderer, get_core_settings
 from core.email import get_resp_emails, send_email
@@ -269,6 +275,12 @@ class LatenessViewSet(BaseModelViewSet):
 
         # Trigger
         sanction_next = False
+
+        # Check if students has parent notification.
+        has_parent_notif = ParentNotificationSettingsModel.objects.filter(
+            student=lateness.student, setting__application="parent_settings_notification"
+        ).exists()
+
         if not lateness.justified:
             for trigger in (
                 SanctionTriggerModel.objects.filter(teaching=lateness.student.teaching)
@@ -348,7 +360,7 @@ class LatenessViewSet(BaseModelViewSet):
             context = {
                 "lateness": lateness,
                 "lateness_count": lateness_count,
-                "warning": sanction_next,
+                "warning": sanction_next if not has_parent_notif else False,
                 "core_settings": get_core_settings(),
             }
             send_email(
