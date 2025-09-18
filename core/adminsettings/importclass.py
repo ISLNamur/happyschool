@@ -1094,6 +1094,13 @@ class ImportStudentFDB(ImportStudent):
             return None
         elif column == "scholar_year":
             return self.scholar_year
+        elif column == "medical_information":
+            medical_information = entry[1][self.column_map["medical_information"]]
+            if "last_medical_visit" in entry[1]:
+                medical_information += (
+                    f" - Dernier vaccin tétanos : {entry[1]['last_medical_visit']}"
+                )
+            return medical_information
         elif column in self.column_map:
             return entry[1][self.column_map[column]]
         else:
