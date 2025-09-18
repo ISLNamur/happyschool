@@ -33,16 +33,28 @@
                 <dd class="col-7">
                     {{ medical.doctor_phone }}
                 </dd>
-                <dt class="col-5 text-end">
+                <dt
+                    v-if="medical.mutual"
+                    class="col-5 text-end"
+                >
                     Mutuelle
                 </dt>
-                <dd class="col-7">
+                <dd
+                    v-if="medical.mutual"
+                    class="col-7"
+                >
                     {{ medical.mutual }}
                 </dd>
-                <dt class="col-5 text-end">
+                <dt
+                    v-if="medical.mutual_number"
+                    class="col-5 text-end"
+                >
                     Numéro mutuelle
                 </dt>
-                <dd class="col-7">
+                <dd
+                    v-if="medical.mutual_number"
+                    class="col-7"
+                >
                     {{ medical.mutual_number }}
                 </dd>
                 <dt class="col-5 text-end">
