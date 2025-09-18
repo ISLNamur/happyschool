@@ -36,11 +36,28 @@
                             :show="loading"
                             rounded="sm"
                         >
-                            <BFormInput
-                                type="date"
-                                :model-value="date"
-                                @update:model-value="changeDate"
-                            />
+                            
+                            <BInputGroup>
+                                <BButton
+                                    size="sm"
+                                    variant="info"
+                                    @click="moveDateBefore"
+                                >
+                                    <IBiChevronLeft />
+                                </BButton>
+                                <BFormInput
+                                    type="date"
+                                    :model-value="date"
+                                    @update:model-value="changeDate"
+                                />
+                                <BButton
+                                    size="sm"
+                                    variant="info"
+                                    @click="moveDateAfter"
+                                >
+                                    <IBiChevronRight />
+                                </BButton>
+                            </BInputGroup>
                         </BOverlay>
                     </BFormGroup>
                     <BFormGroup
@@ -147,6 +164,14 @@ export default {
             } else {
                 this.$router.push(`/overview/${this.date}/student_view/${option.id}/`);
             }
+        },
+        moveDateBefore: function () {
+            const currentDate = Moment(this.date);
+            this.changeDate(currentDate.subtract(1, "days").format("YYYY-MM-DD"));
+        },
+        moveDateAfter: function () {
+            const currentDate = Moment(this.date);
+            this.changeDate(currentDate.add(1, "days").format("YYYY-MM-DD"));
         },
         getSearchOptions: function (query) {
             // Ensure the last search is the first response.
