@@ -77,21 +77,29 @@
                     <template #noOptions />
                 </multiselect>
             </BFormGroup>
-            <BInputGroup v-if="templateOptions.length > 0">
-                <BFormSelect
-                    v-model="template"
-                    :options="templateOptions"
-                    text-field="name"
-                    value-field="id"
-                    @update:model-value="getTemplate"
+            <BFormGroup label="Expéditeurs">
+                <BFormCheckboxGroup
+                    v-model="replyTo"
+                    :options="replyToOptions"
                 />
-                <BButton
-                    :disabled="!template"
-                    @click="getTemplate(template)"
-                >
-                    <IBiArrowRepeat />
-                </BButton>
+            </BFormGroup>
+            <BFormGroup label="Modèle">
+                <BInputGroup v-if="templateOptions.length > 0">
+                    <BFormSelect
+                        v-model="template"
+                        :options="templateOptions"
+                        text-field="name"
+                        value-field="id"
+                        @update:model-value="getTemplate"
+                    />
+                    <BButton
+                        :disabled="!template"
+                        @click="getTemplate(template)"
+                    >
+                        <IBiArrowRepeat />
+                    </BButton>
             </BInputGroup>
+            </BFormGroup>
         </BCol>
         <BCol v-if="$slots.side">
             <slot name="side" />
@@ -120,12 +128,18 @@ import axios from "axios";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
+import { useToastController } from "bootstrap-vue-next";
+
 import TextEditor from "@s:core/js/common/text_editor.vue";
 
 import { getPeopleByName } from "@s:core/js/common/search.js";
 import { displayStudent } from "@s:core/js/common/utilities";
 
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        return { show };
+    },
     emits: ["sending"],
     props: {
         studentId: {
@@ -167,9 +181,12 @@ export default {
             recipientOptions: [
                 { "text": "Père", "value": "father" },
                 { "text": "Mère", "value": "mother" },
+                { "text": "Élève (si disponible)", "value": "student" },
                 { "text": "Responsable légal", "value": "resp" },
                 { "text": "Responsable à l'école", "value": "resp_school" },
             ],
+            replyTo: [],
+            replyToOptions: [],
             responsibleOptions: [],
             otherRecipients: [],
             template: null,
@@ -207,11 +224,21 @@ export default {
                 });
         },
         send: function () {
+            // Check if at least one reply to is selected.
+            if (this.replyTo.length == 0) {
+                this.show({
+                    body: "Vous devez sélectionner au moins un expéditeur.",
+                    variant: "danger",
+                    noCloseButton: true,
+                });
+                return;
+            }
             const data = {
                 msg: this.text,
                 student_id: this.studentId,
                 recipients: this.recipient,
                 other_recipients: this.otherRecipients.map(r => r.pk),
+                reply_to: this.replyTo,
             };
             this.$emit("sending", data);
         },
@@ -250,6 +277,16 @@ export default {
                 .then((resp) => {
                     this.templateOptions = resp.data.results;
                 });
+        }
+
+        if (this.studentId) {
+            axios.get(`/annuaire/api/school_responsible/${this.studentId}/`)
+                .then((resp) => {
+                    this.replyToOptions = Object.entries(resp.data).map((person) => {
+                        return {text: person[1], value: person[0]}
+                    });
+                    this.replyTo = this.replyToOptions.map((rT => rT.value));
+                })
         }
 
         this.text = this.baseTemplate;
