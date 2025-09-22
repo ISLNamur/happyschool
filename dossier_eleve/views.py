@@ -851,6 +851,7 @@ class WarnSanctionAPI(APIView):
     def post(self, request, format=None):
         sanction = CasEleve.objects.get(id=request.data.get("cas_id"))
         recipients = request.data.get("recipients")
+        reply_to = request.data.get("reply_to", [])
         context = {
             "sanction": sanction,
             "text": request.data.get("msg"),
@@ -865,6 +866,8 @@ class WarnSanctionAPI(APIView):
             recipient_email.add(sanction.student.additionalstudentinfo.mother_email)
         if "father" in recipients:
             recipient_email.add(sanction.student.additionalstudentinfo.father_email)
+        if "student" in recipients:
+            recipient_email.add(student.additionalstudentinfo.student_email)
         if "resp" in recipients:
             recipient_email.add(sanction.student.additionalstudentinfo.resp_email)
         if "resp_school" in recipients:
@@ -886,7 +889,7 @@ class WarnSanctionAPI(APIView):
                 subject=f"Sanction concernant {sanction.student.fullname}",
                 email_template="dossier_eleve/email_sanction_parents.html",
                 context=context,
-                reply_to=list(resp_school),
+                reply_to=reply_to,
             )
         sanction.notified = True
         sanction.save()
