@@ -534,6 +534,7 @@ class MailWarningAPI(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         recipients = request.data.get("recipients", [])
+        reply_to = request.data.get("reply_to", [])
         context = {
             "student": student,
             "text": request.data.get("msg"),
@@ -552,6 +553,8 @@ class MailWarningAPI(APIView):
             recipient_email.add(student.additionalstudentinfo.mother_email)
         if "father" in recipients:
             recipient_email.add(student.additionalstudentinfo.father_email)
+        if "student" in recipients:
+            recipient_email.add(student.additionalstudentinfo.student_email)
         if "resp" in recipients:
             recipient_email.add(student.additionalstudentinfo.resp_email)
         if "resp_school" in recipients:
@@ -574,7 +577,7 @@ class MailWarningAPI(APIView):
                 subject=f"Arrivées tardives concernant {student.fullname}",
                 email_template="lateness/email_warning_parents.html",
                 context=context,
-                reply_to=list(resp_school),
+                reply_to=reply_to,
             )
 
         # Log notification
