@@ -71,6 +71,17 @@
             </BCol>
         </BRow>
         <BRow>
+            <BCol class="text-end">
+                <BButton
+                    variant="outline-primary"
+                    :to="`/mail_warning/${studentId}/`"
+                >
+                    <IBiCardText />
+                    Envoyer un mail
+                </BButton>
+            </BCol>
+        </BRow>
+        <BRow class="mt-2">
             <BCol>
                 <absences-stat :student-id="studentId" />
             </BCol>
