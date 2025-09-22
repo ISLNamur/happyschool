@@ -55,7 +55,7 @@ from rest_framework.views import APIView, Response
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 from django_filters import rest_framework as filters
 
@@ -429,6 +429,8 @@ class OtherEmailViewSet(ModelViewSet):
     serializer_class = OtherEmailSerializer
     permission_classes = (IsAuthenticated, HasPermissions)
     pagination_class = LargePageSizePagination
+    filter_backends = [OrderingFilter]
+    ordering = ["last_name", "first_name"]
 
 
 class OtherEmailGroupViewSet(ModelViewSet):
