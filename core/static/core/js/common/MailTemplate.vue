@@ -98,7 +98,7 @@
                     >
                         <IBiArrowRepeat />
                     </BButton>
-            </BInputGroup>
+                </BInputGroup>
             </BFormGroup>
         </BCol>
         <BCol v-if="$slots.side">
@@ -283,10 +283,10 @@ export default {
             axios.get(`/annuaire/api/school_responsible/${this.studentId}/`)
                 .then((resp) => {
                     this.replyToOptions = Object.entries(resp.data).map((person) => {
-                        return {text: person[1], value: person[0]}
+                        return {text: person[1], value: person[0]};
                     });
                     this.replyTo = this.replyToOptions.map((rT => rT.value));
-                })
+                });
         }
 
         this.text = this.baseTemplate;
