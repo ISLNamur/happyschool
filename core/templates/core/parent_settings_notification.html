@@ -7,10 +7,25 @@
         {% vite %}
         {% vite "core/js/parent_settings_notification.js" %}
         <style>
-            #sticky-footer {
-                position: absolute;
-                bottom: 0;
-                width: 100%;
+            * {
+            box-sizing: inherit;
+            }
+
+            html {
+            height: 100%;
+            box-sizing: border-box;
+            }
+
+            body {
+            min-height: 100%;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            }
+
+            footer {
+            background-color: rgb(75 70 74);
+            color: white;
+            padding: 20px;
             }
         </style>
         <script>
