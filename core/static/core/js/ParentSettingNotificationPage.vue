@@ -54,7 +54,7 @@
             >
                 <BCol class="mt-4">
                     <label>{{ email }}</label>
-                    <BFormCheckbox v-model="notif[i]">
+                    <BFormCheckbox v-model="notif[i]" :state="saved">
                         Envoyer des notifications par courriel une fois par semaine.
                     </BFormCheckbox>
                 </BCol>
@@ -97,6 +97,7 @@ export default {
             emails: emails,
             // eslint-disable-next-line no-undef
             notif: new Array(emails.length),
+            saved: null,
             sending: false,
         };
     },
@@ -115,11 +116,15 @@ export default {
             axios.post(`/core/api/parent_settings/${uuid}/`, data={ emails: data }, token)
                 .then(() => {
                     this.sending = false;
+                    this.saved = true;
                     this.show({
                         body: "Les informations ont été sauvées.",
                         variant: "success",
+                        position: "middle-center",
+                        modelValue: 10000,
                     });
                 }).catch(() => {
+                    this.saved = false;
                     this.show({
                         body: "Une erreur est survenue. Merci de réessayer plus tard ou de prévenir le service informatique de l'école.",
                         variant: "danger",
