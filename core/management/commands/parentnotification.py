@@ -55,9 +55,11 @@ class Command(BaseCommand):
             )
 
             scholar_year_start, _ = get_current_scholar_year_interval()
-            context["lateness_count"] = LatenessModel.objects.filter(
-                student=setting.student,
-                datetime_creation__gte=scholar_year_start,
+            context["lateness_justified_count"] = LatenessModel.objects.filter(
+                student=setting.student, datetime_creation__gte=scholar_year_start, justified=True
+            ).count()
+            context["lateness_unjustified_count"] = LatenessModel.objects.filter(
+                student=setting.student, datetime_creation__gte=scholar_year_start, justified=False
             ).count()
 
             context["exclusions"] = StudentAbsenceTeacherModel.objects.filter(
