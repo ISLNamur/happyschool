@@ -32,8 +32,11 @@
                 <BCol>
                     <h2>Retards et exclusions</h2>
                     <p>
-                        Si vous le décidez, vous avez la possibilité de recevoir un courriel chaque semaine contenant un récapitulatif des retards justifiés et injustifiés ainsi que des exclusions de cours.
-                        S'il n'y a aucun retard ou aucune exclusion, aucun courriel ne sera envoyé.
+                        Si vous le décidez, vous avez la possibilité de recevoir un courriel chaque semaine contenant
+                        un récapitulatif des retards justifiés et injustifiés ainsi que des exclusions de cours.
+                        S'il n'y a aucun retard ou aucune exclusion, aucun courriel ne sera envoyé. 
+                        oute autre information d’ordre pédagogique ou disciplinaire vous sera transmise par les canaux habituels 
+                        pages jaunes du jdc, courrier, bulletin…).
                     </p>
                 </BCol>
             </BRow>
