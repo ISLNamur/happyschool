@@ -58,7 +58,7 @@ class Command(BaseCommand):
             context["lateness_count"] = LatenessModel.objects.filter(
                 student=setting.student,
                 datetime_creation__gte=scholar_year_start,
-            )
+            ).count()
 
             context["exclusions"] = StudentAbsenceTeacherModel.objects.filter(
                 date_absence__gte=one_week_before,

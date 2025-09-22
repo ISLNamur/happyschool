@@ -797,7 +797,7 @@ class ParentSettingsNotificationAPI(APIView):
             to=emails,
             subject="Modification des préférences de notification",
             email_template="core/parent_notification_email_change.html",
-            context={student: student},
+            context={"student": student},
         )
 
         return Response(status=status.HTTP_201_CREATED)

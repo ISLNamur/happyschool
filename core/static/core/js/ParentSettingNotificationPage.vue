@@ -64,6 +64,7 @@
                     <BButton
                         variant="primary"
                         :loading="sending"
+                        loading-text="Enregistrement…"
                         :disabled="sending"
                         @click="sendSettings"
                     >
