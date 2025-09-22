@@ -1013,6 +1013,7 @@ class MailWarningAPI(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         recipients = request.data.get("recipients", [])
+        reply_to = request.data.get("reply_to", [])
         context = {
             "student": student,
             "text": request.data.get("msg"),
@@ -1029,6 +1030,8 @@ class MailWarningAPI(APIView):
             recipient_email.add(student.additionalstudentinfo.father_email)
         if "resp" in recipients:
             recipient_email.add(student.additionalstudentinfo.resp_email)
+        if "student" in recipients:
+            recipient_email.add(student.additionalstudentinfo.student_email)
         if "resp_school" in recipients:
             recipient_email = recipient_email.union(resp_school)
 
@@ -1049,7 +1052,7 @@ class MailWarningAPI(APIView):
                 subject=f"Absence concernant {student.fullname}",
                 email_template="student_absence_teacher/email_warning_parents.html",
                 context=context,
-                reply_to=list(resp_school),
+                reply_to=reply_to,
             )
 
         absences_id = request.data.get("absences")
