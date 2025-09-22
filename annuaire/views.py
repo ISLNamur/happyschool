@@ -48,6 +48,7 @@ from django_weasyprint import WeasyTemplateView
 from unidecode import unidecode
 
 from core.utilities import get_menu, check_student_photo, get_scholar_year
+from core.email import get_resp_emails
 from core.people import People, get_classes
 from core.models import (
     StudentModel,
@@ -483,6 +484,19 @@ class StudentMedicalInfoViewSet(ReadOnlyModelViewSet):
             return AdditionalStudentInfo.objects.none()
 
         return super().get_queryset()
+
+
+class SchoolResponsibleAPI(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, student_id, format=None):
+        try:
+            student = StudentModel.objects.get(matricule=student_id)
+        except ObjectDoesNotExists:
+            return Response([])
+
+        emails = get_resp_emails(student)
+        return Response(emails)
 
 
 class ClasseListExcelView(LoginRequiredMixin, View):
