@@ -112,7 +112,12 @@ class PassageFilter(BaseFilters):
     activate_ongoing = filters.BooleanFilter(method="activate_ongoing_by")
 
     class Meta:
-        fields_to_filter = ["matricule_id"]
+        fields_to_filter = [
+            "matricule_id",
+            "matricule__classe",
+            "datetime_arrive",
+            "datetime_sortie",
+        ]
         model = Passage
         fields = BaseFilters.Meta.generate_filters(fields_to_filter)
         filter_overrides = BaseFilters.Meta.filter_overrides
