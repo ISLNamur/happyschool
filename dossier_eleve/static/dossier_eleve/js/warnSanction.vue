@@ -23,7 +23,8 @@
             <mail-template v-if="sanction && baseTemplate" :student-id="sanction.student.matricule"
                 :teachings="store.settings.teachings" title="Avertir les parents de la sanction"
                 get-pdf-url="/dossier_eleve/get_pdf_sanction/" get-pdf-filename="sanction.pdf"
-                :base-template="baseTemplate" :extra-recipients="askPerson" @sending="send" ref="template">
+                :base-template="baseTemplate" :extra-recipients="askPerson" @sending="send" ref="template"
+                :template-context="{ sanction: sanction.id }">
                 <template #side>
                     <BCol>
                         <div class="mt-4 ms-4">
@@ -34,13 +35,13 @@
                             <p
                                 style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0px;">
                                 Concerne : <strong>{{ sanction.student.last_name }} {{ sanction.student.first_name
-                                    }}</strong>
+                                }}</strong>
                             </p>
                             <p v-if="sanction.student.classe"
                                 style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0px;">
                                 Classe : <strong>{{ sanction.student.classe.year }}{{
                                     sanction.student.classe.letter.toUpperCase()
-                                    }}</strong>
+                                }}</strong>
                             </p>
                             <p
                                 style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">
