@@ -54,7 +54,10 @@
             >
                 <BCol class="mt-4">
                     <label>{{ email }}</label>
-                    <BFormCheckbox v-model="notif[i]" :state="saved">
+                    <BFormCheckbox
+                        v-model="notif[i]"
+                        :state="saved"
+                    >
                         Envoyer des notifications par courriel une fois par semaine.
                     </BFormCheckbox>
                 </BCol>
