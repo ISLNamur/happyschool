@@ -469,7 +469,9 @@ export default {
             for (let a in this.attachments) {
                 this.uploadedFiles.push({ file: this.attachments[a], id: -1 });
             }
-            this.attachments.splice(0, this.attachments.length);
+            if (this.attachments) {
+                this.attachments.splice(0, this.attachments.length);
+            }
         },
         setFileData: function (index, data) {
             this.uploadedFiles[index].id = data.id;
