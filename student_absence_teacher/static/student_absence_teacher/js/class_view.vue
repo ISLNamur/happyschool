@@ -21,10 +21,7 @@
     <div>
         <BRow>
             <BCol class="text-right mb-1">
-                <BButton
-                    variant="primary"
-                    @click="validateEducatorAbsences"
-                >
+                <BButton variant="primary" @click="validateEducatorAbsences">
                     Valider toutes les présences
                 </BButton>
             </BCol>
@@ -32,39 +29,23 @@
         <BRow>
             <BCol>
                 <BOverlay :show="loading">
-                    <BTable
-                        id="classoverview"
-                        :items="students"
-                        :fields="fields"
-                        class="text-center"
-                        small
-                    >
+                    <BTable id="classoverview" :items="students" :fields="fields" class="text-center" small>
                         <template #head(absence)="">
                             <BRow>
-                                <BCol
-                                    v-for="p in teachersPeriod"
-                                    :key="p.id"
-                                    class="pr-1 pl-1"
-                                >
+                                <BCol v-for="p in teachersPeriod" :key="p.id" class="pr-1 pl-1">
                                     {{ p.start.slice(0, 5) }}
                                 </BCol>
                             </BRow>
                             <BRow>
-                                <BCol
-                                    v-for="p in educatorsPeriod"
-                                    :key="p.id"
-                                >
+                                <BCol v-for="p in educatorsPeriod" :key="p.id">
                                     {{ p.name }}
                                 </BCol>
                             </BRow>
                         </template>
                         <template #cell(studentName)="data">
-                            <BLink
-                                underline-variant="info"
-                                underline-offset="3"
+                            <BLink underline-variant="info" underline-offset="3"
                                 :to="`/overview/${date}/student_view/${data.item.matricule}/`"
-                                @click="$emit('clearSearch')"
-                            >
+                                @click="$emit('clearSearch')">
                                 {{ data.value }}
                             </BLink>
                             <a :href="`/annuaire/#/person/student/${data.item.matricule}/`">
@@ -73,23 +54,21 @@
                         </template>
                         <template #cell(absence)="data">
                             <overview-teacher-entry :absences="data.item.absence_teachers" />
-                            <overview-educator-entry
-                                :absences="data.item.absence_educators"
-                                @update:model-value="updateEducatorAbsence($event, data.index)"
-                            />
+                            <overview-educator-entry :absences="data.item.absence_educators"
+                                @update:model-value="updateEducatorAbsence($event, data.index)" />
                         </template>
                         <template #cell(appel)="data">
-                            <IBiTelephone
-                                v-if="data.value"
-                                v-b-tooltip.hover="data.value ? `${data.value.object.display} - ${data.value.motive.display}: ${data.value.commentaire}`: ''"
-                            />
+                            <IBiTelephone v-if="data.value"
+                                v-b-tooltip.hover="data.value ? `${data.value.object} - ${data.value.motive.display}: ${data.value.commentaire}` : ''" />
+                        </template>
+                        <template #cell(infirmery)="data">
+                            <IBiPrescription2 v-if="data.value"
+                                v-b-tooltip.hover="data.value ? `${data.value.motifs_admission} – ${data.value.remarques_sortie}` : ''" />
                         </template>
                         <template #cell(isProcessed)="data">
-                            <BFormCheckbox
-                                :disabled="!data.item.absence_educators.some(a => a.status)"
+                            <BFormCheckbox :disabled="!data.item.absence_educators.some(a => a.status)"
                                 v-model="students[data.index].isProcessed"
-                                @update:model-value="updateIsProcessed($event, data.item)"
-                            />
+                                @update:model-value="updateIsProcessed($event, data.item)" />
                         </template>
                     </BTable>
                 </BOverlay>
@@ -162,7 +141,7 @@ export default {
         },
         updateIsProcessed: function (event, student) {
             student.absence_educators.filter(a => a.status !== null).forEach(a => {
-                axios.patch(`/student_absence_teacher/api/absence_educ/${a.id}/`, {is_processed: event}, token)
+                axios.patch(`/student_absence_teacher/api/absence_educ/${a.id}/`, { is_processed: event }, token)
                     .then((resp) => {
                         student = resp.data;
                     });
@@ -223,10 +202,19 @@ export default {
                 axios.get(`/student_absence_teacher/api/absence_educ/?student__classe=${classId}&date_absence=${date}&page_size=500`),
             ];
 
+            let additonalColumn = [];
             // eslint-disable-next-line no-undef
             if (menu.apps.find(a => a.app === "appels")) {
+                additonalColumn.push({ column: "appel", position: promises.length });
                 promises.push(
                     axios.get(`/appels/api/appel/?matricule__classe=${this.classId}&date_motif_start__gte=${this.date}&date_motif_end__lte=${this.date}`)
+                );
+            }
+            // eslint-disable-next-line no-undef
+            if (menu.apps.find(a => a.app === "infirmerie")) {
+                additonalColumn.push({ column: "infirmery", position: promises.length });
+                promises.push(
+                    axios.get(`/infirmerie/api/passage/?matricule__classe=${this.classId}&datetime_arrive__gte=${this.date}&datetime_sortie__lte=${this.date} 23:59`)
                 );
             }
 
@@ -259,19 +247,19 @@ export default {
                         this.fields.splice(1, 0, { key: "group", label: "Groupe" });
                     }
                 }
-                // Check if there are appels.
-                if (resp.length === 6) {
+                // Check if there are appels or infirmery passing.
+                additonalColumn.forEach(aC => {
                     this.fields.push(
                         {
-                            key: "appel",
+                            key: aC.column,
                             label: ""
                         }
                     );
 
                     this.students.forEach(student => {
-                        student.appel = resp[5].data.results.find(a => a.matricule_id === student.matricule);
+                        student[aC.column] = resp[aC.position].data.results.find(a => a.matricule_id === student.matricule);
                     });
-                }
+                })
 
                 this.loading = false;
             });
