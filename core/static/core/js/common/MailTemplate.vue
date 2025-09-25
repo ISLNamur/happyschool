@@ -168,7 +168,7 @@ export default {
         },
         templateContext: {
             type: Object,
-            default: () => {}
+            default: () => { }
         },
         baseTemplate: {
             type: String,
@@ -243,17 +243,21 @@ export default {
             this.$emit("sending", data);
         },
         getTemplate: function (templateId) {
-            const data = Object.assign({student: this.studentId}, this.templateContext);
+            const data = Object.assign({ student: this.studentId }, this.templateContext);
             axios.get(`${this.templateUrl}${templateId}/`, { params: data })
                 .then((resp) => {
                     this.text = resp.data;
                 });
         },
         getPDF: function () {
-            const data = {
-                student_id: this.studentId,
-                text: this.text,
-            };
+            const data = Object.assign(
+                {
+                    student_id: this.studentId,
+                    text: this.text,
+                },
+                this.templateContext
+            );
+
             axios.post(this.getPdfUrl, data, {
                 responseType: "blob",
                 xsrfCookieName: "csrftoken",
@@ -283,7 +287,7 @@ export default {
             axios.get(`/annuaire/api/school_responsible/${this.studentId}/`)
                 .then((resp) => {
                     this.replyToOptions = Object.entries(resp.data).map((person) => {
-                        return {text: person[1], value: person[0]};
+                        return { text: person[1], value: person[0] };
                     });
                     this.replyTo = this.replyToOptions.map((rT => rT.value));
                 });
@@ -300,7 +304,7 @@ export default {
 
 <style>
 .scrollable {
-    height:400px;
+    height: 400px;
     overflow-y: scroll;
 }
 </style>
