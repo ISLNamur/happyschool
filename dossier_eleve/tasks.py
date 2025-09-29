@@ -104,7 +104,7 @@ def task_send_info_email(self, instance_id):
         try:
             send_email(
                 to=teachers,
-                subject="ISLN : À propos de " + student.fullname,
+                subject="ISLN : À propos de " + student.fullname_classe,
                 email_template="dossier_eleve/email_info.html",
                 context=context,
                 attachments=instance.attachments.all(),
@@ -113,7 +113,7 @@ def task_send_info_email(self, instance_id):
         except Exception as err:
             send_email(
                 to=teachers,
-                subject="ISLN : À propos de " + student.fullname,
+                subject="ISLN : À propos de " + student.fullname_classe,
                 email_template="dossier_eleve/email_info.html",
                 context=context,
                 attachments=instance.attachments.all(),
@@ -123,7 +123,7 @@ def task_send_info_email(self, instance_id):
         print(teachers)
         send_email(
             to=[settings.EMAIL_ADMIN],
-            subject="ISLN : À propos de " + student.fullname,
+            subject="ISLN : À propos de " + student.fullname_classe,
             email_template="dossier_eleve/email_info.html",
             context=context,
             attachments=instance.attachments.all(),
