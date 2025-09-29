@@ -19,6 +19,8 @@
 
 import datetime
 
+from time import sleep
+
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
@@ -43,7 +45,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         today = datetime.datetime.now()
         one_week_before = today - datetime.timedelta(days=6)
-        print(f"Looking from {one_week_before}.")
+        print(f"Looking from {one_week_before} to {today}.")
 
         for setting in ParentNotificationSettingsModel.objects.all():
             context = {}
@@ -51,7 +53,9 @@ class Command(BaseCommand):
             context["student"] = setting.student
 
             context["latenesses"] = LatenessModel.objects.filter(
-                datetime_creation__gte=one_week_before, student=setting.student
+                datetime_creation__gte=one_week_before,
+                datetime_creation__lte=today,
+                student=setting.student,
             )
 
             scholar_year_start, _ = get_current_scholar_year_interval()
@@ -64,22 +68,29 @@ class Command(BaseCommand):
 
             context["exclusions"] = StudentAbsenceTeacherModel.objects.filter(
                 date_absence__gte=one_week_before,
+                date_absence__lte=today,
                 student=setting.student,
                 status=StudentAbsenceTeacherModel.EXCLUDED,
             )
 
             if context["latenesses"].exists() or context["exclusions"].exists():
-                print(f"{setting.student} | sending mails to {setting.contact}")
+                print(f"{setting.student} | sending mails to '{setting.contact}'")
                 print(
                     f"Latenesses: {context['latenesses'].count()}, Exclusions: {context['exclusions'].count()}"
                 )
 
                 resp_emails = get_resp_emails(setting.student)
 
-                send_email(
-                    setting.contact,
-                    "Récapitulatif hebdomadaire",
-                    "core/parent_notification_email.html",
-                    context=context,
-                    reply_to=resp_emails,
-                )
+                try:
+                    send_email(
+                        [setting.contact],
+                        "Récapitulatif hebdomadaire",
+                        "core/parent_notification_email.html",
+                        context=context,
+                        reply_to=resp_emails,
+                    )
+                    sleep(1)
+                    print("Sent")
+                except ValueError:
+                    print("ERROR: Unable to sent !")
+                    continue
