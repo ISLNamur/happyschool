@@ -768,6 +768,10 @@ class ParentSettingsNotificationAPI(APIView):
             student=student,
             setting__application="parent_settings_notification",
         )
+
+        if not notif_settings.exists():
+            Response(data=[])
+
         return Response(data=ParentSettingsNotificationSerializer(notif_settings, many=True).data)
 
     def post(self, request, student_uuid, format=None):
