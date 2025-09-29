@@ -355,3 +355,9 @@ class ParentSettingsNotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ParentNotificationSettingsModel
         fields = "__all__"
+
+
+class ColumnToFieldImportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ColumnToFieldImportModel
+        fields = "__all__"

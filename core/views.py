@@ -67,6 +67,7 @@ from core.models import (
     StudentRelativeModel,
     ParentSettingModel,
     ParentNotificationSettingsModel,
+    ColumnToFieldImportModel,
 )
 from core.people import get_classes
 from core.permissions import IsSecretaryPermission
@@ -88,6 +89,7 @@ from core.serializers import (
     GivenCourseSerializer,
     StudentRelativeSerializer,
     ParentSettingsNotificationSerializer,
+    ColumnToFieldImportSerializer,
 )
 from core.utilities import get_scholar_year, get_menu
 
@@ -805,3 +807,12 @@ class ParentSettingsNotificationAPI(APIView):
         )
 
         return Response(status=status.HTTP_201_CREATED)
+
+
+class ColumnToFieldImportViewSet(ModelViewSet):
+    queryset = ColumnToFieldImportModel.objects.all()
+    serializer_class = ColumnToFieldImportSerializer
+    permission_classes = (
+        IsAuthenticated,
+        DjangoModelPermissions,
+    )

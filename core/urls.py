@@ -67,5 +67,6 @@ router.register(r"api/given_course", views.GivenCourseViewSet)
 router.register(r"api/given_course_info", views.GivenCourseInfoViewSet, "given-course-info")
 router.register(r"api/course_schedule", views.CourseScheduleViewSet)
 router.register(r"api/period", views.PeriodCoreViewSet)
+router.register(r"api/column_to_field_import", views.ColumnToFieldImportViewSet)
 
 urlpatterns += router.urls

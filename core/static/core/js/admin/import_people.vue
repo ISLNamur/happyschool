@@ -61,9 +61,11 @@
                                 </BFormGroup>
                             </BFormRow>
                             <BFormRow>
-                                <BFormCheckbox v-model="ignoreFirstLine">
-                                    Ignorer la première ligne
-                                </BFormCheckbox>
+                                <BFormGroup>
+                                    <BFormCheckbox v-model="ignoreFirstLine">
+                                        Ignorer la première ligne
+                                    </BFormCheckbox>
+                                </BFormGroup>
                             </BFormRow>
                             <BFormRow>
                                 <BFormGroup description="Le fichier doit être encodé en UTF-8.">
@@ -76,6 +78,36 @@
                                 </BFormGroup>
                             </BFormRow>
                         </BForm>
+                    </BCol>
+                </BRow>
+                <BRow
+                    v-if="file"
+                    class="mt-3 mb-3"
+                >
+                    <BCol>
+                        <BFormGroup label="Association des columns">
+                            <BFormSelect
+                                :options="fieldAssociationOptions"
+                                value-field="id"
+                                text-field="name"
+                                v-model="fieldAssociation"
+                                @update:model-value="setFieldAssociation"
+                            />
+                        </BFormGroup>
+                    </BCol>
+                    <BCol>
+                        <BFormGroup label="Enregistrer l'association actuelle">
+                            <BInputGroup>
+                                <BFormInput v-model="newAssociationName" />
+                                <BButton
+                                    variant="outline-primary"
+                                    @click="saveAssociation('ST')"
+                                >
+                                    <IBiSave />
+                                    Enregistrer
+                                </BButton>
+                            </BInputGroup>
+                        </BFormGroup>
                     </BCol>
                 </BRow>
                 <BRow>
@@ -250,6 +282,9 @@
 <script>
 import axios from "axios";
 
+import { useToastController } from "bootstrap-vue-next";
+
+const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
 
 const student_column_names = [
     {value: "matricule", text: "Matricule"},
@@ -312,6 +347,10 @@ const teacher_column_names = [
 ];
 
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        return { show };
+    },
     data: function () {
         return {
             ignoreFirstLine: false,
@@ -326,6 +365,9 @@ export default {
             teacher_column_names: teacher_column_names,
             progressSocket: null,
             importState: "",
+            fieldAssociation: null,
+            fieldAssociationOptions: [],
+            newAssociationName: "",
         };
     },
     methods: {
@@ -413,6 +455,30 @@ export default {
                     };
                 });
         },
+        setFieldAssociation: function () {
+            const fieldAssociation = this.fieldAssociationOptions.find(cTF => cTF.id === this.fieldAssociation);
+
+            if (!fieldAssociation) {
+                return;
+            }
+
+            this.fieldToColumn = fieldAssociation.column_to_field;
+        },
+        saveAssociation: function (modelType) {
+            const data = {
+                name: this.newAssociationName,
+                model: modelType,
+                column_to_field: this.fieldToColumn,
+            };
+            axios.post("/core/api/column_to_field_import/", data, token)
+                .then((resp) => {
+                    this.fieldAssociationOptions.push(resp.data);
+                    this.show({
+                        body: "L'association entre les colonnes et les champs a été sauvée.",
+                        variant: "success"
+                    });
+                });
+        },
     },
     mounted: function () {
         axios.get("/core/api/teaching/")
@@ -421,6 +487,11 @@ export default {
             })
             .catch(function (error) {
                 alert(error);
+            });
+
+        axios.get("/core/api/column_to_field_import/")
+            .then((resp) => {
+                this.fieldAssociationOptions = resp.data.results;
             });
     },
     components: {
