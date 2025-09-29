@@ -31,6 +31,9 @@
                 @sending="send"
             >
                 <template #side>
+                    <BAlert :model-value="hasParentNotification">
+                        Au moins un des parents reçoit des notifications.
+                    </BAlert>
                     <BCard
                         no-body
                         class="scrollable"
@@ -84,6 +87,7 @@ export default {
         return {
             sending: false,
             lastLatenesses: [],
+            hasParentNotification: false,
             store: latenessStore()
         };
     },
@@ -97,7 +101,7 @@ export default {
                 .then(() => {
                     this.sending = false;
                     this.$router.push("/").then(() => {
-                        this.show( {
+                        this.show({
                             body: "Le message a bien été envoyé.",
                             variant: "success",
                             noCloseButton: true,
@@ -114,6 +118,12 @@ export default {
         axios.get(`/lateness/api/lateness/?student__matricule=${this.studentId}&activate_after_count=true&ordering=-datetime_creation`)
             .then((resp) => {
                 this.lastLatenesses = resp.data.results;
+
+                // Check if there is parent notification.
+                axios.get(`/core/api/parent_settings/${this.lastLatenesses[0].student.uuid}/`)
+                    .then((resp) => {
+                        this.hasParentNotification = resp.data.length > 0;
+                    });
             });
     },
     components: {
