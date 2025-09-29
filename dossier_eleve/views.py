@@ -867,7 +867,7 @@ class WarnSanctionAPI(APIView):
         if "father" in recipients:
             recipient_email.add(sanction.student.additionalstudentinfo.father_email)
         if "student" in recipients:
-            recipient_email.add(student.additionalstudentinfo.student_email)
+            recipient_email.add(sanction.student.additionalstudentinfo.student_email)
         if "resp" in recipients:
             recipient_email.add(sanction.student.additionalstudentinfo.resp_email)
         if "resp_school" in recipients:
