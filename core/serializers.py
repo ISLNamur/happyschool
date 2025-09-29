@@ -136,6 +136,7 @@ class StudentSerializer(serializers.ModelSerializer):
             "user",
             "courses",
             "group",
+            "uuid",
         )
         depth = 2
 
