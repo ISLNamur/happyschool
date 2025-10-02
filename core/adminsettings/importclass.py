@@ -748,9 +748,11 @@ class ImportStudent(ImportBase):
             relatives = StudentRelativeModel.objects.filter(students=student)
             if relatives.exists():
                 # Update data.
+                resp_email = self.get_value(entry, "resp_email")
                 mother_last_name = self.get_value(entry, "mother_last_name")
                 mother_first_name = self.get_value(entry, "mother_first_name")
-                if mother_last_name and mother_first_name:
+
+                if mother_last_name:
                     try:
                         mother = relatives.get(relationship=StudentRelativeModel.MOTHER)
                         for f in self.relative_fields:
@@ -761,16 +763,61 @@ class ImportStudent(ImportBase):
 
                         contact = mother.contact
                         if contact:
-                            for f in self.contact_fields:
-                                val = self.get_value(entry, f"mother_{f}")
-                                if val:
+                            contact_data = {
+                                f: self.get_value(entry, f"mother_{f}") for f in self.contact_fields
+                            }
+
+                            # Check if there is still info.
+                            if any([val for key, val in contact_data.items()]):
+                                for key, val in contact_data.items():
+                                    val = val if val else ""
                                     setattr(contact, f, val)
-                            contact.save()
+                                contact.save()
+
+                                if contact.email == resp_email:
+                                    mother.is_legal_responsible = True
+                                    mother.save()
                     except ObjectDoesNotExist:
-                        print("Mother not found", student, mother_last_name, mother_first_name)
+                        # Create mother.
+                        resp_last_name = self.get_value(entry, "resp_last_name")
+                        resp_first_name = self.get_value(entry, "resp_first_name")
+                        resp_email = self.get_value(entry, "resp_email")
+
+                        mother_rel_data = {
+                            f: self.get_value(entry, f"mother_{f}")
+                            for f in self.relative_fields
+                            if self.get_value(entry, f"mother_{f}")
+                        }
+                        mother = StudentRelativeModel(**mother_rel_data)
+                        mother.relationship = StudentRelativeModel.MOTHER
+                        mother.gender = GENDER_FEMALE
+
+                        if unidecode(f"{mother_last_name} {mother_first_name}") == unidecode(
+                            f"{resp_last_name} {resp_first_name}"
+                        ):
+                            mother.is_legal_responsible = True
+                            has_responsible = True
+
+                        mother_contact_data = {
+                            f: self.get_value(entry, f"mother_{f}")
+                            for f in self.contact_fields
+                            if self.get_value(entry, f"mother_{f}")
+                        }
+                        if mother_contact_data:
+                            contact = ContactModel.objects.create(**mother_contact_data)
+                            mother.contact = contact
+
+                            # Also check resp email.
+                            if contact.email == resp_email:
+                                mother.is_legal_responsible = True
+                                has_responsible = True
+
+                        mother.save()
+                        mother.students.add(student)
+
                 father_last_name = self.get_value(entry, "father_last_name")
                 father_first_name = self.get_value(entry, "father_first_name")
-                if father_last_name and father_first_name:
+                if father_last_name:
                     try:
                         father = relatives.get(relationship=StudentRelativeModel.FATHER)
                         for f in self.relative_fields:
@@ -781,13 +828,56 @@ class ImportStudent(ImportBase):
 
                         contact = father.contact
                         if contact:
-                            for f in self.contact_fields:
-                                val = self.get_value(entry, f"father_{f}")
-                                if val:
+                            contact_data = {
+                                f: self.get_value(entry, f"father_{f}") for f in self.contact_fields
+                            }
+
+                            # Check if there is still info.
+                            if any([val for key, val in contact_data.items()]):
+                                for key, val in contact_data.items():
+                                    val = val if val else ""
                                     setattr(contact, f, val)
-                            contact.save()
+                                contact.save()
+
+                                if contact.email == resp_email:
+                                    father.is_legal_responsible = True
+                                    father.save()
+                            else:
+                                contact.delete()
                     except ObjectDoesNotExist:
-                        print("Father not found", student, father_last_name, father_first_name)
+                        if father_last_name:
+                            father_rel_data = {
+                                f: self.get_value(entry, f"father_{f}")
+                                for f in self.relative_fields
+                                if self.get_value(entry, f"father_{f}")
+                            }
+                            father = StudentRelativeModel(**father_rel_data)
+                            father.relationship = StudentRelativeModel.FATHER
+                            father.gender = GENDER_MALE
+
+                            if unidecode(father_last_name) == unidecode(
+                                resp_last_name
+                            ) and unidecode(father_first_name) == unidecode(resp_first_name):
+                                father.is_legal_responsible = True
+                                has_responsible = True
+
+                            father_contact_data = {
+                                f: self.get_value(entry, f"father_{f}")
+                                for f in self.contact_fields
+                                if self.get_value(entry, f"father_{f}")
+                            }
+
+                            if father_contact_data:
+                                contact = ContactModel.objects.create(**father_contact_data)
+                                father.contact = contact
+
+                                # Also check resp email.
+                                if contact.email == resp_email:
+                                    father.is_legal_responsible = True
+                                    has_responsible = True
+
+                            father.save()
+                            father.students.add(student)
             else:
                 # Create or set relationship with relative.
                 # Check relative by email.
@@ -810,10 +900,11 @@ class ImportStudent(ImportBase):
 
                     resp_last_name = self.get_value(entry, "resp_last_name")
                     resp_first_name = self.get_value(entry, "resp_first_name")
+                    resp_email = self.get_value(entry, "resp_email")
 
                     mother_last_name = self.get_value(entry, "mother_last_name")
                     mother_first_name = self.get_value(entry, "mother_first_name")
-                    if mother_last_name and mother_first_name:
+                    if mother_last_name:
                         mother_rel_data = {
                             f: self.get_value(entry, f"mother_{f}")
                             for f in self.relative_fields
@@ -823,12 +914,11 @@ class ImportStudent(ImportBase):
                         mother.relationship = StudentRelativeModel.MOTHER
                         mother.gender = GENDER_FEMALE
 
-                        if unidecode(mother_last_name) == unidecode(resp_last_name) and unidecode(
-                            mother_first_name
-                        ) == unidecode(resp_first_name):
+                        if unidecode(f"{mother_last_name} {mother_first_name}") == unidecode(
+                            f"{resp_last_name} {resp_first_name}"
+                        ):
                             mother.is_legal_responsible = True
                             has_responsible = True
-                            print("legal resp", mother_last_name)
 
                         mother_contact_data = {
                             f: self.get_value(entry, f"mother_{f}")
@@ -837,8 +927,12 @@ class ImportStudent(ImportBase):
                         }
                         if mother_contact_data:
                             contact = ContactModel.objects.create(**mother_contact_data)
-                            print("creating mother contact")
                             mother.contact = contact
+
+                            # Also check resp email.
+                            if contact.email == resp_email:
+                                mother.is_legal_responsible = True
+                                has_responsible = True
 
                         mother.save()
                         mother.students.add(student)
@@ -846,7 +940,7 @@ class ImportStudent(ImportBase):
                     father_last_name = self.get_value(entry, "father_last_name")
                     father_first_name = self.get_value(entry, "father_first_name")
 
-                    if father_last_name and father_first_name:
+                    if father_last_name:
                         father_rel_data = {
                             f: self.get_value(entry, f"father_{f}")
                             for f in self.relative_fields
@@ -870,8 +964,12 @@ class ImportStudent(ImportBase):
 
                         if father_contact_data:
                             contact = ContactModel.objects.create(**father_contact_data)
-                            print("creating father contact")
                             father.contact = contact
+
+                            # Also check resp email.
+                            if contact.email == resp_email:
+                                father.is_legal_responsible = True
+                                has_responsible = True
 
                         father.save()
                         father.students.add(student)
@@ -899,7 +997,6 @@ class ImportStudent(ImportBase):
                         }
                         if resp_contact_data:
                             contact = ContactModel.objects.create(**resp_contact_data)
-                            print("creating resp contact")
                             resp.contact = contact
 
                         resp.save()
@@ -1074,7 +1171,8 @@ class ImportStudentFDB(ImportStudent):
             classe_format=self.classe_format,
         )
         # print(students)
-        super()._sync(students.items())
+        student_list = sorted(students.items(), key=lambda x: x[0])
+        super()._sync(student_list)
 
     def get_value(self, entry: dict, column: str) -> Union[int, str, date, None]:
         if "proeco" in settings.INSTALLED_APPS:
