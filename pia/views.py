@@ -28,10 +28,13 @@ from django.views.generic import TemplateView
 from django.db.models import ObjectDoesNotExist, query
 from django.contrib.auth.models import Group
 from django.utils import timezone
+from django.conf import settings
 
+from rest_framework import status
 from rest_framework.filters import OrderingFilter
 from rest_framework.viewsets import ReadOnlyModelViewSet, ModelViewSet
 from rest_framework.permissions import DjangoModelPermissions
+from rest_framework.response import Response
 
 from django_filters import rest_framework as filters
 
@@ -73,6 +76,25 @@ def get_settings():
     return get_app_settings(models.PIASettingsModel)
 
 
+def get_generic_groups() -> dict:
+    sysadmin_group = Group.objects.get(name=settings.SYSADMIN_GROUP)
+    direction_group = Group.objects.get(name=settings.DIRECTION_GROUP)
+    coord_group = Group.objects.get(name=settings.COORDONATOR_GROUP)
+    educ_group = Group.objects.get(name=settings.EDUCATOR_GROUP)
+    teacher_group = Group.objects.get(name=settings.TEACHER_GROUP)
+    pms_group = Group.objects.get(name=settings.PMS_GROUP)
+    reception_group = Group.objects.get(name=settings.RECEPTION_GROUP)
+    return {
+        "sysadmin": sysadmin_group,
+        "direction": direction_group,
+        "coordonator": coord_group,
+        "educator": educ_group,
+        "teacher": teacher_group,
+        "pms": pms_group,
+        "reception": reception_group,
+    }
+
+
 class PIAView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
     template_name = "pia/pia.html"
     permission_required = ("pia.view_piamodel",)
@@ -88,6 +110,16 @@ class PIAView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
         context["filters"] = json.dumps(self.filters)
         context["settings"] = json.dumps((serializers.PIASettingsSerializer(get_settings()).data))
         context["can_add_pia"] = json.dumps(self.request.user.has_perm("pia.add_piamodel"))
+
+        groups = get_generic_groups()
+        groups["sysadmin"] = {"id": groups["sysadmin"].id, "text": "Admin"}
+        groups["direction"] = {"id": groups["direction"].id, "text": "Direction"}
+        groups["coordonator"] = {"id": groups["coordonator"].id, "text": "Coordonateur"}
+        groups["educator"] = {"id": groups["educator"].id, "text": "Educateur"}
+        groups["teacher"] = {"id": groups["teacher"].id, "text": "Professeurs"}
+        groups["pms"] = {"id": groups["pms"].id, "text": "PMS"}
+        groups["reception"] = {"id": groups["reception"].id, "text": "Accueil"}
+        context["groups"] = groups
 
         dis_resp_cat = models.DisorderResponseCategoryModel.objects.all()
         dis_resp_cat_ser = serializers.DisorderResponseCategorySerializer(dis_resp_cat, many=True)
@@ -376,6 +408,24 @@ class BranchGoalItemViewSet(ReadOnlyModelViewSet):
 class UploadFileView(BaseUploadFileView):
     file_model = models.AttachmentModel
     file_serializer = serializers.AttachmentSerializer
+
+    def add_other_fields(self, attachment, request):
+        attachment.save()
+
+        visible_by_groups = Group.objects.filter(id__in=request.data["visible_by"])
+        attachment.visible_by.set(visible_by_groups)
+        return attachment
+
+    def patch(self, request, pk, format=None):
+        attachment = self.file_model.objects.get(id=pk)
+        if "visible_by" in request.data:
+            print(request.data["visible_by"].split(","))
+            groups = Group.objects.filter(id__in=request.data["visible_by"].split(","))
+            print(groups)
+            if groups.exists():
+                attachment.visible_by.set(groups)
+        serializer = self.file_serializer(attachment)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
 
 
 class StudentProjectViewSet(ModelViewSet):

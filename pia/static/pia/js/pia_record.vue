@@ -219,7 +219,7 @@
                     </BRow>
                     <BRow class="mt-4">
                         <BCol>
-                            <h3>Attachements</h3>
+                            <h3>Fichiers joints</h3>
                         </BCol>
                     </BRow>
                     <BRow>
@@ -248,6 +248,7 @@
                                         :file="item.file"
                                         path="/pia/upload_file/"
                                         removestr="4"
+                                        group-access
                                         @delete="deleteFile(index)"
                                         @setdata="setFileData(index, $event)"
                                     />

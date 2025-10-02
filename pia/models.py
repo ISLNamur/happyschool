@@ -56,6 +56,7 @@ class PIASettingsModel(models.Model):
 
 class AttachmentModel(models.Model):
     attachment = models.FileField(upload_to=unique_file_name)
+    visible_by = models.ManyToManyField(Group)
 
 
 class BranchModel(models.Model):
