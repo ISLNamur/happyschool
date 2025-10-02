@@ -20,34 +20,51 @@
 <template>
     <BContainer>
         <BOverlay :show="loading">
-            <mail-template v-if="sanction && baseTemplate" :student-id="sanction.student.matricule"
-                :teachings="store.settings.teachings" title="Avertir les parents de la sanction"
-                get-pdf-url="/dossier_eleve/get_pdf_sanction/" get-pdf-filename="sanction.pdf"
-                :base-template="baseTemplate" :extra-recipients="askPerson" @sending="send" ref="template"
-                :template-context="{ sanction: sanction.id }">
+            <mail-template
+                v-if="sanction && baseTemplate"
+                :student-id="sanction.student.matricule"
+                :teachings="store.settings.teachings"
+                title="Avertir les parents de la sanction"
+                get-pdf-url="/dossier_eleve/get_pdf_sanction/"
+                get-pdf-filename="sanction.pdf"
+                :base-template="baseTemplate"
+                :extra-recipients="askPerson"
+                @sending="send"
+                ref="template"
+                :template-context="{ sanction: sanction.id }"
+            >
                 <template #side>
                     <BCol>
                         <div class="mt-4 ms-4">
                             <p
-                                style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 15px;">
+                                style="font-family: sans-serif; font-size: 16px; font-weight: bold; margin: 0; Margin-bottom: 15px;"
+                            >
                                 {{ sanction.sanction_decision.sanction_decision }}
                             </p>
                             <p
-                                style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0px;">
+                                style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0px;"
+                            >
                                 Concerne : <strong>{{ sanction.student.last_name }} {{ sanction.student.first_name
                                 }}</strong>
                             </p>
-                            <p v-if="sanction.student.classe"
-                                style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0px;">
+                            <p
+                                v-if="sanction.student.classe"
+                                style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0px;"
+                            >
                                 Classe : <strong>{{ sanction.student.classe.year }}{{
                                     sanction.student.classe.letter.toUpperCase()
                                 }}</strong>
                             </p>
                             <p
-                                style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">
+                                style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;"
+                            >
                                 Objet : <strong>Mesure disciplinaire</strong>
                             </p>
-                            <BButton variant="outline-secondary" @click="addAskPerson" size="sm">
+                            <BButton
+                                variant="outline-secondary"
+                                @click="addAskPerson"
+                                size="sm"
+                            >
                                 <IBiPlus />
                                 Ajouter le demandeur
                             </BButton>
