@@ -21,7 +21,10 @@
     <div>
         <BRow>
             <BCol class="text-right mb-1">
-                <BButton variant="primary" @click="validateEducatorAbsences">
+                <BButton
+                    variant="primary"
+                    @click="validateEducatorAbsences"
+                >
                     Valider toutes les présences
                 </BButton>
             </BCol>
@@ -29,23 +32,39 @@
         <BRow>
             <BCol>
                 <BOverlay :show="loading">
-                    <BTable id="classoverview" :items="students" :fields="fields" class="text-center" small>
+                    <BTable
+                        id="classoverview"
+                        :items="students"
+                        :fields="fields"
+                        class="text-center"
+                        small
+                    >
                         <template #head(absence)="">
                             <BRow>
-                                <BCol v-for="p in teachersPeriod" :key="p.id" class="pr-1 pl-1">
+                                <BCol
+                                    v-for="p in teachersPeriod"
+                                    :key="p.id"
+                                    class="pr-1 pl-1"
+                                >
                                     {{ p.start.slice(0, 5) }}
                                 </BCol>
                             </BRow>
                             <BRow>
-                                <BCol v-for="p in educatorsPeriod" :key="p.id">
+                                <BCol
+                                    v-for="p in educatorsPeriod"
+                                    :key="p.id"
+                                >
                                     {{ p.name }}
                                 </BCol>
                             </BRow>
                         </template>
                         <template #cell(studentName)="data">
-                            <BLink underline-variant="info" underline-offset="3"
+                            <BLink
+                                underline-variant="info"
+                                underline-offset="3"
                                 :to="`/overview/${date}/student_view/${data.item.matricule}/`"
-                                @click="$emit('clearSearch')">
+                                @click="$emit('clearSearch')"
+                            >
                                 {{ data.value }}
                             </BLink>
                             <a :href="`/annuaire/#/person/student/${data.item.matricule}/`">
@@ -54,21 +73,29 @@
                         </template>
                         <template #cell(absence)="data">
                             <overview-teacher-entry :absences="data.item.absence_teachers" />
-                            <overview-educator-entry :absences="data.item.absence_educators"
-                                @update:model-value="updateEducatorAbsence($event, data.index)" />
+                            <overview-educator-entry
+                                :absences="data.item.absence_educators"
+                                @update:model-value="updateEducatorAbsence($event, data.index)"
+                            />
                         </template>
                         <template #cell(appel)="data">
-                            <IBiTelephone v-if="data.value"
-                                v-b-tooltip.hover="data.value ? `${data.value.object} - ${data.value.motive.display}: ${data.value.commentaire}` : ''" />
+                            <IBiTelephone
+                                v-if="data.value"
+                                v-b-tooltip.hover="data.value ? `${data.value.object} - ${data.value.motive.display}: ${data.value.commentaire}` : ''"
+                            />
                         </template>
                         <template #cell(infirmery)="data">
-                            <IBiPrescription2 v-if="data.value"
-                                v-b-tooltip.hover="data.value ? `${data.value.motifs_admission} – ${data.value.remarques_sortie}` : ''" />
+                            <IBiPrescription2
+                                v-if="data.value"
+                                v-b-tooltip.hover="data.value ? `${data.value.motifs_admission} – ${data.value.remarques_sortie}` : ''"
+                            />
                         </template>
                         <template #cell(isProcessed)="data">
-                            <BFormCheckbox :disabled="!data.item.absence_educators.some(a => a.status)"
+                            <BFormCheckbox
+                                :disabled="!data.item.absence_educators.some(a => a.status)"
                                 v-model="students[data.index].isProcessed"
-                                @update:model-value="updateIsProcessed($event, data.item)" />
+                                @update:model-value="updateIsProcessed($event, data.item)"
+                            />
                         </template>
                     </BTable>
                 </BOverlay>
@@ -259,7 +286,7 @@ export default {
                     this.students.forEach(student => {
                         student[aC.column] = resp[aC.position].data.results.find(a => a.matricule_id === student.matricule);
                     });
-                })
+                });
 
                 this.loading = false;
             });
