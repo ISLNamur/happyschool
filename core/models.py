@@ -200,6 +200,9 @@ class ContactModel(models.Model):
     mobile = models.CharField(max_length=100, blank=True)
     email = models.EmailField(null=True, blank=True)
 
+    def __str__(self):
+        return f"{self.phone}, {self.mobile}, {self.email}"
+
 
 class StudentModel(models.Model):
     first_name = models.CharField(max_length=200)
