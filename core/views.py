@@ -626,10 +626,14 @@ class BirthdayAPI(APIView):
                 classe__isnull=False,
             ).order_by("teaching")
             students = students.values_list(
-                "last_name", "first_name", "classe__year", "classe__letter"
+                "last_name",
+                "first_name",
+                "classe__year",
+                "classe__letter",
+                "teaching__display_name",
             )
             birthday += [
-                {"name": "%s %s %s%s" % (s[0], s[1], s[2], s[3].upper())} for s in students
+                {"name": f"{s[0]} {s[1]} {s[2]}{s[3].upper()} {s[4][0]}."} for s in students
             ]
         elif people == "responsible":
             responsibles = ResponsibleModel.objects.filter(
