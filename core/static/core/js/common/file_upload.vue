@@ -125,6 +125,7 @@ export default {
         if (this.id < 0) {
             var data = new FormData();
             data.append("file", this.file);
+            // eslint-disable-next-line no-undef
             data.append("visible_by", user_groups.map(uG => uG.id));
             axios.put(this.path, data,
                 {
