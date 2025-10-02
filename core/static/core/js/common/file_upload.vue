@@ -18,34 +18,56 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <BListGroupItem>
-        <BSpinner
-            v-if="loading"
-            small
-        />
-        <BButton
-            v-else
-            @click="deleteEntry"
-            size="sm"
-            variant="danger"
-        >
-            Enlever
-        </BButton>
-        <span v-if="file">{{ file.name }}</span>
-        <span v-else>
-            Voir <a
-                target="_blank"
-                rel="noopener noreferrer"
-                :href="link"
-            >{{ filename.substring(removestr, 40) }}</a>
+    <BListGroupItem class="d-flex align-items-center mt-2">
+        <span>
+            <BSpinner
+                v-if="loading"
+                small
+            />
+            <BButton
+                v-else
+                @click="deleteEntry"
+                size="sm"
+                variant="danger"
+                class="me-2"
+            >
+                Enlever
+            </BButton>
+            <span v-if="file">{{ file.name }}</span>
+            <span v-else>
+                Voir <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    :href="link"
+                >{{ filename.substring(removestr, 40) }}</a>
+            </span>
         </span>
+        <BFormGroup
+            v-if="groupAccess"
+            label="Visible par :"
+            label-cols-sm="5"
+            label-align="end"
+            class="flex-grow-1 ms-2"
+        >
+            <BFormSelect
+                multiple
+                :select-size="3"
+                v-model="selectedGroups"
+                :options="groupOptions"
+                value-field="id"
+                @update:model-value="updateGroup"
+            />
+        </BFormGroup>
     </BListGroupItem>
 </template>
 
 <script>
 import axios from "axios";
 
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
+
 export default {
+    emits: ["setdata", "delete"],
     props: {
         "id": {
             type: Number,
@@ -63,6 +85,10 @@ export default {
             type: String,
             default: "",
         },
+        groupAccess: {
+            type: Boolean,
+            default: false,
+        },
         /** If true, replace /media from the path with another string. */
         removeMedia: {
             type: Boolean,
@@ -74,11 +100,13 @@ export default {
             loading: true,
             link: "",
             filename: "",
+            groupOptions: [],
+            selectedGroups: [],
         };
     },
     methods: {
         deleteEntry: function() {
-            axios.delete(this.path + this.id,
+            axios.delete(`${this.path}${this.id}/`,
                 {
                     xsrfCookieName: "csrftoken",
                     xsrfHeaderName: "X-CSRFToken",
@@ -87,11 +115,17 @@ export default {
                 this.$emit("delete");
             });
         },
+        updateGroup: function () {
+            let data = new FormData();
+            data.append("visible_by", this.selectedGroups);
+            axios.patch(`${this.path}${this.id}/`, data, token);
+        }
     },
     mounted: function() {
         if (this.id < 0) {
             var data = new FormData();
             data.append("file", this.file);
+            data.append("visible_by", user_groups.map(uG => uG.id));
             axios.put(this.path, data,
                 {
                     xsrfCookieName: "csrftoken",
@@ -115,8 +149,22 @@ export default {
                         this.link = this.link.slice(6, this.link.length);
                     }
                     this.filename = this.link.split("/")[this.link.split("/").length - 1];
+
+                    if (this.groupAccess) {
+                        this.selectedGroups = response.data.visible_by;
+                    }
                     this.loading = false;
                 });
+        }
+
+        if (this.groupAccess && typeof groups !== "undefined") {
+            // eslint-disable-next-line no-undef
+            this.groupOptions = Object.values(groups);
+            if (this.id < 0) {
+                // Default group is user groups.
+                // eslint-disable-next-line no-undef
+                this.selectedGroups = user_groups.map(uG => uG.id);
+            }
         }
     },
 };

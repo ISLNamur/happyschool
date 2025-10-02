@@ -409,6 +409,7 @@ class BaseUploadFileView(APIView):
     def put(self, request, format=None):
         file_obj = request.FILES["file"]
         attachment = self.file_model(attachment=file_obj)
+        attachment = self.add_other_fields(attachment, request)
         attachment.save()
         serializer = self.file_serializer(attachment)
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
@@ -424,6 +425,9 @@ class BaseUploadFileView(APIView):
 
         # As we want the object to be removed, if it's not found, it's ok!
         return Response(status=status.HTTP_200_OK)
+
+    def add_other_fields(self, attachment, request):
+        return attachment
 
 
 class ProfilView(LoginRequiredMixin, TemplateView):
