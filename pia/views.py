@@ -409,6 +409,20 @@ class UploadFileView(BaseUploadFileView):
     file_model = models.AttachmentModel
     file_serializer = serializers.AttachmentSerializer
 
+    def get(self, request, pk, format=None):
+        try:
+            attachment = self.file_model.objects.get(pk=pk)
+
+            # Check permissions.
+            intersection = set(request.user.groups.all()) & set(attachment.visible_by.all())
+            if not intersection:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+            serializer = self.file_serializer(attachment)
+            return Response(data=serializer.data, status=status.HTTP_202_ACCEPTED)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
     def add_other_fields(self, attachment, request):
         attachment.save()
 
