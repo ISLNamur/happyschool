@@ -5,20 +5,6 @@ from django.contrib.auth.models import Group
 from django.conf import settings
 
 
-def add_default_group(apps, schema_editor):
-    AttachmentModel = apps.get_model("pia", "AttachmentModel")
-    group_names = [
-        settings.DIRECTION_GROUP,
-        settings.TEACHER_GROUP,
-        settings.EDUCATOR_GROUP,
-        settings.COORDONATOR_GROUP,
-    ]
-    default_groups = Group.objects.filter(name__in=group_names)
-    for a in AttachmentModel.objects.all():
-        a.visible_by.set(default_groups)
-    return
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -36,5 +22,4 @@ class Migration(migrations.Migration):
             name="visible_by",
             field=models.ManyToManyField(to="auth.group"),
         ),
-        migrations.RunPython(add_default_group),
     ]
