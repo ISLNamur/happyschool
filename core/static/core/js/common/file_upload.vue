@@ -67,7 +67,7 @@ import axios from "axios";
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
-    emits: ["setdata", "delete"],
+    emits: ["setdata", "delete", "unavailable"],
     props: {
         "id": {
             type: Number,
@@ -155,6 +155,9 @@ export default {
                         this.selectedGroups = response.data.visible_by;
                     }
                     this.loading = false;
+                })
+                .catch(() => {
+                    this.$emit("unavailable");
                 });
         }
 
