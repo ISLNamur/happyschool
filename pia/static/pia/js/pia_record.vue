@@ -240,7 +240,7 @@
                                     @update:model-value="addFiles"
                                 />
                                 <BListGroup
-                                    v-for="(item, index) in uploadedFiles"
+                                    v-for="(item, index) in uploadedFiles.filter(uF => uF.visible)"
                                     :key="index"
                                 >
                                     <file-upload
@@ -251,6 +251,7 @@
                                         group-access
                                         @delete="deleteFile(index)"
                                         @setdata="setFileData(index, $event)"
+                                        @unavailable="hideFile(index)"
                                     />
                                 </BListGroup>
                             </BFormGroup>
@@ -625,10 +626,14 @@ export default {
         setFileData: function (index, data) {
             this.uploadedFiles[index].id = data.id;
             this.uploadedFiles[index].link = data.attachment;
+            this.uploadedFiles[index].visible = true;
         },
         deleteFile: function (index) {
             this.uploadedFiles.splice(index, 1);
             this.$refs.attachments.reset();
+        },
+        hideFile: function (index) {
+            this.uploadedFiles[index].visible = false;
         },
         /** 
          * Assign text error if any.
@@ -865,7 +870,7 @@ export default {
 
                     // Attachments
                     this.uploadedFiles = resp.data.attachments.map(a => {
-                        return { id: a, file: null };
+                        return { id: a, file: null, visible: true};
                     });
                 });
         },
