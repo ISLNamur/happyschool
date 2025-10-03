@@ -14,7 +14,7 @@ dependencies = [
     "django-cas-ng>=5.0.1",
     "django-filter==25.1",
     "django-weasyprint==2.2.2",
-    "djangorestframework>=3.15.2",
+    "djangorestframework>=3.16.1",
     "icalendar>=6.1.1",
     "ldap3>=2.9.1",
     "psycopg2-binary>=2.9.10",
