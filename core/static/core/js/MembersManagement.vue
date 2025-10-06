@@ -23,17 +23,29 @@
         <BContainer v-cloak>
             <h1>Gestion du personnels</h1>
             <BRow>
-                <p class="card-text mb-2 ml-3">
-                    <BButton
-                        v-b-modal.addGroupModal
-                        variant="primary"
-                    >
-                        <IBiPlus
-                            scale="1.5"
-                        />
-                        Ajouter un groupe
-                    </BButton>
-                </p>
+                <BCol>
+                    <p class="card-text mb-2 ml-3">
+                        <BButton
+                            v-b-modal.addGroupModal
+                            variant="primary"
+                        >
+                            <IBiPlus
+                                scale="1.5"
+                            />
+                            Ajouter un groupe
+                        </BButton>
+                    </p>
+                </BCol>
+                <BCol>
+                    <BFormGroup>
+                        <BInputGroup>
+                            <BInputGroupText>
+                                <IBiSearch />
+                            </BInputGroupText>
+                            <BFormInput v-model="groupSearch" />
+                        </BInputGroup>
+                    </BFormGroup>
+                </BCol>
             </BRow>
             <BRow>
                 <BCol>
@@ -102,7 +114,7 @@
                             </p>
                         </BCard>
                         <BCard
-                            v-for="g in groups"
+                            v-for="g in groups.filter(g => g.name.toLowerCase().includes(this.groupSearch.toLowerCase()))"
                             :key="g.id"
                         >
                             <template #header>
@@ -287,6 +299,7 @@ export default {
             email: "",
             pk: null,
             group: null,
+            groupSearch: "",
             errors: {},
             inputStates: {
                 email: null,
