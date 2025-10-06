@@ -34,12 +34,13 @@ from django.views.generic import TemplateView
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
+from django.db.models import Q
 
 from rest_framework.views import APIView, Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAuthenticated, BasePermission, IsAdminUser
+
 
 from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
@@ -56,6 +57,8 @@ from core.models import (
     TeachingModel,
     ResponsibleModel,
     AdditionalStudentInfo,
+    CourseModel,
+    GivenCourseModel,
 )
 from core.serializers import (
     StudentSerializer,
@@ -67,7 +70,8 @@ from core.serializers import (
     ResponsibleSensitiveSerializer,
     YearSerializer,
     StudentSensitiveInfoSerializer,
-    GivenCourseModel,
+    CourseSerializer,
+    GivenCourseSerializer,
 )
 from core.views import get_app_settings, get_core_settings
 
@@ -367,8 +371,8 @@ class StudentClasseAPI(APIView):
         )
         if gender:
             students = students.filter(additionalstudentinfo__gender=gender)
-        serializer = StudentSerializer(students, many=True)
-        return Response(serializer.data)
+            serializer = StudentSerializer(students, many=True)
+            return Response(serializer.data)
 
 
 class StudentGivenCourseAPI(APIView):
@@ -793,5 +797,54 @@ class SummaryPDF(WeasyTemplateView, PermissionRequiredMixin):
                     status=StudentAbsenceTeacherModel.EXCLUDED,
                 ),
             }
-
         return context
+class ContactPermission(BasePermission):
+    message = 'Adding customers not allowed.'
+    def has_permission(self,request, view):
+        allowed_groups = get_settings().can_see_student_contact.all()
+        return request.user.groups.intersection(allowed_groups).exists()
+        
+class YellowpageAPI(APIView):
+    permission_classes = (IsAuthenticated,ContactPermission)
+    
+    def get(self, request, phonenum, format=None):
+        students = StudentModel.objects.filter(
+            Q(additionalstudentinfo__resp_mobile__iexact=phonenum)| 
+            Q(additionalstudentinfo__resp_phone__iexact=phonenum)|
+            Q(additionalstudentinfo__father_mobile__iexact=phonenum)|
+            Q(additionalstudentinfo__father_phone__iexact=phonenum)|
+            Q(additionalstudentinfo__mother_mobile__iexact=phonenum)|
+            Q(additionalstudentinfo__mother_phone__iexact=phonenum)|
+            Q(additionalstudentinfo__student_mobile__iexact=phonenum)
+            )
+        serializer = StudentSerializer(students,many=True)
+        #serializer = StudentContactInfoSerializer(students, many=True)
+        return Response(serializer.data)
+
+class EmailSearcherAPI(APIView):
+    permission_classes = (IsAuthenticated,ContactPermission)
+    
+    def get(self, request, email, format=None):
+        students = StudentModel.objects.filter(
+            Q(additionalstudentinfo__resp_email__iexact=email)| 
+            Q(additionalstudentinfo__mother_email__iexact=email)|
+            Q(additionalstudentinfo__father_email__iexact=email)|
+            Q(additionalstudentinfo__student_email__iexact=email)
+            )
+        serializer = StudentSerializer(students,many=True)
+        return Response(serializer.data)
+
+class CourseAPI(APIView):
+    def get(self,request,keyword,format=None):
+        course = CourseModel.objects.filter(
+            Q(long_name__icontains=keyword)|
+            Q(short_name__icontains=keyword)
+            )
+        serializer = CourseSerializer(course,many=True)
+        return Response(serializer.data)
+
+class GivenCourseAPI(APIView):
+    def get(self,request,course_id,format=None):
+        given_course = GivenCourseModel.objects.filter(course = course_id)
+        serializer = GivenCourseSerializer(given_course, many=True)
+        return Response(serializer.data)
