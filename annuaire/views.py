@@ -808,7 +808,7 @@ class YellowpageAPI(APIView):
         return Response(serializer.data)
 
 class EmailSearcherAPI(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,ContactPermission)
     
     def get(self, request, email, format=None):
         students = StudentModel.objects.filter(
