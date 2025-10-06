@@ -106,17 +106,31 @@
                             :key="g.id"
                         >
                             <template #header>
-                                <b>{{ g.name }}</b>
-                                <BButton
-                                    v-b-modal.deleteGroupModal
-                                    variant="light"
-                                    class="card-link"
-                                    @click="currentGroup = g"
-                                >
-                                    <IBiDash
-                                        color="red"
-                                    />
-                                </BButton>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>
+                                        <b>{{ g.name }}</b>
+                                        <BButton
+                                            variant="light"
+                                            class="card-link"
+                                            size="sm"
+                                            @click="setPinned(g)"
+                                        >
+                                            <IBiStarFill v-if="g.pinned" />
+                                            <IBiStar v-else />
+                                        </BButton>
+                                    </span>
+                                    <BButton
+                                        v-b-modal.deleteGroupModal
+                                        size="sm"
+                                        variant="light"
+                                        class="card-link"
+                                        @click="currentGroup = g"
+                                    >
+                                        <IBiDash
+                                            color="red"
+                                        />
+                                    </BButton>
+                                </div>
                             </template>
                             <BListGroup>
                                 <BListGroupItem
@@ -320,6 +334,13 @@ export default {
         },
         resetGroupModal() {
             this.groupName = "";
+        },
+        setPinned: function (group) {
+            axios.patch(`/mail_notification/api/other_email_group/${group.id}/`, {pinned: !group.pinned }, token)
+                .then((resp) => {
+                    const groupIndex =this.groups.findIndex(g => g.id === group.id);
+                    this.groups.splice(groupIndex, 1, resp.data);
+                });
         },
         loadCorePeople(personType) {
             // Load person type.
