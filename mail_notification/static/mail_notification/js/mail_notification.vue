@@ -133,6 +133,20 @@
                                     Également envoyer aux educateurs et coordonnateurs correspondants.
                                 </BFormCheckbox>
                             </BFormGroup>
+                            <BListGroup horizontal>
+                                <BListGroupItem
+                                    v-for="group in pinnedGroups"
+                                    :key="group.id"
+                                >
+                                    <BButton
+                                        size="sm"
+                                        @click="addRecipient(group)"
+                                    >
+                                        <IBiPlus />
+                                        {{ group.name }}
+                                    </BButton>
+                                </BListGroupItem>
+                            </BListGroup>
                             <BFormGroup v-if="sendType == 'students'">
                                 <multiselect
                                     v-model="template"
@@ -301,7 +315,8 @@ export default {
             showModal: false,
             sending: false,
             hasError: false,
-            preshow: ""
+            preshow: "",
+            pinnedGroups: [],
         };
     },
     watch: {
@@ -379,6 +394,9 @@ export default {
                     this.tagsLoading = false;
                 });
         },
+        addRecipient: function (group) {
+            this.emailTo.push(group.name);
+        },
         onEditorChange(event) {
             this.emailContent = event.html;
         },
@@ -435,6 +453,11 @@ export default {
     components: { Multiselect, TextEditor, FileUpload },
     mounted: function () {
         this.getTagsOptions("");
+
+        axios.get("/mail_notification/api/other_email_group/?pinned=true")
+            .then((resp) => {
+                this.pinnedGroups = resp.data.results;
+            });
 
         // Get templates.
         axios.get("/mail_answer/api/mail_template/?is_used=0")

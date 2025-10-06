@@ -438,3 +438,6 @@ class OtherEmailGroupViewSet(ModelViewSet):
     serializer_class = OtherEmailGroupSerializer
     permission_classes = (IsAuthenticated, HasPermissions)
     pagination_class = LargePageSizePagination
+    filter_backends = [filters.DjangoFilterBackend]
+
+    filterset_fields = ["pinned"]
