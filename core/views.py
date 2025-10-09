@@ -64,7 +64,6 @@ from core.models import (
     ClasseModel,
     CourseModel,
     GivenCourseModel,
-    StudentRelativeModel,
     ParentSettingModel,
     ParentNotificationSettingsModel,
     ColumnToFieldImportModel,
@@ -87,7 +86,6 @@ from core.serializers import (
     PeriodCoreSerializer,
     CourseScheduleSerializer,
     GivenCourseSerializer,
-    StudentRelativeSerializer,
     ParentSettingsNotificationSerializer,
     ColumnToFieldImportSerializer,
 )
