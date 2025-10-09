@@ -465,6 +465,8 @@ class ImportResponsibleFDB(ImportResponsible):
                 overwrite = OverwriteDataModel.objects.get(
                     people="responsible", uid=entry[0], field=column
                 )
+                if "," in overwrite.value:
+                    return overwrite.value.split(",")
                 return overwrite.value
             except ObjectDoesNotExist:
                 pass
