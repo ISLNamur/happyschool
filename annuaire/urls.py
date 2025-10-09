@@ -53,5 +53,6 @@ router.register(r"api/student_sensitive", views.StudentSensitiveInfoViewSet, "st
 router.register(r"api/info_general", views.StudentGeneralInfoViewSet, "info-general")
 router.register(r"api/info_contact", views.StudentContactInfoViewSet, "info-contact")
 router.register(r"api/info_medical", views.StudentMedicalInfoViewSet, "info-medical")
+router.register(prefix=r"api/student_relative_contact", viewset=views.StudentRelativeContactViewSet)
 
 urlpatterns += router.urls

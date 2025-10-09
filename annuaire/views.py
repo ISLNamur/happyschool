@@ -17,7 +17,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
+from django_filters.rest_framework.backends import DjangoFilterBackend
 import json
+from django.contrib.auth.models import Group
+from django.db.models import QuerySet
 import xlsxwriter
 from datetime import date, timedelta
 
@@ -38,11 +41,13 @@ from django.utils import timezone
 from rest_framework.views import APIView, Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import BasePermission, IsAuthenticated
 from rest_framework.permissions import IsAdminUser
 
 from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
+
+from django_filters import filterset, rest_framework as filters
 
 from django_weasyprint import WeasyTemplateView
 from unidecode import unidecode
@@ -56,6 +61,7 @@ from core.models import (
     TeachingModel,
     ResponsibleModel,
     AdditionalStudentInfo,
+    StudentRelativeModel,
 )
 from core.serializers import (
     StudentSerializer,
@@ -68,6 +74,7 @@ from core.serializers import (
     YearSerializer,
     StudentSensitiveInfoSerializer,
     GivenCourseModel,
+    StudentRelativeContactSerializer,
 )
 from core.views import get_app_settings, get_core_settings
 
@@ -469,6 +476,21 @@ class StudentContactInfoViewSet(ReadOnlyModelViewSet):
         allowed_groups = get_settings().can_see_student_contact.all()
         if not self.request.user.groups.intersection(allowed_groups).exists():
             return AdditionalStudentInfo.objects.none()
+
+        return super().get_queryset()
+
+
+class StudentRelativeContactViewSet(ReadOnlyModelViewSet):
+    queryset: QuerySet[StudentRelativeModel] = StudentRelativeModel.objects.all()
+    serializer_class: type[StudentRelativeContactSerializer] = StudentRelativeContactSerializer
+    permission_classes: list[type[BasePermission]] = [IsAuthenticated]
+    filter_backends: list[type[DjangoFilterBackend]] = [filters.DjangoFilterBackend]
+    filterset_fields: list[str] = ["students"]
+
+    def get_queryset(self) -> QuerySet[StudentRelativeModel]:
+        allowed_groups: QuerySet[Group] = get_settings().can_see_student_contact.all()
+        if not self.request.user.groups.intersection(allowed_groups).exists():
+            return StudentRelativeModel.objects.none()
 
         return super().get_queryset()
 

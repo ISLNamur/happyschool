@@ -43,91 +43,87 @@
                 <dd class="col-7">
                     <a :href="'mailto:' + contact.student_email">{{ contact.student_email }}</a>
                 </dd>
-                <dt class="col-5 text-end">
-                    Nom du responsable
-                </dt>
-                <dd class="col-7">
-                    {{ contact.resp_last_name }} {{ contact.resp_first_name }}
-                </dd>
-                <dt class="col-5 text-end">
-                    Téléphone responsable
-                </dt>
-                <dd class="col-7">
-                    <a :href="`tel:${contact.resp_phone.replaceAll('.', '')}`">
-                        {{ contact.resp_phone }}
-                    </a>
-                </dd>
-                <dt class="col-5 text-end">
-                    GSM responsable
-                </dt>
-                <dd class="col-7">
-                    <a :href="`tel:${contact.resp_mobile.replaceAll('.', '')}`">
-                        {{ contact.resp_mobile }}
-                    </a>
-                </dd>
-                <dt class="col-5 text-end">
-                    Email responsable
-                </dt>
-                <dd class="col-7">
-                    <a :href="'mailto:' + contact.resp_email">{{ contact.resp_email }}</a>
-                </dd>
-                <dt class="col-5 text-end">
-                    Nom de la mère
-                </dt>
-                <dd class="col-7">
-                    {{ contact.mother_last_name }} {{ contact.mother_first_name }}
-                </dd>
-                <dt class="col-5 text-end">
-                    Téléphone de la mère
-                </dt>
-                <dd class="col-7">
-                    <a :href="`tel:${contact.mother_phone.replaceAll('.', '')}`">
-                        {{ contact.mother_phone }}
-                    </a>
-                </dd>
-                <dt class="col-5 text-end">
-                    GSM de la mère
-                </dt>
-                <dd class="col-7">
-                    <a :href="`tel:${contact.mother_mobile.replaceAll('.', '')}`">
-                        {{ contact.mother_mobile }}
-                    </a>
-                </dd>
-                <dt class="col-5 text-end">
-                    Email de la mère
-                </dt>
-                <dd class="col-7">
-                    <a :href="'mailto:' + contact.mother_email">{{ contact.mother_email }}</a>
-                </dd>
-                <dt class="col-5 text-end">
-                    Nom du père
-                </dt>
-                <dd class="col-7">
-                    {{ contact.father_last_name }} {{ contact.father_first_name }}
-                </dd>
-                <dt class="col-5 text-end">
-                    Téléphone du père
-                </dt>
-                <dd class="col-7">
-                    <a :href="`tel:${contact.father_phone.replaceAll('.', '')}`">
-                        {{ contact.father_phone }}
-                    </a>
-                </dd>
-                <dt class="col-5 text-end">
-                    GSM du père
-                </dt>
-                <dd class="col-7">
-                    <a :href="`tel:${contact.father_mobile.replaceAll('.', '')}`">
-                        {{ contact.father_mobile }}
-                    </a>
-                </dd>
-                <dt class="col-5 text-end">
-                    Email du père
-                </dt>
-                <dd class="col-7">
-                    <a :href="'mailto:' + contact.father_email">{{ contact.father_email }}</a>
-                </dd>
             </dl>
+            <BListGroup>
+                <BListGroupItem>
+                    <div class="text-center">
+                        <strong><u>Responsable</u></strong>
+                    </div>
+                    <dl class="row">
+                        <dt class="col-5 text-end">
+                            Nom et prénom
+                        </dt>
+                        <dd class="col-7">
+                            {{ contact.resp_last_name }} {{ contact.resp_first_name }}
+                        </dd>
+                        <dt class="col-5 text-end">
+                            Téléphone
+                        </dt>
+                        <dd class="col-7">
+                            <a :href="`tel:${contact.resp_phone.replaceAll('.', '')}`">
+                                {{ contact.resp_phone }}
+                            </a>
+                        </dd>
+                        <dt class="col-5 text-end">
+                            GSM
+                        </dt>
+                        <dd class="col-7">
+                            <a :href="`tel:${contact.resp_mobile.replaceAll('.', '')}`">
+                                {{ contact.resp_mobile }}
+                            </a>
+                        </dd>
+                        <dt class="col-5 text-end">
+                            Email
+                        </dt>
+                        <dd class="col-7">
+                            <a :href="'mailto:' + contact.resp_email">{{ contact.resp_email }}</a>
+                        </dd>
+                    </dl>
+                </BListGroupItem>
+                <BListGroupItem
+                    v-for="rel in relatives"
+                    :key="rel.id"
+                >
+                    <div class="text-center">
+                        <strong>
+                            <u v-if="rel.relationship === 'M'">Mère</u>
+                            <u v-else-if="rel.relationship === 'F'">Père</u>
+                            <u v-else>{{ rel.relationship }}</u>
+                        </strong>
+                        <span v-if="rel.is_legal_responsible"> (Responsable)</span>
+                    </div>
+                    <dl class="row">
+                        <dt class="col-5 text-end">
+                            Nom et prénom
+                        </dt>
+                        <dd class="col-7">
+                            {{ rel.last_name }} {{ rel.first_name }}
+                        </dd>
+                        <dt class="col-5 text-end">
+                            Téléphone
+                        </dt>
+                        <dd class="col-7">
+                            <a :href="`tel:${rel.contact.phone ? rel.contact.phone.replaceAll('.', '') : ''}`">
+                                {{ rel.contact.phone }}
+                            </a>
+                        </dd>
+                        <dt class="col-5 text-end">
+                            GSM
+                        </dt>
+                        <dd class="col-7">
+                            <a :href="`tel:${rel.contact.mobile ? rel.contact.mobile.replaceAll('.', '') : ''}`">
+                                {{ rel.contact.mobile }}
+                            </a>
+                        </dd>
+                        <dt class="col-5 text-end">
+                            Email
+                        </dt>
+                        <dd class="col-7">
+                            <a :href="`mailto: ${rel.contact.email ? rel.contact.email : ''}`">{{ rel.contact.email }}</a>
+                        </dd>
+                    </dl>
+                </BListGroupItem>
+            </BListGroup>
         </div>
     </BOverlay>
 </template>
@@ -145,6 +141,7 @@ export default {
     data: function () {
         return {
             contact: null,
+            relatives: [],
             loading: true,
         };
     },
@@ -166,6 +163,10 @@ export default {
             .catch(err => {
                 console.log(err);
                 this.loading = false;
+            });
+        axios.get(`/annuaire/api/student_relative_contact/?students=${this.matricule}`)
+            .then((resp) => {
+                this.relatives = resp.data.results;
             });
     }
 };
