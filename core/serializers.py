@@ -30,10 +30,17 @@ class ContactSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class StudentRelativeSerializer(serializers.ModelSerializer):
+class StudentRelativeContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentRelativeModel
-        fields = "__all__"
+        fields = [
+            "last_name",
+            "first_name",
+            "is_legal_responsible",
+            "students",
+            "relationship",
+            "contact",
+        ]
         depth = 1
 
 
