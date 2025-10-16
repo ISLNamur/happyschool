@@ -568,9 +568,14 @@ class StatisticAPI(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, student, format=None):
-        only_sanctions = request.GET.get("only_sanctions", 1) == 1
+        only_sanctions = request.GET.get("only_sanctions", 0) == 1
         only_asked_sanctions = request.GET.get("only_asked_sanctions", 0) == 1
-        stats = self.gen_stats(request.user, student, only_sanctions)
+        stats = self.gen_stats(
+            request.user,
+            student,
+            only_sanctions=only_sanctions,
+            only_asked_sanctions=only_asked_sanctions,
+        )
         return Response(stats)
 
     def gen_stats(
@@ -609,13 +614,14 @@ class StatisticAPI(APIView):
             }
             stats.append(stat)
 
-        for i in infos:
-            stat = {
-                "display": i.display,
-                "value": len(cas_info.filter(info__in=i.info.all())),
-                "type": "info",
-            }
-            stats.append(stat)
+        if not only_sanctions and not only_asked_sanctions:
+            for i in infos:
+                stat = {
+                    "display": i.display,
+                    "value": len(cas_info.filter(info__in=i.info.all())),
+                    "type": "info",
+                }
+                stats.append(stat)
 
         if not only_sanctions:
             stats.append({"display": "Non disciplinaire", "value": len(cas_info), "type": "total"})
