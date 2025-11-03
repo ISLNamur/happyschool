@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     "django_filters",
     "channels",
     "django_vite_plugin",
+    "hijack",
+    "hijack.contrib.admin",
     #'social_django',
     # "django_cas_ng",
     "core",
@@ -75,6 +77,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "hijack.middleware.HijackUserMiddleware",
     # "django_cas_ng.middleware.CASMiddleware",
 ]
 

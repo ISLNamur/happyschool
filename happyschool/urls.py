@@ -35,6 +35,7 @@ urlpatterns = [
     path("annuaire/", include("annuaire.urls"), name="annuaire"),
     path("no_access/", TemplateView.as_view(template_name="core/no_access.html"), name="no_access"),
     path("", RedirectView.as_view(url="annuaire/", permanent=False)),
+    path("hijack/", include("hijack.urls")),
 ]
 
 # Handle SSO with CAS

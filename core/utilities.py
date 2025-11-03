@@ -48,6 +48,8 @@ EXCLUDED_APPS = [
     "django_cas_ng",
     "debug_toolbar",
     "django_vite_plugin",
+    "hijack",
+    "hijack.contrib.admin",
 ]
 
 
