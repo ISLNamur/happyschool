@@ -324,6 +324,8 @@ class SendEmailsView(APIView):
         template = get_template("mail_notification/email.html")
 
         context = {
+            "subject": email_to_sent.subject,
+            "recipients": email_to_sent.email_to,
             "body": email_to_sent.body,
             "to_teachers": email_to_sent.to_type == "teachers",
         }
