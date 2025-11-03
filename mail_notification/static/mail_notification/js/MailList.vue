@@ -39,10 +39,10 @@
             <BCol>
                 <BCard
                     :title="email.subject"
-                    :sub-title="`Envoyé à : ${email.email_to} (${email.teaching}) à partir de : ${email.email_from}`"
                 >
                     <p class="card-text">
-                        Destination : {{ email.to_type }} <br>
+                        Expéditeur : {{ email.email_from }} <br>
+                        Destinataires : {{ `${email.email_to} (${email.teaching})` }} <br>
                         Date : {{ email.datetime_created }} <br>
                         État : {{ email.errors }}
                     </p>
