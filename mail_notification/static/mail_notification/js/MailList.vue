@@ -32,26 +32,51 @@
                 </BNavItem>
             </BNav>
         </BRow>
-        <BRow
-            v-for="email in emails"
-            :key="email.id"
-        >
+        <BRow>
             <BCol>
-                <BCard
-                    :title="email.subject"
-                >
-                    <p class="card-text">
-                        Expéditeur : {{ email.email_from }} <br>
-                        Date : {{ email.datetime_created }} <br>
-                        État : {{ email.errors }}
-                    </p>
-                    <p>
-                        Message <IBiPaperclip v-if="email.attachments.length > 0" /> :
-                    </p>
-                    <BCardBody>
-                        <div v-html="email.body" />
-                    </BCardBody>
-                </BCard>
+                <BPagination
+                    class="mt-1"
+                    :total-rows="entriesCount"
+                    v-model="currentPage"
+                    @update:model-value="changePage"
+                    :per-page="20"
+                />
+            </BCol>
+        </BRow>
+        <BOverlay :show="loading">
+            <BRow
+                v-for="email in emails"
+                :key="email.id"
+            >
+                <BCol>
+                    <BCard
+                        :title="email.subject"
+                        class="mb-2"
+                    >
+                        <p class="card-text">
+                            Expéditeur : {{ email.email_from }} <br>
+                            Date : {{ email.datetime_created }} <br>
+                            État : {{ email.errors }}
+                        </p>
+                        <p>
+                            Message <IBiPaperclip v-if="email.attachments.length > 0" /> :
+                        </p>
+                        <BCardBody>
+                            <div v-html="email.body" />
+                        </BCardBody>
+                    </BCard>
+                </BCol>
+            </BRow>
+        </BOverlay>
+        <BRow>
+            <BCol>
+                <BPagination
+                    class="mt-1"
+                    :total-rows="entriesCount"
+                    v-model="currentPage"
+                    @update:model-value="changePage"
+                    :per-page="20"
+                />
             </BCol>
         </BRow>
     </BContainer>
@@ -64,14 +89,32 @@ import axios from "axios";
 export default {
     data: function () {
         return {
-            emails: []
+            emails: [],
+            currentPage: 1,
+            entriesCount: 0,
+            loading: false,
         };
     },
+    methods: {
+        changePage: function (page) {
+            this.currentPage = page;
+            this.loadEntries();
+            // Move to the top of the page.
+            scroll(0, 0);
+            return;
+        },
+        loadEntries: function () {
+            this.loading = true;
+            axios.get(`/mail_notification/api/notif/?page=${this.currentPage}`)
+                .then((resp) => {
+                    this.emails = resp.data.results;
+                    this.entriesCount = resp.data.count;
+                    this.loading = false;
+                });
+        }
+    },
     mounted: function () {
-        axios.get("/mail_notification/api/notif")
-            .then((resp) => {
-                this.emails = resp.data.results;
-            });
+        this.loadEntries();
     }
 };
 
