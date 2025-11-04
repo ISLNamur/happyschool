@@ -42,7 +42,6 @@
                 >
                     <p class="card-text">
                         Expéditeur : {{ email.email_from }} <br>
-                        Destinataires : {{ `${email.email_to} (${email.teaching})` }} <br>
                         Date : {{ email.datetime_created }} <br>
                         État : {{ email.errors }}
                     </p>
