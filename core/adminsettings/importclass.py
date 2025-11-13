@@ -747,10 +747,13 @@ class ImportStudent(ImportBase):
 
             # Relatives
             # First check if relatives already exist.
+            resp_email: str | None = self.get_value(entry, "resp_email")
+            resp_last_name: str | None = self.get_value(entry, "resp_last_name")
+            resp_first_name: str | None = self.get_value(entry, "resp_first_name")
+
             relatives = StudentRelativeModel.objects.filter(students=student)
             if relatives.exists():
                 # Update data.
-                resp_email = self.get_value(entry, "resp_email")
                 mother_last_name = self.get_value(entry, "mother_last_name")
                 mother_first_name = self.get_value(entry, "mother_first_name")
 
@@ -781,9 +784,6 @@ class ImportStudent(ImportBase):
                                     mother.save()
                     except ObjectDoesNotExist:
                         # Create mother.
-                        resp_last_name = self.get_value(entry, "resp_last_name")
-                        resp_first_name = self.get_value(entry, "resp_first_name")
-                        resp_email = self.get_value(entry, "resp_email")
 
                         mother_rel_data = {
                             f: self.get_value(entry, f"mother_{f}")
@@ -899,10 +899,6 @@ class ImportStudent(ImportBase):
                             continue
                 else:
                     has_responsible = False
-
-                    resp_last_name = self.get_value(entry, "resp_last_name")
-                    resp_first_name = self.get_value(entry, "resp_first_name")
-                    resp_email = self.get_value(entry, "resp_email")
 
                     mother_last_name = self.get_value(entry, "mother_last_name")
                     mother_first_name = self.get_value(entry, "mother_first_name")
