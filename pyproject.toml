@@ -30,6 +30,7 @@ dependencies = [
     "xlsxwriter>=3.2.2",
     "xlwt>=1.3.0",
     "django-hijack>=3.7.4",
+    "django-anymail>=13.1",
 ]
 
 [tool.black]

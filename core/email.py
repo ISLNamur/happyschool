@@ -120,46 +120,39 @@ def send_email_with_mg(
     )
 
 
-def send_email_with_sp(
-    recipients, subject, body, from_email="Informatique ISLN <informatique@isln.be>", attachments=()
-):
+def send_email_with_sp(recipients: list, subject: str, body: str, from_email: str, attachments=()):
     recipients = list(map(lambda r: {"address": r}, recipients))
     if "<" in from_email:
         name = from_email.split("<")[0]
         reply_to = from_email.split("<")[1][:-1]  # Remove last chevron.
-        from_email = {"name": name, "email": reply_to.replace("@", "@email.")}
+        from_email = reply_to.replace("@", "@email.")
     else:
         reply_to = from_email
         from_email = from_email.replace("@", "@email.")
-    data = {
-        "content": {
-            "from": from_email,
-            "subject": subject,
-            "text": strip_tags(body),
-            "html": body,
-            "reply_to": reply_to,
-        },
-        "options": {
-            "open_tracking": False,
-            "click_tracking": False,
-        },
-    }
-    if settings.DEBUG:
-        data["recipients"] = [{"address": settings.EMAIL_ADMIN}]
-        data["content"]["html"] = data["content"]["html"].replace(
-            "</html>", str(recipients) + "</html>"
-        )
-    else:
-        data["recipients"] = recipients
 
-    response = requests.post(
-        "https://api.sparkpost.com/api/v1/transmissions",
-        headers={"Authorization": settings.SPARKPOST_KEY},
-        json=data,
+    email = EmailMultiAlternatives(
+        subject=subject, from_email=from_email, reply_to=[reply_to], body=strip_tags(body)
     )
+
     if settings.DEBUG:
-        print(response.json())
-    return response
+        email.to = [settings.EMAIL_ADMIN]
+        body = body.replace("</html>", str(recipients) + "</html>")
+    else:
+        email.to = recipients
+
+    email.attach_alternative(body, "text/html")
+
+    if attachments:
+        for a in attachments:
+            if isinstance(a, dict):
+                email.attach(filename=a["filename"], content=a["file"])
+            elif isinstance(a.attachment, FieldFile):
+                email.attach_file(a.attachment.path)
+
+    emails_sent = email.send()
+    if settings.DEBUG:
+        print(emails_sent)
+    return emails_sent
 
 
 def get_resp_emails(student: StudentModel) -> dict:

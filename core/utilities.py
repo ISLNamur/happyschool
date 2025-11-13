@@ -50,6 +50,7 @@ EXCLUDED_APPS = [
     "django_vite_plugin",
     "hijack",
     "hijack.contrib.admin",
+    "anymail",
 ]
 
 

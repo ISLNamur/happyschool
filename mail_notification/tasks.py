@@ -119,15 +119,15 @@ def task_send_emails_notif(self, pk, one_by_one=True, responsibles=True):
                     attachments=attachments,
                 )
 
-                print(response.status_code)
-                if response.status_code != 200:
+                print(response)
+                if response == 0:
                     if settings.DEBUG:
                         print("Error with %s" % r)
-                        print(response.json)
-                        email_notif.errors += "Error w/ %s: %s |" % (r, response.status_code)
+                        print(response)
+                        email_notif.errors += "Error w/ %s: %s |" % (r, response)
                         if len(email_notif.errors) > 9000:
                             break
-                    email_notif.errors += "Error while sending %s: %s" % (r, response.status_code)
+                    email_notif.errors += "Error while sending %s: %s" % (r, response)
                     break
 
                 else:
@@ -144,7 +144,6 @@ def task_send_emails_notif(self, pk, one_by_one=True, responsibles=True):
                 email_notif.subject,
                 "<html>%s<br>%s</html>" % (email_notif.body, recipients),
                 from_email=email_notif.email_from,
-                attachments=attachments,
             )
     else:
         response = send_email_with_sp(
@@ -152,10 +151,9 @@ def task_send_emails_notif(self, pk, one_by_one=True, responsibles=True):
             email_notif.subject,
             "<html>%s</html>" % email_notif.body,
             from_email=email_notif.email_from,
-            attachments=attachments,
         )
 
-        if response.status_code == 200:
+        if response != 0:
             email_notif.errors = "Sent."
         else:
             email_notif.errors = "Error."

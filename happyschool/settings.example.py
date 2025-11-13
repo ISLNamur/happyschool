@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "hijack.contrib.admin",
     #'social_django',
     # "django_cas_ng",
+    # "anymail",
     "core",
     "annuaire",
     "infirmerie",
@@ -203,11 +204,19 @@ LOGIN_REDIRECT_URL = "annuaire"
 # Mostly use in debug mode to reroute emails.
 EMAIL_ADMIN = os.getenv("EMAIL_ADMIN", "")
 
+# If anymail is activated change settings here.
+# https://anymail.dev/en/stable/installation/
+
+if "anymail" in INSTALLED_APPS:
+    ANYMAIL = {}
+    EMAIL_BACKEND = "anymail.backends.sparkpost.EmailBackend"
+
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.server.com")
 EMAIL_PORT = os.getenv("EMAIL_PORT", 465)
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "admin@example.org")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "password")
-EMAIL_FROM = os.getenv("EMAIL_FROM", "robot@example.org")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "robot@example.org")
+SERVER_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "robot@example.org")
 
 if EMAIL_PORT == 465:
     EMAIL_USE_SSL = True
