@@ -6,9 +6,12 @@
 <p>Un appel a été reçu.</p>
 {% if appel.is_student %}
 <div align='justify'><p align='center'><img src='cid:{{ etudiant.matricule }}.jpg' width='90' height='136'></p></div>
+{% endif %}
 <dl>
+    {% if appel.is_student %}
     <dt>Concerne</dt>
     <dd><strong>{% if appel.is_student %}{{ etudiant.display }}{% else %}{{ appel.name }}{% endif %}</strong></dd>
+    {% endif %}
     <dt>Objet</dt>
     <dd>{{ appel.object.display }}</dd>
     <dt>Motif</dt>
@@ -49,9 +52,9 @@
     </dd>
     {% endif %}
 </dl>
+
 <p>Merci de réserver la meilleure suite à cet e-mail.</p>
 <p>Bonne journée,</p>
 <p>L'équipe de l'accueil.</p>
 
-{% endif %}
 {% endblock %}
