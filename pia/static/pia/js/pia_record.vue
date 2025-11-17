@@ -478,13 +478,26 @@
                                 <BcardBody>
                                     <span v-html="cas.explication_commentaire" />
                                 </BcardBody>
-                                <BcardFooter class="text-end">
+                                <BcardFooter
+                                    class="text-end"
+                                >
                                     <BButton
                                         variant="warning"
                                         :href="`/dossier_eleve/#/edit/${cas.id}/`"
+                                        class="mb-1 me-1"
                                     >
                                         <IBiPencilSquare />
                                         Modifier
+                                    </BButton>
+                                    <BButton
+                                        v-for="(file, index) in cas.attachments"
+                                        :key="file"
+                                        :href="`/dossier_eleve/attachment/${file}`"
+                                        class="mb-1 me-1"
+                                        variant="outline-secondary"
+                                    >
+                                        <IBiPaperclip />
+                                        Fichier {{ index + 1 }}
                                     </BButton>
                                 </BcardFooter>
                             </BCard>
