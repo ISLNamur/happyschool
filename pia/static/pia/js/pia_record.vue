@@ -620,7 +620,9 @@ export default {
     },
     methods: {
         addFiles: function () {
-            this.uploadedFiles = this.uploadedFiles.concat(this.form.attachments.map(a => { return { file: a, id: -1 }; }));
+            this.uploadedFiles = this.uploadedFiles.concat(this.form.attachments.map(a => {
+                return { file: a, id: -1, visible: true };
+            }));
             this.form.attachments.splice(0, this.form.attachments.length);
         },
         setFileData: function (index, data) {
