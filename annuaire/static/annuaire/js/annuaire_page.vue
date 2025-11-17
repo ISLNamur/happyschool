@@ -172,19 +172,19 @@ export default {
                     query = this.numberPhoneFormat(query);
                     console.log("convert and query: "+query);
                     axios.get(`api/yellowpage/${query}/`)   
-                    .then(response => {
-                        const options = response.data.map(p => {
-                            return {
-                                display: p.display,
-                                id: p.matricule,
-                                type: "phone",
-                            };
+                        .then(response => {
+                            const options = response.data.map(p => {
+                                return {
+                                    display: p.display,
+                                    id: p.matricule,
+                                    type: "phone",
+                                };
+                            });
+                            this.searchOptions = options;
+                        })
+                        .catch(err => {
+                            console.log(err);
                         });
-                        this.searchOptions = options;
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    });
                 }
             }else if(this.advancedSearchSelected.value == "email"){
                 axios.get(`api/emailsearcher/${query}/`)
