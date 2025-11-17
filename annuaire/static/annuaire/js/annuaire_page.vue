@@ -48,6 +48,7 @@
                         />
                     </BFormGroup>
                 </BCol>
+
                 <BCol>
                     <BFormGroup
                         label="Recherche :"
@@ -60,7 +61,7 @@
                             :options="searchOptions"
                             @search-change="getSearchOptions"
                             :loading="searchLoading"
-                            placeholder="Rechercher un étudiant, une classe, un professeur, …"
+                            :placeholder="advancedSearchSelected.desc"
                             select-label=""
                             selected-label="Sélectionné"
                             deselect-label=""
@@ -75,6 +76,30 @@
                             <template #noOptions />
                         </multiselect>
                     </BFormGroup>
+                </BCol>
+                <BCol md="2">
+                    <BButton
+                        v-b-toggle.collapseAdvancedSearch
+                        variant="outline-secondary"
+                        class="mt-2 mt-md-0"
+                    >
+                        <IBiSearch />
+                        Avancée
+                    </BButton>
+                    <BCollapse
+                        id="collapseAdvancedSearch"
+                        class="mt-2"
+                    >
+                        <BFormGroup 
+                            label="Type de recherche :"
+                        >
+                            <BFormSelect
+                                v-model="advancedSearchSelected"
+                                :options="advancedSearchOptions"
+                                :select-size="1"
+                            />
+                        </BFormGroup>
+                    </BCollapse>
                 </BCol>
             </BRow>
             <router-view v-slot="{ Component }">
@@ -97,6 +122,7 @@ import axios from "axios";
 
 import Menu from "@s:core/js/common/menu_bar.vue";
 
+
 export default {
     data: function () {
         return {
@@ -108,7 +134,12 @@ export default {
             search: null,
             searchOptions: [],
             searchLoading: false,
-
+            advancedSearchSelected: {value:"default",desc:"Rechercher un étudiant, une classe, un professeur, …"},
+            advancedSearchOptions:[
+                {text:"Normale",value:{value:"default",desc:"Rechercher un étudiant, une classe, un professeur, …"}},
+                {text:"Par téléphone",value:{value:"phone",desc:"Rechercher par numéro de téléphone fix ou GSM ex: 0470102030 …"}},
+                {text:"Par e-mail",value:{value:"email",desc:"Rechercher par e-mail ex: adresse@email.be"}},
+            ],
         };
     },
     methods: {
@@ -116,7 +147,10 @@ export default {
             if (option.type == "classe") {
                 this.$router.push(`/classe/${option.id}/`);
                 return;
-            } else {
+            }else if(option.type == "phone"){
+                this.$router.push(`/person/student/${option.id}/contact`);
+            }
+            else {
                 this.$router.push(`/person/${option.type}/${option.id}/`);
             }
         },
@@ -133,44 +167,81 @@ export default {
                 active: false,
                 check_access: false,
             };
-            axios.post("/annuaire/api/people_or_classes/", data, token)
-                .then(response => {
-                    if (this.searchId !== currentSearch)
-                        return;
-
-                    const options = response.data.map(p => {
-                        if (Number.isNaN(Number.parseInt(query[0]))) {
-                        // It is a student or a responsible.
-                            if ("is_secretary" in p) {
-                            // It is a responsible.
-                                let teachings = " —";
-                                for (let t in p.teaching) {
-                                    teachings += " " + p.teaching[t].display_name;
-                                }
-
-                                return {
-                                    display: p.last_name + " " + p.first_name + teachings,
-                                    id: p.matricule,
-                                    type: "responsible",
-                                };
-                            } else {
-                            // It is a student.
+            if (this.advancedSearchSelected.value == "phone"){
+                if (query.length > 8){
+                    query = this.numberPhoneFormat(query);
+                    console.log("convert and query: "+query);
+                    axios.get(`api/yellowpage/${query}/`)   
+                        .then(response => {
+                            const options = response.data.map(p => {
                                 return {
                                     display: p.display,
                                     id: p.matricule,
-                                    type: "student",
+                                    type: "phone",
                                 };
-                            }
-                        } else {
-                        // It is a classe.
-                            let classe = p;
-                            classe.type = "classe";
-                            return classe;
-                        }
+                            });
+                            this.searchOptions = options;
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        });
+                }
+            }else if(this.advancedSearchSelected.value == "email"){
+                axios.get(`api/emailsearcher/${query}/`)
+                    .then(response => { console.log(response.data);
+                        const options = response.data.map(p => {
+                            return {
+                                display: p.display,
+                                id: p.matricule,
+                                type: "phone",
+                            };
+                        });
+                        this.searchOptions = options;
+                    })
+                    .catch(err => {
+                        console.log(err);
                     });
+            }else{
+                axios.post("/annuaire/api/people_or_classes/", data, token)
+                    .then(response => {
+                        if (this.searchId !== currentSearch)
+                            return;
 
-                    this.searchOptions = options;
-                });
+                        const options = response.data.map(p => {
+                            if (Number.isNaN(Number.parseInt(query[0]))) {
+                                // It is a student or a responsible.
+                                if ("is_secretary" in p) {
+                                    // It is a responsible.
+                                    let teachings = " —";
+                                    for (let t in p.teaching) {
+                                        teachings += " " + p.teaching[t].display_name;
+                                    }
+
+                                    return {
+                                        display: p.last_name + " " + p.first_name + teachings,
+                                        id: p.matricule,
+                                        type: "responsible",
+                                    };
+                                } else {
+                                    // It is a student.
+                                    return {
+                                        display: p.display,
+                                        id: p.matricule,
+                                        type: "student",
+                                    };
+                                }
+                            } else {
+                                // It is a classe.
+                                let classe = p;
+                                classe.type = "classe";
+                                return classe;
+                            }
+                        });
+
+                        this.searchOptions = options;
+                    });
+            }
+
         },
         overloadInput: function () {
             setTimeout(() => {
@@ -202,6 +273,25 @@ export default {
             }, 300);
             
         },
+        numberPhoneFormat: function (numberPhone){
+            let numberPhoneConverted;
+            let patternPhoneFix = /^([0-9]){9}$/;
+            let patternPhoneMobile = /^([0-9]){10}$/;
+
+            if(patternPhoneMobile.test(numberPhone)){
+                console.log("is Mobile");
+                numberPhoneConverted = `${numberPhone.substring(0,4)}.${numberPhone.substring(4,6)}.${numberPhone.substring(6,8)}.${numberPhone.substring(8,10)}`; 
+            }else if (patternPhoneFix.test(numberPhone)){
+                console.log("is Fix");
+                numberPhoneConverted = `${numberPhone.substring(0,3)}.${numberPhone.substring(3,5)}.${numberPhone.substring(5,7)}.${numberPhone.substring(7,9)}`; 
+            }
+            else{
+                console.log("no valid numberphone");
+                numberPhoneConverted = null;
+            }
+            console.log(numberPhoneConverted);
+            return numberPhoneConverted;
+        } 
     },
     mounted: function () {
         axios.get("/core/api/teaching/")
