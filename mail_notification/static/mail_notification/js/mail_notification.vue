@@ -246,6 +246,7 @@
         <b-modal
             v-model="showModal"
             centered
+            ok-only
         >
             <p v-if="sending">
                 <BSpinner small />
