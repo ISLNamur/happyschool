@@ -325,7 +325,7 @@ class SendEmailsView(APIView):
 
         context = {
             "subject": email_to_sent.subject,
-            "recipients": email_to_sent.email_to,
+            "recipients": ", ".join(email_to_sent.email_to.split(",")),
             "body": email_to_sent.body,
             "to_teachers": email_to_sent.to_type == "teachers",
         }
