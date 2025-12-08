@@ -100,6 +100,8 @@ def task_send_info_email(self, instance_id):
     )
     teachers += list(map(lambda e: e.email, EmailModel.objects.filter(is_pms=True)))
 
+    teachers = [t for t in teachers if t]
+
     if not settings.DEBUG:
         try:
             send_email(
@@ -129,4 +131,4 @@ def task_send_info_email(self, instance_id):
             attachments=instance.attachments.all(),
         )
         for t in teachers:
-            print("Sending email to : " + t)
+            print(f"Sending email to : {str(t)}")
