@@ -179,7 +179,7 @@ export default {
                 if (refInput) {
                     let input = refInput.$refs.search;
                     input.focus();
-                    input.addEventListener("keypress", (e) => {
+                    input.addEventListener("keydown", (e) => {
                         if (e.key == "Enter") {
                             if (refInput.search && refInput.search.length > 1 && !isNaN(refInput.search)) {
                                 axios.get("/annuaire/api/student/" + refInput.search + "/")
