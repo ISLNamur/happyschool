@@ -59,7 +59,7 @@ def send_email(
     text_content = strip_tags(html_content)
 
     email = EmailMultiAlternatives(
-        subject, text_content, settings.EMAIL_FROM, to, cc, connection, reply_to=reply_to
+        subject, text_content, settings.DEFAULT_FROM_EMAIL, to, cc, connection, reply_to=reply_to
     )
     if use_bcc:
         email.to = []
