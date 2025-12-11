@@ -46,6 +46,9 @@ class EmailNotificationSettingsModel(models.Model):
         related_name="add_cc_teachers",
         help_text="When sending an email to teachers send a copy to those emails.",
     )
+    replace_sender_domain_by = models.CharField(
+        max_length=100, blank=True, default="", help_text="Replace the domain for from email field."
+    )
 
 
 class EmailAttachment(models.Model):

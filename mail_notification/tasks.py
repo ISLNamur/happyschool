@@ -24,7 +24,7 @@ from django.conf import settings
 
 from celery import shared_task
 
-from core.email import send_email_with_mg, send_email_with_sp
+from core.email import send_email
 from core.people import People
 from core.models import ResponsibleModel, StudentModel, ClasseModel, EmailModel
 
@@ -49,7 +49,7 @@ def get_settings():
 
 
 @shared_task(bind=True)
-def task_send_emails_notif(self, pk, one_by_one=True, responsibles=True):
+def task_send_emails_notif(self, pk, responsibles=True):
     """Send emails"""
     # First sync media between local and distant server
     subprocess.run(settings.EMAIL_ATTACHMENTS_SYNC["rsync_command"], shell=True)
@@ -74,7 +74,7 @@ def task_send_emails_notif(self, pk, one_by_one=True, responsibles=True):
         )
     )
 
-    # Add a carbon copy to recipients.
+    # Add a carbon copy to specific recipients.
     settings_email_notif = get_settings()
     if email_notif.to_type == "teachers":
         recipients += list(
@@ -85,7 +85,6 @@ def task_send_emails_notif(self, pk, one_by_one=True, responsibles=True):
             map(lambda e: (e.email, None), settings_email_notif.add_cc_parents.all())
         )
 
-    # recipients += [(settings.EMAIL_ADMIN, None), ('directeur@isln.be', None), ('sous-directeur@isln.be', None)]
     print(recipients)
 
     # Get attachments.
@@ -99,6 +98,8 @@ def task_send_emails_notif(self, pk, one_by_one=True, responsibles=True):
         email_notif.answers.is_used = True
         email_notif.answers.save()
 
+    one_by_one = True
+
     if one_by_one:
         one_ok = False
         for r, a in recipients:
@@ -111,25 +112,19 @@ def task_send_emails_notif(self, pk, one_by_one=True, responsibles=True):
                 email_body = email_body.replace("specific_uuid", str(a.uuid))
 
             if not settings.DEBUG:
-                response = send_email_with_sp(
-                    [r],
-                    email_notif.subject,
-                    email_body,
+                response = send_email(
+                    to=[r],
+                    subject=email_notif.subject,
+                    body=email_body,
                     from_email=email_notif.email_from,
-                    attachments=attachments,
+                    clean_from_email=lambda e: f"{e.split('@')[0]}@{settings_email_notif.replace_sender_domain_by}",
+                    reply_to=[email_notif.email_from],
                 )
 
-                print(response)
-                if response == 0:
-                    if settings.DEBUG:
-                        print("Error with %s" % r)
-                        print(response)
-                        email_notif.errors += "Error w/ %s: %s |" % (r, response)
-                        if len(email_notif.errors) > 9000:
-                            break
+                print(response, r)
+                if not response:
                     email_notif.errors += "Error while sending %s: %s" % (r, response)
                     break
-
                 else:
                     one_ok = True
             time.sleep(2)
@@ -139,24 +134,14 @@ def task_send_emails_notif(self, pk, one_by_one=True, responsibles=True):
 
         # Send an email to admin
         if settings.DEBUG:
-            send_email_with_sp(
-                [settings.EMAIL_ADMIN],
-                email_notif.subject,
-                "<html>%s<br>%s</html>" % (email_notif.body, recipients),
+            response = send_email(
+                to=[settings.EMAIL_ADMIN],
+                subject=email_notif.subject,
+                body="<html>%s<br>%s</html>" % (email_notif.body, recipients),
                 from_email=email_notif.email_from,
+                clean_from_email=lambda e: f"{e.split('@')[0]}@{settings_email_notif.replace_sender_domain_by}",
             )
-    else:
-        response = send_email_with_sp(
-            recipients,
-            email_notif.subject,
-            "<html>%s</html>" % email_notif.body,
-            from_email=email_notif.email_from,
-        )
-
-        if response != 0:
-            email_notif.errors = "Sent."
-        else:
-            email_notif.errors = "Error."
+            print(response)
 
     email_notif.save()
 
