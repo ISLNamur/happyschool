@@ -18,6 +18,7 @@
 # along with HappySchool.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+from typing import Callable, Optional, Sequence
 import requests
 
 from django.core.mail import EmailMultiAlternatives, get_connection
@@ -34,32 +35,64 @@ from core.views import get_core_settings
 
 
 def send_email(
-    to,
+    to: Sequence[str],
     subject,
-    email_template,
-    cc=None,
-    images=None,
-    context=None,
+    email_template: Optional[str] = None,
+    body: str | None = None,
+    cc: Sequence[str] | None = None,
+    images: Sequence[str] | None = None,
+    context: dict | None = None,
     attachments=None,
-    use_bcc=False,
-    reply_to=None,
-):
-    to = list(to)
-    if not to:
-        return
+    use_bcc: bool = False,
+    reply_to: str | None = None,
+    from_email: str | None = None,
+    clean_from_email: Callable[[str], str] | None = None,
+    clean_reply_to: Callable[[Sequence], Sequence] | None = None,
+) -> bool:
+    """
+    Send an email
 
-    # Auto include core_settings.
-    if not context:
-        context = {"core_settings": get_core_settings()}
-    elif not "core_settings" in context:
-        context = {"core_settings": get_core_settings()} | context
+    :param images: A sequence of path to images.
+    :param attachments: A sequence of FileField.
+    """
+
+    to: list[str] = list(to)
+    if not to:
+        return False
+
+    if email_template:
+        # Auto include core_settings.
+        if not context:
+            context = {"core_settings": get_core_settings()}
+        elif not "core_settings" in context:
+            context = {"core_settings": get_core_settings()} | context
+
+        html_content = render_to_string(template_name=email_template, context=context)
+        text_content = strip_tags(html_content)
+    elif body:
+        html_content = body
+        text_content = strip_tags(body)
+    else:
+        raise ValueError("A template or a body have to be provided")
+
+    if not from_email:
+        from_email = settings.DEFAULT_FROM_EMAIL
+
+    if clean_from_email:
+        from_email = clean_from_email(from_email)
+
+    if clean_reply_to:
+        reply_to = clean_reply_to(reply_to)
 
     connection = get_connection()
-    html_content = render_to_string(email_template, context)
-    text_content = strip_tags(html_content)
-
     email = EmailMultiAlternatives(
-        subject, text_content, settings.DEFAULT_FROM_EMAIL, to, cc, connection, reply_to=reply_to
+        subject=subject,
+        body=text_content,
+        from_email=from_email,
+        to=to,
+        cc=cc,
+        connection=connection,
+        reply_to=reply_to,
     )
     if use_bcc:
         email.to = []
@@ -83,76 +116,17 @@ def send_email(
             elif isinstance(a.attachment, FieldFile):
                 email.attach_file(a.attachment.path)
 
+    response = False
     if settings.DEBUG or not settings.EMAIL_HOST or settings.EMAIL_HOST == "smtp.server.com":
         if settings.EMAIL_ADMIN:
             email.to = [settings.EMAIL_ADMIN]
-            email.bcc = [settings.EMAIL_ADMIN]
-            email.send()
+            response = email.send()
         else:
             print(email.body)
     else:
-        email.send()
+        response = email.send()
 
-
-def send_email_with_mg(
-    recipients, subject, body, from_email="Informatique ISLN <informatique@isln.be>", attachments=()
-):
-    attachments = list(
-        map(lambda a: ("attachment", (os.path.basename(a), open(a, "rb+").read())), attachments)
-    )
-    data = {
-        "from": from_email.replace("@", "@mg."),
-        "subject": subject,
-        "text": strip_tags(body),
-        "html": body,
-        "h:Reply-To": from_email,
-    }
-    if settings.DEBUG:
-        data["to"] = [settings.EMAIL_ADMIN]
-        data["html"] = data["html"].replace("</html>", str(recipients) + "</html>")
-    else:
-        data["to"] = recipients
-    return requests.post(
-        "https://api.mailgun.net/v3/mg.isln.be/messages",
-        auth=("api", settings.MAILGUN_KEY),
-        data=data,
-        files=attachments,
-    )
-
-
-def send_email_with_sp(recipients: list, subject: str, body: str, from_email: str, attachments=()):
-    recipients = list(map(lambda r: {"address": r}, recipients))
-    if "<" in from_email:
-        name = from_email.split("<")[0]
-        reply_to = from_email.split("<")[1][:-1]  # Remove last chevron.
-        from_email = reply_to.replace("@", "@email.")
-    else:
-        reply_to = from_email
-        from_email = from_email.replace("@", "@email.")
-
-    email = EmailMultiAlternatives(
-        subject=subject, from_email=from_email, reply_to=[reply_to], body=strip_tags(body)
-    )
-
-    if settings.DEBUG:
-        email.to = [settings.EMAIL_ADMIN]
-        body = body.replace("</html>", str(recipients) + "</html>")
-    else:
-        email.to = recipients
-
-    email.attach_alternative(body, "text/html")
-
-    if attachments:
-        for a in attachments:
-            if isinstance(a, dict):
-                email.attach(filename=a["filename"], content=a["file"])
-            elif isinstance(a.attachment, FieldFile):
-                email.attach_file(a.attachment.path)
-
-    emails_sent = email.send()
-    if settings.DEBUG:
-        print(emails_sent)
-    return emails_sent
+    return response > 0
 
 
 def get_resp_emails(student: StudentModel) -> dict:
