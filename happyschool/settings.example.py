@@ -211,6 +211,9 @@ if "anymail" in INSTALLED_APPS:
     ANYMAIL = {}
     EMAIL_BACKEND = "anymail.backends.sparkpost.EmailBackend"
 
+OTHER_EMAIL_PROVIDER = None
+SWEEGO_API = None
+
 EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.server.com")
 EMAIL_PORT = os.getenv("EMAIL_PORT", 465)
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "admin@example.org")
@@ -336,9 +339,6 @@ WEBPACK_LOADER = {
         "STATS_FILE": os.path.join(BASE_DIR, "webpack-stats.json"),
     }
 }
-
-MAILGUN_KEY = "your-mailgun-key"
-SPARKPOST_KEY = "your-sparkpost-key"
 
 EMAIL_ATTACHMENTS_SYNC = {
     "rsync_command": "/usr/bin/rsync -e ssh -avz --delete-after /home/user/happyschool/media/mail_notification happyschool@remote:/home/user/happyschool/media",

@@ -34,6 +34,47 @@ from .models import EmailModel, StudentModel, ResponsibleModel
 from core.views import get_core_settings
 
 
+EMAIL_PROVIDER_SWEEGO: str = "sweego"
+
+
+def send_with_other_provider(email: EmailMultiAlternatives) -> int:
+    if settings.OTHER_EMAIL_PROVIDER == EMAIL_PROVIDER_SWEEGO:
+        # DO NOT SUPPORT ATTACHMENTS (images and files).
+        payload = {
+            "channel": "email",
+            "provider": "sweego",
+            "recipients": [{"email": r} for r in email.recipients()],
+            "from": email.from_email,
+            "subject": email.subject,
+            "message-txt": email.body,
+            "reply-to": [{"email": r} for r in email.reply_to],
+        }
+
+        html_text = [alt.content for alt in email.alternatives if alt.mimetype == "text/html"]
+        if html_text:
+            payload["message-html"] = html_text[0]
+
+        URL = "https://api.sweego.io/send"
+        headers = {
+            "Api-Key": settings.SWEEGO_API,
+            "Content-Type": "application/json",
+        }
+
+        TIMEOUT = 10
+        response = requests.post(URL, json=payload, headers=headers, timeout=TIMEOUT)
+
+        # Check the response status code
+        if response.status_code == 200:
+            return 1
+        else:
+            print(response.json())
+            return 0
+
+    raise ValueError(
+        f"OTHER_EMAIL_PROVIDER {settings.OTHER_EMAIL_PROVIDER} not supported. See docs for available provider"
+    )
+
+
 def send_email(
     to: Sequence[str],
     subject,
@@ -120,11 +161,17 @@ def send_email(
     if settings.DEBUG or not settings.EMAIL_HOST or settings.EMAIL_HOST == "smtp.server.com":
         if settings.EMAIL_ADMIN:
             email.to = [settings.EMAIL_ADMIN]
-            response = email.send()
+            if OTHER_EMAIL_PROVIDER in settings:
+                response = send_with_other_provider(email)
+            else:
+                response = email.send()
         else:
             print(email.body)
     else:
-        response = email.send()
+        if OTHER_EMAIL_PROVIDER in settings:
+            response = send_with_other_provider(email)
+        else:
+            response = email.send()
 
     return response > 0
 
