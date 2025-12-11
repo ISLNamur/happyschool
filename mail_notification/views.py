@@ -204,7 +204,17 @@ class EmailNotificationViewSet(ReadOnlyModelViewSet):
                     continue
 
             # Check if it is a custom group.
-            if OtherEmailGroupModel.objects.filter(name=recipient).exists():
+            group_exists = False
+            for group in OtherEmailGroupModel.objects.filter(name=recipient):
+                group_exists = True
+                for email_model in OtherEmailModel.objects.filter(group=group):
+                    if (
+                        email_model.email == responsible.email
+                        or email_model.email == responsible.email_school
+                    ):
+                        return True
+
+            if group_exists:
                 continue
 
             # So it is directly related to classes.
