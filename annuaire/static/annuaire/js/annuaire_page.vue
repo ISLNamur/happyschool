@@ -36,7 +36,7 @@
                     md="2"
                     sm="12"
                 >
-                    <BFormGroup label="Établissement(s) :">
+                    <BFormGroup label="Établissement(s)">
                         <BFormSelect
                             multiple
                             :select-size="3"
@@ -51,7 +51,7 @@
 
                 <BCol>
                     <BFormGroup
-                        label="Recherche :"
+                        label="Recherche"
                         class="ml-4"
                     >
                         <multiselect
@@ -78,14 +78,17 @@
                     </BFormGroup>
                 </BCol>
                 <BCol md="2">
-                    <BButton
-                        v-b-toggle.collapseAdvancedSearch
-                        variant="outline-secondary"
-                        class="mt-2 mt-md-0"
+                    <BFormGroup
+                        label="Autres filtres"
                     >
-                        <IBiSearch />
-                        Avancée
-                    </BButton>
+                        <BButton
+                            v-b-toggle.collapseAdvancedSearch
+                            variant="outline-secondary"
+                            class="mt-2 mt-md-0"
+                        >
+                            <IBiSliders />
+                        </BButton>
+                    </BFormGroup>
                     <BCollapse
                         id="collapseAdvancedSearch"
                         class="mt-2"
