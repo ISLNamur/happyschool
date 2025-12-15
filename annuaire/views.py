@@ -369,8 +369,9 @@ class StudentClasseAPI(APIView):
         )
         if gender:
             students = students.filter(additionalstudentinfo__gender=gender)
-            serializer = StudentSerializer(students, many=True)
-            return Response(serializer.data)
+
+        serializer = StudentSerializer(students, many=True)
+        return Response(serializer.data)
 
 
 class StudentGivenCourseAPI(APIView):
