@@ -299,9 +299,62 @@
                         </BOverlay>
                     </template>
                     <BRow class="mt-2">
-                        <h4>Objectifs du CCL</h4>
+                        <BCol>
+                            <h4>Objectifs du CCL</h4>
+                        </BCol>
+                        <BCol class="text-end">
+                            <BButton
+                                @click="copyGoalsSummary"
+                                variant="outline-secondary"
+                            >
+                                <IBiCopy />
+                                Copier objectifs
+                            </BButton>
+                        </BCol>
                     </BRow>
-                    <BRow>
+                    <BRow v-if="cross_goal.length + branch_goal.length > 0 && form.student">
+                        <BCol>
+                            <BTableSimple
+                                id="goals-summary"
+                                style="display: none;"
+                            >
+                                <BThead>
+                                    <BTr>
+                                        <BTh>NOM</BTh>
+                                        <BTh>PRÉNOM</BTh>
+                                        <BTh
+                                            v-for="(g, i) in cross_goal.concat(branch_goal)"
+                                            :key="g.id"
+                                        >
+                                            Objectif {{ i + 1 }}
+                                        </BTh>
+                                    </BTr>
+                                </BThead>
+                                <BTbody>
+                                    <BTr>
+                                        <BTd>
+                                            {{ form.student.last_name }}
+                                        </BTd>
+                                        <BTd>
+                                            {{ form.student.first_name }}
+                                        </BTd>
+                                        <BTd
+                                            v-for="(g, i) in goalsList"
+                                            :key="i"
+                                        >
+                                            <p
+                                                v-for="(subGoal, j) in g.split(';')"
+                                                :key="j"
+                                            >
+                                                {{ subGoal }}
+                                            </p>
+                                        </BTd>
+                                    </BTr>
+                                </BTbody>
+                            </BTableSimple>
+                        </BCol>
+                    </BRow>
+                    <BRow class="mt-2">
                         <BCol>
                             <BFormCheckbox
                                 v-model="currentCrossGoal"
@@ -605,6 +658,26 @@ export default {
             // eslint-disable-next-line no-undef
             return menu.apps.some(a => a.app === "dossier_eleve");
         },
+        /**
+         * Get a simple list of goals.
+         */
+        goalsList: function () {
+            if (this.cross_goal.length === 0 && this.branch_goal.length === 0) {
+                return "";
+            }
+
+            return this.cross_goal.concat(this.branch_goal).map((goal) => {
+                let goalText = "";
+                if ("branch" in goal) {
+                    const branch = this.store.branches.find(b => b.id === goal.branch);
+                    goalText = `${branch.branch} : ${goal.branch_goals}`;
+                } else {
+                    goalText = goal.cross_goals;
+                }
+
+                return goalText;
+            });
+        },
     },
     watch: {
         id: function (newVal) {
@@ -632,6 +705,18 @@ export default {
         },
     },
     methods: {
+        copyGoalsSummary: function () {
+            const table = document.querySelector("#goals-summary");
+            const htmlData = new ClipboardItem({ ["text/html"]: table.outerHTML });
+            navigator.clipboard.write([htmlData])
+                .then(() => {
+                    this.show({
+                        body: "Copié !",
+                        variant: "success",
+                        noCloseButton: true,
+                    });
+                });
+        },
         addFiles: function () {
             this.uploadedFiles = this.uploadedFiles.concat(this.form.attachments.map((a) => {
                 return { file: a, id: -1, visible: true };
