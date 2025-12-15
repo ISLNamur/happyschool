@@ -200,14 +200,14 @@ export default {
                 },
                 {
                     key: "addJust",
-                    label: ""
+                    label: "",
                 },
                 {
                     key: "mail_warning",
-                    label: "Mail"
+                    label: "Mail",
                 },
             ],
-            store: studentAbsenceTeacherStore()
+            store: studentAbsenceTeacherStore(),
         };
     },
     computed: {
@@ -224,17 +224,17 @@ export default {
                     searchFilter = `&student__classe=${this.search.id}`;
                 }
             }
-            let url = "status=A" +
-                `&activate_own_classes=${!this.allClasses}` +
-                "&activate_no_justification=true" +
-                `&date_absence__lte=${dateBefore}` +
-                `&mail_warning=${!this.noProcessedEntries}` +
-                searchFilter +
-                "&ordering=-date_absence,datetime_creation" +
-                // eslint-disable-next-line no-undef
-                `&scholar_year=${current_scholar_year}-${current_scholar_year + 1}`;
+            let url = "status=A"
+              + `&activate_own_classes=${!this.allClasses}`
+              + "&activate_no_justification=true"
+              + `&date_absence__lte=${dateBefore}`
+              + `&mail_warning=${!this.noProcessedEntries}`
+              + searchFilter
+              + "&ordering=-date_absence,datetime_creation"
+            // eslint-disable-next-line no-undef
+              + `&scholar_year=${current_scholar_year}-${current_scholar_year + 1}`;
             return url;
-        }
+        },
     },
     methods: {
         displayStudent,
@@ -265,7 +265,7 @@ export default {
                 .then((resp) => {
                     this.entriesCount = resp.data.count;
                     const groupByStudent = Object.groupBy(resp.data.results, ({ student }) => student.matricule);
-                    this.absencesWithoutJust = Object.values(groupByStudent).map(student => {
+                    this.absencesWithoutJust = Object.values(groupByStudent).map((student) => {
                         const date_absence = student.map(s => `${s.date_absence} (${this.store.periodEduc.find(p => p.id === s.period).name})`).join(", ");
                         return {
                             student: student[0].student,
@@ -279,7 +279,7 @@ export default {
 
                     this.loading = false;
 
-                    Promise.all(this.absencesWithoutJust.map(a => {
+                    Promise.all(this.absencesWithoutJust.map((a) => {
                         return axios.get(`/student_absence_teacher/api/count_no_justification/${a.student.matricule}/`);
                     }))
                         .then((resps) => {
@@ -314,11 +314,11 @@ export default {
                 check_access: !this.allClasses,
             };
             axios.post("/annuaire/api/people_or_classes/", data, token)
-                .then(response => {
+                .then((response) => {
                     if (this.searchId !== currentSearch)
                         return;
 
-                    const options = response.data.map(p => {
+                    const options = response.data.map((p) => {
                         if (Number.isNaN(Number.parseInt(query[0]))) {
                             return {
                                 display: displayStudent(p, app),
@@ -343,8 +343,8 @@ export default {
         this.loadEntries();
     },
     components: {
-        Multiselect
-    }
+        Multiselect,
+    },
 };
 
 </script>

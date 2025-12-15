@@ -136,15 +136,15 @@ Moment.locale("fr");
 
 import axios from "axios";
 
-import {displayStudent} from "@s:core/js/common/utilities.js";
+import { displayStudent } from "@s:core/js/common/utilities.js";
 
 import { dossierEleveStore } from "./stores/dossier_eleve.js";
 
 export default {
     props: {
-        rowData : {
+        rowData: {
             type: Object,
-            default: () => {}
+            default: () => {},
         },
     },
     emits: ["delete", "filterStudent"],
@@ -156,7 +156,7 @@ export default {
         };
     },
     computed: {
-        urlToStudentInfo:function(){
+        urlToStudentInfo: function () {
         /**
         * Gets called when the user clicks on the button to see student details
         */
@@ -181,13 +181,13 @@ export default {
             subtitle += "Demandé par " + this.rowData.demandeur + " (" + Moment(this.rowData.datetime_encodage).calendar() + ")";
             return subtitle;
         },
-        category: function() {
+        category: function () {
             if (this.rowData.info)
-                return this.rowData.info.info ;
+                return this.rowData.info.info;
 
             if (this.rowData.sanction_decision)
                 return this.rowData.sanction_decision.sanction_decision;
-            
+
             return "";
         },
         cardClass: function () {
@@ -223,20 +223,19 @@ export default {
         displayStudent,
     },
     mounted: function () {
-        const prom = this.rowData.attachments.map(a => {
+        const prom = this.rowData.attachments.map((a) => {
             return axios.get(`/dossier_eleve/upload_file/${a}/`);
         });
 
         Promise.all(prom)
-            .then(resp => {
+            .then((resp) => {
                 this.attachments = resp.map(r => r.data);
-                this.attachments.forEach(a => {
+                this.attachments.forEach((a) => {
                     const path = a.attachment.split("/");
                     a.filename = path[path.length - 1].substring(5, 60);
                 });
             });
-
-    }
+    },
 };
 </script>
 

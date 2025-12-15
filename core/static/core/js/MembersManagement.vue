@@ -281,7 +281,7 @@ import axios from "axios";
 
 import Menu from "@s:core/js/common/menu_bar.vue";
 
-const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     data: function () {
@@ -319,7 +319,7 @@ export default {
                     this.inputStates[inputs[u]] = null;
                 }
             }
-        }
+        },
     },
     methods: {
         errorMsg(err) {
@@ -349,25 +349,24 @@ export default {
             this.groupName = "";
         },
         setPinned: function (group) {
-            axios.patch(`/mail_notification/api/other_email_group/${group.id}/`, {pinned: !group.pinned }, token)
+            axios.patch(`/mail_notification/api/other_email_group/${group.id}/`, { pinned: !group.pinned }, token)
                 .then((resp) => {
-                    const groupIndex =this.groups.findIndex(g => g.id === group.id);
+                    const groupIndex = this.groups.findIndex(g => g.id === group.id);
                     this.groups.splice(groupIndex, 1, resp.data);
                 });
         },
         loadCorePeople(personType) {
             // Load person type.
-            let param = { "person_type": personType };
-            axios.get("/core/api/members", {params: param})
-                .then(response => {
+            let param = { person_type: personType };
+            axios.get("/core/api/members", { params: param })
+                .then((response) => {
                     this[personType] = response.data.results;
                 });
         },
         loadOtherPeople() {
             axios.get("/mail_notification/api/other_email/")
-                .then(response => {
+                .then((response) => {
                     this.otherEmails = response.data.results;
-
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -375,7 +374,7 @@ export default {
         },
         loadGroups() {
             axios.get("/mail_notification/api/other_email_group/")
-                .then(response => {
+                .then((response) => {
                     this.groups = response.data.results;
                     this.loadOtherPeople();
                 });
@@ -409,11 +408,11 @@ export default {
         addGroup(evt) {
             evt.preventDefault();
 
-            let data = {name: this.groupName};
+            let data = { name: this.groupName };
             axios.post("/mail_notification/api/other_email_group/", data, token)
-                .then(response => {
+                .then((response) => {
                     let id = response.data.id;
-                    this.groups.push({"id": id, "name": this.groupName});
+                    this.groups.push({ id: id, name: this.groupName });
                     this.resetGroupModal();
 
                     this.$refs.addGroupModal.hide();
@@ -438,7 +437,7 @@ export default {
             // Check if this is a modification.
             if (this.pk) path += this.pk.toString() + "/";
 
-            let token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            let token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
             let send = this.pk ? axios.put(path, data, token) : axios.post(path, data, token);
             send.then(() => {
                 // Reload custom groups.
@@ -455,7 +454,7 @@ export default {
                 .catch(function (error) {
                     app.errors = error.response.data;
                 });
-        }
+        },
     },
     mounted: function () {
         // eslint-disable-next-line no-undef
@@ -471,7 +470,7 @@ export default {
     },
     components: {
         "app-menu": Menu,
-    }
+    },
 };
 </script>
 

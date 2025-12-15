@@ -99,7 +99,7 @@ import { absenceProfStore } from "./stores/index.js";
 
 import AbsenceProfEntry from "./absenceProfEntry.vue";
 
-const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
@@ -126,7 +126,7 @@ export default {
             if (this.currentEntry) return this.currentEntry.name;
 
             return "";
-        }
+        },
     },
     methods: {
         changePage: function (_, page) {
@@ -142,7 +142,7 @@ export default {
                     okVariant: "danger",
                     okTitle: "Oui",
                     cancelTitle: "Annuler",
-                }
+                },
             ).then((resp) => {
                 if (resp.ok) {
                     this.deleteEntry();
@@ -157,12 +157,12 @@ export default {
 
             this.currentEntry = null;
         },
-        editEntry: function(entry) {
+        editEntry: function (entry) {
             this.currentEntry = entry;
         },
         loadEntries: function () {
             axios.get("/absence_prof/api/absence/?page_size=20&page=" + this.currentPage + this.filter + this.ordering)
-                .then(response => {
+                .then((response) => {
                     this.entries = response.data.results;
                     this.entriesCount = response.data.count;
                     this.loaded = true;
@@ -173,7 +173,7 @@ export default {
             let storeFilters = this.store.filters;
             for (let f in storeFilters) {
                 if (storeFilters[f].filterType.startsWith("date")
-                    || storeFilters[f].filterType.startsWith("time")) {
+                  || storeFilters[f].filterType.startsWith("time")) {
                     let ranges = storeFilters[f].value.split("_");
                     this.filter += "&" + storeFilters[f].filterType + "__gte=" + ranges[0];
                     this.filter += "&" + storeFilters[f].filterType + "__lte=" + ranges[1];
@@ -183,7 +183,7 @@ export default {
             }
             this.currentPage = 1;
             this.loadEntries();
-        }
+        },
     },
     mounted: function () {
         this.applyFilter();

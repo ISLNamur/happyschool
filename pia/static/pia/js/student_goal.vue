@@ -364,20 +364,20 @@ export default {
         },
         goalLabel: {
             type: String,
-            default: "Objectif"
+            default: "Objectif",
         },
         itemModel: {
             type: String,
-            default: "goal_item"
+            default: "goal_item",
         },
         useBranch: {
             type: Boolean,
-            default: false
+            default: false,
         },
         advanced: {
             type: Boolean,
             default: true,
-        }
+        },
     },
     data: function () {
         return {
@@ -401,12 +401,12 @@ export default {
             searchId: -1,
             errors: {},
             inputStates: {
-                "date_start": null,
-                "date_end": null,
-                "goals": null,
-                "branch": null,
-                "branches": null,
-                "responsible": null
+                date_start: null,
+                date_end: null,
+                goals: null,
+                branch: null,
+                branches: null,
+                responsible: null,
             },
             store: piaStore(),
         };
@@ -416,12 +416,12 @@ export default {
             if (!this.assessment) return null;
 
             return this.assessment.state;
-        }
+        },
     },
     watch: {
         errors: function (newErrors) {
             const goalKey = this.useBranch ? "branch_goals" : "cross_goals";
-            Object.keys(this.inputStates).forEach(key => {
+            Object.keys(this.inputStates).forEach((key) => {
                 if (key.includes("goals") && goalKey in newErrors) {
                     this.inputStates.goals = newErrors[goalKey].length == 0;
                 } else if (key in newErrors) {
@@ -433,9 +433,9 @@ export default {
         },
     },
     methods: {
-        /** 
+        /**
          * Assign text error if any.
-         * 
+         *
          * @param {String} err Field name.
          */
         errorMsg(err) {
@@ -456,7 +456,9 @@ export default {
             });
         },
         addFiles: function () {
-            this.uploadedFiles = this.attachments.map(a => { return { file: a, id: -1 }; });
+            this.uploadedFiles = this.attachments.map((a) => {
+                return { file: a, id: -1 };
+            });
             this.attachments.splice(0, this.attachments.length);
         },
         setFileData: function (index, data) {
@@ -507,14 +509,14 @@ export default {
                 }
 
                 // Attachments
-                this.uploadedFiles = this.goalObject.attachments.map(a => {
+                this.uploadedFiles = this.goalObject.attachments.map((a) => {
                     return { id: a, file: null };
                 });
 
                 // Responsibles
                 const respProm = this.goalObject.responsible.filter(r => r !== null).map(r => axios.get("/annuaire/api/responsible/" + r + "/"));
                 Promise.all(respProm)
-                    .then(resps => {
+                    .then((resps) => {
                         this.responsible = resps.map(resp => resp.data);
                     });
 
@@ -596,7 +598,7 @@ export default {
                                 iE.branch_goal = branchGoalId;
                                 const send = alreadyExists ? axios.put : axios.post;
                                 return send(`/pia/api/intermediate_evaluation/${alreadyExists ? iE.id + "/" : ""}`, iE, token);
-                            })
+                            }),
                         );
                     });
                 }
@@ -611,11 +613,11 @@ export default {
             .then(() => {
                 if (this.useBranch) {
                     this.goalOptions = this.store.branchGoalItems.filter(
-                        bGI => this.advanced ? bGI.advanced : bGI.basic
+                        bGI => this.advanced ? bGI.advanced : bGI.basic,
                     );
                 } else {
                     this.goalOptions = this.store.crossGoalItems.filter(
-                        cGI => this.advanced ? cGI.advanced : cGI.basic
+                        cGI => this.advanced ? cGI.advanced : cGI.basic,
                     );
                 }
                 this.assignGoal();
@@ -625,6 +627,6 @@ export default {
         Multiselect,
         TextEditor,
         FileUpload,
-    }
+    },
 };
 </script>

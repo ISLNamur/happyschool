@@ -78,7 +78,7 @@
                                         >
                                             <IBiCaretRight />
                                         </BButton>
-                                    
+
                                     </BButtonGroup>
                                 </span>
                             </BListGroupItem>
@@ -117,7 +117,7 @@ export default {
         givenCourse: {
             type: Number,
             default: -1,
-        }
+        },
     },
     data: function () {
         return {
@@ -138,7 +138,7 @@ export default {
             }
 
             return givenCourse.students;
-        }
+        },
     },
     methods: {
         displayStudent,
@@ -148,24 +148,24 @@ export default {
             axios.get(`/core/api/course/${this.course}/`),
             axios.get("/core/api/teaching/"),
             axios.get(`/core/api/given_course_info/?course=${this.course}`),
-        ]).then(resps => {
+        ]).then((resps) => {
             this.courseObject = resps[0].data;
             this.currentTeaching = resps[1].data.results.find(
-                r => r.id === this.courseObject.teaching
+                r => r.id === this.courseObject.teaching,
             ).display_name;
 
             this.givenCourses = resps[2].data.results;
             Promise.all(
-                this.givenCourses.map(gC => {
+                this.givenCourses.map((gC) => {
                     return axios.get(`/annuaire/api/student_given_course/${gC.id}/`);
-                })
-            ).then(gCResps => {
+                }),
+            ).then((gCResps) => {
                 this.givenCourses = this.givenCourses.map((gC, index) => {
                     gC.students = gCResps[index].data;
                     return gC;
                 });
             });
         });
-    }
+    },
 };
 </script>

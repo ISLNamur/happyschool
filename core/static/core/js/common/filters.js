@@ -25,16 +25,16 @@ function addFilter(state, filter) {
 
     // Overwrite same filter type except for specific cases.
     switch (filter.filterType) {
-    case "classe":
-        break;
-    default:
-        this.commit("removeFilter", filter.filterType);
+        case "classe":
+            break;
+        default:
+            this.commit("removeFilter", filter.filterType);
     }
 
     state.filters.push(filter);
 }
 
-function addFilterPinia (filter) {
+function addFilterPinia(filter) {
     // If filter is a matricule, remove name filter to avoid conflict.
     if (filter.filterType === "matricule_id") {
         this.removeFilter("name");
@@ -42,16 +42,16 @@ function addFilterPinia (filter) {
 
     // Overwrite same filter type except for specific cases.
     switch (filter.filterType) {
-    case "classe":
-        break;
-    default:
-        this.removeFilter(filter.filterType);
+        case "classe":
+            break;
+        default:
+            this.removeFilter(filter.filterType);
     }
 
     this.filters.push(filter);
 }
 
-function removeFilter (state, key) {
+function removeFilter(state, key) {
     for (let f in state.filters) {
         if (state.filters[f].filterType === key) {
             state.filters.splice(f, 1);
@@ -60,7 +60,7 @@ function removeFilter (state, key) {
     }
 }
 
-function removeFilterPinia (key) {
+function removeFilterPinia(key) {
     for (let f in this.filters) {
         if (this.filters[f].filterType === key) {
             this.filters.splice(f, 1);
@@ -69,7 +69,7 @@ function removeFilterPinia (key) {
     }
 }
 
-function _groupBy (list, keyGetter) {
+function _groupBy(list, keyGetter) {
     const map = new Map();
     list.forEach((item) => {
         const key = keyGetter(item);
@@ -83,7 +83,7 @@ function _groupBy (list, keyGetter) {
     return map;
 }
 
-function getFilters (filters) {
+function getFilters(filters) {
     let filter = "";
     let storeFilters = filters;
     filters = _groupBy(storeFilters, f => f.filterType);
@@ -105,4 +105,4 @@ function getFilters (filters) {
     return filter;
 }
 
-export {addFilter, addFilterPinia, removeFilter, removeFilterPinia, getFilters};
+export { addFilter, addFilterPinia, removeFilter, removeFilterPinia, getFilters };

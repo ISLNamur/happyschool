@@ -27,11 +27,11 @@ export default [{
 {
     path: "/edit/:id/:sortie",
     component: AddPassage,
-    props: true
+    props: true,
 },
 {
     path: "/new/",
     component: AddPassage,
-    props: true
+    props: true,
 },
 ];

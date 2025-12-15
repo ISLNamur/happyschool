@@ -39,7 +39,7 @@
                                 @update:model-value="$emit('update:date_end', $event)"
                                 class="ml-2"
                             />
-                        </div> 
+                        </div>
                     </BForm>
                 </strong>
             </BCol>
@@ -287,13 +287,13 @@ export default {
                     toolbar: [
                         ["bold", "italic", "underline", "strike"],
                         ["blockquote"],
-                        [{ "list": "ordered" }, { "list": "bullet" }],
-                        [{ "indent": "-1" }, { "indent": "+1" }],
-                        [{ "align": [] }],
-                        ["clean"]
-                    ]
+                        [{ list: "ordered" }, { list: "bullet" }],
+                        [{ indent: "-1" }, { indent: "+1" }],
+                        [{ align: [] }],
+                        ["clean"],
+                    ],
                 },
-                placeholder: ""
+                placeholder: "",
             },
             inputStates: {
                 date_start: null,
@@ -305,14 +305,14 @@ export default {
     watch: {
         disorderCareId: function () {
             this.loadSelected();
-        }
+        },
     },
     computed: {
         constDisorderRespList: function () {
-            return this.disorderResponseCategories.map(category => {
+            return this.disorderResponseCategories.map((category) => {
                 return this.store.disorderResponses.filter(
                     dR => dR.categories.includes(category.id)
-                        && this.disorder.map(d => d.id).includes(dR.disorder)
+                      && this.disorder.map(d => d.id).includes(dR.disorder),
                 );
                 // .map(dR => {
                 //     console.log(category.id, dR.id);
@@ -324,10 +324,10 @@ export default {
             });
         },
         customDisorderRespList: function () {
-            return this.disorderResponseCategories.map(category => {
+            return this.disorderResponseCategories.map((category) => {
                 return this.selected_disorder_response
                     .filter(s => s.custom_response.length > 0 && s.category === category.id)
-                    .map(cS => {
+                    .map((cS) => {
                         return {
                             id: null,
                             disorder: this.disorder[0].id,
@@ -340,7 +340,7 @@ export default {
         selectedRespList: function () {
             return this.disorderResponseCategories.map((category, i) => {
                 return this.customDisorderRespList[i]
-                    .concat(this.selected_disorder_response.filter(sDR => sDR.category === category.id).map(sDR => {
+                    .concat(this.selected_disorder_response.filter(sDR => sDR.category === category.id).map((sDR) => {
                         return this.constDisorderRespList[i].find(disResp => sDR.disorder_response === disResp.id);
                     })).filter(sDR => sDR);
             });
@@ -348,7 +348,7 @@ export default {
         notSelectedRespList: function () {
             return this.disorderResponseCategories.map((category, i) => {
                 return this.constDisorderRespList[i]
-                    .filter(r => {
+                    .filter((r) => {
                         const selected = this.selected_disorder_response
                             .find(sDR => sDR.disorder_response === r.id && sDR.category === category.id);
                         return selected === undefined;
@@ -360,7 +360,7 @@ export default {
                 return this.customDisorderRespList[i]
                     .concat(this.constDisorderRespList[i]);
             });
-        }
+        },
     },
     methods: {
         updateDisorderResponse: function ($event) {
@@ -369,7 +369,7 @@ export default {
         removeDisorderResponse: function (disorderResponse, categoryId) {
             console.log(disorderResponse, categoryId);
             const sDRIndex = this.selected_disorder_response.findIndex(
-                sDR => sDR.disorder_response === disorderResponse.id && sDR.category === categoryId
+                sDR => sDR.disorder_response === disorderResponse.id && sDR.category === categoryId,
             );
 
             const removedResponse = this.selected_disorder_response.splice(sDRIndex, 1);
@@ -413,24 +413,24 @@ export default {
             this.customResponse = { text: "" };
         },
         resetSelectionId: function () {
-            this.selected_disorder_response.forEach(sDR => {
+            this.selected_disorder_response.forEach((sDR) => {
                 delete sDR["id"];
             });
         },
         save: function (disorderCareId) {
-            return new Promise(resolve => {
+            return new Promise((resolve) => {
                 const baseUrl = "/pia/api/selected_disorder_response_new/";
                 Promise.all(
-                    this.selected_disorder_response.map(dR => {
+                    this.selected_disorder_response.map((dR) => {
                         const method = dR.id > 0 ? axios.put : axios.post;
                         const url = dR.id > 0 ? `${baseUrl}${dR.id}/` : baseUrl;
                         let data = Object.assign({}, dR);
                         data.disorder_care = disorderCareId;
                         return method(url, data, token);
                     }).concat(
-                        this.deselected.map(desel => axios.delete(`${baseUrl}${desel.id}/`, token))
-                    )
-                ).then(resps => {
+                        this.deselected.map(desel => axios.delete(`${baseUrl}${desel.id}/`, token)),
+                    ),
+                ).then((resps) => {
                     this.selected_disorder_response = resps
                         .filter(resp => resp.config.method === "post" || resp.config.method === "put")
                         .map(resp => resp.data);
@@ -448,7 +448,7 @@ export default {
             } else {
                 this.loading = false;
             }
-        }
+        },
     },
     mounted: function () {
         this.loadSelected();
@@ -457,7 +457,7 @@ export default {
     components: {
         Multiselect,
         TextEditor,
-    }
+    },
 };
 </script>
 

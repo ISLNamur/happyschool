@@ -140,8 +140,8 @@ export default {
     props: {
         pia: {
             type: Number,
-            default: -1
-        }
+            default: -1,
+        },
     },
     data: function () {
         return {
@@ -158,7 +158,7 @@ export default {
             const newId = Math.min(Math.min(...this.courseReinforcements.map(sA => sA.id)), 0) - 1;
 
             this.courseReinforcements.push({
-                id: newId, date_start: null, date_end: null, text: "Nouveau renforcement/méthodo", branches: []
+                id: newId, date_start: null, date_end: null, text: "Nouveau renforcement/méthodo", branches: [],
             });
 
             this.currentCourseReinfor = this.courseReinforcements[this.courseReinforcements.length - 1];
@@ -171,7 +171,6 @@ export default {
             this.courseReinforcements.push(copy);
             this.currentCourseReinfor = copy;
             this.currentCourseReinforId = copy.id;
-
         },
         remove: function () {
             this.create({
@@ -183,7 +182,7 @@ export default {
             }).then((confirm) => {
                 if (confirm.ok) {
                     const cRIndex = this.courseReinforcements.findIndex(
-                        cR => cR.id === this.currentCourseReinfor.id && cR.date_start === this.currentCourseReinfor.date_start
+                        cR => cR.id === this.currentCourseReinfor.id && cR.date_start === this.currentCourseReinfor.date_start,
                     );
                     const removedObj = this.courseReinforcements.splice(cRIndex, 1)[0];
                     this.currentCourseReinfor = this.courseReinforcements[this.courseReinforcements.length - 1];
@@ -195,7 +194,7 @@ export default {
             return new Promise((resolve, reject) => {
                 this.loading = true;
                 Promise.all(
-                    this.courseReinforcements.map(cR => {
+                    this.courseReinforcements.map((cR) => {
                         const isNew = cR.id < 0;
                         const send = isNew ? axios.post : axios.put;
                         const url = `/pia/api/course_reinforcement/${isNew ? "" : cR.id + "/"}`;
@@ -205,7 +204,7 @@ export default {
                         data.pia_model = piaId;
                         data.branches = data.branches.map(b => b.id);
                         return send(url, data, token);
-                    })
+                    }),
                 ).then((resps) => {
                     this.expandCourseReinforcement(resps.map(r => r.data));
                     this.loading = false;
@@ -221,7 +220,7 @@ export default {
             this.currentCourseReinfor = this.courseReinforcements.find(cR => cR.id === selected);
         },
         expandCourseReinforcement: function (courseReinforcements) {
-            this.courseReinforcements = courseReinforcements.sort((a, b) => a.date_start < b.date_start).map(cR => {
+            this.courseReinforcements = courseReinforcements.sort((a, b) => a.date_start < b.date_start).map((cR) => {
                 cR.text = `Du ${cR.date_start} au ${cR.date_end}`;
                 cR.branches = cR.branches.map(bId => this.store.branches.find(bObj => bObj.id === bId));
                 return cR;
@@ -235,7 +234,7 @@ export default {
         },
     },
     components: {
-        Multiselect
+        Multiselect,
     },
     beforeMount: function () {
         this.store.loadOptions()
@@ -250,6 +249,6 @@ export default {
                     this.loading = false;
                 }
             });
-    }
+    },
 };
 </script>

@@ -109,8 +109,8 @@ import Moment from "moment";
 import "moment/dist/locale/fr";
 Moment.locale("fr");
 
-import {getFilters} from "@s:core/js/common/filters.js";
-import {displayStudent} from "@s:core/js/common/utilities.js";
+import { getFilters } from "@s:core/js/common/filters.js";
+import { displayStudent } from "@s:core/js/common/utilities.js";
 
 import { dossierEleveStore } from "./stores/dossier_eleve.js";
 
@@ -118,7 +118,7 @@ import axios from "axios";
 
 export default {
     props: {
-        "entriesCount": {
+        entriesCount: {
             type: Number,
             default: 0,
         },
@@ -162,7 +162,7 @@ export default {
         getNameClasseOptions: function (query) {
             this.searchId += 1;
             let currentSearch = this.searchId;
-            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
             const data = {
                 query: query,
                 teachings: this.store.settings.teachings,
@@ -173,14 +173,14 @@ export default {
 
             const app = this;
             axios.post("/annuaire/api/people_or_classes/", data, token)
-                .then(response => {
+                .then((response) => {
                     if (this.searchId !== currentSearch)
                         return;
 
-                    const options = response.data.map(p => {
+                    const options = response.data.map((p) => {
                         if (Number.isNaN(Number.parseInt(query[0]))) {
                         // It is a student.
-                            return {display: displayStudent(p, app), id: p.matricule};
+                            return { display: displayStudent(p, app), id: p.matricule };
                         } else {
                         // It is a classe.
                             return p;
@@ -201,7 +201,7 @@ export default {
                 path += this.info ? "" : "&no_infos=true";
                 path += this.sanction ? "" : "&no_sanctions=true";
                 // eslint-disable-next-line no-undef
-                path += this.allYears ? "" : "&scholar_year=" + currentYear ;
+                path += this.allYears ? "" : "&scholar_year=" + currentYear;
                 path += "&ordering=student__last_name,-datetime_modified";
 
                 window.open(path);
@@ -214,7 +214,7 @@ export default {
     mounted: function () {
         this.show();
     },
-    components: {Multiselect},
+    components: { Multiselect },
 };
 </script>
 

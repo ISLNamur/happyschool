@@ -304,20 +304,20 @@ export default {
     },
     props: { entry: {
         type: Object,
-        default: null
-    }, 
-    state:{
+        default: null,
+    },
+    state: {
         type: String,
         default: "0",
     },
-    processing:{
+    processing: {
         type: Boolean,
-        default: false
+        default: false,
     },
     id: {
         type: String,
         default: null,
-    }},
+    } },
     data: function () {
         return {
             form: {
@@ -377,7 +377,7 @@ export default {
         },
         datetime_motif_end: function () {
             return `${this.form.date_motif_end} ${this.form.time_motif_end}`;
-        }
+        },
     },
     watch: {
         id: function (newVal) {
@@ -388,7 +388,7 @@ export default {
             }
         },
         name: function () {
-            //Update form data.
+            // Update form data.
             if (this.name && this.name.matricule) {
                 // First update form name data.
                 this.form.name = this.name.display;
@@ -401,13 +401,13 @@ export default {
             }
         },
         datetime_motif_start: function () {
-            if(this.datetime_motif_end < this.datetime_motif_start) {
+            if (this.datetime_motif_end < this.datetime_motif_start) {
                 this.form.date_motif_end = this.form.date_motif_start;
                 this.form.time_motif_end = this.form.time_motif_start;
             }
         },
         datetime_motif_end: function () {
-            if(this.datetime_motif_end < this.datetime_motif_start) {
+            if (this.datetime_motif_end < this.datetime_motif_start) {
                 this.form.date_motif_start = this.form.date_motif_end;
                 this.form.time_motif_start = this.form.time_motif_end;
                 this.inputStates.time_motif_start = true;
@@ -427,11 +427,11 @@ export default {
     },
     methods: {
         setEntry: function (entry) {
-            const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
             axios.get(`/appels/api/appel/${this.id}/`, token)
-                .then(resp => {
+                .then((resp) => {
                     if (resp.data) {
-                        entry=resp.data,
+                        entry = resp.data,
                         this.form = {
                             id: entry.id,
                             name: entry.name,
@@ -462,10 +462,9 @@ export default {
                         if (entry) {
                         // Precheck emails.
                             if (!this.processing && this.form.is_student) {
-                                
-                                this.form.emails = this.store.emails.filter(email => {
+                                this.form.emails = this.store.emails.filter((email) => {
                                     if (this.name.teaching.id == email.teaching
-                                    && email.years.includes(this.name.classe.year)) {
+                                      && email.years.includes(this.name.classe.year)) {
                                         return true;
                                     }
                                     return false;
@@ -492,7 +491,7 @@ export default {
             data.datetime_appel += time;
 
             // Set is_student field and responsible's matricule.
-            if (this.name){
+            if (this.name) {
                 data.is_student = this.name.is_student;
             }
             if (!data.is_student) {
@@ -504,16 +503,16 @@ export default {
 
             let modal = this;
             // Send data.
-            const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
             let path = "/appels/api/appel/";
             if (this.form.id) path += this.form.id + "/";
-            
+
             const send = this.form.id ? axios.put(path, data, token) : axios.post(path, data, token);
             send.then(() => {
                 this.errors = {};
                 this.$emit("update");
                 this.loading = false;
-                if(this.form.id){
+                if (this.form.id) {
                     this.$router.push("/").then(() => {
                         this.show({
                             body: "L'appel a été envoyé.",
@@ -529,7 +528,7 @@ export default {
                             noCloseButton: true,
                         });
                     });
-                }            
+                }
             })
                 .catch(function (error) {
                     modal.loading = false;
@@ -542,7 +541,7 @@ export default {
             let currentSearch = this.searchId;
             this.nameLoading = true;
 
-            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
             const data = {
                 query: query,
                 teachings: this.store.settings.teachings,
@@ -550,14 +549,14 @@ export default {
                 check_access: false,
             };
             axios.post("/annuaire/api/people/", data, token)
-                .then(response => {
+                .then((response) => {
                 // Avoid that a previous search overwrites a faster following search results.
                     if (this.searchId !== currentSearch) {
                         return;
                     }
-                    const options = response.data.map(p => {
+                    const options = response.data.map((p) => {
                     // Format entries.
-                        let entry = {display: p.last_name + " " + p.first_name};
+                        let entry = { display: p.last_name + " " + p.first_name };
                         if ("is_secretary" in p) {
                         // It's a responsible.
                             let teachings = " —";
@@ -585,7 +584,7 @@ export default {
                 });
         },
     },
-    components: {Multiselect},
+    components: { Multiselect },
     mounted: function () {
         if (!this.entry) {
             const nowDate = Moment().format("YYYY-MM-DD");
@@ -599,20 +598,20 @@ export default {
         }
         // Set motive options.
         axios.get("/appels/api/motive/")
-            .then(response => {
-                this.motiveOptions = response.data.results.map(m => {
-                    return {value: m.id, text: m.display};
+            .then((response) => {
+                this.motiveOptions = response.data.results.map((m) => {
+                    return { value: m.id, text: m.display };
                 });
             });
         // Set object options.
         axios.get("/appels/api/object/")
-            .then(response => {
-                this.objectOptions = response.data.results.map(m => {
-                    return {value: m.id, text: m.display};
+            .then((response) => {
+                this.objectOptions = response.data.results.map((m) => {
+                    return { value: m.id, text: m.display };
                 });
             });
         if (this.id) this.setEntry();
-    }
+    },
 };
 </script>
 

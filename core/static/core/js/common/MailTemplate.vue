@@ -144,23 +144,23 @@ export default {
     props: {
         studentId: {
             type: String,
-            default: "-1"
+            default: "-1",
         },
         teachings: {
             type: Array,
-            default: () => []
+            default: () => [],
         },
         title: {
             type: String,
-            default: "Send email"
+            default: "Send email",
         },
         getPdfUrl: {
             type: String,
-            default: "/api/pdf/"
+            default: "/api/pdf/",
         },
         getPdfFilename: {
             type: String,
-            default: "email.pdf"
+            default: "email.pdf",
         },
         templateUrl: {
             type: String,
@@ -168,22 +168,22 @@ export default {
         },
         templateContext: {
             type: Object,
-            default: () => { }
+            default: () => { },
         },
         baseTemplate: {
             type: String,
-            default: ""
+            default: "",
         },
     },
     data: function () {
         return {
             recipient: [],
             recipientOptions: [
-                { "text": "Père", "value": "father" },
-                { "text": "Mère", "value": "mother" },
-                { "text": "Élève (si disponible)", "value": "student" },
-                { "text": "Responsable légal", "value": "resp" },
-                { "text": "Responsable à l'école", "value": "resp_school" },
+                { text: "Père", value: "father" },
+                { text: "Mère", value: "mother" },
+                { text: "Élève (si disponible)", value: "student" },
+                { text: "Responsable légal", value: "resp" },
+                { text: "Responsable à l'école", value: "resp_school" },
             ],
             replyTo: [],
             replyToOptions: [],
@@ -255,15 +255,15 @@ export default {
                     student_id: this.studentId,
                     text: this.text,
                 },
-                this.templateContext
+                this.templateContext,
             );
 
             axios.post(this.getPdfUrl, data, {
                 responseType: "blob",
                 xsrfCookieName: "csrftoken",
-                xsrfHeaderName: "X-CSRFToken"
+                xsrfHeaderName: "X-CSRFToken",
             })
-                .then(resp => {
+                .then((resp) => {
                     const blob = new Blob([resp.data], { type: "application/pdf" });
                     var link = document.createElement("a");
                     link.href = window.URL.createObjectURL(blob);
@@ -272,7 +272,6 @@ export default {
                     link.click();
                     document.body.removeChild(link);
                 });
-
         },
     },
     mounted: function () {
@@ -289,7 +288,7 @@ export default {
                     this.replyToOptions = Object.entries(resp.data).map((person) => {
                         return { text: person[1], value: person[0] };
                     });
-                    this.replyTo = this.replyToOptions.map((rT => rT.value));
+                    this.replyTo = this.replyToOptions.map(rT => rT.value);
                 });
         }
 
@@ -297,8 +296,8 @@ export default {
     },
     components: {
         Multiselect,
-        TextEditor
-    }
+        TextEditor,
+    },
 };
 </script>
 

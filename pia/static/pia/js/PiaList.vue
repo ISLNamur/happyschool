@@ -147,8 +147,8 @@ export default {
     props: {
         currentPage: {
             type: Number,
-            default: 1
-        }
+            default: 1,
+        },
     },
     setup: function () {
         const { create } = useModalController();
@@ -174,20 +174,20 @@ export default {
     watch: {
         currentPage: function () {
             this.loadEntries();
-        }
+        },
     },
     computed: {
         pagesCount: function () {
             if (this.entriesCount === 0) return 1;
 
             return Math.ceil(this.entriesCount / 20);
-        }
+        },
     },
     methods: {
         displayStudent: displayStudent,
         /**
          * Move to another page.
-         * 
+         *
          * @param {Number} pageNum The page number
          */
         changePage: function (pageNum) {
@@ -196,7 +196,7 @@ export default {
         },
         /**
          * Move to the PIA record page.
-         * 
+         *
          * @param {object} student A student object with the matricule.
          */
         goToRecord: function (student) {
@@ -204,28 +204,28 @@ export default {
         },
         /**
          * Search for a student.
-         * 
+         *
          * @param {String} search The current search.
          */
         searchStudent: function (search) {
             this.searchId += 1;
             const currentSearch = this.searchId;
             axios.get(`/pia/api/pia/?student__last_name=${search}`)
-                .then(resp => {
+                .then((resp) => {
                     if (currentSearch < this.searchId) return;
-                    this.studentOptions = resp.data.results.map(p => {
+                    this.studentOptions = resp.data.results.map((p) => {
                         return {
-                            "display": p.student.display,
-                            "matricule": p.student.matricule,
-                            "pia": p.id,
-                            "advanced": p.advanced,
+                            display: p.student.display,
+                            matricule: p.student.matricule,
+                            pia: p.id,
+                            advanced: p.advanced,
                         };
                     });
                 });
         },
         /**
          * Delete a PIA record.
-         * 
+         *
          * @param {Number} index Index of the pia entry.
          */
         deleteRecord: function (index) {
@@ -235,7 +235,7 @@ export default {
                 okVariant: "danger",
                 cancelTitle: "Non",
                 centered: true,
-            }).then(resp => {
+            }).then((resp) => {
                 if (resp.ok) {
                     axios.delete("/pia/api/pia/" + this.entries[index].id + "/", token)
                         .then(() => this.entries.splice(index, 1))
@@ -248,7 +248,7 @@ export default {
             const ordering = "ordering=student__classe__year,student__classe__letter,student__last_name";
             const advanced = this.filterAdvanced === null ? "" : `&advanced=${this.filterAdvanced}`;
             axios.get("/pia/api/pia/?" + ordering + "&page=" + this.currentPage + advanced)
-                .then(resp => {
+                .then((resp) => {
                     this.entries = resp.data.results;
                     this.entriesCount = resp.data.count;
                 });
@@ -274,7 +274,7 @@ export default {
     },
     components: {
         PiaEntry,
-        Multiselect
-    }
+        Multiselect,
+    },
 };
 </script>

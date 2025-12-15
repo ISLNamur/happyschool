@@ -17,7 +17,6 @@
 <!-- You should have received a copy of the GNU Affero General Public License -->
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
-
 <template>
     <div>
         <h4>Mise à jour</h4>
@@ -67,7 +66,7 @@ import axios from "axios";
 
 import { useToastController } from "bootstrap-vue-next";
 
-const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 export default {
     setup: function () {
         const { show } = useToastController();
@@ -84,7 +83,7 @@ export default {
         runUpdate: function () {
             let app = this;
             axios.get("/core/api/update/", token)
-                .then(response => {
+                .then((response) => {
                     app.updating = true;
                     app.updateState = "Connecting to server…\n";
                     const protocol = window.location.protocol === "http:" ? "ws" : "wss";
@@ -109,8 +108,8 @@ export default {
                 variant: "danger",
                 autoHideDelay: 10000,
             });
-        }
-    }
+        },
+    },
 };
 </script>
 

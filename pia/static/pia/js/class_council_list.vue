@@ -99,8 +99,7 @@ import Moment from "moment";
 import "moment/dist/locale/fr";
 Moment.locale("fr");
 
-
-const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
@@ -110,12 +109,12 @@ export default {
     props: {
         pia: {
             type: Number,
-            default: -1
+            default: -1,
         },
         advanced: {
             type: Boolean,
             default: true,
-        }
+        },
     },
     data: function () {
         return {
@@ -136,7 +135,7 @@ export default {
     methods: {
         /**
          * Remove a class council.
-         * 
+         *
          * @param: {String} index The index of the list.
          * @param: {String} list The list where the class council is in.
          */
@@ -147,7 +146,7 @@ export default {
                 okTitle: "Oui",
                 cancelTitle: "Non",
                 centered: true,
-            }).then(resp => {
+            }).then((resp) => {
                 if (resp.ok) {
                     const councilIndex = list === "nextCouncils" ? index : index + this.nextCouncils.length;
                     if (app.councils[councilIndex].id >= 0) {
@@ -168,13 +167,13 @@ export default {
                 piaId = this.pia;
             }
             let app = this;
-            return new Promise((resolve, reject )=> {
+            return new Promise((resolve, reject) => {
                 const nextCouncilsComp = "nextcouncils" in app.$refs ? app.$refs.nextcouncils : [];
                 const preCouncilComp = "precouncils" in app.$refs ? app.$refs.precouncils : [];
                 Promise.all(
                     nextCouncilsComp.map(c => c.submit(piaId)).concat(
-                        preCouncilComp.map(c => c.submit(piaId))
-                    )
+                        preCouncilComp.map(c => c.submit(piaId)),
+                    ),
                 ).then((resps) => {
                     app.councils = resps.map(r => r.data);
                     const nextCouncilProm = nextCouncilsComp.map((c, i) => c.submitCouncilStatement(app.nextCouncils[i].id));
@@ -188,10 +187,10 @@ export default {
                     reject();
                 });
             });
-        }
+        },
     },
     components: {
-        ClassCouncil
+        ClassCouncil,
     },
     mounted: function () {
         axios.get(`/pia/api/class_council/?ordering=-date_council&pia_model=${this.pia}`)
@@ -199,6 +198,6 @@ export default {
                 this.councils = resp.data.results;
                 this.$emit("count", this.councils.length);
             });
-    }
+    },
 };
 </script>

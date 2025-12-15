@@ -104,13 +104,12 @@ Moment.locale("fr");
 
 export default {
     props: {
-        rowData : {
+        rowData: {
             type: Object,
-            default:null}
-        ,
+            default: null },
         deleting: {
-            type: Boolean, 
-            default: false}
+            type: Boolean,
+            default: false },
     },
     computed: {
         title: function () {
@@ -126,9 +125,9 @@ export default {
                 return "";
 
             var subTitleStr = "Traité " + Moment(this.rowData.datetime_traitement).calendar();
-            return  subTitleStr;
+            return subTitleStr;
         },
-        motif_start: function() {
+        motif_start: function () {
             if (this.rowData.datetime_motif_start) {
                 // Deprecated data.
                 return Moment(this.rowData.datetime_motif_start).format("hh:mm DD/MM");
@@ -139,7 +138,7 @@ export default {
             }
             return datetime_str;
         },
-        motif_end: function() {
+        motif_end: function () {
             if (this.rowData.datetime_motif_end) {
                 // Deprecated data.
                 return Moment(this.rowData.datetime_motif_end).format("hh:mm DD/MM");
@@ -151,15 +150,15 @@ export default {
             }
             return datetime_str;
         },
-        appel: function() {
+        appel: function () {
             return Moment(this.rowData.datetime_appel).calendar();
-        }
+        },
     },
     methods: {
         filterStudent: function () {
             this.$emit("filterStudent", this.rowData.matricule_id);
-        }
-    }
+        },
+    },
 };
 </script>
 

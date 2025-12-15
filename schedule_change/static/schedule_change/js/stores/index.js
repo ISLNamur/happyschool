@@ -43,25 +43,25 @@ export const scheduleChangeStore = defineStore("scheduleChangeStore", {
         lastPage: null,
     }),
     actions: {
-        getChangeType () {
+        getChangeType() {
             axios.get("/schedule_change/api/schedule_change_type/", token)
-                .then(resp => {
+                .then((resp) => {
                     this.setChangeType(resp.data.results);
                 });
         },
-        getChangeCategory () {
+        getChangeCategory() {
             axios.get("/schedule_change/api/schedule_change_category/", token)
-                .then(resp => {
+                .then((resp) => {
                     this.setChangeCategory(resp.data.results);
                 });
         },
-        getPlaces () {
-            return new Promise(resolve => {
+        getPlaces() {
+            return new Promise((resolve) => {
                 if (this.places.length > 0) {
                     resolve();
                 } else {
                     axios.get("/schedule_change/api/schedule_change_place/")
-                        .then(resp => {
+                        .then((resp) => {
                             this.places = resp.data.results.map(p => p.name);
                             resolve();
                         });
@@ -70,12 +70,12 @@ export const scheduleChangeStore = defineStore("scheduleChangeStore", {
         },
         addFilter,
         removeFilter,
-        updatePage (page) {
+        updatePage(page) {
             this.lastPage = page;
         },
         enableFullscreen: function () {
             this.canAdd = false;
-            this.addFilter({filterType: "activate_has_classe", tag: "Activer", value: true});
+            this.addFilter({ filterType: "activate_has_classe", tag: "Activer", value: true });
         },
         setChangeType: function (types) {
             this.changeType = types;
@@ -87,7 +87,7 @@ export const scheduleChangeStore = defineStore("scheduleChangeStore", {
             // Add style.
             var sheet = document.createElement("style");
             for (let c in categories) {
-                sheet.innerHTML +=  ".category-" + categories[c].id + " {background-color: #" + categories[c].color + "60;} ";
+                sheet.innerHTML += ".category-" + categories[c].id + " {background-color: #" + categories[c].color + "60;} ";
             }
             document.body.appendChild(sheet);
         },

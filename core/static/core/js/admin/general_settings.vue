@@ -158,7 +158,7 @@ import { useToastController } from "bootstrap-vue-next";
 
 import axios from "axios";
 
-const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
@@ -168,8 +168,8 @@ export default {
     data: function () {
         return {
             teachings: [],
-            currentTeaching: {display_name: null, name: null},
-            inputStates: {display_name: null, name: null},
+            currentTeaching: { display_name: null, name: null },
+            inputStates: { display_name: null, name: null },
             errors: {},
             logo: null,
         };
@@ -199,7 +199,7 @@ export default {
                         noCloseButton: true,
                     });
                 })
-                .catch(err => {
+                .catch((err) => {
                     alert(err);
                 });
         },
@@ -207,9 +207,9 @@ export default {
             axios.delete("/core/api/teaching/" + this.currentTeaching.id + "/", token);
         },
         resetTeachings: function () {
-            this.currentTeaching = {display_name: null, name: null};
+            this.currentTeaching = { display_name: null, name: null };
             axios.get("/core/api/teaching/")
-                .then(response => {
+                .then((response) => {
                     this.teachings = response.data.results;
                 });
         },
@@ -240,8 +240,6 @@ export default {
         this.resetTeachings();
     },
     components: {
-    }
+    },
 };
 </script>
-
-    

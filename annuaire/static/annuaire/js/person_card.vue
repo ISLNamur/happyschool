@@ -17,7 +17,6 @@
 <!-- You should have received a copy of the GNU Affero General Public License -->
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
-
 <template>
     <div>
         <BBreadcrumb>
@@ -105,22 +104,22 @@
 <script>
 import axios from "axios";
 
-import {getCurrentScholarYear} from "@s:core/js/common/utilities.js";
+import { getCurrentScholarYear } from "@s:core/js/common/utilities.js";
 
 export default {
     props: {
         matricule: {
             type: Number,
-            default: 0
+            default: 0,
         },
         type: {
             type: String,
-            default: "student"
+            default: "student",
         },
         noNews: {
             type: Boolean,
             default: false,
-        }
+        },
     },
     data: function () {
         return {
@@ -138,12 +137,12 @@ export default {
             if (this.type === "student") {
                 axios.get(`/annuaire/api/student/${this.matricule}/`)
                     .then((resp) => {
-                        this.locations.push({text: "Classe", to: `/classe/${resp.data.classe.id}/`});
-                        this.locations.push({text: "Élève"});
+                        this.locations.push({ text: "Classe", to: `/classe/${resp.data.classe.id}/` });
+                        this.locations.push({ text: "Élève" });
                     });
 
                 axios.get(`/pia/api/pia/?student__matricule=${this.matricule}`)
-                    .then(resp => {
+                    .then((resp) => {
                         this.pia = resp.data.count > 0 ? resp.data.results[0] : null;
                     });
 
@@ -175,13 +174,13 @@ export default {
                         this.loading = false;
                     });
             } else if (this.type === "responsible") {
-                this.locations = [{text: "Responsable"}];
+                this.locations = [{ text: "Responsable" }];
             }
-        }
+        },
     },
-    
+
     mounted: function () {
         this.initInfo();
-    }
+    },
 };
 </script>

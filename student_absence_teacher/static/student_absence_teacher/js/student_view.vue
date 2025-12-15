@@ -110,7 +110,7 @@
                                     {{ i + 1 }}:
                                     <strong v-b-tooltip="just.motive.name">{{ just.motive.short_name }}</strong> :
                                     {{ just.date_just_start }} ({{ this.educatorsPeriod[just.half_day_start].name }})
-                                    – {{ just.date_just_end }} ({{ this.educatorsPeriod[just.half_day_end].name }}) 
+                                    – {{ just.date_just_end }} ({{ this.educatorsPeriod[just.half_day_end].name }})
                                     <span>
                                         <IBiChatText
                                             v-if="just.comment"
@@ -167,7 +167,7 @@ import OverviewEducatorEntry from "./overview_educator_entry.vue";
 import StudentYearView from "./student_year_view.vue";
 import AbsencesStat from "./AbsencesStat.vue";
 
-const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
@@ -177,12 +177,12 @@ export default {
     props: {
         date: {
             type: String,
-            default: ""
+            default: "",
         },
         studentId: {
             type: String,
-            default: -1
-        }
+            default: -1,
+        },
     },
     data: function () {
         return {
@@ -198,8 +198,8 @@ export default {
                 },
                 {
                     key: "absence",
-                    label: ""
-                }
+                    label: "",
+                },
             ],
             store: studentAbsenceTeacherStore(),
         };
@@ -210,7 +210,7 @@ export default {
         },
         studentId: function () {
             this.getStudentAbsences();
-        }
+        },
     },
     computed: {
         studentAsList: function () {
@@ -230,7 +230,7 @@ export default {
                 okTitle: "Oui",
                 cancelTitle: "Annuler",
             })
-                .then(remove => {
+                .then((remove) => {
                     if (!remove.ok) return;
 
                     axios.delete(`/student_absence_teacher/api/justification/${this.justifications[justIndex].id}/`, token)
@@ -258,13 +258,13 @@ export default {
                 promises.push(axios.get(`/student_absence_teacher/api/absence_teacher/?student__matricule=${this.studentId}&date_absence=${this.date}&page_size=500`));
                 promises.push(axios.get(`/student_absence_teacher/api/absence_educ/?student__matricule=${this.studentId}&date_absence=${this.date}&page_size=500`));
             }
-            Promise.all(promises).then(resp => {
+            Promise.all(promises).then((resp) => {
                 this.teachersPeriod = resp[1].data.results;
                 this.educatorsPeriod = resp[2].data.results;
                 this.student = resp[0].data;
                 this.student.studentName = this.displayStudent(this.student);
                 this.justifications = resp[3].data.results
-                    .map(j => {
+                    .map((j) => {
                         j.motive = resp[4].data.results.find(m => j.motive === m.id);
                         return j;
                     });
@@ -274,15 +274,14 @@ export default {
                 }
                 const teachersAbsences = resp[5].data.results;
                 const educatorsAbsences = resp[6].data.results;
-                this.student.absence_teachers = this.teachersPeriod.map(p => {
+                this.student.absence_teachers = this.teachersPeriod.map((p) => {
                     const absence = teachersAbsences.find(a => a.period.id === p.id);
                     return absence ? absence : null;
                 });
-                this.student.absence_educators = this.educatorsPeriod.map(p => {
+                this.student.absence_educators = this.educatorsPeriod.map((p) => {
                     const absence = educatorsAbsences.find(a => a.period === p.id);
                     return absence ? absence : { status: null, student_id: this.student.matricule, period: p.id, date_absence: this.date };
                 });
-
             });
         },
     },
@@ -294,7 +293,7 @@ export default {
         OverviewEducatorEntry,
         StudentYearView,
         AbsencesStat,
-    }
+    },
 };
 </script>
 

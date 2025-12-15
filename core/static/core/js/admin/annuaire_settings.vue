@@ -49,7 +49,7 @@
                                     variant="light"
                                     class="float-right"
                                     size="sm"
-                                    @click="deleteGroup(permission.permissionName, group)" 
+                                    @click="deleteGroup(permission.permissionName, group)"
                                 >
                                     <IBiTrashFill
                                         color="red"
@@ -90,10 +90,10 @@
         </BRow>
         <BRow>
             <BCol>
-                <BFormGroup 
+                <BFormGroup
                     description=" Afficher les champs utilisateur/mot de passe dans la fiche info et ainsi que la liste des mots de passe des élèves par classe"
                 >
-                    <BFormCheckbox 
+                    <BFormCheckbox
                         v-model="credentials"
                         @update:model-value="sendCredentials"
                     >
@@ -118,7 +118,7 @@ export default {
         const { create } = useModalController();
         return { show, create };
     },
-    data: function() {
+    data: function () {
         return {
             /** A list of permissions which includes:
              * - Current groups (canSee),
@@ -172,29 +172,29 @@ export default {
     },
     methods: {
         /** Update credential setting. */
-        sendCredentials: function() {
+        sendCredentials: function () {
             this.credentials = !this.credentials;
-            axios.put("/annuaire/api/settings/1/",{ show_credentials: this.credentials },token)
+            axios.put("/annuaire/api/settings/1/", { show_credentials: this.credentials }, token)
                 .then(() => {
                     this.show({
                         body: "Sauvegardé.",
                         variant: "success",
-                        noCloseButton: true
+                        noCloseButton: true,
                     });
                 });
         },
         /** Add a group in a permission.
-         * 
+         *
          * @param {String} permName The name of the permission.
          */
-        sendPermission: function(permName) {
+        sendPermission: function (permName) {
             let permission = this.permissions.find(p => p.permissionName == permName);
             // Create a new list so we can ensure that canSee is updated after sending it.
             const canSeeData = permission.canSee.map(g => g.id).concat([permission.selected]);
             axios.put(
                 "/annuaire/api/settings/1/",
-                {["can_see_" + permName]: canSeeData},
-                token
+                { ["can_see_" + permName]: canSeeData },
+                token,
             )
                 .then(() => {
                     permission.canSee = canSeeData.map(id => this.groups.find(g => g.id == id));
@@ -203,21 +203,21 @@ export default {
                     this.show({
                         body: "Sauvegardé.",
                         variant: "success",
-                        noCloseButton: true
+                        noCloseButton: true,
                     });
                 })
-                .catch(err => {
+                .catch((err) => {
                     alert(err);
                 });
         },
         /** Remove group from a permission.
-         * 
+         *
          * @param {String} permName The name of the permission.
          * @param {Object} group The group that has to be removed.
          */
-        deleteGroup: function(permName, group) {
-            this.create({ body: "Êtes-vous sûr de vouloir supprimer " + group.name +" ?"})
-                .then(remove => {
+        deleteGroup: function (permName, group) {
+            this.create({ body: "Êtes-vous sûr de vouloir supprimer " + group.name + " ?" })
+                .then((remove) => {
                     if (!remove.ok) return;
 
                     let permission = this.permissions.find(p => p.permissionName == permName);
@@ -225,23 +225,23 @@ export default {
                     const canSeeData = permission.canSee.map(g => g.id).filter(id => id != group.id);
                     axios.put(
                         "/annuaire/api/settings/1/",
-                        { ["can_see_" + permName]: canSeeData},
-                        token
+                        { ["can_see_" + permName]: canSeeData },
+                        token,
                     )
                         .then(() => {
                             permission.canSee = canSeeData.map(id => this.groups.find(g => g.id == id));
                             permission.availableGroups = permission.availableGroups.concat([group]);
                         })
-                        .catch(err => {
+                        .catch((err) => {
                             alert(err);
                         });
-                }); 
+                });
         },
         /* Get the list of groups that can be chosen. **/
-        getGroups: function() {
+        getGroups: function () {
             axios.get("/core/api/group/")
-                .then(response => {
-                    this.groups = response.data.results.filter(text => {
+                .then((response) => {
+                    this.groups = response.data.results.filter((text) => {
                         if (isNaN(text.name[text.name.length - 1])) {
                             return true;
                         }
@@ -249,20 +249,20 @@ export default {
                 });
         },
     },
-    mounted: function() {
+    mounted: function () {
         this.getGroups();
         axios
-            .get("/annuaire/api/settings/1/") //allready selected
-            .then(response => {
+            .get("/annuaire/api/settings/1/") // allready selected
+            .then((response) => {
                 this.credentials = response.data.show_credentials;
-                this.permissions.forEach(perm => {
+                this.permissions.forEach((perm) => {
                     perm.canSee = response.data["can_see_" + perm.permissionName].map(groupId => this.groups.find(g => g.id == groupId));
-                    perm.availableGroups = this.groups.filter(g => {
+                    perm.availableGroups = this.groups.filter((g) => {
                         return !perm.canSee.find(usedGroup => usedGroup.name == g.name);
                     });
                 });
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 alert(error);
             });
     },

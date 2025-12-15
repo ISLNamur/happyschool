@@ -85,12 +85,12 @@ export default {
         sanctions: {
             type: Array,
             default: () => [],
-        }
+        },
     },
     data: function () {
         return {
             selected: [],
-            tabIndex: 0
+            tabIndex: 0,
         };
     },
     methods: {
@@ -109,15 +109,15 @@ export default {
             chunkOfSanctions.forEach((c, i) => {
                 setTimeout(() => {
                     const isLastChunk = i === chunkOfSanctions.length - 1;
-                    const promiseSanctions = c.map(sId => {
+                    const promiseSanctions = c.map((sId) => {
                         const sanction = this.sanctions.find(s => s.id == sId);
                         const newDate = this.nextWeek(sanction.date_sanction);
                         const comment = sanction.explication_commentaire
-                            + `<p>Report de la sanction du ${sanction.date_sanction} au ${newDate}</p>`;
+                          + `<p>Report de la sanction du ${sanction.date_sanction} au ${newDate}</p>`;
                         return axios.patch(
                             `/dossier_eleve/api/ask_sanctions/${sanction.id}/`,
                             { date_sanction: newDate, explication_commentaire: comment },
-                            token
+                            token,
                         );
                     });
                     Promise.all(promiseSanctions)
@@ -130,18 +130,16 @@ export default {
                             this.loading = false;
                             this.$emit("loading", 1);
                         })
-                        .catch(err => {
+                        .catch((err) => {
                             console.log(err);
                             this.$emit("loading", 1);
                         });
                 }, 500 * i);
             });
-
-
-        }
+        },
     },
     mounted: function () {
         this.selected = this.sanctions.map(s => s.id);
-    }
+    },
 };
 </script>

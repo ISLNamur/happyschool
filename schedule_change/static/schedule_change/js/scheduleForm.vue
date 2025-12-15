@@ -327,7 +327,7 @@ export default {
         id: {
             type: Number,
             default: -1,
-        }
+        },
     },
     data: function () {
         return {
@@ -395,17 +395,17 @@ export default {
         isReplacement: function () {
             for (let ct in this.store.changeType) {
                 if (this.store.changeType[ct].name == "Remplacement"
-                    && this.store.changeType[ct].id == this.form.change) return true;
+                  && this.store.changeType[ct].id == this.form.change) return true;
             }
             return false;
-        }
+        },
     },
     methods: {
         copy: function () {
             delete this.form.id;
             delete this.entry.id;
             this.$router.push("/schedule_form/-1/");
-            this.show( {
+            this.show({
                 body: "Ceci est une copie de l'entrée, vous pouvez maintenant modifier les données sans changer la précédente.",
                 variant: "info",
                 noCloseButton: true,
@@ -435,7 +435,7 @@ export default {
             let app = this;
             this.searchId += 1;
             let currentSearch = this.searchId;
-            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
             const data = {
                 query: query,
                 teachings: this.store.settings.teachings,
@@ -443,11 +443,11 @@ export default {
                 years: true,
             };
             axios.post("/annuaire/api/classes/", data, token)
-                .then(response => {
+                .then((response) => {
                 // Avoid that a previous search overwrites a faster following search results.
                     if (this.searchId !== currentSearch)
                         return;
-                    const options = response.data.map(p => {
+                    const options = response.data.map((p) => {
                         return p.display;
                     });
                     this.classesLoading = false;
@@ -474,7 +474,7 @@ export default {
             this.searchId += 1;
             let currentSearch = this.searchId;
 
-            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
             const data = {
                 query: query,
                 teachings: this.store.settings.teachings,
@@ -483,7 +483,7 @@ export default {
                 active: false,
             };
             axios.post("/annuaire/api/people/", data, token)
-                .then(response => {
+                .then((response) => {
                 // Avoid that a previous search overwrites a faster following search results.
                     if (this.searchId !== currentSearch)
                         return;
@@ -518,7 +518,7 @@ export default {
             if (data.time_end == "") data.time_end = null;
             if (data.place == null) data.place = "";
             // Send data.
-            const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
             let path = "/schedule_change/api/schedule_change/";
             const isPut = this.entry && this.entry.id;
             if (isPut) path += this.form.id + "/";
@@ -527,7 +527,7 @@ export default {
                 this.errors = {};
                 const nextPage = this.store.lastPage ? `/page/${this.store.lastPage}/` : "/";
                 this.$router.push(nextPage).then(() => {
-                    this.show( {
+                    this.show({
                         body: "Les données ont bien été envoyées.",
                         variant: "success",
                         noCloseButton: true,
@@ -550,15 +550,15 @@ export default {
                         console.log(err);
                     });
             }
-        }
+        },
     },
-    components: {Multiselect},
+    components: { Multiselect },
     mounted: function () {
         this.loadEntry();
         this.store.getPlaces()
             .then(() => {
                 this.placesOptions = this.store.places;
             });
-    }
+    },
 };
 </script>

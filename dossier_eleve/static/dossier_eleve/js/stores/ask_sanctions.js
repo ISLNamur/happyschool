@@ -1,4 +1,3 @@
-
 // This file is part of Happyschool.
 //
 // Happyschool is the legal property of its developers, whose names
@@ -28,14 +27,14 @@ import { addFilterPinia as addFilter, removeFilterPinia as removeFilter } from "
 
 export const askSanctionsStore = defineStore("askSanctionsStore", {
     state: () => ({
-         
+
         settings: settings,
         filters: [
             {
                 filterType: "scholar_year",
-                 
+
                 tag: currentYear,
-                 
+
                 value: currentYear,
             },
             {
@@ -44,11 +43,11 @@ export const askSanctionsStore = defineStore("askSanctionsStore", {
                 value: true,
             },
         ],
-         
+
         canSetSanction: canSetSanction,
-         
+
         canAskSanction: canAskSanction,
-         
+
         hasProEco: proeco,
         sanctions: [],
     }),
@@ -56,10 +55,10 @@ export const askSanctionsStore = defineStore("askSanctionsStore", {
         addFilter: addFilter,
         removeFilter: removeFilter,
         getSanctions: function () {
-            return new Promise(resolve => {
+            return new Promise((resolve) => {
                 if (this.sanctions.length == 0) {
                     axios.get("/dossier_eleve/api/sanction_decision/?only_sanctions=1")
-                        .then(resp => {
+                        .then((resp) => {
                             this.sanctions = resp.data.results;
                             resolve();
                         });
@@ -67,6 +66,6 @@ export const askSanctionsStore = defineStore("askSanctionsStore", {
                     resolve();
                 }
             });
-        }
+        },
     },
 });

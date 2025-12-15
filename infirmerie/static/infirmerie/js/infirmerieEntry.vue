@@ -104,7 +104,7 @@ Moment.locale("fr");
 
 export default {
     props: {
-        rowData : {
+        rowData: {
             type: Object,
             default: () => {},
         },
@@ -114,7 +114,7 @@ export default {
         };
     },
     computed: {
-        urlToStudentInfo:function(){
+        urlToStudentInfo: function () {
         /**
         * Gets called when the user clicks on the button to see student details
         */
@@ -132,7 +132,7 @@ export default {
             } else {
                 return "";
             }
-        }
+        },
     },
     methods: {
         deleteEntry: function () {
@@ -146,8 +146,8 @@ export default {
         },
         filterStudent: function () {
             this.$emit("filterStudent", this.rowData.matricule_id);
-        }
-    }
+        },
+    },
 };
 </script>
 

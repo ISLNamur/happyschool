@@ -17,7 +17,6 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import Appels from "../AppelsList.vue";
 import AddAppels from "../addAppels.vue";
 
@@ -32,17 +31,17 @@ const router = createRouter({
         {
             path: "/edit/:id/",
             component: AddAppels,
-            props: true
+            props: true,
         },
         {
             path: "/edit/:id/:state",
             component: AddAppels,
-            props: true
+            props: true,
         },
         {
             path: "/add/",
             component: AddAppels,
-            props: true
+            props: true,
         },
     ],
     history: createWebHashHistory(),

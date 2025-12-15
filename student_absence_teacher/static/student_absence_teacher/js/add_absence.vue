@@ -224,7 +224,7 @@ export default {
             loadingStudent: false,
             studentGroup: null,
             lastUpdate: null,
-            store: studentAbsenceTeacherStore()
+            store: studentAbsenceTeacherStore(),
         };
     },
     computed: {
@@ -240,7 +240,7 @@ export default {
             if (!studentsWithGroup) return [];
 
             return [...new Set(studentsWithGroup.map(s => s.group))];
-        }
+        },
     },
     methods: {
         computeAlert: function () {
@@ -250,10 +250,10 @@ export default {
             const data = {
                 query: query,
                 check_access: false,
-                teachings: this.store.settings.teachings
+                teachings: this.store.settings.teachings,
             };
             axios.post("/annuaire/api/classes/", data, token)
-                .then(resp => {
+                .then((resp) => {
                     this.classesOptions = resp.data;
                 });
         },
@@ -263,13 +263,13 @@ export default {
                     period: this.period[0].id,
                     date_absence: this.currentDate,
                     page_size: 5000,
-                }
+                },
             };
             if (selectBy === "GC") data.params.given_course = this.givenCourse.id;
             if (selectBy === "CL") data.params.student__classe = this.classe.id;
             axios.get("/student_absence_teacher/api/absence_teacher/", data, token)
-                .then(resp => {
-                    this.students = students.map(s => {
+                .then((resp) => {
+                    this.students = students.map((s) => {
                         const savedAbsence = resp.data.results.find(r => r.student_id === s.matricule);
                         if (!savedAbsence) return s;
 
@@ -278,7 +278,7 @@ export default {
                     });
 
                     // Save last data update.
-                    resp.data.results.forEach(ab => {
+                    resp.data.results.forEach((ab) => {
                         if (!this.lastUpdate) {
                             this.lastUpdate = ab.datetime_update;
                         } else if (this.lastUpdate < ab.datetime_update) {
@@ -287,7 +287,7 @@ export default {
                     });
                     this.loadingStudent = false;
                 })
-                .catch(err => {
+                .catch((err) => {
                     alert(err);
                 });
         },
@@ -312,7 +312,7 @@ export default {
                 this.loadingStudent = true;
                 this.students = [];
                 axios.get(`/annuaire/api/student_given_course/${this.givenCourse.id}/`)
-                    .then(resp => {
+                    .then((resp) => {
                         this.showAlert = false;
                         this.store.resetChanges();
                         this.getAbsence(resp.data, selectBy);
@@ -331,7 +331,7 @@ export default {
                 this.students = [];
                 const data = { params: { classe: this.classe.id } };
                 axios.get("/annuaire/api/studentclasse", data)
-                    .then(resp => {
+                    .then((resp) => {
                         this.store.resetChanges();
                         this.showAlert = false;
                         this.getAbsence(resp.data, selectBy);
@@ -347,8 +347,8 @@ export default {
                     period: this.period[0].id,
                     date_absence: this.currentDate,
                     page_size: 5000,
-                    datetime_update__gt: this.lastUpdate
-                }
+                    datetime_update__gt: this.lastUpdate,
+                },
             };
             if (this.givenCourse) {
                 data.params.given_course = this.givenCourse.id;
@@ -362,7 +362,7 @@ export default {
                         const students = resp.data.results.map(ab => `${ab.student.last_name} ${ab.student.first_name}`).join(", ");
                         const changes = `Les élèves suivants ont été modifiés : ${students}. `;
                         const endSentence = "Tous les autres changements ont été sauvegardés.";
-                        this.show({ body: `${baseSentence} ${changes}${endSentence}`});
+                        this.show({ body: `${baseSentence} ${changes}${endSentence}` });
                     }
 
                     const promises = [];
@@ -381,7 +381,7 @@ export default {
                                 period_id: this.period[period].id,
                                 comment: change.comment,
                                 status: change.status,
-                                date_absence: this.currentDate
+                                date_absence: this.currentDate,
                             };
                             if (this.store.settings.select_student_by === "GC") data.given_course_id = this.givenCourse.id;
                             promises.push(send(url, data, token));
@@ -391,18 +391,18 @@ export default {
                         this.store.removeChange(matricule);
                     }
                     Promise.all(promises)
-                        .then(resps => {
+                        .then((resps) => {
                             for (let r in resps) {
                                 this.store.removeChange(resps[r].data.student_id);
                             }
-                            resps.forEach(r => {
+                            resps.forEach((r) => {
                                 if (!this.lastUpdate) {
                                     this.lastUpdate = r.data.datetime_update;
                                 } else if (this.lastUpdate < r.data.datetime_update) {
                                     this.lastUpdate = r.data.datetime_update;
                                 }
                             });
-                            this.show( {
+                            this.show({
                                 body: "Les changements ont été sauvés.",
                                 variant: "success",
                                 noCloseButton: true,
@@ -416,7 +416,7 @@ export default {
 
                             this.computeAlert();
                         })
-                        .catch(err => {
+                        .catch((err) => {
                             alert(err);
                         });
                 });
@@ -424,7 +424,7 @@ export default {
     },
     mounted: function () {
         axios.get("/student_absence_teacher/api/period_teacher/")
-            .then(resp => {
+            .then((resp) => {
                 this.periodOptions = resp.data.results;
             });
 
@@ -433,7 +433,7 @@ export default {
         if (this.givenCourseOptions.length > 0 && this.givenCourseOptions[0].display.includes("["))
             return;
 
-        const classesPromises = this.givenCourseOptions.map(givenCourse => {
+        const classesPromises = this.givenCourseOptions.map((givenCourse) => {
             return axios.get(`/annuaire/api/course_to_classes/${givenCourse.id}/`);
         });
         Promise.all(classesPromises)
@@ -444,7 +444,7 @@ export default {
                 });
             });
     },
-    components: { Multiselect, AddAbsenceEntry, },
+    components: { Multiselect, AddAbsenceEntry },
 
 };
 </script>

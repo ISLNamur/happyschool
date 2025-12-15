@@ -32,7 +32,7 @@ const router = createRouter({
             path: "/warning/:studentId/",
             component: MailWarning,
             props: true,
-        }
+        },
     ],
     history: createWebHashHistory(),
 });

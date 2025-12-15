@@ -121,13 +121,12 @@ import { annuaireStore } from "./stores/index.js";
 
 import axios from "axios";
 
-
 export default {
     props: {
-        "classe": {
+        classe: {
             type: String,
-            default: ""
-        }
+            default: "",
+        },
     },
     data: function () {
         return {
@@ -139,9 +138,9 @@ export default {
         };
     },
     watch: {
-        "$route" () {
+        "$route"() {
             this.loadClasse();
-        }
+        },
     },
     computed: {
         getClassePhoto: function () {
@@ -167,23 +166,23 @@ export default {
             // eslint-disable-next-line no-undef
             const userGroups = new Set(user_groups.map(g => g.id));
             return canSeeGroups.intersection(userGroups).size > 0;
-        }
+        },
     },
     methods: {
         selectStudent: function (matricule) {
             this.$router.push(`/person/student/${matricule}/`);
         },
         loadClasse: function () {
-            const data = {params: {classe: this.classe}};
+            const data = { params: { classe: this.classe } };
             axios.get("/annuaire/api/studentclasse/", data)
-                .then(response => {
+                .then((response) => {
                     this.students = response.data;
                 });
-        }
+        },
     },
     mounted: function () {
         this.loadClasse();
-    }
+    },
 };
 
 </script>

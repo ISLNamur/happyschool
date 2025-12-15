@@ -17,7 +17,6 @@
 <!-- You should have received a copy of the GNU Affero General Public License -->
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
-
 <template>
     <div>
         <h4>Importer des photos</h4>
@@ -74,8 +73,8 @@ export default {
         return {
             people: null,
             peopleOptions: [
-                {text: "Étudiants", value: "student"},
-                {text: "Responsables (enseignants, éducateurs,…)", value: "responsible"}],
+                { text: "Étudiants", value: "student" },
+                { text: "Responsables (enseignants, éducateurs,…)", value: "responsible" }],
             photos: [],
             sending: false,
             currentPhoto: 0,
@@ -88,7 +87,7 @@ export default {
             } else {
                 return "Envoyer";
             }
-        }
+        },
     },
     methods: {
         formatNames(files) {
@@ -107,7 +106,7 @@ export default {
             const header = {
                 xsrfCookieName: "csrftoken",
                 xsrfHeaderName: "X-CSRFToken",
-                headers: {"Content-Disposition": "form-data; name=\"file\"; filename=\"" + this.photos[this.currentPhoto].name.normalize() + "\""},
+                headers: { "Content-Disposition": "form-data; name=\"file\"; filename=\"" + this.photos[this.currentPhoto].name.normalize() + "\"" },
             };
             let data = new FormData();
             data.append("file", this.photos[this.currentPhoto]);
@@ -141,7 +140,7 @@ export default {
                             alert("Unable to send photo: " + app.photos[app.currentPhoto].name);
                         });
                 });
-        }
-    }
+        },
+    },
 };
 </script>

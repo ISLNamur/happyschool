@@ -361,10 +361,10 @@ export default {
         return { show };
     },
     props: {
-        "id": {
+        id: {
             type: String,
-            default: "-1"
-        }
+            default: "-1",
+        },
     },
     data: function () {
         return {
@@ -418,7 +418,7 @@ export default {
                 this.form.student_id = this.name.matricule;
                 // Get statistics.
                 axios.get("/dossier_eleve/api/statistics/" + this.name.matricule + "/")
-                    .then(response => {
+                    .then((response) => {
                         this.stats = response.data;
                     })
                     .catch(function (error) {
@@ -454,7 +454,7 @@ export default {
             }
 
             return this.stats.filter(s => s.type === this.infoOrSanction);
-        }
+        },
     },
     methods: {
         addFiles: function () {
@@ -544,7 +544,7 @@ export default {
             send.then(() => {
                 this.sending = false;
                 this.$router.push("/").then(() => {
-                    this.show( {
+                    this.show({
                         body: "Les données ont bien été envoyées",
                         variant: "success",
                         noCloseButton: true,
@@ -576,11 +576,11 @@ export default {
                 tenure_class_only: this.store.settings.filter_teacher_entries_by_tenure,
             };
             axios.post("/annuaire/api/people/", data, token)
-                .then(response => {
+                .then((response) => {
                     // Avoid that a previous search overwrites a faster following search results.
                     if (this.searchId !== currentSearch)
                         return;
-                    const options = response.data.map(p => {
+                    const options = response.data.map((p) => {
                         // Format entries.
                         let entry = { display: p.last_name + " " + p.first_name, matricule: p.matricule };
                         // Append teachings if necessary.
@@ -618,8 +618,8 @@ export default {
         setSanctionDecisionOptions: function () {
             // Set sanctions and decisions options.
             axios.get("/dossier_eleve/api/sanction_decision/")
-                .then(response => {
-                    this.sanctionDecisionOptions = response.data.results.map(m => {
+                .then((response) => {
+                    this.sanctionDecisionOptions = response.data.results.map((m) => {
                         let entry = { value: m.id, text: m.sanction_decision };
                         if (this.store.settings.enable_submit_sanctions) {
                             entry["disabled"] = m.can_ask;
@@ -629,7 +629,7 @@ export default {
 
                     // Keep sanction decision entry.
                     if (this.store.settings.enable_submit_sanctions) {
-                        this.sanctionDecisionOptions = this.sanctionDecisionOptions.filter(s => {
+                        this.sanctionDecisionOptions = this.sanctionDecisionOptions.filter((s) => {
                             if (this.form.sanction_decision_id === s.value || !s.disabled) {
                                 return true;
                             } else {
@@ -647,7 +647,7 @@ export default {
             // eslint-disable-next-line no-undef
             const groupSet = Object.assign({}, groups);
             groupSet.tenure = {
-                id: -1, text: "Titulaire(s)"
+                id: -1, text: "Titulaire(s)",
             };
             // eslint-disable-next-line no-undef
             if (user_groups.find(g => g.id == groupSet.sysadmin.id)) {
@@ -665,7 +665,7 @@ export default {
             const consideredGroups = Object.keys(groupSettingsMatch);
             // eslint-disable-next-line no-undef
             const userGroups = user_groups.filter(g => consideredGroups.includes(g.name));
-            const concernedSettings = userGroups.map(g => {
+            const concernedSettings = userGroups.map((g) => {
                 const allowedGroupSetting = groupSettingsMatch[g.name] + "_allow_visibility_to";
                 const forcedGroupSetting = groupSettingsMatch[g.name] + "_force_visibility_to";
                 let groupSetting = {
@@ -696,7 +696,7 @@ export default {
                 return new Set([...curValue, ...acc]);
             }, new Set()))];
 
-            this.visibilityOptions = allowedGroups.map(aG => {
+            this.visibilityOptions = allowedGroups.map((aG) => {
                 let group = Object.values(groupSet).find(g => g.id === aG);
                 // Is the group forced?
                 // First check if a group allows it but is not forced. In this case, this group permission prevails
@@ -719,7 +719,7 @@ export default {
     mounted: function () {
         if (this.id >= 0) {
             axios.get(`/dossier_eleve/api/cas_eleve/${this.id}`)
-                .then(resp => {
+                .then((resp) => {
                     this.casObject = resp.data;
                     this.setCas();
                 });
@@ -727,7 +727,7 @@ export default {
             // Prefill demandeur.
             // eslint-disable-next-line no-undef
             axios.get(`/annuaire/api/responsible/${user_properties.matricule}`)
-                .then(resp => {
+                .then((resp) => {
                     this.demandeur = resp.data;
                     if (this.store.settings.teachings.length > 1) {
                         let teachings = " —";
@@ -741,8 +741,8 @@ export default {
 
         // Set info options.
         axios.get("/dossier_eleve/api/info/")
-            .then(response => {
-                this.infoOptions = response.data.results.map(m => {
+            .then((response) => {
+                this.infoOptions = response.data.results.map((m) => {
                     return { value: m.id, text: m.info };
                 });
             })
@@ -751,6 +751,6 @@ export default {
             });
 
         this.setSanctionDecisionOptions();
-    }
+    },
 };
 </script>

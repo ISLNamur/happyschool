@@ -25,7 +25,7 @@
                 md="4"
                 :class="isBold + ' mb-2 mb-md-0'"
             >
-                {{ displayStudent(student) }} 
+                {{ displayStudent(student) }}
             </BCol>
             <BCol>
                 <BRow>
@@ -62,20 +62,20 @@ import { studentAbsenceTeacherStore } from "./stores/index.js";
 
 export default {
     props: {
-        "student": {
+        student: {
             type: Object,
-            default: () => {}
-        }
+            default: () => {},
+        },
     },
     data: function () {
         return {
             options: [
-                {value: "presence", text: "Présent"},
-                {value: "lateness", text: "Retard"},
-                {value: "absence", text: "Absence"},
-                {value: "excluded", text: "Exclus"},
-                {value: "exempted", text: "Dispensé"},
-                {value: "internship", text: "Stage"},
+                { value: "presence", text: "Présent" },
+                { value: "lateness", text: "Retard" },
+                { value: "absence", text: "Absence" },
+                { value: "excluded", text: "Exclus" },
+                { value: "exempted", text: "Dispensé" },
+                { value: "internship", text: "Stage" },
                 // {value: "other", text: "Autre remarque"}
             ],
             status: "presence",
@@ -86,7 +86,7 @@ export default {
     computed: {
         isBold: function () {
             return this.status != "presence" ? "font-weight-bold" : "";
-        }
+        },
     },
     methods: {
         displayStudent,
@@ -97,15 +97,15 @@ export default {
                     this.store.commit("removeChange", this.student.matricule);
                 } else {
                     const change = {
-                        matricule: this.student.matricule, "status": status, old_status: this.student.saved.status,
-                        comment: this.comment, id: this.student.saved.id
+                        matricule: this.student.matricule, status: status, old_status: this.student.saved.status,
+                        comment: this.comment, id: this.student.saved.id,
                     };
                     this.store.setChange(change);
                 }
             } else {
                 const change = {
-                    matricule: this.student.matricule, "status": status,
-                    comment: this.comment, is_new: true
+                    matricule: this.student.matricule, status: status,
+                    comment: this.comment, is_new: true,
                 };
                 this.store.setChange(change);
             }
@@ -118,8 +118,8 @@ export default {
                 this.store.setChange(change);
             } else {
                 const change = {
-                    matricule: this.student.matricule, "status": this.status,
-                    comment: this.comment, is_new: false, id: this.student.saved.id
+                    matricule: this.student.matricule, status: this.status,
+                    comment: this.comment, is_new: false, id: this.student.saved.id,
                 };
                 if ("saved" in this.student) {
                     change.old_status = this.student.saved.status;
@@ -127,7 +127,7 @@ export default {
                 this.store.setChange(change);
                 this.$emit("update");
             }
-        }
+        },
     },
     mounted: function () {
         if ("saved" in this.student) {
@@ -135,12 +135,12 @@ export default {
             this.comment = this.student.saved.comment;
         } else {
             const change = {
-                matricule: this.student.matricule, "status": this.status,
-                comment: this.comment, is_new: true
+                matricule: this.student.matricule, status: this.status,
+                comment: this.comment, is_new: true,
             };
             this.store.setChange(change);
             this.$emit("update");
         }
-    }
+    },
 };
 </script>

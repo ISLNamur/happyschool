@@ -49,7 +49,7 @@
                     size="sm"
                 >
                     Autre compte
-                </BButton> 
+                </BButton>
             </BCol>
         </BRow>
         <BCollapse
@@ -126,6 +126,6 @@ export default {
 
             this.showModelLogin = this.microsoftLogin.length > 0 || this.googleLogin.length > 0;
         }
-    }
+    },
 };
 </script>

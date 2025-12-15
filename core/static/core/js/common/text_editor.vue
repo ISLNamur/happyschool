@@ -45,12 +45,12 @@ export default {
         },
         advanced: {
             type: Boolean,
-            default: false
+            default: false,
         },
         divBlock: {
             type: Boolean,
             default: false,
-        }
+        },
     },
     emits: ["update:modelValue"],
     data: function () {
@@ -99,8 +99,8 @@ export default {
         }
     },
     components: {
-        ckeditor: Ckeditor
-    }
+        ckeditor: Ckeditor,
+    },
 };
 </script>
 

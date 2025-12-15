@@ -128,12 +128,12 @@ import { scheduleChangeStore } from "./stores/index.js";
 
 export default {
     props: {
-        rowData : {
+        rowData: {
             type: Object,
-            default: () => {}
+            default: () => {},
         },
-        deleting: {type: Boolean, default: false},
-        fullscreen: {type: Boolean, default: false},
+        deleting: { type: Boolean, default: false },
+        fullscreen: { type: Boolean, default: false },
     },
     data: () => ({
         test: "plus",
@@ -150,7 +150,7 @@ export default {
                     return "";
                 }
             }
-        
+
             return "";
         },
         category: function () {
@@ -163,7 +163,7 @@ export default {
         },
         hide_comment: function () {
             return this.store.filters.find(f => f.filterType == "activate_show_for_students") !== undefined;
-        }
+        },
     },
     methods: {
         formatTeachers: function (teachers) {
@@ -183,15 +183,15 @@ export default {
             if (this.rowData.category) cat += "category-" + this.rowData.category;
             return "px-3 current-card " + cat;
         },
-        deleteEntry: function() {
+        deleteEntry: function () {
             this.$emit("delete");
         },
-        editEntry: function() {
+        editEntry: function () {
             this.$emit("edit");
         },
-        copyEntry: function() {
+        copyEntry: function () {
             this.$emit("copy");
-        }
+        },
     },
     components: {
         "place-move": IBiBoxArrowRight,

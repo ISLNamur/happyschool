@@ -284,12 +284,12 @@ import axios from "axios";
 import { useToastController } from "bootstrap-vue-next";
 
 import Filters from "@s:core/js/common/filters_form.vue";
-import {getFilters} from "@s:core/js/common/filters.js";
+import { getFilters } from "@s:core/js/common/filters.js";
 import LatenessEntry from "./lateness_entry.vue";
 
 import { latenessStore } from "./stores/index.js";
 
-const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
@@ -337,7 +337,7 @@ export default {
         filterStudent: function (matricule) {
             this.showFilters = true;
             this.store.addFilter(
-                {filterType: "student__matricule", tag: matricule, value: matricule}
+                { filterType: "student__matricule", tag: matricule, value: matricule },
             );
             this.currentPage = 1;
             this.applyFilter();
@@ -366,16 +366,16 @@ export default {
                 check_access: false,
             };
             axios.post("/annuaire/api/people/", data, token)
-                .then(response => {
+                .then((response) => {
                     if (this.searchId !== currentSearch)
                         return;
-                
+
                     this.searchOptions = response.data;
                 });
         },
         selectStudent: function (matricule) {
             axios.get("/annuaire/api/student/" + matricule + "/")
-                .then(resp => {
+                .then((resp) => {
                     if (resp.data) {
                         this.search = resp.data;
                         this.addStudent();
@@ -406,21 +406,20 @@ export default {
                     this.overloadInput();
                 }
             }, 300);
-            
         },
         addStudent: function () {
             const data = {
                 student_id: this.search.matricule,
-                justified: this.justified
+                justified: this.justified,
             };
             let url = "/lateness/api/lateness/";
             if (this.printing) url += `?print=1&printer=${this.printer}`;
             this.addingStudent = true;
             axios.post(url, data, token)
-                .then(response => {
+                .then((response) => {
                     if (response.data.has_sanction) this.show({
                         body: `Une sanction ${response.data.sanction_id ? "a été" : "doit être"} ajoutée !`,
-                        title: "Sanction !"
+                        title: "Sanction !",
                     });
                     this.addingStudent = false;
                     // Reload entries.
@@ -432,7 +431,7 @@ export default {
                         }
                     }, 300);
                 })
-                .catch(err => {
+                .catch((err) => {
                     alert(err);
                     this.addingStudent = false;
                 });
@@ -447,7 +446,7 @@ export default {
                     this.latenesses = response.data.results;
                     this.entriesCount = response.data.count;
                     this.loading = false;
-                }).catch(err => {
+                }).catch((err) => {
                     alert(err);
                     this.loaded = true;
                 });
@@ -461,24 +460,24 @@ export default {
         },
         getTopList: function () {
             axios.get(`/lateness/api/top_lateness?${this.topOwnClasses ? "own_classes=True" : ""}`)
-                .then(resp => {
+                .then((resp) => {
                     this.topLateness = resp.data;
                 });
         },
         checkMatriculeFilter: function () {
             const matricule = (new URL(document.location)).searchParams.get("student__matricule");
             if (matricule) {
-                this.store.addFilter({filterType: "student__matricule", value: matricule, tag: matricule});
+                this.store.addFilter({ filterType: "student__matricule", value: matricule, tag: matricule });
                 this.showFilters = true;
             }
-        }
+        },
     },
     mounted: function () {
         this.countDate = this.store.settings.date_count_start;
 
         this.checkMatriculeFilter();
         this.applyFilter();
-        this.overloadInput();        
+        this.overloadInput();
         this.getTopList();
 
         this.availablePrinters = this.store.settings.printer.split(",")
@@ -495,7 +494,7 @@ export default {
         "multiselect": Multiselect,
         "lateness-entry": LatenessEntry,
         "filters": Filters,
-    }
+    },
 };
 </script>
 

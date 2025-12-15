@@ -319,10 +319,10 @@ import FileUpload from "@s:core/js/common/file_upload.vue";
 
 export default {
     props: {
-        "entry": {
+        entry: {
             type: Object,
-            default: () => { }
-        }
+            default: () => { },
+        },
     },
     data: function () {
         return {
@@ -374,7 +374,7 @@ export default {
                 this.form.student_id = this.name.matricule;
                 // Get statistics.
                 axios.get("/dossier_eleve/api/statistics/" + this.name.matricule + "/")
-                    .then(response => {
+                    .then((response) => {
                         this.stats = response.data.filter(s => s.type === "sanction-decision");
                     })
                     .catch(function (error) {
@@ -552,11 +552,11 @@ export default {
                 educ_by_years: "both",
             };
             axios.post("/annuaire/api/people/", data, token)
-                .then(response => {
+                .then((response) => {
                     // Avoid that a previous search overwrites a faster following search results.
                     if (this.searchId !== currentSearch)
                         return;
-                    const options = response.data.map(p => {
+                    const options = response.data.map((p) => {
                         // Format entries.
                         let entry = { display: p.last_name + " " + p.first_name, matricule: p.matricule };
                         if ("is_secretary" in p) {
@@ -591,7 +591,7 @@ export default {
             // eslint-disable-next-line no-undef
             const groupSet = Object.assign({}, groups);
             groupSet.tenure = {
-                id: -1, text: "Titulaire(s)"
+                id: -1, text: "Titulaire(s)",
             };
             // eslint-disable-next-line no-undef
             if (user_groups.find(g => g.id == groupSet.sysadmin.id)) {
@@ -609,7 +609,7 @@ export default {
             const consideredGroups = Object.keys(groupSettingsMatch);
             // eslint-disable-next-line no-undef
             const userGroups = user_groups.filter(g => consideredGroups.includes(g.name));
-            const concernedSettings = userGroups.map(g => {
+            const concernedSettings = userGroups.map((g) => {
                 const allowedGroupSetting = groupSettingsMatch[g.name] + "_allow_visibility_to";
                 const forcedGroupSetting = groupSettingsMatch[g.name] + "_force_visibility_to";
                 let groupSetting = {
@@ -640,7 +640,7 @@ export default {
                 return new Set([...curValue, ...acc]);
             }, new Set()))];
 
-            this.visibilityOptions = allowedGroups.map(aG => {
+            this.visibilityOptions = allowedGroups.map((aG) => {
                 let group = Object.values(groupSet).find(g => g.id === aG);
                 // Is the group forced?
                 // First check if a group allows it but is not forced. In this case, this group permission prevails
@@ -657,21 +657,20 @@ export default {
                 }
                 return group;
             });
-            
         },
     },
     mounted: function () {
         // Set sanctions and decisions options.
         this.store.getSanctions()
             .then(() => {
-                this.sanctionOptions = this.store.sanctions.map(m => {
+                this.sanctionOptions = this.store.sanctions.map((m) => {
                     return { value: m.id, text: m.sanction_decision };
                 });
             })
             .catch(function (error) {
                 alert(error);
             });
-        
+
         this.setVisibilityGroups();
         this.form.visible_by_groups = this.visibilityOptions.map(g => g.id);
     },

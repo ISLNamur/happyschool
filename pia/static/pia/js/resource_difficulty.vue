@@ -67,12 +67,12 @@ export default {
         },
         resourceDifficulty: {
             type: Object,
-            default: () => {}
+            default: () => {},
         },
         modelValue: {
             type: Boolean,
             default: null,
-        }
+        },
     },
 
 };

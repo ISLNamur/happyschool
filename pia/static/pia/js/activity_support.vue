@@ -199,7 +199,6 @@ import CourseReinforcement from "./course_reinforcement.vue";
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
-
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
@@ -211,8 +210,8 @@ export default {
     props: {
         pia: {
             type: Number,
-            default: -1
-        }
+            default: -1,
+        },
     },
     data: function () {
         return {
@@ -234,7 +233,7 @@ export default {
             const seqDays = this.store.settings.weekday_support_activity.split(",");
             const days = seqDays.filter(d => d.length === 1).map(d => Number(d.trim()));
             const ranges = seqDays.filter(d => d.length === 3).map(d => d.trim()).filter(d => d[1] === "-");
-            ranges.forEach(r => {
+            ranges.forEach((r) => {
                 const start = Number(r[0]);
                 const end = Number(r[2]);
                 if (start <= end) {
@@ -248,16 +247,16 @@ export default {
             return Object.entries(this.dayOfWeek).map((day) => {
                 return { text: day[1], value: Number(day[0]) };
             }).filter(sD => sD.value < 6);
-        }
+        },
     },
     methods: {
         add: function () {
             const newId = Math.min(Math.min(...this.activitySupports.map(sA => sA.id)), 0) - 1;
 
             const newActivitySupport = {
-                support_activities: {}, id: newId, date_start: null, date_end: null, text: "Nouvel aménagement", directed_study: { days: [] }
+                support_activities: {}, id: newId, date_start: null, date_end: null, text: "Nouvel aménagement", directed_study: { days: [] },
             };
-            this.supportDays.forEach(d => {
+            this.supportDays.forEach((d) => {
                 newActivitySupport.support_activities[d] = { branch: [], teachers: [] };
             });
             this.activitySupports.push(newActivitySupport);
@@ -272,7 +271,6 @@ export default {
             this.activitySupports.push(copy);
             this.currentActSupp = copy;
             this.currentActSuppId = copy.id;
-
         },
         remove: function () {
             this.create({
@@ -284,7 +282,7 @@ export default {
             }).then((confirm) => {
                 if (confirm.ok) {
                     const sAIndex = this.activitySupports.findIndex(
-                        sA => sA.id === this.currentActSupp.id && sA.date_start === this.currentActSupp.date_start
+                        sA => sA.id === this.currentActSupp.id && sA.date_start === this.currentActSupp.date_start,
                     );
                     const removedObj = this.activitySupports.splice(sAIndex, 1)[0];
                     this.currentActSupp = this.activitySupports[this.activitySupports.length - 1];
@@ -295,7 +293,7 @@ export default {
         save: function (piaId) {
             return new Promise((resolve, reject) => {
                 this.loading = true;
-                const activitySupportProms = this.activitySupports.map(sA => {
+                const activitySupportProms = this.activitySupports.map((sA) => {
                     const isNew = sA.id < 0;
                     const send = isNew ? axios.post : axios.put;
                     const url = `/pia/api/activity_support/${isNew ? "" : sA.id + "/"}`;
@@ -327,7 +325,7 @@ export default {
             this.directedStudy = this.currentActSupp.directed_study.days.length > 0;
         },
         expandActivitySupport: function (activitySupports) {
-            this.activitySupports = activitySupports.sort((a, b) => a.date_start < b.date_start).map(sA => {
+            this.activitySupports = activitySupports.sort((a, b) => a.date_start < b.date_start).map((sA) => {
                 sA.text = `Du ${sA.date_start} au ${sA.date_end}`;
                 return sA;
             });
@@ -368,9 +366,9 @@ export default {
          * Check and update support activities days if anything has changed.
          */
         checkSupportActivities: function () {
-            this.activitySupports.forEach(aS => {
+            this.activitySupports.forEach((aS) => {
                 // Add new support days.
-                this.supportDays.forEach(sD => {
+                this.supportDays.forEach((sD) => {
                     // Check
                     if (Number(sD) in aS.support_activities) {
                         return;
@@ -383,20 +381,20 @@ export default {
                 const removedDays = Object.keys(aS.support_activities)
                     .filter(sA => !this.supportDays.includes(Number(sA)));
 
-                removedDays.forEach(rD => {
+                removedDays.forEach((rD) => {
                     delete aS[rD];
                 });
             });
         },
         checkDirectedStudy: function () {
-            this.activitySupports.forEach(aS => {
+            this.activitySupports.forEach((aS) => {
                 if ("days" in aS.directed_study) {
                     return;
                 }
 
                 aS.days = [];
             });
-        }
+        },
     },
     components: {
         Multiselect,
@@ -418,6 +416,6 @@ export default {
                     this.loading = false;
                 }
             });
-    }
+    },
 };
 </script>

@@ -169,7 +169,7 @@ export default {
             this.difficulties = this.council_statement.difficulties;
             this.others = this.council_statement.others;
         },
-        /** 
+        /**
          * Submit new/changes branch statement.
          *  @param {String} classCouncilId The id of the class council parent.
          * */
@@ -195,6 +195,6 @@ export default {
     components: {
         TextEditor,
         Multiselect,
-    }
+    },
 };
 </script>

@@ -79,16 +79,16 @@ export default {
                         <div id=popover-${arg.event.id}>
                         <small>${arg.timeText}</small><br />
                         ${arg.event.title} (${arg.event.extendedProps.related_classes})<br />
-                        ${arg.event.extendedProps.place ? arg.event.extendedProps.place + " : " : "" }
+                        ${arg.event.extendedProps.place ? arg.event.extendedProps.place + " : " : ""}
                         ${this.truncateString(arg.event.extendedProps.related_responsibles, 15)}
-                        </div>`
+                        </div>`,
                     };
-                }
-            }
+                },
+            },
         };
     },
     methods: {
-        truncateString: function(str, maxLength) {
+        truncateString: function (str, maxLength) {
             if (str.length <= maxLength) {
                 return str;
             }
@@ -99,12 +99,12 @@ export default {
             this.calendarOptions.events = [];
             const courseInfoProm = [
                 axios.get(`/core/api/course_schedule/?${this.$route.params.type}=${this.$route.params.matricule}`),
-                axios.get(`/annuaire/api/${this.$route.params.type}/${this.$route.params.matricule}/`)
+                axios.get(`/annuaire/api/${this.$route.params.type}/${this.$route.params.matricule}/`),
             ];
 
             Promise.all(courseInfoProm)
-                .then(resps => {
-                    this.calendarOptions.events = resps[0].data.results.map(cS => {
+                .then((resps) => {
+                    this.calendarOptions.events = resps[0].data.results.map((cS) => {
                         const eventDay = Moment().startOf("week").add(cS.day_of_week, "d").format("").slice(0, 11);
                         const start = `${eventDay}${this.periods[cS.period - 1].start}`;
                         const end = `${eventDay}${this.periods[cS.period - 1].end}`;
@@ -117,15 +117,15 @@ export default {
                             place: cS.place,
                             description: course.course.long_name,
                             start: start,
-                            end: end
-                        }; 
+                            end: end,
+                        };
                     });
                 });
         },
     },
     mounted: function () {
         axios.get("/core/api/period/")
-            .then(resp => {
+            .then((resp) => {
                 this.periods = resp.data.results;
                 this.getCourseSchedule();
 
@@ -136,6 +136,6 @@ export default {
     },
     components: {
         FullCalendar,
-    }
+    },
 };
 </script>

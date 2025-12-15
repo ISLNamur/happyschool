@@ -114,7 +114,6 @@ import { studentAbsenceTeacherStore } from "./stores/index.js";
 import OverviewTeacherEntry from "./overview_teacher_entry.vue";
 import OverviewEducatorEntry from "./overview_educator_entry.vue";
 
-
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 export default {
     props: {
@@ -124,7 +123,7 @@ export default {
         },
         date: {
             type: String,
-            default: ""
+            default: "",
         },
     },
     data: function () {
@@ -137,12 +136,12 @@ export default {
                 },
                 {
                     key: "absence",
-                    label: ""
+                    label: "",
                 },
                 {
                     key: "isProcessed",
-                    label: ""
-                }
+                    label: "",
+                },
             ],
             students: [],
             teachersPeriod: [],
@@ -150,7 +149,7 @@ export default {
             classOptions: [],
             search: "",
             searchId: 0,
-            store: studentAbsenceTeacherStore()
+            store: studentAbsenceTeacherStore(),
         };
     },
     watch: {
@@ -159,7 +158,7 @@ export default {
         },
         classId: function () {
             this.updateStudentList();
-        }
+        },
     },
     methods: {
         updateStudentList: function () {
@@ -167,7 +166,7 @@ export default {
             this.getStudentsAbsences(this.classId, this.date);
         },
         updateIsProcessed: function (event, student) {
-            student.absence_educators.filter(a => a.status !== null).forEach(a => {
+            student.absence_educators.filter(a => a.status !== null).forEach((a) => {
                 axios.patch(`/student_absence_teacher/api/absence_educ/${a.id}/`, { is_processed: event }, token)
                     .then((resp) => {
                         student = resp.data;
@@ -183,10 +182,10 @@ export default {
             let data = {
                 query: query,
                 teachings: this.store.settings.teachings,
-                check_access: true
+                check_access: true,
             };
             axios.post("/annuaire/api/classes/", data, token)
-                .then(response => {
+                .then((response) => {
                     if (this.searchId !== currentSearch)
                         return;
                     this.classOptions = response.data;
@@ -199,7 +198,7 @@ export default {
                 return this.students
                     .map(s => s.absence_educators[idx])
                     .filter(a => a.status === null)
-                    .map(a => {
+                    .map((a) => {
                         a.status = "P";
                         return a;
                     });
@@ -209,7 +208,7 @@ export default {
                 .then(() => {
                     document.location.reload();
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err);
                     this.loading = false;
                 });
@@ -234,18 +233,18 @@ export default {
             if (menu.apps.find(a => a.app === "appels")) {
                 additonalColumn.push({ column: "appel", position: promises.length });
                 promises.push(
-                    axios.get(`/appels/api/appel/?matricule__classe=${this.classId}&date_motif_start__gte=${this.date}&date_motif_end__lte=${this.date}`)
+                    axios.get(`/appels/api/appel/?matricule__classe=${this.classId}&date_motif_start__gte=${this.date}&date_motif_end__lte=${this.date}`),
                 );
             }
             // eslint-disable-next-line no-undef
             if (menu.apps.find(a => a.app === "infirmerie")) {
                 additonalColumn.push({ column: "infirmery", position: promises.length });
                 promises.push(
-                    axios.get(`/infirmerie/api/passage/?matricule__classe=${this.classId}&datetime_arrive__gte=${this.date}&datetime_sortie__lte=${this.date} 23:59`)
+                    axios.get(`/infirmerie/api/passage/?matricule__classe=${this.classId}&datetime_arrive__gte=${this.date}&datetime_sortie__lte=${this.date} 23:59`),
                 );
             }
 
-            Promise.all(promises).then(resp => {
+            Promise.all(promises).then((resp) => {
                 const currentDay = (new Date(date)).getDay();
                 const teachersAbsences = resp[3].data.results;
                 const educatorsAbsences = resp[4].data.results;
@@ -253,19 +252,19 @@ export default {
                     .filter(p => extractDayOfWeek(p.day_of_week).includes(currentDay));
                 this.educatorsPeriod = resp[2].data.results
                     .filter(p => extractDayOfWeek(p.day_of_week).includes(currentDay));
-                this.students = resp[0].data.map(s => {
+                this.students = resp[0].data.map((s) => {
                     s.studentName = this.displayStudent(s);
 
-                    s.absence_teachers = this.teachersPeriod.map(p => {
+                    s.absence_teachers = this.teachersPeriod.map((p) => {
                         const absence = teachersAbsences.find(a => a.period.id === p.id && a.student_id === s.matricule);
                         return absence ? absence : null;
                     });
 
-                    s.absence_educators = this.educatorsPeriod.map(p => {
+                    s.absence_educators = this.educatorsPeriod.map((p) => {
                         const absence = educatorsAbsences.find(a => a.period === p.id && a.student_id === s.matricule);
                         return absence ? absence : { status: null, student_id: s.matricule, period: p.id, date_absence: date };
                     });
-                    s.isProcessed = s.absence_educators.map(a => a.is_processed).every((p) => p);
+                    s.isProcessed = s.absence_educators.map(a => a.is_processed).every(p => p);
                     return s;
                 });
                 // Check if there are groups amongs students. If yes add group column.
@@ -275,15 +274,15 @@ export default {
                     }
                 }
                 // Check if there are appels or infirmery passing.
-                additonalColumn.forEach(aC => {
+                additonalColumn.forEach((aC) => {
                     this.fields.push(
                         {
                             key: aC.column,
-                            label: ""
-                        }
+                            label: "",
+                        },
                     );
 
-                    this.students.forEach(student => {
+                    this.students.forEach((student) => {
                         student[aC.column] = resp[aC.position].data.results.find(a => a.matricule_id === student.matricule);
                     });
                 });
@@ -291,7 +290,7 @@ export default {
                 this.loading = false;
             });
         },
-        displayStudent
+        displayStudent,
     },
     mounted: function () {
         this.getStudentsAbsences(this.classId, this.date);
@@ -299,7 +298,7 @@ export default {
     components: {
         OverviewTeacherEntry,
         OverviewEducatorEntry,
-    }
+    },
 };
 </script>
 

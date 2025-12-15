@@ -139,7 +139,7 @@ export default {
     props: {
         customMatricule: {
             type: Number,
-            default: -1
+            default: -1,
         },
     },
     data: function () {
@@ -159,14 +159,14 @@ export default {
     },
     mounted: function () {
         axios.get(`/annuaire/api/info_contact/${this.matricule}/`)
-            .then(response => {
+            .then((response) => {
                 this.contact = response.data;
                 this.loading = false;
             })
-            .catch(err => {
+            .catch((err) => {
                 console.log(err);
                 this.loading = false;
             });
-    }
+    },
 };
 </script>

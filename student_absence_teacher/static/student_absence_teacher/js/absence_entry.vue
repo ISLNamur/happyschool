@@ -88,20 +88,20 @@ import { studentAbsenceTeacherStore } from "./stores/index.js";
 import { displayStudent } from "@s:core/js/common/utilities.js";
 
 const absenceLabel = {
-    "presence": "Présence",
-    "absence": "Absence",
-    "lateness": "Retard",
-    "excluded": "Exclus",
-    "internship": "Stage",
+    presence: "Présence",
+    absence: "Absence",
+    lateness: "Retard",
+    excluded: "Exclus",
+    internship: "Stage",
 };
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     props: {
-        "absence": {
+        absence: {
             type: Object,
-            default: () => { }
-        }
+            default: () => { },
+        },
     },
     data: function () {
         return {
@@ -126,12 +126,12 @@ export default {
         },
         studentAbsenceClass: function () {
             switch (this.studentAbsenceComparison) {
-            case "notset":
-                return "bg-warning";
-            case "match":
-                return "bg-success";
-            case "mismatch":
-                return "bg-danger";
+                case "notset":
+                    return "bg-warning";
+                case "match":
+                    return "bg-success";
+                case "mismatch":
+                    return "bg-danger";
             }
             return "";
         },
@@ -143,7 +143,7 @@ export default {
         displayStudent,
         checkStudentAbsence: function () {
             axios.get(`/student_absence_teacher/api/absence_educ/?student__matricule=${this.absence.student.matricule}&date_absence=${this.absence.date_absence}&period__start__lt=${this.absence.period.end}&period__end__gt=${this.absence.period.start}`)
-                .then(resp => {
+                .then((resp) => {
                     if (resp.data.results.length > 0) {
                         this.studentAbsenceState = resp.data.results.filter(sA => sA.is_absent).length > 0 ? "absence" : "presence";
                         this.relatedStudentAbsence = resp.data.results;
@@ -155,13 +155,13 @@ export default {
             this.updating = true;
             if (!this.studentAbsenceState) {
                 axios.get(`/student_absence_teacher/api/period_educ/?start__lt=${this.absence.period.end}&end__gt=${this.absence.period.start}`)
-                    .then(resp => {
-                        const data = resp.data.results.map(p => {
+                    .then((resp) => {
+                        const data = resp.data.results.map((p) => {
                             return {
                                 student_id: this.absence.student.matricule,
                                 date_absence: this.absence.date_absence,
                                 period: p.id,
-                                is_absent: this.absence.status == "absence"
+                                is_absent: this.absence.status == "absence",
                             };
                         });
                         axios.post("/student_absence_teacher/api/absence_educ/", data, token)
@@ -170,12 +170,12 @@ export default {
                             });
                     });
             } else {
-                const studentAbsencePromise = this.relatedStudentAbsence.map(studAbs => {
+                const studentAbsencePromise = this.relatedStudentAbsence.map((studAbs) => {
                     const data = {
                         student_id: this.absence.student.matricule,
                         date_absence: this.absence.date_absence,
                         period: studAbs.period,
-                        is_absent: this.absence.status == "absence"
+                        is_absent: this.absence.status == "absence",
                     };
                     return axios.put(`/student_absence_teacher/api/absence_educ/${studAbs.id}/`, data, token);
                 });
@@ -188,17 +188,17 @@ export default {
         pullStudentAbs: function () {
             this.updating = true;
             const data = {
-                status: this.absence.status === "presence" || this.absence.status === "lateness" ? "absence" : "presence"
+                status: this.absence.status === "presence" || this.absence.status === "lateness" ? "absence" : "presence",
             };
             axios.patch(`/student_absence_teacher/api/absence_teacher/${this.absence.id}/`, data, token)
                 .then(() => {
                     this.$emit("update");
                     this.updating = false;
                 });
-        }
+        },
     },
     mounted: function () {
         this.checkStudentAbsence();
-    }
+    },
 };
 </script>

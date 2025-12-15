@@ -189,14 +189,14 @@ import { extractDayOfWeek } from "@s:core/js/common/utilities.js";
 
 import { studentAbsenceTeacherStore } from "./stores/index.js";
 
-const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     props: {
         date: {
             type: String,
-            default: () => Moment().format("YYYY-MM-DD")
-        }
+            default: () => Moment().format("YYYY-MM-DD"),
+        },
     },
     data: function () {
         return {
@@ -221,7 +221,7 @@ export default {
             searchOptions: [],
             search: "",
             searchId: -1,
-            store: studentAbsenceTeacherStore()
+            store: studentAbsenceTeacherStore(),
         };
     },
     computed: {
@@ -231,12 +231,12 @@ export default {
         },
         exportOwnClasses: function () {
             return this.classListType === "ownclass" ? "&activate_own_classes=true" : "";
-        }
+        },
     },
     watch: {
         date: function () {
             this.get_absence_count();
-        }
+        },
     },
     methods: {
         /** Updates the massive attendance information of multiple students in multiple classes.
@@ -244,7 +244,7 @@ export default {
          * @async
          * @return {void}
          */
-        async massiveAttendance () {
+        async massiveAttendance() {
             this.massiveAttendanceLoading = true;
             const classes = this.absence_count.filter(a => a.classe.includes(this.filter)).map(a => a.classe__id);
 
@@ -254,10 +254,10 @@ export default {
                 return;
             }
 
-            const tasks = classes.map(c => {
-                return (p) => axios.post(
+            const tasks = classes.map((c) => {
+                return p => axios.post(
                     "/student_absence_teacher/api/massive_attendance/",
-                    {class_id: c, period_id: p, date: this.date},
+                    { class_id: c, period_id: p, date: this.date },
                     token);
             });
 
@@ -292,8 +292,8 @@ export default {
             this.absence_count = [];
             this.getPeriods();
             axios.get(`/student_absence_teacher/api/count_absence/${this.date}/${this.pointOfView}/${this.classListType}/`)
-                .then(resp => {
-                    this.absence_count = JSON.parse(resp.data).map(row => {
+                .then((resp) => {
+                    this.absence_count = JSON.parse(resp.data).map((row) => {
                         const periods = Object.entries(row).filter(c => c[0].startsWith("period"));
                         const emptyPeriods = periods.filter(p => p[1]["teacher_count"] < 0);
                         row._cellVariants = emptyPeriods.reduce((acc, v) => {
@@ -301,7 +301,7 @@ export default {
                             return acc;
                         }, {});
                         if (periods.length > 0 && "not_teacher_count" in periods[0][1]) {
-                            const mismatchPeriods = periods.filter(p => {
+                            const mismatchPeriods = periods.filter((p) => {
                                 if (p[1]["not_teacher_count"] < 0 || p[1]["teacher_count"] < 0) {
                                     return false;
                                 }
@@ -310,7 +310,7 @@ export default {
                                 }
                                 return false;
                             });
-                            mismatchPeriods.forEach(p => {
+                            mismatchPeriods.forEach((p) => {
                                 row._cellVariants[p[0]] = "danger";
                             });
                         }
@@ -320,39 +320,39 @@ export default {
                 });
         },
         getPeriods: function () {
-            this.fields = [{ key: "classe", }];
+            this.fields = [{ key: "classe" }];
             const currentDay = (new Date(this.date)).getDay();
 
             if (this.pointOfView === "teacher") {
                 axios.get("/student_absence_teacher/api/period_teacher/")
-                    .then(resp => {
+                    .then((resp) => {
                         this.fields = this.fields.concat(
                             resp.data.results
                                 .filter(p => extractDayOfWeek(p.day_of_week).includes(currentDay))
-                                .map(p => {
+                                .map((p) => {
                                     return {
                                         key: `period-${p.id}`,
                                         label: `${p.start.slice(0, 5)} ${p.end.slice(0, 5)}`,
-                                        name: p.name
+                                        name: p.name,
                                     };
-                                })
+                                }),
                         );
                     });
             }
 
             axios.get("/student_absence_teacher/api/period_educ/")
-                .then(resp => {
+                .then((resp) => {
                     this.educatorPeriods = resp.data.results
                         .filter(p => extractDayOfWeek(p.day_of_week).includes(currentDay));
                     if (this.pointOfView === "educator") {
                         this.fields = this.fields.concat(
-                            this.educatorPeriods.map(p => {
+                            this.educatorPeriods.map((p) => {
                                 return {
                                     key: `period-${p.id}`,
                                     label: `${p.start.slice(0, 5)} ${p.end.slice(0, 5)}`,
-                                    name: p.name
+                                    name: p.name,
                                 };
-                            })
+                            }),
                         );
                     }
                 });

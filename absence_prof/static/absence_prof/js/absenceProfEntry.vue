@@ -77,7 +77,7 @@ Moment.locale("fr");
 
 export default {
     props: {
-        rowData : {
+        rowData: {
             type: Object,
             default: () => {},
         },
@@ -98,7 +98,7 @@ export default {
             if (this.rowData.status == "En cours") return "encours";
             if (this.rowData.status == "Clôturé") return "cloture";
             return "";
-        }
+        },
     },
     methods: {
         editEntry: function () {
@@ -106,8 +106,8 @@ export default {
         },
         deleteEntry: function () {
             this.$emit("delete");
-        }
-    }
+        },
+    },
 };
 </script>
 
@@ -122,4 +122,3 @@ export default {
     background-color: lightpink;
 }
 </style>
-

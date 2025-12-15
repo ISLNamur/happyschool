@@ -20,7 +20,7 @@
 import axios from "axios";
 
 export function getPeopleByName(query, teachings, people = "all", checkAccess = false) {
-    const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+    const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
     const data = {
         query: query,
         teachings: teachings,

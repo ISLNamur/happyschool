@@ -139,40 +139,40 @@ import { useModal } from "bootstrap-vue-next";
 
 import axios from "axios";
 
-import {displayStudent} from "./utilities.js";
+import { displayStudent } from "./utilities.js";
 
-const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     props: {
         /**
          * The name of the application used for API calls.
          */
-        "app": {
+        app: {
             type: String,
-            default: ""
+            default: "",
         },
         /**
          * The name of the model used for API calls.
          */
-        "model": {
+        model: {
             type: String,
-            default: ""
+            default: "",
         },
         /**
          * State if the search card is shown.
          */
-        "showSearch": {
+        showSearch: {
             type: Boolean,
             default: false,
         },
         /**
          * Local store.
         */
-        "store": {
+        store: {
             type: Object,
-            default: () => null
-        }
+            default: () => null,
+        },
     },
     setup: function () {
         const { show } = useModal("prompt-period-modal");
@@ -196,14 +196,14 @@ export default {
             dateTime1: null,
             /** Second input for date/time/month period filters. */
             dateTime2: null,
-            activated: []
+            activated: [],
         };
     },
     computed: {
         /**
          * Compute the type of the html input type.
          */
-        inputType: function() {
+        inputType: function () {
             if (!this.filterType) return "text";
             if (this.filterType.startsWith("date_month")) return "month";
             if (this.filterType.startsWith("date_")) return "date";
@@ -227,7 +227,7 @@ export default {
          */
         filtersValue: function () {
             return this.storeState.filters.filter(f => !f.filterType.startsWith("activate_"));
-        }
+        },
     },
     watch: {
         /**
@@ -241,7 +241,7 @@ export default {
          */
         dateTime1: function (dateTime) {
             if (this.dateTime2 === null) this.dateTime2 = dateTime;
-        }
+        },
     },
     methods: {
         displayStudent,
@@ -258,32 +258,32 @@ export default {
             }
             this.$refs.filters.$refs.search.focus();
         },
-        /** 
+        /**
          * Prompt a modal if type is date, month or time.
          */
         handleSpecificInput: function () {
             if (this.inputType == "date"
-                || this.inputType == "month"
-                || this.inputType == "time") {
+              || this.inputType == "month"
+              || this.inputType == "time") {
                 this.$refs.selectType.focus();
                 this.show();
             }
         },
-        /** 
+        /**
          * Get options by calling the API of the application.
-         * 
+         *
          * A filter type starting with "activate" won't call the API
          * but will return an only option to activate the filter.
-         * 
+         *
          * @param {String} search The search to filter the options.
          */
-        getOptions: function(search) {
+        getOptions: function (search) {
             // Don't search on empty string.
             if (!search) {
                 this.filterSearchOptions = [];
                 return;
             }
-            
+
             let param = {};
             param[this.filterType] = search;
             this.searchId += 1;
@@ -292,36 +292,36 @@ export default {
                 let data = {
                     query: search,
                     teachings: this.storeState.settings.teachings,
-                    check_access: true
+                    check_access: true,
                 };
                 axios.post("/annuaire/api/classes/", data, token)
-                    .then(response => {
+                    .then((response) => {
                         if (this.searchId !== currentSearch)
                             return;
                         this.filterSearchOptions = Array.from(response.data.map(i => ({
-                            "tag": i.display,
-                            "filterType": "classe",
-                            "value": i.year + i.letter,
+                            tag: i.display,
+                            filterType: "classe",
+                            value: i.year + i.letter,
                         })));
                     });
                 return;
             } else if (this.filterType == "scholar_year") {
                 axios.get("/core/api/scholar_year/?scholar_year=" + search)
-                    .then(response => {
+                    .then((response) => {
                         if (this.searchId !== currentSearch)
                             return;
                         this.filterSearchOptions = Array.from(response.data.map(i => ({
-                            "tag": i,
-                            "filterType": "scholar_year",
-                            "value": i,
+                            tag: i,
+                            filterType: "scholar_year",
+                            value: i,
                         })));
                     });
                 return;
             } else if (this.filterType.startsWith("activate_")) {
                 this.filterSearchOptions = [{
-                    "tag": "Activer",
-                    "filterType": this.filterType,
-                    "value": "true_" + this.filterType,
+                    tag: "Activer",
+                    filterType: this.filterType,
+                    value: "true_" + this.filterType,
                 }];
                 return;
             } else if (this.filterType.startsWith("count_")) {
@@ -335,10 +335,10 @@ export default {
                     active: false,
                 };
                 axios.post("/annuaire/api/people/", data, token)
-                    .then(resp => {
+                    .then((resp) => {
                         if (this.searchId !== currentSearch)
                             return;
-                        this.filterSearchOptions = resp.data.map(s => {
+                        this.filterSearchOptions = resp.data.map((s) => {
                             return {
                                 tag: this.displayStudent(s),
                                 filterType: "student__matricule",
@@ -349,8 +349,8 @@ export default {
                 return;
             }
 
-            axios.get("/" + this.app + "/api/" + this.model + "/", {params: param})
-                .then(response => {
+            axios.get("/" + this.app + "/api/" + this.model + "/", { params: param })
+                .then((response) => {
                     if (this.searchId !== currentSearch)
                         return;
                     let results = [];
@@ -361,23 +361,22 @@ export default {
                         results = response.data.results.map(i => i[this.filterType]);
                     }
                     this.filterSearchOptions = Array.from(new Set(results)).map(i => ({
-                        "tag": i,
-                        "filterType": this.filterType,
-                        "value": i
+                        tag: i,
+                        filterType: this.filterType,
+                        value: i,
                     }));
                 });
-
         },
-        /** 
+        /**
          * Clear dates values
          */
-        cleanDate: function() {
+        cleanDate: function () {
             this.dateTime1 = null;
             this.dateTime2 = null;
         },
         /**
          * Return a nice formatted string for option results.
-         * 
+         *
          * @param {String} search The search string.
          */
         niceLabel(search) {
@@ -388,26 +387,26 @@ export default {
                     break;
                 }
             }
-            return displayType + " : " + search.tag ;
+            return displayType + " : " + search.tag;
         },
         /**
          * Add a datetime tag to filters.
-         * 
+         *
          * It will automatically includes the complete day.
          */
         addDateTimeTag() {
             let blankTime1 = this.filterType.startsWith("datetime") ? " 00:00" : "";
             let blankTime2 = this.filterType.startsWith("datetime") ? " 23:59" : "";
             const tag = {
-                "filterType": this.filterType,
+                filterType: this.filterType,
                 value: this.dateTime1 + blankTime1 + "_" + this.dateTime2 + blankTime2,
-                tag: this.dateTime1 + " " + this.dateTime2
+                tag: this.dateTime1 + " " + this.dateTime2,
             };
             this.addFilter(tag);
         },
-        /** 
+        /**
          * Add a tag to the filters.
-         * 
+         *
          * @param {String} tag The tag.
          */
         addCustomTag: function (tag) {
@@ -424,22 +423,22 @@ export default {
          * @param {Array} checkedFilters The activate filters that are triggered.
          */
         updateActivateFilters: function (checkedFilters) {
-            this.activateFilters.forEach(filter => {
+            this.activateFilters.forEach((filter) => {
                 this.storeCommit("removeFilter", filter.value);
             });
-            
-            checkedFilters.forEach(filter => {
+
+            checkedFilters.forEach((filter) => {
                 this.storeCommit("addFilter", {
-                    "tag": "Activer",
-                    "filterType": filter,
-                    "value": true,
+                    tag: "Activer",
+                    filterType: filter,
+                    value: true,
                 });
             });
             this.updateFilters();
         },
         /**
          * Add a filter to the store.
-         * 
+         *
          * @param {object} addedObject An object with the filter type, the tag and the value.
          */
         addFilter(addedObject) {
@@ -448,7 +447,7 @@ export default {
         },
         /**
          * Remove a filter from the store.
-         * 
+         *
          * @param {object} removedObject The filter to removed.
          */
         removeFilter(removedObject) {
@@ -464,10 +463,10 @@ export default {
          */
         updateFilters() {
             this.$emit("update");
-        }
+        },
     },
-    components: {Multiselect},
-    mounted: function() {
+    components: { Multiselect },
+    mounted: function () {
         // eslint-disable-next-line no-undef
         this.filterTypeOptions = filters.filter(f => !f.value.startsWith("activate_"));
         // eslint-disable-next-line no-undef
@@ -482,7 +481,7 @@ export default {
                 }
             }, 500);
         }
-    }
+    },
 };
 
 </script>

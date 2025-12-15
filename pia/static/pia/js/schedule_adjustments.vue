@@ -87,9 +87,9 @@
                                             v-model="currentSchedAdj.date_end"
                                             class="ml-2"
                                         />
-                                    </div> 
+                                    </div>
                                 </BForm>
-                            
+
                             </strong>
                         </BCol>
                     </BRow>
@@ -129,7 +129,6 @@ import { piaStore } from "./stores/index.js";
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
-
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
@@ -141,8 +140,8 @@ export default {
     props: {
         pia: {
             type: Number,
-            default: -1
-        }
+            default: -1,
+        },
     },
     data: function () {
         return {
@@ -157,7 +156,7 @@ export default {
         add: function () {
             const newId = Math.min(Math.min(...this.scheduleAdjustments.map(sA => sA.id)), 0) - 1;
             this.scheduleAdjustments.push(
-                { schedule_adjustments: [], id: newId, date_start: null, date_end: null, text: "Nouvel aménagement" }
+                { schedule_adjustments: [], id: newId, date_start: null, date_end: null, text: "Nouvel aménagement" },
             );
             this.currentSchedAdj = this.scheduleAdjustments[this.scheduleAdjustments.length - 1];
             this.currentSchedAdjId = newId;
@@ -179,7 +178,7 @@ export default {
             }).then((confirm) => {
                 if (confirm.ok) {
                     const sAIndex = this.scheduleAdjustments.findIndex(
-                        sA => sA.id === this.currentSchedAdj.id && sA.date_start === this.currentSchedAdj.date_start
+                        sA => sA.id === this.currentSchedAdj.id && sA.date_start === this.currentSchedAdj.date_start,
                     );
                     const removedObj = this.scheduleAdjustments.splice(sAIndex, 1)[0];
                     this.currentSchedAdj = this.scheduleAdjustments[this.scheduleAdjustments.length - 1];
@@ -191,7 +190,7 @@ export default {
             return new Promise((resolve, reject) => {
                 this.loading = true;
                 Promise.all(
-                    this.scheduleAdjustments.map(sA => {
+                    this.scheduleAdjustments.map((sA) => {
                         const isNew = sA.id < 0;
                         const send = isNew ? axios.post : axios.put;
                         const url = `/pia/api/schedule_adjustment_plan/${isNew ? "" : sA.id + "/"}`;
@@ -201,7 +200,7 @@ export default {
                         data.pia_model = piaId;
                         data.schedule_adjustment = data.schedule_adjustment.map(adjObj => adjObj.id);
                         return send(url, data, token);
-                    })
+                    }),
                 ).then((resps) => {
                     this.expandScheduleAdjustment(resps.map(r => r.data));
                     this.loading = false;
@@ -217,7 +216,7 @@ export default {
             this.currentSchedAdj = this.scheduleAdjustments.find(sA => sA.id === selected);
         },
         expandScheduleAdjustment: function (scheduleAdjustments) {
-            this.scheduleAdjustments = scheduleAdjustments.sort((a, b) => a.date_start < b.date_start).map(sA => {
+            this.scheduleAdjustments = scheduleAdjustments.sort((a, b) => a.date_start < b.date_start).map((sA) => {
                 sA.text = `Du ${sA.date_start} au ${sA.date_end}`;
                 sA.schedule_adjustment = sA.schedule_adjustment
                     .map(id => this.store.scheduleAdjustments.find(s => s.id === id));
@@ -228,10 +227,10 @@ export default {
                 this.currentSchedAdj = this.scheduleAdjustments[0];
                 this.currentSchedAdjId = this.scheduleAdjustments[0].id;
             }
-        }
+        },
     },
     components: {
-        Multiselect
+        Multiselect,
     },
     mounted: function () {
         this.store.loadOptions()
@@ -243,6 +242,6 @@ export default {
                         });
                 }
             });
-    }
+    },
 };
 </script>

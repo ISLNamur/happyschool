@@ -30,12 +30,12 @@ const router = createRouter({
     {
         path: "/edit/:id/",
         component: CasEleve,
-        props: true
+        props: true,
     },
     {
         path: "/new/",
         component: CasEleve,
-        props: true
+        props: true,
     },
     ],
     history: createWebHashHistory(),

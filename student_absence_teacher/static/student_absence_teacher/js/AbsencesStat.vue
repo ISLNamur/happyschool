@@ -108,8 +108,8 @@ export default {
     props: {
         studentId: {
             type: String,
-            default: -1
-        }
+            default: -1,
+        },
     },
     data: function () {
         return {
@@ -121,7 +121,7 @@ export default {
     watch: {
         studentId: function () {
             this.initData();
-        }
+        },
     },
     computed: {
         totalJustCount: function () {
@@ -137,7 +137,7 @@ export default {
         },
         totalUnjustCount: function () {
             return this.unjustifiedAbsences.reduce((p, c) => p + c.justificationmodel__motive__count, 0);
-        }
+        },
     },
     methods: {
         initData: function () {
@@ -154,10 +154,10 @@ export default {
                     this.justifiedAbsences = resp.data.justified;
                     this.unjustifiedAbsences = resp.data.unjustified;
                 });
-        }
+        },
     },
     mounted: function () {
         this.initData();
-    }
+    },
 };
 </script>

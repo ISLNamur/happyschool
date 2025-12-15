@@ -38,14 +38,14 @@ export const appelsStore = defineStore("appels", {
         addFilter,
         removeFilter,
         loadEmails: function () {
-            return new Promise(resolve => {
+            return new Promise((resolve) => {
                 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
                 axios.get("/core/api/email/", token)
-                    .then(response => {
+                    .then((response) => {
                         this.emails = response.data.results;
                         resolve();
                     });
             });
-        }
-    }
+        },
+    },
 });

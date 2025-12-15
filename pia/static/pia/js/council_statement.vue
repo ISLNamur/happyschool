@@ -189,15 +189,15 @@ export default {
             default: () => {
                 return {
                     resources: [],
-                    difficulties: []
+                    difficulties: [],
                 };
-            }
+            },
         },
         /** Wether the statement is advanced or not. */
         advanced: {
             type: Boolean,
             default: true,
-        }
+        },
     },
     data: function () {
         return {
@@ -220,7 +220,7 @@ export default {
             }
 
             return this.store.resourceDifficulty.filter(
-                (_, idx) => this.statements[idx] !== null
+                (_, idx) => this.statements[idx] !== null,
             );
         },
         resources: function () {
@@ -228,7 +228,7 @@ export default {
         },
         difficulties: function () {
             return this.store.resourceDifficulty.filter((_, idx) => this.statements[idx] === false);
-        }
+        },
     },
     methods: {
         initCouncilStatement: function () {
@@ -243,7 +243,7 @@ export default {
                     this.loading = false;
                 });
             this.statements = this.store.resourceDifficulty.filter(rD => rD.advanced === this.advanced)
-                .map(s => {
+                .map((s) => {
                     const isResource = this.council_statement.resources.includes(s.id);
                     if (isResource) return true;
                     const isDifficulty = this.council_statement.difficulties.includes(s.id);
@@ -251,7 +251,7 @@ export default {
                     return null;
                 });
         },
-        /** 
+        /**
          * Submit new/changes council statement.
          *  @param {String} classCouncilId The id of the class council parent.
          * */
@@ -270,7 +270,7 @@ export default {
 
             const send = "id" in this.council_statement ? axios.put : axios.post;
             return send(url, data, token)
-                .then(resp => {
+                .then((resp) => {
                     this.$emit("update", resp.data);
                 });
         },
@@ -281,6 +281,6 @@ export default {
     components: {
         Multiselect,
         ResourceDifficulty,
-    }
+    },
 };
 </script>

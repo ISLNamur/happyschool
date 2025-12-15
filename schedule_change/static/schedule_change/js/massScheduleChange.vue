@@ -231,7 +231,7 @@ import { useToastController, useModalController } from "bootstrap-vue-next";
 
 import { scheduleChangeStore } from "./stores/index.js";
 
-const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
@@ -254,33 +254,33 @@ export default {
             tableFields: [
                 {
                     key: "change",
-                    label: "Type"
+                    label: "Type",
                 },
                 {
                     key: "category",
-                    label: "Catégorie"
+                    label: "Catégorie",
                 },
                 {
                     key: "date_change",
-                    label: "Date"
+                    label: "Date",
                 },
                 {
                     key: "time_start",
-                    label: "Heure début"
+                    label: "Heure début",
                 },
                 {
                     key: "time_end",
-                    label: "Heure fin"
+                    label: "Heure fin",
                 },
                 {
                     key: "classes",
                     label: "Classes",
-                    formatter: (value) => value.join(", ")
+                    formatter: value => value.join(", "),
                 },
                 {
                     key: "teachers_replaced_id",
                     label: "Prof concerné",
-                    formatter: () => this.teacher.display
+                    formatter: () => this.teacher.display,
                 },
                 {
                     key: "place",
@@ -288,8 +288,8 @@ export default {
                 },
                 {
                     key: "remove",
-                    label: ""
-                }
+                    label: "",
+                },
             ],
             loading: false,
             store: scheduleChangeStore(),
@@ -324,7 +324,7 @@ export default {
                 active: false,
             };
             axios.post("/annuaire/api/people/", data, token)
-                .then(response => {
+                .then((response) => {
                 // Avoid that a previous search overwrites a faster following search results.
                     if (this.searchId !== currentSearch)
                         return;
@@ -344,11 +344,11 @@ export default {
                 years: true,
             };
             axios.post("/annuaire/api/classes/", data, token)
-                .then(response => {
+                .then((response) => {
                 // Avoid that a previous search overwrites a faster following search results.
                     if (this.searchId !== currentSearch)
                         return;
-                    const options = response.data.map(p => {
+                    const options = response.data.map((p) => {
                         return p.display;
                     });
                     this.classesOptions = options;
@@ -368,7 +368,7 @@ export default {
                     cancelTitle: "Annuler",
                     title: "Êtes-vous sûr de vouloir continuer ?",
                     okVariant: "warning",
-                    okTitle: "Continuer"
+                    okTitle: "Continuer",
                 }).then((value) => {
                     if (value.ok) {
                         this.makeSchedules();
@@ -382,7 +382,7 @@ export default {
             this.loading = true;
             Promise.all([
                 axios.get(`/core/api/course_schedule/?responsible=${this.teacher.matricule}`),
-                axios.get("/core/api/period/")
+                axios.get("/core/api/period/"),
             ])
                 .then((resp) => {
                     this.scheduleChanges = [];
@@ -395,7 +395,7 @@ export default {
                         this.scheduleChanges = this.scheduleChanges.concat(
                             resp[0].data.results
                                 .filter(courseSchedule => courseSchedule.day_of_week === currentDay.day() - 1)
-                                .map(courseSchedule => {
+                                .map((courseSchedule) => {
                                     return {
                                         change: this.defaultType,
                                         category: this.defaultCategory,
@@ -405,7 +405,7 @@ export default {
                                         classes: courseSchedule.related_classes ? courseSchedule.related_classes.split(", ") : [],
                                         teachers_replaced_id: [this.teacher.matricule],
                                     };
-                                })
+                                }),
                         );
                         currentDay.add(1, "days");
                     }
@@ -414,7 +414,7 @@ export default {
         },
         submitScheduleChanges: function () {
             this.loading = true;
-            const data = this.scheduleChanges.map(sC => {
+            const data = this.scheduleChanges.map((sC) => {
                 if (sC.time_end === "") {
                     sC.time_end = null;
                 }
@@ -423,7 +423,7 @@ export default {
             axios.post("/schedule_change/api/schedule_change/", data, token)
                 .then(() => {
                     this.$router.push("/").then(() => {
-                        this.show( {
+                        this.show({
                             body: "Les changements ont bien été créés.",
                             variant: "success",
                             noCloseButton: true,
@@ -431,12 +431,12 @@ export default {
                     });
                     this.loading = false;
                 })
-                .catch(err => {
+                .catch((err) => {
                     this.loading = false;
                     console.log(err);
                     alert("Erreur lors de l'envoi");
                 });
-        }
+        },
     },
     mounted: function () {
         this.store.getChangeType();
@@ -446,7 +446,7 @@ export default {
             });
     },
     components: {
-        Multiselect
-    }
+        Multiselect,
+    },
 };
 </script>

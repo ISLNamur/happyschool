@@ -61,12 +61,12 @@ export default [
                 path: "other",
                 component: OtherInfo,
             },
-        ]
+        ],
     },
     {
         path: "/classe/:classe/",
         component: ClassList,
-        props: true
+        props: true,
     },
     {
         path: "/course/:course/:givenCourse/",

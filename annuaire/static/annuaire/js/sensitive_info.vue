@@ -125,25 +125,25 @@ export default {
     mounted: function () {
         if (this.$route.params.type === "student") {
             axios.get(`/annuaire/api/student_sensitive/${this.$route.params.matricule}/`)
-                .then(response => {
+                .then((response) => {
                     this.info = response.data;
                     this.loading = false;
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err);
                     this.loading = false;
                 });
         } else if (this.$route.params.type === "responsible") {
             axios.get(`/annuaire/api/responsible_sensitive/${this.$route.params.matricule}/`)
-                .then(response => {
-                    this.info = {email: response.data.email};
+                .then((response) => {
+                    this.info = { email: response.data.email };
                     this.loading = false;
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err);
                     this.loading = false;
                 });
         }
-    }
+    },
 };
 </script>

@@ -17,8 +17,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-import {createApp} from "vue";
-import {createBootstrap} from "bootstrap-vue-next";
+import { createApp } from "vue";
+import { createBootstrap } from "bootstrap-vue-next";
 
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue-next/dist/bootstrap-vue-next.css";

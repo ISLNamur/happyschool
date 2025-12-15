@@ -95,8 +95,8 @@ export default {
     props: {
         student: {
             type: Number,
-            default: -1
-        }
+            default: -1,
+        },
     },
     data: function () {
         return {
@@ -108,7 +108,7 @@ export default {
     watch: {
         student: function () {
             this.loadData();
-        }
+        },
     },
     methods: {
         niceDate: function (date) {
@@ -119,11 +119,11 @@ export default {
         loadData: function () {
             const studentId = this.$route.params.matricule ? this.$route.params.matricule : this.student;
             axios.get(`/annuaire/api/info_medical/${studentId}/`)
-                .then(response => {
+                .then((response) => {
                     this.medical = response.data;
                     this.loading = false;
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err);
                     this.loading = false;
                 });
@@ -131,10 +131,10 @@ export default {
                 .then((resp) => {
                     this.other_medical_info = resp.data.results.filter(cas => cas.info.info.toLowerCase().includes("médical"));
                 });
-        }
+        },
     },
     mounted: function () {
         this.loadData();
-    }
+    },
 };
 </script>

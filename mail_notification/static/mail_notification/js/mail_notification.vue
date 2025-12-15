@@ -290,9 +290,9 @@ export default {
         return {
             menuInfo: {},
             explanation_mail: "",
-            /*`Dans le cas d'un message «Par élève»,
+            /* `Dans le cas d'un message «Par élève»,
             les variables {{ nom }} et {{ classe }} seront automatiquement converties en nom et classe de l'élève.
-            Vous pouvez voir le résultat directement dans la prévisualisation.`,*/
+            Vous pouvez voir le résultat directement dans la prévisualisation.`, */
             toType: "teachers",
             subject: "",
             emailTo: [],
@@ -327,12 +327,12 @@ export default {
             // Reset fields.
             this.emailFrom = "";
             this.responsibles = false;
-            //TODO reset all other fields.
+            // TODO reset all other fields.
             axios.get("/mail_notification/get_senders/" + this.teaching + "/")
-                .then(response => {
+                .then((response) => {
                     this.emailFromOptions = response.data.map(m => m.sender_email_name + " <" + m.sender_email + ">");
                 });
-        }
+        },
     },
     computed: {
         replaceContent: function () {
@@ -382,7 +382,7 @@ export default {
         getEmailToOptions: function (search) {
             this.emailToLoading = true;
             axios.get("/mail_notification/get_email_to_options/" + this.teaching + "/" + this.toType + "/?query=" + search)
-                .then(response => {
+                .then((response) => {
                     this.emailToOptions = response.data;
                     this.emailToLoading = false;
                 });
@@ -390,7 +390,7 @@ export default {
         getTagsOptions: function (search) {
             this.tagsLoading = true;
             axios.get("/mail_notification/get_tags_options/?query=" + search)
-                .then(response => {
+                .then((response) => {
                     this.tagsOptions = response.data;
                     this.tagsLoading = false;
                 });
@@ -441,7 +441,7 @@ export default {
                 {
                     xsrfCookieName: "csrftoken",
                     xsrfHeaderName: "X-CSRFToken",
-                }
+                },
             ).then(() => {
                 thisApp.sending = false;
                 thisApp.reset();
@@ -449,7 +449,7 @@ export default {
                 thisApp.sending = false;
                 thisApp.hasError = true;
             });
-        }
+        },
     },
     components: { Multiselect, TextEditor, FileUpload },
     mounted: function () {
@@ -462,13 +462,13 @@ export default {
 
         // Get templates.
         axios.get("/mail_answer/api/mail_template/?is_used=0")
-            .then(response => {
+            .then((response) => {
                 this.templateOptions = response.data.results;
             })
             .catch(function (error) {
                 alert(error);
             });
-    }
+    },
 };
 </script>
 

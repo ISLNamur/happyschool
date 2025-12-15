@@ -64,11 +64,11 @@ const router = createRouter({
                     component: StudentView,
                     props: true,
                 },
-            ]
+            ],
         },
         {
             path: "/justification/",
-            component: JustificationList
+            component: JustificationList,
         },
         {
             path: "/justification/:justId/",

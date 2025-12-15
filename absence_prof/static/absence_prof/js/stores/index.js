@@ -34,5 +34,5 @@ export const absenceProfStore = defineStore("absenceProf", {
     actions: {
         addFilter,
         removeFilter,
-    }
+    },
 });

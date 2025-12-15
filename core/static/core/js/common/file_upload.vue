@@ -69,19 +69,19 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 export default {
     emits: ["setdata", "delete", "unavailable"],
     props: {
-        "id": {
+        id: {
             type: Number,
             default: -1,
         },
-        "file": {
+        file: {
             type: File,
             default: null,
         },
-        "path": {
+        path: {
             type: String,
-            default: ""
+            default: "",
         },
-        "removestr": {
+        removestr: {
             type: String,
             default: "",
         },
@@ -93,7 +93,7 @@ export default {
         removeMedia: {
             type: Boolean,
             default: false,
-        }
+        },
     },
     data: function () {
         return {
@@ -105,12 +105,12 @@ export default {
         };
     },
     methods: {
-        deleteEntry: function() {
+        deleteEntry: function () {
             axios.delete(`${this.path}${this.id}/`,
                 {
                     xsrfCookieName: "csrftoken",
                     xsrfHeaderName: "X-CSRFToken",
-                }
+                },
             ).then(() => {
                 this.$emit("delete");
             });
@@ -119,9 +119,9 @@ export default {
             let data = new FormData();
             data.append("visible_by", this.selectedGroups);
             axios.patch(`${this.path}${this.id}/`, data, token);
-        }
+        },
     },
-    mounted: function() {
+    mounted: function () {
         if (this.id < 0) {
             var data = new FormData();
             data.append("file", this.file);
@@ -131,9 +131,9 @@ export default {
                 {
                     xsrfCookieName: "csrftoken",
                     xsrfHeaderName: "X-CSRFToken",
-                    headers: {"Content-Disposition": "form-data; name=\"file\"; filename=\"" + this.file.name.normalize() + "\""},
+                    headers: { "Content-Disposition": "form-data; name=\"file\"; filename=\"" + this.file.name.normalize() + "\"" },
                 })
-                .then(response => {
+                .then((response) => {
                     this.link = response.data.attachment;
                     this.$emit("setdata", response.data);
                     this.loading = false;
@@ -144,7 +144,7 @@ export default {
                 });
         } else {
             axios.get(this.path + this.id + "/")
-                .then(response => {
+                .then((response) => {
                     this.link = response.data.attachment;
                     if (this.removeMedia && this.link.startsWith("/media")) {
                         this.link = this.link.slice(6, this.link.length);

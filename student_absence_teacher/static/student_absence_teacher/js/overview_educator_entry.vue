@@ -51,7 +51,7 @@
 import axios from "axios";
 import { useToastController } from "bootstrap-vue-next";
 
-const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
@@ -61,7 +61,7 @@ export default {
     props: {
         absences: {
             type: Array,
-            default: () => new Array()
+            default: () => new Array(),
         },
     },
     data: function () {
@@ -73,7 +73,7 @@ export default {
     watch: {
         absences: function () {
             this.status = this.absences.map(a => a.status == "A");
-        }
+        },
     },
     methods: {
         updateRecord: function (index, $event) {
@@ -86,9 +86,9 @@ export default {
             };
 
             const isNew = !("id" in this.absences[index]);
-            const url = `/student_absence_teacher/api/absence_educ/${ !isNew ? this.absences[index].id + "/" : ""}`;
+            const url = `/student_absence_teacher/api/absence_educ/${!isNew ? this.absences[index].id + "/" : ""}`;
             const method = isNew ? axios.post(url, [data], token) : axios.put(url, data, token);
-            method.then(resp => {
+            method.then((resp) => {
                 this.$emit("change", [isNew ? resp.data[0] : resp.data, index]);
                 this.updating = false;
             })
@@ -99,10 +99,10 @@ export default {
                         body: "Une erreur est survenue lors de la mise à jour des données.",
                         title: "Erreur",
                         variant: "danger",
-                        solid: true
+                        solid: true,
                     });
                 });
-        }
+        },
     },
     mounted: function () {
         this.status = this.absences.map(a => a.status == "A");

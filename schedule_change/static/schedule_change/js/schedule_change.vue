@@ -191,8 +191,8 @@ export default {
     props: {
         currentPage: {
             type: Number,
-            default: 1
-        }
+            default: 1,
+        },
     },
     data: function () {
         return {
@@ -217,25 +217,25 @@ export default {
     watch: {
         currentPage: function () {
             this.loadEntries();
-        }
+        },
     },
     methods: {
         /**
          * Move to another page.
-         * 
+         *
          * @param {Number} pageNum The page number
          */
         changePage: function (pageNum) {
             this.$router.push(`/page/${pageNum}/`);
             scroll(0, 0);
         },
-        calendar: function(date) {
+        calendar: function (date) {
             return Moment(date).calendar().split(" à")[0];
         },
         time: function (entry) {
             let result = "";
             if (entry.time_start) {
-                result += entry.time_start.slice(0,5);
+                result += entry.time_start.slice(0, 5);
 
                 if (entry.time_end) {
                     result += " à ";
@@ -248,7 +248,7 @@ export default {
                 if (!entry.time_start) {
                     result += "Jusqu'à ";
                 }
-                result += entry.time_end.slice(0,5);
+                result += entry.time_end.slice(0, 5);
             }
 
             if (result === "") {
@@ -265,7 +265,7 @@ export default {
             let storeFilters = this.store.filters;
             for (let f in storeFilters) {
                 if (storeFilters[f].filterType.startsWith("date")
-                    || storeFilters[f].filterType.startsWith("time")) {
+                  || storeFilters[f].filterType.startsWith("time")) {
                     let ranges = storeFilters[f].value.split("_");
                     this.filter += "&" + storeFilters[f].filterType + "__gte=" + ranges[0];
                     this.filter += "&" + storeFilters[f].filterType + "__lte=" + ranges[1];
@@ -281,7 +281,7 @@ export default {
             this.$refs.deleteModal.show();
         },
         deleteEntry: function () {
-            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
             axios.delete("/schedule_change/api/schedule_change/" + this.currentEntry.id, token)
                 .then(() => {
                     this.loadEntries();
@@ -292,9 +292,9 @@ export default {
         loadEntries: function () {
             this.loading = true;
             axios.get(
-                `/schedule_change/api/schedule_change/?page_size=${this.entriesPerPage}&page=${this.currentPage}${this.filter}${this.ordering}`
+                `/schedule_change/api/schedule_change/?page_size=${this.entriesPerPage}&page=${this.currentPage}${this.filter}${this.ordering}`,
             )
-                .then(response => {
+                .then((response) => {
                     this.entries = response.data.results;
                     // Set the first group of changes (group by dates).
                     this.entriesCount = response.data.count;
@@ -307,10 +307,10 @@ export default {
                     }
 
                     this.entriesGrouped = [
-                        {sameDayEntries: [
-                            {sameHourEntries: [
-                                this.entries[0]], time_start: this.entries[0].time_start, time_end: this.entries[0].time_end},
-                        ], day: this.entries[0].date_change}
+                        { sameDayEntries: [
+                            { sameHourEntries: [
+                                this.entries[0]], time_start: this.entries[0].time_start, time_end: this.entries[0].time_end },
+                        ], day: this.entries[0].date_change },
                     ];
                     if (this.entriesCount == 1) {
                         this.loaded = true;
@@ -323,18 +323,18 @@ export default {
                             let sameDay = this.entriesGrouped[this.entriesGrouped.length - 1];
                             let entryCount = sameDay.sameDayEntries.length;
                             if (sameDay.sameDayEntries[entryCount - 1].time_start == this.entries[e].time_start
-                            && sameDay.sameDayEntries[entryCount - 1].time_end == this.entries[e].time_end) {
+                              && sameDay.sameDayEntries[entryCount - 1].time_end == this.entries[e].time_end) {
                                 sameDay.sameDayEntries[entryCount - 1].sameHourEntries.push(this.entries[e]);
                             } else {
-                                sameDay.sameDayEntries.push({sameHourEntries: [
-                                    this.entries[e]], time_start: this.entries[e].time_start, time_end: this.entries[e].time_end});
+                                sameDay.sameDayEntries.push({ sameHourEntries: [
+                                    this.entries[e]], time_start: this.entries[e].time_start, time_end: this.entries[e].time_end });
                             }
                         } else {
-                            this.entriesGrouped.push({sameDayEntries: [
-                                {sameHourEntries: [
-                                    this.entries[e]
-                                ], time_start: this.entries[e].time_start, time_end: this.entries[e].time_end},
-                            ], day: this.entries[e].date_change});
+                            this.entriesGrouped.push({ sameDayEntries: [
+                                { sameHourEntries: [
+                                    this.entries[e],
+                                ], time_start: this.entries[e].time_start, time_end: this.entries[e].time_end },
+                            ], day: this.entries[e].date_change });
                         }
                     }
                     this.loaded = true;
@@ -353,7 +353,7 @@ export default {
                 this.fullscreen = true;
                 this.store.enableFullscreen();
                 if (window.location.href.includes("show_for_students")) {
-                    this.store.addFilter({filterType: "activate_show_for_students", tag: "Activer", value: true});
+                    this.store.addFilter({ filterType: "activate_show_for_students", tag: "Activer", value: true });
                 }
                 this.entriesPerPage = 15;
                 if (this.numberOfPage > 1) {

@@ -111,11 +111,11 @@ export default {
                     this.entriesCount = resp.data.count;
                     this.loading = false;
                 });
-        }
+        },
     },
     mounted: function () {
         this.loadEntries();
-    }
+    },
 };
 
 </script>

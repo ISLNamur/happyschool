@@ -31,12 +31,12 @@ const router = createRouter({
         {
             path: "/edit/:id/",
             component: EditAbsenceProf,
-            props: true
+            props: true,
         },
         {
             path: "/new/",
             component: EditAbsenceProf,
-            props: true
+            props: true,
         },
     ],
     history: createWebHashHistory(),

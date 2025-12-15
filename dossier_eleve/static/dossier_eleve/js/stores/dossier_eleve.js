@@ -38,5 +38,5 @@ export const dossierEleveStore = defineStore("dossierEleveStore", {
     actions: {
         addFilter: addFilter,
         removeFilter: removeFilter,
-    }
+    },
 });

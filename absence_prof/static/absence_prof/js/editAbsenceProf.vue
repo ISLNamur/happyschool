@@ -129,12 +129,12 @@ import axios from "axios";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
-import {getPeopleByName} from "@s:core/js/common/search.js";
+import { getPeopleByName } from "@s:core/js/common/search.js";
 import { absenceProfStore } from "./stores/index.js";
 
 import { useToastController } from "bootstrap-vue-next";
 
-const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
@@ -145,7 +145,7 @@ export default {
         id: {
             type: String,
             default: null,
-        }
+        },
     },
     watch: {
         id: function (newVal) {
@@ -184,7 +184,7 @@ export default {
             sending: false,
             errors: {},
             inputStates: {
-                non_field_errors: null
+                non_field_errors: null,
             },
             store: absenceProfStore(),
         };
@@ -202,10 +202,10 @@ export default {
         },
         loadAbsence: function () {
             axios.get(`/absence_prof/api/absence/${this.id}/`, token)
-                .then(resp => {
+                .then((resp) => {
                     if (resp.data) {
                         axios.get(`/annuaire/api/responsible/${resp.data.id_person}/`, token)
-                            .then(resp => {
+                            .then((resp) => {
                                 this.person = [resp.data];
                             });
                         this.form.id_person = resp.data.id_person;
@@ -216,7 +216,7 @@ export default {
                         this.form.comment = resp.data.comment;
                     }
                 })
-                .catch(err => {
+                .catch((err) => {
                     alert(err);
                 });
         },
@@ -227,7 +227,7 @@ export default {
             evt.preventDefault();
 
             this.sending = true;
-            const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
             const promises = [];
             for (let p in this.person) {
@@ -250,7 +250,7 @@ export default {
                         });
                     });
                 })
-                .catch(err => {
+                .catch((err) => {
                     this.errors = err.response.data;
                     this.sending = false;
                 });
@@ -261,24 +261,26 @@ export default {
             this.searching = true;
 
             getPeopleByName(query, this.store.settings.teachings, "responsible")
-                .then( (resp) => {
+                .then((resp) => {
                 // Avoid that a previous search overwrites a faster following search results.
                     if (this.searchId !== currentSearch)
                         return;
                     this.responsibleOptions = resp.data;
                     this.searching = false;
                 })
-                .catch( (err) => {
+                .catch((err) => {
                     alert(err);
                     this.searching = false;
                 });
-        }
+        },
     },
     mounted: function () {
-        const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+        const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
         axios.get("/absence_prof/api/motif/", token)
-            .then(resp => {
-                this.motifOptions = resp.data.results.map(v => {return {value: v.motif, text: v.motif};});
+            .then((resp) => {
+                this.motifOptions = resp.data.results.map((v) => {
+                    return { value: v.motif, text: v.motif };
+                });
             })
             .catch(() => {
                 alert("Unable to get motives");
@@ -287,7 +289,7 @@ export default {
         if (this.id) this.loadAbsence();
     },
     components: {
-        Multiselect
-    }
+        Multiselect,
+    },
 };
 </script>

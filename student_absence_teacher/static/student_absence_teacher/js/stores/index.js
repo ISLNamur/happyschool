@@ -44,7 +44,7 @@ export const studentAbsenceTeacherStore = defineStore("studentAbsenceTeacher", {
         resetChanges: function (resetExceptions) {
             if (resetExceptions) {
                 const keepChanges = Object.entries(this.changes).filter(
-                    (change) => resetExceptions.includes(change[1].matricule)
+                    change => resetExceptions.includes(change[1].matricule),
                 );
                 this.changes = Object.fromEntries(keepChanges);
                 return;
@@ -70,6 +70,6 @@ export const studentAbsenceTeacherStore = defineStore("studentAbsenceTeacher", {
                     reject();
                 });
             });
-        }
-    }
+        },
+    },
 });

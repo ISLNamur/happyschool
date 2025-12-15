@@ -240,7 +240,7 @@ import { infirmerieStore } from "./stores/index.js";
 
 import MedicalInfo from "@s:annuaire/js/medical_info.vue";
 
-const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
@@ -248,14 +248,14 @@ export default {
         return { show };
     },
     props: {
-        sortie:{
+        sortie: {
             type: String,
             default: "0",
         },
         id: {
             type: String,
             default: null,
-        }
+        },
     },
     watch: {
         errors: function (newErrors) {
@@ -280,21 +280,21 @@ export default {
                 this.form.matricule_id = newName.matricule;
                 this.form.name = newName.display;
             }
-        }
+        },
     },
     data: function () {
         return {
             errors: {},
             dateArrive: Moment().format("YYYY-MM-DD"),
             timeArrive: Moment().format("HH:mm"),
-            dateSortie:"",
-            timeSortie:"",
+            dateSortie: "",
+            timeSortie: "",
             inputStates: {
-                "name": null,
-                "motifs_admission": null,
-                "non_field_errors": null,
-                "datetime_arrive": null,
-                "datetime_sortie": null,
+                name: null,
+                motifs_admission: null,
+                non_field_errors: null,
+                datetime_arrive: null,
+                datetime_sortie: null,
             },
             studentOptions: [],
             searching: false,
@@ -334,7 +334,7 @@ export default {
             this.searchId += 1;
             let currentSearch = this.searchId;
             this.nameLoading = true;
-            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
             const data = {
                 query: query,
                 teachings: this.store.settings.teachings,
@@ -342,13 +342,13 @@ export default {
                 check_access: false,
             };
             axios.post("/annuaire/api/people/", data, token)
-                .then(response => {
+                .then((response) => {
                 // Avoid that a previous search overwrites a faster following search results.
                     if (this.searchId !== currentSearch)
                         return;
-                    const options = response.data.map(p => {
+                    const options = response.data.map((p) => {
                     // Format entries.
-                        let entry = {display: p.display, matricule: p.matricule};
+                        let entry = { display: p.display, matricule: p.matricule };
                         return entry;
                     });
                     this.nameLoading = false;
@@ -364,26 +364,26 @@ export default {
         },
         loadPassage: function () {
             axios.get(`/infirmerie/api/passage/${this.id}/`, token)
-                .then(resp => {
+                .then((resp) => {
                     if (resp.data) {
-                        this.form.matricule_id= resp.data.matricule.matricule;
-                        this.name=resp.data.matricule;
+                        this.form.matricule_id = resp.data.matricule.matricule;
+                        this.name = resp.data.matricule;
                         this.dateArrive = resp.data.datetime_arrive.split("T")[0];
                         this.timeArrive = resp.data.datetime_arrive.split("T")[1].split("+")[0];
                         this.form.remarques_sortie = resp.data.remarques_sortie;
-                        this.form.motifs_admission= resp.data.motifs_admission;
-                        //this.form.id_person = resp.data.id_person;
+                        this.form.motifs_admission = resp.data.motifs_admission;
+                        // this.form.id_person = resp.data.id_person;
                         this.form.motif = resp.data.motif;
                         this.form.name = resp.data.name;
                         this.form.comment = resp.data.comment;
-                        if (this.sortie==1 || this.form.remarques_sortie){
+                        if (this.sortie == 1 || this.form.remarques_sortie) {
                             this.dateSortie = Moment().format("YYYY-MM-DD");
                             this.timeSortie = Moment().format("HH:mm");
                             this.form.datetime_sortie = this.dateSortie;
                         }
                     }
                 })
-                .catch(err => {
+                .catch((err) => {
                     alert(err);
                 });
         },
@@ -401,7 +401,7 @@ export default {
                 data.datetime_sortie = this.dateSortie + " " + this.timeSortie;
             }
             // Send data.
-            const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
             let url = "/infirmerie/api/passage/";
             if (this.id) url += this.id + "/";
             const send = this.id ? axios.put(url, data, token) : axios.post(url, data, token);
@@ -420,7 +420,7 @@ export default {
                 modal.sending = false;
                 modal.errors = error.response.data;
             });
-        }
+        },
     },
     mounted: function () {
         if (this.id) this.loadPassage();
@@ -428,6 +428,6 @@ export default {
     components: {
         Multiselect,
         MedicalInfo,
-    }
+    },
 };
 </script>

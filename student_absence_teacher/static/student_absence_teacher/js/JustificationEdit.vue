@@ -181,10 +181,10 @@ import { studentAbsenceTeacherStore } from "./stores/index.js";
 import AbsencesStat from "./AbsencesStat.vue";
 
 import TextEditor from "@s:core/js/common/text_editor.vue";
-import {getPeopleByName} from "@s:core/js/common/search.js";
+import { getPeopleByName } from "@s:core/js/common/search.js";
 import moment from "moment";
 
-const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
@@ -193,22 +193,22 @@ export default {
         return { show, create };
     },
     props: {
-        "justId": {
-            type: String,
-            default: ""
-        },
-        "studentId": {
-            type: String,
-            default: -1
-        },
-        "endDate": {
+        justId: {
             type: String,
             default: "",
         },
-        "absencesCount": {
+        studentId: {
+            type: String,
+            default: -1,
+        },
+        endDate: {
+            type: String,
+            default: "",
+        },
+        absencesCount: {
             type: Number,
             default: 0,
-        }
+        },
     },
     data: function () {
         return {
@@ -226,22 +226,22 @@ export default {
             relativeAbsences: [],
             nameOptions: [],
             searchId: -1,
-            store: studentAbsenceTeacherStore()
+            store: studentAbsenceTeacherStore(),
         };
     },
     computed: {
         motiveOptions: function () {
-            return this.store.motives.map(m => {
+            return this.store.motives.map((m) => {
                 const motiveWithLabel = Object.assign({}, m);
                 motiveWithLabel.text = `${m.short_name} – ${m.name}`;
                 return motiveWithLabel;
             });
-        }
+        },
     },
     watch: {
         student: function () {
             this.justification.student = this.student.matricule;
-        }
+        },
     },
     methods: {
         getNameOptions: function (query) {
@@ -250,22 +250,22 @@ export default {
             this.searching = true;
 
             getPeopleByName(query, this.store.settings.teachings, "student")
-                .then( (resp) => {
+                .then((resp) => {
                 // Avoid that a previous search overwrites a faster following search results.
                     if (this.searchId !== currentSearch)
                         return;
                     this.nameOptions = resp.data;
                     this.searching = false;
                 })
-                .catch( (err) => {
+                .catch((err) => {
                     alert(err);
                     this.searching = false;
                 });
         },
         getRelatedAbsences: function () {
             // Auto-complete date end.
-            if (this.justification.date_just_start && !this.justification.date_just_end
-                || this.justification.date_just_start > this.justification.date_just_end
+            if ((this.justification.date_just_start && !this.justification.date_just_end)
+              || (this.justification.date_just_start > this.justification.date_just_end)
             ) {
                 this.justification.date_just_end = this.justification.date_just_start;
             }
@@ -283,7 +283,7 @@ export default {
             axios.get(`/student_absence_teacher/api/absence_educ/?status=A&student=${this.justification.student}&date_absence__gte=${this.justification.date_just_start}&date_absence__lte=${this.justification.date_just_end}&page_size=1000`)
                 .then((resp) => {
                     const just_on_one_period = this.justification.date_just_start === this.justification.date_just_end && this.justification.half_day_start === this.justification.half_day_end;
-                    this.relativeAbsences = resp.data.results.filter(absence => {
+                    this.relativeAbsences = resp.data.results.filter((absence) => {
                         const periodAbsenceOrder = this.store.periodEduc.find(p => p.id === absence.period).index;
 
                         if (!just_on_one_period) {
@@ -326,7 +326,7 @@ export default {
                                 reject();
                             }
                         });
-                    } else if (justMotive.justificationmodel__motive__count +2 >= justMotive.justificationmodel__motive__admissible_up_to) {
+                    } else if (justMotive.justificationmodel__motive__count + 2 >= justMotive.justificationmodel__motive__admissible_up_to) {
                         this.create({
                             body: `L'étudiant a bientôt atteint la limite des justificatifs pour le motif ${justMotive.justificationmodel__motive__short_name}. Merci de prendre les dispositions nécessaire.`,
                             okOnly: true,
@@ -360,14 +360,14 @@ export default {
                             this.$router.push(`/overview/${data.date_just_start}/student_view/${data.student}/`)
                                 .then(() => {
                                     this.submitting = false;
-                                    this.show( {
+                                    this.show({
                                         body: "Les données ont bien été envoyées",
                                         variant: "success",
                                         noCloseButton: true,
                                     });
                                 });
                         })
-                        .catch((err) =>  {
+                        .catch((err) => {
                             this.submitting = false;
                             let additionalInfo = "";
                             if ("response" in err && err.response.data.non_field_errors) {
@@ -394,7 +394,7 @@ export default {
                 okTitle: "Oui",
                 cancelTitle: "Annuler",
             })
-                .then(remove => {
+                .then((remove) => {
                     if (!remove.ok) return;
 
                     const dateJustStart = this.justification.date_just_start;
@@ -412,7 +412,7 @@ export default {
                                 });
                         });
                 });
-        }
+        },
     },
     mounted: function () {
         this.store.getOptions().then(() => {
@@ -429,7 +429,7 @@ export default {
                     const startDate = moment(this.endDate).subtract(Math.round(this.absencesCount / this.store.periodEduc.length) + 2, "days").format("YYYY-MM-DD");
 
                     axios.get(
-                        `/student_absence_teacher/api/absence_educ/?student__matricule=${this.studentId}&status=A&date_absence__lte=${this.endDate}&date_absence__gte=${startDate}&ordering=date_absence,period__start`
+                        `/student_absence_teacher/api/absence_educ/?student__matricule=${this.studentId}&status=A&date_absence__lte=${this.endDate}&date_absence__gte=${startDate}&ordering=date_absence,period__start`,
                     ).then((resp) => {
                         this.justification.date_just_start = resp.data.results[0].date_absence;
                         this.justification.half_day_start = this.store.periodEduc.find(p => p.id === resp.data.results[0].period).index;
@@ -461,6 +461,6 @@ export default {
         TextEditor,
         Multiselect,
         AbsencesStat,
-    }
+    },
 };
 </script>

@@ -80,15 +80,15 @@ export default {
     props: {
         studentId: {
             type: String,
-            default: "-1"
-        }
+            default: "-1",
+        },
     },
     data: function () {
         return {
             sending: false,
             lastLatenesses: [],
             hasParentNotification: false,
-            store: latenessStore()
+            store: latenessStore(),
         };
     },
     methods: {
@@ -108,7 +108,7 @@ export default {
                         });
                     });
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err);
                     this.sending = false;
                 });
@@ -127,7 +127,7 @@ export default {
             });
     },
     components: {
-        MailTemplate
-    }
+        MailTemplate,
+    },
 };
 </script>

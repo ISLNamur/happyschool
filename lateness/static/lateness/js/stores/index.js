@@ -30,7 +30,7 @@ export const latenessStore = defineStore("lateness", {
                 filterType: "activate_after_count",
                 tag: "Activer",
                 value: true,
-            }
+            },
         ],
         // eslint-disable-next-line no-undef
         hasSettingsPerm: hasSettingsPerm,
@@ -38,5 +38,5 @@ export const latenessStore = defineStore("lateness", {
     actions: {
         addFilter,
         removeFilter,
-    }
+    },
 });

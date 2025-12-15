@@ -32,7 +32,6 @@
     </div>
 </template>
 
-
 <script>
 import Menu from "@s:core/js/common/menu_bar.vue";
 
@@ -42,13 +41,13 @@ export default {
             menuInfo: {},
         };
     },
-    mounted: function() {
+    mounted: function () {
         // eslint-disable-next-line no-undef
         this.menuInfo = menu;
     },
     components: {
         "app-menu": Menu,
-    }
+    },
 };
 </script>
 

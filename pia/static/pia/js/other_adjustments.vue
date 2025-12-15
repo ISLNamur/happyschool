@@ -106,7 +106,6 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 import TextEditor from "@s:core/js/common/text_editor.vue";
 
-
 export default {
     setup: function () {
         const { create } = useModalController();
@@ -115,8 +114,8 @@ export default {
     props: {
         pia: {
             type: Number,
-            default: -1
-        }
+            default: -1,
+        },
     },
     data: function () {
         return {
@@ -131,7 +130,7 @@ export default {
         add: function () {
             const newId = Math.min(Math.min(...this.otherAdjustments.map(sA => sA.id)), 0) - 1;
             this.otherAdjustments.push(
-                { other_adjustments: "", id: newId, date_start: null, date_end: null, text: "Nouvel aménagement" }
+                { other_adjustments: "", id: newId, date_start: null, date_end: null, text: "Nouvel aménagement" },
             );
             this.currentOtherAdj = this.otherAdjustments[this.otherAdjustments.length - 1];
             this.currentOtherAdjId = newId;
@@ -154,7 +153,7 @@ export default {
             }).then((confirm) => {
                 if (confirm.ok) {
                     const sAIndex = this.otherAdjustments.findIndex(
-                        sA => sA.id === this.currentOtherAdj.id && sA.date_start === this.currentOtherAdj.date_start
+                        sA => sA.id === this.currentOtherAdj.id && sA.date_start === this.currentOtherAdj.date_start,
                     );
                     const removedObj = this.otherAdjustments.splice(sAIndex, 1)[0];
                     this.currentOtherAdj = this.otherAdjustments[this.otherAdjustments.length - 1];
@@ -166,7 +165,7 @@ export default {
             return new Promise((resolve, reject) => {
                 this.loading = true;
                 Promise.all(
-                    this.otherAdjustments.map(sA => {
+                    this.otherAdjustments.map((sA) => {
                         const isNew = sA.id < 0;
                         const send = isNew ? axios.post : axios.put;
                         const url = `/pia/api/other_adjustments/${isNew ? "" : sA.id + "/"}`;
@@ -175,7 +174,7 @@ export default {
                         let data = Object.assign({}, sA);
                         data.pia_model = piaId;
                         return send(url, data, token);
-                    })
+                    }),
                 ).then((resps) => {
                     this.expandOtherAdjustment(resps.map(r => r.data));
                     this.loading = false;
@@ -191,7 +190,7 @@ export default {
             this.currentOtherAdj = this.otherAdjustments.find(sA => sA.id === selected);
         },
         expandOtherAdjustment: function (otherAdjustments) {
-            this.otherAdjustments = otherAdjustments.sort((a, b) => a.date_start < b.date_start).map(oA => {
+            this.otherAdjustments = otherAdjustments.sort((a, b) => a.date_start < b.date_start).map((oA) => {
                 oA.text = `Du ${oA.date_start} au ${oA.date_end}`;
                 return oA;
             });
@@ -200,10 +199,10 @@ export default {
                 this.currentOtherAdj = this.otherAdjustments[0];
                 this.currentOtherAdjId = this.otherAdjustments[0].id;
             }
-        }
+        },
     },
     components: {
-        TextEditor
+        TextEditor,
     },
     mounted: function () {
         this.store.loadOptions()
@@ -215,6 +214,6 @@ export default {
                         });
                 }
             });
-    }
+    },
 };
 </script>

@@ -76,7 +76,7 @@ export default {
         rowData: {
             type: Object,
             default: () => { },
-        }
+        },
     },
     data: function () {
         return {
@@ -85,7 +85,7 @@ export default {
     },
     computed: {
         newEntry: function () {
-            // eslint-disable-next-line no-undef    
+            // eslint-disable-next-line no-undef
             return Moment(this.rowData.datetime_updated) > Moment(lastAccess);
         },
     },
@@ -93,8 +93,8 @@ export default {
         deleteEntry: function () {
             this.$emit("delete");
         },
-        displayStudent
-    }
+        displayStudent,
+    },
 };
 </script>
 

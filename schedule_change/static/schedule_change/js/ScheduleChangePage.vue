@@ -33,7 +33,6 @@
     </div>
 </template>
 
-
 <script>
 import Menu from "@s:core/js/common/menu_bar.vue";
 
@@ -44,15 +43,15 @@ export default {
             fullscreen: false,
         };
     },
-    mounted: function() {
+    mounted: function () {
         this.fullscreen = window.location.href.includes("fullscreen");
-                
+
         // eslint-disable-next-line no-undef
         this.menuInfo = menu;
     },
     components: {
         "app-menu": Menu,
-    }
+    },
 };
 </script>
 

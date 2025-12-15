@@ -44,7 +44,7 @@ const router = createRouter({
                 const props = { ...route.params };
                 props.advanced = props.advanced === "true";
                 return props;
-            }
+            },
         },
         {
             path: "/new/:advanced/",
@@ -53,7 +53,7 @@ const router = createRouter({
                 const props = { ...route.params };
                 props.advanced = props.advanced === "true";
                 return props;
-            }
+            },
         },
     ],
     history: createWebHashHistory(),

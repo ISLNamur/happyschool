@@ -109,7 +109,7 @@ export default {
             entries: [],
             entriesCount: 0,
             inputStates: {
-                "name": null,
+                name: null,
             },
             showSearch: false,
             store: infirmerieStore(),
@@ -118,7 +118,7 @@ export default {
     computed: {
         currentName: function () {
             return "";
-        }
+        },
     },
     methods: {
         changePage: function (page) {
@@ -135,7 +135,7 @@ export default {
         filterStudent: function (matricule) {
             this.showSearch = true;
             this.store.addFilter(
-                {filterType: "matricule_id", tag: matricule, value: matricule}
+                { filterType: "matricule_id", tag: matricule, value: matricule },
             );
             this.applyFilter();
         },
@@ -144,7 +144,7 @@ export default {
             let storeFilters = this.store.filters;
             for (let f in storeFilters) {
                 if (storeFilters[f].filterType.startsWith("date")
-                    || storeFilters[f].filterType.startsWith("time")) {
+                  || storeFilters[f].filterType.startsWith("time")) {
                     let ranges = storeFilters[f].value.split("_");
                     this.filter += "&" + storeFilters[f].filterType + "__gt=" + ranges[0];
                     this.filter += "&" + storeFilters[f].filterType + "__lt=" + ranges[1];
@@ -160,7 +160,7 @@ export default {
             this.$refs.deleteModal.show();
         },
         deleteEntry: function () {
-            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
             axios.delete("/infirmerie/api/passage/" + this.currentEntry.id, token)
                 .then(() => {
                     this.loadEntries();
@@ -168,20 +168,20 @@ export default {
 
             this.currentEntry = null;
         },
-        editEntry: function(index, sortie) {
+        editEntry: function (index, sortie) {
             this.currentEntry = this.entries[index];
             this.openModal(sortie);
         },
         loadEntries: function () {
             axios.get("/infirmerie/api/passage/?page=" + this.currentPage + this.filter + this.ordering)
-                .then(response => {
+                .then((response) => {
                     this.entries = response.data.results;
                     this.entriesCount = response.data.count;
                     this.loaded = true;
                 });
         },
     },
-    mounted: function() {
+    mounted: function () {
         this.applyFilter();
     },
     components: {

@@ -41,22 +41,22 @@ export default {
     props: {
         absences: {
             type: Array,
-            default: () => new Array()
+            default: () => new Array(),
         },
     },
     methods: {
         status: function (state) {
             const translation = {
-                "presence": "P",
-                "lateness": "R",
-                "absence": "A",
-                "exempted": "D",
-                "excluded": "Exclus",
-                "internship": "Stage",
+                presence: "P",
+                lateness: "R",
+                absence: "A",
+                exempted: "D",
+                excluded: "Exclus",
+                internship: "Stage",
             };
             return translation[state];
         },
-    }
+    },
 };
 </script>
 

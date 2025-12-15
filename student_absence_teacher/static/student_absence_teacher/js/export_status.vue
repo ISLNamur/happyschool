@@ -85,8 +85,8 @@ export default {
         return {
             date_from: null,
             date_to: null,
-            document: "pdf"
+            document: "pdf",
         };
-    }
+    },
 };
 </script>

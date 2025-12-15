@@ -62,7 +62,7 @@ export function extractDayOfWeek(daysOfWeek) {
     const days = seqDays.filter(sD => sD.length === 1).map(d => Number(d.trim()));
     // Extract range of days and create inbetween days.
     const ranges = seqDays.filter(sD => sD.trim().length === 3)
-        .map(range => {
+        .map((range) => {
             const from = Number(range[0]);
             const to = Number(range[2]);
             return Array.from(new Array(to - from + 1), (x, i) => i + from);

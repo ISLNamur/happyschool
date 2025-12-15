@@ -346,7 +346,7 @@ export default {
             } else {
                 this.addFilter("activate_own_classes", "Activer", true);
             }
-        }
+        },
     },
     methods: {
         updateMassActionsLoading: function (progress) {
@@ -389,7 +389,7 @@ export default {
         filterStudent: function (matricule) {
             this.showFilters = true;
             this.store.addFilter(
-                { filterType: "student__matricule", tag: matricule, value: matricule }
+                { filterType: "student__matricule", tag: matricule, value: matricule },
             );
             this.applyFilter();
         },
@@ -398,7 +398,7 @@ export default {
             let storeFilters = this.store.filters;
             for (let f in storeFilters) {
                 if (storeFilters[f].filterType.startsWith("date")
-                    || storeFilters[f].filterType.startsWith("time")) {
+                  || storeFilters[f].filterType.startsWith("time")) {
                     let ranges = storeFilters[f].value.split("_");
                     this.filter += "&" + storeFilters[f].filterType + "__gte=" + ranges[0];
                     this.filter += "&" + storeFilters[f].filterType + "__lte=" + ranges[1];
@@ -428,14 +428,14 @@ export default {
         addFilter: function (filterType, tag, value) {
             this.showFilters = true;
             this.store.addFilter(
-                { "filterType": filterType, "tag": tag, "value": value }
+                { filterType: filterType, tag: tag, value: value },
             );
             this.applyFilter();
         },
         loadEntries: function () {
-            return new Promise(resolve => {
+            return new Promise((resolve) => {
                 axios.get(`/dossier_eleve/api/ask_sanctions/?page=${this.currentPage}${this.filter}${this.ordering}&page_size=${this.entriesPerPage}`)
-                    .then(response => {
+                    .then((response) => {
                         this.entriesCount = response.data.count;
                         this.entries = response.data.results;
                         this.loaded = true;
@@ -449,16 +449,16 @@ export default {
         },
         getEntriesNotDone: function () {
             axios.get("/dossier_eleve/api/ask_sanctions/?page=" + this.currentPage + this.filter + this.ordering + "&activate_not_done=true")
-                .then(response => {
+                .then((response) => {
                     this.entriesNotDone = response.data.count;
                 });
         },
         getEntriesWaiting: function () {
             axios.get("/dossier_eleve/api/ask_sanctions/?page=" + this.currentPage + this.filter + this.ordering + "&activate_waiting=true")
-                .then(response => {
+                .then((response) => {
                     this.entriesWaiting = response.data.count;
                 });
-        }
+        },
     },
     mounted: function () {
         // eslint-disable-next-line no-undef
@@ -474,7 +474,7 @@ export default {
         "ask-export-modal": AskExportModal,
         "app-menu": Menu,
         "mass-actions": MassActions,
-    }
+    },
 };
 </script>
 

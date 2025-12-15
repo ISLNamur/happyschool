@@ -30,7 +30,7 @@
 
             @sending="send"
         >
-            <template #side> 
+            <template #side>
                 <BCard
                     no-body
                     class="scrollable"
@@ -63,7 +63,7 @@
                         </BListGroupItem>
                     </BListGroup>
                 </BCard>
-            </template> 
+            </template>
         </mailtemplate>
     </BOverlay>
 </template>
@@ -81,8 +81,8 @@ export default {
     props: {
         studentId: {
             type: String,
-            default: "-1"
-        }
+            default: "-1",
+        },
     },
     data: function () {
         return {
@@ -90,16 +90,16 @@ export default {
             absenceWarned: [],
             sending: false,
             student: null,
-            store: studentAbsenceTeacherStore()
+            store: studentAbsenceTeacherStore(),
         };
     },
     computed: {
         context: function () {
-            return { 
-                dates: this.lastAbsences.map(lA => {
+            return {
+                dates: this.lastAbsences.map((lA) => {
                     const periodName = this.store.periodEduc.find(p => p.id === lA.period).name;
                     return `${lA.date_absence} ${periodName}`;
-                }).join(",")
+                }).join(","),
             };
         },
         dateStart: function () {
@@ -118,7 +118,7 @@ export default {
     methods: {
         send: function (data) {
             const relatedAbsences = this.lastAbsences.filter((lA, i) => this.absenceWarned[i]).map(a => a.id);
-            const context = Object.assign(data, { absences: relatedAbsences});
+            const context = Object.assign(data, { absences: relatedAbsences });
             this.sending = true;
             axios.post("/student_absence_teacher/api/mail_warning/", context, token)
                 .then(() => {
@@ -131,7 +131,7 @@ export default {
                         });
                     });
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err);
                     this.sending = false;
                 });
@@ -151,8 +151,8 @@ export default {
             });
     },
     components: {
-        MailTemplate
-    }
+        MailTemplate,
+    },
 };
 </script>
 

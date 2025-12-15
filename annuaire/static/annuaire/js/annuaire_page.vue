@@ -90,7 +90,7 @@
                         id="collapseAdvancedSearch"
                         class="mt-2"
                     >
-                        <BFormGroup 
+                        <BFormGroup
                             label="Type de recherche :"
                         >
                             <BFormSelect
@@ -122,7 +122,6 @@ import axios from "axios";
 
 import Menu from "@s:core/js/common/menu_bar.vue";
 
-
 export default {
     data: function () {
         return {
@@ -134,11 +133,11 @@ export default {
             search: null,
             searchOptions: [],
             searchLoading: false,
-            advancedSearchSelected: {value:"default",desc:"Rechercher un étudiant, une classe, un professeur, …"},
-            advancedSearchOptions:[
-                {text:"Normale",value:{value:"default",desc:"Rechercher un étudiant, une classe, un professeur, …"}},
-                {text:"Par téléphone",value:{value:"phone",desc:"Rechercher par numéro de téléphone fix ou GSM ex: 0470102030 …"}},
-                {text:"Par e-mail",value:{value:"email",desc:"Rechercher par e-mail ex: adresse@email.be"}},
+            advancedSearchSelected: { value: "default", desc: "Rechercher un étudiant, une classe, un professeur, …" },
+            advancedSearchOptions: [
+                { text: "Normale", value: { value: "default", desc: "Rechercher un étudiant, une classe, un professeur, …" } },
+                { text: "Par téléphone", value: { value: "phone", desc: "Rechercher par numéro de téléphone fix ou GSM ex: 0470102030 …" } },
+                { text: "Par e-mail", value: { value: "email", desc: "Rechercher par e-mail ex: adresse@email.be" } },
             ],
         };
     },
@@ -147,10 +146,9 @@ export default {
             if (option.type == "classe") {
                 this.$router.push(`/classe/${option.id}/`);
                 return;
-            }else if(option.type == "phone"){
+            } else if (option.type == "phone") {
                 this.$router.push(`/person/student/${option.id}/contact`);
-            }
-            else {
+            } else {
                 this.$router.push(`/person/${option.type}/${option.id}/`);
             }
         },
@@ -159,7 +157,7 @@ export default {
             this.searchId += 1;
             let currentSearch = this.searchId;
 
-            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+            const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
             const data = {
                 query: query,
                 teachings: this.teachings.length > 0 ? this.teachings : this.teachingsOptions.map(t => t.id),
@@ -167,13 +165,13 @@ export default {
                 active: false,
                 check_access: false,
             };
-            if (this.advancedSearchSelected.value == "phone"){
-                if (query.length > 8){
+            if (this.advancedSearchSelected.value == "phone") {
+                if (query.length > 8) {
                     query = this.numberPhoneFormat(query);
-                    console.log("convert and query: "+query);
-                    axios.get(`api/yellowpage/${query}/`)   
-                        .then(response => {
-                            const options = response.data.map(p => {
+                    console.log("convert and query: " + query);
+                    axios.get(`api/yellowpage/${query}/`)
+                        .then((response) => {
+                            const options = response.data.map((p) => {
                                 return {
                                     display: p.display,
                                     id: p.matricule,
@@ -182,14 +180,15 @@ export default {
                             });
                             this.searchOptions = options;
                         })
-                        .catch(err => {
+                        .catch((err) => {
                             console.log(err);
                         });
                 }
-            }else if(this.advancedSearchSelected.value == "email"){
+            } else if (this.advancedSearchSelected.value == "email") {
                 axios.get(`api/emailsearcher/${query}/`)
-                    .then(response => { console.log(response.data);
-                        const options = response.data.map(p => {
+                    .then((response) => {
+                        console.log(response.data);
+                        const options = response.data.map((p) => {
                             return {
                                 display: p.display,
                                 id: p.matricule,
@@ -198,16 +197,16 @@ export default {
                         });
                         this.searchOptions = options;
                     })
-                    .catch(err => {
+                    .catch((err) => {
                         console.log(err);
                     });
-            }else{
+            } else {
                 axios.post("/annuaire/api/people_or_classes/", data, token)
-                    .then(response => {
+                    .then((response) => {
                         if (this.searchId !== currentSearch)
                             return;
 
-                        const options = response.data.map(p => {
+                        const options = response.data.map((p) => {
                             if (Number.isNaN(Number.parseInt(query[0]))) {
                                 // It is a student or a responsible.
                                 if ("is_secretary" in p) {
@@ -241,7 +240,6 @@ export default {
                         this.searchOptions = options;
                     });
             }
-
         },
         overloadInput: function () {
             setTimeout(() => {
@@ -254,7 +252,7 @@ export default {
                         if (e.key == "Enter") {
                             if (refInput.search && refInput.search.length > 1 && !isNaN(refInput.search)) {
                                 axios.get("/annuaire/api/student/" + refInput.search + "/")
-                                    .then(resp => {
+                                    .then((resp) => {
                                         if (resp.data) {
                                             this.$router.push(`/person/student/${refInput.search}/`);
                                             refInput.search = "";
@@ -271,31 +269,29 @@ export default {
                     this.overloadInput();
                 }
             }, 300);
-            
         },
-        numberPhoneFormat: function (numberPhone){
+        numberPhoneFormat: function (numberPhone) {
             let numberPhoneConverted;
             let patternPhoneFix = /^([0-9]){9}$/;
             let patternPhoneMobile = /^([0-9]){10}$/;
 
-            if(patternPhoneMobile.test(numberPhone)){
+            if (patternPhoneMobile.test(numberPhone)) {
                 console.log("is Mobile");
-                numberPhoneConverted = `${numberPhone.substring(0,4)}.${numberPhone.substring(4,6)}.${numberPhone.substring(6,8)}.${numberPhone.substring(8,10)}`; 
-            }else if (patternPhoneFix.test(numberPhone)){
+                numberPhoneConverted = `${numberPhone.substring(0, 4)}.${numberPhone.substring(4, 6)}.${numberPhone.substring(6, 8)}.${numberPhone.substring(8, 10)}`;
+            } else if (patternPhoneFix.test(numberPhone)) {
                 console.log("is Fix");
-                numberPhoneConverted = `${numberPhone.substring(0,3)}.${numberPhone.substring(3,5)}.${numberPhone.substring(5,7)}.${numberPhone.substring(7,9)}`; 
-            }
-            else{
+                numberPhoneConverted = `${numberPhone.substring(0, 3)}.${numberPhone.substring(3, 5)}.${numberPhone.substring(5, 7)}.${numberPhone.substring(7, 9)}`;
+            } else {
                 console.log("no valid numberphone");
                 numberPhoneConverted = null;
             }
             console.log(numberPhoneConverted);
             return numberPhoneConverted;
-        } 
+        },
     },
     mounted: function () {
         axios.get("/core/api/teaching/")
-            .then(response => {
+            .then((response) => {
                 this.teachingsOptions = response.data.results;
                 this.loaded = true;
             });
@@ -307,7 +303,7 @@ export default {
     components: {
         "multiselect": Multiselect,
         "app-menu": Menu,
-    }
+    },
 };
 </script>
 

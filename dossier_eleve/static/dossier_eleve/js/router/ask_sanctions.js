@@ -31,17 +31,17 @@ const router = createRouter({
     {
         path: "/edit/:id/",
         component: Ask,
-        props: true
+        props: true,
     },
     {
         path: "/new/",
         component: Ask,
-        props: true
+        props: true,
     },
     {
         path: "/warn/:id/",
         component: WarnSanction,
-        props: true
+        props: true,
     },
     ],
     history: createWebHashHistory(),

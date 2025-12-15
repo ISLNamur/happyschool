@@ -123,7 +123,7 @@ import { useModalController } from "bootstrap-vue-next";
 import CouncilStatement from "./council_statement.vue";
 import OtherStatement from "./other_statement.vue";
 
-const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 /**
  * Root component for showing class council.
@@ -143,7 +143,7 @@ export default {
         advanced: {
             type: Boolean,
             default: true,
-        }
+        },
     },
     data: function () {
         return {
@@ -166,9 +166,9 @@ export default {
         toggleExpand: function () {
             this.expanded = !this.expanded;
         },
-        /** 
+        /**
          * Get promise for submitting the class council.
-         * 
+         *
          * @param {String} piaId The id of the pia model it belgongs.
          */
         submit: function (piaId) {
@@ -184,9 +184,9 @@ export default {
             const send = isNew ? axios.post : axios.put;
             return send(url, data, token);
         },
-        /** 
+        /**
          * Get all the promises of the council statements of the class council.
-         * 
+         *
          * @param {String} classCouncilId The current class council id.
         */
         submitCouncilStatement: function (classCouncilId) {
@@ -212,7 +212,7 @@ export default {
         },
         /**
          * Remove a council statement.
-         * 
+         *
          * @param
          */
         removeStatement: function (councilStatementIndex, statementType) {
@@ -222,7 +222,7 @@ export default {
                 okTitle: "Oui",
                 cancelTitle: "Non",
                 centered: true,
-            }).then(resp => {
+            }).then((resp) => {
                 if (resp.ok) {
                     if (app.class_council.id < 0 || !("id" in app[statementType][councilStatementIndex])) {
                         app[statementType].splice(councilStatementIndex, 1);
@@ -231,7 +231,6 @@ export default {
                             .then(() => app[statementType].splice(councilStatementIndex, 1))
                             .catch(err => alert(err));
                     }
-                    
                 }
             });
         },
@@ -239,11 +238,11 @@ export default {
     mounted: function () {
         if (this.class_council.id >= 0) {
             axios.get(`/pia/api/council_statement/?class_council=${this.class_council.id}`)
-                .then(resp => {
+                .then((resp) => {
                     this.council_statement = resp.data.results;
                 });
             axios.get(`/pia/api/other_statement/?class_council=${this.class_council.id}`)
-                .then(resp => {
+                .then((resp) => {
                     this.other_statement = resp.data.results;
                 });
         } else {
@@ -254,7 +253,7 @@ export default {
     },
     components: {
         CouncilStatement,
-        OtherStatement
-    }
+        OtherStatement,
+    },
 };
 </script>

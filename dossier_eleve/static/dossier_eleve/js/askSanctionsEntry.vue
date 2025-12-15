@@ -211,7 +211,7 @@ export default {
         lightDisplay: {
             type: Boolean,
             default: false,
-        }
+        },
     },
     data: function () {
         return {
@@ -219,7 +219,7 @@ export default {
             nextDate: this.nextWeek(),
             nextSanction: null,
             sanctionOptions: [],
-            store: askSanctionsStore()
+            store: askSanctionsStore(),
         };
     },
     computed: {
@@ -232,7 +232,7 @@ export default {
         nextSanctionData: function () {
             return {
                 date: this.nextDate,
-                sanction: this.sanctionOptions.find(s => s.id === this.nextSanction)
+                sanction: this.sanctionOptions.find(s => s.id === this.nextSanction),
             };
         },
         outdated: function () {
@@ -292,7 +292,7 @@ export default {
                 return true;
 
             return false;
-        }
+        },
     },
     methods: {
         nextWeek: function () {
@@ -320,7 +320,7 @@ export default {
                     alert(error);
                 });
         },
-        displayStudent
+        displayStudent,
     },
     mounted: function () {
         this.store.getSanctions()
@@ -328,7 +328,7 @@ export default {
                 this.sanctionOptions = this.store.sanctions;
                 this.nextSanction = this.rowData.sanction_decision.id;
             });
-    }
+    },
 };
 </script>
 

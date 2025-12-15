@@ -94,7 +94,7 @@ export default {
         return {
             menuInfo: {},
             loaded: false,
-            store: studentAbsenceTeacherStore()
+            store: studentAbsenceTeacherStore(),
         };
     },
     computed: {
@@ -137,7 +137,7 @@ export default {
                 }
             }
             return false;
-        }
+        },
     },
     beforeMount: function () {
         // Move to overview if not having adding access.
@@ -148,7 +148,6 @@ export default {
             ) {
                 this.$router.push(`/overview/${this.date}`);
             }
-
         }
     },
     mounted: function () {
@@ -158,7 +157,7 @@ export default {
     },
     components: {
         "app-menu": Menu,
-    }
+    },
 };
 </script>
 

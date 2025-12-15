@@ -17,13 +17,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import axios from "axios";
 
 import { defineStore } from "pinia";
 
 import { addFilter, removeFilter } from "@s:core/js/common/filters.js";
-
 
 export const piaStore = defineStore("pia", {
     state: () => ({
@@ -48,7 +46,7 @@ export const piaStore = defineStore("pia", {
             this.studentCourses = data;
         },
         loadOptions: function () {
-            return new Promise(resolve => {
+            return new Promise((resolve) => {
                 if (this.disorders.length == 0) {
                     const promises = [
                         axios.get("/pia/api/disorder/"),
@@ -57,10 +55,10 @@ export const piaStore = defineStore("pia", {
                         axios.get("/pia/api/cross_goal_item/"),
                         axios.get("/pia/api/assessment/"),
                         axios.get("/pia/api/branch/"),
-                        axios.get("/pia/api/resource_difficulty/")
+                        axios.get("/pia/api/resource_difficulty/"),
                     ];
                     Promise.all(promises)
-                        .then(resps => {
+                        .then((resps) => {
                             this.disorders = resps[0].data.results;
                             this.scheduleAdjustments = resps[1].data.results;
                             this.branchGoalItems = resps[2].data.results;
@@ -74,6 +72,6 @@ export const piaStore = defineStore("pia", {
                     resolve();
                 }
             });
-        }
-    }
+        },
+    },
 });

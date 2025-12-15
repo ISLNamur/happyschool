@@ -36,7 +36,6 @@
                             :show="loading"
                             rounded="sm"
                         >
-                            
                             <BInputGroup>
                                 <BButton
                                     size="sm"
@@ -110,8 +109,8 @@ export default {
     props: {
         date: {
             type: String,
-            default: () => Moment().format("YYYY-MM-DD")
-        }
+            default: () => Moment().format("YYYY-MM-DD"),
+        },
     },
     data: function () {
         return {
@@ -134,7 +133,7 @@ export default {
             searchOptions: [],
             search: "",
             searchId: -1,
-            store: studentAbsenceTeacherStore()
+            store: studentAbsenceTeacherStore(),
         };
     },
     computed: {
@@ -149,8 +148,7 @@ export default {
 
             if ("classId" in this.$route.params) {
                 this.$router.push(`${newPath}class_view/${this.$route.params.classId}/`);
-            }
-            else if ("studentId" in this.$route.params) {
+            } else if ("studentId" in this.$route.params) {
                 this.$router.push(`${newPath}student_view/${this.$route.params.studentId}/`);
             } else {
                 this.$router.push(newPath);
@@ -186,11 +184,11 @@ export default {
                 check_access: this.classListType === "ownclass",
             };
             axios.post("/annuaire/api/people_or_classes/", data, token)
-                .then(response => {
+                .then((response) => {
                     if (this.searchId !== currentSearch)
                         return;
 
-                    const options = response.data.map(p => {
+                    const options = response.data.map((p) => {
                         if (Number.isNaN(Number.parseInt(query[0]))) {
                             return {
                                 display: p.display,
@@ -210,7 +208,7 @@ export default {
         },
     },
     components: {
-        Multiselect
-    }
+        Multiselect,
+    },
 };
 </script>

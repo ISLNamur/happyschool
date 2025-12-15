@@ -284,66 +284,66 @@ import axios from "axios";
 
 import { useToastController } from "bootstrap-vue-next";
 
-const token = {xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 const student_column_names = [
-    {value: "matricule", text: "Matricule"},
-    {value: "last_name", text: "Nom"},
-    {value: "first_name", text: "Prénom"},
-    {value: "year", text: "Année"},
-    {value: "classe_letter", text: "Classe"},
-    {value: "course_name_short", text: "Cours (court)"},
-    {value: "course_name_long", text: "Cours (long)"},
-    {value: "group", text: "Groupe"},
-    {value: "gender", text: "Genre"},
-    {value: "scholar_year", text: "Année scolaire"},
-    {value: "previous_class", text: "Classe précédente"},
-    {value: "orientation", text: "Orientation"},
-    {value: "street", text: "Rue"},
-    {value: "postal_code", text: "Code postal"},
-    {value: "locality", text: "Ville"},
-    {value: "birth_date", text: "Date de naissance"},
-    {value: "student_phone", text: "Tél. étudiant"},
-    {value: "student_mobile", text: "GSM étudiant"},
-    {value: "student_email", text: "Courriel étudiant"},
-    {value: "resp_last_name", text: "Nom responsable"},
-    {value: "resp_first_name", text: "Prénom responsable"},
-    {value: "resp_phone", text: "Tél. responsable"},
-    {value: "resp_mobile", text: "GSM responsable"},
-    {value: "resp_email", text: "Courriel responsable"},
-    {value: "father_last_name", text: "Nom pére"},
-    {value: "father_first_name", text: "Prénom pére"},
-    {value: "father_job", text: "Job pére"},
-    {value: "father_phone", text: "Tél. pére"},
-    {value: "father_mobile", text: "GSM pére"},
-    {value: "father_email", text: "Courriel pére"},
-    {value: "mother_last_name", text: "Nom mère"},
-    {value: "mother_first_name", text: "Prénom mère"},
-    {value: "mother_job", text: "Job mère"},
-    {value: "mother_phone", text: "Tél. mère"},
-    {value: "mother_mobile", text: "GSM mère"},
-    {value: "mother_email", text: "Courriel mère"},
-    {value: "doctor", text: "Médecin"},
-    {value: "doctor_phone", text: "Tél. médecin"},
-    {value: "mutual", text: "Mutuelle"},
-    {value: "mutual_number", text: "Numéro mutuelle"},
-    {value: "medical_information", text: "Info médicale"},
-    {value: "username", text: "Nom d'utilisateur"},
-    {value: "password", text: "Mot de passe"}
+    { value: "matricule", text: "Matricule" },
+    { value: "last_name", text: "Nom" },
+    { value: "first_name", text: "Prénom" },
+    { value: "year", text: "Année" },
+    { value: "classe_letter", text: "Classe" },
+    { value: "course_name_short", text: "Cours (court)" },
+    { value: "course_name_long", text: "Cours (long)" },
+    { value: "group", text: "Groupe" },
+    { value: "gender", text: "Genre" },
+    { value: "scholar_year", text: "Année scolaire" },
+    { value: "previous_class", text: "Classe précédente" },
+    { value: "orientation", text: "Orientation" },
+    { value: "street", text: "Rue" },
+    { value: "postal_code", text: "Code postal" },
+    { value: "locality", text: "Ville" },
+    { value: "birth_date", text: "Date de naissance" },
+    { value: "student_phone", text: "Tél. étudiant" },
+    { value: "student_mobile", text: "GSM étudiant" },
+    { value: "student_email", text: "Courriel étudiant" },
+    { value: "resp_last_name", text: "Nom responsable" },
+    { value: "resp_first_name", text: "Prénom responsable" },
+    { value: "resp_phone", text: "Tél. responsable" },
+    { value: "resp_mobile", text: "GSM responsable" },
+    { value: "resp_email", text: "Courriel responsable" },
+    { value: "father_last_name", text: "Nom pére" },
+    { value: "father_first_name", text: "Prénom pére" },
+    { value: "father_job", text: "Job pére" },
+    { value: "father_phone", text: "Tél. pére" },
+    { value: "father_mobile", text: "GSM pére" },
+    { value: "father_email", text: "Courriel pére" },
+    { value: "mother_last_name", text: "Nom mère" },
+    { value: "mother_first_name", text: "Prénom mère" },
+    { value: "mother_job", text: "Job mère" },
+    { value: "mother_phone", text: "Tél. mère" },
+    { value: "mother_mobile", text: "GSM mère" },
+    { value: "mother_email", text: "Courriel mère" },
+    { value: "doctor", text: "Médecin" },
+    { value: "doctor_phone", text: "Tél. médecin" },
+    { value: "mutual", text: "Mutuelle" },
+    { value: "mutual_number", text: "Numéro mutuelle" },
+    { value: "medical_information", text: "Info médicale" },
+    { value: "username", text: "Nom d'utilisateur" },
+    { value: "password", text: "Mot de passe" },
 ];
 
 const teacher_column_names = [
-    {value: "matricule", text: "Matricule"},
-    {value: "last_name", text: "Nom"},
-    {value: "first_name", text: "Prénom"},
-    {value: "email", text: "Courriel"},
-    {value: "email_school", text: "Courriel de l'école"},
-    {value: "tenure", text: "Titulariat"},
-    {value: "classe", text: "Classe"},
-    {value: "birth_date", text: "Date de naissance"},
-    {value: "course_name_short", text: "Cours (court)"},
-    {value: "course_name_long", text: "Cours (long)"},
-    {value: "group", text: "Groupe"},
+    { value: "matricule", text: "Matricule" },
+    { value: "last_name", text: "Nom" },
+    { value: "first_name", text: "Prénom" },
+    { value: "email", text: "Courriel" },
+    { value: "email_school", text: "Courriel de l'école" },
+    { value: "tenure", text: "Titulariat" },
+    { value: "classe", text: "Classe" },
+    { value: "birth_date", text: "Date de naissance" },
+    { value: "course_name_short", text: "Cours (court)" },
+    { value: "course_name_long", text: "Cours (long)" },
+    { value: "group", text: "Groupe" },
 ];
 
 export default {
@@ -384,9 +384,9 @@ export default {
                 {
                     xsrfCookieName: "csrftoken",
                     xsrfHeaderName: "X-CSRFToken",
-                    headers: {"Content-Disposition": "form-data; name=\"file\"; filename=\"" + file.name.normalize() + "\""},
+                    headers: { "Content-Disposition": "form-data; name=\"file\"; filename=\"" + file.name.normalize() + "\"" },
                 })
-                .then(response => {
+                .then((response) => {
                     this.content = response.data;
                     this.fieldToColumn = new Array(response.data[0].length);
                     this.testData = response.data[0].map((_, colIndex) => response.data.map(row => row[colIndex]));
@@ -408,17 +408,17 @@ export default {
             data.append(
                 "columns",
                 JSON.stringify(
-                    Object.fromEntries(this.fieldToColumn.map((f, i) => [f, i]).filter(f => f[1] !== undefined))
-                )
+                    Object.fromEntries(this.fieldToColumn.map((f, i) => [f, i]).filter(f => f[1] !== undefined)),
+                ),
             );
 
             axios.post("/core/api/import_students/", data,
                 {
                     xsrfCookieName: "csrftoken",
                     xsrfHeaderName: "X-CSRFToken",
-                    headers: {"Content-Disposition": "form-data; name=\"file\"; filename=\"" + this.file.name.normalize() + "\""},
+                    headers: { "Content-Disposition": "form-data; name=\"file\"; filename=\"" + this.file.name.normalize() + "\"" },
                 })
-                .then(response => {
+                .then((response) => {
                     app.importState = "Connecting to server…\n";
                     const protocol = window.location.protocol === "http:" ? "ws" : "wss";
                     app.progressSocket = new WebSocket(`${protocol}://${window.location.host}/ws/core/import_state/student/${JSON.parse(response.data)}/`);
@@ -436,17 +436,17 @@ export default {
             data.append(
                 "columns",
                 JSON.stringify(
-                    Object.fromEntries(this.fieldToColumn.map((f, i) => [f, i]).filter(f => f[1] !== undefined))
-                )
+                    Object.fromEntries(this.fieldToColumn.map((f, i) => [f, i]).filter(f => f[1] !== undefined)),
+                ),
             );
 
             axios.post("/core/api/import_teachers/", data,
                 {
                     xsrfCookieName: "csrftoken",
                     xsrfHeaderName: "X-CSRFToken",
-                    headers: {"Content-Disposition": "form-data; name=\"file\"; filename=\"" + this.file.name.normalize() + "\""},
+                    headers: { "Content-Disposition": "form-data; name=\"file\"; filename=\"" + this.file.name.normalize() + "\"" },
                 })
-                .then(response => {
+                .then((response) => {
                     app.importState = "Connecting to server…\n";
                     const protocol = window.location.protocol === "http:" ? "ws" : "wss";
                     app.progressSocket = new WebSocket(`${protocol}://${window.location.host}/ws/core/import_state/teacher/${JSON.parse(response.data)}/`);
@@ -475,14 +475,14 @@ export default {
                     this.fieldAssociationOptions.push(resp.data);
                     this.show({
                         body: "L'association entre les colonnes et les champs a été sauvée.",
-                        variant: "success"
+                        variant: "success",
                     });
                 });
         },
     },
     mounted: function () {
         axios.get("/core/api/teaching/")
-            .then(response => {
+            .then((response) => {
                 this.teachingOptions = response.data.results;
             })
             .catch(function (error) {
@@ -495,7 +495,7 @@ export default {
             });
     },
     components: {
-    }
+    },
 };
 </script>
 

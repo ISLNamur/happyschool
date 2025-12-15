@@ -125,13 +125,13 @@ import axios from "axios";
 import { useModalController } from "bootstrap-vue-next";
 
 import Filters from "@s:core/js/common/filters_form.vue";
-import {getFilters} from "@s:core/js/common/filters.js";
+import { getFilters } from "@s:core/js/common/filters.js";
 import CasEleveEntry from "./casEleveEntry.vue";
 import ExportModal from "./exportModal.vue";
 
 import { dossierEleveStore } from "./stores/dossier_eleve.js";
 
-const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
@@ -166,7 +166,7 @@ export default {
             const enable = this.store.settings.enable_submit_sanctions;
             const canAskSanction = this.store.canAskSanction;
             return enable && canAskSanction;
-        }
+        },
     },
     methods: {
         changePage: function (page) {
@@ -183,7 +183,7 @@ export default {
         filterStudent: function (matricule) {
             this.showFilters = true;
             this.store.addFilter(
-                {filterType: "student__matricule", tag: matricule, value: matricule}
+                { filterType: "student__matricule", tag: matricule, value: matricule },
             );
             this.applyFilter();
         },
@@ -211,13 +211,11 @@ export default {
                 });
         },
         deleteEntry: function () {
-            
-
             this.currentEntry = null;
         },
         loadEntries: function () {
             axios.get("/dossier_eleve/api/cas_eleve/?page=" + this.currentPage + this.filter + this.ordering)
-                .then(response => {
+                .then((response) => {
                     this.entriesCount = response.data.count;
                     this.entries = response.data.results;
                     this.loaded = true;
@@ -227,10 +225,10 @@ export default {
             // const fullscreen = window.location.href.includes("matricule");
             const matricule = (new URL(document.location)).searchParams.get("matricule");
             if (matricule) {
-                this.store.addFilter({filterType: "student__matricule", value: matricule, tag: matricule});
+                this.store.addFilter({ filterType: "student__matricule", value: matricule, tag: matricule });
                 this.showFilters = true;
             }
-        }
+        },
     },
     mounted: function () {
         this.checkMatriculeFilter();
@@ -238,11 +236,11 @@ export default {
         this.loadEntries();
 
         axios.get("/dossier_eleve/api/ask_sanctions/?page=" + this.currentPage + this.filter + this.ordering)
-            .then(response => {
+            .then((response) => {
                 this.askSanctionsCount = response.data.count;
             });
         axios.get("/dossier_eleve/api/ask_sanctions/?page=" + this.currentPage + this.filter + this.ordering + "&activate_not_done=true")
-            .then(response => {
+            .then((response) => {
                 this.askSanctionsNotDoneCount = response.data.count;
             });
     },
@@ -250,7 +248,7 @@ export default {
         "filters": Filters,
         "cas-eleve-entry": CasEleveEntry,
         "export-modal": ExportModal,
-    }
+    },
 };
 </script>
 

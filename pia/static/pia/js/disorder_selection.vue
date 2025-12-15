@@ -94,8 +94,8 @@ export default {
     props: {
         pia: {
             type: Number,
-            default: -1
-        }
+            default: -1,
+        },
     },
     data: function () {
         return {
@@ -111,7 +111,7 @@ export default {
         },
         currentDisorderCareObj: function () {
             return this.currentDisorderCare ? this.disorderCares.find(dC => dC.id === this.currentDisorderCare) : null;
-        }
+        },
     },
     methods: {
         add: function () {
@@ -121,7 +121,7 @@ export default {
                 date_start: null,
                 date_end: null,
                 disorder: [],
-                text: "Nouvel aménagement"
+                text: "Nouvel aménagement",
             });
             this.currentDisorderCare = newId;
         },
@@ -142,11 +142,11 @@ export default {
                     okVariant: "danger",
                     okTitle: "Oui",
                     cancelTitle: "Non",
-                }
+                },
             ).then((confirm) => {
                 if (confirm.ok) {
                     const dCIndex = this.disorderCares.findIndex(
-                        sA => sA.id === this.currentDisorderCare && sA.date_start === this.currentDisorderCareObj.date_start
+                        sA => sA.id === this.currentDisorderCare && sA.date_start === this.currentDisorderCareObj.date_start,
                     );
                     if (this.disorderCares.length > 1) {
                         this.currentDisorderCare = this.disorderCares[0].id;
@@ -164,7 +164,7 @@ export default {
                     resolve();
                 }
                 const currentDisorderIndex = this.disorderCares.findIndex(dC => dC.id === this.currentDisorderCare);
-                Promise.all(this.disorderCares.map(dC => {
+                Promise.all(this.disorderCares.map((dC) => {
                     let disorderCare = Object.assign({}, dC);
                     disorderCare.disorder = dC.disorder.map(d => d.id);
                     disorderCare.pia_model = piaId;
@@ -186,7 +186,7 @@ export default {
                     });
                 });
             });
-        }
+        },
     },
     mounted: function () {
         this.loading = true;
@@ -195,7 +195,7 @@ export default {
                 if (this.pia) {
                     axios.get(`/pia/api/disorder_care/?pia_model=${this.pia}`)
                         .then((resp) => {
-                            this.disorderCares = resp.data.results.map(dC => {
+                            this.disorderCares = resp.data.results.map((dC) => {
                                 dC.text = `Du ${dC.date_start} au ${dC.date_end}`;
                                 dC.disorder = dC.disorder.map(dis => this.store.disorders.find(d => d.id === dis));
                                 return dC;
@@ -210,7 +210,7 @@ export default {
             });
     },
     components: {
-        DisorderCare
-    }
+        DisorderCare,
+    },
 };
 </script>

@@ -113,20 +113,20 @@ export default {
             if (state && !this.export_to) {
                 this.export_to = this.export_from;
             }
-        }
+        },
     },
     computed: {
         summaryUrl: function () {
             return "/schedule_change/api/summary_pdf/?page_size=500&date_change__gte="
-            + `${this.export_from}&date_change__lte=${this.export_to}&send_to_teachers=${this.sendToTeachers}`
-            + `&message=${encodeURIComponent(this.message)}`;
+              + `${this.export_from}&date_change__lte=${this.export_to}&send_to_teachers=${this.sendToTeachers}`
+              + `&message=${encodeURIComponent(this.message)}`;
         },
         buttonOkText: function () {
             if (this.sendToTeachers) {
                 return "Créer le PDF et envoyer";
             }
             return "Créer le PDF";
-        }
+        },
     },
     methods: {
         show: function () {
@@ -134,7 +134,7 @@ export default {
         },
         resetModal: function () {
             Object.assign(this.$data, this.$options.data.call(this));
-        }
-    }
+        },
+    },
 };
 </script>

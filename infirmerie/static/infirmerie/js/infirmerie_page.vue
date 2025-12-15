@@ -17,7 +17,6 @@
 <!-- You should have received a copy of the GNU Affero General Public License -->
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
-
 <template>
     <div>
         <app-menu
@@ -42,16 +41,16 @@ import Menu from "@s:core/js/common/menu_bar.vue";
 export default {
     data: function () {
         return {
-            menuInfo: {},    
+            menuInfo: {},
         };
     },
-    mounted: function() {
+    mounted: function () {
         // eslint-disable-next-line no-undef
         this.menuInfo = menu;
     },
     components: {
         "app-menu": Menu,
-    }
+    },
 };
 </script>
 

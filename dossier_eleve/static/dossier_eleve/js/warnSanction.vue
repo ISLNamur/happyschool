@@ -93,8 +93,8 @@ export default {
     props: {
         id: {
             type: Number,
-            default: -1
-        }
+            default: -1,
+        },
     },
     data: function () {
         return {
@@ -123,7 +123,7 @@ export default {
                         });
                     });
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err);
                     this.loading = false;
                 });
@@ -132,22 +132,22 @@ export default {
     mounted: function () {
         this.loading = true;
         axios.get(`/dossier_eleve/api/ask_sanctions/${this.id}/`)
-            .then(resp => {
+            .then((resp) => {
                 this.sanction = resp.data;
                 this.loading = false;
             })
-            .catch(err => {
+            .catch((err) => {
                 console.log(err);
                 this.loading = false;
             });
 
         axios.get(`/dossier_eleve/api/template_sanction/${this.id}/`)
-            .then(resp => {
+            .then((resp) => {
                 this.baseTemplate = resp.data;
             });
     },
     components: {
         MailTemplate,
-    }
+    },
 };
 </script>

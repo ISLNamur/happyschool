@@ -119,7 +119,7 @@
                         >
                             <BLink :to="`/course/${c.course.id}/${c.id}/`">
                                 <span
-                                    v-if="c.course.long_name" 
+                                    v-if="c.course.long_name"
                                     v-b-tooltip="`${c.course.short_name} (${c.group.toUpperCase()})`"
                                 >
                                     {{ c.course.long_name }}
@@ -295,12 +295,12 @@ export default {
     props: {
         customMatricule: {
             type: Number,
-            default: -1
+            default: -1,
         },
         customPersonType: {
             type: String,
-            default: null
-        }
+            default: null,
+        },
     },
     data: function () {
         return {
@@ -340,7 +340,7 @@ export default {
                 this.matricule = this.$route.params.matricule;
                 this.loadInfo();
             }
-        }
+        },
     },
     methods: {
         copyToClipboard: function (text) {
@@ -351,11 +351,11 @@ export default {
                 noCloseButton: true,
             });
         },
-        copyToClipboardFullname: function(){
+        copyToClipboardFullname: function () {
             let fullname = "";
             if (this.personType === "responsible") {
                 fullname = `${this.person.first_name} ${this.person.last_name}`;
-            } else if (this.personType =="student") {
+            } else if (this.personType == "student") {
                 fullname = `${displayStudent(this.person, this)} (${this.person.matricule})`;
             }
             this.copyToClipboard(fullname);
@@ -370,46 +370,46 @@ export default {
 
             return Moment(date).format("HH:mm");
         },
-        loadInfo: function () {            
+        loadInfo: function () {
             switch (this.personType) {
-            case "student":
-                axios.get(`/annuaire/api/student/${this.matricule}/`)
-                    .then(response => {
-                        this.person = response.data;
-                        this.person.courses = this.person.courses.sort((a, b) => a.course.name >= b.course.name);
-                        this.person.teaching = [this.person.teaching];
-                        this.person.classe = this.person.classe ? [this.person.classe] : [];
-                        this.loading = false;
-                    });
+                case "student":
+                    axios.get(`/annuaire/api/student/${this.matricule}/`)
+                        .then((response) => {
+                            this.person = response.data;
+                            this.person.courses = this.person.courses.sort((a, b) => a.course.name >= b.course.name);
+                            this.person.teaching = [this.person.teaching];
+                            this.person.classe = this.person.classe ? [this.person.classe] : [];
+                            this.loading = false;
+                        });
 
-                axios.get(`/annuaire/api/info_general/${this.matricule}/`)
-                    .then(response => {
-                        this.username = response.data.username;
-                        this.password = response.data.password;
-                    });
+                    axios.get(`/annuaire/api/info_general/${this.matricule}/`)
+                        .then((response) => {
+                            this.username = response.data.username;
+                            this.password = response.data.password;
+                        });
 
-                axios.get(`/dossier_eleve/api/cas_eleve/?ordering=-datetime_encodage&activate_important=true&student__matricule=${this.matricule}`)
-                    .then(response => {
-                        this.important = response.data.results;
-                    });
-                break;
-            case "responsible":
-                axios.get(`/annuaire/api/responsible/${this.matricule}/`)
-                    .then(response => {
-                        this.person = response.data;
-                        this.person.courses = this.person.courses.sort((a, b) => a.course.name >= b.course.name);
-                        this.person.classe = this.person.classe.sort((a, b) => a.year + a.letter >= b.year + b.letter);
-                        this.loading = false;
-                    });
-                axios.get(`/annuaire/api/responsible_sensitive/${this.matricule}/`)
-                    .then(response => {
-                        this.username = response.data.user.username;
-                        this.password = response.data.password.length > 15 ? "Indisponible" : response.data.password;
-                    });
-                break;
-        
-            default:
-                break;
+                    axios.get(`/dossier_eleve/api/cas_eleve/?ordering=-datetime_encodage&activate_important=true&student__matricule=${this.matricule}`)
+                        .then((response) => {
+                            this.important = response.data.results;
+                        });
+                    break;
+                case "responsible":
+                    axios.get(`/annuaire/api/responsible/${this.matricule}/`)
+                        .then((response) => {
+                            this.person = response.data;
+                            this.person.courses = this.person.courses.sort((a, b) => a.course.name >= b.course.name);
+                            this.person.classe = this.person.classe.sort((a, b) => a.year + a.letter >= b.year + b.letter);
+                            this.loading = false;
+                        });
+                    axios.get(`/annuaire/api/responsible_sensitive/${this.matricule}/`)
+                        .then((response) => {
+                            this.username = response.data.user.username;
+                            this.password = response.data.password.length > 15 ? "Indisponible" : response.data.password;
+                        });
+                    break;
+
+                default:
+                    break;
             }
         },
     },

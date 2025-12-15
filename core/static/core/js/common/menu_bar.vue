@@ -90,10 +90,10 @@
 
 export default {
     props: {
-        "menu-info":{
+        "menu-info": {
             type: Object,
-            default: () => {}
-        }
+            default: () => {},
+        },
     },
     data: function () {
         return {
@@ -103,7 +103,7 @@ export default {
     mounted: function () {
         // eslint-disable-next-line no-undef
         if (user_properties && user_properties.matricule) this.userMatricule = user_properties.matricule;
-    }
+    },
 };
 </script>
 

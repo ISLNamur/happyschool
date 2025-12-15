@@ -33,24 +33,24 @@ const router = createRouter({
             path: "/page/:currentPage/",
             component: ScheduleChange,
             props: (route) => {
-                const props = {...route.params };
+                const props = { ...route.params };
                 props.currentPage = Number(props.currentPage);
                 return props;
-            }
+            },
         },
         {
             path: "/schedule_form/:id/",
             component: ScheduleForm,
             props: (route) => {
-                const props = {...route.params };
+                const props = { ...route.params };
                 props.id = Number(props.id);
                 return props;
-            }
+            },
         },
         {
             path: "/mass_schedule_change/",
             component: MassScheduleChange,
-        }
+        },
     ],
     history: createWebHashHistory(),
 });

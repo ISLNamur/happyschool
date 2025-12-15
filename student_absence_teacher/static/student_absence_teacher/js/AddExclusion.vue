@@ -189,7 +189,7 @@ import { studentAbsenceTeacherStore } from "./stores/index.js";
 
 import { displayStudent } from "@s:core/js/common/utilities";
 
-const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
@@ -204,7 +204,7 @@ export default {
             exclusionFields: [
                 {
                     key: "dateExclusion",
-                    label: "Date d'exclusion"
+                    label: "Date d'exclusion",
                 },
                 {
                     key: "studentName",
@@ -221,7 +221,7 @@ export default {
                 {
                     key: "actions",
                     label: "",
-                }
+                },
             ],
             search: "",
             searchOptions: [],
@@ -239,7 +239,7 @@ export default {
         displayStudent,
         getTopList: function () {
             axios.get(`/student_absence_teacher/api/top_exclusions?${this.activate_own_classes ? "own_classes=true" : ""}`)
-                .then(resp => {
+                .then((resp) => {
                     this.topExclusions = resp.data;
                 });
         },
@@ -260,7 +260,7 @@ export default {
                 okTitle: "Oui",
                 cancelTitle: "Annuler",
             })
-                .then(remove => {
+                .then((remove) => {
                     if (!remove.ok) return;
 
                     axios.delete(`/student_absence_teacher/api/absence_teacher/${item.id}/`, token)
@@ -281,16 +281,16 @@ export default {
                 check_access: false,
             };
             axios.post("/annuaire/api/people/", data, token)
-                .then(response => {
+                .then((response) => {
                     if (this.searchId !== currentSearch)
                         return;
-                
+
                     this.searchOptions = response.data;
                 });
         },
         selectStudent: function (matricule) {
             axios.get("/annuaire/api/student/" + matricule + "/")
-                .then(resp => {
+                .then((resp) => {
                     if (resp.data) {
                         this.search = resp.data;
                         this.addStudent();
@@ -304,8 +304,8 @@ export default {
         addStudent: function () {
             axios.post(
                 "/student_absence_teacher/api/exclude_student/",
-                {student_id: this.search.matricule, period_id: this.period},
-                token
+                { student_id: this.search.matricule, period_id: this.period },
+                token,
             )
                 .then(() => {
                     this.search = null;
@@ -317,7 +317,7 @@ export default {
             const ownClasses = this.ownClasses ? "&activate_own_classes=true" : "";
             axios.get(`/student_absence_teacher/api/absence_teacher/?status=excluded&page=${this.currentPage}&ordering=-date_absence${studentFilter}${ownClasses}`)
                 .then((resp) => {
-                    this.exclusions = resp.data.results.map(e => {
+                    this.exclusions = resp.data.results.map((e) => {
                         return {
                             id: e.id,
                             dateExclusion: e.date_absence,
@@ -349,7 +349,6 @@ export default {
                     this.overloadInput();
                 }
             }, 300);
-            
         },
     },
     mounted: function () {
@@ -362,6 +361,6 @@ export default {
     },
     components: {
         Multiselect,
-    }
+    },
 };
 </script>

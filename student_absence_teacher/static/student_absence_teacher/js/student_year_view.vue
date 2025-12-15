@@ -69,14 +69,14 @@ export default {
         },
         currentDate: {
             type: String,
-            default: "1970-01-01"
-        }
+            default: "1970-01-01",
+        },
     },
     data: function () {
         return {
             calendar: [],
             fields: [
-                { key: "Mois" }
+                { key: "Mois" },
             ],
             firstDate: null,
             month: [
@@ -98,7 +98,7 @@ export default {
     watch: {
         studentId: function () {
             this.initData();
-        }
+        },
     },
     methods: {
         isToday: function (data) {
@@ -114,9 +114,8 @@ export default {
                     {
                         key: String(d),
                         label: String(d + 1),
-                    }
+                    },
                 );
-
             }
 
             const currentYear = getCurrentScholarYear();
@@ -125,12 +124,12 @@ export default {
             Promise.all([
                 axios.get("/core/api/scholar_calendar/"),
                 axios.get(`/student_absence_teacher/api/absence_educ/?student__matricule=${this.studentId}&date_absence__gte=${from}&date_absence__lt=${to}&page_size=1000&ordering=period__start`),
-                axios.get(`/student_absence_teacher/api/justification/?student__matricule=${this.studentId}&scholar_year=${currentYear}-${currentYear + 1}&page_size=1000`)
+                axios.get(`/student_absence_teacher/api/justification/?student__matricule=${this.studentId}&scholar_year=${currentYear}-${currentYear + 1}&page_size=1000`),
             ])
-                .then(resps => {
+                .then((resps) => {
                     const firstDate = resps[0].data[0][0];
                     this.firstDate = new Date(firstDate[0], firstDate[1] - 1, firstDate[2]);
-                    this.calendar = resps[0].data.map(month => {
+                    this.calendar = resps[0].data.map((month) => {
                         return Object.assign({}, month);
                     });
                     this.calendar.forEach(month => Object.entries(month).forEach((dayData) => {
@@ -138,14 +137,14 @@ export default {
                             if (month._cellVariants) {
                                 month._cellVariants[dayData[0]] = "warning";
                             } else {
-                                month._cellVariants = {[dayData[0]]: "warning"};
+                                month._cellVariants = { [dayData[0]]: "warning" };
                             }
                         }
                         if (this.isCurrentDate(dayData[1])) {
                             if (month._cellVariants) {
                                 month._cellVariants[dayData[0]] = "success";
                             } else {
-                                month._cellVariants = {[dayData[0]]: "success"};
+                                month._cellVariants = { [dayData[0]]: "success" };
                             }
                         }
 
@@ -153,24 +152,23 @@ export default {
                             if (month._cellVariants) {
                                 month._cellVariants[dayData[0]] = "danger";
                             } else {
-                                month._cellVariants = {[dayData[0]]: "danger"};
+                                month._cellVariants = { [dayData[0]]: "danger" };
                             }
                         }
-
                     }));
-                    resps[1].data.results.forEach(abs => {
+                    resps[1].data.results.forEach((abs) => {
                         const rowIndex = ((11 - this.firstDate.getMonth()) + parseInt(abs.date_absence.slice(5, 7))) % 12;
                         const columnIndex = parseInt(abs.date_absence.slice(8, 10)) - 1;
                         const hasJustification = resps[2].data.results.find(just => just.absences.includes(abs.id));
                         this.calendar[rowIndex][String(columnIndex)][4] += hasJustification ? abs.status.toLowerCase() : abs.status;
                     });
                 });
-        }
-        
+        },
+
     },
     mounted: function () {
         this.initData();
-    }
+    },
 };
 </script>
 

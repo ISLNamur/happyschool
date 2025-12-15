@@ -126,15 +126,15 @@ Moment.locale("fr");
 import { latenessStore } from "./stores/index.js";
 import { displayStudent } from "@s:core/js/common/utilities.js";
 
-const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     emits: ["delete", "filterStudent", "update"],
     props: {
         lateness: {
             type: Object,
-            default: () => {}
-        }
+            default: () => {},
+        },
     },
     data: function () {
         return {
@@ -147,7 +147,7 @@ export default {
     computed: {
         niceDate: function () {
             return Moment(this.lateness.datetime_creation).format("HH:mm DD/MM");
-        }
+        },
     },
     methods: {
         displayStudent,
@@ -158,13 +158,13 @@ export default {
             }, 5000);
         },
         updateJustified: function (event) {
-            const data = {justified: event};
+            const data = { justified: event };
             if (event && this.lateness.has_sanction) {
                 data.has_sanction = false;
                 this.sanction = null;
             }
             axios.put(`/lateness/api/lateness/${this.lateness.id}/`, data, token)
-                .then(resp => {
+                .then((resp) => {
                     this.justified = resp.data.justified;
                     this.$emit("update", resp.data);
                 });
@@ -179,24 +179,24 @@ export default {
         if (!this.lateness.sanction_id) return;
 
         axios.get("/dossier_eleve/api/cas_eleve/" + this.lateness.sanction_id + "/")
-            .then(resp => {
+            .then((resp) => {
                 this.sanction = {
                     date_sanction: Moment(resp.data.date_sanction).format("DD/MM/YY"),
                     sanction_faite: true,
-                    to_be_done: false
+                    to_be_done: false,
                 };
-            }
+            },
             )
             .catch(() => {
                 axios.get("/dossier_eleve/api/ask_sanctions/" + this.lateness.sanction_id + "/")
-                    .then(resp => {
+                    .then((resp) => {
                         this.sanction = {
                             date_sanction: Moment(resp.data.date_sanction).format("DD/MM/YY"),
                             sanction_faite: false,
-                            to_be_done: Moment(resp.data.date_sanction) > Moment()
+                            to_be_done: Moment(resp.data.date_sanction) > Moment(),
                         };
                     });
             });
-    }
+    },
 };
 </script>

@@ -176,9 +176,9 @@ import { askSanctionsStore } from "./stores/ask_sanctions.js";
 
 export default {
     props: {
-        "entriesCount": {
+        entriesCount: {
             type: Number,
-            default: 0
+            default: 0,
         },
     },
     data: function () {
@@ -243,15 +243,15 @@ export default {
                 url += `${this.ownClass}/`;
             }
             window.open(url);
-        }
+        },
     },
     mounted: function () {
         this.ownClass = this.store.settings.export_retenues_own_classes_default;
         this.sortByClasse = this.store.settings.export_retenues_by_classe_default;
         this.sortBySanction = this.store.settings.export_retenues_by_sanction_default;
         axios.get("/dossier_eleve/api/sanction_decision/?only_sanction=1")
-            .then(resp => {
-                this.optionsSanction = resp.data.results.filter(sanct => sanct.can_ask).map(sanct => {
+            .then((resp) => {
+                this.optionsSanction = resp.data.results.filter(sanct => sanct.can_ask).map((sanct) => {
                     return {
                         value: sanct.id,
                         text: sanct.sanction_decision,

@@ -80,8 +80,8 @@ export default {
          */
         commentType: {
             type: String,
-            default: ""
-        }
+            default: "",
+        },
     },
     data: function () {
         return {
@@ -91,9 +91,9 @@ export default {
             comment: "",
             /** States of the input. */
             inputStates: {
-                date_comment: null
+                date_comment: null,
             },
-            errors: {}
+            errors: {},
         };
     },
     watch: {
@@ -102,9 +102,9 @@ export default {
         },
     },
     methods: {
-        /** 
+        /**
          * Assign text error if any.
-         * 
+         *
          * @param {String} err Field name.
          */
         errorMsg(err) {
@@ -116,9 +116,9 @@ export default {
         },
         /**
          * Submit the comment to the server.
-         * 
+         *
          * Return a promise and handle any error.
-         * 
+         *
          * @param {Strinrg} piaId The id of parent pia model.
          */
         submit: function (piaId) {
@@ -137,7 +137,7 @@ export default {
             const url = !isNew ? `/pia/api/${this.commentType}/${this.commentObject.id}/` : `/pia/api/${this.commentType}/`;
             const putOrPost = !isNew ? axios.put : axios.post;
             return putOrPost(url, data, token)
-                .catch(error => {
+                .catch((error) => {
                     this.errors = error.response.data;
                     throw "Erreur lors de l'envoi des données.";
                 });
@@ -151,13 +151,13 @@ export default {
                 this.date_comment = this.commentObject[dateField];
                 this.comment = this.commentObject[this.commentType];
             }
-        }
+        },
     },
     components: {
         TextEditor,
     },
     mounted: function () {
         this.assignComment();
-    }
+    },
 };
 </script>

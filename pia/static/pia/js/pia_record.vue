@@ -545,7 +545,7 @@ export default {
         advanced: {
             type: Boolean,
             default: true,
-        }
+        },
     },
     data: function () {
         return {
@@ -571,7 +571,7 @@ export default {
                 schedule_adjustment: [],
                 attachments: [],
                 other_adjustments: "",
-                support_activities: {}
+                support_activities: {},
             },
             uploadedFiles: [],
             cross_goal: [],
@@ -586,12 +586,12 @@ export default {
             errors: {},
             /** List of input error states. */
             inputStates: {
-                "student": null,
-                "referent": null,
-                "sponsor": null,
-                "disorder": null,
-                "disorder_response": null,
-                "schedule_adjustment": null
+                student: null,
+                referent: null,
+                sponsor: null,
+                disorder: null,
+                disorder_response: null,
+                schedule_adjustment: null,
             },
             dayOfWeek: { 1: "Lundi", 2: "Mardi", 3: "Mercredi", 4: "Jeudi", 5: "Vendredi", 6: "Samedi", 7: "Dimanche" },
             store: piaStore(),
@@ -618,11 +618,11 @@ export default {
         },
         /**
          * Handle returned errors states.
-         * 
+         *
          * @param {Object} newErrors Errors states with error message.
          */
         errors: function (newErrors) {
-            Object.keys(this.inputStates).forEach(key => {
+            Object.keys(this.inputStates).forEach((key) => {
                 if (key in newErrors) {
                     this.inputStates[key] = newErrors[key].length == 0;
                 } else {
@@ -633,7 +633,7 @@ export default {
     },
     methods: {
         addFiles: function () {
-            this.uploadedFiles = this.uploadedFiles.concat(this.form.attachments.map(a => {
+            this.uploadedFiles = this.uploadedFiles.concat(this.form.attachments.map((a) => {
                 return { file: a, id: -1, visible: true };
             }));
             this.form.attachments.splice(0, this.form.attachments.length);
@@ -650,9 +650,9 @@ export default {
         hideFile: function (index) {
             this.uploadedFiles[index].visible = false;
         },
-        /** 
+        /**
          * Assign text error if any.
-         * 
+         *
          * @param {String} err Field name.
          */
         errorMsg(err) {
@@ -664,7 +664,7 @@ export default {
         },
         /**
          * Clone an object from the list.
-         * 
+         *
          * @param {String} objectType The type of the goal (cross_goal, branch_goal).
          * @param {Number} objectIndex The index of the goal in the associated goal list.
          */
@@ -675,7 +675,7 @@ export default {
                 okTitle: "Oui",
                 cancelTitle: "Non",
                 centered: true,
-            }).then(resp => {
+            }).then((resp) => {
                 if (resp.ok) {
                     let clonedObject = Object.assign({}, app[objectType][objectIndex]);
                     if (app[objectType][objectIndex].id >= 0) {
@@ -690,7 +690,7 @@ export default {
         },
         /**
          * Remove a object from the list.
-         * 
+         *
          * @param {String} objectType The type of the goal (cross_goal, branch_goal, student_project or parents_opinion).
          * @param {Number} objectIndex The index of the goal in the associated goal list.
          */
@@ -701,7 +701,7 @@ export default {
                 okTitle: "Oui",
                 cancelTitle: "Non",
                 centered: true,
-            }).then(resp => {
+            }).then((resp) => {
                 if (resp.ok) {
                     if (app[objectType][objectIndex].id >= 0) {
                         axios.delete(`/pia/api/${objectType}/` + app[objectType][objectIndex].id + "/", token)
@@ -735,7 +735,7 @@ export default {
                 });
         },
         updateDisorderResponse: function (selected) {
-            this.disorderResponseOptions = this.store.disorderResponses.filter(d => {
+            this.disorderResponseOptions = this.store.disorderResponses.filter((d) => {
                 return this.form.disorder.map(x => x.id).includes(d.disorder);
             });
 
@@ -743,21 +743,21 @@ export default {
 
             // Keep disorder response related to only selected disorder.
             this.selected_disorder_response = this.selected_disorder_response.filter(
-                sDR => this.disorderResponseOptions.includes(sDR.disorder_response)
+                sDR => this.disorderResponseOptions.includes(sDR.disorder_response),
             );
         },
         showSuccess: function (recordId) {
             let app = this;
             app.sending = false;
             if (app.id) {
-                app.show( {
+                app.show({
                     body: "Les données ont bien été sauvegardées",
                     variant: "success",
                     noCloseButton: true,
                 });
             } else {
                 app.$router.replace(`/edit/${recordId}/${this.advanced}/`).then(() => {
-                    app.show( {
+                    app.show({
                         body: "Les données ont bien été sauvegardées",
                         variant: "success",
                         noCloseButton: true,
@@ -767,7 +767,7 @@ export default {
         },
         showFailure: function () {
             this.sending = false;
-            this.show( {
+            this.show({
                 body: "Un problème est survenu lors de l'enregistrement. Merci de vérifier que les données requises ont été complétées.",
                 variant: "danger",
                 noCloseButton: true,
@@ -792,7 +792,7 @@ export default {
             let url = "/pia/api/pia/";
             if (this.id) url += this.id + "/";
             send(url, data, token)
-                .then(resp => {
+                .then((resp) => {
                     const recordId = resp.data.id;
 
                     const disorderPromise = this.advanced ? [app.$refs.disorder.save(recordId)] : [];
@@ -805,23 +805,22 @@ export default {
                     const classCouncilPromises = this.$refs.councils.save(recordId);
                     Promise.all(crossGoalPromises.concat(
                         disorderPromise, scheduleAdjustPromise, activitySupportPromise,
-                        branchGoalPromises, classCouncilPromises, sPPromises, pOPromises
+                        branchGoalPromises, classCouncilPromises, sPPromises, pOPromises,
                     ))
-                        .then(resps => {
+                        .then((resps) => {
                             // Update new component with response.
                             const components = ["cross_goal", "branch_goal", "student_project", "parents_opinion"];
-                            components.forEach(comp => {
+                            components.forEach((comp) => {
                                 const compResps = resps.filter(r => r && r.config.url.includes(`pia/api/${comp}/`));
                                 app[comp] = compResps.map(r => r.data).sort((a, b) => a.datetime_creation < b.datetime_creation);
                             });
 
                             app.showSuccess(recordId);
                         })
-                        .catch(err => {
+                        .catch((err) => {
                             console.log(err);
                             app.showFailure();
                         });
-
                 }).catch(function (error) {
                     console.log(error);
                     app.showFailure();
@@ -842,19 +841,19 @@ export default {
         },
         /**
         * Assign record data from a request.
-        * 
+        *
         * @param {Number} newId The id of the record.
         */
         loadPIA: function (newId) {
             axios.get("/pia/api/pia/" + newId + "/")
-                .then(resp => {
+                .then((resp) => {
                     this.form.student = resp.data.student;
 
-                    resp.data.referent.map(r => {
+                    resp.data.referent.map((r) => {
                         axios.get("/annuaire/api/responsible/" + r + "/")
                             .then(resp => this.form.referent.push(resp.data));
                     });
-                    resp.data.sponsor.map(s => {
+                    resp.data.sponsor.map((s) => {
                         axios.get("/annuaire/api/responsible/" + s + "/")
                             .then(resp => this.form.sponsor.push(resp.data));
                     });
@@ -866,32 +865,32 @@ export default {
                     this.loading = false;
 
                     axios.get(`/dossier_eleve/api/cas_eleve/?page_size=100&info__info=PIA&student__matricule=${resp.data.student.matricule}`)
-                        .then(resp => {
+                        .then((resp) => {
                             this.dossier = resp.data.results;
                         });
 
                     axios.get(`/annuaire/api/student/${resp.data.student.matricule}/`)
-                        .then(resp => {
+                        .then((resp) => {
                             this.store.setCourses(resp.data.courses);
                         });
 
                     this.form.selected_disorder_response = resp.data.selected_disorder_response;
                     this.selectedResponseLoading = true;
                     Promise.all(resp.data.selected_disorder_response.map(id => axios.get(`/pia/api/selected_disorder_response_new/${id}/`)))
-                        .then(resps => {
+                        .then((resps) => {
                             this.selected_disorder_response = resps.map(r => r.data);
                             this.selectedResponseLoading = false;
                         });
 
                     // Attachments
-                    this.uploadedFiles = resp.data.attachments.map(a => {
-                        return { id: a, file: null, visible: true};
+                    this.uploadedFiles = resp.data.attachments.map((a) => {
+                        return { id: a, file: null, visible: true };
                     });
                 });
         },
         /**
          * Initialize the component.
-         * 
+         *
          * It will request options for the select inputs and if editing, call
          * the retrieval of the current data record (goals, comments and council included).
          */
@@ -908,7 +907,7 @@ export default {
                             axios.get("/pia/api/parents_opinion/?pia_model=" + this.id),
                         ];
                         Promise.all(getAllData)
-                            .then(resps => {
+                            .then((resps) => {
                                 this.cross_goal = resps[0].data.results;
                                 this.branch_goal = resps[1].data.results;
                                 this.student_project = resps[2].data.results;
@@ -935,7 +934,7 @@ export default {
         ScheduleAdjustments,
         FileUpload,
         ActivitySupport,
-    }
+    },
 };
 </script>
 

@@ -34,8 +34,8 @@
                     <p>
                         Si vous le décidez, vous avez la possibilité de recevoir un courriel chaque semaine contenant
                         un récapitulatif des retards justifiés et injustifiés ainsi que des exclusions de cours.
-                        S'il n'y a aucun retard ou aucune exclusion, aucun courriel ne sera envoyé. 
-                        oute autre information d’ordre pédagogique ou disciplinaire vous sera transmise par les canaux habituels 
+                        S'il n'y a aucun retard ou aucune exclusion, aucun courriel ne sera envoyé.
+                        oute autre information d’ordre pédagogique ou disciplinaire vous sera transmise par les canaux habituels
                         pages jaunes du jdc, courrier, bulletin…).
                     </p>
                 </BCol>
@@ -84,7 +84,7 @@ import axios from "axios";
 
 import { useToastController } from "bootstrap-vue-next";
 
-const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken"};
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
@@ -114,9 +114,9 @@ export default {
                     data.push(this.emails[i]);
                 }
             });
-            
+
             // eslint-disable-next-line no-undef
-            axios.post(`/core/api/parent_settings/${uuid}/`, data={ emails: data }, token)
+            axios.post(`/core/api/parent_settings/${uuid}/`, data = { emails: data }, token)
                 .then(() => {
                     this.sending = false;
                     this.saved = true;
@@ -133,20 +133,20 @@ export default {
                         variant: "danger",
                     });
                 });
-        }
+        },
     },
     mounted: function () {
         // eslint-disable-next-line no-undef
         axios.get(`/core/api/parent_settings/${uuid}/`)
-            .then(resp => {
+            .then((resp) => {
                 console.log(resp.data);
                 const emailsNotif = resp.data.map(p => p.contact);
-                this.emails.forEach((e,i) => {
+                this.emails.forEach((e, i) => {
                     if (emailsNotif.includes(e)) {
                         this.notif[i] = true;
                     }
                 });
             });
-    }
+    },
 };
 </script>
