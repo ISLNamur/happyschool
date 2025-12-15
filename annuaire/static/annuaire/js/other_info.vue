@@ -31,46 +31,44 @@
             </BCol>
         </BRow>
         <BCard
-            :header="`Derniers messages du dossier des élèves (${dossier_eleve.count} au total)`"
             class="mt-2"
             v-if="dossier_eleve && dossier_eleve.count > 0"
         >
-            <BRow>
-                <BCol cols="2">
-                    <strong>Date</strong>
-                </BCol>
-                <BCol cols="2">
-                    <strong>Objet/Motif</strong>
-                </BCol>
-                <BCol><strong>Message</strong></BCol>
-            </BRow>
-            <BRow
-                v-for="cas in dossier_eleve.results.slice(0, 5)"
-                :key="cas.id"
-                class="mb-2"
-            >
-                <BCol
-                    cols="2"
-                    :class="cas.important ? ' important' : ''"
+            <template #header>
+                Derniers messages du dossier des élèves ({{ dossier_eleve.count }} au total)
+                <BButton
+                    size="sm"
+                    class="ms-2"
+                    :href="'/dossier_eleve/?matricule=' + $route.params.matricule "
+                    variant="secondary"
                 >
-                    {{ niceDate(cas.datetime_encodage) }}
-                </BCol>
-                <BCol
-                    cols="2"
-                    :class="cas.important ? ' important' : ''"
-                >
-                    {{ cas.sanction_decision ? cas.sanction_decision.sanction_decision : cas.info.info }}
-                </BCol>
-                <BCol :class="cas.important ? ' important' : ''">
-                    <div v-html="cas.explication_commentaire" />
-                </BCol>
-            </BRow>
+                    <IBiEye />
+                    Voir tous les cas dans le dossier des élèves
+                </BButton>
+            </template>
             <BRow>
                 <BCol>
-                    <BButton :href="'/dossier_eleve/?matricule=' + $route.params.matricule ">
-                        <IBiEye />
-                        Voir tous les cas dans le dossier des élèves
-                    </BButton>
+                    <BTableLite
+                        stacked="sm"
+                        :fields="[
+                            'Date',
+                            {key: 'title', label: 'Objet/Motif'},
+                            'Message'
+                        ]"
+                        :items="dossier_eleve.results.slice(0, 5)"
+                    >
+                        <template #cell(Date)="data">
+                            {{ niceDate(data.item.datetime_encodage) }}
+                        </template>
+                        <template
+                            #cell(title)="data"
+                        >
+                            {{ data.item.sanction_decision ? data.item.sanction_decision.sanction_decision : data.item.info.info }}
+                        </template>
+                        <template #cell(Message)="data">
+                            <div v-html="data.item.explication_commentaire" />
+                        </template>
+                    </BTableLite>
                 </BCol>
             </BRow>
         </BCard>
@@ -213,7 +211,6 @@
     </BOverlay>
 </template>
 
-
 <script>
 import axios from "axios";
 
@@ -221,17 +218,17 @@ import Moment from "moment";
 import "moment/dist/locale/fr";
 Moment.locale("fr");
 
-import {getCurrentScholarYear} from "@s:core/js/common/utilities.js";
+import { getCurrentScholarYear } from "@s:core/js/common/utilities.js";
 import { annuaireStore } from "./stores/index.js";
 
 export default {
     data: function () {
         return {
             loading: true,
-            dossier_eleve: [],
-            appels: [],
-            infirmerie: [],
-            lateness: [],
+            dossier_eleve: null,
+            appels: null,
+            infirmerie: null,
+            lateness: null,
             infoCount: 0,
             date_from: null,
             date_to: null,
@@ -245,7 +242,7 @@ export default {
             // eslint-disable-next-line no-undef
             const userGroups = new Set(user_groups.map(g => g.id));
             return canSeeGroups.intersection(userGroups).size > 0;
-        }
+        },
     },
     methods: {
         niceDate: function (date) {
@@ -285,9 +282,18 @@ export default {
                 response.forEach((resp, index) => {
                     this[apps[index]] = resp.data;
                     this.infoCount += resp.data.count;
+
+                    if (this.dossier_eleve && this.dossier_eleve.count > 0) {
+                        this.dossier_eleve.results = this.dossier_eleve.results.map((cas) => {
+                            if (cas.important) {
+                                cas._rowVariant = "danger";
+                            }
+                            return cas;
+                        });
+                    }
                 });
                 this.loading = false;
             });
-    }
+    },
 };
 </script>
