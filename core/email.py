@@ -38,7 +38,7 @@ EMAIL_PROVIDER_SWEEGO: str = "sweego"
 
 
 def send_with_other_provider(email: EmailMultiAlternatives) -> int:
-    if settings.OTHER_EMAIL_PROVIDER == EMAIL_PROVIDER_SWEEGO:
+    if getattr(settings, OTHER_EMAIL_PROVIDER, False) == EMAIL_PROVIDER_SWEEGO:
         # DO NOT SUPPORT ATTACHMENTS (images and files).
         payload = {
             "channel": "email",
@@ -161,14 +161,14 @@ def send_email(
     if settings.DEBUG or not settings.EMAIL_HOST or settings.EMAIL_HOST == "smtp.server.com":
         if settings.EMAIL_ADMIN:
             email.to = [settings.EMAIL_ADMIN]
-            if OTHER_EMAIL_PROVIDER in settings:
+            if getattr(settings, "OTHER_EMAIL_PROVIDER", None):
                 response = send_with_other_provider(email)
             else:
                 response = email.send()
         else:
             print(email.body)
     else:
-        if OTHER_EMAIL_PROVIDER in settings:
+        if getattr(settings, "OTHER_EMAIL_PROVIDER", None):
             response = send_with_other_provider(email)
         else:
             response = email.send()
