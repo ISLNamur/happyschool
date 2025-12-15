@@ -220,6 +220,7 @@ class ActivitySupportModel(models.Model):
 
     support_activities = models.JSONField(default=dict)
     directed_study = models.JSONField(default=dict)
+    specific_support = models.TextField(default="", blank=True)
 
     datetime_created = models.DateTimeField(auto_now_add=True)
     datetime_updated = models.DateTimeField(auto_now=True)

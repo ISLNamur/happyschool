@@ -175,6 +175,21 @@
                 </BCard>
             </BCol>
         </BRow>
+        <BRow
+            class="mt-2"
+            v-if="currentActSupp"
+        >
+            <BCol>
+                <BCard>
+                    <BFormGroup>
+                        <template #label>
+                            <strong>Activités spécifiques</strong>
+                        </template>
+                        <text-editor v-model="currentActSupp.specific_support" />
+                    </BFormGroup>
+                </BCard>
+            </BCol>
+        </BRow>
         <BRow class="mt-2">
             <BCol>
                 <course-reinforcement
@@ -194,6 +209,8 @@ import { useModalController } from "bootstrap-vue-next";
 import { getPeopleByName } from "@s:core/js/common/search.js";
 
 import { piaStore } from "./stores/index.js";
+
+import TextEditor from "@s:core/js/common/text_editor.vue";
 
 import CourseReinforcement from "./course_reinforcement.vue";
 
@@ -254,7 +271,13 @@ export default {
             const newId = Math.min(Math.min(...this.activitySupports.map(sA => sA.id)), 0) - 1;
 
             const newActivitySupport = {
-                support_activities: {}, id: newId, date_start: null, date_end: null, text: "Nouvel aménagement", directed_study: { days: [] },
+                id: newId,
+                support_activities: {},
+                date_start: null,
+                date_end: null,
+                text: "Nouvel aménagement",
+                directed_study: { days: [] },
+                specific_support: "",
             };
             this.supportDays.forEach((d) => {
                 newActivitySupport.support_activities[d] = { branch: [], teachers: [] };
@@ -399,6 +422,7 @@ export default {
     components: {
         Multiselect,
         CourseReinforcement,
+        TextEditor,
     },
     mounted: function () {
         this.store.loadOptions()
