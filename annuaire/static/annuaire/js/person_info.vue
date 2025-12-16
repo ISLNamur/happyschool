@@ -278,9 +278,7 @@
 <script>
 import axios from "axios";
 
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
+import { DateTime } from "luxon";
 
 import { useToastController } from "bootstrap-vue-next";
 import { displayStudent } from "@s:core/js/common/utilities.js";
@@ -363,12 +361,7 @@ export default {
         niceDate: function (date) {
             if (!date) return "";
 
-            return Moment(date).calendar();
-        },
-        niceTime: function (date) {
-            if (!date) return "";
-
-            return Moment(date).format("HH:mm");
+            return DateTime.fromISO(date).toLocaleString();
         },
         loadInfo: function () {
             switch (this.personType) {

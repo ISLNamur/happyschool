@@ -88,11 +88,8 @@
 </template>
 
 <script>
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
-
 import axios from "axios";
+import { DateTime } from "luxon";
 
 import { useToastController } from "bootstrap-vue-next";
 
@@ -119,7 +116,7 @@ export default {
         niceDate: function (date) {
             if (!date) return "";
 
-            return Moment(date).calendar();
+            return DateTime.fromISO(date).toLocaleString();
         },
     },
     mounted: function () {

@@ -45,10 +45,7 @@
 
 <script>
 import axios from "axios";
-
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
+import { DateTime } from "luxon";
 
 import FullCalendar from "@fullcalendar/vue3";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -105,9 +102,9 @@ export default {
             Promise.all(courseInfoProm)
                 .then((resps) => {
                     this.calendarOptions.events = resps[0].data.results.map((cS) => {
-                        const eventDay = Moment().startOf("week").add(cS.day_of_week, "d").format("").slice(0, 11);
-                        const start = `${eventDay}${this.periods[cS.period - 1].start}`;
-                        const end = `${eventDay}${this.periods[cS.period - 1].end}`;
+                        const eventDay = DateTime.now().startOf("week").plus({ days: cS.day_of_week }).toISODate();
+                        const start = `${eventDay} ${this.periods[cS.period - 1].start}`;
+                        const end = `${eventDay} ${this.periods[cS.period - 1].end}`;
                         const course = resps[1].data.courses.find(c => cS.given_course.find(gc => gc === c.id));
                         return {
                             id: cS.id,

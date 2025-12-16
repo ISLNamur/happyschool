@@ -87,9 +87,7 @@
 <script>
 import axios from "axios";
 
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
+import { DateTime } from "luxon";
 
 export default {
     props: {
@@ -114,7 +112,7 @@ export default {
         niceDate: function (date) {
             if (!date) return "";
 
-            return Moment(date).calendar();
+            return DateTime.fromISO(date).toLocaleString();
         },
         loadData: function () {
             const studentId = this.$route.params.matricule ? this.$route.params.matricule : this.student;
