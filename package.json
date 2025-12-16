@@ -18,6 +18,7 @@
     "axios": "^1.6.2",
     "bootstrap": "^5.3.3",
     "bootstrap-vue-next": "^0.30.0",
+    "luxon": "^3.7.2",
     "moment": "^2.29.4",
     "pinia": "^3.0.0",
     "vue": "^3.4.38",
@@ -26,8 +27,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.6.2",
-    "@stylistic/eslint-plugin": "^5.6.1",
     "@iconify-json/bi": "^1.2.1",
+    "@stylistic/eslint-plugin": "^5.6.1",
     "@vitejs/plugin-vue": "^6.0.2",
     "django-vite-plugin": "^4.1.2",
     "eslint": "^9.39.2",
