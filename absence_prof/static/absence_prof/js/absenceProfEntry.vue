@@ -71,9 +71,7 @@
 </template>
 
 <script>
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
+import { DateTime } from "luxon";
 
 export default {
     emits: ["edit", "delete"],
@@ -89,10 +87,12 @@ export default {
     },
     computed: {
         date: function () {
+            const dateStart = DateTime.fromISO(this.rowData.date_absence_start).toLocaleString();
             if (this.rowData.date_absence_start == this.rowData.date_absence_end)
-                return Moment(this.rowData.date_absence_start).format("DD/MM/YY");
+                return dateStart;
 
-            return Moment(this.rowData.date_absence_start).format("DD/MM/YY") + " → " + Moment(this.rowData.date_absence_end).format("DD/MM/YY");
+            const dateEnd = DateTime.fromISO(this.rowData.date_absence_end).toLocaleString();
+            return `${dateStart} → ${dateEnd}`;
         },
         statusClass: function () {
             if (this.rowData.status == "A venir") return "avenir";

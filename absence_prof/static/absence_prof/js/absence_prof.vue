@@ -86,10 +86,6 @@
 </template>
 
 <script>
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
-
 import axios from "axios";
 import { useModalController } from "bootstrap-vue-next";
 
