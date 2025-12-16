@@ -97,10 +97,9 @@
     </div>
 </template>
 <script>
-import Moment from "moment";
-import "moment/dist/locale/fr";
+import { DateTime } from "luxon";
+
 import { displayStudent } from "@s:core/js/common/utilities";
-Moment.locale("fr");
 
 export default {
     props: {
@@ -124,34 +123,34 @@ export default {
             if (!this.rowData.is_traiter)
                 return "";
 
-            var subTitleStr = "Traité " + Moment(this.rowData.datetime_traitement).calendar();
+            const subTitleStr = `Traité ${DateTime.fromISO(this.rowData.datetime_traitement).toLocaleString()}`;
             return subTitleStr;
         },
         motif_start: function () {
             if (this.rowData.datetime_motif_start) {
                 // Deprecated data.
-                return Moment(this.rowData.datetime_motif_start).format("hh:mm DD/MM");
+                return DateTime.fromISO(this.rowData.datetime_motif_start).toFormat("HH:mm DD/MM");
             }
-            let datetime_str = Moment(this.rowData.date_motif_start).format("DD/MM");
+            let datetimeStr = DateTime.fromISO(this.rowData.date_motif_start).toFormat("dd/MM");
             if (this.rowData.time_motif_start) {
-                datetime_str = Moment(this.rowData.time_motif_start, "hh:mm:ss").format("hh:mm ") + datetime_str;
+                datetimeStr = DateTime.fromFormat(this.rowData.time_motif_start, "hh:mm:ss").toFormat("HH:mm ") + datetimeStr;
             }
-            return datetime_str;
+            return datetimeStr;
         },
         motif_end: function () {
             if (this.rowData.datetime_motif_end) {
                 // Deprecated data.
-                return Moment(this.rowData.datetime_motif_end).format("hh:mm DD/MM");
+                return DateTime.fromISO(this.rowData.datetime_motif_end).toFormat("HH:mm DD/MM");
             }
 
-            let datetime_str = Moment(this.rowData.date_motif_end).format("DD/MM");
+            let datetimeStr = DateTime.fromISO(this.rowData.date_motif_end).toFormat("dd/MM");
             if (this.rowData.time_motif_end) {
-                datetime_str = Moment(this.rowData.time_motif_end, "hh:mm:ss").format("hh:mm ") + datetime_str;
+                datetimeStr = DateTime.fromFormat(this.rowData.time_motif_end, "hh:mm:ss").toFormat("HH:mm ") + datetimeStr;
             }
-            return datetime_str;
+            return datetimeStr;
         },
         appel: function () {
-            return Moment(this.rowData.datetime_appel).calendar();
+            return DateTime.fromISO(this.rowData.datetime_appel).toLocaleString();
         },
     },
     methods: {

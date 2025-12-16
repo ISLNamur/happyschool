@@ -287,9 +287,7 @@
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
+import { DateTime } from "luxon";
 
 import axios from "axios";
 
@@ -439,11 +437,11 @@ export default {
                             responsible_pk: entry.responsible_pk,
                             object_id: entry.object.id,
                             motive_id: entry.motive.id,
-                            date_motif_start: Moment(entry.date_motif_start).format("YYYY-MM-DD"),
-                            time_motif_start: entry.time_motif_start ? Moment(entry.time_motif_start, "hh:mm:ss").format("hh:mm") : null,
-                            date_motif_end: Moment(entry.date_motif_end).format("YYYY-MM-DD"),
-                            time_motif_end: entry.time_motif_end ? Moment(entry.time_motif_end, "hh:mm:ss").format("hh:mm") : null,
-                            datetime_appel: Moment(entry.datetime_appel).format("YYYY-MM-DD"),
+                            date_motif_start: DateTime.fromISO(entry.date_motif_start).toISODate(),
+                            time_motif_start: entry.time_motif_start ? DateTime.fromFormat(entry.time_motif_start, "hh:mm:ss").toFormat("HH:mm") : null,
+                            date_motif_end: DateTime.fromISO(entry.date_motif_end).toISODate(),
+                            time_motif_end: entry.time_motif_end ? DateTime(entry.time_motif_end, "hh:mm:ss").format("HH:mm") : null,
+                            datetime_appel: DateTime.fromISO(entry.datetime_appel).toISODate(),
                             commentaire: entry.commentaire,
                             emails: entry.emails,
                             custom_email: entry.custom_email,
@@ -458,7 +456,7 @@ export default {
                             this.name = entry.responsible;
                             this.name.is_student = false;
                         }
-                        this.timeAppel = Moment(entry.datetime_appel).format("HH:mm");
+                        this.timeAppel = DateTime.fromISO(entry.datetime_appel).toFormat("HH:mm");
                         if (entry) {
                         // Precheck emails.
                             if (!this.processing && this.form.is_student) {
@@ -487,7 +485,7 @@ export default {
             // Copy form data.
             let data = Object.assign({}, this.form);
             // Add times if any.
-            const time = this.timeAppel ? " " + this.timeAppel : Moment().format("HH:mm");
+            const time = this.timeAppel ? " " + this.timeAppel : DateTime.now().toFormat("HH:mm");
             data.datetime_appel += time;
 
             // Set is_student field and responsible's matricule.
@@ -587,8 +585,8 @@ export default {
     components: { Multiselect },
     mounted: function () {
         if (!this.entry) {
-            const nowDate = Moment().format("YYYY-MM-DD");
-            const nowTime = Moment().format("HH:mm");
+            const nowDate = DateTime.now().toISODate();
+            const nowTime = DateTime.now().toFormat("HH:mm");
             this.form.datetime_appel = nowDate;
             this.form.time_motif_end = nowTime;
             this.form.time_motif_start = nowTime;
