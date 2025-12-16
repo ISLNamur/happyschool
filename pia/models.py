@@ -253,10 +253,25 @@ class ParentsOpinionModel(models.Model):
     datetime_update = models.DateTimeField(auto_now=True)
 
 
+class ResourceDifficultyModel(models.Model):
+    resource = models.CharField(max_length=300)
+    difficulty = models.CharField(max_length=300)
+    category = models.CharField(max_length=300, blank=True)
+    advanced = models.BooleanField(default=True)
+
+    def __str__(self) -> str:
+        return f"{self.resource} <-> {self.difficulty}"
+
+
 class CrossGoalItemModel(models.Model):
     goal = models.CharField(max_length=200)
     advanced = models.BooleanField(default=True)
     basic = models.BooleanField(default=False)
+
+    difficulties = models.ManyToManyField(ResourceDifficultyModel, blank=True)
+    indicator_action = models.TextField(blank=True)
+    given_help = models.TextField(blank=True)
+
     teachings = models.ManyToManyField(TeachingModel)
 
     def __str__(self):
@@ -268,6 +283,10 @@ class BranchGoalItemModel(models.Model):
     branch = models.ForeignKey(BranchModel, on_delete=models.CASCADE, null=True, blank=True)
     advanced = models.BooleanField(default=True)
     basic = models.BooleanField(default=False)
+
+    difficulties = models.ManyToManyField(ResourceDifficultyModel, blank=True)
+    indicator_action = models.TextField(blank=True)
+    given_help = models.TextField(blank=True)
 
     def __str__(self):
         return "%s (%s)" % (self.goal, self.branch)
@@ -365,16 +384,6 @@ class OtherStatementModel(models.Model):
     resources = models.TextField(blank=True)
     difficulties = models.TextField(blank=True)
     others = models.TextField(blank=True)
-
-
-class ResourceDifficultyModel(models.Model):
-    resource = models.CharField(max_length=300)
-    difficulty = models.CharField(max_length=300)
-    category = models.CharField(max_length=300, blank=True)
-    advanced = models.BooleanField(default=True)
-
-    def __str__(self) -> str:
-        return f"{self.resource} <-> {self.difficulty}"
 
 
 class StudentStateModel(models.Model):

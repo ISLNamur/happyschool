@@ -35,7 +35,7 @@
                         </strong>
                     </BCol>
                     <BCol
-                        cols="2"
+                        cols="6"
                         align-self="end"
                         class="text-end"
                     >
@@ -46,6 +46,17 @@
                             {{ expanded ? "Cacher" : "Voir" }}
                         </BButton>
                         <BButton
+                            class="ms-1"
+                            variant="outline-primary"
+                            size="sm"
+                            @click="migrateToGoals"
+                            v-b-tooltip.hover="'Transformer les difficultés en objectifs'"
+                        >
+                            <IBiBoxArrowRight />
+                            En objectifs
+                        </BButton>
+                        <BButton
+                            class="ms-1"
                             @click="$emit('remove')"
                             variant="danger"
                             size="sm"
@@ -66,6 +77,7 @@
                     <BButton
                         @click="council_statement.unshift({resources: [], difficulties: []})"
                         variant="info"
+                        class="mt-2"
                     >
                         <IBiPlus />
                         Ajouter <span v-if="advanced">une branche</span>
@@ -117,8 +129,12 @@
 
 <script>
 import axios from "axios";
+import { DateTime } from "luxon";
 
 import { useModalController } from "bootstrap-vue-next";
+import { useToastController } from "bootstrap-vue-next";
+
+import { piaStore } from "./stores/index.js";
 
 import CouncilStatement from "./council_statement.vue";
 import OtherStatement from "./other_statement.vue";
@@ -130,8 +146,9 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
  */
 export default {
     setup: function () {
+        const { show } = useToastController();
         const { create } = useModalController();
-        return { create };
+        return { create, show };
     },
     props: {
         /** class_council data from database (read-only). id is -1 if new. */
@@ -155,9 +172,76 @@ export default {
             other_statement: [],
             /** State if the list of statements should be shown. */
             expanded: false,
+            store: piaStore(),
         };
     },
     methods: {
+        /**
+         * Migrate the class council to goals.
+         */
+        migrateToGoals: function () {
+            let promises = [];
+            const goals = this.council_statement
+            // Get difficulties and branch
+                .map((council) => {
+                    const difficulties = council.difficulties.map(
+                        d => this.store.resourceDifficulty.find(rD => rD.id === d).id,
+                    );
+                    const branch = council.branch && council.branch.branch !== "Toutes les branches" ? council.branch : null;
+                    console.log(branch);
+                    return {
+                        crossGoals: branch ? [] : this.store.crossGoalItems.filter(cGI => cGI.difficulties.filter(relDiff => difficulties.includes(relDiff)).length > 0),
+                        branchGoals: this.store.branchGoalItems.filter((bGI) => {
+                            const hasGoalItems = bGI.difficulties.filter(relDiff => difficulties.includes(relDiff)).length > 0;
+                            console.log(hasGoalItems, bGI);
+                            return (!bGI.branch || (branch && bGI.branch === branch.id)) && hasGoalItems;
+                        }),
+                        branch: branch,
+                    };
+                })
+                // Filter out difficulties without goals.
+                .filter(data => data.crossGoals.length + data.branchGoals.length > 0);
+
+            console.log(goals);
+            const crossGoals = goals.filter(g => !g.branch);
+            const branchGoals = goals.filter(g => g.branch);
+
+            const baseData = {
+                pia_model: this.class_council.pia_model,
+                date_start: this.date_council,
+                date_end: new DateTime(this.date_council).plus({ weeks: 1 }).toISODate(),
+                responsible: [],
+            };
+
+            crossGoals.forEach((cG) => {
+                const data = Object.assign({
+                    cross_goals: [...new Set(cG.crossGoals.concat(cG.branchGoals).map(goalItem => goalItem.goal))].join(";"),
+                    indicator_action: [...new Set(cG.crossGoals.concat(cG.branchGoals).map(goalItem => goalItem.indicator_action))].join(" "),
+                    given_help: [...new Set(cG.crossGoals.concat(cG.branchGoals).map(goalItem => goalItem.given_help))].join(" "),
+                }, baseData);
+
+                promises.push(axios.post("/pia/api/cross_goal/", data, token));
+            });
+
+            branchGoals.forEach((bG) => {
+                const data = Object.assign({
+                    branch_goals: [...new Set(bG.branchGoals.map(goalItem => goalItem.goal))].join(";"),
+                    indicator_action: [...new Set(bG.branchGoals.map(goalItem => goalItem.indicator_action))].join(" "),
+                    given_help: [...new Set(bG.branchGoals.map(goalItem => goalItem.given_help))].join(" "),
+                    branch: bG.branch,
+                }, baseData);
+
+                promises.push(axios.post("/pia/api/branch_goal/", data, token));
+            });
+
+            Promise.all(promises).then((resps) => {
+                this.show({
+                    body: `Les données ont bien été transformées en objectifs (${resps.length})`,
+                    variant: "success",
+                    noCloseButton: true,
+                });
+            });
+        },
         /** Update data for the new or updated council statement. */
         updateStatement: function (index, data) {
             this.council_statement.splice(index, 1, data);
