@@ -662,11 +662,11 @@ export default {
          * Get a simple list of goals.
          */
         goalsList: function () {
-            if (this.cross_goal.length === 0 && this.branch_goal.length === 0) {
+            if (this.cross_goal.filter(g => g.id > 0).length === 0 && this.branch_goal.filter(g => g.id > 0).length === 0) {
                 return "";
             }
 
-            return this.cross_goal.concat(this.branch_goal).map((goal) => {
+            return this.cross_goal.concat(this.branch_goal).filter(g => g.id > 0).map((goal) => {
                 let goalText = "";
                 if ("branch" in goal) {
                     const branch = this.store.branches.find(b => b.id === goal.branch);
