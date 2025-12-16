@@ -531,10 +531,7 @@ export default {
                 // Assign goals
                 let specificGoals = this.useBranch ? this.goalObject.branch_goals : this.goalObject.cross_goals;
                 let goals = specificGoals.split(";");
-                const options = this.useBranch ? this.store.branchGoalItems : this.store.crossGoalItems;
-                this.goals = options.filter(cg => goals.includes(cg.goal));
-                let newGoals = goals.filter(g => !this.goalOptions.map(cg => cg.goal).includes(g));
-                newGoals.forEach(ng => this.addGoalTag(ng));
+                goals.forEach(ng => this.addGoalTag(ng));
             }
         },
         addGoalTag: function (tag) {
