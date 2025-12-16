@@ -76,6 +76,7 @@ import "moment/dist/locale/fr";
 Moment.locale("fr");
 
 export default {
+    emits: ["edit", "delete"],
     props: {
         rowData: {
             type: Object,
