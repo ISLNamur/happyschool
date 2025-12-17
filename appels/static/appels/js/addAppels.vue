@@ -440,7 +440,7 @@ export default {
                             date_motif_start: DateTime.fromISO(entry.date_motif_start).toISODate(),
                             time_motif_start: entry.time_motif_start ? DateTime.fromFormat(entry.time_motif_start, "hh:mm:ss").toFormat("HH:mm") : null,
                             date_motif_end: DateTime.fromISO(entry.date_motif_end).toISODate(),
-                            time_motif_end: entry.time_motif_end ? DateTime(entry.time_motif_end, "hh:mm:ss").format("HH:mm") : null,
+                            time_motif_end: entry.time_motif_end ? DateTime.fromFormat(entry.time_motif_end, "hh:mm:ss").toFormat("HH:mm") : null,
                             datetime_appel: DateTime.fromISO(entry.datetime_appel).toISODate(),
                             commentaire: entry.commentaire,
                             emails: entry.emails,
