@@ -670,7 +670,7 @@ export default {
                 let goalText = "";
                 if ("branch" in goal) {
                     const branch = this.store.branches.find(b => b.id === goal.branch);
-                    goalText = `${branch.branch} : ${goal.branch_goals}`;
+                    goalText = `${branch.branch} : ${goal.branch_goals}`;
                 } else {
                     goalText = goal.cross_goals;
                 }
