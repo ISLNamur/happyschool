@@ -710,7 +710,6 @@ class CalendarAPI(APIView):
     @staticmethod
     def _format_date(date, is_end=False):
         if ":" in str(date):
-            print(date.strftime("%H:%M" if is_end else "%d/%m/%Y %H:%M"))
             return date.strftime("%H:%M" if is_end else "%d/%m/%Y %H:%M")
         else:
             if is_end:
@@ -724,15 +723,12 @@ class CalendarAPI(APIView):
         events = []
         for cal_ics in ImportCalendarModel.objects.all():
             cal = Calendar.from_ical(requests.get(cal_ics.url).text)
-            # for e in cal.walk('VEVENT'):
-            #    if e['DTSTART'].dt > self._today(e) or e['DTSTART'].dt <= self._today(e) < e['DTEND'].dt:
-            #        print(e['DTEND'].dt)
             evts = [
                 {
                     "calendar": cal_ics.name,
                     "name": str(event["SUMMARY"]),
                     "begin": self._format_date(event["DTSTART"].dt),
-                    "end": self._format_date(event["DTEND"].dt, True),
+                    "end": self._format_date(event["DTEND"].dt, True) if "DTEND" in event else None,
                 }
                 for event in cal.walk("VEVENT")
                 if event["DTSTART"].dt > self._today(event)
