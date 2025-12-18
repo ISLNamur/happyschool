@@ -98,9 +98,7 @@
 </template>
 
 <script>
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
+import { DateTime } from "luxon";
 
 export default {
     props: {
@@ -124,11 +122,11 @@ export default {
             return this.rowData.matricule.display;
         },
         arrival: function () {
-            return Moment(this.rowData.datetime_arrive).format("HH:mm DD/MM");
+            return DateTime.fromISO(this.rowData.datetime_arrive).toFormat("HH:mm dd/MM");
         },
         departure: function () {
             if (this.rowData.datetime_sortie) {
-                return Moment(this.rowData.datetime_sortie).format("HH:mm DD/MM");
+                return DateTime.fromISO(this.rowData.datetime_sortie).toFormat("HH:mm dd/MM");
             } else {
                 return "";
             }

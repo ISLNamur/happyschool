@@ -226,13 +226,10 @@
 
 <script>
 import axios from "axios";
+import { DateTime } from "luxon";
 
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
-
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
 
 import { useToastController } from "bootstrap-vue-next";
 
@@ -285,8 +282,8 @@ export default {
     data: function () {
         return {
             errors: {},
-            dateArrive: Moment().format("YYYY-MM-DD"),
-            timeArrive: Moment().format("HH:mm"),
+            dateArrive: DateTime.now().toISODate(),
+            timeArrive: DateTime.now().toFormat("HH:mm"),
             dateSortie: "",
             timeSortie: "",
             inputStates: {
@@ -377,8 +374,8 @@ export default {
                         this.form.name = resp.data.name;
                         this.form.comment = resp.data.comment;
                         if (this.sortie == 1 || this.form.remarques_sortie) {
-                            this.dateSortie = Moment().format("YYYY-MM-DD");
-                            this.timeSortie = Moment().format("HH:mm");
+                            this.dateSortie = DateTime.now().toISODate();
+                            this.timeSortie = DateTime.now().toFormat("HH:mm");
                             this.form.datetime_sortie = this.dateSortie;
                         }
                     }
