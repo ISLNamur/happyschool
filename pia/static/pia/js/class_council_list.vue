@@ -90,14 +90,11 @@
 
 <script>
 import axios from "axios";
+import { DateTime } from "luxon";
 
 import { useModalController } from "bootstrap-vue-next";
 
 import ClassCouncil from "./class_council.vue";
-
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
@@ -123,7 +120,7 @@ export default {
     },
     computed: {
         threeWeeksFromNow: function () {
-            return Moment().subtract(21, "days").format();
+            return DateTime.now().minus({ days: 21 }).toISODate();
         },
         nextCouncils: function () {
             return this.councils.filter(council => council.date_council >= this.threeWeeksFromNow || !council.date_council);

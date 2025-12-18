@@ -63,9 +63,7 @@
 </template>
 
 <script>
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
+import { DateTime } from "luxon";
 
 import { piaStore } from "./stores/index.js";
 
@@ -86,7 +84,7 @@ export default {
     computed: {
         newEntry: function () {
             // eslint-disable-next-line no-undef
-            return Moment(this.rowData.datetime_updated) > Moment(lastAccess);
+            return DateTime.fromISO(this.rowData.datetime_updated) > DateTime.fromISO(lastAccess);
         },
     },
     methods: {
