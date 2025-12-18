@@ -81,9 +81,7 @@
 </template>
 
 <script>
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
+import { DateTime } from "luxon";
 
 import Menu from "@s:core/js/common/menu_bar.vue";
 
@@ -103,7 +101,7 @@ export default {
                 return this.$route.params.date;
             }
 
-            return Moment().format("YYYY-MM-DD");
+            return DateTime.now().toISODate();
         },
         can_access_list: function () {
             const access_groups = this.store.settings.can_see_list;

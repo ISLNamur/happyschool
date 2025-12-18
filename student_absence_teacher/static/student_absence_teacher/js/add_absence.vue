@@ -194,8 +194,7 @@ import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
 import axios from "axios";
-import Moment from "moment";
-import "moment/dist/locale/fr";
+import { DateTime } from "luxon";
 
 import { useToastController } from "bootstrap-vue-next";
 
@@ -220,7 +219,7 @@ export default {
             classe: null,
             students: [],
             showAlert: false,
-            currentDate: Moment().format("YYYY-MM-DD"),
+            currentDate: DateTime.now().toISODate(),
             loadingStudent: false,
             studentGroup: null,
             lastUpdate: null,

@@ -96,9 +96,7 @@
 <script>
 import axios from "axios";
 
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
+import { DateTime } from "luxon";
 
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
@@ -109,7 +107,7 @@ export default {
     props: {
         date: {
             type: String,
-            default: () => Moment().format("YYYY-MM-DD"),
+            default: () => DateTime.now().toISODate(),
         },
     },
     data: function () {
@@ -164,12 +162,12 @@ export default {
             }
         },
         moveDateBefore: function () {
-            const currentDate = Moment(this.date);
-            this.changeDate(currentDate.subtract(1, "days").format("YYYY-MM-DD"));
+            const currentDate = DateTime.fromISO(this.date);
+            this.changeDate(currentDate.minus({ days: 1 }).toISODate());
         },
         moveDateAfter: function () {
-            const currentDate = Moment(this.date);
-            this.changeDate(currentDate.add(1, "days").format("YYYY-MM-DD"));
+            const currentDate = DateTime.fromISO(this.date);
+            this.changeDate(currentDate.plus({ days: 1 }).toISODate());
         },
         getSearchOptions: function (query) {
             // Ensure the last search is the first response.

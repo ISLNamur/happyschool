@@ -171,6 +171,7 @@
 
 <script>
 import axios from "axios";
+import { DateTime } from "luxon";
 
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
@@ -182,7 +183,6 @@ import AbsencesStat from "./AbsencesStat.vue";
 
 import TextEditor from "@s:core/js/common/text_editor.vue";
 import { getPeopleByName } from "@s:core/js/common/search.js";
-import moment from "moment";
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
@@ -426,7 +426,7 @@ export default {
                 if (this.endDate) {
                     this.justification.date_just_end = this.endDate;
                     // Estimate from unjustified count (with a margin of two days).
-                    const startDate = moment(this.endDate).subtract(Math.round(this.absencesCount / this.store.periodEduc.length) + 2, "days").format("YYYY-MM-DD");
+                    const startDate = DateTime.fromISO(this.endDate).minus({ days: Math.round(this.absencesCount / this.store.periodEduc.length) + 2 }).toISODate();
 
                     axios.get(
                         `/student_absence_teacher/api/absence_educ/?student__matricule=${this.studentId}&status=A&date_absence__lte=${this.endDate}&date_absence__gte=${startDate}&ordering=date_absence,period__start`,

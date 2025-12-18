@@ -161,8 +161,7 @@
 
 <script>
 import axios from "axios";
-import Moment from "moment";
-import "moment/dist/locale/fr";
+import { DateTime } from "luxon";
 
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
@@ -213,7 +212,7 @@ export default {
     computed: {
         urlData: function () {
             const daysBefore = 1;
-            const dateBefore = Moment().subtract(daysBefore, "days").toISOString().slice(0, 10);
+            const dateBefore = DateTime.now().minus({ days: daysBefore }).toISODate();
 
             // Check current search.
             let searchFilter = "";

@@ -181,9 +181,7 @@
 <script>
 import axios from "axios";
 
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
+import { DateTime } from "luxon";
 
 import { extractDayOfWeek } from "@s:core/js/common/utilities.js";
 
@@ -195,7 +193,7 @@ export default {
     props: {
         date: {
             type: String,
-            default: () => Moment().format("YYYY-MM-DD"),
+            default: () => DateTime.now().toISODate(),
         },
     },
     data: function () {
