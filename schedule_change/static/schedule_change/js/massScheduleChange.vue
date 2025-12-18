@@ -218,9 +218,7 @@
 </template>
 
 <script>
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
+import { DateTime } from "luxon";
 
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
@@ -301,7 +299,7 @@ export default {
                 this.dateEnd = this.dateStart;
             }
 
-            if (Moment(this.dateStart).isAfter(Moment(this.dateEnd))) {
+            if (DateTime.fromISO(this.dateStart) > DateTime.fromISO(this.dateEnd)) {
                 this.dateEnd = this.dateStart;
             }
         },
@@ -388,18 +386,21 @@ export default {
                     this.scheduleChanges = [];
 
                     const periods = resp[1].data.results;
-                    const startDay = Moment(this.dateStart);
-                    const endDay = Moment(this.dateEnd);
+                    const startDay = DateTime.fromISO(this.dateStart);
+                    const endDay = DateTime.fromISO(this.dateEnd);
                     let currentDay = startDay;
-                    while (currentDay.isSameOrBefore(endDay)) {
+                    while (currentDay.startOf("day") <= endDay.startOf("day")) {
+                        console.log(resp[0].data.results, currentDay.get("day") - 1);
+                        console.log(resp[0].data.results
+                            .filter(courseSchedule => courseSchedule.day_of_week === currentDay.weekday - 1));
                         this.scheduleChanges = this.scheduleChanges.concat(
                             resp[0].data.results
-                                .filter(courseSchedule => courseSchedule.day_of_week === currentDay.day() - 1)
+                                .filter(courseSchedule => courseSchedule.day_of_week === currentDay.weekday - 1)
                                 .map((courseSchedule) => {
                                     return {
                                         change: this.defaultType,
                                         category: this.defaultCategory,
-                                        date_change: currentDay.format("YYYY-MM-DD"),
+                                        date_change: currentDay.toISODate(),
                                         time_start: periods.find(p => p.id === courseSchedule.period).start,
                                         time_end: periods.find(p => p.id === courseSchedule.period).end,
                                         classes: courseSchedule.related_classes ? courseSchedule.related_classes.split(", ") : [],
@@ -407,7 +408,7 @@ export default {
                                     };
                                 }),
                         );
-                        currentDay.add(1, "days");
+                        currentDay = currentDay.plus({ days: 1 });
                     }
                     this.loading = false;
                 });

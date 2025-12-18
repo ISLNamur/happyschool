@@ -174,9 +174,7 @@
 </template>
 
 <script>
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
+import { DateTime } from "luxon";
 
 import { scheduleChangeStore } from "./stores/index.js";
 
@@ -230,7 +228,7 @@ export default {
             scroll(0, 0);
         },
         calendar: function (date) {
-            return Moment(date).calendar().split(" à")[0];
+            return DateTime.fromISO(date).toLocaleString();
         },
         time: function (entry) {
             let result = "";
