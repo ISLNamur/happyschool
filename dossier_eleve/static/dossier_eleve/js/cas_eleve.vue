@@ -341,10 +341,6 @@ import "vue-multiselect/dist/vue-multiselect.css";
 
 import TextEditor from "@s:core/js/common/text_editor.vue";
 
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
-
 import axios from "axios";
 
 import { useToastController } from "bootstrap-vue-next";

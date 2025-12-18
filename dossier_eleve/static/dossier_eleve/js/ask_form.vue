@@ -307,9 +307,9 @@ import "vue-multiselect/dist/vue-multiselect.css";
 
 import TextEditor from "@s:core/js/common/text_editor.vue";
 
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
+import { DateTime } from "luxon";
+
+console.log(DateTime.now());
 
 import axios from "axios";
 
@@ -417,7 +417,7 @@ export default {
                 }
 
                 if (entry.datetime_conseil) {
-                    this.form.datetime_conseil = Moment(entry.datetime_conseil).format("YYYY-MM-DD");
+                    this.form.datetime_conseil = DateTime.fromISO(entry.datetime_conseil).toISODate();
                 }
                 if (entry.attachments.length > 0) {
                     for (let a in entry.attachments) {

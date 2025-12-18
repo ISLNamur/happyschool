@@ -193,8 +193,7 @@
     </div>
 </template>
 <script>
-import Moment from "moment";
-import "moment/dist/locale/fr";
+import { DateTime } from "luxon";
 
 import axios from "axios";
 
@@ -236,24 +235,28 @@ export default {
             };
         },
         outdated: function () {
-            return Moment(this.rowData.date_sanction) < Moment();
+            return DateTime.fromISO(this.rowData.date_sanction) < DateTime.now();
         },
         title: function () {
             return this.displayStudent(this.rowData.student);
         },
         subtitle: function () {
-            return "Demandé par " + this.rowData.demandeur + " (" + Moment(this.rowData.datetime_encodage).calendar() + ")";
+            return "Demandé par " + this.rowData.demandeur + " (" + DateTime.fromISO(this.rowData.datetime_encodage).toLocaleString() + ")";
         },
         category: function () {
             return this.rowData.sanction_decision.sanction_decision;
         },
         date_sanction: function () {
-            const date_sanction_start = this.rowData.date_sanction ? Moment(this.rowData.date_sanction).format("DD/MM/YY") : "";
-            const date_sanction_end = this.rowData.date_sanction_end ? Moment(this.rowData.date_sanction_end).format("DD/MM/YY") : "";
+            const date_sanction_start = this.rowData.date_sanction ? DateTime.fromISO(this.rowData.date_sanction).toFormat("dd/MM/yy") : "";
+            const date_sanction_end = this.rowData.date_sanction_end ? DateTime.fromISO(this.rowData.date_sanction_end).toFormat("dd/MM/yy") : "";
+            if (date_sanction_start === date_sanction_end) {
+                return date_sanction_start;
+            }
+
             return `${date_sanction_start}${this.rowData.date_sanction_end ? " - " : ""}${date_sanction_end}`;
         },
         date_council: function () {
-            const datetime_conseil = this.rowData.datetime_conseil ? Moment(this.rowData.datetime_conseil).format("DD/MM/YY") : null;
+            const datetime_conseil = this.rowData.datetime_conseil ? DateTime.fromISO(this.rowData.datetime_conseil).toFormat("dd/MM/yy") : null;
             if (datetime_conseil)
                 return datetime_conseil;
             if (!this.rowData.date_sanction) {
@@ -280,7 +283,7 @@ export default {
                 return false;
             } else {
                 // Check that sanction date is today or older.
-                return Moment(this.rowData.date_sanction).isSameOrBefore(Moment(), "day");
+                return DateTime.fromISO(this.rowData.date_sanction).startOf("day") <= DateTime.now().startOf("day");
             }
         },
         canEditSanction: function () {
@@ -296,9 +299,12 @@ export default {
     },
     methods: {
         nextWeek: function () {
-            const sanctionDay = Moment(this.rowData.date_sanction).day();
-            const nextDay = Moment().day() >= sanctionDay ? sanctionDay + 7 : sanctionDay;
-            return Moment().day(nextDay).format("YYYY-MM-DD");
+            const sanctionDate = DateTime.fromISO(this.rowData.date_sanction).startOf("day");
+            if (sanctionDate > DateTime.now().startOf("day")) {
+                return sanctionDate.toISODate();
+            }
+
+            return sanctionDate.plus({ week: 1 }).toISODate();
         },
         deleteEntry: function () {
             this.$emit("delete");

@@ -72,8 +72,7 @@
 </template>
 
 <script>
-import Moment from "moment";
-import "moment/dist/locale/fr";
+import { DateTime } from "luxon";
 import axios from "axios";
 
 import { displayStudent } from "@s:core/js/common/utilities.js";
@@ -96,7 +95,7 @@ export default {
     methods: {
         displayStudent,
         nextWeek: function (date) {
-            return Moment(date).add(7, "days").format("YYYY-MM-DD");
+            return DateTime.fromISO(date).plus({ week: 1 }).toISODate();
         },
         reportSanctions: function () {
             this.$emit("loading", 0);

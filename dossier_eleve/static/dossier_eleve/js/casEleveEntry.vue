@@ -130,9 +130,7 @@
     </div>
 </template>
 <script>
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
+import { DateTime } from "luxon";
 
 import axios from "axios";
 
@@ -164,7 +162,7 @@ export default {
         },
         new: function () {
             // eslint-disable-next-line no-undef
-            return Moment(this.rowData.datetime_modified) > Moment(dossierEleveLastAccess);
+            return DateTime.fromISO(this.rowData.datetime_modified) > DateTime.fromISO(dossierEleveLastAccess);
         },
         title: function () {
             return this.displayStudent(this.rowData.student);
@@ -172,13 +170,13 @@ export default {
         subtitle: function () {
             let subtitle = "";
             if (this.rowData.date_sanction) {
-                subtitle += "Sanction : " + Moment(this.rowData.date_sanction).format("DD/MM/YY");
-                if (this.rowData.date_sanction_end) {
-                    subtitle += ` - ${Moment(this.rowData.date_sanction_end).format("DD/MM/YY")}`;
+                subtitle += "Sanction : " + DateTime.fromISO(this.rowData.date_sanction).toFormat("dd/MM/yy");
+                if (this.rowData.date_sanction_end && this.rowData.date_sanction_end !== this.rowData.date_sanction) {
+                    subtitle += ` - ${DateTime.fromISO(this.rowData.date_sanction_end).toFormat("dd/MM/yy")}`;
                 }
                 subtitle += ". ";
             }
-            subtitle += "Demandé par " + this.rowData.demandeur + " (" + Moment(this.rowData.datetime_encodage).calendar() + ")";
+            subtitle += "Demandé par " + this.rowData.demandeur + " (" + DateTime.fromISO(this.rowData.datetime_encodage).toLocaleString() + ")";
             return subtitle;
         },
         category: function () {
