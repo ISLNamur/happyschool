@@ -118,10 +118,7 @@
 
 <script>
 import axios from "axios";
-
-import Moment from "moment";
-import "moment/dist/locale/fr";
-Moment.locale("fr");
+import { DateTime } from "luxon";
 
 import { latenessStore } from "./stores/index.js";
 import { displayStudent } from "@s:core/js/common/utilities.js";
@@ -146,7 +143,7 @@ export default {
     },
     computed: {
         niceDate: function () {
-            return Moment(this.lateness.datetime_creation).format("HH:mm DD/MM");
+            return DateTime.fromISO(this.lateness.datetime_creation).toFormat("HH:mm dd/MM");
         },
     },
     methods: {
@@ -181,7 +178,7 @@ export default {
         axios.get("/dossier_eleve/api/cas_eleve/" + this.lateness.sanction_id + "/")
             .then((resp) => {
                 this.sanction = {
-                    date_sanction: Moment(resp.data.date_sanction).format("DD/MM/YY"),
+                    date_sanction: DateTime.fromISO(resp.data.date_sanction).toFormat("dd/MM/yy"),
                     sanction_faite: true,
                     to_be_done: false,
                 };
@@ -191,9 +188,9 @@ export default {
                 axios.get("/dossier_eleve/api/ask_sanctions/" + this.lateness.sanction_id + "/")
                     .then((resp) => {
                         this.sanction = {
-                            date_sanction: Moment(resp.data.date_sanction).format("DD/MM/YY"),
+                            date_sanction: DateTime.fromISO(resp.data.date_sanction).toFormat("dd/MM/yy"),
                             sanction_faite: false,
-                            to_be_done: Moment(resp.data.date_sanction) > Moment(),
+                            to_be_done: DateTime.fromISO(resp.data.date_sanction) > DateTime.now(),
                         };
                     });
             });

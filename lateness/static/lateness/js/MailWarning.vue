@@ -62,8 +62,7 @@
 
 <script>
 import axios from "axios";
-import Moment from "moment";
-import "moment/dist/locale/fr";
+import { DateTime } from "luxon";
 
 import { useToastController } from "bootstrap-vue-next";
 import MailTemplate from "@s:core/js/common/MailTemplate.vue";
@@ -93,7 +92,7 @@ export default {
     },
     methods: {
         niceDate: function (dateStr) {
-            return Moment(dateStr).format("HH:mm DD/MM");
+            return DateTime.fromISO(dateStr).toFormat("HH:mm dd/MM");
         },
         send: function (data) {
             this.sending = true;
