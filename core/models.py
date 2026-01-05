@@ -131,6 +131,10 @@ class GivenCourseModel(models.Model):
         return ", ".join({s.classe.compact_str for s in self.studentmodel_set.distinct("classe")})
 
     @property
+    def has_multiple_classes(self):
+        return self.studentmodel_set.distinct("classe").count() > 1
+
+    @property
     def teachers(self):
         return [
             {"id": teacher.id, "matricule": teacher.matricule, "fullname": teacher.fullname}
