@@ -32,6 +32,14 @@ class PIAAdmin(admin.ModelAdmin):
     raw_id_fields = ["student"]
 
 
+class CrossGoalItemAdmin(admin.ModelAdmin):
+    filter_horizontal = ["difficulties"]
+
+
+class BranchGoalItemAdmin(admin.ModelAdmin):
+    filter_horizontal = ["difficulties"]
+
+
 admin.site.register(models.PIASettingsModel)
 admin.site.register(models.PIAModel, PIAAdmin)
 admin.site.register(models.DisorderModel)
@@ -44,8 +52,8 @@ admin.site.register(models.CrossGoalModel)
 admin.site.register(models.AssessmentModel)
 admin.site.register(models.BranchModel)
 admin.site.register(models.BranchGoalModel)
-admin.site.register(models.CrossGoalItemModel)
-admin.site.register(models.BranchGoalItemModel)
+admin.site.register(models.CrossGoalItemModel, CrossGoalItemAdmin)
+admin.site.register(models.BranchGoalItemModel, BranchGoalItemAdmin)
 admin.site.register(models.IntermediateEvaluationModel)
 admin.site.register(models.ClassCouncilPIAModel)
 admin.site.register(models.OtherStatementModel)
