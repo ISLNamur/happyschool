@@ -607,6 +607,7 @@ class ClassePhotosView(LoginRequiredMixin, WeasyTemplateView):
                 tenures = ResponsibleModel.objects.filter(tenure=classe)
 
                 context["tenures"] = tenures
+                context["has_multiple_classes"] = False
             except ObjectDoesNotExist:
                 return context
         elif course_id:
@@ -614,6 +615,8 @@ class ClassePhotosView(LoginRequiredMixin, WeasyTemplateView):
                 given_course = GivenCourseModel.objects.get(id=course_id)
                 students = StudentModel.objects.filter(courses=given_course)
                 title = f"{given_course.course.long_name} ({given_course.classes})"
+
+                context["has_multiple_classes"] = given_course.has_multiple_classes
             except ObjectDoesNotExist:
                 return context
         else:

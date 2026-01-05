@@ -9,7 +9,7 @@
     <style>
         @page {
             size: a4;
-            margin-top: 10mm;
+            margin-top: 0mm;
             margin-bottom: 0;
         }
 
@@ -55,6 +55,7 @@
                     <img src="/static/photos/{{ student.matricule }}.jpg" />
                     <p>
                         {{ student.fullname }}
+                        {% if has_multiple_classes and student.classe %}{{ student.classe.compact_str }}{% endif %}
                     </p>
                 </td>
                 {% endfor %}
