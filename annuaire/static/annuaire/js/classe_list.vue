@@ -18,7 +18,10 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <BRow align-h="end">
+    <BRow
+        align-h="end"
+        class="mt-2"
+    >
         <BCol>
             <div
                 v-if="students.length > 0"
