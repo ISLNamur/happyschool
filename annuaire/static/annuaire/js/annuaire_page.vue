@@ -31,24 +31,6 @@
         <BContainer v-if="loaded">
             <h1>Annuaire</h1>
             <BRow>
-                <BCol
-                    v-if="teachingsOptions.length > 1"
-                    md="2"
-                    sm="12"
-                >
-                    <BFormGroup label="Établissement(s)">
-                        <BFormSelect
-                            multiple
-                            :select-size="3"
-                            v-model="teachings"
-                            :options="teachingsOptions"
-                            value-field="id"
-                            text-field="display_name"
-                            class="mb-2"
-                        />
-                    </BFormGroup>
-                </BCol>
-
                 <BCol>
                     <BFormGroup
                         label="Recherche"
@@ -77,31 +59,76 @@
                         </multiselect>
                     </BFormGroup>
                 </BCol>
-                <BCol md="2">
+                <BCol
+                    sm="3"
+                    md="2"
+                >
                     <BFormGroup
                         label="Autres filtres"
                     >
                         <BButton
-                            v-b-toggle.collapseAdvancedSearch
-                            variant="outline-secondary"
-                            class="mt-2 mt-md-0"
+                            @click="showAdvanced = !showAdvanced"
+                            :variant="showAdvanced ? 'secondary' : 'outline-secondary'"
                         >
                             <IBiSliders />
                         </BButton>
                     </BFormGroup>
+                </BCol>
+            </BRow>
+            <BRow>
+                <BCol>
                     <BCollapse
-                        id="collapseAdvancedSearch"
+                        v-model="showAdvanced"
                         class="mt-2"
                     >
-                        <BFormGroup
-                            label="Type de recherche :"
-                        >
-                            <BFormSelect
-                                v-model="advancedSearchSelected"
-                                :options="advancedSearchOptions"
-                                :select-size="1"
-                            />
-                        </BFormGroup>
+                        <BCard border-variant="secondary">
+                            <BFormGroup
+                                v-if="teachingsOptions.length > 1"
+                                label="Établissement(s)"
+                            >
+                                <BFormSelect
+                                    multiple
+                                    :select-size="3"
+                                    v-model="teachings"
+                                    :options="teachingsOptions"
+                                    value-field="id"
+                                    text-field="display_name"
+                                    class="mb-2"
+                                />
+                            </BFormGroup>
+                            <BFormGroup
+                                label="Type de recherche"
+                            >
+                                <BFormSelect
+                                    v-model="advancedSearchSelected"
+                                    :options="advancedSearchOptions"
+                                    :select-size="1"
+                                />
+                            </BFormGroup>
+                            <BFormGroup
+                                label="Type de personne"
+                            >
+                                <BFormSelect v-model="personType">
+                                    <BFormSelectOption value="all">
+                                        Toutes les personnes
+                                    </BFormSelectOption>
+                                    <BFormSelectOption value="student">
+                                        Étudiant
+                                    </BFormSelectOption>
+                                    <BFormSelectOption value="responsible">
+                                        Responsable
+                                    </BFormSelectOption>
+                                </BFormSelect>
+                            </BFormGroup>
+                            <BFormGroup class="mt-1">
+                                <BFormCheckbox
+                                    v-model="onlyActive"
+                                    switch
+                                >
+                                    Ne pas chercher dans les anciens
+                                </BFormCheckbox>
+                            </BFormGroup>
+                        </BCard>
                     </BCollapse>
                 </BCol>
             </BRow>
@@ -135,11 +162,14 @@ export default {
             teachingsOptions: [],
             search: null,
             searchOptions: [],
+            personType: "all",
+            onlyActive: false,
             searchLoading: false,
-            advancedSearchSelected: { value: "default", desc: "Rechercher un étudiant, une classe, un professeur, …" },
+            showAdvanced: false,
+            advancedSearchSelected: { value: "default", desc: "Rechercher un étudiant, une classe, un professeur" },
             advancedSearchOptions: [
-                { text: "Normale", value: { value: "default", desc: "Rechercher un étudiant, une classe, un professeur, …" } },
-                { text: "Par téléphone", value: { value: "phone", desc: "Rechercher par numéro de téléphone fix ou GSM ex: 0470102030 …" } },
+                { text: "Normale", value: { value: "default", desc: "Rechercher un étudiant, une classe, un professeur" } },
+                { text: "Par téléphone", value: { value: "phone", desc: "Rechercher par numéro de téléphone fix ou GSM ex: 0470102030" } },
                 { text: "Par e-mail", value: { value: "email", desc: "Rechercher par e-mail ex: adresse@email.be" } },
             ],
         };
@@ -164,8 +194,8 @@ export default {
             const data = {
                 query: query,
                 teachings: this.teachings.length > 0 ? this.teachings : this.teachingsOptions.map(t => t.id),
-                people: "all",
-                active: false,
+                people: this.personType,
+                active: this.onlyActive,
                 check_access: false,
             };
             if (this.advancedSearchSelected.value == "phone") {
