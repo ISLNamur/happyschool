@@ -76,6 +76,8 @@
 <script>
 import axios from "axios";
 
+import { useToastController } from "bootstrap-vue-next";
+
 import MailTemplate from "@s:core/js/common/MailTemplate.vue";
 
 import { studentAbsenceTeacherStore } from "./stores/index.js";
@@ -83,6 +85,10 @@ import { studentAbsenceTeacherStore } from "./stores/index.js";
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
+    setup: function () {
+        const { show } = useToastController();
+        return { show };
+    },
     props: {
         studentId: {
             type: String,
