@@ -1012,6 +1012,7 @@ class MailWarningAPI(APIView):
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
+        set_as_warned = request.data.get("set_warned", True)
         recipients = request.data.get("recipients", [])
         reply_to = request.data.get("reply_to", [])
         context = {
@@ -1057,7 +1058,7 @@ class MailWarningAPI(APIView):
 
         absences_id = request.data.get("absences")
         for absence in StudentAbsenceEducModel.objects.filter(id__in=absences_id):
-            absence.mail_warning = True
+            absence.mail_warning = set_as_warned
             absence.save()
 
         # Log notification

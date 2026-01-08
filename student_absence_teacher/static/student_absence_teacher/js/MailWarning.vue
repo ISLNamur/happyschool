@@ -46,6 +46,11 @@
                         </div>
                     </template>
                     <BListGroup>
+                        <BListGroupItem variant="primary">
+                            <BFormCheckbox v-model="setWarned">
+                                Marquer les absences comme traitées
+                            </BFormCheckbox>
+                        </BListGroupItem>
                         <BListGroupItem
                             v-for="absence, idx in lastAbsences"
                             :key="absence.id"
@@ -88,6 +93,7 @@ export default {
         return {
             lastAbsences: [],
             absenceWarned: [],
+            setWarned: true,
             sending: false,
             student: null,
             store: studentAbsenceTeacherStore(),
@@ -118,7 +124,7 @@ export default {
     methods: {
         send: function (data) {
             const relatedAbsences = this.lastAbsences.filter((lA, i) => this.absenceWarned[i]).map(a => a.id);
-            const context = Object.assign(data, { absences: relatedAbsences });
+            const context = Object.assign(data, { absences: relatedAbsences, set_warned: this.setWarned });
             this.sending = true;
             axios.post("/student_absence_teacher/api/mail_warning/", context, token)
                 .then(() => {
