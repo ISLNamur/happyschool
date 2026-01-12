@@ -732,7 +732,10 @@ class CalendarAPI(APIView):
                 }
                 for event in cal.walk("VEVENT")
                 if event["DTSTART"].dt > self._today(event)
-                or event["DTSTART"].dt <= self._today(event) < event["DTEND"].dt
+                or (
+                    "DTEND" in event
+                    and event["DTSTART"].dt <= self._today(event) < event["DTEND"].dt
+                )
             ]
             events += evts
         events = sorted(events, key=lambda e: (e["begin"][6:], e["begin"][3:5], e["begin"][:2]))
