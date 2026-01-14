@@ -355,7 +355,9 @@ class LatenessViewSet(BaseModelViewSet):
 
         # Notification
         if lateness_settings.notify_responsible:
-            responsibles = get_resp_emails(lateness.student)
+            responsibles = get_resp_emails(
+                lateness.student, school_email=lateness_settings.use_email_school
+            )
 
             context = {
                 "lateness": lateness,
