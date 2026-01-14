@@ -563,11 +563,13 @@ class MailWarningAPI(APIView):
         other_responsibles = ResponsibleModel.objects.filter(
             pk__in=request.data.get("other_recipients")
         )
+
+        email_school = get_settings().use_email_school
         recipient_email = recipient_email.union(
             {
-                r.email_school if r.email_school else r.email
+                r.email_school if email_school else r.email
                 for r in other_responsibles
-                if r.email_school or r.email
+                if (email_school and r.email_school) or (r.email and not email_school)
             }
         )
 
