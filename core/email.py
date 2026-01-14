@@ -176,7 +176,7 @@ def send_email(
     return response > 0
 
 
-def get_resp_emails(student: StudentModel) -> dict:
+def get_resp_emails(student: StudentModel, school_email=True) -> dict:
     """Return a dict of emails and names of responsible that are in charge of the student."""
     emails = {}
     for e in EmailModel.objects.filter(teaching=student.teaching, years=student.classe.year):
@@ -186,6 +186,13 @@ def get_resp_emails(student: StudentModel) -> dict:
     educators = ResponsibleModel.objects.filter(
         teaching=student.teaching, classe=student.classe, is_educator=True
     )
-    emails = dict(emails, **{e.email_school: e.fullname for e in educators})
+    emails = dict(
+        emails,
+        **{
+            e.email_school if school_email else e.email: e.fullname
+            for e in educators
+            if (school_email and e.email_school) or (e.email and not school_email)
+        },
+    )
 
     return emails
