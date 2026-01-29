@@ -467,6 +467,8 @@ class ImportResponsibleFDB(ImportResponsible):
                 )
                 if "," in overwrite.value:
                     return overwrite.value.split(",")
+                if overwrite.value == "None":
+                    return None
                 return overwrite.value
             except ObjectDoesNotExist:
                 pass
