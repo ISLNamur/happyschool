@@ -314,3 +314,10 @@ class CasEleve(models.Model):
             ("set_sanction", "Can set sanction"),
             ("ask_sanction", "Can ask sanction"),
         )
+
+
+class GroupCaseModel(models.Model):
+    cases = models.ManyToManyField(CasEleve, blank=False, null=False)
+
+    datetime_creation = models.DateTimeField(auto_now_add=True)
+    datetime_update = models.DateTimeField(auto_now=True)
