@@ -142,7 +142,7 @@
                                 :key="res.id"
                                 :resource-difficulty="res"
                                 :edit-mode="editMode"
-                                :value="true"
+                                :model-value="true"
                             />
                         </BListGroup>
                     </BCol>
@@ -156,7 +156,7 @@
                                 :key="res.id"
                                 :resource-difficulty="res"
                                 :edit-mode="editMode"
-                                :value="false"
+                                :model-value="false"
                             />
                         </BListGroup>
                     </BCol>

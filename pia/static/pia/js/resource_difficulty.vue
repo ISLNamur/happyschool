@@ -60,6 +60,7 @@
 
 <script>
 export default {
+    emits: ["update:modelValue"],
     props: {
         editMode: {
             type: Boolean,
