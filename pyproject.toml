@@ -9,7 +9,7 @@ dependencies = [
     "channels==4.3.2",
     "channels-redis==4.3.0",
     "daphne==4.2.1",
-    "Django==5.2.9",
+    "Django==5.2.11",
     "django-auth-ldap>=5.1.0",
     "django-cas-ng>=5.0.1",
     "django-filter==25.2",
