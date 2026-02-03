@@ -22,7 +22,7 @@
     "pinia": "^3.0.0",
     "vue": "^3.4.38",
     "vue-multiselect": "^3.1.0",
-    "vue-router": "^4.2.5"
+    "vue-router": "^5.0.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.2",
