@@ -21,7 +21,6 @@ from django.contrib import admin
 
 from .models import Appel, MotiveModel, ObjectModel, AppelsSettingsModel
 
-
 admin.site.register(Appel)
 admin.site.register(MotiveModel)
 admin.site.register(ObjectModel)
