@@ -33,7 +33,6 @@ from email.mime.image import MIMEImage
 from .models import EmailModel, StudentModel, ResponsibleModel
 from core.views import get_core_settings
 
-
 EMAIL_PROVIDER_SWEEGO: str = "sweego"
 
 

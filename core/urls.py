@@ -24,7 +24,6 @@ from rest_framework.routers import DefaultRouter
 from . import views
 from .adminsettings import views as admin_views
 
-
 app_name = "core"
 
 urlpatterns = [

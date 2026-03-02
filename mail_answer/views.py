@@ -43,7 +43,6 @@ from .models import (
     MailAnswerSettingsModel,
 )
 
-
 permissions = (
     IsAuthenticated,
     DjangoModelPermissions,

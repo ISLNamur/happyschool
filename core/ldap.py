@@ -22,7 +22,6 @@ from datetime import date
 
 from django.conf import settings
 
-
 ldap_to_django = {
     "sn": "last_name",
     "cn": "first_name",

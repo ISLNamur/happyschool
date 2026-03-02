@@ -27,7 +27,6 @@ from .models import (
     ScheduleChangePlaceModel,
 )
 
-
 admin.site.register(ScheduleChangeModel)
 admin.site.register(ScheduleChangeSettingsModel)
 admin.site.register(ScheduleChangeTypeModel)
