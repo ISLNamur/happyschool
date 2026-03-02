@@ -97,6 +97,7 @@ class PassageView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
         {"value": "name", "text": "Nom"},
         {"value": "activate_ongoing", "text": "Malades présents"},
         {"value": "matricule_id", "text": "Matricule"},
+        {"value": "datetime_arrive", "text": "Date"},
     ]
 
     def get_context_data(self, **kwargs):
