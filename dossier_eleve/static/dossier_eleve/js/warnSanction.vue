@@ -143,7 +143,7 @@ export default {
 
         axios.get(`/dossier_eleve/api/template_sanction/${this.id}/`)
             .then((resp) => {
-                this.baseTemplate = resp.data;
+                this.baseTemplate = resp.data ? resp.data : "<p></p>";
             });
     },
     components: {
