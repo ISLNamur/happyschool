@@ -55,4 +55,13 @@ export default {
 .b-form-group {
     margin-bottom: 1rem;
 }
+
+.fade-enter-active {
+    transition: opacity .1s
+}
+
+.fade-enter,
+.fade-leave-to .fade-leave-active {
+    opacity: 0
+}
 </style>

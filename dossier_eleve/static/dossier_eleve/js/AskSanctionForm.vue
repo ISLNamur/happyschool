@@ -378,7 +378,10 @@ export default {
         updateMatricule: function (selectedOption) {
             this.form.student_id = selectedOption.matricule;
 
-            axios.get(`/dossier_eleve/api/statistics/${this.form.student_id}/`)
+            this.getStatistics(this.form.student_id);
+        },
+        getStatistics: function (student_id) {
+            axios.get(`/dossier_eleve/api/statistics/${student_id}/`)
                 .then((response) => {
                     this.stats = response.data.filter(s => s.type === "sanction-decision");
                 })
@@ -600,6 +603,7 @@ export default {
                     axios.get(`/dossier_eleve/api/ask_sanctions/${this.id}/`)
                         .then((resp) => {
                             this.form = resp.data;
+                            this.getStatistics(this.form.student_id);
                             this.form.time_sanction_start = this.form.time_sanction_start ? this.form.time_sanction_start.slice(0, 5) : null;
                             this.form.time_sanction_end = this.form.time_sanction_end ? this.form.time_sanction_end.slice(0, 5) : null;
                             if (this.form.visible_by_tenure) {
