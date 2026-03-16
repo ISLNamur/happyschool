@@ -21,6 +21,18 @@
     <BContainer>
         <BOverlay :show="sending">
             <BRow>
+                <BCol>
+                    <BBreadcrumb>
+                        <BBreadcrumbItem href="/dossier_eleve/">
+                            Dossier élève
+                        </BBreadcrumbItem>
+                        <BBreadcrumbItem to="/">
+                            Demandes de sanction
+                        </BBreadcrumbItem>
+                    </BBreadcrumb>
+                </BCol>
+            </BRow>
+            <BRow>
                 <BCol sm="4">
                     <div>
                         <BImg
@@ -225,6 +237,18 @@
                                         <strong>{{ val.display }} :</strong> {{ val.value }}
                                     </BListGroupItem>
                                 </BListGroup>
+                                <BListGroup class="mt-2">
+                                    <BListGroupItem><strong>Demandes en cours</strong></BListGroupItem>
+                                    <BListGroupItem
+                                        v-for="sanction in lastSanctions"
+                                        :key="sanction.id"
+                                        class="d-flex justify-content-between align-items-center"
+                                        :to="`/edit/${sanction.id}/`"
+                                        :variant="sanction.id === id ? 'info' : ''"
+                                    >
+                                        {{ sanction.date_sanction }} <span>{{ sanction.sanction_decision.sanction_decision }}</span>
+                                    </BListGroupItem>
+                                </BListGroup>
                             </BCol>
                         </BFormRow>
                         <BFormRow>
@@ -346,6 +370,7 @@ export default {
             demandeurLoading: false,
             searchId: 0,
             stats: [],
+            lastSanctions: [],
             timeSanction: null,
             visibilityOptions: [],
             errors: {},
@@ -373,6 +398,11 @@ export default {
                 }
             }
         },
+        id: function () {
+            if (this.id > 0) {
+                this.loadData();
+            }
+        },
     },
     methods: {
         updateMatricule: function (selectedOption) {
@@ -387,6 +417,12 @@ export default {
                 })
                 .catch(function (error) {
                     alert(error);
+                });
+        },
+        getLastSanctions: function () {
+            axios.get(`/dossier_eleve/api/ask_sanctions/?student__matricule=${this.form.student_id}`)
+                .then((resp) => {
+                    this.lastSanctions = resp.data.results;
                 });
         },
         errorMsg(err) {
@@ -590,6 +626,35 @@ export default {
                 return group;
             });
         },
+        loadData: function () {
+            this.sending = true;
+            axios.get(`/dossier_eleve/api/ask_sanctions/${this.id}/`)
+                .then((resp) => {
+                    this.form = resp.data;
+                    this.getStatistics(this.form.student_id);
+                    this.getLastSanctions();
+                    this.form.time_sanction_start = this.form.time_sanction_start ? this.form.time_sanction_start.slice(0, 5) : null;
+                    this.form.time_sanction_end = this.form.time_sanction_end ? this.form.time_sanction_end.slice(0, 5) : null;
+                    if (this.form.visible_by_tenure) {
+                        this.form.visible_by_groups.push(-1);
+                    }
+
+                    if (this.form.datetime_conseil) {
+                        this.form.datetime_conseil = DateTime.fromISO(this.form.datetime_conseil).toISODate();
+                    }
+                    if (this.form.attachments.length > 0) {
+                        for (let a in this.form.attachments) {
+                            this.uploadedFiles.push({ id: this.form.attachments[a], file: null });
+                        }
+                    }
+                    this.sending = false;
+                })
+                .catch(function (err) {
+                    console.log(err);
+                    this.sending = false;
+                });
+            this.setVisibilityGroups();
+        },
     },
     mounted: function () {
         // Set sanctions and decisions options.
@@ -600,26 +665,7 @@ export default {
                 });
 
                 if (this.id > 0) {
-                    axios.get(`/dossier_eleve/api/ask_sanctions/${this.id}/`)
-                        .then((resp) => {
-                            this.form = resp.data;
-                            this.getStatistics(this.form.student_id);
-                            this.form.time_sanction_start = this.form.time_sanction_start ? this.form.time_sanction_start.slice(0, 5) : null;
-                            this.form.time_sanction_end = this.form.time_sanction_end ? this.form.time_sanction_end.slice(0, 5) : null;
-                            if (this.form.visible_by_tenure) {
-                                this.form.visible_by_groups.push(-1);
-                            }
-
-                            if (this.form.datetime_conseil) {
-                                this.form.datetime_conseil = DateTime.fromISO(this.form.datetime_conseil).toISODate();
-                            }
-                            if (this.form.attachments.length > 0) {
-                                for (let a in this.form.attachments) {
-                                    this.uploadedFiles.push({ id: this.form.attachments[a], file: null });
-                                }
-                            }
-                        });
-                    this.setVisibilityGroups();
+                    this.loadData();
                 } else {
                     this.setVisibilityGroups();
                     // Default is everyone.
