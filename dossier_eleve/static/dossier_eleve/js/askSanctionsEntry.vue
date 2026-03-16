@@ -101,7 +101,7 @@
                                 <BButton
                                     variant="light"
                                     size="sm"
-                                    @click="editEntry"
+                                    :to="`/edit/${rowData.id}/`"
                                     class="card-link"
                                 ><IBiPencilSquare
                                     color="green"
@@ -350,15 +350,6 @@ export default {
 
 .entry-subtitle {
     color: grey;
-}
-
-.fade-enter-active {
-    transition: opacity .7s
-}
-
-.fade-enter,
-.fade-leave-to .fade-leave-active {
-    opacity: 0
 }
 
 .info {

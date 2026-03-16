@@ -18,7 +18,7 @@
 // along with Happyschool.  If not, see <http://www.gnu.org/licenses/>.
 
 import AskSanctions from "../askSanctions.vue";
-import Ask from "../ask_form.vue";
+import Ask from "../AskSanctionForm.vue";
 import WarnSanction from "../warnSanction.vue";
 
 import { createRouter, createWebHashHistory } from "vue-router";
@@ -31,7 +31,11 @@ const router = createRouter({
     {
         path: "/edit/:id/",
         component: Ask,
-        props: true,
+        props: (route) => {
+            const props = { ...route.params };
+            props.id = Number(props.id);
+            return props;
+        },
     },
     {
         path: "/new/",
@@ -41,7 +45,11 @@ const router = createRouter({
     {
         path: "/warn/:id/",
         component: WarnSanction,
-        props: true,
+        props: (route) => {
+            const props = { ...route.params };
+            props.id = Number(props.id);
+            return props;
+        },
     },
     ],
     history: createWebHashHistory(),

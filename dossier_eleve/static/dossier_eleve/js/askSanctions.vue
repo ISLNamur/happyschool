@@ -52,7 +52,7 @@
                             <BButton
                                 v-if="store.canAskSanction"
                                 variant="primary"
-                                @click="openDynamicModal('ask-modal')"
+                                to="/new/"
                                 class="w-100 mb-1"
                             >
                                 <IBiPlus
