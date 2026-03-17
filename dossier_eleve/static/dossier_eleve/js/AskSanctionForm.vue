@@ -596,7 +596,7 @@ export default {
             });
 
             // eslint-disable-next-line no-undef
-            if (user_properties.tenure.includes(this.name.classe)) {
+            if (this.form.student && user_properties.tenure.includes(this.form.student.classe)) {
                 concernedSettings.push({
                     group: -1,
                     isAllowed: new Set(settings.tenure_allow_visibility_to),
@@ -647,13 +647,15 @@ export default {
                             this.uploadedFiles.push({ id: this.form.attachments[a], file: null });
                         }
                     }
+
+                    this.setVisibilityGroups();
+
                     this.sending = false;
                 })
                 .catch(function (err) {
                     console.log(err);
                     this.sending = false;
                 });
-            this.setVisibilityGroups();
         },
     },
     mounted: function () {
