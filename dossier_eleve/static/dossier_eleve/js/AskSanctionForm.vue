@@ -237,7 +237,10 @@
                                         <strong>{{ val.display }} :</strong> {{ val.value }}
                                     </BListGroupItem>
                                 </BListGroup>
-                                <BListGroup class="mt-2">
+                                <BListGroup
+                                    v-if="lastSanctions.length > 0"
+                                    class="mt-2"
+                                >
                                     <BListGroupItem><strong>Demandes en cours</strong></BListGroupItem>
                                     <BListGroupItem
                                         v-for="sanction in lastSanctions"
