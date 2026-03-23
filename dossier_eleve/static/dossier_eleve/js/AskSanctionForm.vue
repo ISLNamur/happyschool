@@ -410,6 +410,7 @@ export default {
     methods: {
         updateMatricule: function (selectedOption) {
             this.form.student_id = selectedOption.matricule;
+            this.form.name = selectedOption.display;
 
             this.getStatistics(this.form.student_id);
         },
