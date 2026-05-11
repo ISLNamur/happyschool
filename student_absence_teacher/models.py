@@ -45,6 +45,7 @@ class StudentAbsenceTeacherSettingsModel(models.Model):
         Group, default=None, blank=True, related_name="can_see_exclusion"
     )
     select_student_by = models.CharField(choices=SELECT_STUDENT, max_length=4, default=CLASS)
+    sender_email = models.EmailField(null=True, default=None, blank=True)
     sync_with_proeco = models.BooleanField("Synchronise les absences avec ProEco", default=False)
 
 

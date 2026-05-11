@@ -1047,12 +1047,15 @@ class MailWarningAPI(APIView):
             }
         )
 
+        app_settings = get_settings()
+
         for r in recipient_email:
             send_email(
                 [r],
                 subject=f"Absence concernant {student.fullname}",
                 email_template="student_absence_teacher/email_warning_parents.html",
                 context=context,
+                from_email=app_settings.sender_email,
                 reply_to=reply_to,
             )
 
