@@ -58,6 +58,7 @@ export default {
         const { show } = useToastController();
         return { show };
     },
+    emits: ["update:model-value"],
     props: {
         absences: {
             type: Array,
@@ -89,7 +90,7 @@ export default {
             const url = `/student_absence_teacher/api/absence_educ/${!isNew ? this.absences[index].id + "/" : ""}`;
             const method = isNew ? axios.post(url, [data], token) : axios.put(url, data, token);
             method.then((resp) => {
-                this.$emit("change", [isNew ? resp.data[0] : resp.data, index]);
+                this.$emit("update:model-value", [isNew ? resp.data[0] : resp.data, index]);
                 this.updating = false;
             })
                 .catch(() => {
