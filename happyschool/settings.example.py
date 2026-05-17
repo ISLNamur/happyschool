@@ -172,7 +172,7 @@ SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = "key"
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = "secret"
 
-# An key/secret must be created in
+# A key/secret must be created in
 # https://portal.azure.com/ > Azure Active Directory > Application registration
 # and a redirect url must be added, https is mandatory.
 SOCIAL_AUTH_MICROSOFT_GRAPH_KEY = "keyyy-keyyyy-keyyyy"
@@ -196,7 +196,9 @@ if DEBUG:
 else:
     STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
-CRISPY_TEMPLATE_PACK = "bootstrap3"
+DJANGO_VITE_PLUGIN = {
+    "BUILD_DIR": "static",
+}
 
 LOGIN_URL = "auth"
 LOGIN_REDIRECT_URL = "annuaire"
