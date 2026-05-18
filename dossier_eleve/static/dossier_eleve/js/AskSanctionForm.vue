@@ -413,6 +413,7 @@ export default {
             this.form.name = selectedOption.display;
 
             this.getStatistics(this.form.student_id);
+            this.getLastSanctions();
         },
         getStatistics: function (student_id) {
             axios.get(`/dossier_eleve/api/statistics/${student_id}/`)
