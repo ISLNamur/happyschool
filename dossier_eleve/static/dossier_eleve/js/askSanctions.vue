@@ -191,7 +191,6 @@
                 :row-data="entry"
                 :light-display="lightDisplay"
                 @delete="askDelete(entry)"
-                @edit="editEntry(index)"
                 @filter-student="filterStudent($event)"
                 @done="loadEntries"
                 @update-sanction="updateSanction(entry, $event)"
@@ -291,7 +290,6 @@
 import axios from "axios";
 
 import AskSanctionsEntry from "./askSanctionsEntry.vue";
-import AskModal from "./ask_form.vue";
 import AskExportModal from "./askExportModal.vue";
 import MassActions from "./massActions.vue";
 import Filters from "@s:core/js/common/filters_form.vue";
@@ -413,10 +411,6 @@ export default {
             this.currentEntry = entry;
             this.$refs.deleteModal.show();
         },
-        editEntry: function (index) {
-            this.currentEntry = this.entries[index];
-            this.openDynamicModal("ask-modal");
-        },
         deleteEntry: function () {
             axios.delete("/dossier_eleve/api/ask_sanctions/" + this.currentEntry.id + "/", token)
                 .then(() => {
@@ -470,7 +464,6 @@ export default {
     components: {
         "filters": Filters,
         "ask-sanctions-entry": AskSanctionsEntry,
-        "ask-modal": AskModal,
         "ask-export-modal": AskExportModal,
         "app-menu": Menu,
         "mass-actions": MassActions,
