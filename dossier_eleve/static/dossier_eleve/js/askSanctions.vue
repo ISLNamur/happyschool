@@ -186,7 +186,7 @@
                 </BRow>
             </BCard>
             <ask-sanctions-entry
-                v-for="(entry, index) in entries"
+                v-for="entry in entries"
                 :key="entry.id"
                 :row-data="entry"
                 :light-display="lightDisplay"

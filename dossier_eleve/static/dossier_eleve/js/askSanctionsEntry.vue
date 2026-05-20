@@ -202,6 +202,7 @@ import { displayStudent } from "@s:core/js/common/utilities.js";
 import { askSanctionsStore } from "./stores/ask_sanctions.js";
 
 export default {
+    emits: ["update-sanction", "delete", "filterStudent", "done"],
     props: {
         rowData: {
             type: Object,
@@ -308,9 +309,6 @@ export default {
         },
         deleteEntry: function () {
             this.$emit("delete");
-        },
-        editEntry: function () {
-            this.$emit("edit");
         },
         filterStudent: function () {
             this.$emit("filterStudent", this.rowData.student_id);
