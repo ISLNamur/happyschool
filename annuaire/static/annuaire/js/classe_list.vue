@@ -21,6 +21,7 @@
     <BRow
         align-h="end"
         class="mt-2"
+        id="class-student-list"
     >
         <BCol>
             <div

@@ -18,7 +18,7 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <div id="info-student">
+    <div id="info-person">
         <BOverlay :show="loading">
             <BRow v-if="person">
                 <BCol
