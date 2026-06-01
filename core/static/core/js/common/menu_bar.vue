@@ -18,7 +18,7 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <div>
+    <div id="menu">
         <BNavbar
             toggleable="lg"
             type="light"
