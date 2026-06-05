@@ -64,7 +64,7 @@ from core.email import send_email, get_resp_emails
 
 from .serializers import *
 from .models import *
-from .tasks import task_send_info_email, notify_sanction
+from .tasks import task_send_cas_email, notify_sanction
 
 from io import BytesIO
 from PyPDF2 import PdfWriter
@@ -386,7 +386,7 @@ class CasEleveViewSet(BaseModelViewSet, ForceVisibilityMixin):
         super().perform_create(serializer)
         cas = serializer.save(created_by=self.request.user)
         if send_to_teachers:
-            task_send_info_email.apply_async(
+            task_send_cas_email.apply_async(
                 countdown=1, kwargs={"instance_id": serializer.save().id}
             )
 
@@ -400,7 +400,7 @@ class CasEleveViewSet(BaseModelViewSet, ForceVisibilityMixin):
         super().perform_update(serializer)
 
         if serializer.validated_data["send_to_teachers"]:
-            task_send_info_email.apply_async(
+            task_send_cas_email.apply_async(
                 countdown=1, kwargs={"instance_id": serializer.save().id}
             )
 

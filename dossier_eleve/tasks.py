@@ -82,7 +82,7 @@ def notify_sanction(self, instance_id):
 
 
 @shared_task(bind=True)
-def task_send_info_email(self, instance_id):
+def task_send_cas_email(self, instance_id):
     instance = CasEleve.objects.get(id=instance_id)
     student = instance.student
     teachers_obj = get_teachers_from_student(student)
@@ -91,7 +91,8 @@ def task_send_info_email(self, instance_id):
     teachers = [
         t.email_school if dossier_eleve_settings.use_school_email else t.email for t in teachers_obj
     ]
-    context = {"student": student, "info": instance, "info_type": instance.info.info}
+    cas_type = instance.info.info if instance.info else instance.sanction_decision.sanction_decision
+    context = {"student": student, "cas": instance, "cas_type": cas_type}
 
     # Add coord and educs to email list
     teachers += map(
@@ -107,7 +108,7 @@ def task_send_info_email(self, instance_id):
             send_email(
                 to=teachers,
                 subject="ISLN : À propos de " + student.fullname_classe,
-                email_template="dossier_eleve/email_info.html",
+                email_template="dossier_eleve/email_cas.html",
                 context=context,
                 attachments=instance.attachments.all(),
                 use_bcc=True,
@@ -116,7 +117,7 @@ def task_send_info_email(self, instance_id):
             send_email(
                 to=teachers,
                 subject="ISLN : À propos de " + student.fullname_classe,
-                email_template="dossier_eleve/email_info.html",
+                email_template="dossier_eleve/email_cas.html",
                 context=context,
                 attachments=instance.attachments.all(),
                 use_bcc=True,
@@ -126,7 +127,7 @@ def task_send_info_email(self, instance_id):
         send_email(
             to=[settings.EMAIL_ADMIN],
             subject="ISLN : À propos de " + student.fullname_classe,
-            email_template="dossier_eleve/email_info.html",
+            email_template="dossier_eleve/email_cas.html",
             context=context,
             attachments=instance.attachments.all(),
         )
