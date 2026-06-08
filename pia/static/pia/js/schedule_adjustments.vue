@@ -123,7 +123,7 @@
 <script>
 import axios from "axios";
 
-import { useModalController } from "bootstrap-vue-next";
+import { useModal } from "bootstrap-vue-next";
 
 import { piaStore } from "./stores/index.js";
 
@@ -134,7 +134,7 @@ import "vue-multiselect/dist/vue-multiselect.css";
 
 export default {
     setup: function () {
-        const { create } = useModalController();
+        const { create } = useModal();
         return { create };
     },
     props: {
@@ -175,7 +175,7 @@ export default {
                 okVariant: "danger",
                 okTitle: "Oui",
                 cancelTitle: "Non",
-            }).then((confirm) => {
+            }).show().then((confirm) => {
                 if (confirm.ok) {
                     const sAIndex = this.scheduleAdjustments.findIndex(
                         sA => sA.id === this.currentSchedAdj.id && sA.date_start === this.currentSchedAdj.date_start,

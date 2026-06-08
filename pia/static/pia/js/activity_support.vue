@@ -204,7 +204,7 @@
 <script>
 import axios from "axios";
 
-import { useModalController } from "bootstrap-vue-next";
+import { useModal } from "bootstrap-vue-next";
 
 import { getPeopleByName } from "@s:core/js/common/search.js";
 
@@ -221,7 +221,7 @@ import "vue-multiselect/dist/vue-multiselect.css";
 
 export default {
     setup: function () {
-        const { create } = useModalController();
+        const { create } = useModal();
         return { create };
     },
     props: {
@@ -302,7 +302,7 @@ export default {
                 okVariant: "danger",
                 okTitle: "Oui",
                 cancelTitle: "Non",
-            }).then((confirm) => {
+            }).show().then((confirm) => {
                 if (confirm.ok) {
                     const sAIndex = this.activitySupports.findIndex(
                         sA => sA.id === this.currentActSupp.id && sA.date_start === this.currentActSupp.date_start,

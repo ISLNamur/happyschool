@@ -123,7 +123,7 @@
 <script>
 import axios from "axios";
 
-import { useModalController } from "bootstrap-vue-next";
+import { useModal } from "bootstrap-vue-next";
 
 import { piaStore } from "./stores/index.js";
 
@@ -134,7 +134,7 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { create } = useModalController();
+        const { create } = useModal();
         return { create };
     },
     props: {
@@ -179,7 +179,7 @@ export default {
                 okVariant: "danger",
                 okTitle: "Oui",
                 cancelTitle: "Non",
-            }).then((confirm) => {
+            }).show().then((confirm) => {
                 if (confirm.ok) {
                     const cRIndex = this.courseReinforcements.findIndex(
                         cR => cR.id === this.currentCourseReinfor.id && cR.date_start === this.currentCourseReinfor.date_start,

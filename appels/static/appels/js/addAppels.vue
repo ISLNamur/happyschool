@@ -291,13 +291,13 @@ import { DateTime } from "luxon";
 
 import axios from "axios";
 
-import { useToastController } from "bootstrap-vue-next";
+import { useToast } from "bootstrap-vue-next";
 
 import { appelsStore } from "./stores/index.js";
 
 export default {
     setup: function () {
-        const { show } = useToastController();
+        const { show } = useToast();
         return { show };
     },
     props: { entry: {

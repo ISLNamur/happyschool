@@ -333,7 +333,7 @@ import axios from "axios";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
-import { useModalController } from "bootstrap-vue-next";
+import { useModal } from "bootstrap-vue-next";
 
 import TextEditor from "@s:core/js/common/text_editor.vue";
 
@@ -346,7 +346,7 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { create } = useModalController();
+        const { create } = useModal();
         return { create };
     },
     props: {
@@ -548,7 +548,7 @@ export default {
                 okVariant: "danger",
                 okTitle: "Oui",
                 cancelTitle: "Non",
-            }).then((response) => {
+            }).show().then((response) => {
                 if (response.ok && "id" in this.intermediateEvaluation[index]) {
                     axios.delete(`/pia/api/intermediate_evaluation/${this.intermediateEvaluation[index].id}/`, token);
                 }

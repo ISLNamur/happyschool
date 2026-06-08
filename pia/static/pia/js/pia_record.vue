@@ -580,14 +580,14 @@ import DisorderSelection from "./disorder_selection.vue";
 import ScheduleAdjustments from "./schedule_adjustments.vue";
 
 import ActivitySupport from "./activity_support.vue";
-import { useModalController, useToastController } from "bootstrap-vue-next";
+import { useModal, useToast } from "bootstrap-vue-next";
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { show } = useToastController();
-        const { create } = useModalController();
+        const { show } = useToast();
+        const { create } = useModal();
         return { show, create };
     },
     props: {
@@ -760,7 +760,7 @@ export default {
                 okTitle: "Oui",
                 cancelTitle: "Non",
                 centered: true,
-            }).then((resp) => {
+            }).show().then((resp) => {
                 if (resp.ok) {
                     let clonedObject = Object.assign({}, app[objectType][objectIndex]);
                     if (app[objectType][objectIndex].id >= 0) {
@@ -786,7 +786,7 @@ export default {
                 okTitle: "Oui",
                 cancelTitle: "Non",
                 centered: true,
-            }).then((resp) => {
+            }).show().then((resp) => {
                 if (resp.ok) {
                     if (app[objectType][objectIndex].id >= 0) {
                         axios.delete(`/pia/api/${objectType}/` + app[objectType][objectIndex].id + "/", token)

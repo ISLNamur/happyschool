@@ -108,14 +108,14 @@
 <script>
 import axios from "axios";
 
-import { useModalController, useToastController } from "bootstrap-vue-next";
+import { useModal, useToast } from "bootstrap-vue-next";
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { show } = useToastController();
-        const { create } = useModalController();
+        const { show } = useToast();
+        const { create } = useModal();
         return { show, create };
     },
     data: function () {
@@ -216,7 +216,7 @@ export default {
          * @param {Object} group The group that has to be removed.
          */
         deleteGroup: function (permName, group) {
-            this.create({ body: "Êtes-vous sûr de vouloir supprimer " + group.name + " ?" })
+            this.create({ body: "Êtes-vous sûr de vouloir supprimer " + group.name + " ?" }).show()
                 .then((remove) => {
                     if (!remove.ok) return;
 

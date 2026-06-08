@@ -98,7 +98,7 @@
 <script>
 import axios from "axios";
 
-import { useModalController } from "bootstrap-vue-next";
+import { useModal } from "bootstrap-vue-next";
 
 import { piaStore } from "./stores/index.js";
 
@@ -108,7 +108,7 @@ import TextEditor from "@s:core/js/common/text_editor.vue";
 
 export default {
     setup: function () {
-        const { create } = useModalController();
+        const { create } = useModal();
         return { create };
     },
     props: {
@@ -150,7 +150,7 @@ export default {
                 okVariant: "danger",
                 okTitle: "Oui",
                 cancelTitle: "Non",
-            }).then((confirm) => {
+            }).show().then((confirm) => {
                 if (confirm.ok) {
                     const sAIndex = this.otherAdjustments.findIndex(
                         sA => sA.id === this.currentOtherAdj.id && sA.date_start === this.currentOtherAdj.date_start,

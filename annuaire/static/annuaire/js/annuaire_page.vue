@@ -18,7 +18,7 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <div>
+    <BApp>
         <div
             class="loading"
             v-if="!loaded"
@@ -27,7 +27,6 @@
             v-if="loaded"
             :menu-info="menuInfo"
         />
-        <BToastOrchestrator />
         <BContainer v-if="loaded">
             <h1>Annuaire</h1>
             <BRow>
@@ -141,7 +140,7 @@
                 </transition>
             </router-view>
         </BContainer>
-    </div>
+    </BApp>
 </template>
 
 <script>

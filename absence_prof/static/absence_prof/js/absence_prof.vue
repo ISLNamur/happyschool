@@ -87,7 +87,7 @@
 
 <script>
 import axios from "axios";
-import { useModalController } from "bootstrap-vue-next";
+import { useModal } from "bootstrap-vue-next";
 
 import Filters from "@s:core/js/common/filters_form.vue";
 
@@ -99,7 +99,7 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { create } = useModalController();
+        const { create } = useModal();
         return { create };
     },
     data: function () {
@@ -139,7 +139,7 @@ export default {
                     okTitle: "Oui",
                     cancelTitle: "Annuler",
                 },
-            ).then((resp) => {
+            ).show().then((resp) => {
                 if (resp.ok) {
                     this.deleteEntry();
                 }

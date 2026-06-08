@@ -280,14 +280,14 @@ import axios from "axios";
 
 import { DateTime } from "luxon";
 
-import { useToastController } from "bootstrap-vue-next";
+import { useToast } from "bootstrap-vue-next";
 import { displayStudent } from "@s:core/js/common/utilities.js";
 
 import { annuaireStore } from "./stores/index.js";
 
 export default {
     setup: function () {
-        const { show } = useToastController();
+        const { show } = useToast();
         return { show };
     },
     props: {

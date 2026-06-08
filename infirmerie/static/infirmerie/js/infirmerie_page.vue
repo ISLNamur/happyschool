@@ -18,12 +18,10 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <div>
+    <BApp>
         <app-menu
             :menu-info="menuInfo"
         />
-        <BModalOrchestrator />
-        <BToastOrchestrator />
         <router-view v-slot="{ Component }">
             <transition
                 name="slide-left"
@@ -32,7 +30,7 @@
                 <component :is="Component" />
             </transition>
         </router-view>
-    </div>
+    </BApp>
 </template>
 
 <script>

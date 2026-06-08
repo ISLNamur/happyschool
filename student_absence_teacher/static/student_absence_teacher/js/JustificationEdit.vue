@@ -176,7 +176,7 @@ import { DateTime } from "luxon";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
-import { useToastController, useModalController } from "bootstrap-vue-next";
+import { useToast, useModal } from "bootstrap-vue-next";
 
 import { studentAbsenceTeacherStore } from "./stores/index.js";
 import AbsencesStat from "./AbsencesStat.vue";
@@ -188,8 +188,8 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { show } = useToastController();
-        const { create } = useModalController();
+        const { show } = useToast();
+        const { create } = useModal();
         return { show, create };
     },
     props: {
@@ -319,7 +319,7 @@ export default {
                             okVariant: "danger",
                             okTitle: "Oui",
                             cancelTitle: "Annuler",
-                        }).then((proceed) => {
+                        }).show().then((proceed) => {
                             if (proceed.ok) {
                                 resolve();
                             } else {
@@ -330,7 +330,7 @@ export default {
                         this.create({
                             body: `L'étudiant a bientôt atteint la limite des justificatifs pour le motif ${justMotive.justificationmodel__motive__short_name}. Merci de prendre les dispositions nécessaire.`,
                             okOnly: true,
-                        }).then(() => {
+                        }).show().then(() => {
                             resolve();
                         });
                     } else {
@@ -393,7 +393,7 @@ export default {
                 okVariant: "danger",
                 okTitle: "Oui",
                 cancelTitle: "Annuler",
-            })
+            }).show()
                 .then((remove) => {
                     if (!remove.ok) return;
 

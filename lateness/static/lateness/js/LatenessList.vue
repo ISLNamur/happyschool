@@ -281,7 +281,7 @@ import "vue-multiselect/dist/vue-multiselect.css";
 
 import axios from "axios";
 
-import { useToastController } from "bootstrap-vue-next";
+import { useToast } from "bootstrap-vue-next";
 
 import Filters from "@s:core/js/common/filters_form.vue";
 import { getFilters } from "@s:core/js/common/filters.js";
@@ -293,7 +293,7 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { show } = useToastController();
+        const { show } = useToast();
         return { show };
     },
     data: function () {

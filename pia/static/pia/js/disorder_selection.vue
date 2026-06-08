@@ -79,7 +79,7 @@
 <script>
 import axios from "axios";
 
-import { useModalController } from "bootstrap-vue-next";
+import { useModal } from "bootstrap-vue-next";
 
 import { piaStore } from "./stores/index.js";
 import DisorderCare from "./disorder_care.vue";
@@ -88,7 +88,7 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { create } = useModalController();
+        const { create } = useModal();
         return { create };
     },
     props: {
@@ -143,7 +143,7 @@ export default {
                     okTitle: "Oui",
                     cancelTitle: "Non",
                 },
-            ).then((confirm) => {
+            ).show().then((confirm) => {
                 if (confirm.ok) {
                     const dCIndex = this.disorderCares.findIndex(
                         sA => sA.id === this.currentDisorderCare && sA.date_start === this.currentDisorderCareObj.date_start,

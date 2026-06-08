@@ -343,7 +343,7 @@ import TextEditor from "@s:core/js/common/text_editor.vue";
 
 import axios from "axios";
 
-import { useToastController } from "bootstrap-vue-next";
+import { useToast } from "bootstrap-vue-next";
 
 import FileUpload from "@s:core/js/common/file_upload.vue";
 
@@ -353,7 +353,7 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { show } = useToastController();
+        const { show } = useToast();
         return { show };
     },
     props: {

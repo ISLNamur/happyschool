@@ -18,19 +18,17 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <div>
+    <BApp>
         <app-menu
             v-if="!fullscreen"
             :menu-info="menuInfo"
         />
-        <BModalOrchestrator />
-        <BToastOrchestrator />
         <router-view v-slot="{ Component }">
             <Transition name="fade">
                 <component :is="Component" />
             </Transition>
         </router-view>
-    </div>
+    </BApp>
 </template>
 
 <script>

@@ -183,7 +183,7 @@ import "vue-multiselect/dist/vue-multiselect.css";
 
 import axios from "axios";
 
-import { useModalController } from "bootstrap-vue-next";
+import { useModal } from "bootstrap-vue-next";
 
 import { studentAbsenceTeacherStore } from "./stores/index.js";
 
@@ -193,7 +193,7 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { create } = useModalController();
+        const { create } = useModal();
         return { create };
     },
     data: function () {
@@ -259,7 +259,7 @@ export default {
                 okVariant: "danger",
                 okTitle: "Oui",
                 cancelTitle: "Annuler",
-            })
+            }).show()
                 .then((remove) => {
                     if (!remove.ok) return;
 

@@ -231,7 +231,7 @@ import { DateTime } from "luxon";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
-import { useToastController } from "bootstrap-vue-next";
+import { useToast } from "bootstrap-vue-next";
 
 import { infirmerieStore } from "./stores/index.js";
 
@@ -241,7 +241,7 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { show } = useToastController();
+        const { show } = useToast();
         return { show };
     },
     props: {

@@ -225,7 +225,7 @@ import "vue-multiselect/dist/vue-multiselect.css";
 
 import axios from "axios";
 
-import { useToastController, useModalController } from "bootstrap-vue-next";
+import { useToast, useModal } from "bootstrap-vue-next";
 
 import { scheduleChangeStore } from "./stores/index.js";
 
@@ -233,8 +233,8 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { show } = useToastController();
-        const { create } = useModalController();
+        const { show } = useToast();
+        const { create } = useModal();
         return { show, create };
     },
     data: function () {
@@ -367,7 +367,7 @@ export default {
                     title: "Êtes-vous sûr de vouloir continuer ?",
                     okVariant: "warning",
                     okTitle: "Continuer",
-                }).then((value) => {
+                }).show().then((value) => {
                     if (value.ok) {
                         this.makeSchedules();
                     }

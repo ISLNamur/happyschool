@@ -18,7 +18,7 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <div>
+    <BApp>
         <div
             class="loading"
             v-if="!loaded"
@@ -75,9 +75,7 @@
             </BRow>
             <router-view />
         </BContainer>
-        <BModalOrchestrator />
-        <BToastOrchestrator />
-    </div>
+    </BApp>
 </template>
 
 <script>

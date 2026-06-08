@@ -128,7 +128,7 @@ import axios from "axios";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
-import { useToastController } from "bootstrap-vue-next";
+import { useToast } from "bootstrap-vue-next";
 
 import TextEditor from "@s:core/js/common/text_editor.vue";
 
@@ -137,7 +137,7 @@ import { displayStudent } from "@s:core/js/common/utilities";
 
 export default {
     setup: function () {
-        const { show } = useToastController();
+        const { show } = useToast();
         return { show };
     },
     emits: ["sending"],

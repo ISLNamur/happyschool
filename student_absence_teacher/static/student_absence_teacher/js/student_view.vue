@@ -156,7 +156,7 @@
 
 <script>
 import axios from "axios";
-import { useModalController } from "bootstrap-vue-next";
+import { useModal } from "bootstrap-vue-next";
 
 import { displayStudent } from "@s:core/js/common/utilities.js";
 
@@ -171,7 +171,7 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { create } = useModalController();
+        const { create } = useModal();
         return { create };
     },
     props: {
@@ -229,7 +229,7 @@ export default {
                 okVariant: "danger",
                 okTitle: "Oui",
                 cancelTitle: "Annuler",
-            })
+            }).show()
                 .then((remove) => {
                     if (!remove.ok) return;
 

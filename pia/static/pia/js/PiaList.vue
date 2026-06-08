@@ -129,7 +129,7 @@
 <script>
 import axios from "axios";
 
-import { useModalController } from "bootstrap-vue-next";
+import { useModal } from "bootstrap-vue-next";
 
 import { piaStore } from "./stores/index.js";
 import { displayStudent } from "@s:core/js/common/utilities.js";
@@ -151,7 +151,7 @@ export default {
         },
     },
     setup: function () {
-        const { create } = useModalController();
+        const { create } = useModal();
         return { create };
     },
     data: function () {
@@ -235,7 +235,7 @@ export default {
                 okVariant: "danger",
                 cancelTitle: "Non",
                 centered: true,
-            }).then((resp) => {
+            }).show().then((resp) => {
                 if (resp.ok) {
                     axios.delete("/pia/api/pia/" + this.entries[index].id + "/", token)
                         .then(() => this.entries.splice(index, 1))

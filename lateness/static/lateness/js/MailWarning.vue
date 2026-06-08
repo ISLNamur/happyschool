@@ -64,7 +64,7 @@
 import axios from "axios";
 import { DateTime } from "luxon";
 
-import { useToastController } from "bootstrap-vue-next";
+import { useToast } from "bootstrap-vue-next";
 import MailTemplate from "@s:core/js/common/MailTemplate.vue";
 
 import { latenessStore } from "./stores/index.js";
@@ -73,7 +73,7 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { show } = useToastController();
+        const { show } = useToast();
         return { show };
     },
     props: {

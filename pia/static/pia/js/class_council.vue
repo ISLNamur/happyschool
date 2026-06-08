@@ -131,8 +131,8 @@
 import axios from "axios";
 import { DateTime } from "luxon";
 
-import { useModalController } from "bootstrap-vue-next";
-import { useToastController } from "bootstrap-vue-next";
+import { useModal } from "bootstrap-vue-next";
+import { useToast } from "bootstrap-vue-next";
 
 import { piaStore } from "./stores/index.js";
 
@@ -146,8 +146,8 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
  */
 export default {
     setup: function () {
-        const { show } = useToastController();
-        const { create } = useModalController();
+        const { show } = useToast();
+        const { create } = useModal();
         return { create, show };
     },
     props: {
@@ -306,7 +306,7 @@ export default {
                 okTitle: "Oui",
                 cancelTitle: "Non",
                 centered: true,
-            }).then((resp) => {
+            }).show().then((resp) => {
                 if (resp.ok) {
                     if (app.class_council.id < 0 || !("id" in app[statementType][councilStatementIndex])) {
                         app[statementType].splice(councilStatementIndex, 1);

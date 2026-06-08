@@ -132,13 +132,13 @@ import "vue-multiselect/dist/vue-multiselect.css";
 import { getPeopleByName } from "@s:core/js/common/search.js";
 import { absenceProfStore } from "./stores/index.js";
 
-import { useToastController } from "bootstrap-vue-next";
+import { useToast } from "bootstrap-vue-next";
 
 const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { show } = useToastController();
+        const { show } = useToast();
         return { show };
     },
     props: {

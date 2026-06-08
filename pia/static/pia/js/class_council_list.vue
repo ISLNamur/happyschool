@@ -92,7 +92,7 @@
 import axios from "axios";
 import { DateTime } from "luxon";
 
-import { useModalController } from "bootstrap-vue-next";
+import { useModal } from "bootstrap-vue-next";
 
 import ClassCouncil from "./class_council.vue";
 
@@ -100,7 +100,7 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { create } = useModalController();
+        const { create } = useModal();
         return { create };
     },
     props: {
@@ -143,7 +143,7 @@ export default {
                 okTitle: "Oui",
                 cancelTitle: "Non",
                 centered: true,
-            }).then((resp) => {
+            }).show().then((resp) => {
                 if (resp.ok) {
                     const councilIndex = list === "nextCouncils" ? index : index + this.nextCouncils.length;
                     if (app.councils[councilIndex].id >= 0) {
