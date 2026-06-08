@@ -202,6 +202,7 @@
                         </BAlert>
                     </BFormRow>
                     <BButton
+                        id="submit-passage"
                         type="submit"
                         variant="primary"
                         :disabled="sending"
