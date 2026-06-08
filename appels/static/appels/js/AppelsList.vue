@@ -197,7 +197,7 @@ export default {
         },
         deleteEntry: function () {
             const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
-            axios.delete("/appels/api/appel/" + this.currentEntry.id, token)
+            axios.delete(`/appels/api/appel/${this.currentEntry.id}/`, token)
                 .then(() => {
                     this.loadEntries();
                 });
