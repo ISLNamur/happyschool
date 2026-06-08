@@ -30,6 +30,7 @@
             </BButton>
             <BFormGroup>
                 <BFormCheckboxGroup
+                    id="filters-switches"
                     v-model="activated"
                     :options="activateFilters"
                     switches
