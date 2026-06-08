@@ -129,8 +129,14 @@ export default {
             pia: null,
         };
     },
+    watch: {
+        matricule: function () {
+            this.initInfo();
+        },
+    },
     methods: {
         initInfo: function () {
+            this.infoCount = 0;
             if (window.history.length > 1 && !window.history.state.back) {
                 this.backHistory = true;
             }
@@ -147,24 +153,19 @@ export default {
                     });
 
                 let promises = [];
-                let apps = [];
                 // eslint-disable-next-line no-undef
                 const userMenu = menu;
                 if (userMenu.apps.find(a => a.app == "dossier_eleve")) {
                     promises.push(axios.get(`/dossier_eleve/api/cas_eleve/?ordering=-datetime_encodage&student__matricule=${this.matricule}`));
-                    apps.push("dossier_eleve");
                 }
                 if (userMenu.apps.find(a => a.app == "appels")) {
                     promises.push(axios.get(`/appels/api/appel/?ordering=-datetime_appel&matricule_id=${this.matricule}`));
-                    apps.push("appels");
                 }
                 if (userMenu.apps.find(a => a.app == "infirmerie")) {
                     promises.push(axios.get(`/infirmerie/api/passage/?ordering=-datetime_passage&matricule_id=${this.matricule}`));
-                    apps.push("infirmerie");
                 }
                 if (userMenu.apps.find(a => a.app == "lateness")) {
                     promises.push(axios.get(`/lateness/api/lateness/?ordering=-datetime_creation&student__matricule=${this.matricule}&scholar_year=${getCurrentScholarYear()}`));
-                    apps.push("lateness");
                 }
                 Promise.all(promises)
                     .then((response) => {
@@ -174,7 +175,7 @@ export default {
                         this.loading = false;
                     });
             } else if (this.type === "responsible") {
-                this.locations = [{ text: "Responsable" }];
+                this.locations = [{ text: "Responsable", to: `/person/responsible/${this.matricule}/` }];
             }
         },
     },
