@@ -13,7 +13,7 @@ dependencies = [
     "django-auth-ldap>=5.1.0",
     "django-cas-ng>=5.0.1",
     "django-filter==25.2",
-    "django-weasyprint==2.2.2",
+    "django-weasyprint==2.5.0",
     "djangorestframework>=3.16.1",
     "icalendar>=6.1.1",
     "ldap3>=2.9.1",
