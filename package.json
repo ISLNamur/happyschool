@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@ckeditor/ckeditor5-build-classic": "^44.0.0",
-    "@ckeditor/ckeditor5-vue": "^7.3.0",
+    "@ckeditor/ckeditor5-vue": "^8.1.1",
     "@fullcalendar/core": "^6.1.15",
     "@fullcalendar/interaction": "^6.1.15",
     "@fullcalendar/timegrid": "^6.1.15",
