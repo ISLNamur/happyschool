@@ -91,13 +91,6 @@ export default {
             }
         },
     },
-    mounted: function () {
-        if (this.divBlock) {
-            // const Block = Quill.import("blots/block");
-            // Block.tagName = "DIV";
-            // Quill.register(Block, true);
-        }
-    },
     components: {
         ckeditor: Ckeditor,
     },
