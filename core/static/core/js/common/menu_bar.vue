@@ -76,7 +76,7 @@
                             Administration
                         </BDropdownItem>
                         <BDropdownDivider />
-                        <BDropdownItem href="/logout/">
+                        <BDropdownItem @click="logout">
                             Se déconnecter
                         </BDropdownItem>
                     </BNavItem-dropdown>
@@ -87,7 +87,9 @@
 </template>
 
 <script>
+import axios from "axios";
 
+const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 export default {
     props: {
         "menu-info": {
@@ -99,6 +101,12 @@ export default {
         return {
             userMatricule: null,
         };
+    },
+    methods: {
+        logout: function () {
+            axios.post("/logout/", {}, token)
+                .then(() => window.location = "/auth/");
+        },
     },
     mounted: function () {
         // eslint-disable-next-line no-undef
