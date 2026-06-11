@@ -21,8 +21,15 @@ from datetime import date, datetime
 
 from unittest.mock import patch, Mock
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.firefox.options import Options
+
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+
 from django.test import TestCase
 from django.contrib.auth.models import User
+
 from .people import (
     People,
     STUDENT,
@@ -33,9 +40,38 @@ from .people import (
     get_students_from_teacher,
 )
 
+
 from .utilities import in_scholar_year, get_scholar_year, extract_day_of_week
 
 from .models import TeachingModel, StudentModel, ClasseModel, ResponsibleModel, CoreSettingsModel
+
+
+class SeleniumTestBase(StaticLiveServerTestCase):
+    fixtures = ["test_functional.json"]
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        options = Options()
+        options.add_argument("--headless")
+        cls.driver = WebDriver(options=options)
+        cls.driver.implicitly_wait(10)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.driver.quit()
+        super().tearDownClass()
+
+    def login(self):
+        """
+        Login as an administrator
+        """
+        self.driver.get(f"{self.live_server_url}/infirmerie/")
+        username_input = self.driver.find_element(By.ID, "username")
+        username_input.send_keys("admin")
+        password_input = self.driver.find_element(By.ID, "password")
+        password_input.send_keys("password")
+        self.driver.find_element(By.XPATH, '//button[@type="submit"]').click()
 
 
 class GetAllTeachingTest(TestCase):
