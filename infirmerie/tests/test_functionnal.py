@@ -19,63 +19,35 @@
 
 import time
 
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from selenium.webdriver.firefox.webdriver import WebDriver
-from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
 
-
-class SeleniumTestBase(StaticLiveServerTestCase):
-    fixtures = ["test_functional.json", "test_infirmerie.json"]
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        options = Options()
-        options.add_argument("--headless")
-        cls.selenium = WebDriver(options=options)
-        cls.selenium.implicitly_wait(10)
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.selenium.quit()
-        super().tearDownClass()
-
-    def login(self):
-        """
-        Login as an administrator
-        """
-        self.selenium.get(f"{self.live_server_url}/infirmerie/")
-        username_input = self.selenium.find_element(By.ID, "username")
-        username_input.send_keys("admin")
-        password_input = self.selenium.find_element(By.ID, "password")
-        password_input.send_keys("password")
-        self.selenium.find_element(By.XPATH, '//button[@type="submit"]').click()
+from core.tests import SeleniumTestBase
 
 
 class InfirmerieAddTest(SeleniumTestBase):
+    fixtures = SeleniumTestBase.fixtures + ["test_infirmerie.json"]
+
     def test_adding_deleting_student(self):
         self.login()
 
-        self.selenium.find_element(By.LINK_TEXT, "Ajouter un malade").click()
-        self.selenium.find_element(By.CSS_SELECTOR, ".multiselect__input").send_keys("tutu")
+        self.driver.find_element(By.LINK_TEXT, "Ajouter un malade").click()
+        self.driver.find_element(By.CSS_SELECTOR, ".multiselect__input").send_keys("tutu")
         time.sleep(1)
-        self.selenium.find_element(By.CSS_SELECTOR, ".multiselect__input").send_keys(Keys.ENTER)
-        self.selenium.find_element(By.ID, "input-admission").click()
-        self.selenium.find_element(By.ID, "input-admission").send_keys("ENTRÉE")
-        self.selenium.find_element(By.ID, "submit-passage").click()
-        self.selenium.find_element(By.LINK_TEXT, "Encoder départ").click()
-        self.selenium.find_element(By.ID, "input-remarque").click()
-        self.selenium.find_element(By.ID, "input-remarque").send_keys("SORTIE")
-        self.selenium.find_element(By.ID, "submit-passage").click()
+        self.driver.find_element(By.CSS_SELECTOR, ".multiselect__input").send_keys(Keys.ENTER)
+        self.driver.find_element(By.ID, "input-admission").click()
+        self.driver.find_element(By.ID, "input-admission").send_keys("ENTRÉE")
+        self.driver.find_element(By.ID, "submit-passage").click()
+        self.driver.find_element(By.LINK_TEXT, "Encoder départ").click()
+        self.driver.find_element(By.ID, "input-remarque").click()
+        self.driver.find_element(By.ID, "input-remarque").send_keys("SORTIE")
+        self.driver.find_element(By.ID, "submit-passage").click()
 
 
 class InfirmerieDeleteTest(SeleniumTestBase):
     def test_adding_deleting_student(self):
         self.login()
 
-        self.selenium.find_element(By.CSS_SELECTOR, ".form-check-input").click()
-        self.selenium.find_element(By.CSS_SELECTOR, ".btn-light:nth-child(2) > svg").click()
-        self.selenium.find_element(By.CSS_SELECTOR, ".btn-primary:nth-child(2)").click()
+        self.driver.find_element(By.CSS_SELECTOR, ".form-check-input").click()
+        self.driver.find_element(By.CSS_SELECTOR, ".btn-light:nth-child(2) > svg").click()
+        self.driver.find_element(By.CSS_SELECTOR, ".btn-primary:nth-child(2)").click()
