@@ -28,9 +28,10 @@ from core.tests import SeleniumTestBase
 class InfirmerieAddTest(SeleniumTestBase):
     fixtures = SeleniumTestBase.fixtures + ["test_infirmerie.json"]
 
-    def test_adding_deleting_student(self):
+    def test_adding_student(self):
         self.login()
 
+        self.driver.get(f"{self.live_server_url}/infirmerie")
         self.driver.find_element(By.LINK_TEXT, "Ajouter un malade").click()
         self.driver.find_element(By.CSS_SELECTOR, ".multiselect__input").send_keys("tutu")
         time.sleep(1)
@@ -45,7 +46,7 @@ class InfirmerieAddTest(SeleniumTestBase):
 
 
 class InfirmerieDeleteTest(SeleniumTestBase):
-    def test_adding_deleting_student(self):
+    def test_deleting_student(self):
         self.login()
 
         self.driver.find_element(By.CSS_SELECTOR, ".form-check-input").click()
