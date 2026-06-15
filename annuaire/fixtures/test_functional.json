@@ -380,5 +380,26 @@
             "classe": [],
             "tenure": []
         }
+    },
+    {
+        "model": "core.responsiblemodel",
+        "pk": 5,
+        "fields": {
+            "first_name": "Sys",
+            "last_name": "Admin",
+            "matricule": 42,
+            "email": "admin.sys@happy.org",
+            "email_school": null,
+            "is_teacher": false,
+            "is_educator": false,
+            "user": [
+                "admin"
+            ],
+            "teaching": [
+                1
+            ],
+            "classe": [],
+            "tenure": []
+        }
     }
 ]
