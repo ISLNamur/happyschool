@@ -47,7 +47,6 @@ class AbsenceProfSerializer(serializers.ModelSerializer):
     def validate(self, data):
         """Ensure date_asbence_start is before date_absence_end."""
 
-        print(data)
         if data["date_absence_start"] > data["date_absence_end"]:
             raise serializers.ValidationError(
                 "La date de fin doit se trouver après la date de début."
