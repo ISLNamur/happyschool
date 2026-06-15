@@ -48,12 +48,14 @@ from .models import TeachingModel, StudentModel, ClasseModel, ResponsibleModel, 
 
 class SeleniumTestBase(StaticLiveServerTestCase):
     fixtures = ["test_functional.json"]
+    headless = True
 
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
         options = Options()
-        options.add_argument("--headless")
+        if cls.headless:
+            options.add_argument("--headless")
         cls.driver = WebDriver(options=options)
         cls.driver.implicitly_wait(10)
 
@@ -66,7 +68,7 @@ class SeleniumTestBase(StaticLiveServerTestCase):
         """
         Login as an administrator
         """
-        self.driver.get(f"{self.live_server_url}/infirmerie/")
+        self.driver.get(f"{self.live_server_url}/")
         username_input = self.driver.find_element(By.ID, "username")
         username_input.send_keys("admin")
         password_input = self.driver.find_element(By.ID, "password")
