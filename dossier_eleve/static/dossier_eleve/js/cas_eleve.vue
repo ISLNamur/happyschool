@@ -143,10 +143,14 @@
                                     v-model="infoOrSanction"
                                     :disabled="id >= 0 ? true : false"
                                 >
-                                    <BFormRadio value="info">
+                                    <BFormRadio
+                                        id="info-check"
+                                        value="info"
+                                    >
                                         Non disciplinaire
                                     </BFormRadio>
                                     <BFormRadio
+                                        id="sanction-decision-check"
                                         value="sanction-decision"
                                         :disabled="!store.canSetSanction"
                                     >
@@ -195,7 +199,7 @@
                                 :state="inputStates.sanction_decision_id"
                             >
                                 <BFormSelect
-                                    id="input-info"
+                                    id="input-sanction-decision"
                                     v-model="form.sanction_decision_id"
                                     :options="sanctionDecisionOptions"
                                 >
@@ -258,6 +262,7 @@
                                 :state="inputStates.explication_commentaire"
                             >
                                 <text-editor
+                                    id="comment"
                                     v-model="form.explication_commentaire"
                                     div-block
                                 />
@@ -301,6 +306,7 @@
                         <BCol>
                             <BFormGroup
                                 v-if="visibilityOptions.length > 0"
+                                id="visibility-check"
                                 label="Donner la visibilité à :"
                             >
                                 <BFormCheckboxGroup
