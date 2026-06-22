@@ -46,8 +46,11 @@ class InfirmerieAddTest(SeleniumTestBase):
 
 
 class InfirmerieDeleteTest(SeleniumTestBase):
+    fixtures = SeleniumTestBase.fixtures + ["test_infirmerie.json"]
+
     def test_deleting_student(self):
         self.login()
+        self.driver.get(f"{self.live_server_url}/infirmerie")
 
         self.driver.find_element(By.CSS_SELECTOR, ".form-check-input").click()
         self.driver.find_element(By.CSS_SELECTOR, ".btn-light:nth-child(2) > svg").click()
