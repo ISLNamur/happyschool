@@ -19,7 +19,7 @@
     "bootstrap": "^5.3.8",
     "bootstrap-vue-next": "^0.45.5",
     "luxon": "^3.7.2",
-    "pinia": "^3.0.0",
+    "pinia": "^4.0.2",
     "vue": "^3.5.35",
     "vue-multiselect": "^3.1.0",
     "vue-router": "^4.2.5"
