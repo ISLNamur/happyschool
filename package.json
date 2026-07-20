@@ -14,7 +14,7 @@
     "@fullcalendar/core": "^6.1.15",
     "@fullcalendar/interaction": "^6.1.15",
     "@fullcalendar/timegrid": "^6.1.15",
-    "@fullcalendar/vue3": "^6.1.15",
+    "@fullcalendar/vue3": "^7.0.1",
     "axios": "^1.6.2",
     "bootstrap": "^5.3.8",
     "bootstrap-vue-next": "^0.45.5",
