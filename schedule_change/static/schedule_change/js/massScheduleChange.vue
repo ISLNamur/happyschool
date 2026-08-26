@@ -273,7 +273,6 @@ export default {
                 {
                     key: "classes",
                     label: "Classes",
-                    formatter: value => value.join(", "),
                 },
                 {
                     key: "teachers_replaced_id",
@@ -390,9 +389,6 @@ export default {
                     const endDay = DateTime.fromISO(this.dateEnd);
                     let currentDay = startDay;
                     while (currentDay.startOf("day") <= endDay.startOf("day")) {
-                        console.log(resp[0].data.results, currentDay.get("day") - 1);
-                        console.log(resp[0].data.results
-                            .filter(courseSchedule => courseSchedule.day_of_week === currentDay.weekday - 1));
                         this.scheduleChanges = this.scheduleChanges.concat(
                             resp[0].data.results
                                 .filter(courseSchedule => courseSchedule.day_of_week === currentDay.weekday - 1)
