@@ -136,7 +136,7 @@
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
-import { useModal } from "bootstrap-vue-next";
+import { useToggle } from "bootstrap-vue-next";
 
 import axios from "axios";
 
@@ -176,7 +176,7 @@ export default {
         },
     },
     setup: function () {
-        const { show } = useModal("prompt-period-modal");
+        const { show } = useToggle("prompt-period-modal");
         return { show };
     },
     data: function () {
@@ -266,7 +266,8 @@ export default {
             if (this.inputType == "date"
               || this.inputType == "month"
               || this.inputType == "time") {
-                this.$refs.selectType.focus();
+                this.$refs.selectType.$el.focus();
+                this.$refs.filters.deactivate();
                 this.show();
             }
         },
