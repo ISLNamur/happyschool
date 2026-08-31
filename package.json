@@ -21,7 +21,7 @@
     "luxon": "^3.7.2",
     "pinia": "^3.0.0",
     "vue": "^3.5.35",
-    "vue-multiselect": "^3.1.0",
+    "vue-multiselect": "^3.5.0",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
