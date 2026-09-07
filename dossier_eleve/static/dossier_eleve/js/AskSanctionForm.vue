@@ -363,6 +363,7 @@ export default {
             form: {
                 student: null,
                 student_id: null,
+                visible_by_groups: [],
             },
             attachments: [],
             uploadedFiles: [],
