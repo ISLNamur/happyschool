@@ -44,9 +44,9 @@ class Command(BaseCommand):
                 task_write_proeco.delay(write.id)
                 time.sleep(1)
 
-        if options["email"]:
+        if options["email"] and not_done_write:
             send_email(
-                to=settings.EMAIL_ADMIN,
+                to=[settings.EMAIL_ADMIN],
                 subject="Check proeco writes",
                 email_template="proeco/warn_write.html",
                 context={"write": not_done_write},
