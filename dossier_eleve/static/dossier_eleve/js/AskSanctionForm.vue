@@ -676,8 +676,6 @@ export default {
                     this.loadData();
                 } else {
                     this.setVisibilityGroups();
-                    // Default is everyone.
-                    this.form.visible_by_groups = this.visibilityOptions.map(g => g.id);
                 }
             })
             .catch(function (error) {
