@@ -28,9 +28,8 @@ from django.contrib.auth.views import LogoutView, TemplateView
 
 from core.utilities import EXCLUDED_APPS
 from core.views import LoginView
-from happyschool.settings import HOME_APP
 
-if HOME_APP in settings:
+if hasattr(settings, "HOME_APP"):
     default_url = f"{settings.HOME_APP}/"
 else:
     default_url = "annuaire/"
