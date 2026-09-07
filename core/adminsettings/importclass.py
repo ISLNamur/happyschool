@@ -23,7 +23,7 @@ from typing import Union, TextIO
 from datetime import date
 from unidecode import unidecode
 
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User, Group
@@ -784,6 +784,12 @@ class ImportStudent(ImportBase):
                                 if contact.email == resp_email:
                                     mother.is_legal_responsible = True
                                     mother.save()
+                    except MultipleObjectsReturned:
+                        print(
+                            "Multiple mothers found",
+                            student,
+                            relatives.filter(relationship=StudentRelativeModel.MOTHER),
+                        )
                     except ObjectDoesNotExist:
                         # Create mother.
 
@@ -848,6 +854,12 @@ class ImportStudent(ImportBase):
                                     father.save()
                             else:
                                 contact.delete()
+                    except MultipleObjectsReturned:
+                        print(
+                            "Multiple fathers found",
+                            student,
+                            relatives.filter(relationship=StudentRelativeModel.MOTHER),
+                        )
                     except ObjectDoesNotExist:
                         if father_last_name:
                             father_rel_data = {
