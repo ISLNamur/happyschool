@@ -28,13 +28,19 @@ from django.contrib.auth.views import LogoutView, TemplateView
 
 from core.utilities import EXCLUDED_APPS
 from core.views import LoginView
+from happyschool.settings import HOME_APP
+
+if HOME_APP in settings:
+    default_url = f"{settings.HOME}/"
+else:
+    default_url = "annuaire/"
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("core/", include("core.urls")),
     path("annuaire/", include("annuaire.urls"), name="annuaire"),
     path("no_access/", TemplateView.as_view(template_name="core/no_access.html"), name="no_access"),
-    path("", RedirectView.as_view(url="annuaire/", permanent=False)),
+    path("", RedirectView.as_view(url=default_url, permanent=False)),
     path("hijack/", include("hijack.urls")),
 ]
 
