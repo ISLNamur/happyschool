@@ -251,7 +251,7 @@ import axios from "axios";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.css";
 
-import { useModal } from "bootstrap-vue-next";
+import { useToggle } from "bootstrap-vue-next";
 
 import TextEditor from "@s:core/js/common/text_editor.vue";
 
@@ -261,7 +261,7 @@ const token = { xsrfCookieName: "csrftoken", xsrfHeaderName: "X-CSRFToken" };
 
 export default {
     setup: function () {
-        const { show } = useModal("add-custom-response");
+        const { show } = useToggle("add-custom-response");
         return { show };
     },
     emits: ["update:date_start", "update:date_end", "update:disorder", "update:other_adjustsments"],
