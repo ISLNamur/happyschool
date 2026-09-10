@@ -18,65 +18,66 @@
 <!-- along with Happyschool.  If not, see <http://www.gnu.org/licenses/>. -->
 
 <template>
-    <BToastOrchestrator />
-    <BContainer>
-        <BCard class="mt-2">
-            <BRow>
-                <BCol>
-                    <h1 class="text-center">
-                        Paramètres de notification
-                    </h1>
-                </BCol>
-            </BRow>
-            <BRow>
-                <BCol>
-                    <h2>Retards et exclusions</h2>
-                    <p>
-                        Si vous le décidez, vous avez la possibilité de recevoir un courriel chaque semaine contenant
-                        un récapitulatif des retards justifiés et injustifiés ainsi que des exclusions de cours.
-                        S'il n'y a aucun retard ou aucune exclusion, aucun courriel ne sera envoyé.
-                        oute autre information d’ordre pédagogique ou disciplinaire vous sera transmise par les canaux habituels
-                        pages jaunes du jdc, courrier, bulletin…).
-                    </p>
-                </BCol>
-            </BRow>
-            <BRow>
-                <BCol>
-                    Élève concerné : <strong>{{ student }}</strong>
-                </BCol>
-            </BRow>
-            <BRow class="mt-4">
-                <p><strong>Sélectionnez le ou les courriels qui vont recevoir le récapitulatif</strong></p>
-            </BRow>
-            <BRow
-                v-for="email, i in emails"
-                :key="i"
-            >
-                <BCol class="mt-4">
-                    <label>{{ email }}</label>
-                    <BFormCheckbox
-                        v-model="notif[i]"
-                        :state="saved"
-                    >
-                        Envoyer des notifications par courriel une fois par semaine.
-                    </BFormCheckbox>
-                </BCol>
-            </BRow>
-            <BRow class="mt-3">
-                <BCol>
-                    <BButton
-                        variant="primary"
-                        :loading="sending"
-                        loading-text="Enregistrement…"
-                        :disabled="sending"
-                        @click="sendSettings"
-                    >
-                        Envoyer
-                    </BButton>
-                </BCol>
-            </BRow>
-        </BCard>
-    </BContainer>
+    <BApp>
+        <BContainer>
+            <BCard class="mt-2">
+                <BRow>
+                    <BCol>
+                        <h1 class="text-center">
+                            Paramètres de notification
+                        </h1>
+                    </BCol>
+                </BRow>
+                <BRow>
+                    <BCol>
+                        <h2>Retards et exclusions</h2>
+                        <p>
+                            Si vous le décidez, vous avez la possibilité de recevoir un courriel chaque semaine contenant
+                            un récapitulatif des retards justifiés et injustifiés ainsi que des exclusions de cours.
+                            S'il n'y a aucun retard ou aucune exclusion, aucun courriel ne sera envoyé.
+                            oute autre information d’ordre pédagogique ou disciplinaire vous sera transmise par les canaux habituels
+                            pages jaunes du jdc, courrier, bulletin…).
+                        </p>
+                    </BCol>
+                </BRow>
+                <BRow>
+                    <BCol>
+                        Élève concerné : <strong>{{ student }}</strong>
+                    </BCol>
+                </BRow>
+                <BRow class="mt-4">
+                    <p><strong>Sélectionnez le ou les courriels qui vont recevoir le récapitulatif</strong></p>
+                </BRow>
+                <BRow
+                    v-for="email, i in emails"
+                    :key="i"
+                >
+                    <BCol class="mt-4">
+                        <label>{{ email }}</label>
+                        <BFormCheckbox
+                            v-model="notif[i]"
+                            :state="saved"
+                        >
+                            Envoyer des notifications par courriel une fois par semaine.
+                        </BFormCheckbox>
+                    </BCol>
+                </BRow>
+                <BRow class="mt-3">
+                    <BCol>
+                        <BButton
+                            variant="primary"
+                            :loading="sending"
+                            loading-text="Enregistrement…"
+                            :disabled="sending"
+                            @click="sendSettings"
+                        >
+                            Envoyer
+                        </BButton>
+                    </BCol>
+                </BRow>
+            </BCard>
+        </BContainer>
+    </BApp>
 </template>
 
 <script>
