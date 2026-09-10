@@ -114,12 +114,12 @@ export default {
 
 <style>
 .avenir {
-    background-color: lightgreen;
+    background-color: lightgreen !important;
 }
 .encours {
-    background-color: lightyellow;
+    background-color: lightyellow !important;
 }
 .cloture {
-    background-color: lightpink;
+    background-color: lightpink  !important;
 }
 </style>
