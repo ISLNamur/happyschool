@@ -167,9 +167,9 @@ export default {
             showAdvanced: false,
             advancedSearchSelected: { value: "default", desc: "Rechercher un étudiant, une classe, un professeur" },
             advancedSearchOptions: [
-                { text: "Normale", value: { value: "default", desc: "Rechercher un étudiant, une classe, un professeur" } },
-                { text: "Par téléphone", value: { value: "phone", desc: "Rechercher par numéro de téléphone fix ou GSM ex: 0470102030" } },
-                { text: "Par e-mail", value: { value: "email", desc: "Rechercher par e-mail ex: adresse@email.be" } },
+                { text: "Nom élève/prof ou classe", value: { value: "default", desc: "Rechercher un étudiant, une classe, un professeur" } },
+                { text: "Téléphone parent/élève", value: { value: "phone", desc: "Rechercher par numéro de téléphone fix ou GSM ex: 0470102030" } },
+                { text: "Courriel parent/élève", value: { value: "email", desc: "Rechercher par e-mail ex: adresse@email.be" } },
             ],
         };
     },
@@ -303,21 +303,19 @@ export default {
             }, 300);
         },
         numberPhoneFormat: function (numberPhone) {
-            let numberPhoneConverted;
+            // Remove not numeric characters.
+            const cleanNumber = numberPhone.replace("+32", "0").replace("+33", "0").replace(/[^\d.-]+/g, "").replaceAll(".", "");
+
+            let numberPhoneConverted = null;
             let patternPhoneFix = /^([0-9]){9}$/;
             let patternPhoneMobile = /^([0-9]){10}$/;
 
-            if (patternPhoneMobile.test(numberPhone)) {
-                console.log("is Mobile");
-                numberPhoneConverted = `${numberPhone.substring(0, 4)}.${numberPhone.substring(4, 6)}.${numberPhone.substring(6, 8)}.${numberPhone.substring(8, 10)}`;
-            } else if (patternPhoneFix.test(numberPhone)) {
-                console.log("is Fix");
-                numberPhoneConverted = `${numberPhone.substring(0, 3)}.${numberPhone.substring(3, 5)}.${numberPhone.substring(5, 7)}.${numberPhone.substring(7, 9)}`;
-            } else {
-                console.log("no valid numberphone");
-                numberPhoneConverted = null;
+            if (patternPhoneMobile.test(cleanNumber)) {
+                numberPhoneConverted = `${cleanNumber.substring(0, 4)}.${cleanNumber.substring(4, 6)}.${cleanNumber.substring(6, 8)}.${cleanNumber.substring(8, 10)}`;
+            } else if (patternPhoneFix.test(cleanNumber)) {
+                numberPhoneConverted = `${cleanNumber.substring(0, 3)}.${cleanNumber.substring(3, 5)}.${cleanNumber.substring(5, 7)}.${cleanNumber.substring(7, 9)}`;
             }
-            console.log(numberPhoneConverted);
+
             return numberPhoneConverted;
         },
     },
