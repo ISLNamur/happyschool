@@ -46,6 +46,7 @@ class LatenessSerializer(serializers.ModelSerializer):
             "sanction_id",
             "lateness_count",
             "justified",
+            "missing_card",
             "has_sanction",
         )
 

@@ -57,10 +57,10 @@
                 </BCol>
                 <BCol
                     sm="12"
-                    md="4"
-                    lg="3"
+                    md="5"
+                    lg="4"
                 >
-                    <div class="text-start d-flex">
+                    <div class="d-flex justify-content-between">
                         <BFormCheckbox
                             v-model="justified"
                             switch
@@ -69,10 +69,30 @@
                         >
                             {{ lateness.justified ? "Justifié" : "Injustifié" }}
                         </BFormCheckbox>
+                        <BFormCheckbox
+                            v-if="store.settings.enable_missing_card"
+                            v-model="missingCard"
+                            class="me-2 ms-2"
+                            @update:model-value="updateMissingCard"
+                            :value="false"
+                            :unchecked-value="true"
+                        >
+                            <IBiPersonVcardFill
+                                :id="`missing-${lateness.id}`"
+                                class="align-middle"
+                                v-if="missingCard"
+                                color="red"
+                                v-b-tooltip="'Carte étudiante manquante'"
+                            />
+                            <IBiPersonVcard
+                                v-else
+                                color="green"
+                            />
+                        </BFormCheckbox>
                         <BButton
                             :to="`/warning/${lateness.student.matricule}/`"
                             variant="light"
-                            class="card-link"
+                            class="card-link ms-3"
                         >
                             <IBiCard-text variant="secondary" />
                         </BButton>
@@ -136,6 +156,7 @@ export default {
     data: function () {
         return {
             justified: false,
+            missingCard: false,
             showPhoto: false,
             sanction: null,
             store: latenessStore(),
@@ -166,12 +187,23 @@ export default {
                     this.$emit("update", resp.data);
                 });
         },
+        updateMissingCard: function (event) {
+            axios.put(
+                `/lateness/api/lateness/${this.lateness.id}/`,
+                { missing_card: this.missingCard },
+                token,
+            ).then((resp) => {
+                this.missingCard = resp.data.missing_card;
+                this.$emit("update", resp.data);
+            });
+        },
         filterStudent: function () {
             this.$emit("filterStudent", this.lateness.student_id);
         },
     },
     mounted: function () {
         this.justified = this.lateness.justified;
+        this.missingCard = this.lateness.missing_card;
 
         if (!this.lateness.sanction_id) return;
 

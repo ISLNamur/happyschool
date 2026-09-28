@@ -36,6 +36,7 @@ class LatenessSettingsModel(models.Model):
     date_count_start = models.DateField(default=date(year=2019, month=9, day=1))
     notify_responsible = models.BooleanField(default=False)
     enable_camera_scan = models.BooleanField(default=False)
+    enable_missing_card = models.BooleanField(default=False)
     use_email_school = models.BooleanField(default=False)
 
 
@@ -89,6 +90,7 @@ class LatenessModel(models.Model):
     has_sanction = models.BooleanField(default=False)
     sanction_id = models.PositiveIntegerField(null=True, blank=True)
     justified = models.BooleanField(default=False)
+    missing_card = models.BooleanField(default=False)
     datetime_creation = models.DateTimeField(
         "Date et heure de création du retard", auto_now_add=True
     )

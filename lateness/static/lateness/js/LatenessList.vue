@@ -105,6 +105,21 @@
                         </BCard>
                     </BCol>
                     <BCol
+                        v-if="store.settings.enable_missing_card"
+                        cols="5"
+                        md="4"
+                    >
+                        <BCard
+                            bg-variant="light"
+                            no-body
+                            class="p-2"
+                        >
+                            <BFormCheckbox v-model="missingCard">
+                                Carte manquante
+                            </BFormCheckbox>
+                        </BCard>
+                    </BCol>
+                    <BCol
                         cols="3"
                         md="4"
                         v-if="store.settings.printer.length > 0 && availablePrinters.length > 1"
@@ -313,6 +328,7 @@ export default {
             addingStudent: false,
             printing: true,
             justified: false,
+            missingCard: false,
             countDate: null,
             topLateness: [],
             topOwnClasses: false,
@@ -411,6 +427,7 @@ export default {
             const data = {
                 student_id: this.search.matricule,
                 justified: this.justified,
+                missing_card: this.missingCard,
             };
             let url = "/lateness/api/lateness/";
             if (this.printing) url += `?print=1&printer=${this.printer}`;
