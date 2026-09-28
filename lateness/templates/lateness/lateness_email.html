@@ -6,7 +6,9 @@
                 <h2>Retard</h2>
                 <p>Bonjour,</p>
                 <p>
-                    Pour information, {{ lateness.student.last_name }} {{ lateness.student.first_name }} est arrivé(e) en retard le {{ lateness.datetime_creation }}.
+                    Pour information, {{ lateness.student.last_name }} {{ lateness.student.first_name }} est arrivé(e) en retard
+                    ({% if lateness.justified %}justifié{% else %}<strong>non-justifié</strong>{% endif %}) le {{ lateness.datetime_creation }}.
+                    {% if lateness.missing_card%}La carte de l'étudiant était <strong>absente</strong>.{% endif %}
                     Le nombre de retard pour cette période est de <strong>{{ lateness_count }}</strong>.
                 </p>
                 {% if warning %}
