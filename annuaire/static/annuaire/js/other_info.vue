@@ -53,10 +53,33 @@
                         :fields="[
                             'Date',
                             {key: 'title', label: 'Objet/Motif'},
+                            '',
                             'Message'
                         ]"
                         :items="dossier_eleve.results.slice(0, 5)"
                     >
+                        <template #cell()="data">
+                            <BDropdown
+                                size="sm"
+                                variant="link"
+                                toggle-class="text-decoration-none"
+                                no-caret
+                            >
+                                <template #button-content>
+                                    <IBiPaperclip
+                                        color="blue"
+                                        v-if="data.item.attachments.length > 0"
+                                    />
+                                </template>
+                                <BDropdownItem
+                                    v-for="a in data.item.attachments"
+                                    :key="a"
+                                    :href="`/dossier_eleve/attachment/${a.id}/`"
+                                >
+                                    {{ a.filename }}
+                                </BDropdownItem>
+                            </BDropdown>
+                        </template>
                         <template #cell(Date)="data">
                             {{ niceDate(data.item.datetime_encodage) }}
                         </template>
@@ -66,7 +89,10 @@
                             {{ data.item.sanction_decision ? data.item.sanction_decision.sanction_decision : data.item.info.info }}
                         </template>
                         <template #cell(Message)="data">
-                            <div v-html="data.item.explication_commentaire" />
+                            <div
+                                v-html="data.item.explication_commentaire"
+                                class="partial"
+                            />
                         </template>
                     </BTableLite>
                 </BCol>
@@ -253,6 +279,22 @@ export default {
 
             return DateTime.fromISO(date).toFormat("HH:mm");
         },
+        getDossierEleveFileName: function () {
+            this.dossier_eleve.results.forEach((cas, i) => {
+                const prom = cas.attachments.map((a) => {
+                    return axios.get(`/dossier_eleve/upload_file/${a}/`);
+                });
+
+                Promise.all(prom)
+                    .then((resp) => {
+                        this.dossier_eleve.results[i].attachments = resp.map(r => r.data);
+                        this.dossier_eleve.results[i].attachments.forEach((a) => {
+                            const path = a.attachment.split("/");
+                            a.filename = path[path.length - 1].substring(5, 60);
+                        });
+                    });
+            });
+        },
     },
     mounted: function () {
         let promises = [];
@@ -288,6 +330,7 @@ export default {
                             }
                             return cas;
                         });
+                        this.getDossierEleveFileName();
                     }
                 });
                 this.loading = false;
@@ -295,3 +338,10 @@ export default {
     },
 };
 </script>
+
+<style>
+.partial {
+    overflow: scroll;
+    max-height: 8.6rem;
+}
+</style>
